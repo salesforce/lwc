@@ -22,7 +22,7 @@ import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';
 import { Context } from './context';
-import { SlotSet, VM, resetShadowRoot, runWithBoundaryProtection } from './vm';
+import { VM, resetShadowRoot, runWithBoundaryProtection } from './vm';
 import { EmptyArray } from './utils';
 import { isTemplateRegistered, registerTemplate } from './secure-template';
 import {
@@ -45,7 +45,7 @@ export function setVMBeingRendered(vm: VM | null) {
 
 export { registerTemplate };
 export interface Template {
-    (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): VNodes;
+    (api: RenderAPI, cmp: object, ctx: Context): VNodes;
 
     /**
      * The stylesheet associated with the template.
@@ -72,24 +72,25 @@ export interface Template {
         shadowAttribute: string;
     };
 }
-const EmptySlots: SlotSet = create(null);
 
 function validateSlots(vm: VM, html: any) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const { cmpSlots = EmptySlots } = vm;
+    const { children } = vm;
     const { slots = EmptyArray } = html;
-    for (const slotName in cmpSlots) {
-        // eslint-disable-next-line no-production-assert
-        assert.isTrue(
-            isArray(cmpSlots[slotName]),
-            `Slots can only be set to an array, instead received ${toString(
-                cmpSlots[slotName]
-            )} for slot "${slotName}" in ${vm}.`
-        );
-
+    const slotNameRecord: Record<string, 1> = create(null);
+    for (let i = 0, len = children.length; i < len; i += 1) {
+        const vnode = children[i];
+        if (isNull(vnode)) {
+            continue;
+        }
+        const { data } = vnode;
+        const slotName = ((data.attrs && data.attrs.slot) || '') as string;
+        slotNameRecord[slotName] = 1;
+    }
+    for (const slotName in slotNameRecord) {
         if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: #1297 - this should never really happen because the compiler should always validate
             // eslint-disable-next-line no-production-assert
@@ -147,7 +148,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         },
         () => {
             // job
-            const { component, context, cmpSlots, cmpTemplate, tro } = vm;
+            const { component, context, cmpTemplate, tro } = vm;
             tro.observe(() => {
                 // reset the cache memoizer for template when needed
                 if (html !== cmpTemplate) {
@@ -211,7 +212,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 
-                vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache!);
+                vnodes = html.call(undefined, api, component, context.tplCache!);
                 const { styleVNode } = context;
                 if (!isNull(styleVNode)) {
                     ArrayUnshift.call(vnodes, styleVNode);

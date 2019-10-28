@@ -16,6 +16,9 @@ import {
     isNull,
     ArrayReduce,
     defineProperties,
+    isFalse,
+    isFunction,
+    ArraySplice,
 } from '@lwc/shared';
 import { getAttribute, setAttribute } from '../env/element';
 import { dispatchEvent } from '../env/dom';
@@ -27,10 +30,18 @@ import {
     getFilteredChildNodes,
     getFilteredSlotAssignedNodes,
 } from '../faux-shadow/traverse';
-import { childNodesGetter, parentNodeGetter } from '../env/node';
+import {
+    childNodesGetter,
+    parentNodeGetter,
+    insertBefore,
+    removeChild,
+    appendChild,
+    replaceChild,
+} from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
-import { isNodeShadowed, getNodeNearestOwnerKey } from '../faux-shadow/node';
+import { isNodeShadowed, getNodeNearestOwnerKey, getInternalChildNodes } from '../faux-shadow/node';
 import { arrayFromCollection } from '../shared/utils';
+import { getShadowRootResolver, getShadowRootRecord, SlottedNodeRecord } from './shadow-root';
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -80,6 +91,80 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
         },
         []
     );
+}
+
+interface SlotMeta {
+    distributed: boolean;
+    fragment: DocumentFragment;
+}
+
+const slotMetaMap: WeakMap<HTMLSlotElement, SlotMeta> = new WeakMap();
+
+function getSlotMeta(slotElm: HTMLSlotElement): SlotMeta {
+    let meta = slotMetaMap.get(slotElm);
+    if (isUndefined(meta)) {
+        meta = {
+            distributed: false,
+            fragment: document.createDocumentFragment(),
+        };
+    }
+    return meta;
+}
+
+function getDefaultContentFragment(slotElm: HTMLSlotElement): HTMLSlotElement | DocumentFragment {
+    const meta = getSlotMeta(slotElm);
+    return isTrue(meta.distributed) ? meta.fragment : slotElm;
+}
+
+function distSlottedNodesIntoSlotElement(
+    slotElm: HTMLSlotElement,
+    slottedNodeRecords: SlottedNodeRecord[]
+) {
+    const { name = '' } = slotElm;
+    for (let i = 0, len = slottedNodeRecords.length; i < len; i += 1) {
+        const { 0: node, 1: nameOnRec } = slottedNodeRecords[i];
+        if (nameOnRec === name) {
+            appendChild.call(slotElm, node);
+        }
+    }
+}
+
+function findSlottedRecordIndex(node: Node, slottedNodeRecords: SlottedNodeRecord[]): number {
+    for (let i = 0, len = slottedNodeRecords.length; i < len; i += 1) {
+        const record = slottedNodeRecords[i];
+        if (record[0] === node) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+export function insertIntoSlot<T extends Node>(
+    slotElm: HTMLSlotElement,
+    newChild: T,
+    refChild: Node | null
+) {
+    const meta = getSlotMeta(slotElm);
+    if (isFalse(meta.distributed)) {
+        // switching from default content to distributed content and storing the
+        // default fragment in case we have to restore the default content
+        const childNodes = getInternalChildNodes(slotElm);
+        for (let i = 0, len = childNodes.length; i < len; i += 1) {
+            appendChild.call(meta.fragment, childNodes[i]);
+        }
+        meta.distributed = true;
+    }
+    insertBefore.call(slotElm, newChild, refChild);
+}
+
+export function removeFromSlot<T extends Node>(slotElm: HTMLSlotElement, oldChild: T) {
+    const meta = getSlotMeta(slotElm);
+    removeChild.call(slotElm, oldChild);
+    if (isTrue(meta.distributed) && getInternalChildNodes(slotElm).length === 0) {
+        // no more distributed content, we fallback to the stored default fragment
+        appendChild.call(slotElm, meta.fragment);
+        meta.distributed = false;
+    }
 }
 
 export function assignedSlotGetterPatched(this: Element): HTMLSlotElement | null {
@@ -153,13 +238,27 @@ defineProperties(HTMLSlotElement.prototype, {
             return isNull(name) ? '' : name;
         },
         set(this: HTMLSlotElement, value: string) {
-            setAttribute.call(this, 'name', value);
+            if (value !== '' || getAttribute.call(this, 'name') !== null) {
+                // avoid setting the attribute if it is empty and was never set before
+                setAttribute.call(this, 'name', value);
+            }
+            // compiler will always set the name property, even for default slot where it is empty string
+            const fn = getShadowRootResolver(this);
+            if (isFunction(fn)) {
+                // slot came from template
+                const meta = getShadowRootRecord(this);
+                // storing a back-pointer from the shadowRoot to the slot element for
+                // the given name
+                meta.slotElements[value] = this;
+                // distributing existing slotted elements into the slot when needed
+                distSlottedNodesIntoSlotElement(this, meta.slottedRecords);
+            }
         },
         enumerable: true,
         configurable: true,
     },
     childNodes: {
-        get(this: HTMLSlotElement): NodeListOf<Node & Element> {
+        get(this: HTMLSlotElement): NodeListOf<Node> {
             if (isNodeShadowed(this)) {
                 const owner = getNodeOwner(this);
                 const childNodes = isNull(owner)
@@ -172,4 +271,171 @@ defineProperties(HTMLSlotElement.prototype, {
         enumerable: true,
         configurable: true,
     },
+
+    // slotting mechanism
+    insertBefore: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: HTMLSlotElement, newChild: T, refChild: Node | null): T {
+            const defaultContentFrag = getDefaultContentFragment(this);
+            insertBefore.call(defaultContentFrag, newChild, refChild);
+            return newChild;
+        },
+    },
+    removeChild: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: HTMLSlotElement, oldChild: T): T {
+            const defaultContentFrag = getDefaultContentFragment(this);
+            removeChild.call(defaultContentFrag, oldChild);
+            return oldChild;
+        },
+    },
+    appendChild: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: HTMLSlotElement, newChild: T): T {
+            const defaultContentFrag = getDefaultContentFragment(this);
+            appendChild.call(defaultContentFrag, newChild);
+            return newChild;
+        },
+    },
+    replaceChild: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: HTMLSlotElement, newChild: Node, oldChild: T): T {
+            const defaultContentFrag = getDefaultContentFragment(this);
+            replaceChild.call(defaultContentFrag, newChild, oldChild);
+            return oldChild;
+        },
+    },
 });
+
+function hostInsertBefore(
+    slottedRecords: SlottedNodeRecord[],
+    slotElements: Record<string, HTMLSlotElement>,
+    nr: SlottedNodeRecord,
+    slotName: string,
+    refIndex: number
+) {
+    // insert right after ref
+    ArraySplice.call(slottedRecords, refIndex, 0, nr);
+    if (slotElements[slotName]) {
+        // needs immediate allocation
+        let refNode: Node | null = null;
+        // trying to find a good ref that was attached to the same slot
+        for (let i = refIndex + 1, len = slottedRecords.length; i < len; i += 1) {
+            if (slottedRecords[i][1] === slotName) {
+                refNode = slottedRecords[i][0];
+                break;
+            }
+        }
+        insertIntoSlot(slotElements[slotName], nr[0], refNode);
+    }
+}
+
+function hostRemoveChild(
+    slottedRecords: SlottedNodeRecord[],
+    slotElements: Record<string, HTMLSlotElement>,
+    slotName: string,
+    index: number
+) {
+    // remove record from records
+    const r = slottedRecords[index];
+    ArraySplice.call(slottedRecords, index, 1);
+    if (slotElements[slotName]) {
+        // needs immediate removal from dom
+        removeFromSlot(slotElements[slotName], r[0]);
+    }
+}
+
+/**
+ * This operation will add few methods to the host to attempt to control
+ * the insertion and removal of child nodes that must be slotted into its
+ * shadow root.
+ *
+ * Note: this method does not support innerHTML, and co., it only support
+ *       regular dom manipulation methods.
+ */
+export function adoptHostToSupportSlotting(host: Element) {
+    defineProperties(host, {
+        insertBefore: {
+            writable: true,
+            enumerable: true,
+            configurable: true,
+            value<T extends Node>(this: Element, newChild: T, refChild: Node | null): T {
+                const { slotElements, slottedRecords } = getShadowRootRecord(this);
+                const slotName = (newChild as any).slot || '';
+                const nr: SlottedNodeRecord = {
+                    0: newChild,
+                    1: slotName,
+                };
+                const refIndex = isNull(refChild)
+                    ? slottedRecords.length - 1
+                    : findSlottedRecordIndex(refChild, slottedRecords);
+                if (refIndex === -1) {
+                    throw new Error(`Failed to execute 'insertBefore' on 'Node': The node before
+                        which the new node is to be inserted is not a child of this node.`);
+                }
+                hostInsertBefore(slottedRecords, slotElements, nr, slotName, refIndex);
+                return newChild;
+            },
+        },
+        removeChild: {
+            writable: true,
+            enumerable: true,
+            configurable: true,
+            value<T extends Node>(this: Element, oldChild: T): T {
+                const { slotElements, slottedRecords } = getShadowRootRecord(this);
+                const slotName = (oldChild as any).slot || '';
+                const refIndex = findSlottedRecordIndex(oldChild, slottedRecords);
+                if (refIndex === -1) {
+                    throw new Error(`Failed to execute 'removeChild' on 'Node': The node to
+                        be removed is not a child of this node.`);
+                }
+                hostRemoveChild(slottedRecords, slotElements, slotName, refIndex);
+                return oldChild;
+            },
+        },
+        appendChild: {
+            writable: true,
+            enumerable: true,
+            configurable: true,
+            value<T extends Node>(this: Element, newChild: T): T {
+                const { slotElements, slottedRecords } = getShadowRootRecord(this);
+                const slotName = (newChild as any).slot || '';
+                const nr: SlottedNodeRecord = {
+                    0: newChild,
+                    1: slotName,
+                };
+                const refIndex = slottedRecords.length - 1;
+                hostInsertBefore(slottedRecords, slotElements, nr, slotName, refIndex);
+                return newChild;
+            },
+        },
+        replaceChild: {
+            writable: true,
+            enumerable: true,
+            configurable: true,
+            value<T extends Node>(this: Element, newChild: Node, oldChild: T): T {
+                const { slotElements, slottedRecords } = getShadowRootRecord(this);
+                const slotName = (newChild as any).slot || '';
+                const nr: SlottedNodeRecord = {
+                    0: newChild,
+                    1: slotName,
+                };
+                const refIndex = findSlottedRecordIndex(oldChild, slottedRecords);
+                if (refIndex === -1) {
+                    throw new Error(`The node to be replaced is not a child of this node.`);
+                }
+                hostRemoveChild(slottedRecords, slotElements, slotName, refIndex);
+                hostInsertBefore(slottedRecords, slotElements, nr, slotName, refIndex);
+                return oldChild;
+            },
+        },
+    });
+}

@@ -46,20 +46,34 @@ import { pathComposer } from '../3rdparty/polymer/path-composer';
 import { getInternalChildNodes, setNodeKey, setNodeOwnerKey } from './node';
 import { innerHTMLSetter } from '../env/element';
 import { getOwnerDocument } from '../shared/utils';
+import { adoptHostToSupportSlotting } from './slot';
 
 const { getHiddenField, setHiddenField, createFieldName } = fields;
 const ShadowRootResolverKey = '$shadowResolver$';
 const InternalSlot = createFieldName('shadowRecord', 'synthetic-shadow');
 const { createDocumentFragment } = document;
 
+export interface SlottedNodeRecord {
+    // slotted node
+    0: Node;
+    // slot name
+    1: string;
+}
+
 interface ShadowRootRecord {
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
     host: Element;
     shadowRoot: SyntheticShadowRootInterface;
+    // Record with all slot elements ever inserted in the shadowRoot
+    slotElements: Record<string, HTMLSlotElement>;
+    // Array of records with all slotted nodes in the order of insertion
+    slottedRecords: SlottedNodeRecord[];
 }
 
-function getInternalSlot(root: SyntheticShadowRootInterface | Element): ShadowRootRecord {
+export function getShadowRootRecord(
+    root: SyntheticShadowRootInterface | Element
+): ShadowRootRecord {
     const record: ShadowRootRecord | undefined = getHiddenField(root, InternalSlot);
     if (isUndefined(record)) {
         throw new TypeError();
@@ -95,15 +109,15 @@ export function setShadowRootResolver(node: Node, fn: ShadowRootResolver) {
 }
 
 export function isDelegatingFocus(host: HTMLElement): boolean {
-    return getInternalSlot(host).delegatesFocus;
+    return getShadowRootRecord(host).delegatesFocus;
 }
 
 export function getHost(root: SyntheticShadowRootInterface): Element {
-    return getInternalSlot(root).host;
+    return getShadowRootRecord(root).host;
 }
 
 export function getShadowRoot(elm: Element): SyntheticShadowRootInterface {
-    return getInternalSlot(elm).shadowRoot;
+    return getShadowRootRecord(elm).shadowRoot;
 }
 
 // Intentionally adding Node here as possible the first argument
@@ -131,6 +145,8 @@ export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticSh
         delegatesFocus: !!delegatesFocus,
         host: elm,
         shadowRoot: sr,
+        slotElements: create(null),
+        slottedRecords: [],
     };
     setHiddenField(sr, InternalSlot, record);
     setHiddenField(elm, InternalSlot, record);
@@ -140,6 +156,8 @@ export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticSh
     setShadowRootResolver(sr, shadowResolver);
     // correcting the proto chain
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
+    // patch the host instance to support slotting
+    adoptHostToSupportSlotting(elm);
     return sr;
 }
 
@@ -204,7 +222,7 @@ const ShadowRootDescriptors = {
     delegatesFocus: {
         configurable: true,
         get(this: SyntheticShadowRootInterface): boolean {
-            return getInternalSlot(this).delegatesFocus;
+            return getShadowRootRecord(this).delegatesFocus;
         },
     },
     elementFromPoint: {
@@ -247,7 +265,7 @@ const ShadowRootDescriptors = {
     mode: {
         configurable: true,
         get(this: SyntheticShadowRootInterface) {
-            return getInternalSlot(this).mode;
+            return getShadowRootRecord(this).mode;
         },
     },
     styleSheets: {

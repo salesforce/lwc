@@ -5,13 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, fields, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
-import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
+import { ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
     createVM,
     removeVM,
     getCustomElementVM,
-    allocateInSlot,
     appendVM,
     runWithBoundaryProtection,
 } from './vm';
@@ -157,19 +156,6 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
         },
         noop
     );
-}
-
-export function allocateChildrenHook(vnode: VCustomElement) {
-    const elm = vnode.elm as HTMLElement;
-    const vm = getCustomElementVM(elm);
-    const { children } = vnode;
-    vm.aChildren = children;
-    if (isTrue(useSyntheticShadow)) {
-        // slow path
-        allocateInSlot(vm, children);
-        // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
-        vnode.children = EmptyArray;
-    }
 }
 
 export function createViewModelHook(vnode: VCustomElement) {
