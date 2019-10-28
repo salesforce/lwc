@@ -352,7 +352,7 @@ defineProperties(Node.prototype, {
     },
     parentNode: {
         get(this: Node): (Node & ParentNode) | null {
-            if (isNodeShadowed(this)) {
+            if (!isUndefined(getNodeOwnerKey(this))) {
                 return parentNodeGetterPatched.call(this);
             }
             return parentNodeGetter.call(this);
@@ -362,7 +362,7 @@ defineProperties(Node.prototype, {
     },
     parentElement: {
         get(this: Node): Element | null {
-            if (isNodeShadowed(this)) {
+            if (!isUndefined(getNodeOwnerKey(this))) {
                 return parentElementGetterPatched.call(this);
             }
             return parentElementGetter.call(this);
