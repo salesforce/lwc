@@ -44,8 +44,6 @@ import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from '
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
-const { DISABLE_NODE_PATCH } = getInitializedFeatureFlags();
-
 // DO NOT CHANGE this:
 // these two values need to be in sync with engine
 const OwnerKey = '$$OwnerKey$$';
@@ -53,23 +51,11 @@ const OwnKey = '$$OwnKey$$';
 
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
-function getInitializedFeatureFlags() {
-    let DISABLE_NODE_PATCH;
-
-    if (featureFlags.ENABLE_NODE_PATCH) {
-        DISABLE_NODE_PATCH = false;
-    } else {
-        DISABLE_NODE_PATCH = true;
-    }
-
-    return { DISABLE_NODE_PATCH };
-}
-
 export function getNodeOwnerKey(node: Node): number | undefined {
     return node[OwnerKey];
 }
 
-export function setNodeOwnerKey(node: Node, value: number) {
+export function setNodeOwnerKey(node: Node, value: number | undefined) {
     if (process.env.NODE_ENV !== 'production') {
         // in dev-mode, we are more restrictive about what you can do with the owner key
         defineProperty(node, OwnerKey, {
@@ -343,7 +329,7 @@ defineProperties(Node.prototype, {
     },
     textContent: {
         get(this: Node): string {
-            if (DISABLE_NODE_PATCH) {
+            if (!featureFlags.ENABLE_NODE_PATCH) {
                 if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
                     return textContentGetterPatched.call(this);
                 }
@@ -420,7 +406,7 @@ defineProperties(Node.prototype, {
     },
     contains: {
         value(this: Node, otherNode: Node): boolean {
-            if (DISABLE_NODE_PATCH) {
+            if (!featureFlags.ENABLE_NODE_PATCH) {
                 if (otherNode == null) {
                     return false;
                 }
@@ -444,7 +430,7 @@ defineProperties(Node.prototype, {
     },
     cloneNode: {
         value(this: Node, deep?: boolean): Node {
-            if (DISABLE_NODE_PATCH) {
+            if (!featureFlags.ENABLE_NODE_PATCH) {
                 const ownerKey = getNodeOwnerKey(this);
                 if (!isUndefined(ownerKey) || isHostElement(this)) {
                     return cloneNodePatched.call(this, deep);

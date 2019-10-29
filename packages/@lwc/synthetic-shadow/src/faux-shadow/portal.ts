@@ -6,12 +6,16 @@
  */
 import { isUndefined, forEach, defineProperty, isTrue } from '@lwc/shared';
 import { getInternalChildNodes } from './node';
+import { compareDocumentPosition } from '../env/node';
 import { setShadowRootResolver, ShadowRootResolver, getShadowRootResolver } from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
 
 const MO = MutationObserver;
 const MutationObserverObserve = MO.prototype.observe;
 const DomManualPrivateKey = '$$DomManualKey$$';
+
+// Resolver function used when a node is removed from within a portal
+const DocumentResolverFn = function() {} as ShadowRootResolver;
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -43,13 +47,36 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
 function initPortalObserver() {
     return new MO(mutations => {
         forEach.call(mutations, mutation => {
-            const { target: elm, addedNodes } = mutation;
+            /**
+             * This routine will process all nodes added or removed from elm (which is marked as a portal)
+             * When adding a node to the portal element, we should add the ownership.
+             * When removing a node from the portal element, this ownership should be removed.
+             *
+             * There is some special cases in which MutationObserver may call with stacked mutations (the same node
+             * will be in addedNodes and removedNodes) or with false positives (a node that is removed and re-appended
+             * in the same tick) for those cases, we cover by checking that the node is contained
+             * (or not in the case of removal) by the element.
+             */
+            const { target: elm, addedNodes, removedNodes } = mutation;
             // the target of the mutation should always have a ShadowRootResolver attached to it
             const fn = getShadowRootResolver(elm) as ShadowRootResolver;
             const shadowToken = getShadowToken(elm);
+
+            // Process removals first to handle the case where an element is removed and reinserted
+            for (let i = 0, len = removedNodes.length; i < len; i += 1) {
+                const node: Node = removedNodes[i];
+                if (
+                    !(compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY)
+                ) {
+                    adoptChildNode(node, DocumentResolverFn, undefined);
+                }
+            }
+
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
                 const node: Node = addedNodes[i];
-                adoptChildNode(node, fn, shadowToken);
+                if (compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
+                    adoptChildNode(node, fn, shadowToken);
+                }
             }
         });
     });
