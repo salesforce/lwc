@@ -59,3 +59,13 @@ export function arrayFromCollection<T extends Node, K extends Element>(
     }
     return cloned;
 }
+
+/**
+ * Is the given node an element?
+ * Duct-typing to detect if a node has a specific property. This is faster than the instanceOf Element check
+ * https://jsperf.com/duck-typing-vs-instanceof-lwc
+ * @param node
+ */
+export function isAnElement(node: Node): boolean {
+    return 'childElementCount' in node;
+}

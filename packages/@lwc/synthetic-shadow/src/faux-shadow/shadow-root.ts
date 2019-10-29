@@ -44,13 +44,21 @@ import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { retarget } from '../3rdparty/polymer/retarget';
 import { pathComposer } from '../3rdparty/polymer/path-composer';
 import { getInternalChildNodes, setNodeKey, setNodeOwnerKey } from './node';
-import { innerHTMLSetter } from '../env/element';
+import { innerHTMLSetter, setAttribute } from '../env/element';
 import { getOwnerDocument } from '../shared/utils';
 
 const { getHiddenField, setHiddenField, createFieldName } = fields;
 const ShadowRootResolverKey = '$shadowResolver$';
 const InternalSlot = createFieldName('shadowRecord', 'synthetic-shadow');
 const { createDocumentFragment } = document;
+
+/*
+ * Using a simple custom attribute is faster based on perf results:
+ * Setting attribute: https://jsperf.com/attribute-vs-data-attribute/1
+ * matches(selector): https://jsperf.com/matches-attribute-vs-data-attribute/1
+ * querySelector(): https://jsperf.com/query-by-attribute-vs-data-attribute/1
+ **/
+export const HostMarkerAttribute = 'lwc-host';
 
 interface ShadowRootRecord {
     mode: 'open' | 'closed';
@@ -138,6 +146,7 @@ export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticSh
     const x = (shadowResolver.nodeKey = uid++);
     setNodeKey(elm, x);
     setShadowRootResolver(sr, shadowResolver);
+    setAttribute.call(elm, HostMarkerAttribute, '');
     // correcting the proto chain
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
     return sr;
