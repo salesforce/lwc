@@ -30,7 +30,6 @@ let portalObserver: MutationObserver | undefined;
 
 const portalObserverConfig: MutationObserverInit = {
     childList: true,
-    subtree: false,
 };
 
 function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string | undefined) {
