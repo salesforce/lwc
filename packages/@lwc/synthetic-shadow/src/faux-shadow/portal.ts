@@ -38,13 +38,18 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
         return; // nothing to do here, it is already correctly patched
     }
     setShadowRootResolver(node, fn);
-    // Root LWC elements can't contain slots, therefore we stop listening mutations.
-    if (node instanceof Element && !isHostElement(node)) {
+    if (node instanceof Element) {
+        setShadowToken(node, shadowToken);
+
+        if (isHostElement(node)) {
+            // Root LWC elements can't get content slotted into them, therefore we don't observe their children.
+            return;
+        }
+
         if (isUndefined(previousNodeShadowResolver)) {
             // we only care about Element without shadowResolver (no MO.observe has been called)
             MutationObserverObserve.call(portalObserver, node, portalObserverConfig);
         }
-        setShadowToken(node, shadowToken);
         // recursively patching all children as well
         const childNodes = getInternalChildNodes(node);
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
