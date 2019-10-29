@@ -2,7 +2,7 @@
 env_default: &env_default
   working_directory: ~/lwc
   docker:
-    - image: circleci/node:10-browsers
+    - image: circleci/node:10.16.3-browsers
 
 env_perf: &env_perf
   <<: *env_default
