@@ -7,7 +7,7 @@
 import * as path from 'path';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
 
-import { NormalizedCompilerOptions, CompilerOptions, normalizeOptions } from '../compiler/options';
+import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
 import styleTransform from './style';
 import templateTransformer from './template';
 import scriptTransformer from './javascript';
@@ -29,7 +29,7 @@ export interface FileTransformerResult {
 export function transform(
     src: string,
     filename: string,
-    options: CompilerOptions
+    options: TransformOptions
 ): Promise<FileTransformerResult> {
     validateArguments(src, filename);
     return new Promise((resolve, reject) => {
@@ -49,10 +49,11 @@ export function transform(
 export function transformSync(
     src: string,
     filename: string,
-    options: CompilerOptions
+    options: TransformOptions
 ): FileTransformerResult {
     validateArguments(src, filename);
-    return transformFile(src, filename, normalizeOptions(options));
+    const normalizedOptions = validateTransformOptions(options);
+    return transformFile(src, filename, normalizedOptions);
 }
 
 function validateArguments(src: string, filename: string) {
@@ -63,7 +64,7 @@ function validateArguments(src: string, filename: string) {
 export function transformFile(
     src: string,
     filename: string,
-    options: NormalizedCompilerOptions
+    options: NormalizedTransformOptions
 ): FileTransformerResult {
     let transformer;
 

@@ -4,19 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { CompilerOptions } from '../../compiler/options';
+import { TransformOptions } from '../../options';
 import { transform } from '../transformer';
 
 import { pretify } from '../../__tests__/utils';
 
-const COMPILER_OPTIONS: CompilerOptions = {
+const TRANSFORMATION_OPTIONS: TransformOptions = {
     namespace: 'x',
     name: 'foo',
-    files: {},
 };
 
 it('should throw when processing an invalid HTML file', async () => {
-    await expect(transform(`<html`, 'foo.html', COMPILER_OPTIONS)).rejects.toMatchObject({
+    await expect(transform(`<html`, 'foo.html', TRANSFORMATION_OPTIONS)).rejects.toMatchObject({
         filename: 'foo.html',
         message: expect.stringContaining('Invalid HTML syntax: eof-in-tag.'),
     });
@@ -55,7 +54,7 @@ it('should apply transformation for template file', async () => {
         };
     `;
 
-    const { code } = await transform(actual, 'foo.html', COMPILER_OPTIONS);
+    const { code } = await transform(actual, 'foo.html', TRANSFORMATION_OPTIONS);
 
     expect(pretify(code)).toBe(pretify(expected));
 });

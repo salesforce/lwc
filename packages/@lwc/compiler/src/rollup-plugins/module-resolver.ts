@@ -9,7 +9,7 @@ import { Plugin } from 'rollup';
 import { ModuleResolutionErrors, generateCompilerError } from '@lwc/errors';
 import { hasOwnProperty } from '@lwc/shared';
 
-import { NormalizedCompilerOptions, BundleFiles } from '../compiler/options';
+import { NormalizedCompileOptions, BundleFiles } from '../options';
 
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
@@ -52,11 +52,11 @@ function inferExtension(fileName: string, files: BundleFiles) {
     return fileName;
 }
 
-function fileExists(fileName: string, { files }: NormalizedCompilerOptions): boolean {
+function fileExists(fileName: string, { files }: NormalizedCompileOptions): boolean {
     return hasOwnProperty.call(files, fileName);
 }
 
-function readFile(filename: string, options: NormalizedCompilerOptions): string {
+function readFile(filename: string, options: NormalizedCompileOptions): string {
     const { files } = options;
 
     if (fileExists(filename, options)) {
@@ -72,7 +72,7 @@ function readFile(filename: string, options: NormalizedCompilerOptions): string 
 function generateModuleResolutionError(
     importee: string,
     importer: string,
-    options: NormalizedCompilerOptions
+    options: NormalizedCompileOptions
 ) {
     const absPath = getAbsolutePath(importee, importer, options);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
@@ -98,7 +98,7 @@ function generateModuleResolutionError(
 function generateEntryResolutionError(
     importee: string,
     importer: string,
-    options: NormalizedCompilerOptions
+    options: NormalizedCompileOptions
 ) {
     const absPath = getAbsolutePath(importee, importer, options);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
@@ -114,7 +114,7 @@ function generateEntryResolutionError(
           });
 }
 
-function getAbsolutePath(importee: string, importer: string, options: NormalizedCompilerOptions) {
+function getAbsolutePath(importee: string, importer: string, options: NormalizedCompileOptions) {
     const { baseDir, files } = options;
     const relPath = importer ? path.dirname(importer) : baseDir || '';
     return inferExtension(path.join(relPath, importee), files);
@@ -126,7 +126,7 @@ function getCaseIgnoredFilenameMatch(files: { [key: string]: string }, nameToMat
     );
 }
 
-export default function({ options }: { options: NormalizedCompilerOptions }): Plugin {
+export default function({ options }: { options: NormalizedCompileOptions }): Plugin {
     return {
         name: 'lwc-module-resolver',
 

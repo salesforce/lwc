@@ -25,7 +25,9 @@ testValidateOptions('transformSync', transformSync);
 
 describe('transform', () => {
     it('returns a promise resolving to an object with code', () => {
-        expect(transform(`console.log('Hello')`, 'foo.js', {})).resolves.toMatchObject({
+        expect(
+            transform(`console.log('Hello')`, 'foo.js', { name: 'foo', namespace: 'x' })
+        ).resolves.toMatchObject({
             code: expect.any(String),
         });
     });
@@ -33,7 +35,9 @@ describe('transform', () => {
 
 describe('transformSync', () => {
     it('returns to an object with code', () => {
-        expect(transformSync(`console.log('Hello')`, 'foo.js', {})).toMatchObject({
+        expect(
+            transformSync(`console.log('Hello')`, 'foo.js', { name: 'foo', namespace: 'x' })
+        ).toMatchObject({
             code: expect.any(String),
         });
     });

@@ -5,15 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { CompilerOptions } from '../../compiler/options';
+import { TransformOptions } from '../../options';
 import { transform } from '../transformer';
 
 import { pretify } from '../../__tests__/utils';
 
-const COMPILER_OPTIONS: CompilerOptions = {
+const TRANSFORMATION_OPTIONS: TransformOptions = {
     namespace: 'x',
     name: 'foo',
-    files: {},
 };
 
 it('should apply transformation for valid javascript file', async () => {
@@ -32,12 +31,12 @@ it('should apply transformation for valid javascript file', async () => {
         });
     `;
 
-    const { code } = await transform(actual, 'foo.js', COMPILER_OPTIONS);
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
     expect(pretify(code)).toBe(pretify(expected));
 });
 
 it('should throw when processing an invalid javascript file', async () => {
-    await expect(transform(`const`, 'foo.js', COMPILER_OPTIONS)).rejects.toMatchObject({
+    await expect(transform(`const`, 'foo.js', TRANSFORMATION_OPTIONS)).rejects.toMatchObject({
         filename: 'foo.js',
         message: expect.stringContaining('foo.js: Unexpected token (1:5)'),
     });
@@ -56,6 +55,6 @@ it('allows dynamic imports', async () => {
         }
     `;
 
-    const { code } = await transform(actual, 'foo.js', COMPILER_OPTIONS);
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
     expect(pretify(code)).toBe(pretify(expected));
 });

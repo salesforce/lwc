@@ -7,7 +7,7 @@
 import { minify } from 'terser';
 import { Plugin } from 'rollup';
 
-import { NormalizedOutputConfig } from '../compiler/options';
+import { NormalizedOutputConfig } from '../options';
 
 /**
  * Rollup plugin applying minification to the generated bundle.
