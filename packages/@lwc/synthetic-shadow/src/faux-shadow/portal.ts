@@ -7,11 +7,16 @@
 import { isUndefined, forEach, defineProperty, isTrue } from '@lwc/shared';
 import { getInternalChildNodes } from './node';
 import { compareDocumentPosition } from '../env/node';
-import { setShadowRootResolver, ShadowRootResolver, getShadowRootResolver } from './shadow-root';
+import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
+import {
+    setShadowRootResolver,
+    ShadowRootResolver,
+    getShadowRootResolver,
+    isHostElement,
+} from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
 
 const MO = MutationObserver;
-const MutationObserverObserve = MO.prototype.observe;
 const DomManualPrivateKey = '$$DomManualKey$$';
 
 // Resolver function used when a node is removed from within a portal
@@ -25,15 +30,21 @@ let portalObserver: MutationObserver | undefined;
 
 const portalObserverConfig: MutationObserverInit = {
     childList: true,
-    subtree: true,
+    subtree: false,
 };
 
 function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string | undefined) {
-    if (getShadowRootResolver(node) === fn) {
+    const previousNodeShadowResolver = getShadowRootResolver(node);
+    if (previousNodeShadowResolver === fn) {
         return; // nothing to do here, it is already correctly patched
     }
     setShadowRootResolver(node, fn);
-    if (node instanceof Element) {
+    // Root LWC elements can't contain slots, therefore we stop listening mutations.
+    if (node instanceof Element && !isHostElement(node)) {
+        if (isUndefined(previousNodeShadowResolver)) {
+            // we only care about Element without shadowResolver (no MO.observe has been called)
+            MutationObserverObserve.call(portalObserver, node, portalObserverConfig);
+        }
         setShadowToken(node, shadowToken);
         // recursively patching all children as well
         const childNodes = getInternalChildNodes(node);
