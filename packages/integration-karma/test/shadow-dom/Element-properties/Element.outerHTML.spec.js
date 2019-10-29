@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { stripHostMarker } from 'test-utils';
 
 import Test from 'x/test';
 
@@ -7,8 +8,8 @@ describe('Element.outerHTML - get', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
-        expect(elm.outerHTML).toBe('<x-test></x-test>');
-        expect(elm.shadowRoot.querySelector('x-container').outerHTML).toBe(
+        expect(stripHostMarker(elm.outerHTML)).toBe('<x-test></x-test>');
+        expect(stripHostMarker(elm.shadowRoot.querySelector('x-container').outerHTML)).toBe(
             '<x-container><div>Slotted Text<input name="slotted"></div></x-container>'
         );
         expect(elm.shadowRoot.querySelector('div').outerHTML).toBe(

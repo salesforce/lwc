@@ -330,11 +330,16 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         register = {};
     }
 
+    function stripHostMarker(str) {
+        return str.replace(/ lwc-host(="")/gm, '');
+    }
+
     return {
         registerForLoad: registerForLoad,
         clearRegister: clearRegister,
         load: load,
         extractDataIds: extractDataIds,
         extractShadowDataIds: extractShadowDataIds,
+        stripHostMarker: stripHostMarker,
     };
 })(LWC, jasmine, beforeAll);

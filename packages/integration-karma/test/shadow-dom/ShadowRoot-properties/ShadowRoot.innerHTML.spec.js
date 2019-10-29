@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { stripHostMarker } from 'test-utils';
 
 import Test from 'x/test';
 
@@ -7,7 +8,9 @@ describe('ShadowRoot.innerHTML', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
-        expect(elm.shadowRoot.innerHTML).toBe('<x-container><div>Slotted Text</div></x-container>');
+        expect(stripHostMarker(elm.shadowRoot.innerHTML)).toBe(
+            '<x-container><div>Slotted Text</div></x-container>'
+        );
         expect(elm.shadowRoot.querySelector('x-container').shadowRoot.innerHTML).toBe(
             '<div>Before[<slot></slot>]After</div>'
         );

@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { stripHostMarker } from 'test-utils';
 
 import Container from 'x/container';
 import ParentSpecialized from 'x/parentSpecialized';
@@ -67,28 +68,28 @@ if (!process.env.NATIVE_SHADOW) {
 
         describe('Element.prototype API', () => {
             it('should keep behavior for innerHTML', () => {
-                expect(elementOutsideLWC.innerHTML.length).toBe(455);
+                expect(stripHostMarker(elementOutsideLWC.innerHTML).length).toBe(455);
                 expect(rootLwcElement.innerHTML.length).toBe(0);
                 expect(lwcElementInsideShadow.innerHTML.length).toBe(0);
 
-                expect(divManuallyApendedToShadow.innerHTML.length).toBe(176); // <x-manually-inserted><p>slot-container text</p><x-with-slot><p>with
+                expect(stripHostMarker(divManuallyApendedToShadow.innerHTML).length).toBe(176); // <x-manually-inserted><p>slot-container text</p><x-with-slot><p>with
 
-                expect(cmpShadow.innerHTML.length).toBe(99);
+                expect(stripHostMarker(cmpShadow.innerHTML).length).toBe(99);
 
                 expect(slottedComponent.innerHTML.length).toBe(46);
                 expect(slottedNode.innerHTML.length).toBe(19);
             });
 
             it('should keep behavior for outerHTML', () => {
-                expect(elementOutsideLWC.outerHTML.length).toBe(466);
-                expect(rootLwcElement.outerHTML.length).toBe(27);
-                expect(lwcElementInsideShadow.outerHTML.length).toBe(27);
+                expect(stripHostMarker(elementOutsideLWC.outerHTML).length).toBe(466);
+                expect(stripHostMarker(rootLwcElement.outerHTML).length).toBe(27);
+                expect(stripHostMarker(lwcElementInsideShadow.outerHTML).length).toBe(27);
 
-                expect(divManuallyApendedToShadow.outerHTML.length).toBe(206); // <div class="manual-ctx"><x-manually-inserted><p>slot-container text</p><x-with-slot><p>wi ....
+                expect(stripHostMarker(divManuallyApendedToShadow.outerHTML).length).toBe(206); // <div class="manual-ctx"><x-manually-inserted><p>slot-container text</p><x-with-slot><p>wi ....
 
                 expect(cmpShadow.outerHTML).toBe(undefined);
 
-                expect(slottedComponent.outerHTML.length).toBe(73);
+                expect(stripHostMarker(slottedComponent.outerHTML).length).toBe(73);
                 expect(slottedNode.outerHTML.length).toBe(46);
             });
 
