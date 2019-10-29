@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined, forEach, defineProperty, isTrue } from '@lwc/shared';
-import { getInternalChildNodes } from './node';
-import { compareDocumentPosition } from '../env/node';
+import { childNodesGetter, compareDocumentPosition } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
 import {
     setShadowRootResolver,
@@ -51,10 +50,9 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
             MutationObserverObserve.call(portalObserver, node, portalObserverConfig);
         }
         // recursively patching all children as well
-        const childNodes = getInternalChildNodes(node);
+        const childNodes = childNodesGetter.call(node);
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            const child = childNodes[i];
-            adoptChildNode(child, fn, shadowToken);
+            adoptChildNode(childNodes[i], fn, shadowToken);
         }
     }
 }
