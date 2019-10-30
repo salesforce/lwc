@@ -145,10 +145,15 @@ export function rerenderVM(vm: VM) {
     rehydrate(vm);
 }
 
+function addHostAttribute(elm: HTMLElement) {
+    (elm as any).$lwcHostToken$;
+}
+
 export function appendRootVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
+    addHostAttribute(vm.elm);
     runConnectedCallback(vm);
     rehydrate(vm);
 }
@@ -158,6 +163,7 @@ export function appendVM(vm: VM) {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
     }
+    addHostAttribute(vm.elm);
     runConnectedCallback(vm);
     rehydrate(vm);
 }

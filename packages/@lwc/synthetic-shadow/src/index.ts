@@ -34,3 +34,4 @@ import './faux-shadow/slot';
 import './faux-shadow/event-target';
 import './faux-shadow/portal';
 import './faux-shadow/shadow-token';
+import './faux-shadow/lwc-host';

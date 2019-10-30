@@ -14,14 +14,14 @@ import {
     defineProperty,
     forEach,
     isFalse,
-    isTrue,
     isNull,
     isUndefined,
 } from '@lwc/shared';
-import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
-import { SyntheticShadowRoot, HostMarkerAttribute } from '../../faux-shadow/shadow-root';
 import { matches } from '../../env/element';
 import { isAnElement } from '../../shared/utils';
+import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
+import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
+import { HostTokenAttributeName } from '../../faux-shadow/lwc-host';
 
 const OriginalMutationObserver = MutationObserver;
 const {
@@ -78,10 +78,9 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
 
 // Descendant selector with a * is as performant as a selector with tag name
 // https://jsperf.com/matches-selector-optimization/1
-const ShadowedElementSelector = `[${HostMarkerAttribute}] *`;
+const ShadowedElementSelector = `[${HostTokenAttributeName}] *`;
 /**
  * Is the given node an element and not inside a shadow?
- * @param node
  */
 function isNonShadowedElement(node: Node): boolean {
     // If the target is an element and it is not the descendant of a host element
@@ -178,7 +177,7 @@ function filterMutationRecords(
                 // First, check if the target is not the descendant of a lwc host element.
                 // If it is not, return record as-is.
                 // If it is, then ascend the tree starting from target and check if observer is qualified
-                if (isTrue(isNonShadowedElement(target)) || isQualifiedObserver(observer, target)) {
+                if (isNonShadowedElement(target) || isQualifiedObserver(observer, target)) {
                     ArrayPush.call(filteredSet, record);
                 }
             }
