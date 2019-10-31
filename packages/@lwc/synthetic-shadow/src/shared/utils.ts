@@ -66,7 +66,7 @@ export function arrayFromCollection<T extends Node, K extends Element>(
  * https://jsperf.com/duck-typing-vs-instanceof-lwc
  * @param node
  */
-export function isAnElement(node: Node): boolean {
+export function isAnElement(node: Node): node is Element {
     // Any property that is specifically in Element interface. Using 'matches' property.
     // https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
     return 'matches' in node;

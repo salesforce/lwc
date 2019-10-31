@@ -13,14 +13,13 @@ import {
     defineProperties,
     defineProperty,
     forEach,
-    isFalse,
     isNull,
     isUndefined,
 } from '@lwc/shared';
 import { matches } from '../../env/element';
 import { isAnElement } from '../../shared/utils';
-import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
-import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
+import { getNodeNearestOwnerKey } from '../../faux-shadow/node';
+import { SyntheticShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
 
 const OriginalMutationObserver = MutationObserver;
 const {
@@ -78,15 +77,15 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
 // Descendant selector with a * is as performant as a selector with tag name
 // https://jsperf.com/matches-selector-optimization/1
 const ShadowedElementSelector = '[lwc\\:host] *';
-/**
- * Is the given node an element and not inside a shadow?
- */
+
+function isElementShadowed(elm: Element) {
+    return matches.call(elm, ShadowedElementSelector);
+}
+
+// Is the given node an element and not inside a shadow?
 function isNonShadowedElement(node: Node): boolean {
-    // If the target is an element and it is not the descendant of a host element
-    if (isAnElement(node) && isFalse(matches.call(node as Element, ShadowedElementSelector))) {
-        return true;
-    }
-    return false;
+    // If the target is an element and it is not shadowed
+    return isAnElement(node) && !isElementShadowed(node);
 }
 
 /**
@@ -132,7 +131,7 @@ function filterMutationRecords(
             // Determine if the mutations affected the host or the shadowRoot
             // Mutations affecting host: changes to slot content
             // Mutations affecting shadowRoot: changes to template content
-            if (type === 'childList' && !isUndefined(getNodeKey(target))) {
+            if (type === 'childList' && isHostElement(target)) {
                 // In case of added nodes, we can climb up the tree and determine eligibility
                 if (addedNodes.length > 0) {
                     // Optimization: Peek in and test one node to decide if the MutationRecord qualifies

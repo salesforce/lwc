@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, isNull } from '@lwc/shared';
+import { defineProperty } from '@lwc/shared';
 import { getAttribute, setAttribute } from '../env/element';
 
 /*
@@ -19,8 +19,8 @@ const HostTokenAttributeName = 'lwc:host';
  * Patching HTMLElement.prototype.$lwcHostToken$ to add a custom attribute to host elements
  */
 defineProperty(HTMLElement.prototype, '$lwcHostToken$', {
-    get(this: HTMLElement): boolean {
-        return !isNull(getAttribute.call(this, HostTokenAttributeName));
+    get(this: HTMLElement): string | null {
+        return getAttribute.call(this, HostTokenAttributeName);
     },
     set(this: HTMLElement, value: string) {
         setAttribute.call(this, HostTokenAttributeName, value);
