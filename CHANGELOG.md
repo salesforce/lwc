@@ -1,4 +1,14 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.7...v) (2019-10-23)
+# [](https://github.com/salesforce/lwc/compare/v1.1.8...v) (2019-10-31)
+
+
+### Bug Fixes
+
+* **ci:** set node version to 10.16.3 until 10.17 is evaluated ([#1597](https://github.com/salesforce/lwc/issues/1597)) ([8f57622](https://github.com/salesforce/lwc/commit/8f57622))
+* **synthetic-shadow:** make isNodeShadowed to only check owner key ([#1599](https://github.com/salesforce/lwc/issues/1599)) ([e325eba](https://github.com/salesforce/lwc/commit/e325eba))
+
+
+
+## [1.1.8](https://github.com/salesforce/lwc/compare/v1.1.7...v1.1.8) (2019-10-23)
 
 
 ### Bug Fixes
