@@ -331,7 +331,7 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
     }
 
     function stripHostMarker(str) {
-        return str.replace(/ lwc-host(="")/gm, '');
+        return str.replace(/ lwc:host(="")/gm, '');
     }
 
     return {

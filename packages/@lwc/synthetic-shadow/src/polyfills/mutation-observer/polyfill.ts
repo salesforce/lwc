@@ -21,7 +21,6 @@ import { matches } from '../../env/element';
 import { isAnElement } from '../../shared/utils';
 import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
-import { HostTokenAttributeName } from '../../faux-shadow/lwc-host';
 
 const OriginalMutationObserver = MutationObserver;
 const {
@@ -78,7 +77,7 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
 
 // Descendant selector with a * is as performant as a selector with tag name
 // https://jsperf.com/matches-selector-optimization/1
-const ShadowedElementSelector = `[${HostTokenAttributeName}] *`;
+const ShadowedElementSelector = '[lwc\\:host] *';
 /**
  * Is the given node an element and not inside a shadow?
  */

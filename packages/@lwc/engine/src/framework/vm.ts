@@ -146,7 +146,7 @@ export function rerenderVM(vm: VM) {
 }
 
 function addHostAttribute(elm: HTMLElement) {
-    (elm as any).$lwcHostToken$;
+    (elm as any).$lwcHostToken$ = '';
 }
 
 export function appendRootVM(vm: VM) {

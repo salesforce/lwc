@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty } from '@lwc/shared';
-import { setAttribute } from '../env/element';
+import { defineProperty, isNull } from '@lwc/shared';
+import { getAttribute, setAttribute } from '../env/element';
 
 /*
  * Using a simple custom attribute is faster based on perf results:
@@ -13,14 +13,17 @@ import { setAttribute } from '../env/element';
  * matches(selector): https://jsperf.com/matches-attribute-vs-data-attribute/1
  * querySelector(): https://jsperf.com/query-by-attribute-vs-data-attribute/1
  **/
-export const HostTokenAttributeName = 'lwc-host';
+const HostTokenAttributeName = 'lwc:host';
 
 /**
  * Patching HTMLElement.prototype.$lwcHostToken$ to add a custom attribute to host elements
  */
 defineProperty(HTMLElement.prototype, '$lwcHostToken$', {
-    get(this: HTMLElement) {
-        setAttribute.call(this, HostTokenAttributeName, '');
+    get(this: HTMLElement): boolean {
+        return !isNull(getAttribute.call(this, HostTokenAttributeName));
+    },
+    set(this: HTMLElement, value: string) {
+        setAttribute.call(this, HostTokenAttributeName, value);
     },
     configurable: true,
 });

@@ -67,5 +67,7 @@ export function arrayFromCollection<T extends Node, K extends Element>(
  * @param node
  */
 export function isAnElement(node: Node): boolean {
-    return 'childElementCount' in node;
+    // Any property that is specifically in Element interface. Using 'matches' property.
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
+    return 'matches' in node;
 }
