@@ -119,16 +119,13 @@ defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isHostElement(this)) {
                     return innerHTMLGetterPatched.call(this);
                 }
 
                 return innerHTMLGetter.call(this);
             }
 
-            if (isNodeShadowed(this) || isHostElement(this)) {
-                return innerHTMLGetterPatched.call(this);
-            }
             // TODO: issue #1222 - remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return innerHTMLGetter.call(this);
@@ -144,15 +141,12 @@ defineProperties(Element.prototype, {
     outerHTML: {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isHostElement(this)) {
                     return outerHTMLGetterPatched.call(this);
                 }
                 return outerHTMLGetter.call(this);
             }
 
-            if (isNodeShadowed(this) || isHostElement(this)) {
-                return outerHTMLGetterPatched.call(this);
-            }
             // TODO: issue #1222 - remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return outerHTMLGetter.call(this);

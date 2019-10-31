@@ -97,7 +97,19 @@ export function getNodeKey(node: Node): number | undefined {
     return node[OwnKey];
 }
 
+/**
+ * This function does not traverse up for performance reasons, but is good enough for most of the use cases.
+ * If you need to be sure and verify those nodes that don't have owner key, use isNodeDeepShadowed instead.
+ */
 export function isNodeShadowed(node: Node): boolean {
+    return !isUndefined(getNodeOwnerKey(node));
+}
+
+/**
+ * This function verifies if a node (with or without owner key) is contained in a shadow root.
+ * Use with care since has high computational cost.
+ */
+export function isNodeDeepShadowed(node: Node): boolean {
     return !isUndefined(getNodeNearestOwnerKey(node));
 }
 
@@ -330,16 +342,13 @@ defineProperties(Node.prototype, {
     textContent: {
         get(this: Node): string {
             if (!featureFlags.ENABLE_NODE_PATCH) {
-                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isHostElement(this)) {
                     return textContentGetterPatched.call(this);
                 }
 
                 return textContentGetter.call(this);
             }
 
-            if (isNodeShadowed(this) || isHostElement(this)) {
-                return textContentGetterPatched.call(this);
-            }
             // TODO: issue #1222 - remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return textContentGetter.call(this);
@@ -352,7 +361,7 @@ defineProperties(Node.prototype, {
     },
     parentNode: {
         get(this: Node): (Node & ParentNode) | null {
-            if (!isUndefined(getNodeOwnerKey(this))) {
+            if (isNodeShadowed(this)) {
                 return parentNodeGetterPatched.call(this);
             }
             return parentNodeGetter.call(this);
@@ -362,7 +371,7 @@ defineProperties(Node.prototype, {
     },
     parentElement: {
         get(this: Node): Element | null {
-            if (!isUndefined(getNodeOwnerKey(this))) {
+            if (isNodeShadowed(this)) {
                 return parentElementGetterPatched.call(this);
             }
             return parentElementGetter.call(this);
@@ -410,8 +419,8 @@ defineProperties(Node.prototype, {
                 if (otherNode == null) {
                     return false;
                 }
-                const ownerKey = getNodeOwnerKey(this);
-                if (!isUndefined(ownerKey) || isHostElement(this)) {
+
+                if (isNodeShadowed(this) || isHostElement(this)) {
                     return containsPatched.call(this, otherNode);
                 }
 
@@ -431,22 +440,23 @@ defineProperties(Node.prototype, {
     cloneNode: {
         value(this: Node, deep?: boolean): Node {
             if (!featureFlags.ENABLE_NODE_PATCH) {
-                const ownerKey = getNodeOwnerKey(this);
-                if (!isUndefined(ownerKey) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isHostElement(this)) {
                     return cloneNodePatched.call(this, deep);
                 }
 
                 return cloneNode.call(this, deep);
             }
 
-            if (isNodeShadowed(this) || isHostElement(this)) {
+            if (isTrue(deep)) {
+                // TODO: issue #1222 - remove global bypass
+                if (isGlobalPatchingSkipped(this)) {
+                    return cloneNode.call(this, deep);
+                }
+
                 return cloneNodePatched.call(this, deep);
             }
-            // TODO: issue #1222 - remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
-                return cloneNode.call(this, deep);
-            }
-            return cloneNodePatched.call(this, deep);
+
+            return cloneNode.call(this, deep);
         },
         enumerable: true,
         writable: true,

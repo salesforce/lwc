@@ -15,11 +15,11 @@ import {
 } from '../../env/element';
 import { eventTargetGetter } from '../../env/dom';
 import { patchEvent } from '../../faux-shadow/events';
-import { isNodeShadowed } from '../../faux-shadow/node';
+import { isNodeDeepShadowed } from '../../faux-shadow/node';
 
 function doesEventNeedsPatch(e: Event): boolean {
     const originalTarget = eventTargetGetter.call(e);
-    return originalTarget instanceof Node && isNodeShadowed(originalTarget);
+    return originalTarget instanceof Node && isNodeDeepShadowed(originalTarget);
 }
 
 function getEventListenerWrapper(fnOrObj): EventListener | null {
