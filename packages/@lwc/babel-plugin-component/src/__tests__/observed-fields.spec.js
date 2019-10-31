@@ -60,10 +60,7 @@ describe('observed fields', () => {
                   publicMethods: ["someMethod"],
                   wire: {
                     wiredProp: {
-                      adapter: createElement,
-                      config: function($cmp) {
-                        return {};
-                      }
+                      adapter: createElement
                     }
                   },
                   track: {
@@ -174,10 +171,7 @@ describe('observed fields', () => {
                     publicMethods: ["someMethod"],
                     wire: {
                       wiredProp: {
-                        adapter: createElement,
-                        config: function($cmp) {
-                          return {};
-                        }
+                        adapter: createElement
                       }
                     },
                     track: {
