@@ -26,6 +26,7 @@ const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
 const tsAppDir = path.join(fixturesDir, 'ts_simple_app/src');
 const tsImportsJsDir = path.join(fixturesDir, 'ts_imports_js/src');
 const jsImportsTsDir = path.join(fixturesDir, 'js_imports_ts/src');
+const jsMultiVersion = path.join(fixturesDir, 'multi_version');
 
 describe('default configuration', () => {
     it(`simple app`, () => {
@@ -105,6 +106,20 @@ describe('javascript relative import', () => {
         expect.assertions(1);
         return doRollup(entry, { compat: false }).catch(error => {
             expect(error).toEqual(new Error('Importing a .ts file into a .js is not supported'));
+        });
+    });
+});
+
+describe('multi-package-version', () => {
+    it(`should find all modules`, () => {
+        const entry = path.join(jsMultiVersion, 'src/main.js');
+        const rollupOptions = {
+            rootDir: jsMultiVersion,
+        };
+
+        return doRollup(entry, { compat: false }, rollupOptions).then(({ code }) => {
+            expect(code).toContain('"nested-button');
+            expect(code).toContain('"root-button');
         });
     });
 });

@@ -1,7 +1,7 @@
 {
     "modules": [
-        "@lwc/engine",
-        "@lwc/wire-service",
-        "@lwc/synthetic-shadow"
+        { "npm" : "@lwc/engine" },
+        { "npm": "@lwc/wire-service" },
+        { "npm" :"@lwc/synthetic-shadow" }
     ]
 }

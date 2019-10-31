@@ -31,29 +31,50 @@ function isMixingJsAndTs(importerExt, importeeExt) {
     );
 }
 
+// From a list of modules resolved, create an Map for faster moduleId seach
+function createMapFromCollectedModules(modules) {
+    return modules.reduce((map, moduleRecord) => {
+        const id = moduleRecord.specifier;
+        const entry = map.get(id) || [];
+        entry.push(moduleRecord);
+        // We need to sort them by the longest scope so we find the most specific first
+        entry.sort((a, b) => b.scope.length - a.scope.length);
+        return map.set(id, entry);
+    }, new Map());
+}
+
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
 
     // Closure to store the resolved modules
-    let modulePaths = {};
+    let resolvedModulesIndex = [];
 
     return {
         name: 'rollup-plugin-lwc-compiler',
 
         options({ input }) {
-            const { modules: userModules = [], rootDir } = mergedPluginOptions;
-            const defaultModulesDir = rootDir ? path.resolve(rootDir) : path.dirname(input);
-            const modules = [...userModules, ...DEFAULT_MODULES, defaultModulesDir];
-            const resolvedModules = lwcResolver.resolveModules({ rootDir, modules });
-            modulePaths = resolvedModules.reduce((map, m) => ((map[m.specifier] = m), map), {});
+            const { modules: userModules = [], rootDir: rollupRootDir } = mergedPluginOptions;
+            const rootDir = rollupRootDir ? path.resolve(rollupRootDir) : rollupRootDir;
+            const defaultModulesDir = rootDir || path.dirname(input);
+            const modules = [...userModules, ...DEFAULT_MODULES, { dir: defaultModulesDir }];
+            const collectedModules = lwcResolver.resolveModules({ rootDir, modules });
+            resolvedModulesIndex = createMapFromCollectedModules(collectedModules);
         },
 
         resolveId(importee, importer) {
             // Resolve entry point if the import references a LWC module
-            if (modulePaths[importee]) {
-                return modulePaths[importee].entry;
+            if (resolvedModulesIndex.has(importee)) {
+                const matches = resolvedModulesIndex.get(importee);
+                if (matches.length > 1) {
+                    const match = matches.find(m => importer.startsWith(m.scope));
+                    if (match) {
+                        return match.entry;
+                    }
+                } else {
+                    return matches[0].entry;
+                }
             }
 
             // Normalize relative import to absolute import
