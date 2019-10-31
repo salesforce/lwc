@@ -110,11 +110,7 @@ defineProperties(HTMLSlotElement.prototype, {
         ) {
             // super.addEventListener - but that doesn't work with typescript
             HTMLElement.prototype.addEventListener.call(this, type, listener, options);
-            if (
-                isNodeShadowed(this) &&
-                type === 'slotchange' &&
-                !getHiddenField(this, SlotChangeKey)
-            ) {
+            if (type === 'slotchange' && !getHiddenField(this, SlotChangeKey)) {
                 setHiddenField(this, SlotChangeKey, true);
                 if (!observer) {
                     observer = initSlotObserver();
