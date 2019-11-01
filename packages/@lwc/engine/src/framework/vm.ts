@@ -156,9 +156,7 @@ export function appendRootVM(vm: VM) {
 export function appendVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
     }
-    runConnectedCallback(vm);
     rehydrate(vm);
 }
 
@@ -382,7 +380,7 @@ function flushRehydrationQueue() {
     endGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
 }
 
-function runConnectedCallback(vm: VM) {
+export function runConnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
