@@ -4,7 +4,7 @@ import Single from 'x/single';
 import Parent from 'x/parent';
 import ParentIf from 'x/parentIf';
 import ParentProp from 'x/parentProp';
-import Container from 'x/container';
+import Container from 'invocationorder/container';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
