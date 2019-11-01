@@ -30,9 +30,8 @@ import {
     resolveCircularModuleDependency,
     isCircularModuleDependency,
     EmptyObject,
-    useSyntheticShadow,
 } from './utils';
-import { VM, SlotSet } from './vm';
+import { VM } from './vm';
 import { ComponentConstructor } from './component';
 import {
     VNode,
@@ -60,7 +59,6 @@ import {
     createCustomElmHook,
     updateCustomElmHook,
     updateChildrenHook,
-    allocateChildrenHook,
     removeCustomElmHook,
     markAsDynamicChildren,
 } from './hooks';
@@ -77,7 +75,7 @@ export interface CustomElementCompilerData extends ElementCompilerData {
 }
 
 export interface RenderAPI {
-    s(slotName: string, data: ElementCompilerData, children: VNodes, slotset: SlotSet): VNode;
+    s(slotName: string, data: ElementCompilerData, children: VNodes): VNode;
     h(tagName: string, data: ElementCompilerData, children: VNodes): VNode;
     c(
         tagName: string,
@@ -181,16 +179,10 @@ const CustomElementHook: Hooks = {
             markNodeFromVNode(vnode.elm as Element);
         }
         createViewModelHook(vnode);
-        allocateChildrenHook(vnode);
         createCustomElmHook(vnode);
     },
     update: (oldVnode: VCustomElement, vnode: VCustomElement) => {
         updateCustomElmHook(oldVnode, vnode);
-        // in fallback mode, the allocation will always set children to
-        // empty and delegate the real allocation to the slot elements
-        allocateChildrenHook(vnode);
-        // in fallback mode, the children will be always empty, so, nothing
-        // will happen, but in native, it does allocate the light dom
         updateChildrenHook(oldVnode, vnode);
         // this will update the shadowRoot
         rerenderCustomElmHook(vnode);
@@ -318,29 +310,20 @@ export function ti(value: any): number {
 }
 
 // [s]lot element node
-export function s(
-    slotName: string,
-    data: ElementCompilerData,
-    children: VNodes,
-    slotset: SlotSet | undefined
-): VElement {
+export function s(slotName: string, data: ElementCompilerData, children: VNodes): VElement {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     }
-    if (
-        !isUndefined(slotset) &&
-        !isUndefined(slotset[slotName]) &&
-        slotset[slotName].length !== 0
-    ) {
-        children = slotset[slotName];
-    }
     const vnode = h('slot', data, children);
-    if (useSyntheticShadow) {
-        // TODO: #1276 - compiler should give us some sort of indicator when a vnodes collection is dynamic
-        sc(children);
-    }
+    // TODO: data.attr.name for slot vnode should not be used, instead it should use the prop
+    // this will facilitate the determinations of the slot to be associated to the shadow
+    // that it belongs to...
+    // TODO: the following code should be done by the compiler not by this method.
+    // TODO: we should remove this method entirely, and instead just do api.h() for slot elements
+    vnode.data.props = vnode.data.props || {};
+    vnode.data.props.name = slotName;
     return vnode;
 }
 
@@ -747,10 +730,6 @@ export function dc(
  * to the engine that a particular collection of children must be diffed using the slow
  * algo based on keys due to the nature of the list. E.g.:
  *
- *   - slot element's children: the content of the slot has to be dynamic when in synthetic
- *                              shadow mode because the `vnode.children` might be the slotted
- *                              content vs default content, in which case the size and the
- *                              keys are not matching.
  *   - children that contain dynamic components
  *   - children that are produced by iteration
  *
