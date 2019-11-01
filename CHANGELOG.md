@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.8...v) (2019-10-31)
+# [](https://github.com/salesforce/lwc/compare/v1.1.10...v) (2019-11-01)
+
+
+### Bug Fixes
+
+* **engine:** lifecycle callback invocation order for native shadow ([#1604](https://github.com/salesforce/lwc/issues/1604)) ([927d879](https://github.com/salesforce/lwc/commit/927d879))
+
+
+
+## [1.1.10](https://github.com/salesforce/lwc/compare/v1.1.8...v1.1.10) (2019-10-31)
 
 
 ### Bug Fixes
