@@ -69,7 +69,7 @@ function resolveModulesFromNpm(packageName: string): RegistryEntry[] {
         const lwcConfigFile = path.join(packageDir, LWC_CONFIG_FILE);
 
         if (fs.existsSync(lwcConfigFile)) {
-            resolvedModules = resolveModules({ rootDir: lwcConfigFile });
+            resolvedModules = resolveModules({ rootDir: path.dirname(lwcConfigFile) });
         } else {
             const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
             if (pkgJson.lwc) {
