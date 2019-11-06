@@ -65,8 +65,8 @@ export interface NormalizedDynamicComponentConfig {
 }
 
 export interface TransformOptions {
-    name: string;
-    namespace: string;
+    name?: string;
+    namespace?: string;
     /**
      * An optional directory prefix that contains the specified components
      * files. Only used when the component that is the compiler's entry point.
@@ -90,6 +90,8 @@ export interface NormalizedTransformOptions extends TransformOptions {
 }
 
 export interface NormalizedCompileOptions extends CompileOptions {
+    name: string;
+    namespace: string;
     outputConfig: NormalizedOutputConfig;
     stylesheetConfig: NormalizedStylesheetConfig;
     experimentalDynamicComponent: NormalizedDynamicComponentConfig;
@@ -120,12 +122,6 @@ export function validateNormalizedCompileOptions(options: NormalizedCompileOptio
 
 export function validateOptions(options: TransformOptions) {
     invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
-    invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [
-        options.name,
-    ]);
-    invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [
-        options.namespace,
-    ]);
 
     if (!isUndefined(options.stylesheetConfig)) {
         validateStylesheetConfig(options.stylesheetConfig);
@@ -138,6 +134,14 @@ export function validateOptions(options: TransformOptions) {
 
 export function validateCompileOptions(options: CompileOptions): NormalizedCompileOptions {
     validateOptions(options);
+
+    invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [
+        options.name,
+    ]);
+
+    invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [
+        options.namespace,
+    ]);
 
     invariant(
         !isUndefined(options.files) && !!Object.keys(options.files).length,
