@@ -411,6 +411,9 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 if (attr.name === 'id') {
                     return codeGen.genScopedId(attr.value);
                 }
+                if (attr.name === 'spellcheck') {
+                    return t.booleanLiteral(!(attr.value === 'false'));
+                }
                 if (isIdReferencingAttribute(attr.name)) {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
                 }

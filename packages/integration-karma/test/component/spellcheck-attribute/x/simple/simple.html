@@ -1,0 +1,3 @@
+<template>
+    <textarea></textarea>
+</template>
