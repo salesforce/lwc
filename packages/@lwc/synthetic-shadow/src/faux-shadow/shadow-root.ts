@@ -105,6 +105,13 @@ export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
     return getInternalSlot(elm).shadowRoot;
 }
 
+// Intentionally adding Node here as possible the first argument
+// since this check is harmless for nodes as well, and it speeds up things
+// to avoid casting before calling this method in few places.
+export function isHostElement(elm: Element | Node): boolean {
+    return !isUndefined(getInternalField(elm, InternalSlot));
+}
+
 export function hasSyntheticShadow(elm: HTMLElement): boolean {
     return !isUndefined(getInternalField(elm, InternalSlot));
 }

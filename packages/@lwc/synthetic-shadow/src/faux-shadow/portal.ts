@@ -5,13 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined, forEach, defineProperty, isTrue } from '../shared/language';
-import { getInternalChildNodes } from './node';
-import '../polyfills/mutation-observer/main';
-import { setShadowRootResolver, ShadowRootResolver, getShadowRootResolver } from './shadow-root';
+import { childNodesGetter } from '../env/node';
+import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
+import {
+    setShadowRootResolver,
+    ShadowRootResolver,
+    getShadowRootResolver,
+    isHostElement,
+} from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
 
-const MutationObserver = (window as any).MutationObserver;
-const MutationObserverObserve = MutationObserver.prototype.observe;
 const DomManualPrivateKey = '$$DomManualKey$$';
 
 // We can use a single observer without having to worry about leaking because
@@ -22,21 +25,30 @@ let portalObserver: MutationObserver | undefined;
 
 const portalObserverConfig: MutationObserverInit = {
     childList: true,
-    subtree: true,
 };
 
 function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string | undefined) {
-    if (getShadowRootResolver(node) === fn) {
+    const previousNodeShadowResolver = getShadowRootResolver(node);
+    if (previousNodeShadowResolver === fn) {
         return; // nothing to do here, it is already correctly patched
     }
     setShadowRootResolver(node, fn);
     if (node instanceof Element) {
         setShadowToken(node, shadowToken);
+
+        if (isHostElement(node)) {
+            // Root LWC elements can't get content slotted into them, therefore we don't observe their children.
+            return;
+        }
+
+        if (isUndefined(previousNodeShadowResolver)) {
+            // we only care about Element without shadowResolver (no MO.observe has been called)
+            MutationObserverObserve.call(portalObserver, node, portalObserverConfig);
+        }
         // recursively patching all children as well
-        const childNodes = getInternalChildNodes(node);
+        const childNodes = childNodesGetter.call(node);
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            const child = childNodes[i];
-            adoptChildNode(child, fn, shadowToken);
+            adoptChildNode(childNodes[i], fn, shadowToken);
         }
     }
 }
