@@ -15,7 +15,6 @@ import {
 } from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
 
-const MO = MutationObserver;
 const DomManualPrivateKey = '$$DomManualKey$$';
 
 // Resolver function used when a node is removed from within a portal
@@ -58,7 +57,7 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
 }
 
 function initPortalObserver() {
-    return new MO(mutations => {
+    return new MutationObserver(mutations => {
         forEach.call(mutations, mutation => {
             /**
              * This routine will process all nodes added or removed from elm (which is marked as a portal)
