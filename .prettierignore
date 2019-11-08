@@ -5,3 +5,4 @@ coverage/
 fixtures/
 public/
 types/
+node_modules/

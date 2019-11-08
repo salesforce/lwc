@@ -12,9 +12,10 @@ lib/
 packages/**/dist/
 benchmarking/dist/
 __benchmarks_results__/
-
 packages/integration-tests/public/
 packages/integration-tests/errorShots/
 packages/integration-tests/results/
 packages/integration-tests/.env
 
+!packages/@lwc/module-resolver/src/__tests__/fixtures/multi-version/node_modules/
+!packages/@lwc/rollup-plugin/src/__tests__/fixtures/multi_version/node_modules/
