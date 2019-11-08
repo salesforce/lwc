@@ -50,7 +50,7 @@ export function loadConfig(configDir: string): LwcConfig {
     try {
         return JSON.parse(fs.readFileSync(configFile, 'utf8'));
     } catch (e) {
-        console.log(`[module-resolver] Error parsing JSON on file: "${configFile}"`);
+        console.warn(`[module-resolver] Error parsing JSON on file: "${configFile}", ignoring config file.`);
         return DEFAULT_CONFIG;
     }
 }
