@@ -1,4 +1,14 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.10...v) (2019-11-01)
+# [](https://github.com/salesforce/lwc/compare/v1.1.11...v) (2019-11-11)
+
+
+### Bug Fixes
+
+* **compiler:** make name and namespace optional ([#1609](https://github.com/salesforce/lwc/issues/1609)) ([54b1529](https://github.com/salesforce/lwc/commit/54b1529))
+* **synthetic-shadow:** use native mutation observer for portal elements ([#1596](https://github.com/salesforce/lwc/issues/1596)) ([4b5995f](https://github.com/salesforce/lwc/commit/4b5995f))
+
+
+
+## [1.1.11](https://github.com/salesforce/lwc/compare/v1.1.10...v1.1.11) (2019-11-01)
 
 
 ### Bug Fixes
