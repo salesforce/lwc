@@ -1,4 +1,8 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.11...v) (2019-11-11)
+# [](https://github.com/salesforce/lwc/compare/v1.1.12...v) (2019-11-13)
+
+
+
+## [1.1.12](https://github.com/salesforce/lwc/compare/v1.1.11...v1.1.12) (2019-11-11)
 
 
 ### Bug Fixes
