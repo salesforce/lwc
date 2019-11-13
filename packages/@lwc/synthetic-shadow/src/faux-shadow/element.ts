@@ -389,79 +389,87 @@ defineProperties(Element.prototype, {
         enumerable: true,
         configurable: true,
     },
-    getElementsByClassName: {
-        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            const elements = arrayFromCollection(
-                elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
-            ) as Element[];
-
-            if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements)
-                );
-            }
-
-            const filteredResults = getFilteredArrayOfNodes(
-                this,
-                elements,
-                ShadowDomSemantic.Enabled
-            );
-            return createStaticHTMLCollection(filteredResults);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    },
-    getElementsByTagName: {
-        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            const elements = arrayFromCollection(
-                elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
-            ) as Element[];
-
-            if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements)
-                );
-            }
-
-            const filteredResults = getFilteredArrayOfNodes(
-                this,
-                elements,
-                ShadowDomSemantic.Enabled
-            );
-            return createStaticHTMLCollection(filteredResults);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    },
-    getElementsByTagNameNS: {
-        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            const elements = arrayFromCollection(
-                elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
-                    string,
-                    string
-                ])
-            ) as Element[];
-
-            if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements)
-                );
-            }
-
-            const filteredResults = getFilteredArrayOfNodes(
-                this,
-                elements,
-                ShadowDomSemantic.Enabled
-            );
-            return createStaticHTMLCollection(filteredResults);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    },
 });
+
+// The following APIs are used directly by Jest internally so we avoid patching them during testing.
+if (process.env.NODE_ENV !== 'test') {
+    defineProperties(Element.prototype, {
+        getElementsByClassName: {
+            value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+                const elements = arrayFromCollection(
+                    elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [
+                        string
+                    ])
+                ) as Element[];
+
+                if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+                    return createStaticHTMLCollection(
+                        getNonPatchedFilteredArrayOfNodes(this, elements)
+                    );
+                }
+
+                const filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    elements,
+                    ShadowDomSemantic.Enabled
+                );
+                return createStaticHTMLCollection(filteredResults);
+            },
+            writable: true,
+            enumerable: true,
+            configurable: true,
+        },
+        getElementsByTagName: {
+            value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+                const elements = arrayFromCollection(
+                    elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
+                ) as Element[];
+
+                if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+                    return createStaticHTMLCollection(
+                        getNonPatchedFilteredArrayOfNodes(this, elements)
+                    );
+                }
+
+                const filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    elements,
+                    ShadowDomSemantic.Enabled
+                );
+                return createStaticHTMLCollection(filteredResults);
+            },
+            writable: true,
+            enumerable: true,
+            configurable: true,
+        },
+        getElementsByTagNameNS: {
+            value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+                const elements = arrayFromCollection(
+                    elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
+                        string,
+                        string
+                    ])
+                ) as Element[];
+
+                if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+                    return createStaticHTMLCollection(
+                        getNonPatchedFilteredArrayOfNodes(this, elements)
+                    );
+                }
+
+                const filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    elements,
+                    ShadowDomSemantic.Enabled
+                );
+                return createStaticHTMLCollection(filteredResults);
+            },
+            writable: true,
+            enumerable: true,
+            configurable: true,
+        },
+    });
+}
 
 // IE11 extra patches for wrong prototypes
 if (hasOwnProperty.call(HTMLElement.prototype, 'getElementsByClassName')) {
