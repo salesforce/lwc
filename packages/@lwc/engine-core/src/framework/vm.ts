@@ -598,6 +598,19 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
     }
 }
 
+function hasDifferentIdentities(a: VNode | null, b: VNode | null): boolean {
+    if (a === b) {
+        // cached vnodes or null will qualify here
+        return false;
+    }
+    if (isNull(a) || isNull(b)) {
+        // replace or insertion
+        return true;
+    }
+    // keys must be different otherwise they represent the same element
+    return a.key !== b.key;
+}
+
 // slow path routine
 // NOTE: we should probably more this routine to the synthetic shadow folder
 // and get the allocation to be cached by in the elm instead of in the VM
@@ -644,12 +657,29 @@ export function allocateInSlot(vm: VM, children: VNodes) {
             const oldVNodes = oldSlots[key];
             const vnodes = cmpSlots[key];
             for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
-                if (oldVNodes[j] !== vnodes[j]) {
+                if (hasDifferentIdentities(oldVNodes[j], vnodes[j])) {
                     markComponentAsDirty(vm);
                     return;
                 }
             }
         }
+        // If we to this point in the algo, it means that the allocation children
+        // collection identical, no new nodes or removal, and all existing vnodes
+        // have the same identity (key). We can just simply diff those vnodes directly
+        // to avoid marking the vm as dirty, which will cause a full rehydration
+        // just to allocate the exact same things.
+        const { aChildren } = vm;
+        const slottedNewChildren: VNodes = [];
+        const slottedOldChildren: VNodes = [];
+        for (let i = 0, len = children.length; i < len; i += 1) {
+            const oldVNode = aChildren[i];
+            if (!isNull(oldVNode) && !isUndefined(oldVNode.elm)) {
+                const newVNode = children[i];
+                ArrayPush.call(slottedNewChildren, oldVNode);
+                ArrayPush.call(slottedOldChildren, newVNode);
+            }
+        }
+        updateStaticChildren(vm.elm, slottedOldChildren, slottedNewChildren);
     }
 }
 
