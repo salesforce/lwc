@@ -164,17 +164,6 @@
                 "start": 981,
                 "length": 15
             }
-        },
-        {
-            "code": 1051,
-            "message": "LWC1051: Forbidden tag found in template: '<title>' tag is not allowed.",
-            "level": 1,
-            "location": {
-                "line": 57,
-                "column": 9,
-                "start": 1632,
-                "length": 15
-            }
         }
     ]
 }
