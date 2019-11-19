@@ -2,24 +2,24 @@
     "warnings": [
         {
             "code": 1051,
-            "message": "LWC1051: Forbidden tag found in template: '<link>' tag is not allowed.",
+            "message": "LWC1051: Forbidden tag found in template: '<object>' tag is not allowed.",
             "level": 1,
             "location": {
                 "line": 2,
                 "column": 5,
                 "start": 15,
-                "length": 23
+                "length": 37
             }
         },
         {
             "code": 1050,
-            "message": "LWC1050: Forbidden MathML namespace tag found in template: '<link>' tag is not allowed within <math>",
+            "message": "LWC1050: Forbidden MathML namespace tag found in template: '<object>' tag is not allowed within <math>",
             "level": 1,
             "location": {
                 "line": 4,
                 "column": 9,
-                "start": 58,
-                "length": 45
+                "start": 72,
+                "length": 37
             }
         }
     ]
