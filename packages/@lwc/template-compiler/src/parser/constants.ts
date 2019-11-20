@@ -226,15 +226,7 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-valuetext': 'ariaValueText',
 };
 
-export const HTML_TAG_BLACKLIST = new Set([
-    'base',
-    'embed',
-    'link',
-    'meta',
-    'object',
-    'script',
-    'title',
-]);
+export const HTML_TAG_BLACKLIST = new Set(['base', 'link', 'meta', 'script', 'title']);
 
 export const HTML_ATTRIBUTES_REVERSE_LOOKUP: {
     [attr: string]: string[];
