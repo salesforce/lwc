@@ -8,12 +8,6 @@ function getSpellcheckValue(container, selector) {
     return elm.getAttribute('spellcheck');
 }
 
-function getSpellcheckValueFromTextarea(container, selector) {
-    const elm = container.shadowRoot.querySelector(selector).shadowRoot.querySelector('textarea');
-
-    return elm.spellcheck;
-}
-
 it('should render the correct attribute value for static values', () => {
     const elm = createElement('x-container', { is: Container });
     document.body.appendChild(elm);
@@ -48,12 +42,6 @@ describe('when set dynamically using expressions', () => {
             return Promise.resolve().then(() => {
                 expect(getSpellcheckValue(elm, '.computed')).toBe(
                     expectedSpellcheckValue.toString()
-                );
-
-                // verifies that the rendered value for spellcheck on a custom element,
-                // is the same one as the one rendered on an html element.
-                expect(getSpellcheckValueFromTextarea(elm, '.computed')).toBe(
-                    expectedSpellcheckValue
                 );
             });
         });

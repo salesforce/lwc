@@ -407,7 +407,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
 
                 if (attr.name === 'spellcheck' && element.component) {
                     // this normalization is only needed for custom elements.
-                    return codeGen.genSpellcheckExpressionNormalization(expression);
+                    return codeGen.genSpellcheckNormalizeExpression(expression);
                 }
 
                 return expression;

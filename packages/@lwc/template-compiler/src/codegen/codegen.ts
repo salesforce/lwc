@@ -195,7 +195,7 @@ export default class CodeGen {
      *          ? [expr].toString().ToLowerCase() !== "false"
      *          : true
      */
-    genSpellcheckExpressionNormalization(expression: t.Expression): t.ConditionalExpression {
+    genSpellcheckNormalizeExpression(expression: t.Expression): t.ConditionalExpression {
         const conditionTest = t.binaryExpression('!=', expression, t.nullLiteral());
         const truePath = t.binaryExpression(
             '!==',
