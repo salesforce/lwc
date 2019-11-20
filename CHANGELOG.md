@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.13...v) (2019-11-20)
+# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.1...v) (2019-11-20)
+
+
+### Bug Fixes
+
+* ease restriction for using object and embed in template ([#1622](https://github.com/salesforce/lwc/issues/1622)) ([5d73761](https://github.com/salesforce/lwc/commit/5d73761))
+
+
+
+## [1.1.13-224.1](https://github.com/salesforce/lwc/compare/v1.1.13...v1.1.13-224.1) (2019-11-20)
 
 
 ### Bug Fixes
