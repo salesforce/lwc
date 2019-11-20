@@ -1,8 +1,9 @@
 <template>
-    <x-simple spellcheck={computedSpellcheck} class="computed"></x-simple>
+    <x-simple spellcheck={spellcheckValue} spellcheck-value={spellcheckValue} class="computed"></x-simple>
 
     <x-simple spellcheck="" class="empty-v"></x-simple>
     <x-simple spellcheck="false" class="false-v"></x-simple>
+    <x-simple spellcheck="fAlSe" class="false-case-insensitive-v"></x-simple>
     <x-simple spellcheck="true" class="true-v"></x-simple>
     <x-simple spellcheck="null" class="null-v"></x-simple>
     <x-simple spellcheck="0" class="falsy-v"></x-simple>
