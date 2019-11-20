@@ -24,6 +24,7 @@ export const defaultDefHTMLPropertyNames = [
     'lang',
     'tabIndex',
     'title',
+    'spellcheck',
 ];
 
 // Few more exceptions that are using the attribute name to match the property in lowercase.

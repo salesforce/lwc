@@ -84,6 +84,7 @@ const GLOBAL_HTML_ATTRIBUTES = [
     'role',
     'tabIndex',
     'title',
+    'spellcheck',
 ].sort();
 
 it('it should return the global HTML attributes in props', () => {
