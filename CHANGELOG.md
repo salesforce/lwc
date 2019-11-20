@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.12...v) (2019-11-13)
+# [](https://github.com/salesforce/lwc/compare/v1.1.13...v) (2019-11-20)
+
+
+### Bug Fixes
+
+* **compiler:** [spring20]restrict tags that can be inside a math tag ([#1621](https://github.com/salesforce/lwc/issues/1621)) ([63c59db](https://github.com/salesforce/lwc/commit/63c59db))
+
+
+
+## [1.1.13](https://github.com/salesforce/lwc/compare/v1.1.12...v1.1.13) (2019-11-13)
 
 
 
