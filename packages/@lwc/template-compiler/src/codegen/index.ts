@@ -404,6 +404,12 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                         codeGen.genScopedFragId(expression),
                     ]);
                 }
+
+                if (attr.name === 'spellcheck' && element.component) {
+                    // this normalization is only needed for custom elements.
+                    return codeGen.genSpellcheckExpressionNormalization(expression);
+                }
+
                 return expression;
             }
 
@@ -412,7 +418,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                     return codeGen.genScopedId(attr.value);
                 }
                 if (attr.name === 'spellcheck') {
-                    return t.booleanLiteral(!(attr.value === 'false'));
+                    return t.booleanLiteral(attr.value.toLowerCase() !== 'false');
                 }
                 if (isIdReferencingAttribute(attr.name)) {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
