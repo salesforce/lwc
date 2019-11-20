@@ -118,7 +118,7 @@ export const SVG_TAG_WHITELIST = new Set([
     'use',
 ]);
 
-export const MATHML_TAG_BLACKLIST = new Set(['script']);
+export const MATHML_TAG_BLACKLIST = new Set(['script', 'link', 'base', 'object', 'embed', 'meta']);
 
 export const GLOBAL_ATTRIBUTE_SET = new Set([
     'role',
@@ -226,7 +226,15 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-valuetext': 'ariaValueText',
 };
 
-export const HTML_TAG_BLACKLIST = new Set(['base', 'link', 'meta', 'script', 'title']);
+export const HTML_TAG_BLACKLIST = new Set([
+    'base',
+    'embed',
+    'link',
+    'meta',
+    'object',
+    'script',
+    'title',
+]);
 
 export const HTML_ATTRIBUTES_REVERSE_LOOKUP: {
     [attr: string]: string[];
