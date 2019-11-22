@@ -663,7 +663,7 @@ export function allocateInSlot(vm: VM, children: VNodes) {
                 }
             }
         }
-        // If we to this point in the algo, it means that the allocation children
+        // If we reach to this point in the algo, it means that the allocation children
         // collection identical, no new nodes or removal, and all existing vnodes
         // have the same identity (key). We can just simply diff those vnodes directly
         // to avoid marking the vm as dirty, which will cause a full rehydration
