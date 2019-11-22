@@ -607,7 +607,8 @@ function hasDifferentIdentities(a: VNode | null, b: VNode | null): boolean {
         // replace or insertion
         return true;
     }
-    // keys must be different otherwise they represent the same element
+    // if keys are different, it means the vnodes are representing a different element
+    // if the keys are the same, it means the vnodes are representing the same element
     return a.key !== b.key;
 }
 
