@@ -6,7 +6,6 @@
  */
 
 module.exports = {
-    testEnvironment: 'jest-environment-jsdom-fifteen',
     testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
 
     // Global mono-repo code coverage threshold.
