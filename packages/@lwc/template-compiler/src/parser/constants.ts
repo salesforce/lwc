@@ -118,7 +118,7 @@ export const SVG_TAG_WHITELIST = new Set([
     'use',
 ]);
 
-export const MATHML_TAG_BLACKLIST = new Set(['script']);
+export const MATHML_TAG_BLACKLIST = new Set(['script', 'link', 'base', 'object', 'embed', 'meta']);
 
 export const GLOBAL_ATTRIBUTE_SET = new Set([
     'role',

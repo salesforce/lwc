@@ -10,6 +10,17 @@
                 "start": 15,
                 "length": 27
             }
+        },
+        {
+            "code": 1050,
+            "message": "LWC1050: Forbidden MathML namespace tag found in template: '<meta>' tag is not allowed within <math>",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 9,
+                "start": 62,
+                "length": 72
+            }
         }
     ]
 }

@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1050,
+            "message": "LWC1050: Forbidden MathML namespace tag found in template: '<object>' tag is not allowed within <math>",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 9,
+                "start": 30,
+                "length": 37
+            }
+        }
+    ]
+}
