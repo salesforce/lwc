@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.23...v) (2019-10-03)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.24...v) (2019-11-27)
+
+
+### Bug Fixes
+
+* **synthetic-shadow:** use native mutation observer for portal elements ([#1627](https://github.com/salesforce/lwc/issues/1627)) ([750fd03](https://github.com/salesforce/lwc/commit/750fd03)), closes [#1596](https://github.com/salesforce/lwc/issues/1596)
+
+
+
+## [1.0.2-222.24](https://github.com/salesforce/lwc/compare/v1.0.2-222.23...v1.0.2-222.24) (2019-10-03)
 
 
 ### Bug Fixes
