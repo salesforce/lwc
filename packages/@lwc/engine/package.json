@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine",
-    "version": "1.0.2-222.25",
+    "version": "1.0.2-222.24",
     "description": "LWC Engine",
     "main": "lib/framework/main.js",
     "module": "dist/modules/es2017/engine.js",
@@ -15,7 +15,7 @@
         "observable-membrane": "0.26.1"
     },
     "devDependencies": {
-        "@lwc/template-compiler": "1.0.2-222.25"
+        "@lwc/template-compiler": "1.0.2-222.24"
     },
     "lwc": {
         "modules": {
@@ -25,5 +25,5 @@
     "publishConfig": {
         "access": "public"
     },
-    "gitHead": "761859741f99cf17e14731979822375914b5a8f7"
+    "gitHead": "8c408fdb66e76dc15652111fe752a4b683201a97"
 }
