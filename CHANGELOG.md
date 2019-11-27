@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.1...v) (2019-11-20)
+# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.2...v) (2019-11-27)
+
+
+### Bug Fixes
+
+* **synthetic-shadow:** qunit has issues when document object is patched ([#1625](https://github.com/salesforce/lwc/issues/1625)) ([#1626](https://github.com/salesforce/lwc/issues/1626)) ([f92d385](https://github.com/salesforce/lwc/commit/f92d385))
+
+
+
+## [1.1.13-224.2](https://github.com/salesforce/lwc/compare/v1.1.13-224.1...v1.1.13-224.2) (2019-11-20)
 
 
 ### Bug Fixes
