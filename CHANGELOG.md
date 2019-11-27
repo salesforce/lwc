@@ -1,4 +1,14 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.12...v) (2019-11-13)
+# [](https://github.com/salesforce/lwc/compare/v1.1.13...v) (2019-11-27)
+
+
+### Bug Fixes
+
+* restrict tags that can be inside a math tag ([#1620](https://github.com/salesforce/lwc/issues/1620)) ([2f20c47](https://github.com/salesforce/lwc/commit/2f20c47))
+* **synthetic-shadow:** qunit has issues when document object is patched ([#1625](https://github.com/salesforce/lwc/issues/1625)) ([06d459e](https://github.com/salesforce/lwc/commit/06d459e))
+
+
+
+## [1.1.13](https://github.com/salesforce/lwc/compare/v1.1.12...v1.1.13) (2019-11-13)
 
 
 
