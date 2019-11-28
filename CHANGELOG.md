@@ -1,4 +1,8 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.24...v) (2019-11-27)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.25...v) (2019-11-28)
+
+
+
+## [1.0.2-222.25](https://github.com/salesforce/lwc/compare/v1.0.2-222.24...v1.0.2-222.25) (2019-11-27)
 
 
 ### Bug Fixes
