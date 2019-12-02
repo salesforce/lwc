@@ -16,6 +16,7 @@ function setFeatureFlag(name: string, value: FeatureFlagValue) {
     if (!isBoolean) {
         const message = `Invalid ${typeof value} value specified for the "${name}" flag. Runtime feature flags can only be set to a boolean value.`;
         if (process.env.NODE_ENV === 'production') {
+            // eslint-disable-next-line no-console
             console.error(message);
         } else {
             throw new TypeError(message);
@@ -24,6 +25,7 @@ function setFeatureFlag(name: string, value: FeatureFlagValue) {
     if (!isUndefined(features[name])) {
         runtimeFlags[name] = value;
     } else {
+        // eslint-disable-next-line no-console
         console.warn(
             `LWC feature flag "${name}" is undefined. Possible reasons are that 1) it was misspelled or 2) it was removed from the @lwc/features package.`
         );
