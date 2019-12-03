@@ -91,12 +91,11 @@
     "packages/perf-benchmarks"
   ],
   "engines": {
-    "node": ">=10.16.3 <10.17.0",
-    "yarn": ">=1.17.3 <1.18.0"
+    "node": ">=10"
   },
   "volta": {
-    "node": "10.16.3",
-    "yarn": "1.17.3"
+    "node": "12.13.1",
+    "yarn": "1.19.2"
   },
   "resolutions": {
     "jsdom": "^15.2.1",

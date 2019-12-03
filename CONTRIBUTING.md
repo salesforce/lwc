@@ -11,7 +11,7 @@ Before you start, familiarize yourself with [Lightning Web Components](https://l
 
 ## Requirements
 
- * Node >= 10.13.0
+ * Node >= 10
  * Yarn >= 1.6
 
 ## Installation
