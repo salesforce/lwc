@@ -4,13 +4,11 @@
     },
 
     "globals": {
-        "process": true,
-        "global": true
+        "process": true
     },
 
     "rules": {
-        "no-production-assert": "error",
-        "no-prototype-builtins": "error"
+        "lwc-internal/no-production-assert": "error"
     },
 
     "overrides": [
@@ -20,7 +18,7 @@
             ],
 
             "rules": {
-                "no-production-assert": "off"
+                "lwc-internal/no-production-assert": "off"
             }
         },
         {

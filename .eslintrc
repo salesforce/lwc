@@ -6,7 +6,10 @@
         "sourceType": "module"
     },
 
-    "plugins": ["@typescript-eslint"],
+    "plugins": [
+        "@typescript-eslint",
+        "lwc-internal"
+    ],
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/eslint-recommended",
@@ -34,6 +37,7 @@
         "no-iterator": "error",
         "no-lone-blocks": "error",
         "no-proto": "error",
+        "no-prototype-builtins": "error",
         "no-new-require": "error",
         "no-restricted-properties": ["error", {
             "object": "arguments",
@@ -117,7 +121,7 @@
         },
         {
             "files": [
-                "**/integration-tests/**",
+                "**/integration-tests/**"
             ],
 
             "globals": {
