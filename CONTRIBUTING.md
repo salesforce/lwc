@@ -11,8 +11,10 @@ Before you start, familiarize yourself with [Lightning Web Components](https://l
 
 ## Requirements
 
- * Node >= 10
- * Yarn >= 1.6
+ * [Node](https://nodejs.org/) >= 10
+ * [Yarn](https://yarnpkg.com/) >= 1.6
+
+This project uses [Volta](https://volta.sh/) to ensure that all the contributors share the same version of `Node` and `Yarn` for development. If you are considering making frequent contributions to this project, we recommend installing this tool as well.
 
 ## Installation
 
