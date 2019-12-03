@@ -7,26 +7,28 @@
     },
 
     "plugins": ["@typescript-eslint"],
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+    ],
 
     "env": {
         "es6": true
     },
 
-    "globals": {
-        "globalThis": "writable"
-    },
-
     "rules": {
-        "block-scoped-var": "error",
+        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
             "error",
             { "argsIgnorePattern": "^_" }
         ],
-        "no-alert": "warn",
+
+        "block-scoped-var": "error",
+        "no-alert": "error",
         "no-buffer-constructor": "error",
+        "no-console": "error",
         "no-eval": "error",
-        "no-extend-native": "error", // This is complimentary to no-extend-global-constructor
+        "no-extend-native": "error",
         "no-extra-bind": "error",
         "no-extra-label": "error",
         "no-iterator": "error",
@@ -74,20 +76,17 @@
         }],
         "no-self-compare": "error",
         "no-undef-init": "error",
-        "no-unused-vars": "off", // Override eslint:recommended rule
-        "no-useless-catch": "error",
         "no-useless-computed-key": "error",
         "no-useless-return": "error",
-        "no-with": "error",
         "prefer-const": ["error", {
             "destructuring": "any",
             "ignoreReadBeforeAssign": true
-          }],
+        }],
         "template-curly-spacing": "error",
         "yoda": "error",
 
         // Want to enable if there is consent
-        "no-shadow": "off", // 20 violations https://eslint.org/docs/rules/no-shadow
+        "no-shadow": "off", // 20 violations https://eslint.org/docs/rules/no-shadow	
         "no-use-before-define": ["off", { "functions": true, "classes": true, "variables": false }], // 215 violations https://eslint.org/docs/rules/no-use-before-define
         "prefer-arrow-callback": ["off", {
             "allowNamedFunctions": false,
@@ -128,6 +127,7 @@
         },
         {
             "files": [
+                "./*.js",
                 "**/scripts/**",
                 "**/jest.config.js"
             ],
