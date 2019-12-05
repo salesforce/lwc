@@ -82,7 +82,7 @@ function validateSlots(vm: VM, html: any) {
     const { cmpSlots = EmptySlots } = vm;
     const { slots = EmptyArray } = html;
     for (const slotName in cmpSlots) {
-        // eslint-disable-next-line no-production-assert
+        // eslint-disable-next-line lwc-internal/no-production-assert
         assert.isTrue(
             isArray(cmpSlots[slotName]),
             `Slots can only be set to an array, instead received ${toString(
@@ -92,7 +92,7 @@ function validateSlots(vm: VM, html: any) {
 
         if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: #1297 - this should never really happen because the compiler should always validate
-            // eslint-disable-next-line no-production-assert
+            // eslint-disable-next-line lwc-internal/no-production-assert
             logError(
                 `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
                 vm.elm
@@ -112,7 +112,7 @@ function validateFields(vm: VM, html: Template) {
     const { ids = [] } = html;
     forEach.call(ids, (propName: string) => {
         if (!(propName in component)) {
-            // eslint-disable-next-line no-production-assert
+            // eslint-disable-next-line lwc-internal/no-production-assert
             logError(
                 `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. Check for a typo in the template.`,
                 vm.elm

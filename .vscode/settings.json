@@ -1,12 +1,6 @@
 {
   "typescript.tsdk": "./node_modules/typescript/lib",
 
-  "eslint.options": {
-    "rulePaths": [
-      "./scripts/eslint/rules"
-    ]
-  },
-
   "eslint.validate": [
     "javascript",
     "typescript"

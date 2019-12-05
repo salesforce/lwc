@@ -9,7 +9,7 @@
   "scripts": {
     "prepare": "yarn build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
-    "lint": "eslint packages/ scripts/ --ext=js,ts --rulesdir=./scripts/eslint/rules",
+    "lint": "eslint packages/ scripts/ --ext=js,ts",
     "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json,md}'",
     "build": "lerna run build --ignore perf-benchmarks --ignore integration-tests",
     "test": "jest --config ./scripts/jest/root.config.js",
@@ -40,6 +40,7 @@
     "cz-conventional-changelog": "^2.1.0",
     "es5-proxy-compat": "^0.22.0",
     "eslint": "^6.7.2",
+    "eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
     "execa": "^1.0.0",
     "express": "^4.17.1",
     "glob": "^7.1.2",
@@ -76,7 +77,7 @@
   },
   "lint-staged": {
     "**/*.{js,ts}": [
-      "eslint --rulesdir=./scripts/eslint/rules"
+      "eslint"
     ],
     "{packages,scripts}/**/*.{js,ts,json,md}": [
       "prettier --write",
