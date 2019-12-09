@@ -6,7 +6,10 @@ import { extractDataIds } from 'test-utils';
 
 import ShadowTree from 'x/shadowTree';
 
-const EVENT_MAPPING = [['Event', Event], ['CustomEvent', CustomEvent]];
+const EVENT_MAPPING = [
+    ['Event', Event],
+    ['CustomEvent', CustomEvent],
+];
 
 function dispatchEventWithLog(target, event) {
     var log = [];

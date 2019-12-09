@@ -31,10 +31,10 @@ export default function apply() {
             tagName: K,
             _options?: ElementCreationOptions
         ): HTMLElementTagNameMap[K] | HTMLElement {
-            const elm = createElement.apply(this, ArraySlice.call(arguments) as [
-                string,
-                ElementCreationOptions?
-            ]);
+            const elm = createElement.apply(
+                this,
+                ArraySlice.call(arguments) as [string, ElementCreationOptions?]
+            );
             if (
                 tagName.length === 4 &&
                 StringCharCodeAt.call(tagName, 0) === CHAR_S &&

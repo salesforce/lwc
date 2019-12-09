@@ -89,9 +89,7 @@ const wireService = {
                         });
                         assert.isTrue(
                             segments[0] !== wireTarget,
-                            `@wire on "${wireTarget}": reactive parameter "${
-                                segments[0]
-                            }" must not refer to self`
+                            `@wire on "${wireTarget}": reactive parameter "${segments[0]}" must not refer to self`
                         );
                         // restriction for dot-notation reactive parameters
                         if (segments.length > 1) {

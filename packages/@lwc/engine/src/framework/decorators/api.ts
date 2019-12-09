@@ -32,7 +32,7 @@ export default function api(
     }
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
-            !descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)),
+            !descriptor || isFunction(descriptor.get) || isFunction(descriptor.set),
             `Invalid property ${toString(
                 propName
             )} definition in ${target}, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`

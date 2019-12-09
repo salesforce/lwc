@@ -47,7 +47,10 @@ export const BABEL_CONFIG_BASE = {
     configFile: false,
     sourceMaps: true,
     parserOpts: {
-        plugins: [['dynamicImport', {}], ['decorators', { decoratorsBeforeExport: true }]],
+        plugins: [
+            ['dynamicImport', {}],
+            ['decorators', { decoratorsBeforeExport: true }],
+        ],
     },
     presets: [],
 };

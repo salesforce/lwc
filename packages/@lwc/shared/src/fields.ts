@@ -24,7 +24,7 @@ const hiddenFieldsMap: WeakMap<any, Record<symbol | string, any>> = new WeakMap(
 export function setHiddenField(o: any, fieldName: symbol, value: any) {
     let valuesByField = hiddenFieldsMap.get(o);
     if (isUndefined(valuesByField)) {
-        valuesByField = create(null) as (Record<symbol, any>);
+        valuesByField = create(null) as Record<symbol, any>;
         hiddenFieldsMap.set(o, valuesByField);
     }
     // @ts-ignore https://github.com/microsoft/TypeScript/issues/1863

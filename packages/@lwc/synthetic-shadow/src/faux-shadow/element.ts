@@ -220,22 +220,25 @@ defineProperties(Element.prototype, {
 
 // IE11 extra patches for wrong prototypes
 if (hasOwnProperty.call(HTMLElement.prototype, 'innerHTML')) {
-    defineProperty(HTMLElement.prototype, 'innerHTML', getOwnPropertyDescriptor(
-        Element.prototype,
-        'innerHTML'
-    ) as PropertyDescriptor);
+    defineProperty(
+        HTMLElement.prototype,
+        'innerHTML',
+        getOwnPropertyDescriptor(Element.prototype, 'innerHTML') as PropertyDescriptor
+    );
 }
 if (hasOwnProperty.call(HTMLElement.prototype, 'outerHTML')) {
-    defineProperty(HTMLElement.prototype, 'outerHTML', getOwnPropertyDescriptor(
-        Element.prototype,
-        'outerHTML'
-    ) as PropertyDescriptor);
+    defineProperty(
+        HTMLElement.prototype,
+        'outerHTML',
+        getOwnPropertyDescriptor(Element.prototype, 'outerHTML') as PropertyDescriptor
+    );
 }
 if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
-    defineProperty(HTMLElement.prototype, 'children', getOwnPropertyDescriptor(
-        Element.prototype,
-        'children'
-    ) as PropertyDescriptor);
+    defineProperty(
+        HTMLElement.prototype,
+        'children',
+        getOwnPropertyDescriptor(Element.prototype, 'children') as PropertyDescriptor
+    );
 }
 
 // Deep-traversing patches from this point on:
@@ -397,9 +400,10 @@ if (process.env.NODE_ENV !== 'test') {
         getElementsByClassName: {
             value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
                 const elements = arrayFromCollection(
-                    elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [
-                        string
-                    ])
+                    elementGetElementsByClassName.apply(
+                        this,
+                        ArraySlice.call(arguments) as [string]
+                    )
                 ) as Element[];
 
                 if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
@@ -445,10 +449,10 @@ if (process.env.NODE_ENV !== 'test') {
         getElementsByTagNameNS: {
             value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
                 const elements = arrayFromCollection(
-                    elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
-                        string,
-                        string
-                    ])
+                    elementGetElementsByTagNameNS.apply(
+                        this,
+                        ArraySlice.call(arguments) as [string, string]
+                    )
                 ) as Element[];
 
                 if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
@@ -473,8 +477,9 @@ if (process.env.NODE_ENV !== 'test') {
 
 // IE11 extra patches for wrong prototypes
 if (hasOwnProperty.call(HTMLElement.prototype, 'getElementsByClassName')) {
-    defineProperty(HTMLElement.prototype, 'getElementsByClassName', getOwnPropertyDescriptor(
-        Element.prototype,
-        'getElementsByClassName'
-    ) as PropertyDescriptor);
+    defineProperty(
+        HTMLElement.prototype,
+        'getElementsByClassName',
+        getOwnPropertyDescriptor(Element.prototype, 'getElementsByClassName') as PropertyDescriptor
+    );
 }

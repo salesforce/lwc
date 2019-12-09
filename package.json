@@ -53,7 +53,7 @@
     "lerna": "^3.15.0",
     "lint-staged": "^8.2.0",
     "mime-types": "^2.1.21",
-    "prettier": "1.16.4",
+    "prettier": "^1.19.1",
     "rollup": "^1.27.9",
     "rollup-plugin-cleanup": "^3.1.1",
     "rollup-plugin-compat": "^0.22.0",
