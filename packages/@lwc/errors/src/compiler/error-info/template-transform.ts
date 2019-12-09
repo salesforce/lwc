@@ -7,7 +7,7 @@
 import { DiagnosticLevel } from '../../shared/types';
 
 /**
- * TODO: W-5678919 - implement script to determine the next available error code
+ * TODO [W-5678919]: implement script to determine the next available error code
  * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
  */
 

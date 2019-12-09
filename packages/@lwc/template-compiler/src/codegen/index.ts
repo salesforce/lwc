@@ -192,7 +192,6 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         let babelElement: t.Expression;
 
         // Check wether it has the special directive lwc:dynamic
-        // TODO: We should inline a isDynamicElement, but ts doesn't like it
         if (element.lwc && element.lwc.dynamic) {
             const { expression } = bindExpression(element.lwc.dynamic, element);
             babelElement = codeGen.genDynamicElement(element.tag, expression, databag, children);

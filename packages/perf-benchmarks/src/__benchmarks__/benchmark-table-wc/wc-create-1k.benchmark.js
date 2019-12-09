@@ -8,7 +8,7 @@ import { buildCustomElementConstructor } from 'lwc';
 import Table from 'benchmark/tableComponent';
 import Row from 'benchmark/tableComponentRow';
 
-import { Store } from '../../tableStore';
+import Store from '../../tableStore';
 import { insertTableComponent, destroyTableComponent } from '../../utils';
 
 customElements.define('benchmark-table-component', buildCustomElementConstructor(Table));

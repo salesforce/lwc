@@ -8,7 +8,7 @@
 import { createElement } from 'lwc';
 import Table from 'benchmark/tableComponent';
 
-import { Store } from '../../tableStore';
+import Store from '../../tableStore';
 import { insertTableComponent, destroyTableComponent } from '../../utils';
 
 benchmark(`benchmark-table-component/update-10th/1k`, () => {

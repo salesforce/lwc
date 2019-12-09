@@ -7,9 +7,6 @@
 /*
  * Detects property changes by installing setter/getter overrides on the component
  * instance.
- *
- * TODO - in 216 engine will expose an 'updated' callback for services that is invoked
- * once after all property changes occur in the event loop.
  */
 
 import { ConfigListenerMetadata, ConfigContext, ReactiveParameter } from './wiring';
@@ -36,7 +33,7 @@ function invokeConfigListeners(
             }
         }
 
-        // TODO - consider read-only membrane to enforce invariant of immutable config
+        // TODO [#1634]: consider read-only membrane to enforce invariant of immutable config
         const config = Object.assign({}, statics, reactiveValues);
         listener.call(undefined, config);
     });

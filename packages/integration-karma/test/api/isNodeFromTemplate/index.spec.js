@@ -1,4 +1,4 @@
-// TODO [#1284] Import this from the lwc module once we move validation from compiler to linter
+// TODO [#1284]: Import this from the lwc module once we move validation from compiler to linter
 const { isNodeFromTemplate } = LWC;
 
 import { createElement } from 'lwc';
@@ -48,7 +48,7 @@ it('should return true on elements manually inserted in the DOM inside an elemen
     const div = document.createElement('div');
     elm.shadowRoot.querySelector('div').appendChild(div);
 
-    // TODO [#1253] optimization to synchronously adopt new child nodes added
+    // TODO [#1253]: optimization to synchronously adopt new child nodes added
     // to this elm, we can do that by patching the most common operations
     // on the node itself
     if (!process.env.NATIVE_SHADOW) {
@@ -61,7 +61,7 @@ it('should return true on elements manually inserted in the DOM inside an elemen
     });
 });
 
-// TODO [#1252] old behavior that is still used by some pieces of the platform
+// TODO [#1252]: old behavior that is still used by some pieces of the platform
 // if isNodeFromTemplate() returns true, locker will prevent traversing to such elements from document
 if (!process.env.NATIVE_SHADOW) {
     it('should return false on elements manually inserted in the DOM inside an element NOT marked with lwc:dom="manual"', () => {
