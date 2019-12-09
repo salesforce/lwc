@@ -2,7 +2,6 @@
     "extends": "../../../tsconfig.json",
 
     "compilerOptions": {
-        "noImplicitAny": false,
         "strictFunctionTypes": false,
 
         "outDir": "dist/commonjs",

@@ -6,21 +6,24 @@
  */
 import { ResultMessage } from 'postcss';
 
-export interface ImportMessage extends ResultMessage {
+interface ImportMessage extends ResultMessage {
     type: 'import';
     id: string;
 }
 
-export interface VarFunctionMessage extends ResultMessage {
+interface VarFunctionMessage extends ResultMessage {
     type: 'var-function';
     original: string;
 }
+
+const PLUGIN_NAME = '@lwc/style-compiler';
 
 const IMPORT_TYPE = 'import';
 const VAR_FUNCTION_TYPE = 'var-function';
 
 export function importMessage(id: string): ImportMessage {
     return {
+        plugin: PLUGIN_NAME,
         type: IMPORT_TYPE,
         id,
     };
@@ -31,7 +34,11 @@ export function isImportMessage(message: any): message is ImportMessage {
 }
 
 export function varFunctionMessage(original: string): VarFunctionMessage {
-    return { type: VAR_FUNCTION_TYPE, original };
+    return {
+        plugin: PLUGIN_NAME,
+        type: VAR_FUNCTION_TYPE,
+        original,
+    };
 }
 
 export function isVarFunctionMessage(message: any): message is VarFunctionMessage {
