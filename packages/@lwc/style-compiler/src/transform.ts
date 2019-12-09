@@ -47,9 +47,9 @@ export function transform(src: string, id: string, config: Config = {}): { code:
     ];
 
     if (minify) {
-        // We are unshifting to ensure minification runs before lwc
-        // This is important because we clone declarations that can't be mangled by the minifier.
-        plugins = [...postcssMinify, ...plugins];
+        // It's important to run the postcss minification plugins before the LWC one because we
+        // need to clone the CSS declarations and they shouldn't be mangled by the minifier.
+        plugins = [...postcssMinify(), ...plugins];
     }
 
     const result = postcss(plugins).process(src, { from: id });
