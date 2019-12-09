@@ -91,7 +91,7 @@ function validateSlots(vm: VM, html: any) {
         );
 
         if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
-            // TODO: #1297 - this should never really happen because the compiler should always validate
+            // TODO [#1297]: this should never really happen because the compiler should always validate
             // eslint-disable-next-line lwc-internal/no-production-assert
             logError(
                 `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,

@@ -32,7 +32,7 @@ it('should not throw when invoking in the different lifecycle hooks', () => {
     }).not.toThrow();
 });
 
-// TODO: #1043 inconsistent restriction between native shadow and synthetic shadow
+// TODO [#1043]: inconsistent restriction between native shadow and synthetic shadow
 xit('should log an error message when removing a non existing event handler', () => {
     const elm = createElement('x-non-existing-event-listener', { is: NonExistingEventListener });
 

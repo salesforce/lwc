@@ -29,7 +29,7 @@ describe('Element.outerHTML - get', () => {
 });
 
 describe('Element.outerHTML - set', () => {
-    // TODO - #991 Add error type to the .toThrowError(<type>) matcher once the issue is fixed.
+    // TODO [#991]: Add error type to the .toThrowError(<type>) matcher once the issue is fixed.
     xit('should throw when invoking setter on the host element', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
@@ -39,7 +39,7 @@ describe('Element.outerHTML - set', () => {
         }).toThrowError();
     });
 
-    // TODO - #991 Add error type to the .toThrowError(<type>) matcher once the issue is fixed.
+    // TODO [#991]: Add error type to the .toThrowError(<type>) matcher once the issue is fixed.
     xit('should log an error when invoking setter for an element in the shadow', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);

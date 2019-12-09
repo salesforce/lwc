@@ -231,7 +231,7 @@ function getShadowRootRestrictionsDescriptors(
                         sr
                     )} by adding an event listener for "${type}".`
                 );
-                // TODO: #420 - this is triggered when the component author attempts to add a listener
+                // TODO [#420]: this is triggered when the component author attempts to add a listener
                 // programmatically into its Component's shadow root
                 if (!isUndefined(options)) {
                     logError(
@@ -348,7 +348,7 @@ function getCustomElementRestrictionsDescriptors(
                         elm
                     )} by adding an event listener for "${type}".`
                 );
-                // TODO: #420 - this is triggered when the component author attempts to add a listener
+                // TODO [#420]: this is triggered when the component author attempts to add a listener
                 // programmatically into a lighting element node
                 if (!isUndefined(options)) {
                     logError(

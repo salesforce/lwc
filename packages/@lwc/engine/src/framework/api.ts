@@ -139,8 +139,8 @@ const ElementHook: Hooks = {
     create: (vnode: VElement) => {
         const { data, sel, clonedElement } = vnode;
         const { ns } = data;
-        // TODO: issue #1364 - supporting the ability to inject a cloned StyleElement
-        // via a vnode this is used for style tags for native shadow
+        // TODO [#1364]: supporting the ability to inject a cloned StyleElement via a vnode this is
+        // used for style tags for native shadow
         if (isUndefined(clonedElement)) {
             vnode.elm = isUndefined(ns)
                 ? document.createElement(sel)
@@ -216,15 +216,15 @@ const CustomElementHook: Hooks = {
 };
 
 function linkNodeToShadow(vnode: VNode) {
-    // TODO: #1164 - this should eventually be done by the polyfill directly
+    // TODO [#1164]: this should eventually be done by the polyfill directly
     (vnode.elm as any).$shadowResolver$ = (vnode.owner.cmpRoot as any).$shadowResolver$;
 }
 
-// TODO: #1136 - this should be done by the compiler, adding ns to every sub-element
+// TODO [#1136]: this should be done by the compiler, adding ns to every sub-element
 function addNS(vnode: VElement) {
     const { data, children, sel } = vnode;
     data.ns = NamespaceAttributeForSVG;
-    // TODO: #1275 - review why `sel` equal `foreignObject` should get this `ns`
+    // TODO [#1275]: review why `sel` equal `foreignObject` should get this `ns`
     if (isArray(children) && sel !== 'foreignObject') {
         for (let j = 0, n = children.length; j < n; ++j) {
             const childNode = children[j];
@@ -344,7 +344,7 @@ export function s(
     }
     const vnode = h('slot', data, children);
     if (useSyntheticShadow) {
-        // TODO: #1276 - compiler should give us some sort of indicator when a vnodes collection is dynamic
+        // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
     return vnode;
@@ -415,7 +415,7 @@ export function c(
         hook: CustomElementHook,
         ctor: Ctor,
         owner: vmBeingRendered as VM,
-        mode: 'open', // TODO: #1294 - this should be defined in Ctor
+        mode: 'open', // TODO [#1294]: this should be defined in Ctor
     };
     addVNodeToChildLWC(vnode);
     return vnode;
@@ -427,7 +427,7 @@ export function i(
     factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
 ): VNodes {
     const list: VNodes = [];
-    // TODO: #1276 - compiler should give us some sort of indicator when a vnodes collection is dynamic
+    // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
     const vmBeingRendered = getVMBeingRendered();
     if (isUndefined(iterable) || iterable === null) {
@@ -525,7 +525,7 @@ export function f(items: any[]): any[] {
     }
     const len = items.length;
     const flattened: VNodes = [];
-    // TODO: #1276 - compiler should give us some sort of indicator when a vnodes collection is dynamic
+    // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(flattened);
     for (let j = 0; j < len; j += 1) {
         const item = items[j];

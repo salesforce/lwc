@@ -19,7 +19,7 @@ export { CompilerDiagnosticOrigin, CompilerDiagnostic, CompilerError } from './u
 
 export * from './error-info';
 
-// TODO: #1289 - Can be flattened now that we're down to only 2 properties
+// TODO [#1289]: Can be flattened now that we're down to only 2 properties
 export interface ErrorConfig {
     messageArgs?: any[];
     origin?: CompilerDiagnosticOrigin;
@@ -31,7 +31,7 @@ export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): str
         : errorInfo.message;
 
     if (errorInfo.url && errorInfo.url !== '') {
-        // TODO: #1289 - Add url info into message
+        // TODO [#1289]: Add url info into message
     }
 
     return `LWC${errorInfo.code}: ${message}`;
@@ -167,6 +167,6 @@ function convertErrorToDiagnostic(
     const filename = getFilename(origin, error);
     const location = getLocation(origin, error);
 
-    // TODO: #1289 - Preserve stack information
+    // TODO [#1289]: Preserve stack information
     return { code, message, level, filename, location };
 }

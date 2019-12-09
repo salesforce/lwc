@@ -254,7 +254,7 @@ export class WireEventTarget {
             this._cmp.dispatchEvent(internalDomEvent);
             return false; // canceling signal since we don't want this to propagate
         } else if (evt.type === 'WireContextEvent') {
-            // TODO: issue #1357 - remove this branch
+            // TODO [#1357]: remove this branch
             return this._cmp.dispatchEvent(evt);
         } else {
             throw new Error(`Invalid event ${evt}.`);

@@ -8,7 +8,7 @@ beforeEach(() => {
     document.body.focus();
 });
 
-// TODO: #1327 - enable after patching focus method
+// TODO [#1327]: enable after patching focus method
 xit('should focus the first internally focusable element (delegatesFocus=true)', () => {
     const elm = createElement('x-focus', { is: DelegatesFocusTrue });
     document.body.appendChild(elm);
@@ -26,7 +26,7 @@ it('should not focus the first internally focusable element (delegatesFocus=fals
     expect(elm.shadowRoot.activeElement).toBeNull();
 });
 
-// TODO: #1329 - enable after fixing bug where the custom element does not gain focus
+// TODO [#1329]: enable after fixing bug where the custom element does not gain focus
 xit('should focus the host element (delegatesFocus=false, tabIndex=-1)', () => {
     const container = createElement('x-container', { is: Container });
     document.body.appendChild(container);

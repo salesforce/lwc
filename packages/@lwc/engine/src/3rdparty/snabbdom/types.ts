@@ -46,7 +46,7 @@ export interface VElement extends VNode {
     elm: Element | undefined;
     text: undefined;
     key: Key;
-    // TODO: issue #1364 - support the ability to provision a cloned StyleElement
+    // TODO [#1364]: support the ability to provision a cloned StyleElement
     // for native shadow as a perf optimization
     clonedElement?: HTMLStyleElement;
 }

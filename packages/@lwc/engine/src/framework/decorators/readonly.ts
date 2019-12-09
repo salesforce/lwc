@@ -14,7 +14,7 @@ import { reactiveMembrane } from '../membrane';
  */
 export default function readonly(obj: any): any {
     if (process.env.NODE_ENV !== 'production') {
-        // TODO: #1292 - Remove the readonly decorator
+        // TODO [#1292]: Remove the readonly decorator
         if (arguments.length !== 1) {
             assert.fail(
                 '@readonly cannot be used as a decorator just yet, use it as a function with one argument to produce a readonly version of the provided value.'

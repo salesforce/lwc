@@ -29,7 +29,7 @@ export function getOwnerWindow(node: Node): Window {
 
 let skipGlobalPatching: boolean;
 
-// TODO: issue #1222 - remove global bypass
+// TODO [#1222]: remove global bypass
 export function isGlobalPatchingSkipped(node: Node): boolean {
     // we lazily compute this value instead of doing it during evaluation, this helps
     // for apps that are setting this after the engine code is evaluated.

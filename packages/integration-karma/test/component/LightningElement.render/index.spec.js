@@ -8,7 +8,7 @@ function testInvalidTemplate(type, template) {
         const elm = createElement('x-dynamic-template', { is: DynamicTemplate });
         elm.template = template;
 
-        // TODO: #1109 - Inconsistent error message for render lifecycle method
+        // TODO [#1109]: Inconsistent error message for render lifecycle method
         // Once the error is fixed, we should add the error message to the assertion.
         expect(() => {
             document.body.appendChild(elm);

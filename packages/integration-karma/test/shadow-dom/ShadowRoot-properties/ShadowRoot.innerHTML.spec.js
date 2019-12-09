@@ -13,7 +13,7 @@ describe('ShadowRoot.innerHTML', () => {
         );
     });
 
-    // TODO - #991 No error is thrown when invoking
+    // TODO [#991]: No error is thrown when invoking
     xit('should throw an error when invoking setter on the shadowRoot', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);

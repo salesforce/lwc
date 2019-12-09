@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-// TODO: #1311 move this tests to integration
-// TODO: issue #1341 find ways to test this in browsers
+// TODO [#1311]: move this tests to integration
+// TODO [#1341]: find ways to test this in browsers
 // import { isFocusable, isTabbable } from '../focus';
 
 // fake functions for now until we can enable this test again in karma

@@ -23,7 +23,7 @@ testDispatchEvent('Event', 'test', new Event('test'));
 testDispatchEvent('CustomEvent', 'testcustom', new CustomEvent('testcustom'));
 testDispatchEvent('FocusEvent', 'testfocus', new CustomEvent('testfocus'));
 
-// TODO: #1072 - LightningElement.addEventListener throws 2 different type of errors in dev and prod
+// TODO [#1072]: LightningElement.addEventListener throws 2 different type of errors in dev and prod
 xit('should throw an error if the parameter is not an instance of Event', () => {
     const elm = createElement('x-test', { is: Test });
     document.body.appendChild(elm);
