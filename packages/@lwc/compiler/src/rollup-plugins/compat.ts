@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { Plugin } from 'rollup';
-import babel from '@babel/core';
+import * as babel from '@babel/core';
 
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
 import { NormalizedOutputConfig } from '../options';
@@ -18,6 +18,7 @@ export default function({ sourcemap }: NormalizedOutputConfig): Plugin {
         ...BABEL_CONFIG_BASE,
         presets: [[presetCompat, { proxy: true }]],
     };
+
     const config = Object.assign({}, BABEL_CONFIG_CONFIG, { sourceMaps: sourcemap });
 
     return {

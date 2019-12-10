@@ -46,7 +46,7 @@ export function transform(src: string, id: string, config: Config = {}): { code:
     ];
 
     if (minify) {
-        const postcssMinify = require('./postcss-minify-plugins');
+        const postcssMinify = require('./postcss-minify-plugins').default;
         // It's important to run the postcss minification plugins before the LWC one because we
         // need to clone the CSS declarations and they shouldn't be mangled by the minifier.
         plugins = [...postcssMinify(), ...plugins];

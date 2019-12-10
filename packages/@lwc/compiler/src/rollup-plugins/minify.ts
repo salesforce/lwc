@@ -14,6 +14,7 @@ import { NormalizedOutputConfig } from '../options';
 export default function({ sourcemap }: NormalizedOutputConfig): Plugin {
     // Inlining the `terser` module require to only pay the parsing and evaluation cost for needed modules
     const { minify } = require('terser');
+
     return {
         name: 'lwc-minify',
 
