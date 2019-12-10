@@ -35,7 +35,14 @@ module.exports = function postProcess({ types: t }) {
 
     function collectObservedFields(body, decoratedProperties) {
         const mappers = {
-            ObjectExpression: ({ properties }) => properties.map(({ key: { name } }) => name),
+            ObjectExpression: ({ properties }) =>
+                properties.map(({ key }) => {
+                    if (t.isIdentifier(key)) {
+                        return key.name;
+                    } else if (t.isStringLiteral(key)) {
+                        return key.value;
+                    }
+                }),
             ArrayExpression: ({ elements }) => elements.map(({ value }) => value),
         };
 

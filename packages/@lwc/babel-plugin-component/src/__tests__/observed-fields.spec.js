@@ -79,6 +79,59 @@ describe('observed fields', () => {
     );
 
     pluginTest(
+        'should not add reserved words to fields when is a reserved word decorated with @api, @track or @wire',
+        `
+        import { api, wire, track, createElement } from 'lwc';
+        export default class Test {
+            interface;
+            @api static;
+            @track for;
+            @wire(createElement) function;
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { createElement } from "lwc";
+                
+                class Test {
+                  constructor() {
+                    this.interface = void 0;
+                    this.static = void 0;
+                    this.for = void 0;
+                    this.function = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  publicProps: {
+                    static: {
+                      config: 0
+                    }
+                  },
+                  wire: {
+                    function: {
+                      adapter: createElement
+                    }
+                  },
+                  track: {
+                    for: 1
+                  },
+                  fields: ["interface"]
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `,
+            },
+        }
+    );
+
+    pluginTest(
         'should transform export default that is not a class',
         `
         const DATA_FROM_NETWORK = [
