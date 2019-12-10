@@ -5,18 +5,18 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { Plugin } from 'rollup';
-import * as babel from '@babel/core';
-import * as presetCompat from 'babel-preset-compat';
-
-import { BABEL_CONFIG_BASE } from '../babel-plugins';
 import { NormalizedOutputConfig } from '../options';
 
-const BABEL_CONFIG_CONFIG = {
-    ...BABEL_CONFIG_BASE,
-    presets: [[presetCompat, { proxy: true }]],
-};
-
 export default function({ sourcemap }: NormalizedOutputConfig): Plugin {
+    // [perf optimization] inline these imports to prevent node-tool from parsing unused libs until compiling for 'compat'
+    const babel = require('@babel/core');
+    const { BABEL_CONFIG_BASE } = require('../babel-plugins');
+    const presetCompat = require('babel-preset-compat');
+
+    const BABEL_CONFIG_CONFIG = {
+        ...BABEL_CONFIG_BASE,
+        presets: [[presetCompat, { proxy: true }]],
+    };
     const config = Object.assign({}, BABEL_CONFIG_CONFIG, { sourceMaps: sourcemap });
 
     return {

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { minify } from 'terser';
 import { Plugin } from 'rollup';
 
 import { NormalizedOutputConfig } from '../options';
@@ -13,6 +12,8 @@ import { NormalizedOutputConfig } from '../options';
  * Rollup plugin applying minification to the generated bundle.
  */
 export default function({ sourcemap }: NormalizedOutputConfig): Plugin {
+    // [perf optimization] inline the import to prevent node-tool from parsing unused lib until compiling for 'prod'.
+    const { minify } = require('terser');
     return {
         name: 'lwc-minify',
 

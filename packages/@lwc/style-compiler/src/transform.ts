@@ -8,7 +8,6 @@ import postcss from 'postcss';
 
 import serialize from './serialize';
 import postcssLwc from './postcss-lwc-plugin';
-import postcssMinify from './postcss-minify-plugins';
 
 export interface Config {
     /** CSS custom properties configuration */
@@ -47,6 +46,7 @@ export function transform(src: string, id: string, config: Config = {}): { code:
     ];
 
     if (minify) {
+        const postcssMinify = require('./postcss-minify-plugins');
         // It's important to run the postcss minification plugins before the LWC one because we
         // need to clone the CSS declarations and they shouldn't be mangled by the minifier.
         plugins = [...postcssMinify(), ...plugins];
