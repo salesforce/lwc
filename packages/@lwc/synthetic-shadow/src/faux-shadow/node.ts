@@ -172,7 +172,7 @@ function parentNodeGetterPatched(this: Node): (Node & ParentNode) | null {
     if (isNull(value)) {
         return value;
     }
-    // TODO: this needs optimization, maybe implementing it based on this.assignedSlot
+    // TODO [#1635]: this needs optimization, maybe implementing it based on this.assignedSlot
     return getShadowParent(this, value);
 }
 
@@ -184,7 +184,7 @@ function parentElementGetterPatched(this: Node): Element | null {
     const parentNode = getShadowParent(this, value);
     // it could be that the parentNode is the shadowRoot, in which case
     // we need to return null.
-    // TODO: this needs optimization, maybe implementing it based on this.assignedSlot
+    // TODO [#1635]: this needs optimization, maybe implementing it based on this.assignedSlot
     return parentNode instanceof Element ? parentNode : null;
 }
 
@@ -248,7 +248,7 @@ function childNodesGetterPatched(this: Node): NodeListOf<Node & Element> {
         return createStaticNodeList(childNodes);
     }
     // nothing to do here since this does not have a synthetic shadow attached to it
-    // TODO: what about slot elements?
+    // TODO [#1636]: what about slot elements?
     return childNodesGetter.call(this);
 }
 
@@ -349,7 +349,7 @@ defineProperties(Node.prototype, {
                 return textContentGetter.call(this);
             }
 
-            // TODO: issue #1222 - remove global bypass
+            // TODO [#1222]: remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return textContentGetter.call(this);
             }
@@ -403,7 +403,7 @@ defineProperties(Node.prototype, {
     },
     compareDocumentPosition: {
         value(this: Node, otherNode: Node): number {
-            // TODO: issue #1222 - remove global bypass
+            // TODO [#1222]: remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return compareDocumentPosition.call(this, otherNode);
             }
@@ -427,7 +427,7 @@ defineProperties(Node.prototype, {
                 return contains.call(this, otherNode);
             }
 
-            // TODO: issue #1222 - remove global bypass
+            // TODO [#1222]: remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return contains.call(this, otherNode);
             }
@@ -448,7 +448,7 @@ defineProperties(Node.prototype, {
             }
 
             if (isTrue(deep)) {
-                // TODO: issue #1222 - remove global bypass
+                // TODO [#1222]: remove global bypass
                 if (isGlobalPatchingSkipped(this)) {
                     return cloneNode.call(this, deep);
                 }

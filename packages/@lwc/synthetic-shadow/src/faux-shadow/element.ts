@@ -126,7 +126,7 @@ defineProperties(Element.prototype, {
                 return innerHTMLGetter.call(this);
             }
 
-            // TODO: issue #1222 - remove global bypass
+            // TODO [#1222]: remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return innerHTMLGetter.call(this);
             }
@@ -147,7 +147,7 @@ defineProperties(Element.prototype, {
                 return outerHTMLGetter.call(this);
             }
 
-            // TODO: issue #1222 - remove global bypass
+            // TODO [#1222]: remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return outerHTMLGetter.call(this);
             }
@@ -289,7 +289,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         // element belonging to the document
         const elm = ArrayFind.call(
             nodeList,
-            // TODO: issue #1222 - remove global bypass
+            // TODO [#1222]: remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
         return isUndefined(elm) ? null : elm;
@@ -339,7 +339,7 @@ function getFilteredArrayOfNodes<T extends Node>(
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
                 unfilteredNodes,
-                // TODO: issue #1222 - remove global bypass
+                // TODO [#1222]: remove global bypass
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
             );
         } else {

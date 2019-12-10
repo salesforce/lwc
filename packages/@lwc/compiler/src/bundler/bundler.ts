@@ -71,7 +71,7 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
 
     const { outputConfig, name, namespace } = options;
 
-    // TODO: #1268 - remove format option once tests are converted to 'amd' format
+    // TODO [#1268]: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
     const diagnostics: CompilerDiagnostic[] = [];

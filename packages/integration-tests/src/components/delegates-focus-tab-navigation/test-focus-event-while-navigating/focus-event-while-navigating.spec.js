@@ -12,7 +12,7 @@ describe('Focus event while sequential focus navigation', () => {
         browser.url(URL);
     });
 
-    // TODO: #1243 - Fix bug where shadow tree receives focus event when it should be skipped
+    // TODO [#1243]: Fix bug where shadow tree receives focus event when it should be skipped
     describe.skip('delegatesFocus: true, tabindex: -1', () => {
         beforeEach(() => {
             // Reset counters
@@ -82,7 +82,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
     });
 
-    // TODO: #1244 - Fix bug where host does not receive focus event when it should
+    // TODO [#1244]: Fix bug where host does not receive focus event when it should
     describe.skip('delegatesFocus: true, tabindex: none', () => {
         beforeEach(() => {
             // Reset counters
@@ -225,7 +225,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
     });
 
-    // TODO: #1243 - Fix bug where shadow tree receives focus event when it should be skipped
+    // TODO [#1243]: Fix bug where shadow tree receives focus event when it should be skipped
     describe.skip('delegatesFocus: false, tabindex: -1', () => {
         beforeEach(() => {
             // Reset counters
@@ -368,7 +368,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
     });
 
-    // TODO: #1244 - Fix bug where host does not receive focus event when it should
+    // TODO [#1244]: Fix bug where host does not receive focus event when it should
     describe.skip('delegatesFocus: false, tabindex: none', () => {
         beforeEach(() => {
             // Reset counters

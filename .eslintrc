@@ -89,6 +89,8 @@
         "template-curly-spacing": "error",
         "yoda": "error",
 
+        "lwc-internal/no-invalid-todo": "error",
+
         // Want to enable if there is consent
         "no-shadow": "off", // 20 violations https://eslint.org/docs/rules/no-shadow	
         "no-use-before-define": ["off", { "functions": true, "classes": true, "variables": false }], // 215 violations https://eslint.org/docs/rules/no-use-before-define

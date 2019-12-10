@@ -46,7 +46,7 @@ function testEventScopeInShadowTree(type, Ctor) {
             expect(logs).toEqual([[nodes.span, nodes.span, composedPath]]);
         });
 
-        // TODO: #960 - Non composed events leaks out of the shadow tree
+        // TODO [#960]: Non composed events leaks out of the shadow tree
         xit('{ bubble: true }', () => {
             const evt = new Ctor('test', { bubbles: true });
             const logs = dispatchEventWithLog(nodes.span, evt);
@@ -59,7 +59,7 @@ function testEventScopeInShadowTree(type, Ctor) {
             ]);
         });
 
-        // TODO: #1138 - Composed and non-bubbling events doesn't invoke host event listeners
+        // TODO [#1138]: Composed and non-bubbling events doesn't invoke host event listeners
         xit('{ composed: true }', () => {
             const evt = new Ctor('test', { composed: true });
             const logs = dispatchEventWithLog(nodes.span, evt);
@@ -80,7 +80,7 @@ function testEventScopeInShadowTree(type, Ctor) {
             ]);
         });
 
-        // TODO: #1139 - Event constructor doesn't support composed in compat mode
+        // TODO [#1139]: Event constructor doesn't support composed in compat mode
         xit('{ bubble: true, composed: true }', () => {
             const evt = new Ctor('test', { bubbles: true, composed: true });
 
@@ -109,7 +109,7 @@ function testEventScopeInShadowTree(type, Ctor) {
 }
 
 function testEventScopeOnHostElement(type, Ctor) {
-    // TODO: #1141 - Event non dispatched from within a LWC shadow tree are not patched
+    // TODO [#1141]: Event non dispatched from within a LWC shadow tree are not patched
     xdescribe(`event scope on host element ${type}`, () => {
         let nodes;
         beforeEach(() => {

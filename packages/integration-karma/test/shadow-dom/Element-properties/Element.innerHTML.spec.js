@@ -29,7 +29,7 @@ describe('Element.innerHTML - get', () => {
 });
 
 describe('Element.innerHTML - set', () => {
-    // TODO - #990 No error is thrown when invoking innerHTML on the host element
+    // TODO [#990]: No error is thrown when invoking innerHTML on the host element
     xit('should throw when invoking setter on the host element', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);

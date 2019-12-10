@@ -236,7 +236,7 @@ export function getComponentDef(Ctor: any, subclassComponentName?: string): Comp
 
         let meta = getComponentRegisteredMeta(Ctor);
         if (isUndefined(meta)) {
-            // TODO: #1295 - remove this workaround after refactoring tests
+            // TODO [#1295]: remove this workaround after refactoring tests
             meta = {
                 template: undefined,
                 name: Ctor.name,

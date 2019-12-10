@@ -5,7 +5,7 @@ import Text from 'x/text';
 import Slotted from 'x/slotted';
 
 describe('ParentNode.firstElementChild', () => {
-    // TODO: #977 - in test mode the children doesn't return the right set of values
+    // TODO [#977]: in test mode the children doesn't return the right set of values
     xit('should return the first element child', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
@@ -20,7 +20,7 @@ describe('ParentNode.firstElementChild', () => {
         expect(elm.shadowRoot.firstElementChild).toBe(null);
     });
 
-    // TODO: #977 - in test mode the children doesn't return the right set of values
+    // TODO [#977]: in test mode the children doesn't return the right set of values
     xit('should return the right elements for slotted children', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);

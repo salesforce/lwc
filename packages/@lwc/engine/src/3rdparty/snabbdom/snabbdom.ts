@@ -34,7 +34,7 @@ function isVNode(vnode: any): vnode is VNode {
 function createKeyToOldIdx(children: VNodes, beginIdx: number, endIdx: number): KeyToIndexMap {
     const map: KeyToIndexMap = {};
     let j: number, key: Key | undefined, ch;
-    // TODO: simplify this by assuming that all vnodes has keys
+    // TODO [#1637]: simplify this by assuming that all vnodes has keys
     for (j = beginIdx; j <= endIdx; ++j) {
         ch = children[j];
         if (isVNode(ch)) {
@@ -106,12 +106,7 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
         } else if (sameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patchVnode(oldStartVnode, newEndVnode);
-            newEndVnode.hook.move(
-                oldStartVnode,
-                parentElm,
-                // TODO: resolve this, but using dot notation for nextSibling for now
-                (oldEndVnode.elm as Node).nextSibling
-            );
+            newEndVnode.hook.move(oldStartVnode, parentElm, (oldEndVnode.elm as Node).nextSibling);
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (sameVnode(oldEndVnode, newStartVnode)) {

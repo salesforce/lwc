@@ -8,10 +8,12 @@
 
 const noExtendGlobalConstructor = require('./rules/no-extend-global-constructor');
 const noProductionAssert = require('./rules/no-production-assert');
+const noInvalidTodo = require('./rules/no-invalid-todo');
 
 module.exports = {
     rules: {
         'no-extend-global-constructor': noExtendGlobalConstructor,
         'no-production-assert': noProductionAssert,
+        'no-invalid-todo': noInvalidTodo,
     },
 };

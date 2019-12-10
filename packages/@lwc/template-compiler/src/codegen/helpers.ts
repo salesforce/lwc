@@ -61,9 +61,10 @@ export function isDynamic(element: IRElement): boolean {
 }
 
 /**
- * Returns true if the passed element should be flattened
- * TODO: #1303 - Move this logic into the optimizing compiler. This kind of
- *       optimization should be done before the actual code generation.
+ * Returns true if the passed element should be flattened.
+ *
+ * TODO [#1303]: Move this logic into the optimizing compiler. This kind of optimization should be
+ * done before the actual code generation.
  */
 export function shouldFlatten(element: IRElement): boolean {
     return element.children.some(

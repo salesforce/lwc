@@ -541,7 +541,7 @@ BaseLightningElementConstructor.prototype = {
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getComponentVM(this);
-            // TODO: #1290 - this still fails in dev but works in production, eventually, we should just throw in all modes
+            // TODO [#1290]: this still fails in dev but works in production, eventually, we should just throw in all modes
             assert.isFalse(
                 isBeingConstructed(vm),
                 `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`

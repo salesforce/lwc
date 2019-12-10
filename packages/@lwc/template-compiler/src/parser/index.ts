@@ -195,7 +195,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         Text: {
             enter(node: parse5.AST.Default.TextNode) {
                 // Extract the raw source to avoid HTML entity decoding done by parse5
-                // TODO: #1286 - Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
+                // TODO [#1286]: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
                 const location = node.__location as parse5.MarkupData.Location;
 
                 const { startOffset, endOffset } = location;
@@ -913,7 +913,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 }
             }
 
-            // TODO #1136 - once the template compiler emits the element namespace information to the engine we should
+            // TODO [#1136]: once the template compiler emits the element namespace information to the engine we should
             // restrict the validation of the "srcdoc" attribute on the "iframe" element only if this element is
             // part of the HTML namespace.
             if (tag === 'iframe' && attrName === 'srcdoc') {
@@ -1090,7 +1090,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         );
     }
 
-    // TODO: #1286 - Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
+    // TODO [#1286]: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
     function normalizeLocation(
         location?: parse5.MarkupData.Location
     ): { line: number; column: number; start: number; length: number } {

@@ -66,8 +66,7 @@ function _random(max) {
     return Math.round(Math.random() * 1000) % max;
 }
 
-// TODO export as default class when compiler handles it
-export class Store {
+export default class Store {
     constructor() {
         this.data = [];
         this.selected = undefined;

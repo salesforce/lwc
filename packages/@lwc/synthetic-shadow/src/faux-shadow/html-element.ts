@@ -115,7 +115,7 @@ function blurPatched(this: HTMLElement) {
 
 function focusPatched(this: HTMLElement) {
     disableKeyboardFocusNavigationRoutines();
-    // TODO: #1327 - Shadow DOM semantics for focus method
+    // TODO [#1327]: Shadow DOM semantics for focus method
     focus.call(this);
     enableKeyboardFocusNavigationRoutines();
 }

@@ -104,7 +104,7 @@ function markElementAsPortal(elm: Element) {
     }
     // install mutation observer for portals
     MutationObserverObserve.call(portalObserver, elm, portalObserverConfig);
-    // TODO: #1253 - optimization to synchronously adopt new child nodes added
+    // TODO [#1253]: optimization to synchronously adopt new child nodes added
     // to this elm, we can do that by patching the most common operations
     // on the node itself
 }
@@ -123,7 +123,7 @@ function markElementAsPortal(elm: Element) {
  *    marked as $domManual$, setting it to false does nothing.
  *
  **/
-// TODO: #1306 - rename this to $observerConnection$
+// TODO [#1306]: rename this to $observerConnection$
 defineProperty(Element.prototype, '$domManual$', {
     set(this: Element, v: boolean) {
         this[DomManualPrivateKey] = v;
