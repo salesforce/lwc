@@ -5,12 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { Plugin } from 'rollup';
+import babel from '@babel/core';
+
+import { BABEL_CONFIG_BASE } from '../babel-plugins';
 import { NormalizedOutputConfig } from '../options';
 
 export default function({ sourcemap }: NormalizedOutputConfig): Plugin {
-    // [perf optimization] inline these imports to prevent node-tool from parsing unused libs until compiling for 'compat'
-    const babel = require('@babel/core');
-    const { BABEL_CONFIG_BASE } = require('../babel-plugins');
+    // Inlining the `babel-preset-compat` module require to only pay the parsing and evaluation cost for needed modules
     const presetCompat = require('babel-preset-compat');
 
     const BABEL_CONFIG_CONFIG = {
