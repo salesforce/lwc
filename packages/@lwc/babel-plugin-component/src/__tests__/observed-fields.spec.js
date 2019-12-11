@@ -132,12 +132,53 @@ describe('observed fields', () => {
     );
 
     pluginTest(
-        'should not observe changes in a field when is defined in bracket notation',
+        'should not observe changes in computed fields',
+        `
+        import { api, wire, track, createElement } from 'lwc';
+        const PREFIX = 'prefix';
+        export default class Test {
+            interface;
+            ['a'] = 0;
+            [\`\${PREFIX}Field\`] = 'prefixed field';
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { createElement } from "lwc";
+                const PREFIX = "prefix";
+                
+                class Test {
+                  constructor() {
+                    this.interface = void 0;
+                    this["a"] = 0;
+                    this[\`\${PREFIX}Field\`] = "prefixed field";
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  fields: ["interface"]
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `,
+            },
+        }
+    );
+
+    pluginTest(
+        'should not observe changes in a static fields',
         `
         import { api, wire, track, createElement } from 'lwc';
         export default class Test {
             interface;
-            ['a'] = 0;
+            static foo = 3;
+            static baz = 1;
         }
     `,
         {
@@ -151,9 +192,11 @@ describe('observed fields', () => {
                 class Test {
                   constructor() {
                     this.interface = void 0;
-                    this["a"] = 0;
                   }
                 }
+                
+                Test.foo = 3;
+                Test.baz = 1;
                 
                 _registerDecorators(Test, {
                   fields: ["interface"]

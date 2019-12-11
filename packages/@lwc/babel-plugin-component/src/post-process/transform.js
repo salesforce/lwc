@@ -56,6 +56,7 @@ module.exports = function postProcess({ types: t }) {
                 path =>
                     t.isClassProperty(path.node) &&
                     !isLWCNode(path.node) &&
+                    !path.node.static &&
                     t.isIdentifier(path.node.key) &&
                     !(decoratedIdentifiers.indexOf(path.node.key.name) >= 0)
             )
