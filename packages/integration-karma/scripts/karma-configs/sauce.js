@@ -37,7 +37,7 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_ie11',
         browserName: 'internet explorer',
-        version: '11.0',
+        version: '11',
         compat: true,
         nativeShadowCompatible: false,
     },

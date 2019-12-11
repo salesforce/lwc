@@ -10,10 +10,10 @@
         "build:prod_compat": "MODE=prod_compat yarn build",
         "start": "http-server -c-1 -p 8080",
         "local": "yarn local:prod",
-        "local:dev": "yarn build:dev && MODE=dev wdio ./scripts/wdio.conf.js",
-        "local:prod": "yarn build:prod && MODE=prod wdio ./scripts/wdio.conf.js",
-        "local:compat": "yarn build:compat && MODE=compat wdio ./scripts/wdio.conf.js",
-        "local:prod_compat": "yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.conf.js",
+        "local:dev": "yarn build:dev && MODE=dev wdio ./scripts/wdio.local.conf.js",
+        "local:prod": "yarn build:prod && MODE=prod wdio ./scripts/wdio.local.conf.js",
+        "local:compat": "yarn build:compat && MODE=compat wdio ./scripts/wdio.local.conf.js",
+        "local:prod_compat": "yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.local.conf.js",
         "sauce": "yarn sauce:prod",
         "sauce:dev": "MODE=dev yarn build:dev && MODE=dev wdio ./scripts/wdio.sauce.conf.js",
         "sauce:prod": "MODE=prod yarn build:prod && MODE=prod wdio ./scripts/wdio.sauce.conf.js",
@@ -23,21 +23,19 @@
     "devDependencies": {
         "@lwc/rollup-plugin": "1.1.15",
         "@wdio/cli": "^5.15.0",
-        "@wdio/junit-reporter": "^5.15.0",
         "@wdio/local-runner": "^5.15.0",
         "@wdio/mocha-framework": "^5.15.0",
         "@wdio/sauce-service": "^5.11.1",
+        "@wdio/selenium-standalone-service": "^5.14.5",
         "@wdio/spec-reporter": "^5.14.5",
         "@wdio/static-server-service": "^5.14.4",
         "@wdio/sync": "^5.14.4",
-        "chromedriver": "^77.0.0",
         "compat-polyfills": "^0.21.7",
         "deepmerge": "^1.5.2",
         "dotenv": "^4.0.0",
         "fs-extra": "^8.1.0",
         "http-server": "^0.11.1",
         "lwc": "1.1.15",
-        "minimist": "^1.2.0",
-        "wdio-chromedriver-service": "^5.0.2"
+        "minimist": "^1.2.0"
     }
 }
