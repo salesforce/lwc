@@ -35,7 +35,14 @@ module.exports = function postProcess({ types: t }) {
 
     function collectObservedFields(body, decoratedProperties) {
         const mappers = {
-            ObjectExpression: ({ properties }) => properties.map(({ key: { name } }) => name),
+            ObjectExpression: ({ properties }) =>
+                properties.map(({ key }) => {
+                    if (t.isIdentifier(key)) {
+                        return key.name;
+                    } else if (t.isStringLiteral(key)) {
+                        return key.value;
+                    }
+                }),
             ArrayExpression: ({ elements }) => elements.map(({ value }) => value),
         };
 
@@ -49,6 +56,8 @@ module.exports = function postProcess({ types: t }) {
                 path =>
                     t.isClassProperty(path.node) &&
                     !isLWCNode(path.node) &&
+                    !path.node.static &&
+                    t.isIdentifier(path.node.key) &&
                     !(decoratedIdentifiers.indexOf(path.node.key.name) >= 0)
             )
             .map(path => path.node.key.name);

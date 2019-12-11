@@ -115,4 +115,19 @@ describe('observed-fields', () => {
             expect(elm.shadowRoot.querySelector('.inherited-value').textContent).toBe('mutated');
         });
     });
+
+    it('should allow decorated reserved words as field names', () => {
+        const elm = createElement('x-simple', { is: Simple });
+        elm.static = 'static value';
+        document.body.appendChild(elm);
+
+        expect(elm.shadowRoot.querySelector('.static-value').textContent).toBe('static value');
+        elm.static = 'static value modified';
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('.static-value').textContent).toBe(
+                'static value modified'
+            );
+        });
+    });
 });
