@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.2...v) (2019-11-27)
+# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.3...v) (2019-12-11)
+
+
+### Bug Fixes
+
+* **compiler:** decorated props duplicated in fields ([#1641](https://github.com/salesforce/lwc/issues/1641)) ([90269c6](https://github.com/salesforce/lwc/commit/90269c6))
+
+
+
+## [1.1.13-224.3](https://github.com/salesforce/lwc/compare/v1.1.13-224.2...v1.1.13-224.3) (2019-11-27)
 
 
 ### Bug Fixes
