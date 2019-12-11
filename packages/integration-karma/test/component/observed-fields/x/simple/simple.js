@@ -5,6 +5,7 @@ class BaseKlass extends LightningElement {
 }
 
 export default class Simple extends BaseKlass {
+    @api static;
     @track trackedField;
     simpleValue = 'initial';
     complexValue = {

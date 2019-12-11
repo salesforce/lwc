@@ -79,7 +79,7 @@ describe('observed fields', () => {
     );
 
     pluginTest(
-        'should not add reserved words to fields when is a reserved word decorated with @api, @track or @wire',
+        'should not process reserved words as field when decorated with @api, @track or @wire',
         `
         import { api, wire, track, createElement } from 'lwc';
         export default class Test {
@@ -120,6 +120,42 @@ describe('observed fields', () => {
                   track: {
                     for: 1
                   },
+                  fields: ["interface"]
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `,
+            },
+        }
+    );
+
+    pluginTest(
+        'should not observe changes in a field when is defined in bracket notation',
+        `
+        import { api, wire, track, createElement } from 'lwc';
+        export default class Test {
+            interface;
+            ['a'] = 0;
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { createElement } from "lwc";
+                
+                class Test {
+                  constructor() {
+                    this.interface = void 0;
+                    this["a"] = 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
                   fields: ["interface"]
                 });
                 
