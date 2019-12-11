@@ -124,7 +124,7 @@ run_karma_coverage: &run_karma_coverage
 run_integration_tests_chrome: &run_integration_tests_chrome
   run:
     name: Run integration test - Headless Chrome
-    command: yarn local:prod
+    command: yarn sauce:prod --browsers chrome
     working_directory: packages/integration-tests
 
 run_integration_tests_ie11: &run_integration_tests_ie11
@@ -217,6 +217,11 @@ jobs:
     <<: *env_test
     steps:
       - *load_workspace
+
+      - *setup_sauce_env_variables
+      - *start_sauce_connect
+      - *wait_for_sauce_connect
+
       - *run_integration_tests_chrome
 
 

@@ -5,43 +5,38 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// force non-headless Chrome on Sauce Labs for debugability
-process.env.HEADLESS_CHROME = false;
+const path = require('path');
 
 const merge = require('deepmerge');
 const minimist = require('minimist');
 
-const base = require('./wdio.conf.js');
+require('dotenv').config({
+    path: path.resolve(__dirname, '../.env'),
+});
+
+const baseConfig = require('./wdio.conf.js');
 
 const browsers = [
     // Note that headless Chrome also needs to be updated in wdio.conf.js for non-SauceLabs runs
     {
         commonName: 'chrome',
         browserName: 'chrome',
-        platform: 'Windows 10',
-        version: '61.0',
-        chromeOptions: {
-            //binary: CHROME_BIN_PATH,
-            args: ['headless', 'disable-gpu'],
-        },
+        version: 'latest',
     },
     {
         commonName: 'edge',
         browserName: 'MicrosoftEdge',
-        platform: 'Windows 10',
-        version: '15.15063',
+        version: 'latest',
     },
     {
         commonName: 'safari',
         browserName: 'safari',
-        platform: 'macOS 10.12',
-        version: '11.0',
+        platform: 'OS X 10.13',
     },
     {
         commonName: 'firefox',
         browserName: 'firefox',
-        platform: 'macOS 10.12',
-        version: '55.0',
+        version: 'latest',
     },
 ];
 
@@ -50,35 +45,23 @@ const compatBrowsers = [
     {
         commonName: 'ie11',
         browserName: 'internet explorer',
-        platform: 'Windows 10',
-        version: '11.103',
-        iedriverVersion: '3.4.0',
+        version: '11',
     },
     {
-        // ideally this would be 10.1 (or latest 10.x available) but there is
-        // a bug in SafariDriver for 10.1 and window management
-        commonName: 'safari10',
+        commonName: 'safari',
         browserName: 'safari',
         platform: 'OS X 10.11',
-        version: '10.0',
+        version: '10',
     },
     {
-        commonName: 'safari9',
-        browserName: 'safari',
-        platform: 'OS X 10.11',
-        version: '9.0',
-    },
-    {
-        commonName: 'chrome30',
+        commonName: 'chrome',
         browserName: 'chrome',
-        platform: 'Windows 8.1',
-        version: '30.0',
+        version: '59',
     },
     {
-        commonName: 'firefox45',
+        commonName: 'firefox',
         browserName: 'firefox',
-        platform: 'Windows 8',
-        version: '45.0',
+        version: '54',
     },
 ];
 
@@ -108,15 +91,6 @@ const customData = {
     commit: process.env.CIRCLE_SHA1,
     branch: process.env.CIRCLE_BRANCH,
     buildUrl: process.env.CIRCLE_BUILD_URL,
-};
-
-const sauceServiceConfig = {
-    user: username,
-    key: accessKey,
-
-    sauceConnect: false,
-
-    capabilities: getCapabilities(),
 };
 
 function getCapabilities() {
@@ -151,4 +125,9 @@ function getCapabilities() {
     });
 }
 
-exports.config = merge(base.config, sauceServiceConfig);
+exports.config = merge(baseConfig.config, {
+    user: username,
+    key: accessKey,
+
+    capabilities: getCapabilities(),
+});
