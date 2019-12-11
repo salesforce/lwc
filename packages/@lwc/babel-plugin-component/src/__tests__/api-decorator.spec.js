@@ -408,7 +408,7 @@ describe('Transform property', () => {
                     }
                   },
                   publicMethods: ["m1"],
-                  fields: ["privateProp", "ctor"]
+                  fields: ["privateProp"]
                 });
 
                 export default _registerComponent(Text, {
