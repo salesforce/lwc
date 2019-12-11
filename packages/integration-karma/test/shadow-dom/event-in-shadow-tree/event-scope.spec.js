@@ -109,8 +109,7 @@ function testEventScopeInShadowTree(type, Ctor) {
 }
 
 function testEventScopeOnHostElement(type, Ctor) {
-    // TODO [#1141]: Event non dispatched from within a LWC shadow tree are not patched
-    xdescribe(`event scope on host element ${type}`, () => {
+    describe(`event scope on host element ${type}`, () => {
         let nodes;
         beforeEach(() => {
             nodes = createShadowTree(document.body);
