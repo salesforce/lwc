@@ -154,9 +154,7 @@ function getPublicMethodsHash(
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(
                 isFunction(target.prototype[methodName]),
-                `Component "${target.name}" should have a method \`${methodName}\` instead of ${
-                    target.prototype[methodName]
-                }.`
+                `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`
             );
         }
         methodsHash[methodName] = target.prototype[methodName];

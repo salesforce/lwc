@@ -26,7 +26,7 @@ export default function process(root: Root, result: Result) {
         // Ensure import match the following syntax:
         //     @import "foo";
         //     @import "./foo.css";
-        if (!params.length || (params[0].type !== 'string' || !params[0].value)) {
+        if (!params.length || params[0].type !== 'string' || !params[0].value) {
             throw node.error(`Invalid import statement, unable to find imported module.`);
         }
 

@@ -507,15 +507,17 @@ export const getInternalChildNodes =
 
 // IE11 extra patches for wrong prototypes
 if (hasOwnProperty.call(HTMLElement.prototype, 'contains')) {
-    defineProperty(HTMLElement.prototype, 'contains', getOwnPropertyDescriptor(
-        Node.prototype,
-        'contains'
-    ) as PropertyDescriptor);
+    defineProperty(
+        HTMLElement.prototype,
+        'contains',
+        getOwnPropertyDescriptor(Node.prototype, 'contains') as PropertyDescriptor
+    );
 }
 
 if (hasOwnProperty.call(HTMLElement.prototype, 'parentElement')) {
-    defineProperty(HTMLElement.prototype, 'parentElement', getOwnPropertyDescriptor(
-        Node.prototype,
-        'parentElement'
-    ) as PropertyDescriptor);
+    defineProperty(
+        HTMLElement.prototype,
+        'parentElement',
+        getOwnPropertyDescriptor(Node.prototype, 'parentElement') as PropertyDescriptor
+    );
 }

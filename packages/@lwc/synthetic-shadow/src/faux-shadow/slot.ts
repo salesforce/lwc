@@ -49,9 +49,7 @@ function initSlotObserver() {
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
                     mutation.type === 'childList',
-                    `Invalid mutation type: ${
-                        mutation.type
-                    }. This mutation handler for slots should only handle "childList" mutations.`
+                    `Invalid mutation type: ${mutation.type}. This mutation handler for slots should only handle "childList" mutations.`
                 );
             }
             const { target: slot } = mutation;

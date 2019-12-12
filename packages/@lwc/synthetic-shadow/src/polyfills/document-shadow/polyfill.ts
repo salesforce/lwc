@@ -164,10 +164,10 @@ defineProperty(Document.prototype, 'getElementsByTagName', {
 defineProperty(Document.prototype, 'getElementsByTagNameNS', {
     value(this: Document): HTMLCollectionOf<Element> {
         const elements = arrayFromCollection(
-            documentGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
-                string,
-                string
-            ])
+            documentGetElementsByTagNameNS.apply(
+                this,
+                ArraySlice.call(arguments) as [string, string]
+            )
         );
         const filtered = ArrayFilter.call(
             elements,

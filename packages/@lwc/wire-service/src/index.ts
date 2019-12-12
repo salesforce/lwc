@@ -19,7 +19,7 @@ import {
     WireEventTargetListener,
     Context,
     WireContext,
-    WireEventTarget,
+    WireEventTarget as WireServiceTargetConstructor,
 } from './wiring';
 import { ValueChangedEvent } from './value-changed-event';
 import { LinkContextEvent } from './link-context-event';
@@ -89,9 +89,7 @@ const wireService = {
                         });
                         assert.isTrue(
                             segments[0] !== wireTarget,
-                            `@wire on "${wireTarget}": reactive parameter "${
-                                segments[0]
-                            }" must not refer to self`
+                            `@wire on "${wireTarget}": reactive parameter "${segments[0]}" must not refer to self`
                         );
                         // restriction for dot-notation reactive parameters
                         if (segments.length > 1) {
@@ -109,7 +107,13 @@ const wireService = {
             }
 
             if (adapterFactory) {
-                const wireEventTarget = new WireEventTarget(cmp, def, context, wireDef, wireTarget);
+                const wireEventTarget = new WireServiceTargetConstructor(
+                    cmp,
+                    def,
+                    context,
+                    wireDef,
+                    wireTarget
+                );
                 adapterFactory({
                     dispatchEvent: wireEventTarget.dispatchEvent.bind(wireEventTarget),
                     addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),

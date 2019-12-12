@@ -327,9 +327,7 @@ module.exports = {
                 ) {
                     context.report({
                         node,
-                        message: `Directly extending the "${
-                            node.superClass.name
-                        }" global constructor causes an error to be thrown in IE11. Favor usage of prototypical inheritance.`,
+                        message: `Directly extending the "${node.superClass.name}" global constructor causes an error to be thrown in IE11. Favor usage of prototypical inheritance.`,
                     });
                 }
             },

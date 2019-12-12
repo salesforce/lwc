@@ -27,28 +27,6 @@ function createPreprocessor(config, emitter, logger) {
     // Cache reused between each compilation to speed up the compilation time.
     let cache;
 
-    const plugins = [
-        lwcRollupPlugin({
-            // Disable package resolution to avoid lookup in the node_modules directory to boost the initial compilation
-            // time.
-            resolveFromPackages: false,
-            experimentalDynamicComponent: {
-                loader: 'test-utils',
-                strict: true,
-            },
-        }),
-    ];
-
-    if (compat) {
-        plugins.push(
-            compatRollupPlugin({
-                // The compat polyfills are injected at runtime by Karma, polyfills can be shared between all the
-                // suites.
-                polyfills: false,
-            })
-        );
-    }
-
     return async (_content, file, done) => {
         const input = file.path;
 
@@ -58,6 +36,28 @@ function createPreprocessor(config, emitter, logger) {
         const ancestorDirectories = path.relative(basePath, suiteDir).split(path.sep);
         const intro = ancestorDirectories.map(tag => `describe("${tag}", function () {`).join('\n');
         const outro = ancestorDirectories.map(() => `});`).join('\n');
+
+        const plugins = [
+            lwcRollupPlugin({
+                // Disable package resolution to avoid lookup in the node_modules directory to boost the initial compilation
+                // time.
+                resolveFromPackages: false,
+                experimentalDynamicComponent: {
+                    loader: 'test-utils',
+                    strict: true,
+                },
+            }),
+        ];
+
+        if (compat) {
+            plugins.push(
+                compatRollupPlugin({
+                    // The compat polyfills are injected at runtime by Karma, polyfills can be shared between all the
+                    // suites.
+                    polyfills: false,
+                })
+            );
+        }
 
         try {
             const bundle = await rollup({

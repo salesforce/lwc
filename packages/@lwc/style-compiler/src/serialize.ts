@@ -74,18 +74,15 @@ export default function serialize(result: postcss.LazyResult, config: Config): s
 
 function reduceTokens(tokens: Token[]): Token[] {
     return [{ type: TokenType.text, value: '' }, ...tokens, { type: TokenType.text, value: '' }]
-        .reduce(
-            (acc, token) => {
-                const prev = acc[acc.length - 1];
-                if (token.type === TokenType.text && prev && prev.type === TokenType.text) {
-                    prev.value += token.value;
-                    return acc;
-                } else {
-                    return [...acc, token];
-                }
-            },
-            [] as Token[]
-        )
+        .reduce((acc, token) => {
+            const prev = acc[acc.length - 1];
+            if (token.type === TokenType.text && prev && prev.type === TokenType.text) {
+                prev.value += token.value;
+                return acc;
+            } else {
+                return [...acc, token];
+            }
+        }, [] as Token[])
         .filter(t => t.value !== '');
 }
 
