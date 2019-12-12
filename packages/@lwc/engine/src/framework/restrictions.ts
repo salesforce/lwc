@@ -19,9 +19,18 @@ import {
     isUndefined,
     setPrototypeOf,
     toString,
+    isString,
+    isObject,
+    isNull,
 } from '@lwc/shared';
+<<<<<<< HEAD
 import { logError } from '../shared/logger';
 import { ComponentInterface } from './component';
+=======
+import { logError } from '../shared/assert';
+import { LightningElement } from './base-lightning-element';
+import { ComponentInterface, getComponentAsString } from './component';
+>>>>>>> a843dc01... refactor(engine): move dispatchEvent check to restrictions
 import { globalHTMLProperties } from './attributes';
 import { isBeingConstructed, isInvokingRender } from './invoker';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
@@ -302,10 +311,12 @@ function getCustomElementRestrictionsDescriptors(
         throw new ReferenceError();
     }
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm, options);
+
     const originalAddEventListener = elm.addEventListener;
     const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
     const originalTextContentDescriptor = getPropertyDescriptor(elm, 'textContent')!;
+
     return assign(descriptors, {
         innerHTML: generateAccessorDescriptor({
             get(this: HTMLElement): string {
@@ -385,12 +396,49 @@ function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
     };
 }
 
-function getLightningElementPrototypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
+function getLightningElementPrototypeRestrictionsDescriptors(
+    proto: typeof LightningElement.prototype
+): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const descriptors = {};
+
+    const originalDispatchEvent = proto.dispatchEvent;
+
+    const descriptors = {
+        dispatchEvent: generateDataDescriptor({
+            value(this: LightningElement, event: Event): boolean {
+                const vm = getAssociatedVM(this);
+
+                assert.isFalse(
+                    isBeingConstructed(vm),
+                    `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentAsString(
+                        this
+                    )} because no one is listening just yet.`
+                );
+
+                if (!isNull(event) && isObject(event)) {
+                    const { type } = event;
+
+                    if (isString(type) && !/^[a-z][a-z0-9_]*$/.test(type)) {
+                        logError(
+                            `Invalid event type "${type}" dispatched in element ${getComponentAsString(
+                                vm.component
+                            )}. ` +
+                                'Event name must start with a lowercase letter and followed only lowercase letters, numbers, and underscores',
+                            vm.elm
+                        );
+                    }
+                }
+
+                // Typescript does not like it when you treat the `arguments` object as an array
+                // @ts-ignore type-mismatch
+                return originalDispatchEvent.apply(this, arguments);
+            },
+        }),
+    };
+
     forEach.call(getOwnPropertyNames(globalHTMLProperties), (propName: string) => {
         if (propName in proto) {
             return; // no need to redefine something that we are already exposing
@@ -418,6 +466,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(proto: object): Pro
             },
         });
     });
+
     return descriptors;
 }
 
@@ -453,6 +502,8 @@ export function patchComponentWithRestrictions(cmp: ComponentInterface) {
     defineProperties(cmp, getComponentRestrictionsDescriptors());
 }
 
-export function patchLightningElementPrototypeWithRestrictions(proto: object) {
+export function patchLightningElementPrototypeWithRestrictions(
+    proto: typeof LightningElement.prototype
+) {
     defineProperties(proto, getLightningElementPrototypeRestrictionsDescriptors(proto));
 }
