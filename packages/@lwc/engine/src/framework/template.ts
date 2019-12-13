@@ -95,7 +95,7 @@ function validateSlots(vm: VM, html: any) {
             // eslint-disable-next-line lwc-internal/no-production-assert
             logError(
                 `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
-                vm.elm
+                vm
             );
         }
     }
@@ -115,7 +115,7 @@ function validateFields(vm: VM, html: Template) {
             // eslint-disable-next-line lwc-internal/no-production-assert
             logError(
                 `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. Check for a typo in the template.`,
-                vm.elm
+                vm
             );
         }
     });

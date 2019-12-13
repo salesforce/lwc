@@ -5,44 +5,34 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayJoin, ArrayPush, isNull, StringToLowerCase } from '@lwc/shared';
-import { tagNameGetter } from '../env/element';
 
-function getFormattedComponentStack(elm: Element): string {
-    const componentStack: string[] = [];
-    const indentationChar = '\t';
+import { VM } from '../framework/vm';
+
+const INDENT_CHAR = '\t';
+
+function getFormattedComponentStack(vm: VM): string {
+    const stack: string[] = [];
     let indentation = '';
 
-    let currentNode: Node | null = elm;
+    let current: VM | null = vm;
 
-    // traversing up via getRootNode logic to find the component stack
-    do {
-        ArrayPush.call(
-            componentStack,
-            `${indentation}<${StringToLowerCase.call(tagNameGetter.call(currentNode as Element))}>`
-        );
-        indentation = indentation + indentationChar;
-        const newRootNode = currentNode.getRootNode();
-        if (newRootNode === currentNode || newRootNode === document) {
-            currentNode = null; // quitting
-        } else if (newRootNode instanceof ShadowRoot) {
-            currentNode = newRootNode.host;
-        } else {
-            // When the element is part of a tree that is not connected,
-            // the root node will be the top element of that tree, e.g.:
-            // `<div><p /></div>`, when calling p.getRootNode() it returns
-            // the div reference. This branch covers that case.
-            currentNode = newRootNode;
-        }
-    } while (!isNull(currentNode));
+    while (!isNull(current)) {
+        // TODO: clean this up not to access the elm.tagName getter and rather add some property on
+        // on the VM with the name.
+        ArrayPush.call(stack, `${indentation}<${StringToLowerCase.call(current.elm.tagName)}>`);
 
-    return ArrayJoin.call(componentStack, '\n');
+        indentation += INDENT_CHAR;
+        current = current.owner;
+    }
+
+    return ArrayJoin.call(stack, '\n');
 }
 
-export function logError(message: string, elm?: Element) {
+export function logError(message: string, vm?: VM) {
     let msg = `[LWC error]: ${message}`;
 
-    if (elm) {
-        msg = `${msg}\n${getFormattedComponentStack(elm)}`;
+    if (vm) {
+        msg = `${msg}\n${getFormattedComponentStack(vm)}`;
     }
 
     if (process.env.NODE_ENV === 'test') {

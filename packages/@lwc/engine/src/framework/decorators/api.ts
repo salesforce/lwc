@@ -75,7 +75,7 @@ function createPublicPropertyDescriptor(
                         `\`${name}\` constructor can’t read the value of property \`${toString(
                             key
                         )}\` because the owner component hasn’t set the value yet. Instead, use the \`${name}\` constructor to set a default value for the property.`,
-                        vm.elm
+                        vm
                     );
                 }
                 return;

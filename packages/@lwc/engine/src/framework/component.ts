@@ -14,7 +14,6 @@ import {
 import { invokeServiceHook, Services } from './services';
 import { VM, getAssociatedVM, UninitializedVM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
-import { tagNameGetter } from '../env/element';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
@@ -160,5 +159,5 @@ export function getComponentAsString(component: ComponentInterface): string {
         throw new ReferenceError();
     }
     const vm = getAssociatedVM(component);
-    return `<${StringToLowerCase.call(tagNameGetter.call(vm.elm))}>`;
+    return `<${StringToLowerCase.call(vm.elm.tagName)}>`;
 }

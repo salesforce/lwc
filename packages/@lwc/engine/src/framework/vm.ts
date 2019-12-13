@@ -45,7 +45,6 @@ import {
     endGlobalMeasure,
     GlobalMeasurementPhase,
 } from './performance-timing';
-import { tagNameGetter } from '../env/element';
 import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { hasDynamicChildren } from './hooks';
@@ -537,15 +536,12 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
 export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
     let elm: Element | null = startingElement;
+
+    // TODO: reuse the same logic to build the component stack than the one used in the assert.
     do {
         const currentVm = getAssociatedVMIfPresent(elm);
         if (!isUndefined(currentVm)) {
-            const tagName = tagNameGetter.call(elm);
-            const is = elm.getAttribute('is');
-            ArrayPush.call(
-                wcStack,
-                `<${StringToLowerCase.call(tagName)}${is ? ' is="${is}' : ''}>`
-            );
+            ArrayPush.call(wcStack, `<${StringToLowerCase.call(elm.tagName)}}>`);
         }
         elm = getParentOrHostElement(elm);
     } while (!isNull(elm));

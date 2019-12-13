@@ -261,7 +261,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         if (data.style && !isString(data.style)) {
             logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
-                vmBeingRendered!.elm
+                vmBeingRendered!
             );
         }
         forEach.call(children, (childVnode: VNode | null | undefined) => {
@@ -315,7 +315,7 @@ export function ti(value: any): number {
                 `Invalid tabindex value \`${toString(
                     value
                 )}\` in template for ${vmBeingRendered}. This attribute must be set to 0 or -1.`,
-                vmBeingRendered!.elm
+                vmBeingRendered!
             );
         }
     }
@@ -380,7 +380,7 @@ export function c(
         if (data.style && !isString(data.style)) {
             logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
-                vmBeingRendered!.elm
+                vmBeingRendered!
             );
         }
         if (arguments.length === 4) {
@@ -435,7 +435,7 @@ export function i(
                 `Invalid template iteration for value "${toString(
                     iterable
                 )}" in ${vmBeingRendered}. It must be an Array or an iterable Object.`,
-                vmBeingRendered!.elm
+                vmBeingRendered!
             );
         }
         return list;
@@ -503,7 +503,7 @@ export function i(
     }
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(iterationError)) {
-            logError(iterationError, vmBeingRendered!.elm);
+            logError(iterationError, vmBeingRendered!);
         }
     }
     return list;
@@ -660,7 +660,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
         if (process.env.NODE_ENV !== 'production') {
             logError(
                 `Invalid id value "${id}". The id attribute must contain a non-empty string.`,
-                vmBeingRendered!.elm
+                vmBeingRendered!
             );
         }
         return id;
@@ -680,7 +680,7 @@ export function fid(url: string | undefined | null): string | null | undefined {
             if (isUndefined(url)) {
                 logError(
                     `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
-                    vmBeingRendered!.elm
+                    vmBeingRendered!
                 );
             }
         }

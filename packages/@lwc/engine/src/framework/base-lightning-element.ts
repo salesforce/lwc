@@ -82,7 +82,7 @@ function createBridgeToElementDescriptor(
                     const name = vm.elm.constructor.name;
                     logError(
                         `\`${name}\` constructor can't read the value of property \`${propName}\` because the owner component hasn't set the value yet. Instead, use the \`${name}\` constructor to set a default value for the property.`,
-                        vm.elm
+                        vm
                     );
                 }
                 return;
@@ -332,7 +332,7 @@ BaseLightningElementConstructor.prototype = {
                         '1) Start with a lowercase letter',
                         '2) Contain only lowercase letters, numbers, and underscores',
                     ].join(' ')}`,
-                    elm
+                    vm
                 );
             }
         }

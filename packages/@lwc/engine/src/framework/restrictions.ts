@@ -88,7 +88,7 @@ function getNodeRestrictionsDescriptors(
         appendChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
                 if (this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('appendChild', 'method'), this);
+                    logError(portalRestrictionErrorMessage('appendChild', 'method'));
                 }
                 return appendChild.call(this, aChild);
             },
@@ -96,7 +96,7 @@ function getNodeRestrictionsDescriptors(
         insertBefore: generateDataDescriptor({
             value(this: Node, newNode: Node, referenceNode: Node) {
                 if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('insertBefore', 'method'), this);
+                    logError(portalRestrictionErrorMessage('insertBefore', 'method'));
                 }
                 return insertBefore.call(this, newNode, referenceNode);
             },
@@ -104,7 +104,7 @@ function getNodeRestrictionsDescriptors(
         removeChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
                 if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('removeChild', 'method'), this);
+                    logError(portalRestrictionErrorMessage('removeChild', 'method'));
                 }
                 return removeChild.call(this, aChild);
             },
@@ -112,7 +112,7 @@ function getNodeRestrictionsDescriptors(
         replaceChild: generateDataDescriptor({
             value(this: Node, newChild: Node, oldChild: Node) {
                 if (this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('replaceChild', 'method'), this);
+                    logError(portalRestrictionErrorMessage('replaceChild', 'method'));
                 }
                 return replaceChild.call(this, newChild, oldChild);
             },
@@ -123,7 +123,7 @@ function getNodeRestrictionsDescriptors(
             },
             set(this: Node, value: string) {
                 if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('nodeValue', 'property'), this);
+                    logError(portalRestrictionErrorMessage('nodeValue', 'property'));
                 }
                 originalNodeValueDescriptor.set!.call(this, value);
             },
@@ -134,7 +134,7 @@ function getNodeRestrictionsDescriptors(
             },
             set(this: Node, value: string) {
                 if (this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('textContent', 'property'), this);
+                    logError(portalRestrictionErrorMessage('textContent', 'property'));
                 }
                 originalTextContentDescriptor.set!.call(this, value);
             },
@@ -160,7 +160,7 @@ function getElementRestrictionsDescriptors(
             },
             set(this: HTMLElement, value: string) {
                 if (isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('innerHTML', 'property'), this);
+                    logError(portalRestrictionErrorMessage('innerHTML', 'property'));
                 }
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
@@ -235,8 +235,7 @@ function getShadowRootRestrictionsDescriptors(
                 // programmatically into its Component's shadow root
                 if (!isUndefined(options)) {
                     logError(
-                        'The `addEventListener` method in `LightningElement` does not support any options.',
-                        this.host
+                        'The `addEventListener` method in `LightningElement` does not support any options.'
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
@@ -352,8 +351,7 @@ function getCustomElementRestrictionsDescriptors(
                 // programmatically into a lighting element node
                 if (!isUndefined(options)) {
                     logError(
-                        'The `addEventListener` method in `LightningElement` does not support any options.',
-                        this
+                        'The `addEventListener` method in `LightningElement` does not support any options.'
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
@@ -402,7 +400,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(proto: object): Pro
                 } else if (attribute) {
                     msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
                 }
-                logError(msg.join('\n'), getAssociatedVM(this).elm);
+                logError(msg.join('\n'), getAssociatedVM(this));
             },
             set() {
                 const { readOnly } = globalHTMLProperties[propName];
