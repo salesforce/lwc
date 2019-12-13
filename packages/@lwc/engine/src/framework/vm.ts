@@ -251,8 +251,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
     linkComponent(initializedVm);
 }
 
-// function assertIsVM(obj: any): asserts obj is VM {
-function assertIsVM(obj: any): void {
+function assertIsVM(obj: any): asserts obj is VM {
     if (!isObject(obj) || !('cmpRoot' in obj)) {
         throw new TypeError(`${obj} is not a VM.`);
     }
