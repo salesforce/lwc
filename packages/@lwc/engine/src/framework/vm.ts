@@ -572,15 +572,37 @@ function assertIsVM(obj: any): void {
     }
 }
 
-type AssociableWithVM = Node | LightningElement | ComponentInterface;
+type VMAssociable = Node | LightningElement | ComponentInterface;
 
+/**
+ * An internal field used to associate objects the engine manipulates with view models.
+ */
 const ViewModelReflection = createFieldName('ViewModel', 'engine');
 
-export function associateVM(obj: AssociableWithVM, vm: VM): void {
+/**
+ * Associate an object with a view model.
+ */
+export function associateVM(obj: VMAssociable, vm: VM): void {
     setHiddenField(obj, ViewModelReflection, vm);
 }
 
-export function getAssociatedVMIfPresent(obj: AssociableWithVM): VM | undefined {
+/**
+ * Returns the view model associated with the passed object.
+ */
+export function getAssociatedVM(obj: VMAssociable): VM {
+    const vm = getHiddenField(obj, ViewModelReflection);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assertIsVM(vm);
+    }
+
+    return vm as VM;
+}
+
+/**
+ * Returns the view model associated with the passed object if present, or return undefined.
+ */
+export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
     const maybeVm = getHiddenField(obj, ViewModelReflection);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -590,16 +612,6 @@ export function getAssociatedVMIfPresent(obj: AssociableWithVM): VM | undefined 
     }
 
     return maybeVm as VM | undefined;
-}
-
-export function getAssociatedVM(obj: AssociableWithVM): VM {
-    const vm = getHiddenField(obj, ViewModelReflection);
-
-    if (process.env.NODE_ENV !== 'production') {
-        assertIsVM(vm);
-    }
-
-    return vm as VM;
 }
 
 // slow path routine

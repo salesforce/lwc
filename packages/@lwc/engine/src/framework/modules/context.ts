@@ -17,7 +17,7 @@ function createContext(vnode: VNode) {
         return;
     }
 
-    const elm = vnode.elm as HTMLElement;
+    const elm = vnode.elm!;
     const vm = getAssociatedVMIfPresent(elm);
 
     if (!isUndefined(vm)) {
