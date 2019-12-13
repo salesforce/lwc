@@ -123,7 +123,6 @@ function validateFields(vm: VM, html: Template) {
 
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isFunction(html),
             `evaluateTemplate() second argument must be an imported template instead of ${toString(
@@ -182,7 +181,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                         applyStyleAttributes(vm, hostAttribute, shadowAttribute);
                         // Caching style vnode so it can be reused on every render
                         context.styleVNode = evaluateCSS(
-                            vm,
                             stylesheets,
                             hostAttribute,
                             shadowAttribute

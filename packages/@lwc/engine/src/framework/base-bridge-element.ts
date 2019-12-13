@@ -8,7 +8,6 @@
  * This module is responsible for creating the base bridge class BaseBridgeElement
  * that represents the HTMLElement extension used for any LWC inserted in the DOM.
  */
-import { assert } from '@lwc/shared';
 import {
     ArraySlice,
     create,
@@ -21,15 +20,9 @@ import {
     seal,
     setPrototypeOf,
 } from '@lwc/shared';
-import { getCustomElementVM, VM } from './vm';
+import { getCustomElementVM } from './vm';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { reactiveMembrane } from './membrane';
-
-export function prepareForPropUpdate(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-}
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
 // from the element instance, and get the value or set a new value on the component.

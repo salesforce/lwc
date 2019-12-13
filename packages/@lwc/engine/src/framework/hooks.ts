@@ -193,9 +193,7 @@ export function createViewModelHook(vnode: VCustomElement) {
         mode,
         owner,
     });
-    const vm = getCustomElementVM(elm);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isArray(vnode.children),
             `Invalid vnode for a custom element, it must have children defined.`
@@ -234,7 +232,6 @@ export function createChildrenHook(vnode: VElement) {
 export function rerenderCustomElmHook(vnode: VCustomElement) {
     const vm = getCustomElementVM(vnode.elm as HTMLElement);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isArray(vnode.children),
             `Invalid vnode for a custom element, it must have children defined.`

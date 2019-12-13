@@ -80,9 +80,6 @@ function createBridgeToElementDescriptor(
         configurable,
         get(this: ComponentInterface) {
             const vm = getComponentVM(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-            }
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
                     const name = vm.elm.constructor.name;
@@ -99,7 +96,6 @@ function createBridgeToElementDescriptor(
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(
                     !isInvokingRender,
@@ -257,7 +253,6 @@ function BaseLightningElementConstructor(this: LightningElement) {
         throw new ReferenceError();
     }
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue('cmpProps' in vmBeingConstructed, `${vmBeingConstructed} is not a vm.`);
         assert.invariant(
             vmBeingConstructed.elm instanceof HTMLElement,
             `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`
@@ -354,7 +349,6 @@ BaseLightningElementConstructor.prototype = {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             const vmBeingRendered = getVMBeingRendered();
-            assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
             assert.invariant(
                 !isInvokingRender,
                 `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`
@@ -377,9 +371,6 @@ BaseLightningElementConstructor.prototype = {
         options?: boolean | AddEventListenerOptions
     ) {
         const vm = getComponentVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        }
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.removeEventListener(type, wrappedListener, options);
     },
@@ -551,9 +542,6 @@ BaseLightningElementConstructor.prototype = {
     },
     get template(): ShadowRoot {
         const vm = getComponentVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        }
         return vm.cmpRoot;
     },
     get shadowRoot(): ShadowRoot | null {
@@ -567,9 +555,6 @@ BaseLightningElementConstructor.prototype = {
     },
     toString(): string {
         const vm = getComponentVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        }
         return `[object ${vm.def.name}]`;
     },
 };

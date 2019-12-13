@@ -68,9 +68,6 @@ function createPublicPropertyDescriptor(
     return {
         get(this: ComponentInterface): any {
             const vm = getComponentVM(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-            }
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
                     const name = vm.elm.constructor.name;
@@ -90,7 +87,6 @@ function createPublicPropertyDescriptor(
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
                     !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
@@ -173,15 +169,14 @@ function createPublicAccessorDescriptor(
     return {
         get(this: ComponentInterface): any {
             if (process.env.NODE_ENV !== 'production') {
-                const vm = getComponentVM(this);
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+                // Assert that the this value is an actual Component with an associated VM.
+                getComponentVM(this);
             }
             return get.call(this);
         },
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(
                     !isInvokingRender,

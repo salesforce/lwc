@@ -57,13 +57,6 @@ export function getComponentRegisteredMeta(Ctor: ComponentConstructor): Componen
 }
 
 export function createComponent(uninitializedVm: UninitializedVM, Ctor: ComponentConstructor) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            uninitializedVm && 'cmpProps' in uninitializedVm,
-            `${uninitializedVm} is not a vm.`
-        );
-    }
-
     // create the component instance
     invokeComponentConstructor(uninitializedVm, Ctor);
 
@@ -76,14 +69,11 @@ export function createComponent(uninitializedVm: UninitializedVM, Ctor: Componen
 }
 
 export function linkComponent(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    // wiring service
     const {
         def: { wire },
     } = vm;
-    if (wire) {
+
+    if (!isUndefined(wire)) {
         const { wiring } = Services;
         if (wiring) {
             invokeServiceHook(vm, wiring);
@@ -113,7 +103,6 @@ export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
 
 export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
 
@@ -133,7 +122,6 @@ export function renderComponent(vm: VM): VNodes {
 
 export function markComponentAsDirty(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         const vmBeingRendered = getVMBeingRendered();
         assert.isFalse(
             vm.isDirty,
@@ -154,9 +142,6 @@ export function markComponentAsDirty(vm: VM) {
 const cmpEventListenerMap: WeakMap<EventListener, EventListener> = new WeakMap();
 
 export function getWrappedComponentsListener(vm: VM, listener: EventListener): EventListener {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }

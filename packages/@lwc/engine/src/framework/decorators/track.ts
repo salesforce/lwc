@@ -63,9 +63,6 @@ export function createTrackedPropertyDescriptor(
     return {
         get(this: ComponentInterface): any {
             const vm = getComponentVM(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-            }
             valueObserved(this, key);
             return vm.cmpTrack[key];
         },
@@ -73,7 +70,6 @@ export function createTrackedPropertyDescriptor(
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
                     !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
