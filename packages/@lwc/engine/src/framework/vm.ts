@@ -117,7 +117,12 @@ export interface VM extends UninitializedVM {
     oar: Record<PropertyKey, ReactiveObserver>;
 }
 
+type VMAssociable = Node | LightningElement | ComponentInterface;
+
 let idx: number = 0;
+
+/** The internal slot used to associated the different objects the engine manipulates with the VM */
+const ViewModelReflection = createFieldName('ViewModel', 'engine');
 
 function callHook(
     cmp: ComponentInterface | undefined,
@@ -244,6 +249,39 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
     // link component to the wire service
     const initializedVm = uninitializedVm as VM;
     linkComponent(initializedVm);
+}
+
+// function assertIsVM(obj: any): asserts obj is VM {
+function assertIsVM(obj: any): void {
+    if (!isObject(obj) || !('cmpRoot' in obj)) {
+        throw new TypeError(`${obj} is not a VM.`);
+    }
+}
+
+export function associateVM(obj: VMAssociable, vm: VM): void {
+    setHiddenField(obj, ViewModelReflection, vm);
+}
+
+export function getAssociatedVM(obj: VMAssociable): VM {
+    const vm = getHiddenField(obj, ViewModelReflection);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assertIsVM(vm);
+    }
+
+    return vm as VM;
+}
+
+export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
+    const maybeVm = getHiddenField(obj, ViewModelReflection);
+
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(maybeVm)) {
+            assertIsVM(maybeVm);
+        }
+    }
+
+    return maybeVm as VM | undefined;
 }
 
 function rehydrate(vm: VM) {
@@ -563,55 +601,6 @@ export function isNodeFromTemplate(node: Node): boolean {
     }
     const root = node.getRootNode();
     return root instanceof ShadowRoot;
-}
-
-// function assertIsVM(obj: any): asserts obj is VM {
-function assertIsVM(obj: any): void {
-    if (!isObject(obj) || !('cmpRoot' in obj)) {
-        throw new TypeError(`${obj} is not a VM.`);
-    }
-}
-
-type VMAssociable = Node | LightningElement | ComponentInterface;
-
-/**
- * An internal field used to associate objects the engine manipulates with view models.
- */
-const ViewModelReflection = createFieldName('ViewModel', 'engine');
-
-/**
- * Associate an object with a view model.
- */
-export function associateVM(obj: VMAssociable, vm: VM): void {
-    setHiddenField(obj, ViewModelReflection, vm);
-}
-
-/**
- * Returns the view model associated with the passed object.
- */
-export function getAssociatedVM(obj: VMAssociable): VM {
-    const vm = getHiddenField(obj, ViewModelReflection);
-
-    if (process.env.NODE_ENV !== 'production') {
-        assertIsVM(vm);
-    }
-
-    return vm as VM;
-}
-
-/**
- * Returns the view model associated with the passed object if present, or return undefined.
- */
-export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
-    const maybeVm = getHiddenField(obj, ViewModelReflection);
-
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(maybeVm)) {
-            assertIsVM(maybeVm);
-        }
-    }
-
-    return maybeVm as VM | undefined;
 }
 
 // slow path routine
