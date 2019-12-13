@@ -28,13 +28,7 @@ import {
     ComponentConstructor,
     markComponentAsDirty,
 } from './component';
-import {
-    ViewModelReflection,
-    addCallbackToNextTick,
-    EmptyObject,
-    EmptyArray,
-    useSyntheticShadow,
-} from './utils';
+import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback } from './invoker';
 import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from '../env/dom';
@@ -56,6 +50,9 @@ import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from '../libs/mutation-tracker';
+import { LightningElement } from './base-lightning-element';
+
+const { createFieldName, getHiddenField, setHiddenField } = fields;
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -425,7 +422,7 @@ function runShadowChildNodesDisconnectedCallback(vm: VM) {
         // * when slotted custom element is not used by the element where it is slotted
         //   into it, as a result, the custom element was never initialized.
         if (!isUndefined(elm)) {
-            const childVM = getCustomElementVM(elm as HTMLElement);
+            const childVM = getAssociatedVM(elm);
             resetComponentStateWhenRemoved(childVM);
         }
     }
@@ -453,7 +450,7 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
                 recursivelyDisconnectChildren(vnode.children);
             } else {
                 // it is a VCustomElement, disconnect it and ignore its children
-                resetComponentStateWhenRemoved(getCustomElementVM(vnode.elm as HTMLElement));
+                resetComponentStateWhenRemoved(getAssociatedVM(vnode.elm as HTMLElement));
             }
         }
     }
@@ -480,13 +477,12 @@ export function scheduleRehydration(vm: VM) {
     }
 }
 
-const { getHiddenField } = fields;
 function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let elm: Element | null = startingElement;
     let vm: VM | undefined;
 
     while (!isNull(elm)) {
-        vm = getAssociatedIfPresent(elm);
+        vm = getAssociatedVMIfPresent(elm);
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
@@ -505,7 +501,7 @@ export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
     let elm: Element | null = startingElement;
     do {
-        const currentVm = getAssociatedIfPresent(elm);
+        const currentVm = getAssociatedVMIfPresent(elm);
         if (!isUndefined(currentVm)) {
             const tagName = tagNameGetter.call(elm);
             const is = elm.getAttribute('is');
@@ -576,8 +572,16 @@ function assertIsVM(obj: any): void {
     }
 }
 
-export function getAssociatedIfPresent(elm: Element): VM | undefined {
-    const maybeVm = getHiddenField(elm, ViewModelReflection);
+type AssociableWithVM = Node | LightningElement | ComponentInterface;
+
+const ViewModelReflection = createFieldName('ViewModel', 'engine');
+
+export function associateVM(obj: AssociableWithVM, vm: VM): void {
+    setHiddenField(obj, ViewModelReflection, vm);
+}
+
+export function getAssociatedVMIfPresent(obj: AssociableWithVM): VM | undefined {
+    const maybeVm = getHiddenField(obj, ViewModelReflection);
 
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(maybeVm)) {
@@ -588,28 +592,8 @@ export function getAssociatedIfPresent(elm: Element): VM | undefined {
     return maybeVm as VM | undefined;
 }
 
-export function getCustomElementVM(elm: HTMLElement): VM {
-    const vm = getHiddenField(elm, ViewModelReflection);
-
-    if (process.env.NODE_ENV !== 'production') {
-        assertIsVM(vm);
-    }
-
-    return vm as VM;
-}
-
-export function getComponentVM(component: ComponentInterface): VM {
-    const vm = getHiddenField(component, ViewModelReflection);
-
-    if (process.env.NODE_ENV !== 'production') {
-        assertIsVM(vm);
-    }
-
-    return vm as VM;
-}
-
-export function getShadowRootVM(root: ShadowRoot): VM {
-    const vm = getHiddenField(root, ViewModelReflection);
+export function getAssociatedVM(obj: AssociableWithVM): VM {
+    const vm = getHiddenField(obj, ViewModelReflection);
 
     if (process.env.NODE_ENV !== 'production') {
         assertIsVM(vm);

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assign, isUndefined } from '@lwc/shared';
-import { getAssociatedIfPresent } from '../vm';
+import { getAssociatedVMIfPresent } from '../vm';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
 function createContext(vnode: VNode) {
@@ -18,7 +18,7 @@ function createContext(vnode: VNode) {
     }
 
     const elm = vnode.elm as HTMLElement;
-    const vm = getAssociatedIfPresent(elm);
+    const vm = getAssociatedVMIfPresent(elm);
 
     if (!isUndefined(vm)) {
         assign(vm.context, context);

@@ -17,7 +17,6 @@ import {
     assert,
     create,
     defineProperties,
-    fields,
     freeze,
     getOwnPropertyNames,
     isFalse,
@@ -35,9 +34,9 @@ import {
     getComponentAsString,
     getTemplateReactiveObserver,
 } from './component';
-import { ViewModelReflection, EmptyObject } from './utils';
+import { EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { getComponentVM, VM } from './vm';
+import { getAssociatedVM, VM, associateVM } from './vm';
 import { valueObserved, valueMutated } from '../libs/mutation-tracker';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
@@ -45,8 +44,6 @@ import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
-
-const { setHiddenField } = fields;
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -79,7 +76,7 @@ function createBridgeToElementDescriptor(
         enumerable,
         configurable,
         get(this: ComponentInterface) {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
                     const name = vm.elm.constructor.name;
@@ -94,7 +91,7 @@ function createBridgeToElementDescriptor(
             return get.call(vm.elm);
         },
         set(this: ComponentInterface, newValue: any) {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(
@@ -130,7 +127,7 @@ function createBridgeToElementDescriptor(
 }
 
 function getLinkedElement(cmp: ComponentInterface): HTMLElement {
-    return getComponentVM(cmp).elm;
+    return getAssociatedVM(cmp).elm;
 }
 
 interface ComponentHooks {
@@ -284,9 +281,9 @@ function BaseLightningElementConstructor(this: LightningElement) {
     };
     const cmpRoot = elm.attachShadow(shadowRootOptions);
     // linking elm, shadow root and component with the VM
-    setHiddenField(component, ViewModelReflection, vm);
-    setHiddenField(cmpRoot, ViewModelReflection, vm);
-    setHiddenField(elm, ViewModelReflection, vm);
+    associateVM(component, vm as VM);
+    associateVM(cmpRoot, vm as VM);
+    associateVM(elm, vm as VM);
     // VM is now initialized
     (vm as VM).cmpRoot = cmpRoot;
     if (process.env.NODE_ENV !== 'production') {
@@ -301,7 +298,7 @@ BaseLightningElementConstructor.prototype = {
     constructor: BaseLightningElementConstructor,
     dispatchEvent(event: Event): boolean {
         const elm = getLinkedElement(this);
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
 
         if (process.env.NODE_ENV !== 'production') {
             if (arguments.length === 0) {
@@ -346,7 +343,7 @@ BaseLightningElementConstructor.prototype = {
         listener: EventListener,
         options?: boolean | AddEventListenerOptions
     ) {
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
         if (process.env.NODE_ENV !== 'production') {
             const vmBeingRendered = getVMBeingRendered();
             assert.invariant(
@@ -370,7 +367,7 @@ BaseLightningElementConstructor.prototype = {
         listener: EventListener,
         options?: boolean | AddEventListenerOptions
     ) {
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.removeEventListener(type, wrappedListener, options);
     },
@@ -378,7 +375,7 @@ BaseLightningElementConstructor.prototype = {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
-                isBeingConstructed(getComponentVM(this)),
+                isBeingConstructed(getAssociatedVM(this)),
                 `Failed to construct '${getComponentAsString(
                     this
                 )}': The result must not have attributes.`
@@ -410,7 +407,7 @@ BaseLightningElementConstructor.prototype = {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
-                isBeingConstructed(getComponentVM(this)),
+                isBeingConstructed(getAssociatedVM(this)),
                 `Failed to construct '${getComponentAsString(
                     this
                 )}': The result must not have attributes.`
@@ -443,7 +440,7 @@ BaseLightningElementConstructor.prototype = {
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             assert.isFalse(
                 isBeingConstructed(vm),
                 `this.getBoundingClientRect() should not be called during the construction of the custom element for ${getComponentAsString(
@@ -460,7 +457,7 @@ BaseLightningElementConstructor.prototype = {
     // querySelector<K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null;
     // querySelector<K extends keyof SVGElementTagNameMap>(selectors: K): SVGElementTagNameMap[K] | null;
     querySelector<E extends Element = Element>(selectors: string): E | null {
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
@@ -480,7 +477,7 @@ BaseLightningElementConstructor.prototype = {
     // querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>,
     // querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>,
     querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E> {
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
@@ -498,7 +495,7 @@ BaseLightningElementConstructor.prototype = {
      * match the provided tagName.
      */
     getElementsByTagName(tagNameOrWildCard: string): HTMLCollectionOf<Element> {
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
@@ -516,7 +513,7 @@ BaseLightningElementConstructor.prototype = {
      * match the provide classnames.
      */
     getElementsByClassName(names: string): HTMLCollectionOf<Element> {
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
@@ -531,7 +528,7 @@ BaseLightningElementConstructor.prototype = {
 
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             // TODO [#1290]: this still fails in dev but works in production, eventually, we should just throw in all modes
             assert.isFalse(
                 isBeingConstructed(vm),
@@ -541,7 +538,7 @@ BaseLightningElementConstructor.prototype = {
         return getLinkedElement(this).classList;
     },
     get template(): ShadowRoot {
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
         return vm.cmpRoot;
     },
     get shadowRoot(): ShadowRoot | null {
@@ -550,11 +547,11 @@ BaseLightningElementConstructor.prototype = {
         return null;
     },
     render(): Template {
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
         return vm.def.template;
     },
     toString(): string {
-        const vm = getComponentVM(this);
+        const vm = getAssociatedVM(this);
         return `[object ${vm.def.name}]`;
     },
 };

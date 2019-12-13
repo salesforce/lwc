@@ -24,7 +24,7 @@ import { logError } from '../shared/assert';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
 import { isBeingConstructed, isInvokingRender } from './invoker';
-import { getShadowRootVM, getComponentVM } from './vm';
+import { getAssociatedVM } from './vm';
 import { isUpdatingTemplate, getVMBeingRendered } from './template';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
@@ -246,7 +246,7 @@ function getShadowRootRestrictionsDescriptors(
         }),
         querySelector: generateDataDescriptor({
             value(this: ShadowRoot) {
-                const vm = getShadowRootVM(this);
+                const vm = getAssociatedVM(this);
                 assert.isFalse(
                     isBeingConstructed(vm),
                     `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`
@@ -258,7 +258,7 @@ function getShadowRootRestrictionsDescriptors(
         }),
         querySelectorAll: generateDataDescriptor({
             value(this: ShadowRoot) {
-                const vm = getShadowRootVM(this);
+                const vm = getAssociatedVM(this);
                 assert.isFalse(
                     isBeingConstructed(vm),
                     `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`
@@ -402,7 +402,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(proto: object): Pro
                 } else if (attribute) {
                     msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
                 }
-                logError(msg.join('\n'), getComponentVM(this).elm);
+                logError(msg.join('\n'), getAssociatedVM(this).elm);
             },
             set() {
                 const { readOnly } = globalHTMLProperties[propName];

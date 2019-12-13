@@ -10,7 +10,7 @@ import { logError } from '../../shared/assert';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { valueObserved, valueMutated, ReactiveObserver } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';
-import { getComponentVM, rerenderVM } from '../vm';
+import { getAssociatedVM, rerenderVM } from '../vm';
 import { getDecoratorsRegisteredMeta } from './register';
 import { addCallbackToNextTick } from '../utils';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
@@ -67,7 +67,7 @@ function createPublicPropertyDescriptor(
 ): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
                     const name = vm.elm.constructor.name;
@@ -84,7 +84,7 @@ function createPublicPropertyDescriptor(
             return vm.cmpProps[key];
         },
         set(this: ComponentInterface, newValue: any) {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(
@@ -170,12 +170,12 @@ function createPublicAccessorDescriptor(
         get(this: ComponentInterface): any {
             if (process.env.NODE_ENV !== 'production') {
                 // Assert that the this value is an actual Component with an associated VM.
-                getComponentVM(this);
+                getAssociatedVM(this);
             }
             return get.call(this);
         },
         set(this: ComponentInterface, newValue: any) {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(

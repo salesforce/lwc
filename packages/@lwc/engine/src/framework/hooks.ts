@@ -10,11 +10,11 @@ import {
     rerenderVM,
     createVM,
     removeVM,
-    getCustomElementVM,
+    getAssociatedVM,
     allocateInSlot,
     appendVM,
     runWithBoundaryProtection,
-    getAssociatedIfPresent,
+    getAssociatedVMIfPresent,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -141,7 +141,7 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
 }
 
 export function insertCustomElmHook(vnode: VCustomElement) {
-    const vm = getCustomElementVM(vnode.elm as HTMLElement);
+    const vm = getAssociatedVM(vnode.elm!);
     appendVM(vm);
 }
 
@@ -160,8 +160,7 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
 }
 
 export function allocateChildrenHook(vnode: VCustomElement) {
-    const elm = vnode.elm as HTMLElement;
-    const vm = getCustomElementVM(elm);
+    const vm = getAssociatedVM(vnode.elm!);
     const { children } = vnode;
     vm.aChildren = children;
     if (isTrue(useSyntheticShadow)) {
@@ -174,7 +173,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
 
 export function createViewModelHook(vnode: VCustomElement) {
     const elm = vnode.elm as HTMLElement;
-    if (!isUndefined(getAssociatedIfPresent(elm))) {
+    if (!isUndefined(getAssociatedVMIfPresent(elm))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here since this hook is called right after invoking `document.createElement`.
@@ -230,7 +229,7 @@ export function createChildrenHook(vnode: VElement) {
 }
 
 export function rerenderCustomElmHook(vnode: VCustomElement) {
-    const vm = getCustomElementVM(vnode.elm as HTMLElement);
+    const vm = getAssociatedVM(vnode.elm!);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             isArray(vnode.children),
@@ -258,7 +257,7 @@ export function removeElmHook(vnode: VElement) {
     for (let j = 0, len = children.length; j < len; ++j) {
         const ch = children[j];
         if (!isNull(ch)) {
-            ch.hook.remove(ch, elm as HTMLElement);
+            ch.hook.remove(ch, elm!);
         }
     }
 }
@@ -266,7 +265,7 @@ export function removeElmHook(vnode: VElement) {
 export function removeCustomElmHook(vnode: VCustomElement) {
     // for custom elements we don't have to go recursively because the removeVM routine
     // will take care of disconnecting any child VM attached to its shadow as well.
-    removeVM(getCustomElementVM(vnode.elm as HTMLElement));
+    removeVM(getAssociatedVM(vnode.elm!));
 }
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(

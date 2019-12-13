@@ -7,7 +7,7 @@
 import { assert, isFalse, isUndefined, toString } from '@lwc/shared';
 import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
 import { isInvokingRender } from '../invoker';
-import { getComponentVM } from '../vm';
+import { getAssociatedVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentConstructor, ComponentInterface } from '../component';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
@@ -62,12 +62,12 @@ export function createTrackedPropertyDescriptor(
 ): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             valueObserved(this, key);
             return vm.cmpTrack[key];
         },
         set(this: ComponentInterface, newValue: any) {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(

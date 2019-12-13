@@ -53,8 +53,7 @@ import {
     TrackDef,
 } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
-import { getAssociatedIfPresent } from './vm';
-
+import { getAssociatedVMIfPresent } from './vm';
 
 export interface ComponentDef extends DecoratorMeta {
     name: string;
@@ -270,7 +269,7 @@ export function getComponentConstructor(elm: HTMLElement): ComponentConstructor 
     let ctor: ComponentConstructor | null = null;
 
     if (elm instanceof HTMLElement) {
-        const vm = getAssociatedIfPresent(elm);
+        const vm = getAssociatedVMIfPresent(elm);
 
         if (!isUndefined(vm)) {
             ctor = vm.def.ctor;

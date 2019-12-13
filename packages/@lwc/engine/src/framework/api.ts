@@ -32,7 +32,7 @@ import {
     EmptyObject,
     useSyntheticShadow,
 } from './utils';
-import { getCustomElementVM, runConnectedCallback, SlotSet, VM, VMState } from './vm';
+import { getAssociatedVM, runConnectedCallback, SlotSet, VM, VMState } from './vm';
 import { ComponentConstructor } from './component';
 import {
     VNode,
@@ -197,7 +197,7 @@ const CustomElementHook: Hooks = {
     },
     insert: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
         insertNodeHook(vnode, parentNode, referenceNode);
-        const vm = getCustomElementVM(vnode.elm as HTMLElement);
+        const vm = getAssociatedVM(vnode.elm!);
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
         }

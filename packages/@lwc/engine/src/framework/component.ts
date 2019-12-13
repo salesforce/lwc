@@ -12,7 +12,7 @@ import {
     invokeEventListener,
 } from './invoker';
 import { invokeServiceHook, Services } from './services';
-import { VM, getComponentVM, UninitializedVM, scheduleRehydration } from './vm';
+import { VM, getAssociatedVM, UninitializedVM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { tagNameGetter } from '../env/element';
 import { ReactiveObserver } from '../libs/mutation-tracker';
@@ -159,6 +159,6 @@ export function getComponentAsString(component: ComponentInterface): string {
     if (process.env.NODE_ENV === 'production') {
         throw new ReferenceError();
     }
-    const vm = getComponentVM(component);
+    const vm = getAssociatedVM(component);
     return `<${StringToLowerCase.call(tagNameGetter.call(vm.elm))}>`;
 }

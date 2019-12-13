@@ -18,9 +18,9 @@ import {
     createVM,
     removeRootVM,
     appendRootVM,
-    getCustomElementVM,
+    getAssociatedVM,
     VMState,
-    getAssociatedIfPresent,
+    getAssociatedVMIfPresent,
 } from './vm';
 import { ComponentConstructor } from './component';
 import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
@@ -109,7 +109,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
 
     // Create element with correct tagName
     const element = document.createElement(sel);
-    if (!isUndefined(getAssociatedIfPresent(element))) {
+    if (!isUndefined(getAssociatedVMIfPresent(element))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here.
@@ -130,7 +130,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
     setHiddenField(element, ConnectingSlot, () => {
-        const vm = getCustomElementVM(element);
+        const vm = getAssociatedVM(element);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
         if (vm.state === VMState.connected) {
             // usually means moving the element from one place to another, which is observable via life-cycle hooks
@@ -140,7 +140,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
     setHiddenField(element, DisconnectingSlot, () => {
-        const vm = getCustomElementVM(element);
+        const vm = getAssociatedVM(element);
         removeRootVM(vm);
     });
     return element;
