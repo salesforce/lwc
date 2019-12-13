@@ -36,7 +36,7 @@ import {
 } from './component';
 import { EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { getAssociatedVM, VM, associateVM } from './vm';
+import { associateVM, getAssociatedVM, VM } from './vm';
 import { valueObserved, valueMutated } from '../libs/mutation-tracker';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
