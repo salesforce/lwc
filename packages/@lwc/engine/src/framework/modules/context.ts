@@ -4,12 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assign, fields, isUndefined } from '@lwc/shared';
+import { assign, isUndefined } from '@lwc/shared';
+import { getAssociatedIfPresent } from '../vm';
 import { VNode } from '../../3rdparty/snabbdom/types';
-import { ViewModelReflection } from '../utils';
-import { VM } from '../vm';
-
-const { getHiddenField } = fields;
 
 function createContext(vnode: VNode) {
     const {
@@ -20,8 +17,8 @@ function createContext(vnode: VNode) {
         return;
     }
 
-    const elm = vnode.elm as Element;
-    const vm: VM = getHiddenField(elm, ViewModelReflection);
+    const elm = vnode.elm as HTMLElement;
+    const vm = getAssociatedIfPresent(elm);
 
     if (!isUndefined(vm)) {
         assign(vm.context, context);

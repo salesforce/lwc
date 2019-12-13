@@ -19,7 +19,6 @@ import {
     assign,
     create,
     defineProperties,
-    fields,
     freeze,
     getOwnPropertyNames,
     getPrototypeOf,
@@ -29,11 +28,7 @@ import {
     setPrototypeOf,
 } from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
-import {
-    resolveCircularModuleDependency,
-    isCircularModuleDependency,
-    ViewModelReflection,
-} from './utils';
+import { resolveCircularModuleDependency, isCircularModuleDependency } from './utils';
 import {
     ComponentConstructor,
     ErrorCallback,
@@ -58,6 +53,8 @@ import {
     TrackDef,
 } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
+import { getAssociatedIfPresent } from './vm';
+
 
 export interface ComponentDef extends DecoratorMeta {
     name: string;
@@ -72,7 +69,6 @@ export interface ComponentDef extends DecoratorMeta {
 }
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
-const { getHiddenField } = fields;
 
 function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
@@ -272,12 +268,15 @@ export function getComponentDef(Ctor: any, subclassComponentName?: string): Comp
  */
 export function getComponentConstructor(elm: HTMLElement): ComponentConstructor | null {
     let ctor: ComponentConstructor | null = null;
+
     if (elm instanceof HTMLElement) {
-        const vm = getHiddenField(elm, ViewModelReflection);
+        const vm = getAssociatedIfPresent(elm);
+
         if (!isUndefined(vm)) {
             ctor = vm.def.ctor;
         }
     }
+
     return ctor;
 }
 

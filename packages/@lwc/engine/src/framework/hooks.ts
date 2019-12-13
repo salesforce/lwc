@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, fields, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
-import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
+import { assert, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
+import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
     createVM,
@@ -14,6 +14,7 @@ import {
     allocateInSlot,
     appendVM,
     runWithBoundaryProtection,
+    getAssociatedIfPresent,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -34,7 +35,6 @@ import {
 import { getComponentDef, setElementProto } from './def';
 
 const noop = () => void 0;
-const { getHiddenField } = fields;
 
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
@@ -174,7 +174,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
 
 export function createViewModelHook(vnode: VCustomElement) {
     const elm = vnode.elm as HTMLElement;
-    if (!isUndefined(getHiddenField(elm, ViewModelReflection))) {
+    if (!isUndefined(getAssociatedIfPresent(elm))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here since this hook is called right after invoking `document.createElement`.

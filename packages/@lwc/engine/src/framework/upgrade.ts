@@ -14,14 +14,16 @@ import {
     isUndefined,
     toString,
 } from '@lwc/shared';
-import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
-import { ComponentConstructor } from './component';
 import {
-    EmptyObject,
-    isCircularModuleDependency,
-    resolveCircularModuleDependency,
-    ViewModelReflection,
-} from './utils';
+    createVM,
+    removeRootVM,
+    appendRootVM,
+    getCustomElementVM,
+    VMState,
+    getAssociatedIfPresent,
+} from './vm';
+import { ComponentConstructor } from './component';
+import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
@@ -35,7 +37,9 @@ function callNodeSlot(node: Node, slot: symbol): Node {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
     }
-    const fn = getHiddenField(node, slot);
+
+    const fn = getHiddenField(node, slot) as Function | undefined;
+
     if (!isUndefined(fn)) {
         fn();
     }
@@ -105,7 +109,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
 
     // Create element with correct tagName
     const element = document.createElement(sel);
-    if (!isUndefined(getHiddenField(element, ViewModelReflection))) {
+    if (!isUndefined(getAssociatedIfPresent(element))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here.

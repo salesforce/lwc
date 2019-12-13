@@ -486,7 +486,7 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let vm: VM | undefined;
 
     while (!isNull(elm)) {
-        vm = getHiddenField(elm, ViewModelReflection);
+        vm = getAssociatedIfPresent(elm);
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
@@ -505,7 +505,7 @@ export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
     let elm: Element | null = startingElement;
     do {
-        const currentVm: VM | undefined = getHiddenField(elm, ViewModelReflection);
+        const currentVm = getAssociatedIfPresent(elm);
         if (!isUndefined(currentVm)) {
             const tagName = tagNameGetter.call(elm);
             const is = elm.getAttribute('is');
@@ -569,29 +569,53 @@ export function isNodeFromTemplate(node: Node): boolean {
     return root instanceof ShadowRoot;
 }
 
-export function getCustomElementVM(elm: HTMLElement): VM {
-    if (process.env.NODE_ENV !== 'production') {
-        const vm = getHiddenField(elm, ViewModelReflection);
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+// function assertIsVM(obj: any): asserts obj is VM {
+function assertIsVM(obj: any): void {
+    if (!isObject(obj) || !('cmpRoot' in obj)) {
+        throw new TypeError(`${obj} is not a VM.`);
     }
-    return getHiddenField(elm, ViewModelReflection) as VM;
+}
+
+export function getAssociatedIfPresent(elm: Element): VM | undefined {
+    const maybeVm = getHiddenField(elm, ViewModelReflection);
+
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(maybeVm)) {
+            assertIsVM(maybeVm);
+        }
+    }
+
+    return maybeVm as VM | undefined;
+}
+
+export function getCustomElementVM(elm: HTMLElement): VM {
+    const vm = getHiddenField(elm, ViewModelReflection);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assertIsVM(vm);
+    }
+
+    return vm as VM;
 }
 
 export function getComponentVM(component: ComponentInterface): VM {
+    const vm = getHiddenField(component, ViewModelReflection);
+
     if (process.env.NODE_ENV !== 'production') {
-        const vm = getHiddenField(component, ViewModelReflection);
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        assertIsVM(vm);
     }
-    return getHiddenField(component, ViewModelReflection) as VM;
+
+    return vm as VM;
 }
 
 export function getShadowRootVM(root: ShadowRoot): VM {
-    // TODO [#1299]: use a weak map instead of an internal field
+    const vm = getHiddenField(root, ViewModelReflection);
+
     if (process.env.NODE_ENV !== 'production') {
-        const vm = getHiddenField(root, ViewModelReflection);
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        assertIsVM(vm);
     }
-    return getHiddenField(root, ViewModelReflection) as VM;
+
+    return vm as VM;
 }
 
 // slow path routine

@@ -6,7 +6,13 @@
  */
 import { create, isUndefined } from './language';
 
-/**
+/*
+ * Typescript doesn't allow indexing using Symbol, aliasing the Field type to any for now.
+ * Details: https://github.com/microsoft/TypeScript/issues/1863
+ */
+type HiddenField = any;
+
+/*
  * In IE11, symbols are expensive.
  * Due to the nature of the symbol polyfill. This method abstract the
  * creation of symbols, so we can fallback to string when native symbols
@@ -14,27 +20,27 @@ import { create, isUndefined } from './language';
  */
 const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
-export function createFieldName(key: string, namespace: string): symbol {
-    // @ts-ignore: using a string as a symbol for perf reasons
+export function createFieldName(key: string, namespace: string): HiddenField {
     return hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-${namespace}-${key}$$`;
 }
 
-const hiddenFieldsMap: WeakMap<any, Record<symbol | string, any>> = new WeakMap();
+const hiddenFieldsMap: WeakMap<any, Record<HiddenField, any>> = new WeakMap();
 
-export function setHiddenField(o: any, fieldName: symbol, value: any) {
+export function setHiddenField(o: any, field: HiddenField, value: any): void {
     let valuesByField = hiddenFieldsMap.get(o);
+
     if (isUndefined(valuesByField)) {
-        valuesByField = create(null) as Record<symbol, any>;
-        hiddenFieldsMap.set(o, valuesByField);
+        valuesByField = create(null);
+        hiddenFieldsMap.set(o, valuesByField!);
     }
-    // @ts-ignore https://github.com/microsoft/TypeScript/issues/1863
-    valuesByField[fieldName] = value;
+
+    valuesByField![field] = value;
 }
 
-export function getHiddenField(o: any, fieldName: symbol) {
+export function getHiddenField(o: any, field: HiddenField): unknown {
     const valuesByField = hiddenFieldsMap.get(o);
+
     if (!isUndefined(valuesByField)) {
-        // @ts-ignore https://github.com/microsoft/TypeScript/issues/1863
-        return valuesByField[fieldName];
+        return valuesByField[field];
     }
 }
