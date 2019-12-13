@@ -42,6 +42,22 @@ import {
 } from './component';
 import { createObservedFieldsDescriptorMap } from './observed-fields';
 import { Template } from './template';
+import { HTMLElementOriginalDescriptors } from './html-properties';
+import { BaseLightningElement } from './base-lightning-element';
+import {
+    BaseBridgeElement,
+    HTMLBridgeElementFactory,
+    HTMLElementConstructor,
+} from './base-bridge-element';
+import {
+    getDecoratorsRegisteredMeta,
+    DecoratorMeta,
+    PropsDef,
+    WireHash,
+    MethodDef,
+    TrackDef,
+} from './decorators/register';
+import { defaultEmptyTemplate } from './secure-template';
 
 export interface ComponentDef extends DecoratorMeta {
     name: string;
@@ -270,23 +286,6 @@ export function getComponentConstructor(elm: HTMLElement): ComponentConstructor 
 export function setElementProto(elm: HTMLElement, def: ComponentDef) {
     setPrototypeOf(elm, def.bridge.prototype);
 }
-
-import { HTMLElementOriginalDescriptors } from './html-properties';
-import { BaseLightningElement } from './base-lightning-element';
-import {
-    BaseBridgeElement,
-    HTMLBridgeElementFactory,
-    HTMLElementConstructor,
-} from './base-bridge-element';
-import {
-    getDecoratorsRegisteredMeta,
-    DecoratorMeta,
-    PropsDef,
-    WireHash,
-    MethodDef,
-    TrackDef,
-} from './decorators/register';
-import { defaultEmptyTemplate } from './secure-template';
 
 // Typescript is inferring the wrong function type for this particular
 // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
