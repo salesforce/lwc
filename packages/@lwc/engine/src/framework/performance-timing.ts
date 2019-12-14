@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, StringToLowerCase } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared';
+
 import { UninitializedVM } from './vm';
+import { getComponentTag } from '../shared/format';
 
 type MeasurementPhase =
     | 'constructor'
@@ -31,8 +33,7 @@ const isUserTimingSupported: boolean =
     typeof performance.clearMeasures === 'function';
 
 function getMarkName(phase: string, vm: UninitializedVM): string {
-    // TODO: Let's store this info on VM.
-    return `<${StringToLowerCase.call(vm.elm.tagName)} (${vm.idx})> - ${phase}`;
+    return `${getComponentTag(vm)} - ${phase}`;
 }
 
 function start(markName: string) {

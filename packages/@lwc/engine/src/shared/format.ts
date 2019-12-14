@@ -6,20 +6,20 @@
  */
 import { isNull, ArrayJoin, ArrayPush, StringToLowerCase } from '@lwc/shared';
 
-import { VM } from '../framework/vm';
+import { VM, UninitializedVM } from '../framework/vm';
 
-export function getElementTagName(vm: VM): string {
+export function getComponentTag(vm: VM | UninitializedVM): string {
     // Note: Element.prototype.tagName getter might be poisoned but we should be fine in this case
     // the getTagName function is only used for debugging purposes.
     return `<${StringToLowerCase.call(vm.elm.tagName)}>`;
 }
 
 export function getComponentStack(vm: VM): string {
-    const stack = [];
+    const stack: string[] = [];
     let prefix = '';
 
     while (!isNull(vm.owner)) {
-        ArrayPush.call(stack, prefix + getElementTagName(vm));
+        ArrayPush.call(stack, prefix + getComponentTag(vm));
 
         vm = vm.owner;
         prefix += '\t';
