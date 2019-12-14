@@ -20,7 +20,7 @@ import {
     setPrototypeOf,
     toString,
 } from '@lwc/shared';
-import { logError } from '../shared/assert';
+import { logError } from '../shared/logger';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
 import { isBeingConstructed, isInvokingRender } from './invoker';

@@ -22,7 +22,7 @@ import {
     StringCharCodeAt,
     toString,
 } from '@lwc/shared';
-import { logError } from '../shared/assert';
+import { logError } from '../shared/logger';
 import { invokeEventListener, invokeComponentCallback } from './invoker';
 import { getVMBeingRendered } from './template';
 import {

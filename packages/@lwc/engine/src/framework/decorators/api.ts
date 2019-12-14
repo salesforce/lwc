@@ -6,7 +6,7 @@
  */
 import features from '@lwc/features';
 import { assert, isFalse, isFunction, isObject, isTrue, isUndefined, toString } from '@lwc/shared';
-import { logError } from '../../shared/assert';
+import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { valueObserved, valueMutated, ReactiveObserver } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';

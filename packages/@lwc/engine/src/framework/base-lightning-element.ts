@@ -25,7 +25,7 @@ import {
     isObject,
     seal,
 } from '@lwc/shared';
-import { logError } from '../shared/assert';
+import { logError } from '../shared/logger';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { patchLightningElementPrototypeWithRestrictions } from './restrictions';
 import {
