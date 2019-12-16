@@ -7,7 +7,7 @@
 
 /* eslint-disable no-unsafe-finally */
 
-const assert = require('../../../src/shared/assert');
+const logger = require('../../../src/shared/logger');
 
 function createMatcher(methodName) {
     return function matcher(fn, expectedMessage) {
@@ -26,15 +26,15 @@ function createMatcher(methodName) {
         };
 
         // Swap the original logging method with the spy
-        const originalMethod = assert[methodName];
-        assert[methodName] = consoleSpy;
+        const originalMethod = logger[methodName];
+        logger[methodName] = consoleSpy;
 
         try {
             fn();
         } finally {
             // Set back the logging method to it's original value before returning the
             // matcher result.
-            assert[methodName] = originalMethod;
+            logger[methodName] = originalMethod;
 
             if (this.isNot) {
                 if (receivedMessages.length > 0) {
