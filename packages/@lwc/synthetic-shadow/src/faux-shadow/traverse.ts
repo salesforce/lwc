@@ -153,8 +153,8 @@ export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<
 export function getAllSlottedMatches<T extends Node>(
     host: Element,
     nodeList: NodeList | Node[]
-): Array<T> {
-    const filteredAndPatched = [];
+): T[] {
+    const filteredAndPatched: T[] = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
         if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
@@ -174,8 +174,8 @@ export function getFirstSlottedMatch(host: Element, nodeList: Element[]): Elemen
     return null;
 }
 
-export function getAllMatches<T extends Node>(owner: Element, nodeList: Node[]): Array<T> {
-    const filteredAndPatched = [];
+export function getAllMatches<T extends Node>(owner: Element, nodeList: Node[]): T[] {
+    const filteredAndPatched: T[] = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
         const isOwned = isNodeOwnedBy(owner, node);

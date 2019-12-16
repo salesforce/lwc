@@ -7,13 +7,14 @@
 import { isUndefined, defineProperty } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
 
+const ShadowTokenKey = '$shadowToken$';
 const ShadowTokenPrivateKey = '$$ShadowTokenKey$$';
 
 export function getShadowToken(node: Node): string | undefined {
-    return (node as any).$shadowToken$;
+    return (node as any)[ShadowTokenKey];
 }
 export function setShadowToken(node: Node, shadowToken: string | undefined) {
-    (node as any).$shadowToken$ = shadowToken;
+    (node as any)[ShadowTokenKey] = shadowToken;
 }
 
 /**
@@ -27,17 +28,17 @@ export function setShadowToken(node: Node, shadowToken: string | undefined) {
  **/
 defineProperty(Element.prototype, '$shadowToken$', {
     set(this: Element, shadowToken: string | undefined) {
-        const oldShadowToken = this[ShadowTokenPrivateKey];
+        const oldShadowToken = (this as any)[ShadowTokenPrivateKey];
         if (!isUndefined(oldShadowToken) && oldShadowToken !== shadowToken) {
             removeAttribute.call(this, oldShadowToken);
         }
         if (!isUndefined(shadowToken)) {
             setAttribute.call(this, shadowToken, '');
         }
-        this[ShadowTokenPrivateKey] = shadowToken;
+        (this as any)[ShadowTokenPrivateKey] = shadowToken;
     },
     get(this: Element): string | undefined {
-        return this[ShadowTokenPrivateKey];
+        return (this as any)[ShadowTokenPrivateKey];
     },
     configurable: true,
 });

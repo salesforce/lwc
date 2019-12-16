@@ -7,10 +7,7 @@
     "module": "dist/synthetic-shadow.js",
     "scripts": {
         "clean": "rm -rf dist/",
-        "build": "rollup --config ./scripts/rollup/rollup.config.js",
-        "start": "concurrently 'yarn build:playground --watch' 'yarn run serve:playground'",
-        "build:playground": "rollup -c playground/rollup.config.js",
-        "serve:playground": "node playground/server.js"
+        "build": "tsc --noEmit && rollup --config ./scripts/rollup/rollup.config.js"
     },
     "files": [
         "dist/"

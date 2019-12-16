@@ -22,7 +22,6 @@ const {
 const { isArray } = Array;
 
 const {
-    constructor: ArrayConstructor,
     filter: ArrayFilter,
     find: ArrayFind,
     forEach,
@@ -45,7 +44,6 @@ const {
 } = String.prototype;
 
 export {
-    ArrayConstructor,
     ArrayFilter,
     ArrayFind,
     ArrayIndexOf,

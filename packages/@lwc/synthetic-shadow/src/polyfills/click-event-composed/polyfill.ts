@@ -8,7 +8,7 @@ import { addEventListener, removeEventListener } from '../../env/element';
 
 const originalClickDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'click');
 
-function handleClick(event) {
+function handleClick(event: Event) {
     Object.defineProperty(event, 'composed', {
         configurable: true,
         enumerable: true,

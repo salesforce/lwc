@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull } from '@lwc/shared';
+import { isNull, isUndefined } from '@lwc/shared';
 import { pathComposer } from './path-composer';
 import { SyntheticShadowRoot } from './../../faux-shadow/shadow-root';
 
@@ -32,7 +32,7 @@ export function retarget(refNode: EventTarget | null, path: EventTarget[]): Even
             rootIdx = refNodePath.indexOf(root);
             lastRoot = root;
         }
-        if (!(root instanceof SyntheticShadowRoot) || rootIdx > -1) {
+        if (!(root instanceof SyntheticShadowRoot) || (!isUndefined(rootIdx) && rootIdx > -1)) {
             return ancestor;
         }
     }

@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayMap,
     create,
     defineProperty,
     forEach,
@@ -15,15 +14,9 @@ import {
     setHiddenField,
 } from '@lwc/shared';
 
+import { getAttribute } from '../env/element';
+
 const Items = createHiddenField<Element[]>('StaticHTMLCollectionItems', 'synthetic-shadow');
-
-function isValidHTMLCollectionName(name) {
-    return name !== 'length' && isNaN(name);
-}
-
-function getNodeHTMLCollectionName(node) {
-    return node.getAttribute('id') || node.getAttribute('name');
-}
 
 function StaticHTMLCollection() {
     throw new TypeError('Illegal constructor');
@@ -55,76 +48,27 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         value(name: string) {
-            if (isValidHTMLCollectionName(name) && this[name]) {
-                return this[name];
+            if (name === '') {
+                return null;
             }
+
             const items = getHiddenField(this, Items)!;
             // Note: loop in reverse so that the first named item matches the named property
             for (let len = items.length - 1; len >= 0; len -= 1) {
                 const item = items[len];
-                const nodeName = getNodeHTMLCollectionName(item);
-                if (nodeName === name) {
+
+                if (
+                    name === getAttribute.call(item, 'id') ||
+                    name === getAttribute.call(item, 'name')
+                ) {
                     return item;
                 }
             }
+
             return null;
         },
     },
 
-    // Iterator protocol
-
-    forEach: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value(cb, thisArg) {
-            forEach.call(getHiddenField(this, Items), cb, thisArg);
-        },
-    },
-    entries: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value() {
-            return ArrayMap.call(getHiddenField(this, Items), (v: any, i: number) => [i, v]);
-        },
-    },
-    keys: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value() {
-            return ArrayMap.call(getHiddenField(this, Items), (v: any, i: number) => i);
-        },
-    },
-    values: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value() {
-            return getHiddenField(this, Items);
-        },
-    },
-    [Symbol.iterator]: {
-        writable: true,
-        configurable: true,
-        value() {
-            let nextIndex = 0;
-            return {
-                next: () => {
-                    const items = getHiddenField(this, Items)!;
-                    return nextIndex < items.length
-                        ? {
-                              value: items[nextIndex++],
-                              done: false,
-                          }
-                        : {
-                              done: true,
-                          };
-                },
-            };
-        },
-    },
     [Symbol.toStringTag]: {
         configurable: true,
         get() {
