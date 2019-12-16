@@ -6,9 +6,9 @@
  */
 import { assign, isUndefined } from '@lwc/shared';
 import { getAssociatedVMIfPresent } from '../vm';
-import { VNode } from '../../3rdparty/snabbdom/types';
+import { VElement } from '../../3rdparty/snabbdom/types';
 
-function createContext(vnode: VNode) {
+function createContext(vnode: VElement) {
     const {
         data: { context },
     } = vnode;

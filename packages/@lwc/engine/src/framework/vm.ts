@@ -117,7 +117,7 @@ export interface VM extends UninitializedVM {
     oar: Record<PropertyKey, ReactiveObserver>;
 }
 
-type VMAssociable = Node | LightningElement | ComponentInterface;
+type VMAssociable = ShadowRoot | LightningElement | ComponentInterface;
 
 let idx: number = 0;
 
