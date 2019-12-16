@@ -247,7 +247,7 @@ export interface LightningElement {
 function BaseLightningElementConstructor(this: LightningElement) {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
-        throw new ReferenceError();
+        throw new ReferenceError('Invalid Constructor');
     }
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(

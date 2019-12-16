@@ -121,7 +121,7 @@ type VMAssociable = Node | LightningElement | ComponentInterface;
 
 let idx: number = 0;
 
-/** The internal slot used to associated the different objects the engine manipulates with the VM */
+/** The internal slot used to associate different objects the engine manipulates with the VM */
 const ViewModelReflection = createFieldName('ViewModel', 'engine');
 
 function callHook(
@@ -252,12 +252,12 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
 }
 
 function assertIsVM(obj: any): asserts obj is VM {
-    if (!isObject(obj) || !('cmpRoot' in obj)) {
+    if (isNull(obj) || !isObject(obj) || !('cmpRoot' in obj)) {
         throw new TypeError(`${obj} is not a VM.`);
     }
 }
 
-export function associateVM(obj: VMAssociable, vm: VM): void {
+export function associateVM(obj: VMAssociable, vm: VM) {
     setHiddenField(obj, ViewModelReflection, vm);
 }
 
