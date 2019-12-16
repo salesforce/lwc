@@ -33,7 +33,7 @@ const isUserTimingSupported: boolean =
     typeof performance.clearMeasures === 'function';
 
 function getMarkName(phase: string, vm: UninitializedVM): string {
-    return `${getComponentTag(vm)} - ${phase}`;
+    return `${getComponentTag(vm, true)} - ${phase}`;
 }
 
 function start(markName: string) {

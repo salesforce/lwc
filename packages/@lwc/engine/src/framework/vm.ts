@@ -18,7 +18,6 @@ import {
     isTrue,
     isUndefined,
     keys,
-    StringToLowerCase,
 } from '@lwc/shared';
 import { getComponentDef } from './def';
 import {
@@ -50,6 +49,7 @@ import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdo
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElement } from './base-lightning-element';
+import { getComponentTag } from '../shared/format';
 
 const { createFieldName, getHiddenField, setHiddenField } = fields;
 
@@ -537,11 +537,10 @@ export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
     let elm: Element | null = startingElement;
 
-    // TODO: reuse the same logic to build the component stack than the one used in the assert.
     do {
         const currentVm = getAssociatedVMIfPresent(elm);
         if (!isUndefined(currentVm)) {
-            ArrayPush.call(wcStack, `<${StringToLowerCase.call(elm.tagName)}}>`);
+            ArrayPush.call(wcStack, getComponentTag(currentVm));
         }
         elm = getParentOrHostElement(elm);
     } while (!isNull(elm));
