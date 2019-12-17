@@ -24,7 +24,7 @@ import { logError } from '../shared/logger';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
 import { isBeingConstructed, isInvokingRender } from './invoker';
-import { getAssociatedVM } from './vm';
+import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
 import { isUpdatingTemplate, getVMBeingRendered } from './template';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
@@ -160,7 +160,10 @@ function getElementRestrictionsDescriptors(
             },
             set(this: HTMLElement, value: string) {
                 if (isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('innerHTML', 'property'));
+                    logError(
+                        portalRestrictionErrorMessage('innerHTML', 'property'),
+                        getAssociatedVMIfPresent(this)
+                    );
                 }
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
@@ -235,7 +238,8 @@ function getShadowRootRestrictionsDescriptors(
                 // programmatically into its Component's shadow root
                 if (!isUndefined(options)) {
                     logError(
-                        'The `addEventListener` method in `LightningElement` does not support any options.'
+                        'The `addEventListener` method in `LightningElement` does not support any options.',
+                        getAssociatedVMIfPresent(this)
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
@@ -351,7 +355,8 @@ function getCustomElementRestrictionsDescriptors(
                 // programmatically into a lighting element node
                 if (!isUndefined(options)) {
                     logError(
-                        'The `addEventListener` method in `LightningElement` does not support any options.'
+                        'The `addEventListener` method in `LightningElement` does not support any options.',
+                        getAssociatedVMIfPresent(this)
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
@@ -402,10 +407,13 @@ function getLightningElementPrototypeRestrictionsDescriptors(proto: object): Pro
                 }
                 logError(msg.join('\n'), getAssociatedVM(this));
             },
-            set() {
+            set(this: ComponentInterface) {
                 const { readOnly } = globalHTMLProperties[propName];
                 if (readOnly) {
-                    logError(`The global HTML property \`${propName}\` is read-only.`);
+                    logError(
+                        `The global HTML property \`${propName}\` is read-only.`,
+                        getAssociatedVM(this)
+                    );
                 }
             },
         });
