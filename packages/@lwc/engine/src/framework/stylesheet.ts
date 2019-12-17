@@ -108,13 +108,11 @@ function collectStylesheets(stylesheets, hostSelector, shadowSelector, isNative,
 }
 
 export function evaluateCSS(
-    vm: VM,
     stylesheets: StylesheetFactory[],
     hostAttribute: string,
     shadowAttribute: string
 ): VNode | null {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
     }
 

@@ -6,7 +6,7 @@
  */
 import { ArrayMap, getOwnPropertyNames, isNull, isObject, isUndefined } from '@lwc/shared';
 import { ComponentConstructor } from './component';
-import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from './vm';
+import { createVM, appendRootVM, removeRootVM, getAssociatedVM, CreateVMInit } from './vm';
 import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
@@ -50,11 +50,11 @@ export function buildCustomElementConstructor(
             }
         }
         connectedCallback() {
-            const vm = getCustomElementVM(this);
+            const vm = getAssociatedVM(this);
             appendRootVM(vm);
         }
         disconnectedCallback() {
-            const vm = getCustomElementVM(this);
+            const vm = getAssociatedVM(this);
             removeRootVM(vm);
         }
         attributeChangedCallback(attrName, oldValue, newValue) {

@@ -4,13 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, fields, isUndefined, keys } from '@lwc/shared';
-import { ViewModelReflection } from '../utils';
-import { prepareForPropUpdate } from '../base-bridge-element';
+import { assert, isUndefined, keys } from '@lwc/shared';
 import { VNode } from '../../3rdparty/snabbdom/types';
 import { getAttrNameFromPropName } from '../attributes';
-
-const { getHiddenField } = fields;
 
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For special whitelisted properties, we check against the actual property value on the DOM element instead of
@@ -36,9 +32,7 @@ function update(oldVnode: VNode, vnode: VNode) {
     }
 
     const elm = vnode.elm as Element;
-    const vm = getHiddenField(elm, ViewModelReflection);
     const isFirstPatch = isUndefined(oldProps);
-    const isCustomElement = !isUndefined(vm);
     const { sel } = vnode;
 
     for (const key in props) {
@@ -60,9 +54,6 @@ function update(oldVnode: VNode, vnode: VNode) {
             isFirstPatch ||
             cur !== (isLiveBindingProp(sel as string, key) ? elm[key] : (oldProps as any)[key])
         ) {
-            if (isCustomElement) {
-                prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
-            }
             elm[key] = cur;
         }
     }

@@ -10,7 +10,7 @@ import { logError } from '../../shared/assert';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { valueObserved, valueMutated, ReactiveObserver } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';
-import { getComponentVM, rerenderVM } from '../vm';
+import { getAssociatedVM, rerenderVM } from '../vm';
 import { getDecoratorsRegisteredMeta } from './register';
 import { addCallbackToNextTick } from '../utils';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
@@ -67,10 +67,7 @@ function createPublicPropertyDescriptor(
 ): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
-            const vm = getComponentVM(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-            }
+            const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
                     const name = vm.elm.constructor.name;
@@ -87,10 +84,9 @@ function createPublicPropertyDescriptor(
             return vm.cmpProps[key];
         },
         set(this: ComponentInterface, newValue: any) {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
                     !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
@@ -173,15 +169,14 @@ function createPublicAccessorDescriptor(
     return {
         get(this: ComponentInterface): any {
             if (process.env.NODE_ENV !== 'production') {
-                const vm = getComponentVM(this);
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+                // Assert that the this value is an actual Component with an associated VM.
+                getAssociatedVM(this);
             }
             return get.call(this);
         },
         set(this: ComponentInterface, newValue: any) {
-            const vm = getComponentVM(this);
+            const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(
                     !isInvokingRender,

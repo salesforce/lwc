@@ -28,13 +28,7 @@ import {
     ComponentConstructor,
     markComponentAsDirty,
 } from './component';
-import {
-    ViewModelReflection,
-    addCallbackToNextTick,
-    EmptyObject,
-    EmptyArray,
-    useSyntheticShadow,
-} from './utils';
+import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback } from './invoker';
 import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from '../env/dom';
@@ -56,6 +50,9 @@ import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from '../libs/mutation-tracker';
+import { LightningElement } from './base-lightning-element';
+
+const { createFieldName, getHiddenField, setHiddenField } = fields;
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -120,7 +117,12 @@ export interface VM extends UninitializedVM {
     oar: Record<PropertyKey, ReactiveObserver>;
 }
 
+type VMAssociable = ShadowRoot | LightningElement | ComponentInterface;
+
 let idx: number = 0;
+
+/** The internal slot used to associate different objects the engine manipulates with the VM */
+const ViewModelReflection = createFieldName('ViewModel', 'engine');
 
 function callHook(
     cmp: ComponentInterface | undefined,
@@ -139,33 +141,21 @@ function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
 }
 
 export function rerenderVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     rehydrate(vm);
 }
 
 export function appendRootVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     runConnectedCallback(vm);
     rehydrate(vm);
 }
 
 export function appendVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     rehydrate(vm);
 }
 
 // just in case the component comes back, with this we guarantee re-rendering it
 // while preventing any attempt to rehydration until after reinsertion.
 function resetComponentStateWhenRemoved(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     const { state } = vm;
     if (state !== VMState.disconnected) {
         const { oar, tro } = vm;
@@ -186,7 +176,6 @@ function resetComponentStateWhenRemoved(vm: VM) {
 // old vnode.children is removed from the DOM.
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             vm.state === VMState.connected || vm.state === VMState.disconnected,
             `${vm} must have been connected.`
@@ -197,9 +186,6 @@ export function removeVM(vm: VM) {
 
 // this method is triggered by the removal of a root element from the DOM.
 export function removeRootVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     resetComponentStateWhenRemoved(vm);
 }
 
@@ -265,9 +251,40 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
     linkComponent(initializedVm);
 }
 
+function assertIsVM(obj: any): asserts obj is VM {
+    if (isNull(obj) || !isObject(obj) || !('cmpRoot' in obj)) {
+        throw new TypeError(`${obj} is not a VM.`);
+    }
+}
+
+export function associateVM(obj: VMAssociable, vm: VM) {
+    setHiddenField(obj, ViewModelReflection, vm);
+}
+
+export function getAssociatedVM(obj: VMAssociable): VM {
+    const vm = getHiddenField(obj, ViewModelReflection);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assertIsVM(vm);
+    }
+
+    return vm as VM;
+}
+
+export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
+    const maybeVm = getHiddenField(obj, ViewModelReflection);
+
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(maybeVm)) {
+            assertIsVM(maybeVm);
+        }
+    }
+
+    return maybeVm as VM | undefined;
+}
+
 function rehydrate(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             vm.elm instanceof HTMLElement,
             `rehydration can only happen after ${vm} was patched the first time.`
@@ -280,9 +297,6 @@ function rehydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     const { cmpRoot, children: oldCh } = vm;
     vm.children = newCh; // caching the new children collection
     if (newCh.length > 0 || oldCh.length > 0) {
@@ -322,9 +336,6 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
 }
 
 function runRenderedCallback(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     const { rendered } = Services;
     if (rendered) {
         invokeServiceHook(vm, rendered);
@@ -381,9 +392,6 @@ function flushRehydrationQueue() {
 }
 
 export function runConnectedCallback(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     const { state } = vm;
     if (state === VMState.connected) {
         return; // nothing to do since it was already connected
@@ -410,7 +418,6 @@ export function runConnectedCallback(vm: VM) {
 
 function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
     if (isFalse(vm.isDirty)) {
@@ -441,9 +448,6 @@ function runDisconnectedCallback(vm: VM) {
 }
 
 function runShadowChildNodesDisconnectedCallback(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     const { velements: vCustomElementCollection } = vm;
     // reporting disconnection for every child in inverse order since they are inserted in reserved order
     for (let i = vCustomElementCollection.length - 1; i >= 0; i -= 1) {
@@ -455,16 +459,13 @@ function runShadowChildNodesDisconnectedCallback(vm: VM) {
         // * when slotted custom element is not used by the element where it is slotted
         //   into it, as a result, the custom element was never initialized.
         if (!isUndefined(elm)) {
-            const childVM = getCustomElementVM(elm as HTMLElement);
+            const childVM = getAssociatedVM(elm);
             resetComponentStateWhenRemoved(childVM);
         }
     }
 }
 
 function runLightChildNodesDisconnectedCallback(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     const { aChildren: adoptedChildren } = vm;
     recursivelyDisconnectChildren(adoptedChildren);
 }
@@ -486,7 +487,7 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
                 recursivelyDisconnectChildren(vnode.children);
             } else {
                 // it is a VCustomElement, disconnect it and ignore its children
-                resetComponentStateWhenRemoved(getCustomElementVM(vnode.elm as HTMLElement));
+                resetComponentStateWhenRemoved(getAssociatedVM(vnode.elm as HTMLElement));
             }
         }
     }
@@ -497,9 +498,6 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // of an error, in which case the children VNodes might not be representing the current
 // state of the DOM
 export function resetShadowRoot(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     vm.children = EmptyArray;
     ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
     // disconnecting any known custom element inside the shadow of the this vm
@@ -507,9 +505,6 @@ export function resetShadowRoot(vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     if (!vm.isScheduled) {
         vm.isScheduled = true;
         if (rehydrateQueue.length === 0) {
@@ -519,21 +514,12 @@ export function scheduleRehydration(vm: VM) {
     }
 }
 
-function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    const { elm } = vm;
-    return getErrorBoundaryVM(elm);
-}
-
-const { getHiddenField } = fields;
 function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let elm: Element | null = startingElement;
     let vm: VM | undefined;
 
     while (!isNull(elm)) {
-        vm = getHiddenField(elm, ViewModelReflection);
+        vm = getAssociatedVMIfPresent(elm);
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
@@ -552,7 +538,7 @@ export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
     let elm: Element | null = startingElement;
     do {
-        const currentVm: VM | undefined = getHiddenField(elm, ViewModelReflection);
+        const currentVm = getAssociatedVMIfPresent(elm);
         if (!isUndefined(currentVm)) {
             const tagName = tagNameGetter.call(elm);
             const is = elm.getAttribute('is');
@@ -616,37 +602,11 @@ export function isNodeFromTemplate(node: Node): boolean {
     return root instanceof ShadowRoot;
 }
 
-export function getCustomElementVM(elm: HTMLElement): VM {
-    if (process.env.NODE_ENV !== 'production') {
-        const vm = getHiddenField(elm, ViewModelReflection);
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    return getHiddenField(elm, ViewModelReflection) as VM;
-}
-
-export function getComponentVM(component: ComponentInterface): VM {
-    if (process.env.NODE_ENV !== 'production') {
-        const vm = getHiddenField(component, ViewModelReflection);
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    return getHiddenField(component, ViewModelReflection) as VM;
-}
-
-export function getShadowRootVM(root: ShadowRoot): VM {
-    // TODO [#1299]: use a weak map instead of an internal field
-    if (process.env.NODE_ENV !== 'production') {
-        const vm = getHiddenField(root, ViewModelReflection);
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    return getHiddenField(root, ViewModelReflection) as VM;
-}
-
 // slow path routine
 // NOTE: we should probably more this routine to the synthetic shadow folder
 // and get the allocation to be cached by in the elm instead of in the VM
 export function allocateInSlot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.invariant(
             isObject(vm.cmpSlots),
             `When doing manual allocation, there must be a cmpSlots object available.`
@@ -702,10 +662,8 @@ export function runWithBoundaryProtection(
     job: () => void,
     post: () => void
 ) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
     let error;
+
     pre();
     try {
         job();
@@ -715,9 +673,7 @@ export function runWithBoundaryProtection(
         post();
         if (!isUndefined(error)) {
             error.wcStack = error.wcStack || getErrorComponentStack(vm.elm);
-            const errorBoundaryVm = isNull(owner)
-                ? undefined
-                : getErrorBoundaryVMFromOwnElement(owner);
+            const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner.elm);
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }

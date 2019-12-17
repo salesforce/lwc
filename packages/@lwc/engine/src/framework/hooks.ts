@@ -4,16 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, fields, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
-import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
+import { assert, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
+import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
     createVM,
     removeVM,
-    getCustomElementVM,
+    getAssociatedVM,
     allocateInSlot,
     appendVM,
     runWithBoundaryProtection,
+    getAssociatedVMIfPresent,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -34,7 +35,6 @@ import {
 import { getComponentDef, setElementProto } from './def';
 
 const noop = () => void 0;
-const { getHiddenField } = fields;
 
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
@@ -141,7 +141,7 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
 }
 
 export function insertCustomElmHook(vnode: VCustomElement) {
-    const vm = getCustomElementVM(vnode.elm as HTMLElement);
+    const vm = getAssociatedVM(vnode.elm!);
     appendVM(vm);
 }
 
@@ -160,8 +160,7 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
 }
 
 export function allocateChildrenHook(vnode: VCustomElement) {
-    const elm = vnode.elm as HTMLElement;
-    const vm = getCustomElementVM(elm);
+    const vm = getAssociatedVM(vnode.elm!);
     const { children } = vnode;
     vm.aChildren = children;
     if (isTrue(useSyntheticShadow)) {
@@ -174,7 +173,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
 
 export function createViewModelHook(vnode: VCustomElement) {
     const elm = vnode.elm as HTMLElement;
-    if (!isUndefined(getHiddenField(elm, ViewModelReflection))) {
+    if (!isUndefined(getAssociatedVMIfPresent(elm))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here since this hook is called right after invoking `document.createElement`.
@@ -193,9 +192,7 @@ export function createViewModelHook(vnode: VCustomElement) {
         mode,
         owner,
     });
-    const vm = getCustomElementVM(elm);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isArray(vnode.children),
             `Invalid vnode for a custom element, it must have children defined.`
@@ -232,9 +229,8 @@ export function createChildrenHook(vnode: VElement) {
 }
 
 export function rerenderCustomElmHook(vnode: VCustomElement) {
-    const vm = getCustomElementVM(vnode.elm as HTMLElement);
+    const vm = getAssociatedVM(vnode.elm!);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isArray(vnode.children),
             `Invalid vnode for a custom element, it must have children defined.`
@@ -261,7 +257,7 @@ export function removeElmHook(vnode: VElement) {
     for (let j = 0, len = children.length; j < len; ++j) {
         const ch = children[j];
         if (!isNull(ch)) {
-            ch.hook.remove(ch, elm as HTMLElement);
+            ch.hook.remove(ch, elm!);
         }
     }
 }
@@ -269,7 +265,7 @@ export function removeElmHook(vnode: VElement) {
 export function removeCustomElmHook(vnode: VCustomElement) {
     // for custom elements we don't have to go recursively because the removeVM routine
     // will take care of disconnecting any child VM attached to its shadow as well.
-    removeVM(getCustomElementVM(vnode.elm as HTMLElement));
+    removeVM(getAssociatedVM(vnode.elm!));
 }
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(

@@ -14,14 +14,16 @@ import {
     isUndefined,
     toString,
 } from '@lwc/shared';
-import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
-import { ComponentConstructor } from './component';
 import {
-    EmptyObject,
-    isCircularModuleDependency,
-    resolveCircularModuleDependency,
-    ViewModelReflection,
-} from './utils';
+    createVM,
+    removeRootVM,
+    appendRootVM,
+    getAssociatedVM,
+    VMState,
+    getAssociatedVMIfPresent,
+} from './vm';
+import { ComponentConstructor } from './component';
+import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
@@ -35,7 +37,9 @@ function callNodeSlot(node: Node, slot: symbol): Node {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
     }
-    const fn = getHiddenField(node, slot);
+
+    const fn = getHiddenField(node, slot) as Function | undefined;
+
     if (!isUndefined(fn)) {
         fn();
     }
@@ -105,7 +109,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
 
     // Create element with correct tagName
     const element = document.createElement(sel);
-    if (!isUndefined(getHiddenField(element, ViewModelReflection))) {
+    if (!isUndefined(getAssociatedVMIfPresent(element))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here.
@@ -126,7 +130,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
     setHiddenField(element, ConnectingSlot, () => {
-        const vm = getCustomElementVM(element);
+        const vm = getAssociatedVM(element);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
         if (vm.state === VMState.connected) {
             // usually means moving the element from one place to another, which is observable via life-cycle hooks
@@ -136,7 +140,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
     setHiddenField(element, DisconnectingSlot, () => {
-        const vm = getCustomElementVM(element);
+        const vm = getAssociatedVM(element);
         removeRootVM(vm);
     });
     return element;

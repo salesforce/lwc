@@ -4,13 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { fields } from '@lwc/shared';
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement, registerDecorators } from '../main';
-import { ViewModelReflection } from '../utils';
-import { getComponentVM } from '../vm';
-
-const { getHiddenField } = fields;
+import { getAssociatedVM } from '../vm';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
@@ -19,7 +15,7 @@ describe('vm', () => {
         it('should have idx>0 (creation index) during construction', () => {
             class MyComponent1 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent1 });
-            const hiddenFields = getHiddenField(elm, ViewModelReflection);
+            const hiddenFields = getAssociatedVM(elm);
             expect(hiddenFields.idx).toBeGreaterThan(0);
         });
 
@@ -27,7 +23,7 @@ describe('vm', () => {
             class MyComponent2 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent2 });
             document.body.appendChild(elm);
-            const hiddenFields = getHiddenField(elm, ViewModelReflection);
+            const hiddenFields = getAssociatedVM(elm);
             expect(hiddenFields.idx).toBeGreaterThan(0);
         });
 
@@ -35,7 +31,7 @@ describe('vm', () => {
             class MyComponent3 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent3 });
             document.body.appendChild(elm);
-            const hiddenFields = getHiddenField(elm, ViewModelReflection);
+            const hiddenFields = getAssociatedVM(elm);
             expect(hiddenFields.idx).toBeGreaterThan(0);
             document.body.removeChild(elm);
             expect(hiddenFields.idx).toBeGreaterThan(0);
@@ -47,7 +43,7 @@ describe('vm', () => {
             class ChildComponent4 extends LightningElement {
                 constructor() {
                     super();
-                    vm2 = getComponentVM(this);
+                    vm2 = getAssociatedVM(this);
                 }
             }
 
@@ -64,7 +60,7 @@ describe('vm', () => {
             class MyComponent4 extends LightningElement {
                 constructor() {
                     super();
-                    vm1 = getComponentVM(this);
+                    vm1 = getAssociatedVM(this);
                 }
                 render() {
                     return html;
@@ -84,7 +80,7 @@ describe('vm', () => {
             class ChildComponent5 extends LightningElement {
                 constructor() {
                     super();
-                    vm2 = getComponentVM(this);
+                    vm2 = getAssociatedVM(this);
                 }
                 render() {
                     counter++;
@@ -105,7 +101,7 @@ describe('vm', () => {
             class MyComponent5 extends LightningElement {
                 constructor() {
                     super();
-                    vm1 = getComponentVM(this);
+                    vm1 = getAssociatedVM(this);
                 }
                 render() {
                     return html;
