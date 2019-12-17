@@ -378,9 +378,7 @@ BaseLightningElementConstructor.prototype = {
             const vm = getAssociatedVM(this);
             assert.isFalse(
                 isBeingConstructed(vm),
-                `Failed to construct '${getComponentTag(
-                    vm
-                )}': The result must not have attributes.`
+                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
             );
         }
         unlockAttribute(elm, attrName);
@@ -411,9 +409,7 @@ BaseLightningElementConstructor.prototype = {
             const vm = getAssociatedVM(this);
             assert.isFalse(
                 isBeingConstructed(vm),
-                `Failed to construct '${getComponentTag(
-                    vm
-                )}': The result must not have attributes.`
+                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
             );
         }
         unlockAttribute(elm, attrName);
