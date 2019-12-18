@@ -25,13 +25,11 @@ import {
     isObject,
     seal,
 } from '@lwc/shared';
-import { logError } from '../shared/assert';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { patchLightningElementPrototypeWithRestrictions } from './restrictions';
 import {
     ComponentInterface,
     getWrappedComponentsListener,
-    getComponentAsString,
     getTemplateReactiveObserver,
 } from './component';
 import { EmptyObject } from './utils';
@@ -42,6 +40,9 @@ import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
+
+import { logError } from '../shared/logger';
+import { getComponentTag } from '../shared/format';
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
 
@@ -82,7 +83,7 @@ function createBridgeToElementDescriptor(
                     const name = vm.elm.constructor.name;
                     logError(
                         `\`${name}\` constructor can't read the value of property \`${propName}\` because the owner component hasn't set the value yet. Instead, use the \`${name}\` constructor to set a default value for the property.`,
-                        vm.elm
+                        vm
                     );
                 }
                 return;
@@ -104,8 +105,8 @@ function createBridgeToElementDescriptor(
                 );
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `Failed to construct '${getComponentAsString(
-                        this
+                    `Failed to construct '${getComponentTag(
+                        vm
                     )}': The result must not have attributes.`
                 );
                 assert.invariant(
@@ -303,15 +304,15 @@ BaseLightningElementConstructor.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             if (arguments.length === 0) {
                 throw new Error(
-                    `Failed to execute 'dispatchEvent' on ${getComponentAsString(
-                        this
+                    `Failed to execute 'dispatchEvent' on ${getComponentTag(
+                        vm
                     )}: 1 argument required, but only 0 present.`
                 );
             }
             if (!(event instanceof GlobalEvent)) {
                 throw new Error(
-                    `Failed to execute 'dispatchEvent' on ${getComponentAsString(
-                        this
+                    `Failed to execute 'dispatchEvent' on ${getComponentTag(
+                        vm
                     )}: parameter 1 is not of type 'Event'.`
                 );
             }
@@ -319,20 +320,20 @@ BaseLightningElementConstructor.prototype = {
             const { type: evtName } = event;
             assert.isFalse(
                 isBeingConstructed(vm),
-                `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentAsString(
-                    this
+                `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentTag(
+                    vm
                 )} because no one is listening for the event "${evtName}" just yet.`
             );
 
             if (!/^[a-z][a-z0-9_]*$/.test(evtName)) {
                 logError(
-                    `Invalid event type "${evtName}" dispatched in element ${getComponentAsString(
-                        this
+                    `Invalid event type "${evtName}" dispatched in element ${getComponentTag(
+                        vm
                     )}. Event name must ${[
                         '1) Start with a lowercase letter',
                         '2) Contain only lowercase letters, numbers, and underscores',
                     ].join(' ')}`,
-                    elm
+                    vm
                 );
             }
         }
@@ -374,11 +375,10 @@ BaseLightningElementConstructor.prototype = {
     setAttributeNS(ns: string | null, attrName: string, _value: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
+            const vm = getAssociatedVM(this);
             assert.isFalse(
-                isBeingConstructed(getAssociatedVM(this)),
-                `Failed to construct '${getComponentAsString(
-                    this
-                )}': The result must not have attributes.`
+                isBeingConstructed(vm),
+                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
             );
         }
         unlockAttribute(elm, attrName);
@@ -406,11 +406,10 @@ BaseLightningElementConstructor.prototype = {
     setAttribute(attrName: string, _value: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
+            const vm = getAssociatedVM(this);
             assert.isFalse(
-                isBeingConstructed(getAssociatedVM(this)),
-                `Failed to construct '${getComponentAsString(
-                    this
-                )}': The result must not have attributes.`
+                isBeingConstructed(vm),
+                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
             );
         }
         unlockAttribute(elm, attrName);
@@ -443,8 +442,8 @@ BaseLightningElementConstructor.prototype = {
             const vm = getAssociatedVM(this);
             assert.isFalse(
                 isBeingConstructed(vm),
-                `this.getBoundingClientRect() should not be called during the construction of the custom element for ${getComponentAsString(
-                    this
+                `this.getBoundingClientRect() should not be called during the construction of the custom element for ${getComponentTag(
+                    vm
                 )} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`
             );
         }
@@ -461,8 +460,8 @@ BaseLightningElementConstructor.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
-                `this.querySelector() cannot be called during the construction of the custom element for ${getComponentAsString(
-                    this
+                `this.querySelector() cannot be called during the construction of the custom element for ${getComponentTag(
+                    vm
                 )} because no children has been added to this element yet.`
             );
         }
@@ -481,8 +480,8 @@ BaseLightningElementConstructor.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
-                `this.querySelectorAll() cannot be called during the construction of the custom element for ${getComponentAsString(
-                    this
+                `this.querySelectorAll() cannot be called during the construction of the custom element for ${getComponentTag(
+                    vm
                 )} because no children has been added to this element yet.`
             );
         }
@@ -499,8 +498,8 @@ BaseLightningElementConstructor.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
-                `this.getElementsByTagName() cannot be called during the construction of the custom element for ${getComponentAsString(
-                    this
+                `this.getElementsByTagName() cannot be called during the construction of the custom element for ${getComponentTag(
+                    vm
                 )} because no children has been added to this element yet.`
             );
         }
@@ -517,8 +516,8 @@ BaseLightningElementConstructor.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
-                `this.getElementsByClassName() cannot be called during the construction of the custom element for ${getComponentAsString(
-                    this
+                `this.getElementsByClassName() cannot be called during the construction of the custom element for ${getComponentTag(
+                    vm
                 )} because no children has been added to this element yet.`
             );
         }

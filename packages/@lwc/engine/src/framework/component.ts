@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isFalse, isFunction, isUndefined, StringToLowerCase } from '@lwc/shared';
+import { assert, isArray, isFalse, isFunction, isUndefined } from '@lwc/shared';
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
@@ -12,9 +12,8 @@ import {
     invokeEventListener,
 } from './invoker';
 import { invokeServiceHook, Services } from './services';
-import { VM, getAssociatedVM, UninitializedVM, scheduleRehydration } from './vm';
+import { VM, UninitializedVM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
-import { tagNameGetter } from '../env/element';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
@@ -153,12 +152,4 @@ export function getWrappedComponentsListener(vm: VM, listener: EventListener): E
         cmpEventListenerMap.set(listener, wrappedListener);
     }
     return wrappedListener;
-}
-
-export function getComponentAsString(component: ComponentInterface): string {
-    if (process.env.NODE_ENV === 'production') {
-        throw new ReferenceError();
-    }
-    const vm = getAssociatedVM(component);
-    return `<${StringToLowerCase.call(tagNameGetter.call(vm.elm))}>`;
 }

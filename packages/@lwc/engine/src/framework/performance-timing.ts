@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, StringToLowerCase } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared';
+
 import { UninitializedVM } from './vm';
-import { tagNameGetter } from '../env/element';
+import { getComponentTag } from '../shared/format';
 
 type MeasurementPhase =
     | 'constructor'
@@ -32,7 +33,13 @@ const isUserTimingSupported: boolean =
     typeof performance.clearMeasures === 'function';
 
 function getMarkName(phase: string, vm: UninitializedVM): string {
-    return `<${StringToLowerCase.call(tagNameGetter.call(vm.elm))} (${vm.idx})> - ${phase}`;
+    // Adding the VM idx to the mark name creates a unique mark name component instance. This is necessary to produce
+    // the right measures for components that are recursive.
+    return `${getComponentTag(vm)} - ${phase} - ${vm.idx}`;
+}
+
+function getMeasureName(phase: string, vm: UninitializedVM): string {
+    return `${getComponentTag(vm)} - ${phase}`;
 }
 
 function start(markName: string) {
@@ -62,11 +69,10 @@ export const endMeasure = !isUserTimingSupported
     ? noop
     : function(phase: MeasurementPhase, vm: UninitializedVM) {
           const markName = getMarkName(phase, vm);
-          end(markName, markName);
+          const measureName = getMeasureName(phase, vm);
+          end(measureName, markName);
       };
 
-// Global measurements can be nested into each others (e.g. nested component creation via createElement). In those cases
-// the VM is used to create unique mark names at each level.
 export const startGlobalMeasure = !isUserTimingSupported
     ? noop
     : function(phase: GlobalMeasurementPhase, vm?: UninitializedVM) {

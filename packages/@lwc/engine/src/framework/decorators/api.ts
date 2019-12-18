@@ -6,7 +6,7 @@
  */
 import features from '@lwc/features';
 import { assert, isFalse, isFunction, isObject, isTrue, isUndefined, toString } from '@lwc/shared';
-import { logError } from '../../shared/assert';
+import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { valueObserved, valueMutated, ReactiveObserver } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';
@@ -75,7 +75,7 @@ function createPublicPropertyDescriptor(
                         `\`${name}\` constructor can’t read the value of property \`${toString(
                             key
                         )}\` because the owner component hasn’t set the value yet. Instead, use the \`${name}\` constructor to set a default value for the property.`,
-                        vm.elm
+                        vm
                     );
                 }
                 return;

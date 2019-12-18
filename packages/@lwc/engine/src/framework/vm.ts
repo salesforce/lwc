@@ -18,7 +18,6 @@ import {
     isTrue,
     isUndefined,
     keys,
-    StringToLowerCase,
 } from '@lwc/shared';
 import { getComponentDef } from './def';
 import {
@@ -45,12 +44,12 @@ import {
     endGlobalMeasure,
     GlobalMeasurementPhase,
 } from './performance-timing';
-import { tagNameGetter } from '../env/element';
 import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElement } from './base-lightning-element';
+import { getComponentTag } from '../shared/format';
 
 const { createFieldName, getHiddenField, setHiddenField } = fields;
 
@@ -537,15 +536,11 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
 export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
     let elm: Element | null = startingElement;
+
     do {
         const currentVm = getAssociatedVMIfPresent(elm);
         if (!isUndefined(currentVm)) {
-            const tagName = tagNameGetter.call(elm);
-            const is = elm.getAttribute('is');
-            ArrayPush.call(
-                wcStack,
-                `<${StringToLowerCase.call(tagName)}${is ? ' is="${is}' : ''}>`
-            );
+            ArrayPush.call(wcStack, getComponentTag(currentVm));
         }
         elm = getParentOrHostElement(elm);
     } while (!isNull(elm));

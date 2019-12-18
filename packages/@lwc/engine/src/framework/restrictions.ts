@@ -20,11 +20,11 @@ import {
     setPrototypeOf,
     toString,
 } from '@lwc/shared';
-import { logError } from '../shared/assert';
+import { logError } from '../shared/logger';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
 import { isBeingConstructed, isInvokingRender } from './invoker';
-import { getAssociatedVM } from './vm';
+import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
 import { isUpdatingTemplate, getVMBeingRendered } from './template';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
@@ -88,7 +88,7 @@ function getNodeRestrictionsDescriptors(
         appendChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
                 if (this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('appendChild', 'method'), this);
+                    logError(portalRestrictionErrorMessage('appendChild', 'method'));
                 }
                 return appendChild.call(this, aChild);
             },
@@ -96,7 +96,7 @@ function getNodeRestrictionsDescriptors(
         insertBefore: generateDataDescriptor({
             value(this: Node, newNode: Node, referenceNode: Node) {
                 if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('insertBefore', 'method'), this);
+                    logError(portalRestrictionErrorMessage('insertBefore', 'method'));
                 }
                 return insertBefore.call(this, newNode, referenceNode);
             },
@@ -104,7 +104,7 @@ function getNodeRestrictionsDescriptors(
         removeChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
                 if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('removeChild', 'method'), this);
+                    logError(portalRestrictionErrorMessage('removeChild', 'method'));
                 }
                 return removeChild.call(this, aChild);
             },
@@ -112,7 +112,7 @@ function getNodeRestrictionsDescriptors(
         replaceChild: generateDataDescriptor({
             value(this: Node, newChild: Node, oldChild: Node) {
                 if (this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('replaceChild', 'method'), this);
+                    logError(portalRestrictionErrorMessage('replaceChild', 'method'));
                 }
                 return replaceChild.call(this, newChild, oldChild);
             },
@@ -123,7 +123,7 @@ function getNodeRestrictionsDescriptors(
             },
             set(this: Node, value: string) {
                 if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('nodeValue', 'property'), this);
+                    logError(portalRestrictionErrorMessage('nodeValue', 'property'));
                 }
                 originalNodeValueDescriptor.set!.call(this, value);
             },
@@ -134,7 +134,7 @@ function getNodeRestrictionsDescriptors(
             },
             set(this: Node, value: string) {
                 if (this instanceof Element && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('textContent', 'property'), this);
+                    logError(portalRestrictionErrorMessage('textContent', 'property'));
                 }
                 originalTextContentDescriptor.set!.call(this, value);
             },
@@ -160,7 +160,10 @@ function getElementRestrictionsDescriptors(
             },
             set(this: HTMLElement, value: string) {
                 if (isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('innerHTML', 'property'), this);
+                    logError(
+                        portalRestrictionErrorMessage('innerHTML', 'property'),
+                        getAssociatedVMIfPresent(this)
+                    );
                 }
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
@@ -236,7 +239,7 @@ function getShadowRootRestrictionsDescriptors(
                 if (!isUndefined(options)) {
                     logError(
                         'The `addEventListener` method in `LightningElement` does not support any options.',
-                        this.host
+                        getAssociatedVMIfPresent(this)
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
@@ -353,7 +356,7 @@ function getCustomElementRestrictionsDescriptors(
                 if (!isUndefined(options)) {
                     logError(
                         'The `addEventListener` method in `LightningElement` does not support any options.',
-                        this
+                        getAssociatedVMIfPresent(this)
                     );
                 }
                 // Typescript does not like it when you treat the `arguments` object as an array
@@ -402,12 +405,15 @@ function getLightningElementPrototypeRestrictionsDescriptors(proto: object): Pro
                 } else if (attribute) {
                     msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
                 }
-                logError(msg.join('\n'), getAssociatedVM(this).elm);
+                logError(msg.join('\n'), getAssociatedVM(this));
             },
-            set() {
+            set(this: ComponentInterface) {
                 const { readOnly } = globalHTMLProperties[propName];
                 if (readOnly) {
-                    logError(`The global HTML property \`${propName}\` is read-only.`);
+                    logError(
+                        `The global HTML property \`${propName}\` is read-only.`,
+                        getAssociatedVM(this)
+                    );
                 }
             },
         });

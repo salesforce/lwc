@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor } from '@lwc/shared';
-
 const {
     hasAttribute,
     getAttribute,
@@ -15,11 +13,6 @@ const {
     removeAttributeNS,
 } = Element.prototype;
 
-const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(
-    Element.prototype,
-    'tagName'
-)!.get!;
-
 export {
     hasAttribute,
     getAttribute,
@@ -27,5 +20,4 @@ export {
     setAttributeNS,
     removeAttribute,
     removeAttributeNS,
-    tagNameGetter,
 };
