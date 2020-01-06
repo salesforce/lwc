@@ -23,18 +23,15 @@ import {
     isObject,
     isNull,
 } from '@lwc/shared';
-<<<<<<< HEAD
-import { logError } from '../shared/logger';
-import { ComponentInterface } from './component';
-=======
-import { logError } from '../shared/assert';
+
 import { LightningElement } from './base-lightning-element';
-import { ComponentInterface, getComponentAsString } from './component';
->>>>>>> a843dc01... refactor(engine): move dispatchEvent check to restrictions
+import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
 import { isBeingConstructed, isInvokingRender } from './invoker';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
 import { isUpdatingTemplate, getVMBeingRendered } from './template';
+import { logError } from '../shared/logger';
+import { getComponentTag } from '../shared/format';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
@@ -413,8 +410,8 @@ function getLightningElementPrototypeRestrictionsDescriptors(
 
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentAsString(
-                        this
+                    `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentTag(
+                        vm
                     )} because no one is listening just yet.`
                 );
 
@@ -423,11 +420,10 @@ function getLightningElementPrototypeRestrictionsDescriptors(
 
                     if (isString(type) && !/^[a-z][a-z0-9_]*$/.test(type)) {
                         logError(
-                            `Invalid event type "${type}" dispatched in element ${getComponentAsString(
-                                vm.component
-                            )}. ` +
-                                'Event name must start with a lowercase letter and followed only lowercase letters, numbers, and underscores',
-                            vm.elm
+                            `Invalid event type "${type}" dispatched in element ${getComponentTag(
+                                vm
+                            )}. Event name must start with a lowercase letter and followed only lowercase letters, numbers, and underscores`,
+                            vm
                         );
                     }
                 }
