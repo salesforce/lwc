@@ -19,7 +19,6 @@ import {
     isUndefined,
     setPrototypeOf,
     toString,
-    isString,
     isObject,
     isNull,
 } from '@lwc/shared';
@@ -418,7 +417,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                 if (!isNull(event) && isObject(event)) {
                     const { type } = event;
 
-                    if (isString(type) && !/^[a-z][a-z0-9_]*$/.test(type)) {
+                    if (!/^[a-z][a-z0-9_]*$/.test(type)) {
                         logError(
                             `Invalid event type "${type}" dispatched in element ${getComponentTag(
                                 vm
