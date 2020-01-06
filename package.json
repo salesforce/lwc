@@ -95,8 +95,8 @@
     "node": ">=10"
   },
   "volta": {
-    "node": "12.13.1",
-    "yarn": "1.19.2"
+    "node": "12.14.0",
+    "yarn": "1.21.1"
   },
   "resolutions": {
     "set-value": "^2.0.1"
