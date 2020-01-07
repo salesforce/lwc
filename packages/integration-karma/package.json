@@ -15,7 +15,7 @@
         "@lwc/engine": "1.1.16",
         "@lwc/rollup-plugin": "1.1.16",
         "@lwc/synthetic-shadow": "1.1.16",
-        "chokidar": "^3.3.0",
+        "chokidar": "^3.3.1",
         "istanbul-api": "^2.1.6",
         "karma": "^4.4.1",
         "karma-chrome-launcher": "^3.1.0",
