@@ -47,7 +47,7 @@ it('should throw when event is dispatched during construction', function() {
         createElement('x-test', { is: Test });
     }).toThrowErrorDev(
         Error,
-        /this.dispatchEvent\(\) should not be called during the construction of the custom element for <x-test> because no one is listening for the event "event" just yet/
+        /this.dispatchEvent\(\) should not be called during the construction of the custom element for <x-test> because no one is listening just yet/
     );
 });
 

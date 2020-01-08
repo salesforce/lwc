@@ -40,11 +40,8 @@ import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
-
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-
-const GlobalEvent = Event; // caching global reference to avoid poisoning
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -297,47 +294,11 @@ function BaseLightningElementConstructor(this: LightningElement) {
 // HTML Element - The Good Parts
 BaseLightningElementConstructor.prototype = {
     constructor: BaseLightningElementConstructor,
-    dispatchEvent(event: Event): boolean {
+    dispatchEvent(_event: Event): boolean {
         const elm = getLinkedElement(this);
-        const vm = getAssociatedVM(this);
-
-        if (process.env.NODE_ENV !== 'production') {
-            if (arguments.length === 0) {
-                throw new Error(
-                    `Failed to execute 'dispatchEvent' on ${getComponentTag(
-                        vm
-                    )}: 1 argument required, but only 0 present.`
-                );
-            }
-            if (!(event instanceof GlobalEvent)) {
-                throw new Error(
-                    `Failed to execute 'dispatchEvent' on ${getComponentTag(
-                        vm
-                    )}: parameter 1 is not of type 'Event'.`
-                );
-            }
-
-            const { type: evtName } = event;
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because no one is listening for the event "${evtName}" just yet.`
-            );
-
-            if (!/^[a-z][a-z0-9_]*$/.test(evtName)) {
-                logError(
-                    `Invalid event type "${evtName}" dispatched in element ${getComponentTag(
-                        vm
-                    )}. Event name must ${[
-                        '1) Start with a lowercase letter',
-                        '2) Contain only lowercase letters, numbers, and underscores',
-                    ].join(' ')}`,
-                    vm
-                );
-            }
-        }
-        return dispatchEvent.call(elm, event);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch;
+        return dispatchEvent.apply(elm, arguments);
     },
     addEventListener(
         type: string,
