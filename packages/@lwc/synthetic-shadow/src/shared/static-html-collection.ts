@@ -4,10 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, create, defineProperty, fields, forEach, setPrototypeOf } from '@lwc/shared';
-const { createFieldName, getHiddenField, setHiddenField } = fields;
+import {
+    ArrayMap,
+    create,
+    defineProperty,
+    forEach,
+    setPrototypeOf,
+    createHiddenField,
+    getHiddenField,
+    setHiddenField,
+} from '@lwc/shared';
 
-const Items = createFieldName('items');
+const Items = createHiddenField<Element[]>('StaticHTMLCollectionItems', 'synthetic-shadow');
 
 function isValidHTMLCollectionName(name) {
     return name !== 'length' && isNaN(name);
@@ -38,7 +46,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         get() {
-            return getHiddenField(this, Items).length;
+            return getHiddenField(this, Items)!.length;
         },
     },
     // https://dom.spec.whatwg.org/#dom-htmlcollection-nameditem-key
@@ -50,7 +58,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
             if (isValidHTMLCollectionName(name) && this[name]) {
                 return this[name];
             }
-            const items = getHiddenField(this, Items);
+            const items = getHiddenField(this, Items)!;
             // Note: loop in reverse so that the first named item matches the named property
             for (let len = items.length - 1; len >= 0; len -= 1) {
                 const item = items[len];
@@ -104,7 +112,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
             let nextIndex = 0;
             return {
                 next: () => {
-                    const items = getHiddenField(this, Items);
+                    const items = getHiddenField(this, Items)!;
                     return nextIndex < items.length
                         ? {
                               value: items[nextIndex++],

@@ -4,10 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, create, defineProperty, fields, forEach, setPrototypeOf } from '@lwc/shared';
-const { createFieldName, getHiddenField, setHiddenField } = fields;
+import {
+    ArrayMap,
+    create,
+    defineProperty,
+    forEach,
+    setPrototypeOf,
+    createHiddenField,
+    getHiddenField,
+    setHiddenField,
+} from '@lwc/shared';
 
-const Items = createFieldName('items', 'synthetic-shadow');
+const Items = createHiddenField<Node[]>('StaticNodeListItems', 'synthetic-shadow');
 
 function StaticNodeList() {
     throw new TypeError('Illegal constructor');
@@ -31,7 +39,8 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         get() {
-            return getHiddenField(this, Items).length;
+            const items = getHiddenField(this, Items)!;
+            return items.length;
         },
     },
 
@@ -76,7 +85,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
             let nextIndex = 0;
             return {
                 next: () => {
-                    const items = getHiddenField(this, Items);
+                    const items = getHiddenField(this, Items)!;
                     return nextIndex < items.length
                         ? {
                               value: items[nextIndex++],

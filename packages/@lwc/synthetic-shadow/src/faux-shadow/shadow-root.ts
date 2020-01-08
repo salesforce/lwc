@@ -10,11 +10,13 @@ import {
     create,
     defineProperties,
     defineProperty,
-    fields,
     isNull,
     isTrue,
     isUndefined,
     setPrototypeOf,
+    createHiddenField,
+    getHiddenField,
+    setHiddenField,
 } from '@lwc/shared';
 import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
 import {
@@ -47,9 +49,8 @@ import { getInternalChildNodes, setNodeKey, setNodeOwnerKey } from './node';
 import { innerHTMLSetter } from '../env/element';
 import { getOwnerDocument } from '../shared/utils';
 
-const { getHiddenField, setHiddenField, createFieldName } = fields;
 const ShadowRootResolverKey = '$shadowResolver$';
-const InternalSlot = createFieldName('shadowRecord', 'synthetic-shadow');
+const InternalSlot = createHiddenField<ShadowRootRecord>('shadowRecord', 'synthetic-shadow');
 const { createDocumentFragment } = document;
 
 interface ShadowRootRecord {
@@ -60,7 +61,7 @@ interface ShadowRootRecord {
 }
 
 function getInternalSlot(root: SyntheticShadowRootInterface | Element): ShadowRootRecord {
-    const record: ShadowRootRecord | undefined = getHiddenField(root, InternalSlot);
+    const record = getHiddenField(root, InternalSlot);
     if (isUndefined(record)) {
         throw new TypeError();
     }

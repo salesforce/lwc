@@ -7,12 +7,15 @@
 import {
     assert,
     assign,
-    fields,
     isFunction,
     isNull,
     isObject,
     isUndefined,
     toString,
+    HiddenField,
+    createHiddenField,
+    getHiddenField,
+    setHiddenField,
 } from '@lwc/shared';
 import {
     createVM,
@@ -29,16 +32,17 @@ import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
-const { createFieldName, getHiddenField, setHiddenField } = fields;
-const ConnectingSlot = createFieldName('connecting', 'engine');
-const DisconnectingSlot = createFieldName('disconnecting', 'engine');
+type NodeSlot = () => {};
 
-function callNodeSlot(node: Node, slot: symbol): Node {
+const ConnectingSlot = createHiddenField<NodeSlot>('connecting', 'engine');
+const DisconnectingSlot = createHiddenField<NodeSlot>('disconnecting', 'engine');
+
+function callNodeSlot(node: Node, slot: HiddenField<NodeSlot>): Node {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
     }
 
-    const fn = getHiddenField(node, slot) as Function | undefined;
+    const fn = getHiddenField(node, slot);
 
     if (!isUndefined(fn)) {
         fn();
