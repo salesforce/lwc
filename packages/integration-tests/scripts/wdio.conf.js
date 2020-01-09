@@ -47,16 +47,6 @@ exports.config = {
     specs: ['./src/**/*.spec.js'],
     suites: wdSuites,
 
-    maxInstances: 3,
-    capabilities: [],
-
-    // Specifies globally the timeout for all the `waitFor*` defined by wdio.
-    // https://webdriver.io/docs/timeouts.html#webdriverio-related-timeouts
-    waitforTimeout: 20 * 1000, // 20 seconds
-
-    connectionRetryTimeout: 2 * 60 * 1000, // 2 minutes
-    connectionRetryCount: 5,
-
     services: ['static-server'],
 
     staticServerFolders: [
@@ -65,11 +55,5 @@ exports.config = {
     ],
 
     framework: 'mocha',
-    mochaOpts: {
-        // Specify test timeout threshold time enforced by mocha.
-        // https://mochajs.org/#-timeout-ms-t-ms
-        timeout: 30 * 1000, // 30 seconds
-    },
-
     reporters: ['spec'],
 };

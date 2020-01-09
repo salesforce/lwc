@@ -12,6 +12,8 @@ const baseConfig = require('./wdio.conf.js');
 const HEADLESS = process.env.HEADLESS_CHROME !== 'false';
 
 exports.config = merge(baseConfig.config, {
+    maxInstances: 5,
+
     capabilities: [
         {
             browserName: 'chrome',
