@@ -11,9 +11,6 @@ env_perf: &env_perf
 
 env_test: &env_test
   <<: *env_default
-  environment:
-    - SAUCE_USERNAME: lwc_ci
-    - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
 
 # Yarn cache
 restore_yarn_cache: &restore_yarn_cache
@@ -65,7 +62,7 @@ run_linting: &run_linting
 # Sauce connect
 setup_sauce_env_variables: &setup_sauce_env_variables
   run:
-    name: Setup sauce connect environement variables
+    name: Setup sauce connect environment variables
     command: |
         echo 'export SAUCE_TUNNEL_ID="lwc-${CIRCLE_BUILD_NUM}"' >> $BASH_ENV
 
@@ -74,12 +71,17 @@ start_sauce_connect: &start_sauce_connect
     name: Install and start sauce connect
     background: true
     command: |
-        # Be mindfull when upgrading the version of sauce connect. Saucelabs' support acknowledged that the 4.5.2 and
-        # 4.5.3 versions have some issues related to tunnel creation.
-        curl https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz -o saucelabs.tar.gz
-        tar -xzf saucelabs.tar.gz
-        cd sc-*
-        bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY} -i ${SAUCE_TUNNEL_ID}
+        if [ -z "$SAUCE_USERNAME" ] || [ -z "$SAUCE_KEY" ]; then
+          echo 'Sauce credentials are unavailable. Failing...'
+          exit 1;
+        else
+          # Be mindfull when upgrading the version of sauce connect. Saucelabs' support acknowledged that the 4.5.2 and
+          # 4.5.3 versions have some issues related to tunnel creation.
+          curl https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz -o saucelabs.tar.gz
+          tar -xzf saucelabs.tar.gz
+          cd sc-*
+          bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY} -i ${SAUCE_TUNNEL_ID}
+        fi
 
 wait_for_sauce_connect: &wait_for_sauce_connect
   run:
@@ -211,7 +213,6 @@ jobs:
       - *run_karma_coverage
 
       - *stop_sauce_connect
-
 
   test_integration:
     <<: *env_test
