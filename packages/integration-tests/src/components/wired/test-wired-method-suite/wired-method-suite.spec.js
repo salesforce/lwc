@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Component with a wired method', () => {
-    const URL = 'http://localhost:4567/wired-method-suite';
+    const URL = '/wired-method-suite';
 
     before(() => {
         browser.url(URL);

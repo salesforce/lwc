@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = 'http://localhost:4567/tabindex-zero-internal-tabindex-negative';
+const URL = '/tabindex-zero-internal-tabindex-negative';
 
 describe('Tab navigation when tabindex 0', () => {
     beforeEach(() => {

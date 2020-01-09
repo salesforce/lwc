@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Composed focusout event', () => {
-    const URL = 'http://localhost:4567/focusout-composed-true';
+    const URL = '/focusout-composed-true';
 
     before(() => {
         browser.url(URL);

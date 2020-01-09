@@ -6,7 +6,7 @@
  */
 const assert = require('assert');
 describe('Delegates focus', () => {
-    const URL = 'http://localhost:4567/focusable-span-after-negative-tabindex';
+    const URL = '/focusable-span-after-negative-tabindex';
 
     beforeEach(() => {
         browser.url(URL);

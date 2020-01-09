@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Composed focusin event', () => {
-    const URL = 'http://localhost:4567/focusin-composed-true';
+    const URL = '/focusin-composed-true';
 
     before(() => {
         browser.url(URL);

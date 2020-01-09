@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 describe('Tabbing into custom element with delegates focus', () => {
-    const URL = 'http://localhost:4567/delegates-focus-click-shadow-input-negative-tab-index';
+    const URL = '/delegates-focus-click-shadow-input-negative-tab-index';
 
     before(() => {
         browser.url(URL);

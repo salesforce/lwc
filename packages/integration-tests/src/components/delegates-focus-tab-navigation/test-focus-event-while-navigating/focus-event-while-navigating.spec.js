@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = 'http://localhost:4567/focus-event-while-navigating';
+const URL = '/focus-event-while-navigating';
 
 describe('Focus event while sequential focus navigation', () => {
     beforeEach(() => {

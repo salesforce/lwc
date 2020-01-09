@@ -6,7 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = 'http://localhost:4567/delegates-focus-click-target-natively-non-focusable';
+const URL = '/delegates-focus-click-target-natively-non-focusable';
 
 describe('when the click target is natively non-focusable', () => {
     beforeEach(() => {

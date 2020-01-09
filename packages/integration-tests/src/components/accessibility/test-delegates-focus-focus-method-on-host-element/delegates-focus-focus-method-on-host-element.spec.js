@@ -6,7 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = 'http://localhost:4567/delegates-focus-focus-method-on-host-element';
+const URL = '/delegates-focus-focus-method-on-host-element';
 
 describe('Invoking the focus method of a host element', () => {
     beforeEach(() => {
