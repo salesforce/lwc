@@ -97,7 +97,7 @@ run_unit_tests: &run_unit_tests
     name: Run unit tests
     command: yarn test --ci --runInBand --coverage --reporters=default --reporters=jest-junit
     environment:
-      JEST_JUNIT_OUTPUT_DIR: test-results/jest
+      JEST_JUNIT_OUTPUT_DIR: reports/jest
       JEST_JUNIT_OUTPUT_NAME: result.xml
       JEST_JUNIT_SUITE_NAME: "{filepath}"
       JEST_JUNIT_CLASSNAME: "{classname}"
@@ -107,7 +107,11 @@ run_unit_tests: &run_unit_tests
 
 store_unit_tests_results: &store_unit_tests_results
   store_test_results:
-    path: test-results
+    path: reports
+
+store_unit_tests_artifacts: &store_unit_tests_artifacts
+  store_artifacts:
+    path: reports
 
 run_karma_tests: &run_karma_tests
   run:
@@ -204,8 +208,11 @@ jobs:
     <<: *env_default
     steps:
       - *load_workspace
+
       - *run_unit_tests
+
       - *store_unit_tests_results
+      - *store_unit_tests_artifacts
 
 
   test_karma:
