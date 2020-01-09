@@ -27,7 +27,7 @@ describe('Tabbing into custom element with delegates focus', () => {
                     'integration-delegates-focus-false-negative-tab-index'
                 );
             },
-            500,
+            undefined,
             'expect integration-delegates-focus-false-negative-tab-index to be focused'
         );
 
@@ -41,7 +41,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
                 return activeFromShadow.getTagName() === 'a';
             },
-            500,
+            undefined,
             'expect anchor to be focused'
         );
     });

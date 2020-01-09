@@ -38,7 +38,7 @@ describe('Tabbing into custom element with delegates focus', () => {
                 });
                 return active.getTagName() === 'input';
             },
-            500,
+            undefined,
             'expect input to be focused'
         );
     });

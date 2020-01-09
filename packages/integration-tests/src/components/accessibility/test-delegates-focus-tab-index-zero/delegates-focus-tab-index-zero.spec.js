@@ -23,7 +23,7 @@ describe('Delegate focus with tabindex 0', () => {
 
                 return active.getTagName().toLowerCase() === 'input';
             },
-            500,
+            undefined,
             'Input should be focused'
         );
     });
@@ -39,7 +39,7 @@ describe('Delegate focus with tabindex 0', () => {
 
                 return active.getText() === 'second button';
             },
-            500,
+            undefined,
             'Second button should be focused'
         );
 
@@ -53,7 +53,7 @@ describe('Delegate focus with tabindex 0', () => {
 
                 return active.getTagName().toLowerCase() === 'input';
             },
-            500,
+            undefined,
             'Input should be focused'
         );
 
@@ -66,7 +66,7 @@ describe('Delegate focus with tabindex 0', () => {
                 });
                 return active.getText() === 'first button';
             },
-            500,
+            undefined,
             'First button should be focused'
         );
     });
