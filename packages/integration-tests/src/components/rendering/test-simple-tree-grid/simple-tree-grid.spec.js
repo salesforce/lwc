@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Testing component: simple-list-container', () => {
-    const URL = 'http://localhost:4567/simple-tree-grid';
+    const URL = '/simple-tree-grid';
     let element;
 
     before(() => {

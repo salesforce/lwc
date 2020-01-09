@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = 'http://localhost:4567/shadow-access';
+const URL = '/shadow-access';
 
 describe('document.prototype query methods', () => {
     before(() => {

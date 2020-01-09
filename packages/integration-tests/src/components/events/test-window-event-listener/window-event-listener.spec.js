@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Event Target on window event listener', () => {
-    const URL = 'http://localhost:4567/window-event-listener/';
+    const URL = '/window-event-listener/';
 
     before(() => {
         browser.url(URL);

@@ -6,7 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = 'http://localhost:4567/delegates-focus-focus-method-on-internal-element';
+const URL = '/delegates-focus-focus-method-on-internal-element';
 
 describe('Invoking the focus method on an element inside a shadow tree', () => {
     beforeEach(() => {

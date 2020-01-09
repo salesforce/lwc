@@ -6,7 +6,7 @@
  */
 const assert = require('assert');
 describe('when disabled button comes after a component that is delegating focus with tabindex -1', () => {
-    const URL = 'http://localhost:4567/disabled-button-after-negative-tabindex';
+    const URL = '/disabled-button-after-negative-tabindex';
 
     beforeEach(() => {
         browser.url(URL);
