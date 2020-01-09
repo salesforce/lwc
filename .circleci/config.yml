@@ -205,6 +205,7 @@ jobs:
     steps:
       - *load_workspace
       - *run_unit_tests
+      - *store_unit_tests_results
 
 
   test_karma:
