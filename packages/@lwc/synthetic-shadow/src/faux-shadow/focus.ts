@@ -10,7 +10,9 @@ import {
     ArrayReverse,
     ArraySlice,
     assert,
-    fields,
+    createHiddenField,
+    getHiddenField,
+    setHiddenField,
     isNull,
     isUndefined,
     toString,
@@ -43,8 +45,6 @@ import {
 import { isDelegatingFocus } from './shadow-root';
 import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
 
-const { createFieldName, getHiddenField, setHiddenField } = fields;
-
 const TabbableElementsQuery = `
     button:not([tabindex="-1"]):not([disabled]),
     [contenteditable]:not([tabindex="-1"]),
@@ -57,7 +57,10 @@ const TabbableElementsQuery = `
     [tabindex="0"]
 `;
 
-const DidAddMouseDownListener = createFieldName('DidAddMouseDownListener', 'synthetic-shadow');
+const DidAddMouseDownListener = createHiddenField<boolean>(
+    'DidAddMouseDownListener',
+    'synthetic-shadow'
+);
 
 function isVisible(element: HTMLElement): boolean {
     const { width, height } = getBoundingClientRect.call(element);

@@ -10,7 +10,6 @@ import {
     ArrayUnshift,
     assert,
     create,
-    fields,
     isArray,
     isFalse,
     isNull,
@@ -18,6 +17,9 @@ import {
     isTrue,
     isUndefined,
     keys,
+    createHiddenField,
+    getHiddenField,
+    setHiddenField,
 } from '@lwc/shared';
 import { getComponentDef } from './def';
 import {
@@ -50,8 +52,6 @@ import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElement } from './base-lightning-element';
 import { getComponentTag } from '../shared/format';
-
-const { createFieldName, getHiddenField, setHiddenField } = fields;
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -121,7 +121,7 @@ type VMAssociable = ShadowRoot | LightningElement | ComponentInterface;
 let idx: number = 0;
 
 /** The internal slot used to associate different objects the engine manipulates with the VM */
-const ViewModelReflection = createFieldName('ViewModel', 'engine');
+const ViewModelReflection = createHiddenField<VM>('ViewModel', 'engine');
 
 function callHook(
     cmp: ComponentInterface | undefined,
@@ -267,7 +267,7 @@ export function getAssociatedVM(obj: VMAssociable): VM {
         assertIsVM(vm);
     }
 
-    return vm as VM;
+    return vm!;
 }
 
 export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {

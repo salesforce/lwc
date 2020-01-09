@@ -7,10 +7,10 @@
 import { create, isUndefined } from './language';
 
 /*
- * Typescript doesn't allow indexing using Symbol, aliasing the Field type to any for now.
- * Details: https://github.com/microsoft/TypeScript/issues/1863
+ * The __type property on HiddenField doesn't actually exists at runtime. It is only used to store
+ * the type of the associated field value.
  */
-type HiddenField = any;
+export type HiddenField<T> = { __type: T };
 
 /*
  * In IE11, symbols are expensive.
@@ -20,13 +20,13 @@ type HiddenField = any;
  */
 const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
-export function createFieldName(key: string, namespace: string): HiddenField {
-    return hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-${namespace}-${key}$$`;
+export function createHiddenField<T = unknown>(key: string, namespace: string): HiddenField<T> {
+    return (hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-${namespace}-${key}$$`) as any;
 }
 
-const hiddenFieldsMap: WeakMap<any, Record<HiddenField, any>> = new WeakMap();
+const hiddenFieldsMap: WeakMap<any, Record<any, any>> = new WeakMap();
 
-export function setHiddenField(o: any, field: HiddenField, value: any): void {
+export function setHiddenField<T>(o: any, field: HiddenField<T>, value: T): void {
     let valuesByField = hiddenFieldsMap.get(o);
 
     if (isUndefined(valuesByField)) {
@@ -34,13 +34,13 @@ export function setHiddenField(o: any, field: HiddenField, value: any): void {
         hiddenFieldsMap.set(o, valuesByField!);
     }
 
-    valuesByField![field] = value;
+    valuesByField![field as any] = value;
 }
 
-export function getHiddenField(o: any, field: HiddenField): unknown {
+export function getHiddenField<T>(o: any, field: HiddenField<T>): T | undefined {
     const valuesByField = hiddenFieldsMap.get(o);
 
     if (!isUndefined(valuesByField)) {
-        return valuesByField[field];
+        return valuesByField[field as any];
     }
 }

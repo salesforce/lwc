@@ -8,7 +8,6 @@ import {
     assert,
     ArrayIndexOf,
     ArrayPush,
-    fields,
     forEach,
     isUndefined,
     isTrue,
@@ -16,6 +15,9 @@ import {
     isNull,
     ArrayReduce,
     defineProperties,
+    createHiddenField,
+    getHiddenField,
+    setHiddenField,
 } from '@lwc/shared';
 import { getAttribute, setAttribute } from '../env/element';
 import { dispatchEvent } from '../env/dom';
@@ -38,9 +40,8 @@ import { arrayFromCollection } from '../shared/utils';
 // https://dom.spec.whatwg.org/#garbage-collection
 let observer;
 
-const { createFieldName, getHiddenField, setHiddenField } = fields;
 const observerConfig: MutationObserverInit = { childList: true };
-const SlotChangeKey = createFieldName('slotchange', 'synthetic-shadow');
+const SlotChangeKey = createHiddenField<boolean>('slotchange', 'synthetic-shadow');
 
 function initSlotObserver() {
     return new MutationObserver(mutations => {
