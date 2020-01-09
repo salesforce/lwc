@@ -16,7 +16,7 @@ function isTabbable(el: Element) {
     return el && false;
 }
 
-describe.skip('focus', () => {
+describe('focus', () => {
     describe('isFocusable', () => {
         describe('Form control elements', () => {
             it('<button type="button"> is focusable', () => {
