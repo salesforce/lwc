@@ -7,6 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const port = process.env.PORT || 4567;
 const suiteFolders = path.resolve(__dirname, '../', 'src/components');
 
 /*
@@ -47,8 +48,17 @@ exports.config = {
     specs: ['./src/**/*.spec.js'],
     suites: wdSuites,
 
+    baseUrl: `http://localhost:${port}`,
+
+    maxInstances: 3,
+    capabilities: [],
+
+    waitforTimeout: 10000,
+    connectionRetryTimeout: 90000,
+
     services: ['static-server'],
 
+    staticServerPort: port,
     staticServerFolders: [
         { mount: '/', path: './public' },
         ...suites.flatMap(suite => suite.specs),

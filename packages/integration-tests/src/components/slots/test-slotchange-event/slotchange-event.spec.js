@@ -6,7 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = 'http://localhost:4567/slotchange-event';
+const URL = '/slotchange-event';
 
 describe('slotchange', () => {
     before(() => {

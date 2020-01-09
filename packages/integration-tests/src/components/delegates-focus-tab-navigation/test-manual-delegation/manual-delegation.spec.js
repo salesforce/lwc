@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = 'http://localhost:4567/manual-delegation';
+const URL = '/manual-delegation';
 
 describe('Tab navigation when component passes tabindex attribute to an internal element', () => {
     before(() => {

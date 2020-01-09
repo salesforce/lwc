@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Retarget relatedTarget', () => {
-    const URL = 'http://localhost:4567/retarget-slotted-custom-element-related-target';
+    const URL = '/retarget-slotted-custom-element-related-target';
 
     before(() => {
         browser.url(URL);

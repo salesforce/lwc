@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('focus delegation when clicking on form element label', () => {
-    const URL = 'http://localhost:4567/delegates-focus-non-focusable-click-target';
+    const URL = '/delegates-focus-non-focusable-click-target';
 
     beforeEach(() => {
         browser.url(URL);

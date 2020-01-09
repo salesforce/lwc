@@ -6,7 +6,7 @@
  */
 
 describe('Tabbing into custom element with delegates focus', () => {
-    const URL = 'http://localhost:4567/delegates-focus-negative-tabindex-focusin-handler';
+    const URL = '/delegates-focus-negative-tabindex-focusin-handler';
 
     before(() => {
         browser.url(URL);

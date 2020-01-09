@@ -6,7 +6,7 @@
  */
 
 describe('shadow root element from point should return correct element', () => {
-    const URL = 'http://localhost:4567/element-from-point/';
+    const URL = '/element-from-point/';
 
     before(() => {
         browser.url(URL);

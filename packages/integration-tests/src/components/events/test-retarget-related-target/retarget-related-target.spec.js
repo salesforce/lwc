@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Retarget relatedTarget', () => {
-    const URL = 'http://localhost:4567/retarget-related-target';
+    const URL = '/retarget-related-target';
 
     before(() => {
         browser.url(URL);

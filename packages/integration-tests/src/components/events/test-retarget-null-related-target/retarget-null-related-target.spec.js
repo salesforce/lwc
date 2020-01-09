@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 describe('Retarget relatedTarget', () => {
-    const URL = 'http://localhost:4567/retarget-null-related-target';
+    const URL = '/retarget-null-related-target';
 
     before(() => {
         browser.url(URL);

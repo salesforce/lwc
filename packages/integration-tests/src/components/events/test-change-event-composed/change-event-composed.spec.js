@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Composed change event', () => {
-    const URL = 'http://localhost:4567/change-event-composed/';
+    const URL = '/change-event-composed/';
 
     before(() => {
         browser.url(URL);

@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Tabbing into custom element with delegates focus', () => {
-    const URL = 'http://localhost:4567/delegates-focus-slot';
+    const URL = '/delegates-focus-slot';
 
     before(() => {
         browser.url(URL);

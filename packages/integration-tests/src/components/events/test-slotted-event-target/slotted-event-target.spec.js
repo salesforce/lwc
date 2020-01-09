@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Event target in slot elements', () => {
-    const URL = 'http://localhost:4567/slotted-event-target/';
+    const URL = '/slotted-event-target/';
 
     before(() => {
         browser.url(URL);
