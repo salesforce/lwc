@@ -130,4 +130,19 @@ exports.config = merge(baseConfig.config, {
     key: accessKey,
 
     capabilities: getCapabilities(),
+
+    maxInstances: 3,
+
+    // Specifies globally the timeout for all the `waitFor*` defined by wdio.
+    // https://webdriver.io/docs/timeouts.html#webdriverio-related-timeouts
+    waitforTimeout: 20 * 1000, // 20 seconds
+
+    connectionRetryTimeout: 2 * 60 * 1000, // 2 minutes
+    connectionRetryCount: 5,
+
+    mochaOpts: {
+        // Specify test timeout threshold time enforced by mocha.
+        // https://mochajs.org/#-timeout-ms-t-ms
+        timeout: 30 * 1000, // 30 seconds
+    },
 });

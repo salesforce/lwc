@@ -31,7 +31,7 @@ describe('Tabbing into custom element with delegates focus', () => {
                 });
                 return div.getText() === 'Focus in called';
             },
-            500,
+            undefined,
             'expected focusin to have been triggered'
         );
     });
