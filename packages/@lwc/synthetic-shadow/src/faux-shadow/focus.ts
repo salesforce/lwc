@@ -145,7 +145,7 @@ function relatedTargetPosition(host: HTMLElement, relatedTarget: EventTarget): n
     return -1;
 }
 
-function muteEvent(event) {
+function muteEvent(event: Event) {
     event.preventDefault();
     event.stopPropagation();
 }

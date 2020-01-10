@@ -32,6 +32,14 @@ const observerLookupField = '$$lwcNodeObservers$$';
 
 const observerToNodesMap: WeakMap<MutationObserver, Array<Node>> = new WeakMap();
 
+function getNodeObservers(node: Node): MutationObserver[] {
+    return (node as any)[observerLookupField];
+}
+
+function setNodeObservers(node: Node, observers: MutationObserver[]) {
+    (node as any)[observerLookupField] = observers;
+}
+
 /**
  * Retarget the mutation record's target value to its shadowRoot
  * @param {MutationRecord} originalRecord
@@ -81,7 +89,7 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
 function isQualifiedObserver(observer: MutationObserver, target: Node): boolean {
     let parentNode: Node | null = target;
     while (!isNull(parentNode)) {
-        const parentNodeObservers = parentNode[observerLookupField];
+        const parentNodeObservers = getNodeObservers(parentNode);
         if (
             !isUndefined(parentNodeObservers) &&
             (parentNodeObservers[0] === observer || // perf optimization to check for the first item is a match
@@ -124,10 +132,11 @@ function filterMutationRecords(
                     if (isQualifiedObserver(observer, sampleNode)) {
                         // If the target was being observed, then return record as-is
                         // this will be the case for slot content
+                        const nodeObservers = getNodeObservers(target);
                         if (
-                            target[observerLookupField] &&
-                            (target[observerLookupField][0] === observer ||
-                                ArrayIndexOf.call(target[observerLookupField], observer) !== -1)
+                            nodeObservers &&
+                            (nodeObservers[0] === observer ||
+                                ArrayIndexOf.call(nodeObservers, observer) !== -1)
                         ) {
                             ArrayPush.call(filteredSet, record);
                         } else {
@@ -139,19 +148,22 @@ function filterMutationRecords(
                     // In the case of removed nodes, climbing the tree is not an option as the nodes are disconnected
                     // We can only check if either the host or shadow root was observed and qualify the record
                     const shadowRoot = (target as Element).shadowRoot;
-                    const sampleNode: Node = removedNodes[0];
+                    const sampleNode = removedNodes[0];
                     if (
                         getNodeNearestOwnerKey(target) === getNodeNearestOwnerKey(sampleNode) && // trickery: sampleNode is slot content
                         isQualifiedObserver(observer, target) // use target as a close enough reference to climb up
                     ) {
                         ArrayPush.call(filteredSet, record);
-                    } else if (
-                        shadowRoot &&
-                        shadowRoot[observerLookupField] &&
-                        (shadowRoot[observerLookupField][0] === observer ||
-                            ArrayIndexOf.call(shadowRoot[observerLookupField], observer) !== -1)
-                    ) {
-                        ArrayPush.call(filteredSet, retargetMutationRecord(record));
+                    } else if (shadowRoot) {
+                        const shadowRootObservers = getNodeObservers(shadowRoot);
+
+                        if (
+                            shadowRootObservers &&
+                            (shadowRootObservers[0] === observer ||
+                                ArrayIndexOf.call(shadowRootObservers, observer) !== -1)
+                        ) {
+                            ArrayPush.call(filteredSet, retargetMutationRecord(record));
+                        }
                     }
                 }
             } else {
@@ -231,13 +243,16 @@ function patchedObserve(
     target: Node,
     options?: MutationObserverInit
 ): void {
+    let targetObservers = getNodeObservers(target);
+
     // Maintain a list of all observers that want to observe a node
-    if (isUndefined(target[observerLookupField])) {
-        defineProperty(target, observerLookupField, { value: [] });
+    if (isUndefined(targetObservers)) {
+        targetObservers = [];
+        setNodeObservers(target, targetObservers);
     }
     // Same observer trying to observe the same node
-    if (ArrayIndexOf.call(target[observerLookupField], this) === -1) {
-        ArrayPush.call(target[observerLookupField], this);
+    if (ArrayIndexOf.call(targetObservers, this) === -1) {
+        ArrayPush.call(targetObservers, this);
     } // else There is more bookkeeping to do here https://dom.spec.whatwg.org/#dom-mutationobserver-observe Step #7
 
     // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment

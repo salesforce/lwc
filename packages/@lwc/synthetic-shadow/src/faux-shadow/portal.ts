@@ -126,13 +126,14 @@ function markElementAsPortal(elm: Element) {
 // TODO [#1306]: rename this to $observerConnection$
 defineProperty(Element.prototype, '$domManual$', {
     set(this: Element, v: boolean) {
-        this[DomManualPrivateKey] = v;
+        (this as any)[DomManualPrivateKey] = v;
+
         if (isTrue(v)) {
             markElementAsPortal(this);
         }
     },
-    get() {
-        return this[DomManualPrivateKey];
+    get(this: Element) {
+        return (this as any)[DomManualPrivateKey];
     },
     configurable: true,
 });

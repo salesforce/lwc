@@ -31,7 +31,7 @@ const escapeAttrRegExp = /[&\u00A0"]/g;
 const escapeDataRegExp = /[&\u00A0<>]/g;
 const { replace, toLowerCase } = String.prototype;
 
-function escapeReplace(c) {
+function escapeReplace(c: string): string {
     switch (c) {
         case '&':
             return '&amp;';
@@ -48,11 +48,11 @@ function escapeReplace(c) {
     }
 }
 
-function escapeAttr(s) {
+function escapeAttr(s: string): string {
     return replace.call(s, escapeAttrRegExp, escapeReplace);
 }
 
-function escapeData(s) {
+function escapeData(s: string): string {
     return replace.call(s, escapeDataRegExp, escapeReplace);
 }
 

@@ -47,7 +47,7 @@ function isChildNode(root: Element, node: Node): boolean {
 
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
-function getRootNodeHost(node: Node, options): Node {
+function getRootNodeHost(node: Node, options: GetRootNodeOptions): Node {
     let rootNode = node.getRootNode(options);
 
     // is SyntheticShadowRootInterface
@@ -92,7 +92,7 @@ function targetGetter(this: Event): EventTarget | null {
 }
 
 function composedPathValue(this: Event): EventTarget[] {
-    const originalTarget: EventTarget = eventTargetGetter.call(this);
+    const originalTarget = eventTargetGetter.call(this);
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
     // if the dispatch phase is done, the composedPath should be empty array
     return isNull(originalCurrentTarget) ? [] : pathComposer(originalTarget as Node, this.composed);
@@ -187,7 +187,7 @@ function getWrappedShadowRootListener(
             // * if the event is dispatched directly on the host, it is not observable from root
             // * if the event is dispatched in an element that does not belongs to the shadow and it is not composed,
             //   it is not observable from the root
-            const { composed } = event as any;
+            const { composed } = event;
             const target = eventTargetGetter.call(event);
             const currentTarget = eventCurrentTargetGetter.call(event);
             if (target !== currentTarget) {
@@ -323,7 +323,7 @@ function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
 function isValidEventForCustomElement(event: Event): boolean {
     const target = eventTargetGetter.call(event);
     const currentTarget = eventCurrentTargetGetter.call(event);
-    const { composed } = event as any;
+    const { composed } = event;
     return (
         // it is composed, and we should always get it, or
         composed === true ||

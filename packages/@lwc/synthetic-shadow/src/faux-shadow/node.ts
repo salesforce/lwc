@@ -44,15 +44,13 @@ import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from '
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
-// DO NOT CHANGE this:
-// these two values need to be in sync with engine
-const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
+const OwnerKey = '$$OwnerKey$$';
 
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
 export function getNodeOwnerKey(node: Node): number | undefined {
-    return node[OwnerKey];
+    return (node as any)[OwnerKey];
 }
 
 export function setNodeOwnerKey(node: Node, value: number | undefined) {
@@ -64,8 +62,12 @@ export function setNodeOwnerKey(node: Node, value: number | undefined) {
         });
     } else {
         // in prod, for better perf, we just let it roll
-        node[OwnerKey] = value;
+        (node as any)[OwnerKey] = value;
     }
+}
+
+export function getNodeKey(node: Node): number | undefined {
+    return (node as any)[OwnKey];
 }
 
 export function setNodeKey(node: Node, value: number) {
@@ -76,7 +78,7 @@ export function setNodeKey(node: Node, value: number) {
         });
     } else {
         // in prod, for better perf, we just let it roll
-        node[OwnKey] = value;
+        (node as any)[OwnKey] = value;
     }
 }
 
@@ -85,16 +87,12 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
     let ownerKey: number | undefined;
     // search for the first element with owner identity (just in case of manually inserted elements)
     while (!isNull(ownerNode)) {
-        ownerKey = ownerNode[OwnerKey];
+        ownerKey = getNodeOwnerKey(ownerNode);
         if (!isUndefined(ownerKey)) {
             return ownerKey;
         }
         ownerNode = parentNodeGetter.call(ownerNode);
     }
-}
-
-export function getNodeKey(node: Node): number | undefined {
-    return node[OwnKey];
 }
 
 /**
@@ -210,7 +208,7 @@ function containsPatched(this: Node, otherNode: Node) {
     return (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
 }
 
-function cloneNodePatched(this: Node, deep: boolean): Node {
+function cloneNodePatched(this: Node, deep?: boolean): Node {
     const clone = nativeCloneNode.call(this, false);
 
     // Per spec, browsers only care about truthy values
@@ -230,7 +228,7 @@ function cloneNodePatched(this: Node, deep: boolean): Node {
 /**
  * This method only applies to elements with a shadow or slots
  */
-function childNodesGetterPatched(this: Node): NodeListOf<Node & Element> {
+function childNodesGetterPatched(this: Node): NodeListOf<Node> {
     if (this instanceof Element && isHostElement(this)) {
         const owner = getNodeOwner(this);
         const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
@@ -380,7 +378,7 @@ defineProperties(Node.prototype, {
         configurable: true,
     },
     childNodes: {
-        get(this: Node): NodeListOf<Node & Element> {
+        get(this: Node): NodeListOf<Node> {
             if (hasMountedChildren(this)) {
                 return childNodesGetterPatched.call(this);
             }
@@ -481,9 +479,9 @@ let internalChildNodeAccessorFlag = false;
 export function isExternalChildNodeAccessorFlagOn(): boolean {
     return !internalChildNodeAccessorFlag;
 }
-export const getInternalChildNodes =
+export const getInternalChildNodes: (node: Node) => NodeListOf<ChildNode> =
     process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)
-        ? function(node: Node): NodeListOf<ChildNode> {
+        ? function(node) {
               internalChildNodeAccessorFlag = true;
               let childNodes;
               let error = null;
@@ -499,9 +497,9 @@ export const getInternalChildNodes =
                       throw error; // eslint-disable-line no-unsafe-finally
                   }
               }
-              return childNodes;
+              return childNodes as NodeListOf<ChildNode>;
           }
-        : function(node: Node): NodeListOf<ChildNode> {
+        : function(node) {
               return node.childNodes;
           };
 
@@ -510,7 +508,7 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'contains')) {
     defineProperty(
         HTMLElement.prototype,
         'contains',
-        getOwnPropertyDescriptor(Node.prototype, 'contains') as PropertyDescriptor
+        getOwnPropertyDescriptor(Node.prototype, 'contains')!
     );
 }
 
@@ -518,6 +516,6 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'parentElement')) {
     defineProperty(
         HTMLElement.prototype,
         'parentElement',
-        getOwnPropertyDescriptor(Node.prototype, 'parentElement') as PropertyDescriptor
+        getOwnPropertyDescriptor(Node.prototype, 'parentElement')!
     );
 }

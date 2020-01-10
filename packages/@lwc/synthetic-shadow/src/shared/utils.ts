@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayConstructor, isUndefined, isTrue } from '@lwc/shared';
+import { isUndefined, isTrue } from '@lwc/shared';
 import { ownerDocumentGetter } from '../env/node';
 import { defaultViewGetter } from '../env/document';
 import { getAttribute } from '../env/element';
@@ -51,7 +51,7 @@ export function arrayFromCollection<T extends Node, K extends Element>(
     collection: NodeListOf<T> | HTMLCollectionOf<K>
 ): Array<T | K> {
     const size = collection.length;
-    const cloned: T[] | K[] = new ArrayConstructor(size);
+    const cloned: T[] | K[] = [];
     if (size > 0) {
         for (let i = 0; i < size; i++) {
             cloned[i] = collection[i];

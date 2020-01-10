@@ -5,25 +5,19 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayMap,
     create,
     defineProperty,
     forEach,
+    ArrayMap,
     setPrototypeOf,
     createHiddenField,
     getHiddenField,
     setHiddenField,
 } from '@lwc/shared';
 
+import { getAttribute } from '../env/element';
+
 const Items = createHiddenField<Element[]>('StaticHTMLCollectionItems', 'synthetic-shadow');
-
-function isValidHTMLCollectionName(name) {
-    return name !== 'length' && isNaN(name);
-}
-
-function getNodeHTMLCollectionName(node) {
-    return node.getAttribute('id') || node.getAttribute('name');
-}
 
 function StaticHTMLCollection() {
     throw new TypeError('Illegal constructor');
@@ -55,29 +49,34 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         value(name: string) {
-            if (isValidHTMLCollectionName(name) && this[name]) {
-                return this[name];
+            if (name === '') {
+                return null;
             }
+
             const items = getHiddenField(this, Items)!;
-            // Note: loop in reverse so that the first named item matches the named property
-            for (let len = items.length - 1; len >= 0; len -= 1) {
+            for (let i = 0, len = items.length; i < len; i++) {
                 const item = items[len];
-                const nodeName = getNodeHTMLCollectionName(item);
-                if (nodeName === name) {
+
+                if (
+                    name === getAttribute.call(item, 'id') ||
+                    name === getAttribute.call(item, 'name')
+                ) {
                     return item;
                 }
             }
+
             return null;
         },
     },
 
-    // Iterator protocol
-
+    // Iterable protocol
+    // TODO [#1665]: HTMLCollection should not implement the iterable protocol. The only collection
+    // interface implementing this protocol is NodeList. This code need to be removed.
     forEach: {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(cb, thisArg) {
+        value(cb: (value: Element, key: number, parent: Element[]) => void, thisArg?: any) {
             forEach.call(getHiddenField(this, Items), cb, thisArg);
         },
     },
@@ -86,7 +85,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(getHiddenField(this, Items), (v: any, i: number) => [i, v]);
+            return ArrayMap.call(getHiddenField(this, Items), (v, i) => [i, v]);
         },
     },
     keys: {
@@ -94,7 +93,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(getHiddenField(this, Items), (v: any, i: number) => i);
+            return ArrayMap.call(getHiddenField(this, Items), (v, i) => i);
         },
     },
     values: {
@@ -125,6 +124,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
             };
         },
     },
+
     [Symbol.toStringTag]: {
         configurable: true,
         get() {

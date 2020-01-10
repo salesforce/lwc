@@ -38,7 +38,7 @@ import { arrayFromCollection } from '../shared/utils';
 // "Registered observers in a node’s registered observer list have a weak
 // reference to the node."
 // https://dom.spec.whatwg.org/#garbage-collection
-let observer;
+let observer: MutationObserver | undefined;
 
 const observerConfig: MutationObserverInit = { childList: true };
 const SlotChangeKey = createHiddenField<boolean>('slotchange', 'synthetic-shadow');
@@ -154,7 +154,7 @@ defineProperties(HTMLSlotElement.prototype, {
         configurable: true,
     },
     childNodes: {
-        get(this: HTMLSlotElement): NodeListOf<Node & Element> {
+        get(this: HTMLSlotElement): NodeListOf<Node> {
             if (isNodeShadowed(this)) {
                 const owner = getNodeOwner(this);
                 const childNodes = isNull(owner)
