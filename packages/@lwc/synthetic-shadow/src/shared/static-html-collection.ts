@@ -8,6 +8,7 @@ import {
     create,
     defineProperty,
     forEach,
+    ArrayMap,
     setPrototypeOf,
     createHiddenField,
     getHiddenField,
@@ -65,6 +66,62 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
             }
 
             return null;
+        },
+    },
+
+    // Iterable protocol
+    // TODO [#1665]: HTMLCollection should not implement the iterable protocol. The only collection
+    // interface implementing this protocol is NodeList. This code need to be removed.
+    forEach: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(cb: (value: Element, key: number, parent: Element[]) => void, thisArg?: any) {
+            forEach.call(getHiddenField(this, Items), cb, thisArg);
+        },
+    },
+    entries: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value() {
+            return ArrayMap.call(getHiddenField(this, Items), (v, i) => [i, v]);
+        },
+    },
+    keys: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value() {
+            return ArrayMap.call(getHiddenField(this, Items), (v, i) => i);
+        },
+    },
+    values: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value() {
+            return getHiddenField(this, Items);
+        },
+    },
+    [Symbol.iterator]: {
+        writable: true,
+        configurable: true,
+        value() {
+            let nextIndex = 0;
+            return {
+                next: () => {
+                    const items = getHiddenField(this, Items)!;
+                    return nextIndex < items.length
+                        ? {
+                              value: items[nextIndex++],
+                              done: false,
+                          }
+                        : {
+                              done: true,
+                          };
+                },
+            };
         },
     },
 
