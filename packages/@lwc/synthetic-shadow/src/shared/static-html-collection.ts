@@ -53,8 +53,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
             }
 
             const items = getHiddenField(this, Items)!;
-            // Note: loop in reverse so that the first named item matches the named property
-            for (let len = items.length - 1; len >= 0; len -= 1) {
+            for (let i = 0, len = items.length; i < len; i++) {
                 const item = items[len];
 
                 if (
