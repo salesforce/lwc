@@ -37,7 +37,7 @@ load_workspace: &load_workspace
 # Build
 install_and_build: &install_and_build
   run:
-    name: Install depedencies and build
+    name: Install dependencies and build
     command: yarn install --frozen-lockfile
 
 run_sanity_checks: &run_sanity_checks
@@ -71,19 +71,12 @@ start_sauce_connect: &start_sauce_connect
     name: Install and start sauce connect
     background: true
     command: |
-        if [ -z "$SAUCE_USERNAME" ] || [ -z "$SAUCE_KEY" ]; then
-          echo 'Sauce credentials are unavailable. Failing...'
-          exit 1;
-        else
-          echo 'Sauce credentials available, proceeding to setup tunnel'
-          # Be mindfull when upgrading the version of sauce connect. Saucelabs' support acknowledged that the 4.5.2 and
-          # 4.5.3 versions have some issues related to tunnel creation.
-          curl https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz -o saucelabs.tar.gz
-          tar -xzf saucelabs.tar.gz
-          cd sc-*
-          bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY} -i ${SAUCE_TUNNEL_ID}
-          echo 'Sauce is up and running'
-        fi
+        # Be mindful when upgrading the version of sauce connect. Saucelabs' support acknowledged that the 4.5.2 and
+        # 4.5.3 versions have some issues related to tunnel creation.
+        curl https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz -o saucelabs.tar.gz
+        tar -xzf saucelabs.tar.gz
+        cd sc-*
+        bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY} -i ${SAUCE_TUNNEL_ID}
 
 wait_for_sauce_connect: &wait_for_sauce_connect
   run:
@@ -93,9 +86,7 @@ wait_for_sauce_connect: &wait_for_sauce_connect
 stop_sauce_connect: &stop_sauce_connect
   run:
     name: Stop sauce connect
-    command: |
-      echo "Shutting tunnel ID ${SAUCE_TUNNEL_ID}"
-      kill -9 `cat /tmp/sc_client-${SAUCE_TUNNEL_ID}.pid`
+    command: kill -9 `cat /tmp/sc_client-${SAUCE_TUNNEL_ID}.pid`
 
 # Test
 run_unit_tests: &run_unit_tests
@@ -275,6 +266,10 @@ workflows:
             - build
 
       - test_karma:
+          filters:
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - build
 
@@ -295,11 +290,19 @@ workflows:
             - build
 
       - test_integration:
+          filters:
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - test_unit
             - test_karma
 
       - test_integration_compat:
+          filters:
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - test_unit
             - test_karma
