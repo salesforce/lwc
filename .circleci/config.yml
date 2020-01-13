@@ -11,9 +11,6 @@ env_perf: &env_perf
 
 env_test: &env_test
   <<: *env_default
-  environment:
-    - SAUCE_USERNAME: lwc_ci
-    - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
 
 # Yarn cache
 restore_yarn_cache: &restore_yarn_cache
@@ -40,7 +37,7 @@ load_workspace: &load_workspace
 # Build
 install_and_build: &install_and_build
   run:
-    name: Install depedencies and build
+    name: Install dependencies and build
     command: yarn install --frozen-lockfile
 
 run_sanity_checks: &run_sanity_checks
@@ -65,7 +62,7 @@ run_linting: &run_linting
 # Sauce connect
 setup_sauce_env_variables: &setup_sauce_env_variables
   run:
-    name: Setup sauce connect environement variables
+    name: Setup sauce connect environment variables
     command: |
         echo 'export SAUCE_TUNNEL_ID="lwc-${CIRCLE_BUILD_NUM}"' >> $BASH_ENV
 
@@ -74,7 +71,7 @@ start_sauce_connect: &start_sauce_connect
     name: Install and start sauce connect
     background: true
     command: |
-        # Be mindfull when upgrading the version of sauce connect. Saucelabs' support acknowledged that the 4.5.2 and
+        # Be mindful when upgrading the version of sauce connect. Saucelabs' support acknowledged that the 4.5.2 and
         # 4.5.3 versions have some issues related to tunnel creation.
         curl https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz -o saucelabs.tar.gz
         tar -xzf saucelabs.tar.gz
@@ -212,7 +209,6 @@ jobs:
 
       - *stop_sauce_connect
 
-
   test_integration:
     <<: *env_test
     steps:
@@ -270,6 +266,10 @@ workflows:
             - build
 
       - test_karma:
+          filters:
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - build
 
@@ -290,11 +290,19 @@ workflows:
             - build
 
       - test_integration:
+          filters:
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - test_unit
             - test_karma
 
       - test_integration_compat:
+          filters:
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - test_unit
             - test_karma
