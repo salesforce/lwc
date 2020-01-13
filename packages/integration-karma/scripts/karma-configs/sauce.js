@@ -28,7 +28,7 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
-        platform: 'OS X 10.13',
+        version: 'latest',
         compat: false,
         nativeShadowCompatible: true,
     },
