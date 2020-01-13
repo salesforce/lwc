@@ -514,7 +514,7 @@ describe('expression', () => {
         const { root } = parseTemplate(
             `<template><select title=&#x007B;x&#x007D;></select></template>`
         );
-        expect(root.children[0].attrs.title.value).toBe('{x}');
+        expect(root.children[0].attrs.title).toMatchObject({ value: TEMPLATE_IDENTIFIER });
     });
 
     it('potential expression error', () => {

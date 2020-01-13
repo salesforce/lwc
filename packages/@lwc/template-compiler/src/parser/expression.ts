@@ -33,9 +33,8 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
-export function isUnicodeExpression(source: string, isQuoted: boolean): boolean {
-    source = isQuoted ? source.slice(1, -1) : source || '';
-    return source.startsWith('&#x007B;') && source.endsWith('&#x007D;');
+export function isUnicodeExpression(source: string): boolean {
+    return !!source && source.startsWith('"&#x007B;') && source.endsWith('&#x007D;"');
 }
 
 // FIXME: Avoid throwing errors and return it properly
