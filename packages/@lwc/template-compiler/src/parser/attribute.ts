@@ -177,7 +177,7 @@ export function normalizeAttributeValue(
 
     // <input value="myValue"/>
     // -> Valid string literal.
-    return { value, escapedExpression: isUnicodeExpression(rawValue, isQuoted) };
+    return { value, escapedExpression: isUnicodeExpression(rawValue) };
 }
 
 export function attributeName(attr: parse5.AST.Default.Attribute): string {
