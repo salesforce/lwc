@@ -465,6 +465,34 @@ describe('expression', () => {
         });
     });
 
+    it('quoted expression with leading spaces should produce error', () => {
+        const { warnings } = parseTemplate(`<template><input title="  {myValue}" /></template>`);
+        expect(warnings[0].message).toMatch(`Ambiguous attribute value title="  {myValue}"`);
+        expect(warnings[0]).toMatchObject({
+            location: EXPECTED_LOCATION,
+        });
+    });
+    // if the curly brace is at 0th or 1st position of the string, then it is currenlty an error (given closing brace exists)
+    // "{username}-lightningUpload-{recId}-"
+    // "[{asdf}]"
+    it('quoted expression with leading characters should not produce error', () => {
+        const testAttr = 'h{myValue}';
+        const { root } = parseTemplate(`<template><input title="${testAttr}"/></template>`);
+        expect(root.children[0].attrs.title).toMatchObject({ value: testAttr });
+    });
+
+    it('quoted expression warpped in square brackets should not produce error', () => {
+        const testAttr = '[{myValue}]';
+        const { root } = parseTemplate(`<template><input title="${testAttr}"/></template>`);
+        expect(root.children[0].attrs.title).toMatchObject({ value: testAttr });
+    });
+
+    it('quoted expression with trailing characters should not produce error', () => {
+        const testAttr = '{myValue}content';
+        const { root } = parseTemplate(`<template><input title="${testAttr}"/></template>`);
+        expect(root.children[0].attrs.title).toMatchObject({ value: testAttr });
+    });
+
     it('autofix unquoted value next to unary tag', () => {
         const { root } = parseTemplate(`<template><input title={myValue}/></template>`);
         expect(root.children[0].attrs.title).toMatchObject({ value: TEMPLATE_IDENTIFIER });
@@ -473,6 +501,20 @@ describe('expression', () => {
     it('escaped attribute with curly braces', () => {
         const { root } = parseTemplate(`<template><input title="\\{myValue}"/></template>`);
         expect(root.children[0].attrs.title.value).toBe('{myValue}');
+    });
+
+    it('escaped brace characters', () => {
+        const { root } = parseTemplate(
+            `<template><select title="&#x007B;x&#x007D;"></select></template>`
+        );
+        expect(root.children[0].attrs.title.value).toBe('{x}');
+    });
+
+    it('escaped expression', () => {
+        const { root } = parseTemplate(
+            `<template><select title=&#x007B;x&#x007D;></select></template>`
+        );
+        expect(root.children[0].attrs.title.value).toBe('{x}');
     });
 
     it('potential expression error', () => {

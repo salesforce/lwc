@@ -20,7 +20,7 @@ import { isBoundToIterator } from '../shared/ir';
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
 
-const VALID_EXPRESSION_RE = /^{.+}$/;
+const VALID_EXPRESSION_RE = /^\s*{.+}$/;
 const POTENTIAL_EXPRESSION_RE = /^.?{.+}.*$/;
 
 const ITERATOR_NEXT_KEY = 'next';
@@ -31,6 +31,11 @@ export function isExpression(source: string): boolean {
 
 export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
+}
+
+export function isUnicodeExpression(source: string, isQuoted: boolean): boolean {
+    source = isQuoted ? source.slice(1, -1) : source || '';
+    return source.startsWith('&#x007B;') && source.endsWith('&#x007D;');
 }
 
 // FIXME: Avoid throwing errors and return it properly

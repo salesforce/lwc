@@ -14,6 +14,7 @@ import {
     EXPRESSION_SYMBOL_START,
     isExpression,
     isPotentialExpression,
+    isUnicodeExpression,
 } from './expression';
 
 import { IRElement } from '../shared/types';
@@ -37,14 +38,12 @@ import {
 
 import { isCustomElement } from '../shared/ir';
 
-function isQuotedAttribute(rawAttribute: string) {
-    const [, value] = rawAttribute.split('=');
-    return value && value.startsWith('"') && value.endsWith('"');
+function isQuotedAttribute(rawValue: string): boolean {
+    return rawValue ? rawValue.startsWith('"') && rawValue.endsWith('"') : false;
 }
 
-function isEscapedAttribute(rawAttribute: string) {
-    const [, value] = rawAttribute.split('=');
-    return !value || !(value.includes('{') && value.includes('}'));
+function hasMatchingBrackets(rawValue: string) {
+    return rawValue && rawValue.includes('{') && rawValue.includes('}');
 }
 
 const booleanAttributes = new Set<string>([
@@ -109,6 +108,7 @@ export function normalizeAttributeValue(
     escapedExpression: boolean;
 } {
     const { name, value } = attr;
+    const [, rawValue] = raw.split('=');
     if (booleanAttributes.has(name)) {
         if (value === 'true') {
             throw generateCompilerError(ParserDiagnostics.BOOLEAN_ATTRIBUTE_TRUE, {
@@ -121,10 +121,15 @@ export function normalizeAttributeValue(
         }
     }
 
-    const isQuoted = isQuotedAttribute(raw);
-    const isEscaped = isEscapedAttribute(raw);
-    if (!isEscaped && isExpression(value)) {
-        if (isQuoted) {
+    const isQuoted = isQuotedAttribute(rawValue);
+    const matchedBrackets = hasMatchingBrackets(rawValue);
+    if (matchedBrackets && isExpression(value)) {
+        const trimmed = value.trim();
+        if (
+            isQuoted &&
+            trimmed.startsWith(EXPRESSION_SYMBOL_START) &&
+            trimmed.endsWith(EXPRESSION_SYMBOL_END)
+        ) {
             // <input value="{myValue}" />
             // -> ambiguity if the attribute value is a template identifier or a string literal.
 
@@ -139,7 +144,8 @@ export function normalizeAttributeValue(
         // <input value={myValue} />
         // -> Valid identifier.
         return { value, escapedExpression: false };
-    } else if (!isEscaped && isPotentialExpression(value)) {
+    } else if (matchedBrackets && isPotentialExpression(value)) {
+        // Due to html parser limitations we have to check self-closing edge cases
         const isExpressionEscaped = value.startsWith(`\\${EXPRESSION_SYMBOL_START}`);
         const isExpressionNextToSelfClosing =
             value.startsWith(EXPRESSION_SYMBOL_START) &&
@@ -157,20 +163,21 @@ export function normalizeAttributeValue(
             // -> Valid escaped string literal
 
             return { value: value.slice(1), escapedExpression: true };
+        } else if (!isQuoted) {
+            // <input title={myValue}checked />
+            let escaped = raw.replace(/="?/, '="\\');
+            escaped += escaped.endsWith('"') ? '' : '"';
+
+            // Throw if the attribute value looks like an expression, but it can't be resolved by the compiler.
+            throw generateCompilerError(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, {
+                messageArgs: [raw, escaped],
+            });
         }
-
-        let escaped = raw.replace(/="?/, '="\\');
-        escaped += escaped.endsWith('"') ? '' : '"';
-
-        // Throw if the attribute value looks like an expression, but it can't be resolved by the compiler.
-        throw generateCompilerError(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, {
-            messageArgs: [raw, escaped],
-        });
     }
 
     // <input value="myValue"/>
     // -> Valid string literal.
-    return { value, escapedExpression: false };
+    return { value, escapedExpression: isUnicodeExpression(rawValue, isQuoted) };
 }
 
 export function attributeName(attr: parse5.AST.Default.Attribute): string {
