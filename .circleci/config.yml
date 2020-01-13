@@ -160,12 +160,6 @@ store_best_artifacts: &store_best_artifacts
     path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
     destination: benchmarks
 
-# Canary publish
-publish_canary_artifacts: &publish_canary_artifacts
-  run:
-    name: Publish canary artifacts
-    command: node scripts/release_canary_npm.js ${CIRCLE_SHA1} packages/@lwc packages
-
 
 # Jobs definition
 version: 2
@@ -247,13 +241,6 @@ jobs:
       - *store_best_artifacts
 
 
-  push_canary_npm_artifacts:
-    <<: *env_default
-    steps:
-      - *load_workspace
-      - *publish_canary_artifacts
-
-
 # Workflows definition
 workflows:
   version: 2
@@ -274,14 +261,6 @@ workflows:
             - build
 
       - perf_and_compare:
-          filters:
-              branches:
-                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
-                ignore: /pull\/[0-9]+/
-          requires:
-            - build
-
-      - push_canary_npm_artifacts:
           filters:
               branches:
                 # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
