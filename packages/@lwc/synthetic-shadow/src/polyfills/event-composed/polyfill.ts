@@ -57,7 +57,35 @@ export default function apply() {
         keypress: 1,
     });
 
-    // Composed for Native events
+    const EventConstructor = Event;
+
+    // Patch Event constructor to add the composed property on events created via new Event.
+    function PatchedEvent(this: Event, type: string, eventInitDict?: EventInit): Event {
+        const event = new EventConstructor(type, eventInitDict);
+
+        const isComposed = !!(eventInitDict && eventInitDict.composed);
+        Object.defineProperties(event, {
+            composed: {
+                get(): boolean {
+                    return isComposed;
+                },
+                configurable: true,
+                enumerable: true,
+            },
+        });
+
+        return event;
+    }
+
+    PatchedEvent.prototype = EventConstructor.prototype;
+    PatchedEvent.AT_TARGET = EventConstructor.AT_TARGET;
+    PatchedEvent.BUBBLING_PHASE = EventConstructor.BUBBLING_PHASE;
+    PatchedEvent.CAPTURING_PHASE = EventConstructor.CAPTURING_PHASE;
+    PatchedEvent.NONE = EventConstructor.NONE;
+
+    (window as any).Event = PatchedEvent;
+
+    // Patch the Event prototype to add the composed property on user agent dispatched event.
     Object.defineProperties(Event.prototype, {
         composed: {
             get() {
