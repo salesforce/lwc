@@ -19,7 +19,7 @@ function testCloneNodeShadowRoot(deep) {
     });
 
     // TODO [#1065]: Node.cloneNode should throw an error in all modes
-    xit(`should throw when invoking cloneNode on a shadowRoot with deep=${deep}`, () => {
+    it(`should throw when invoking cloneNode on a shadowRoot with deep=${deep}`, () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
