@@ -5,8 +5,7 @@ import Text from 'x/text';
 import Slotted from 'x/slotted';
 
 describe('ParentNode.childElementCount', () => {
-    // TODO [#977]: in test mode the children doesn't return the right set of values
-    xit('should return the number of children elements', () => {
+    it('should return the number of children elements', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
@@ -20,8 +19,7 @@ describe('ParentNode.childElementCount', () => {
         expect(elm.shadowRoot.childElementCount).toBe(0);
     });
 
-    // TODO [#977]: in test mode the children doesn't return the right set of values
-    xit('should return the right number of elements for content children', () => {
+    it('should return the right number of elements for content children', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 

@@ -28,8 +28,7 @@ describe('Node.textContent - getter', () => {
 });
 
 describe('Node.textContent - setter', () => {
-    // TODO [#990]: no error is thrown when invoking textContent on the host element
-    xit('should throw when invoking setter on the host element', () => {
+    it('should throw when invoking setter on the host element', () => {
         const elm = createElement('x-test', { is: Slotted });
         document.body.appendChild(elm);
 
