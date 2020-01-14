@@ -31,6 +31,7 @@ import {
     firstChildGetter,
     textContentGetter,
     childNodesGetter,
+    isConnected,
 } from '../env/node';
 import {
     getNodeOwner,
@@ -465,6 +466,13 @@ defineProperties(Node.prototype, {
         enumerable: true,
         configurable: true,
         writable: true,
+    },
+    isConnected: {
+        enumerable: true,
+        configurable: true,
+        get(this: Node) {
+            return isConnected.call(this);
+        },
     },
 });
 
