@@ -29,24 +29,22 @@ describe('Element.outerHTML - get', () => {
 });
 
 describe('Element.outerHTML - set', () => {
-    // TODO [#991]: Add error type to the .toThrowError(<type>) matcher once the issue is fixed.
-    xit('should throw when invoking setter on the host element', () => {
+    it('should throw when invoking setter on the host element', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         expect(() => {
             elm.outerHTML = '<span>Hello World!</span>';
-        }).toThrowError();
+        }).toThrowError(TypeError);
     });
 
-    // TODO [#991]: Add error type to the .toThrowError(<type>) matcher once the issue is fixed.
-    xit('should log an error when invoking setter for an element in the shadow', () => {
+    it('should log an error when invoking setter for an element in the shadow', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         expect(() => {
             const div = elm.shadowRoot.querySelector('div');
             div.outerHTML = '<span>Hello World!</span>';
-        }).toThrowError();
+        }).toThrowError(TypeError);
     });
 });
