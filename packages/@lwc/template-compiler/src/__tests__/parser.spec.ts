@@ -481,7 +481,7 @@ describe('expression', () => {
         expect(root.children[0].attrs.title).toMatchObject({ value: testAttr });
     });
 
-    it('quoted expression warpped in square brackets should not produce error', () => {
+    it('quoted expression of curly brackets inside square brackets should not produce error', () => {
         const testAttr = '[{myValue}]';
         const { root } = parseTemplate(`<template><input title="${testAttr}"/></template>`);
         expect(root.children[0].attrs.title).toMatchObject({ value: testAttr });
