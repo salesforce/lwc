@@ -27,7 +27,7 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         nodes = createShadowTree(document.body);
     });
 
-    // Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
+    // TODO [#1129]: Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
     xit('element (composed: true)', () => {
         const evt = new CustomEvent('test', { composed: true, bubbles: true });
         nodes.span.dispatchEvent(evt);
@@ -36,7 +36,7 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         expect(evt.target).toBe(nodes['x-shadow-tree']);
     });
 
-    // Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
+    // TODO [#1129]: Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
     xit('element (composed: false)', () => {
         const evt = new CustomEvent('test', { bubbles: true });
         nodes.span.dispatchEvent(evt);
@@ -45,7 +45,7 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         expect(evt.target).toBe(null);
     });
 
-    // Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
+    // TODO [#1129]: Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
     xit('element added via lwc:dom="manual" (composed: true)', () => {
         const evt = new CustomEvent('test', { composed: true, bubbles: true });
         nodes['span-manual'].dispatchEvent(evt);
@@ -54,7 +54,7 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         expect(evt.target).toBe(nodes['x-shadow-tree']);
     });
 
-    // Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
+    // TODO [#1129]: Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
     xit('element added via lwc:dom="manual" (composed: false)', () => {
         const evt = new CustomEvent('test', { bubbles: true });
         nodes['span-manual'].dispatchEvent(evt);
@@ -63,7 +63,7 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         expect(evt.target).toBe(null);
     });
 
-    // Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
+    // TODO [#1129]: Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
     xit('component (composed: true)', () => {
         const evt = new CustomEvent('test', { composed: true, bubbles: true });
         nodes['x-shadow-tree'].dispatchEventComponent(evt);
@@ -72,7 +72,7 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         assertEventStateReset(evt);
     });
 
-    // Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
+    // TODO [#1129]: Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
     xit('component (composed: false)', () => {
         const evt = new CustomEvent('test', { bubbles: true });
         nodes['x-shadow-tree'].dispatchEventComponent(evt);
