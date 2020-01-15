@@ -31,7 +31,8 @@ it('should throw an error if the parameter is not an instance of Event', () => {
         elm.dispatch('event');
     }).toThrowError(
         Error,
-        /Failed to execute 'dispatchEvent' on 'EventTarget': parameter 1 is not of type 'Event'|Argument 1 \('event'\) to EventTarget.dispatchEvent must be an instance of Event|Argument 1 of EventTarget\.dispatchEvent is not an object|Invalid argument/
+        // Error message covers chrome, firefox, Safari, IE11, Safari 10.0.0
+        /Failed to execute 'dispatchEvent' on 'EventTarget': parameter 1 is not of type 'Event'|Argument 1 \('event'\) to EventTarget.dispatchEvent must be an instance of Event|Argument 1 of EventTarget\.dispatchEvent is not an object|Invalid argument|Type error/
     );
 });
 
