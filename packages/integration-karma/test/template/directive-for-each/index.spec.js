@@ -58,8 +58,7 @@ function iterator() {
 }
 testForEach('Iterator', { [Symbol.iterator]: iterator });
 
-// TODO [#1285]: revisit
-xit('should throw an error when the passing a non iterable', () => {
+it('should throw an error when the passing a non iterable', () => {
     const elm = createElement('x-test', { is: XTest });
     elm.items = {};
 
