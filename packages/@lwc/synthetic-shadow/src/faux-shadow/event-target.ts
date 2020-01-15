@@ -52,7 +52,6 @@ function removeEventListenerPatched(
 }
 
 // IE11 doesn't have EventTarget, so we have to patch it conditionally:
-
 if (typeof EventTarget !== 'undefined') {
     defineProperties(EventTarget.prototype, {
         addEventListener: {
