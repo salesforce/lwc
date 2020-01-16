@@ -4,23 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor, defineProperties } from '@lwc/shared';
+import { defineProperties } from '@lwc/shared';
 import { addCustomElementEventListener, removeCustomElementEventListener } from './events';
 import { isHostElement } from './shadow-root';
-
-const eventTargetGetter: (this: Event) => Element = getOwnPropertyDescriptor(
-    Event.prototype,
-    'target'
-)!.get!;
-const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnPropertyDescriptor(
-    Event.prototype,
-    'currentTarget'
-)!.get!;
 
 // These methods are usually from EventTarget.prototype, but that's not available in IE11, the next best thing
 // is Node.prototype, which is an EventTarget as well.
 const {
-    dispatchEvent,
     addEventListener: superAddEventListener,
     removeEventListener: superRemoveEventListener,
 } = Node.prototype;
@@ -85,5 +75,3 @@ if (typeof EventTarget !== 'undefined') {
         },
     });
 }
-
-export { dispatchEvent, eventTargetGetter, eventCurrentTargetGetter };
