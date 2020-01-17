@@ -487,6 +487,23 @@ describe('WireEventTarget', () => {
             );
             wireEventTarget.dispatchEvent(new LinkContextEvent('foo', callback));
         });
+        it('invokes dispatch method on element when wirecontextevent received', () => {
+            expect.assertions(1);
+            const event = { type: 'wirecontextevent' };
+            const mockCmp = {
+                dispatchEvent(evt) {
+                    expect(evt.type).toBe('wirecontextevent');
+                },
+            };
+            const wireEventTarget = new target.WireEventTarget(
+                mockCmp as any,
+                {} as ElementDef,
+                {} as target.Context,
+                { method: 1 } as WireDef,
+                'test'
+            );
+            wireEventTarget.dispatchEvent(event as Event);
+        });
         it('throws on non-ValueChangedEvent', () => {
             const test = {};
             test.toString = () => 'test';
