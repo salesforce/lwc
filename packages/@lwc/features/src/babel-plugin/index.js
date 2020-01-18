@@ -108,7 +108,7 @@ module.exports = function({ types: t }) {
                 }
 
                 if (this.opts.prod) {
-                    if (isUnaryNegation) {
+                    if (isUnaryNegation && typeof value === 'boolean') {
                         value = !value;
                     }
                     if (value === true) {
