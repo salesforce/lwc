@@ -49,30 +49,6 @@ pluginTester({
                 }
             `,
         },
-        'should not transform null runtime flags': {
-            code: `
-                import { runtimeFlags } from '@lwc/features';
-
-                if (runtimeFlags.ENABLE_FEATURE_NULL) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_NULL');
-                }
-
-                if (!runtimeFlags.ENABLE_FEATURE_NULL) {
-                    console.log('!runtimeFlags.ENABLE_FEATURE_NULL');
-                }
-            `,
-            output: `
-                import { runtimeFlags } from '@lwc/features';
-
-                if (runtimeFlags.ENABLE_FEATURE_NULL) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_NULL');
-                }
-
-                if (!runtimeFlags.ENABLE_FEATURE_NULL) {
-                    console.log('!runtimeFlags.ENABLE_FEATURE_NULL');
-                }
-            `,
-        },
         'should transform boolean-true compile-time flags': {
             code: `
                 import features from '@lwc/features';
@@ -94,30 +70,6 @@ pluginTester({
 
                 if (!runtimeFlags.ENABLE_FEATURE_TRUE) {
                     console.log('!features.ENABLE_FEATURE_TRUE');
-                }
-            `,
-        },
-        'should not transform boolean-true runtime flags': {
-            code: `
-                import { runtimeFlags } from '@lwc/features';
-
-                if (runtimeFlags.ENABLE_FEATURE_TRUE) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
-                }
-
-                if (!runtimeFlags.ENABLE_FEATURE_TRUE) {
-                    console.log('!runtimeFlags.ENABLE_FEATURE_TRUE');
-                }
-            `,
-            output: `
-                import { runtimeFlags } from '@lwc/features';
-
-                if (runtimeFlags.ENABLE_FEATURE_TRUE) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
-                }
-
-                if (!runtimeFlags.ENABLE_FEATURE_TRUE) {
-                    console.log('!runtimeFlags.ENABLE_FEATURE_TRUE');
                 }
             `,
         },
@@ -145,30 +97,6 @@ pluginTester({
                 }
             `,
         },
-        'should not transform boolean-false runtime flags': {
-            code: `
-                import { runtimeFlags } from '@lwc/features';
-
-                if (runtimeFlags.ENABLE_FEATURE_FALSE) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_FALSE');
-                }
-
-                if (!runtimeFlags.ENABLE_FEATURE_FALSE) {
-                    console.log('!runtimeFlags.ENABLE_FEATURE_FALSE');
-                }
-            `,
-            output: `
-                import { runtimeFlags } from '@lwc/features';
-
-                if (runtimeFlags.ENABLE_FEATURE_FALSE) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_FALSE');
-                }
-
-                if (!runtimeFlags.ENABLE_FEATURE_FALSE) {
-                    console.log('!runtimeFlags.ENABLE_FEATURE_FALSE');
-                }
-            `,
-        },
         'should not transform if-tests that are not member expressions (compile-time)': {
             code: `
                 import FEATURES from '@lwc/features';
@@ -185,22 +113,6 @@ pluginTester({
                 }
             `,
         },
-        'should not transform if-tests that are not member expressions (runtime)': {
-            code: `
-                import { runtimeFlags } from '@lwc/features';
-
-                if (isTrue(runtimeFlags.ENABLE_FEATURE_TRUE)) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
-                }
-            `,
-            output: `
-                import { runtimeFlags } from '@lwc/features';
-
-                if (isTrue(runtimeFlags.ENABLE_FEATURE_TRUE)) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
-                }
-            `,
-        },
         'should not transform feature flags when used with a ternary operator': {
             code: `
                 import feats from '@lwc/features';
@@ -209,6 +121,17 @@ pluginTester({
             output: `
                 import feats, { runtimeFlags } from '@lwc/features';
                 console.log(feats.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
+            `,
+        },
+        'should throw an error if runtimeFlags are imported': {
+            error:
+                'Invalid import of "runtimeFlags" from "@lwc/features". Runtime flags can only be imported by the compiler.',
+            code: `
+                import { runtimeFlags } from '@lwc/features';
+
+                if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                    console.log('runtimeFlags.ENABLE_FEATURE_NULL');
+                }
             `,
         },
         'should throw an error if the flag is undefined': {
@@ -302,14 +225,14 @@ pluginTester({
         },
         'should not transform member expressions that are not runtime flag lookups': {
             code: `
-                import { runtimeFlags } from '@lwc/features';
+                import featureFlags from '@lwc/features';
 
                 if (churroteria.ENABLE_FEATURE_TRUE) {
                     console.log('churroteria.ENABLE_FEATURE_TRUE');
                 }
             `,
             output: `
-                import { runtimeFlags } from '@lwc/features';
+                import featureFlags, { runtimeFlags } from '@lwc/features';
 
                 if (churroteria.ENABLE_FEATURE_TRUE) {
                     console.log('churroteria.ENABLE_FEATURE_TRUE');
