@@ -9,8 +9,8 @@ import { VNode } from '../../3rdparty/snabbdom/types';
 import { getAttrNameFromPropName } from '../attributes';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
-    // For special whitelisted properties, we check against the actual property value on the DOM element instead of
-    // relying on tracked property values.
+    // For properties with live bindings, we read values from the DOM element
+    // instead of relying on internally tracked values.
     return sel === 'input' && (key === 'value' || key === 'checked');
 }
 

@@ -22,7 +22,7 @@ import {
     ATTR_NAME,
     DATA_RE,
     SVG_NAMESPACE_URI,
-    SVG_TAG_WHITELIST,
+    SUPPORTED_SVG_TAGS,
     ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
@@ -70,17 +70,17 @@ export function isIdReferencingAttribute(attrName: string): boolean {
     return ID_REFERENCING_ATTRIBUTES_SET.has(attrName);
 }
 
-// Whitelists http://www.w3.org/1999/xhtml namespace idref elements for which we
+// http://www.w3.org/1999/xhtml namespace idref elements for which we
 // allow id references.
 export function isAllowedFragOnlyUrlsXHTML(
     tagName: string,
     attrName: string,
     namespaceURI: string
 ): boolean {
-    const whitelistedTags = [HTML_TAG.A, HTML_TAG.AREA];
+    const allowed = [HTML_TAG.A, HTML_TAG.AREA];
     return (
         attrName === ATTR_NAME.HREF &&
-        whitelistedTags.includes(tagName) &&
+        allowed.includes(tagName) &&
         namespaceURI === HTML_NAMESPACE_URI
     );
 }
@@ -263,7 +263,7 @@ export function isValidHTMLAttribute(tagName: string, attrName: string): boolean
     if (
         GLOBAL_ATTRIBUTE_SET.has(attrName) ||
         isAriaOrDataOrFmkAttribute(attrName) ||
-        SVG_TAG_WHITELIST.has(tagName) ||
+        SUPPORTED_SVG_TAGS.has(tagName) ||
         DASHED_TAGNAME_ELEMENT_SET.has(tagName) ||
         isTemplateDirective(attrName) ||
         !KNOWN_HTML_ELEMENTS.has(tagName)
@@ -284,7 +284,7 @@ function isTemplateDirective(attrName: string): boolean {
 function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
     const { tag } = element;
     const isDataAttributeOrFmk = isDataAttribute(attrName) || isFmkAttribute(attrName);
-    const isSvgTag = SVG_TAG_WHITELIST.has(tag);
+    const isSvgTag = SUPPORTED_SVG_TAGS.has(tag);
     return !isSvgTag && !isDataAttributeOrFmk;
 }
 

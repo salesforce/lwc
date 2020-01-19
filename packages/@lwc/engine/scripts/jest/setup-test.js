@@ -9,7 +9,7 @@
 
 const chalk = require('chalk');
 
-const { CONSOLE_WHITELIST } = require('./test-whitelist');
+const { LEGACY_TEST_EXCEPTIONS } = require('./legacy-test-exceptions');
 const { toLogError } = require('./matchers/log-error');
 
 // Extract original methods from console
@@ -32,14 +32,14 @@ beforeEach(() => {
 afterEach(() => {
     const { fullName } = currentSpec;
 
-    const isWhitelistedTest = CONSOLE_WHITELIST.includes(fullName);
+    const isLegacyTest = LEGACY_TEST_EXCEPTIONS.includes(fullName);
     const didTestLogged = console.error.mock.calls.length > 0;
 
     try {
-        if (isWhitelistedTest) {
+        if (isLegacyTest) {
             if (!didTestLogged) {
                 const boldedName = chalk.green.bold(fullName);
-                const boldedFile = chalk.green.bold('test-whitelist.js');
+                const boldedFile = chalk.green.bold('legacy-test-exceptions.js');
                 const message = [
                     `This test used to log an error but no longer does.`,
                     `Please remove "${boldedName}" from "${boldedFile}"`,

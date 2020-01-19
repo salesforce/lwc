@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const { generateError, getEngineImportSpecifiers } = require('./utils');
-const { LWC_PACKAGE_EXPORTS, LWC_API_WHITELIST } = require('./constants');
+const { LWC_PACKAGE_EXPORTS, LWC_SUPPORTED_APIS } = require('./constants');
 const { LWCClassErrors } = require('@lwc/errors');
 
 module.exports = function() {
@@ -15,7 +15,7 @@ module.exports = function() {
 
             // validate internal api imports
             engineImportSpecifiers.forEach(({ name }) => {
-                if (!LWC_API_WHITELIST.has(name)) {
+                if (!LWC_SUPPORTED_APIS.has(name)) {
                     throw generateError(path, {
                         errorInfo: LWCClassErrors.INVALID_IMPORT_PROHIBITED_API,
                         messageArgs: [name],

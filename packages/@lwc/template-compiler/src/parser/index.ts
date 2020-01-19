@@ -72,7 +72,7 @@ import {
     HTML_TAG_BLACKLIST,
     ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
-    SVG_TAG_WHITELIST,
+    SUPPORTED_SVG_TAGS,
     SVG_NAMESPACE_URI,
     HTML_NAMESPACE_URI,
     MATHML_TAG_BLACKLIST,
@@ -868,7 +868,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 return warnOnElement(ParserDiagnostics.FORBIDDEN_TAG_ON_TEMPLATE, node, [tag]);
             }
 
-            const isNotAllowedSvgTag = !SVG_TAG_WHITELIST.has(tag);
+            const isNotAllowedSvgTag = !SUPPORTED_SVG_TAGS.has(tag);
             if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
                 return warnOnElement(ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE, node, [
                     tag,
@@ -887,7 +887,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             const isKnownTag =
                 isCustomElement(element) ||
                 KNOWN_HTML_ELEMENTS.has(tag) ||
-                SVG_TAG_WHITELIST.has(tag) ||
+                SUPPORTED_SVG_TAGS.has(tag) ||
                 DASHED_TAGNAME_ELEMENT_SET.has(tag);
 
             if (!isKnownTag) {

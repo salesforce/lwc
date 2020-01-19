@@ -39,8 +39,6 @@ function rollupFeaturesPlugin() {
     };
 }
 
-const TS_WHITELIST = ['**/*.ts', '/**/node_modules/**/*.js', '*.ts', '/**/*.js'];
-
 function rollupConfig({ format = 'es' } = {}) {
     return {
         input: entry,
@@ -57,7 +55,7 @@ function rollupConfig({ format = 'es' } = {}) {
             rollupTypescriptPlugin({
                 target: 'es2017',
                 typescript,
-                include: TS_WHITELIST,
+                include: ['**/*.ts', '/**/node_modules/**/*.js', '*.ts', '/**/*.js'],
             }),
             rollupFeaturesPlugin(),
         ],

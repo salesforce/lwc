@@ -46,7 +46,7 @@ const ATTRIBUTE_NAME_CHAR = [
 export const ARIA_RE = new RegExp('^(aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 
-export const SVG_TAG_WHITELIST = new Set([
+export const SUPPORTED_SVG_TAGS = new Set([
     'svg',
     'a',
     'altGlyph',

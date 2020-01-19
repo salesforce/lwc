@@ -34,7 +34,7 @@ const LWC_PACKAGE_EXPORTS = {
     WIRE_DECORATOR: 'wire',
 };
 
-const LWC_API_WHITELIST = new Set([
+const LWC_SUPPORTED_APIS = new Set([
     'buildCustomElementConstructor',
     'createElement',
     'getComponentDef',
@@ -75,7 +75,7 @@ module.exports = {
     LWC_DECORATORS,
     LWC_PACKAGE_ALIAS,
     LWC_PACKAGE_EXPORTS,
-    LWC_API_WHITELIST,
+    LWC_SUPPORTED_APIS,
     LWC_COMPONENT_PROPERTIES,
     DECORATOR_TYPES,
 };

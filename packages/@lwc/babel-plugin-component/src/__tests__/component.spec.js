@@ -69,7 +69,7 @@ describe('Element import', () => {
     );
 
     pluginTest(
-        'throws non-whitelisted lwc api is imported',
+        'throws when a non-supported lwc api is imported',
         `
         import { registerTemplate } from "lwc";
         import tmpl from './localTemplate.html';
@@ -89,7 +89,7 @@ describe('Element import', () => {
     );
 
     pluginTest(
-        'allows importing whitelisted apis from "lwc"',
+        'allows importing supported apis from "lwc"',
         `
         import {
             api,
