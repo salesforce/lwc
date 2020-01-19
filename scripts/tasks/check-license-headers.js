@@ -145,7 +145,7 @@ function check() {
     if (invalidFiles.length > 0) {
         console.log(`Salesforce copyright header check failed for the following files:
   ${invalidFiles.join('\n  ')}
-Please include the header or blacklist the files in \`scripts/checkCopyrightHeaders.js\``);
+Please include the header or add an exception for the file in \`scripts/checkCopyrightHeaders.js\``);
         process.exit(1);
     }
 }

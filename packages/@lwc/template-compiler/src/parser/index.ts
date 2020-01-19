@@ -69,13 +69,13 @@ import {
     VALID_IF_MODIFIER,
     EVENT_HANDLER_RE,
     EVENT_HANDLER_NAME_RE,
-    HTML_TAG_BLACKLIST,
+    DISALLOWED_HTML_TAGS,
     ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
     SUPPORTED_SVG_TAGS,
     SVG_NAMESPACE_URI,
     HTML_NAMESPACE_URI,
-    MATHML_TAG_BLACKLIST,
+    DISALLOWED_MATHML_TAGS,
     MATHML_NAMESPACE_URI,
     KNOWN_HTML_ELEMENTS,
     LWC_DIRECTIVES,
@@ -863,7 +863,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         } else {
             const namespace = node.namespaceURI;
 
-            const isNotAllowedHtmlTag = HTML_TAG_BLACKLIST.has(tag);
+            const isNotAllowedHtmlTag = DISALLOWED_HTML_TAGS.has(tag);
             if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
                 return warnOnElement(ParserDiagnostics.FORBIDDEN_TAG_ON_TEMPLATE, node, [tag]);
             }
@@ -875,7 +875,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 ]);
             }
 
-            const isNotAllowedMathMlTag = MATHML_TAG_BLACKLIST.has(tag);
+            const isNotAllowedMathMlTag = DISALLOWED_MATHML_TAGS.has(tag);
             if (namespace === MATHML_NAMESPACE_URI && isNotAllowedMathMlTag) {
                 return warnOnElement(
                     ParserDiagnostics.FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE,

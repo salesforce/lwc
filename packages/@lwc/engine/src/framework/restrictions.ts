@@ -193,7 +193,7 @@ function getShadowRootRestrictionsDescriptors(
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    // blacklisting properties in dev mode only to avoid people doing the wrong
+    // Disallowing properties in dev mode only to avoid people doing the wrong
     // thing when using the real shadow root, because if that's the case,
     // the component will not work when running with synthetic shadow.
     const originalQuerySelector = sr.querySelector;
@@ -277,14 +277,14 @@ function getShadowRootRestrictionsDescriptors(
             },
         }),
     });
-    const BlackListedShadowRootMethods = {
+    const BlockedShadowRootMethods = {
         cloneNode: 0,
         getElementById: 0,
         getSelection: 0,
         elementsFromPoint: 0,
         dispatchEvent: 0,
     };
-    forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
+    forEach.call(getOwnPropertyNames(BlockedShadowRootMethods), (methodName: string) => {
         const descriptor = generateAccessorDescriptor({
             get() {
                 throw new Error(`Disallowed method "${methodName}" in ShadowRoot.`);
