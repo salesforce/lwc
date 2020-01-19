@@ -29,11 +29,6 @@ module.exports = function({ types: t }) {
     return {
         name: 'babel-plugin-lwc-features',
         visitor: {
-            // `pre()` doesn't have access to the `this.opts` plugin options so
-            // we initialize in the Program visitor instead.
-            Program() {
-                this.featureFlags = this.opts.featureFlags || defaultFeatureFlags;
-            },
             ImportDeclaration(path) {
                 if (path.node.source.value === FEATURES_PACKAGE_NAME) {
                     this.importDeclarationPath = path;
@@ -97,17 +92,26 @@ module.exports = function({ types: t }) {
                 }
 
                 const name = propertyPath.node.name;
-                let value = this.featureFlags[name];
+                let value = (this.opts.featureFlags || defaultFeatureFlags)[name];
                 validate(name, value);
 
-                if (!this.opts.prod || value === null) {
+                if (!this.opts.prod) {
                     if (isCompileTimeFlag) {
                         testPath.node.object = t.identifier(RUNTIME_FLAGS_IDENTIFIER);
-                        return;
                     }
+                    return;
                 }
 
                 if (this.opts.prod) {
+                    // This transform is generally run in prod-mode, after
+                    // running it beforehand in non-prod mode. This logic
+                    // handles the case where the code was not previously
+                    // transformed in non-prod mode.
+                    if (isCompileTimeFlag && value === null) {
+                        testPath.node.object = t.identifier(RUNTIME_FLAGS_IDENTIFIER);
+                        return;
+                    }
+
                     if (isUnaryNegation && typeof value === 'boolean') {
                         value = !value;
                     }
