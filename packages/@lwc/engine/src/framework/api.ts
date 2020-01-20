@@ -532,14 +532,14 @@ export function f(items: any[]): any[] {
 }
 
 // [t]ext node
-export function t(text: string): VText {
+export function t(value: unknown): VText {
     const data = EmptyObject;
     let sel, children, key, elm;
     return {
         sel,
         data,
         children,
-        text,
+        text: String(value),
         elm,
         key,
 
