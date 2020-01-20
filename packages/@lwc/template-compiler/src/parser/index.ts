@@ -771,13 +771,14 @@ export default function parse(source: string, state: State): TemplateParseResult
                 return;
             }
 
-            // disallow attr name that doesn't start with an alphabetic character.
-            if (name.match(/^[^a-z]/)) {
+            // negative lookahead:
+            // disallow attr name that doesn't start with optional hyphen followed by alphabetic char
+            if (name.match(/^(?![-]*[a-z])/)) {
                 const node = element.__original as parse5.AST.Default.Element;
-                warnAt(ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_CHARACTER, [
-                    name,
-                    treeAdapter.getTagName(node),
-                ]);
+                warnAt(
+                    ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER,
+                    [name, treeAdapter.getTagName(node)]
+                );
                 return;
             }
 

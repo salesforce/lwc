@@ -1458,6 +1458,41 @@ describe('html-element', () => {
 
             expect(childElm.getAttribute('title')).toBe('child title');
         });
+
+        it('should allow accessing uppercased public prop that was set via template', () => {
+            expect.assertions(1);
+
+            class Child extends LightningElement {}
+            registerDecorators(Child, {
+                publicProps: { Upper: 'default' },
+            });
+
+            const html = compileTemplate(
+                `
+                <template>
+                    <x-child -upper="Value from parent"></x-child>
+                </template>
+            `,
+                {
+                    modules: {
+                        'x-child': Child,
+                    },
+                }
+            );
+            class Parent extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+
+            const parentElm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(parentElm);
+
+            return Promise.resolve().then(() => {
+                const child = parentElm.shadowRoot.querySelector('x-child');
+                expect(child.Upper).toBe('Value from parent');
+            });
+        });
     });
 
     describe('integration', () => {

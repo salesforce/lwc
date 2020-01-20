@@ -609,7 +609,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1124: _leading is not valid attribute for x-button. Attribute name must start with alphabetic character.',
+                    'LWC1124: _leading is not valid attribute for x-button. Attribute name must start with alphabetic character or a hyphen.',
             });
         });
 
@@ -635,7 +635,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1124: 2_under is not valid attribute for x-button. Attribute name must start with alphabetic character.',
+                    'LWC1124: 2_under is not valid attribute for x-button. Attribute name must start with alphabetic character or a hyphen.',
             });
         });
 
@@ -677,6 +677,44 @@ describe('props and attributes', () => {
             expect(root.children[0].props).toMatchObject({
                 under_scoreSecond_underScore: { value: 'bar' },
             });
+        });
+    });
+
+    describe('attributes with leading hyphen', () => {
+        it('attribute name with a leading hyphen is converted to a prop with a leading uppercase character', () => {
+            const { root } = parseTemplate(`<template><x-button -foo="bar"></x-button></template>`);
+            expect(root.children[0].props).toMatchObject({
+                Foo: { value: 'bar' },
+            });
+        });
+
+        it('attribute name with a multiple leading hyphens is converted to a prop with a single leading uppercase character', () => {
+            const { root } = parseTemplate(
+                `<template><x-button --foo="bar"></x-button></template>`
+            );
+            expect(root.children[0].props).toMatchObject({
+                Foo: { value: 'bar' },
+            });
+        });
+
+        it('hyphenated custom element props', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button 
+                    -class="r"
+                    -data-xx="foo"
+                    -aria-hidden="hidden"
+                    -foo-bar="x"
+                    -role="xx"
+                ></x-button>
+                </template>`);
+            expect(root.children[0].props).toMatchObject({
+                Class: { value: 'r' },
+                DataXx: { value: 'foo' },
+                AriaHidden: { value: 'hidden' },
+                FooBar: { value: 'x' },
+                Role: { value: 'xx' },
+            });
+            expect(root.children[0].attrs).toBeUndefined();
         });
     });
 });
