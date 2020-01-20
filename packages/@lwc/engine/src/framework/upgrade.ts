@@ -27,7 +27,7 @@ import {
     disconnectedRootElement,
 } from './vm';
 import { ComponentConstructor } from './component';
-import { getComponentDef, setElementProto } from './def';
+import { getComponentInternalDef, setElementProto } from './def';
 
 type NodeSlotCallback = (element: Node) => {};
 
@@ -112,7 +112,7 @@ export function createElement(
         return element;
     }
 
-    const def = getComponentDef(Ctor);
+    const def = getComponentInternalDef(Ctor);
     setElementProto(element, def);
 
     createVM(element, def.ctor, {
