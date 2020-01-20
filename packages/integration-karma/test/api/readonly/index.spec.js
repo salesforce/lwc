@@ -21,8 +21,7 @@ it('it should return a wrapped object', () => {
     expect(wrapObj).not.toBe(obj);
 });
 
-// TODO [salesforce/observable-membrane#28]: ReadOnly membrane doesn't throw when mutating a value on JavascriptCore
-xit('should throw when trying to mutate an object property', () => {
+it('should throw when trying to mutate an object property', () => {
     const wrapObj = readonly({ foo: true });
 
     expect(() => {

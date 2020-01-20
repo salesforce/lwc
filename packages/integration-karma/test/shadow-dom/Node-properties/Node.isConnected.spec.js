@@ -19,8 +19,7 @@ describe('Node.isConnected', () => {
         expect(elm.shadowRoot.isConnected).toBe(true);
     });
 
-    // TODO [#987]: Node.isConnected returns false when the node comes from the shadow tree in IE11
-    xit('should return true if the component is connected in the DOM', () => {
+    it('should return true if the component is connected in the DOM', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
