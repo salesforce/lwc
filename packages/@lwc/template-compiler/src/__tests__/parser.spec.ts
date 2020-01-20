@@ -688,7 +688,7 @@ describe('props and attributes', () => {
             });
         });
 
-        it('attribute name with a multiple leading hyphens is converted to a prop with a single leading uppercase character', () => {
+        it('attribute name with multiple leading hyphens is converted to a prop with a single leading uppercase character', () => {
             const { root } = parseTemplate(
                 `<template><x-button --foo="bar"></x-button></template>`
             );
