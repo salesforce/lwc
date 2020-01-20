@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { LightningElement, api, getComponentDef } from 'lwc';
 
 import PublicProperties from 'x/publicProperties';
@@ -20,6 +21,36 @@ function testInvalidComponentConstructor(name, ctor) {
         );
     });
 }
+
+beforeAll(function() {
+    const getNormalizedFunctionAsString = fn => fn.toString().replace(/(\s|\n)/g, '');
+
+    jasmine.addMatchers({
+        toEqualWireSettings: function() {
+            return {
+                compare: function(actual, expected) {
+                    Object.keys(actual).forEach(currentKey => {
+                        const normalizedActual = Object.assign({}, actual[currentKey], {
+                            config: getNormalizedFunctionAsString(actual[currentKey].config),
+                        });
+
+                        const normalizedExpected = Object.assign({}, expected[currentKey], {
+                            config: getNormalizedFunctionAsString(
+                                expected[currentKey].config || function() {}
+                            ),
+                        });
+
+                        expect(normalizedActual).toEqual(normalizedExpected);
+                    });
+
+                    return {
+                        pass: true,
+                    };
+                },
+            };
+        },
+    });
+});
 
 testInvalidComponentConstructor('null', null);
 testInvalidComponentConstructor('undefined', undefined);
@@ -175,9 +206,12 @@ describe('@api', () => {
 describe('@wire', () => {
     it('should return the wired properties in wire object', () => {
         const { wire } = getComponentDef(WireProperties);
-        expect(wire).toEqual({
+        expect(wire).toEqualWireSettings({
             foo: {
                 adapter: wireAdapter,
+                config: function($cmp) {
+                    return {};
+                },
             },
             bar: {
                 adapter: wireAdapter,
@@ -185,6 +219,9 @@ describe('@wire', () => {
                     a: true,
                 },
                 params: {},
+                config: function($cmp) {
+                    return { a: true };
+                },
             },
             baz: {
                 adapter: wireAdapter,
@@ -193,6 +230,9 @@ describe('@wire', () => {
                 },
                 params: {
                     c: 'foo',
+                },
+                config: function($cmp) {
+                    return { b: true, c: $cmp.foo };
                 },
             },
         });
@@ -200,10 +240,13 @@ describe('@wire', () => {
 
     it('should return the wired methods in the wire object with a method flag', () => {
         const { wire } = getComponentDef(WireMethods);
-        expect(wire).toEqual({
+        expect(wire).toEqualWireSettings({
             foo: {
                 adapter: wireAdapter,
                 method: 1,
+                config: function($cmp) {
+                    return {};
+                },
             },
             bar: {
                 adapter: wireAdapter,
@@ -212,6 +255,9 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
+                config: function($cmp) {
+                    return { a: true };
+                },
             },
             baz: {
                 adapter: wireAdapter,
@@ -222,19 +268,25 @@ describe('@wire', () => {
                     c: 'foo',
                 },
                 method: 1,
+                config: function($cmp) {
+                    return { b: true, c: $cmp.foo };
+                },
             },
         });
     });
 
     it('should inherit wire properties from the base class', () => {
         const { wire } = getComponentDef(WirePropertiesInheritance);
-        expect(wire).toEqual({
+        expect(wire).toEqualWireSettings({
             parentProp: {
                 adapter: wireAdapter,
                 static: {
                     parent: true,
                 },
                 params: {},
+                config: function($cmp) {
+                    return { parent: true };
+                },
             },
             overriddenInChild: {
                 adapter: wireAdapter,
@@ -242,6 +294,9 @@ describe('@wire', () => {
                     child: true,
                 },
                 params: {},
+                config: function($cmp) {
+                    return { child: true };
+                },
             },
             childProp: {
                 adapter: wireAdapter,
@@ -249,13 +304,16 @@ describe('@wire', () => {
                     child: true,
                 },
                 params: {},
+                config: function($cmp) {
+                    return { child: true };
+                },
             },
         });
     });
 
     it('should inherit the wire methods from the case class', () => {
         const { wire } = getComponentDef(WireMethodsInheritance);
-        expect(wire).toEqual({
+        expect(wire).toEqualWireSettings({
             parentMethod: {
                 adapter: wireAdapter,
                 static: {
@@ -263,6 +321,11 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
+                config: function($cmp) {
+                    return {
+                        parent: true,
+                    };
+                },
             },
             overriddenInChild: {
                 adapter: wireAdapter,
@@ -271,6 +334,11 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
+                config: function($cmp) {
+                    return {
+                        child: true,
+                    };
+                },
             },
             childMethod: {
                 adapter: wireAdapter,
@@ -279,6 +347,11 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
+                config: function($cmp) {
+                    return {
+                        child: true,
+                    };
+                },
             },
         });
     });
