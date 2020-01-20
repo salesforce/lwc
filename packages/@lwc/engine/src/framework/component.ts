@@ -11,7 +11,6 @@ import {
     isInvokingRender,
     invokeEventListener,
 } from './invoker';
-import { invokeServiceHook, Services } from './services';
 import { VM, UninitializedVM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { ReactiveObserver } from '../libs/mutation-tracker';
@@ -67,31 +66,8 @@ export function createComponent(uninitializedVm: UninitializedVM, Ctor: Componen
     }
 }
 
-export function linkComponent(vm: VM) {
-    const {
-        def: { wire },
-    } = vm;
-
-    if (!isUndefined(wire)) {
-        const { wiring } = Services;
-        if (wiring) {
-            invokeServiceHook(vm, wiring);
-        }
-    }
-}
-
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     return new ReactiveObserver(() => {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.invariant(
-                !isInvokingRender,
-                `Mutating property is not allowed during the rendering life-cycle of ${getVMBeingRendered()}.`
-            );
-            assert.invariant(
-                !isUpdatingTemplate,
-                `Mutating property is not allowed while updating template of ${getVMBeingRendered()}.`
-            );
-        }
         const { isDirty } = vm;
         if (isFalse(isDirty)) {
             markComponentAsDirty(vm);

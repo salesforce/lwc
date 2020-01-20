@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import ObservableMembrane from 'observable-membrane';
-import { valueObserved, valueMutated } from '../libs/mutation-tracker';
+import { valueObserved, valueMutated } from './mutation-tracker';
 
 function valueDistortion(value: any) {
     return value;

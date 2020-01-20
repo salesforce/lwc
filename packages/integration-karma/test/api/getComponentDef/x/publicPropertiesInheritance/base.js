@@ -1,6 +1,10 @@
 import { LightningElement, api } from 'lwc';
 
 export default class Base extends LightningElement {
-    @api parentProp;
+    @api get parentProp() {
+        return undefined;
+    }
+    set parentProp(v) {}
+
     @api overriddenInChild;
 }
