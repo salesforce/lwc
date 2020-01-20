@@ -64,7 +64,7 @@ it('should throw an error when the passing a non iterable', () => {
 
     // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
     expect(() => document.body.appendChild(elm)).toThrowError(
-        /Invalid template iteration for value `\[object Object\]` in \[object:vm undefined \(\d+\)\]. It must be an array-like object and not `null` nor `undefined`.|Invalid template iteration for value `\[object ProxyObject\]` in \[object:vm undefined \(\d+\)\]. It must be an array-like object and not `null` nor `undefined`./
+        /Invalid template iteration for value `\[object (ProxyObject|Object)\]` in \[object:vm undefined \(\d+\)\]. It must be an array-like object and not `null` nor `undefined`./
     );
 });
 
