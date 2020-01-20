@@ -68,7 +68,7 @@ const TEMPLATE_FUNCTION = template(
     { sourceType: 'module' }
 );
 
-const BLACKLIST_LWC_DIRECTIVES = new Set(['dynamic']);
+const DISALLOWED_LWC_DIRECTIVES = new Set(['dynamic']);
 
 function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: CodeGen) {
     const { lwc, locator } = element;
@@ -77,7 +77,7 @@ function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: 
     // LWC
     if (lwc) {
         const lwcObject: t.ObjectProperty[] = Object.keys(lwc)
-            .filter(key => !BLACKLIST_LWC_DIRECTIVES.has(key))
+            .filter(key => !DISALLOWED_LWC_DIRECTIVES.has(key))
             .map(key => {
                 return t.objectProperty(t.identifier(key), t.stringLiteral(lwc[key]));
             });

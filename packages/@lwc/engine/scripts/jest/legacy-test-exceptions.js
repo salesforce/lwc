@@ -12,7 +12,7 @@
  *
  * BY ADDING A NEW ENTRY IN THIS LIST, YOU WILL BRING SHAME ON YOURSELF OVER MULTIPLE GENERATIONS!!
  */
-const CONSOLE_WHITELIST = [
+const LEGACY_TEST_EXCEPTIONS = [
     '#shadowRootQuerySelector should not throw error if querySelector does not match any elements',
     '#shadowRootQuerySelector should not throw error if querySelectorAll does not match any elements',
     '#shadowRootQuerySelector should return null if querySelector does not match any elements',
@@ -27,14 +27,14 @@ const CONSOLE_WHITELIST = [
     'html-element global HTML Properties should log error message when attribute is set via elm.setAttribute if reflective property is defined',
 ];
 
-for (let i = 0; i < CONSOLE_WHITELIST.length; i++) {
-    for (let j = i + 1; j < CONSOLE_WHITELIST.length; j++) {
-        if (CONSOLE_WHITELIST[i] === CONSOLE_WHITELIST[j]) {
-            throw new Error(`Duplicate test name in whitelist "${CONSOLE_WHITELIST[i]}"`);
+for (let i = 0; i < LEGACY_TEST_EXCEPTIONS.length; i++) {
+    for (let j = i + 1; j < LEGACY_TEST_EXCEPTIONS.length; j++) {
+        if (LEGACY_TEST_EXCEPTIONS[i] === LEGACY_TEST_EXCEPTIONS[j]) {
+            throw new Error(`Duplicate test name "${LEGACY_TEST_EXCEPTIONS[i]}"`);
         }
     }
 }
 
 module.exports = {
-    CONSOLE_WHITELIST,
+    LEGACY_TEST_EXCEPTIONS,
 };

@@ -46,7 +46,7 @@ const ATTRIBUTE_NAME_CHAR = [
 export const ARIA_RE = new RegExp('^(aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 
-export const SVG_TAG_WHITELIST = new Set([
+export const SUPPORTED_SVG_TAGS = new Set([
     'svg',
     'a',
     'altGlyph',
@@ -118,7 +118,14 @@ export const SVG_TAG_WHITELIST = new Set([
     'use',
 ]);
 
-export const MATHML_TAG_BLACKLIST = new Set(['script', 'link', 'base', 'object', 'embed', 'meta']);
+export const DISALLOWED_MATHML_TAGS = new Set([
+    'script',
+    'link',
+    'base',
+    'object',
+    'embed',
+    'meta',
+]);
 
 export const GLOBAL_ATTRIBUTE_SET = new Set([
     'role',
@@ -226,7 +233,7 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-valuetext': 'ariaValueText',
 };
 
-export const HTML_TAG_BLACKLIST = new Set(['base', 'link', 'meta', 'script', 'title']);
+export const DISALLOWED_HTML_TAGS = new Set(['base', 'link', 'meta', 'script', 'title']);
 
 export const HTML_ATTRIBUTES_REVERSE_LOOKUP: {
     [attr: string]: string[];
