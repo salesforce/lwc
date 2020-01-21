@@ -4,24 +4,28 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const OriginalCustomEvent = CustomEvent;
+const CustomEventConstructor = CustomEvent;
 
-function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
-    const event = new OriginalCustomEvent(type, eventInitDict);
-    // support for composed on custom events
+function PatchedCustomEvent<T>(
+    this: Event,
+    type: string,
+    eventInitDict: CustomEventInit<T>
+): CustomEvent<T> {
+    const event = new CustomEventConstructor(type, eventInitDict);
+
+    const isComposed = !!(eventInitDict && eventInitDict.composed);
     Object.defineProperties(event, {
         composed: {
-            // We can't use "value" here, because IE11 doesn't like mixing and matching
-            // value with get() from Event.prototype.
             get() {
-                return !!(eventInitDict && (eventInitDict as any).composed);
+                return isComposed;
             },
             configurable: true,
             enumerable: true,
         },
     });
+
     return event;
 }
 
-PatchedCustomEvent.prototype = OriginalCustomEvent.prototype;
+PatchedCustomEvent.prototype = CustomEventConstructor.prototype;
 (window as any).CustomEvent = PatchedCustomEvent;
