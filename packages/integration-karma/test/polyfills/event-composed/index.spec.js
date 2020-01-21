@@ -13,6 +13,7 @@ it('should respect when the event composed flag is set during construction', () 
 
 it('should set composed to true for click events dispatched by the user agent', done => {
     const elm = document.createElement('div');
+    document.body.appendChild(elm);
 
     elm.addEventListener('click', evt => {
         expect(evt.composed).toBe(true);
