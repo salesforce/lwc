@@ -76,13 +76,8 @@
     }
   },
   "lint-staged": {
-    "**/*.{js,ts}": [
-      "eslint"
-    ],
-    "{packages,scripts}/**/*.{js,ts,json,md}": [
-      "prettier --write",
-      "git add"
-    ]
+    "**/*.{js,ts}": "eslint",
+    "{packages,scripts}/**/*.{js,ts,json,md}": "prettier --write"
   },
   "workspaces": [
     "packages/@lwc/*",
