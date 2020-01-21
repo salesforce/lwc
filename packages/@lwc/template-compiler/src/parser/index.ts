@@ -771,7 +771,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                 return;
             }
 
-            // negative lookahead:
             // disallow attr name that doesn't start with optional hyphen followed by alphabetic char
             if (!/^-*[a-z]/.test(name)) {
                 const node = element.__original as parse5.AST.Default.Element;
