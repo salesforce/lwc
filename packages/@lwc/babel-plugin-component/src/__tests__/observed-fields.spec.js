@@ -117,7 +117,10 @@ describe('observed fields', () => {
                   },
                   wire: {
                     function: {
-                      adapter: createElement
+                      adapter: createElement,
+                      config: function($cmp) {
+                         return {};
+                      }
                     }
                   },
                   track: {

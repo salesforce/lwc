@@ -7,7 +7,7 @@
 import { assert } from '@lwc/shared';
 import { ComponentInterface } from '../component';
 import { componentValueObserved } from '../mutation-tracker';
-import { getComponentVM } from '../vm';
+import { getAssociatedVM } from '../vm';
 import { WireAdapterConstructor } from '../wiring';
 
 /**
@@ -28,18 +28,12 @@ export default function wire(
 export function internalWireFieldDecorator(key: string): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
-            const vm = getComponentVM(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-            }
+            const vm = getAssociatedVM(this);
             componentValueObserved(vm, key);
             return vm.cmpFields[key];
         },
         set(this: ComponentInterface, value: any) {
-            const vm = getComponentVM(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-            }
+            const vm = getAssociatedVM(this);
             /**
              * intentionally ignoring the reactivity here since this is just
              * letting the author to do the wrong thing, but it will keep our

@@ -27,7 +27,6 @@ import {
     keys,
 } from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
-=======
 import {
     resolveCircularModuleDependency,
     isCircularModuleDependency,
@@ -40,7 +39,6 @@ import {
     getComponentRegisteredMeta,
 } from './component';
 import { Template } from './template';
-import { HTMLElementOriginalDescriptors } from './html-properties';
 import { BaseLightningElement, lightningBasedDescriptors } from './base-lightning-element';
 import { getDecoratorsMeta } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
@@ -50,15 +48,6 @@ import {
     HTMLBridgeElementFactory,
     HTMLElementConstructor,
 } from './base-bridge-element';
-import {
-    getDecoratorsRegisteredMeta,
-    DecoratorMeta,
-    PropsDef,
-    WireHash,
-    MethodDef,
-    TrackDef,
-} from './decorators/register';
-import { defaultEmptyTemplate } from './secure-template';
 import { getAssociatedVMIfPresent } from './vm';
 
 export interface ComponentDef {
