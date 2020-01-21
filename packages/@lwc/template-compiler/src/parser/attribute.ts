@@ -293,10 +293,10 @@ export function attributeToPropertyName(element: IRElement, attrName: string): s
     if (shouldCamelCaseAttribute(element, attrName)) {
         const attrToSplit = ATTRS_PROPS_TRANFORMS[propName] || propName;
 
-        // flag indicating whether 'cammelcase' library should uppercase the leading character
+        // flag indicating whether leading character should be uppercased
         const pascalCase = attrToSplit.startsWith('-');
 
-        // remove leading hyphen to allow 'camelcase' libraby to uppercase the first character
+        // remove leading hyphen
         const normalizedAttrToSplit = pascalCase ? attrToSplit.replace(/^[-]+/, '') : attrToSplit;
         propName = normalizedAttrToSplit
             .split('_')

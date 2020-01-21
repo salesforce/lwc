@@ -773,7 +773,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             // negative lookahead:
             // disallow attr name that doesn't start with optional hyphen followed by alphabetic char
-            if (name.match(/^(?![-]*[a-z])/)) {
+            if (!/^-*[a-z]/.test(name)) {
                 const node = element.__original as parse5.AST.Default.Element;
                 warnAt(
                     ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER,

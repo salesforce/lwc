@@ -4,6 +4,7 @@ import RadioButton from 'misc/radioButton';
 import InputValue from 'live/inputValue';
 import InputChecked from 'live/inputChecked';
 import SpecialCharacterPublicProp from 'attrs/specialCharacter';
+import UppercaseCharacterPublicPropParent from 'attrs/uppercaseParent';
 
 describe('live properties', () => {
     describe('input [checked] property', () => {
@@ -65,6 +66,19 @@ describe('custom properties', () => {
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('attrs-underscore-child').under_score).toEqual(
                 'underscore property'
+            );
+        });
+    });
+
+    it('should allow attribute name with a leading uppercase character', () => {
+        const elm = createElement('attrs-uppercase-parent', {
+            is: UppercaseCharacterPublicPropParent,
+        });
+        document.body.appendChild(elm);
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('attrs-uppercase-child').Upper).toEqual(
+                'uppercase value from parent component'
             );
         });
     });
