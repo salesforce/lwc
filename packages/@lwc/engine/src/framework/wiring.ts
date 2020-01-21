@@ -58,6 +58,7 @@ function createConfigWatcher(
     const callback = () => {
         let config: ConfigValue;
         ro.observe(() => (config = configCallback(component)));
+        // eslint-disable-next-line lwc-internal/no-invalid-todo
         // TODO: dev-mode validation of config based on the adapter.configSchema
         // @ts-ignore it is assigned in the observe() callback
         callbackWhenConfigIsReady(config);
@@ -93,6 +94,7 @@ function createContextWatcher(
                 // adds this callback into the disconnect bucket so it gets disconnected from parent
                 // the the element hosting the wire is disconnected
                 ArrayPush.call(wiredDisconnecting, disconnectCallback);
+                // eslint-disable-next-line lwc-internal/no-invalid-todo
                 // TODO: dev-mode validation of config based on the adapter.contextSchema
                 callbackWhenContextIsReady(newContext);
             },

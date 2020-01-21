@@ -27,11 +27,7 @@ import {
     keys,
 } from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
-import {
-    resolveCircularModuleDependency,
-    isCircularModuleDependency,
-    EmptyObject,
-} from './utils';
+import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from './utils';
 import {
     ComponentConstructor,
     ErrorCallback,
@@ -144,9 +140,7 @@ function createComponentDef(
     render = render || superDef.render;
     template = template || superDef.template;
 
-    // installing observed fields into the prototype
-    // TODO: consider move this to instance level fields to match the original
-    // semantics of the public fields.
+    // installing observed fields into the prototype.
     defineProperties(proto, observedFields);
 
     const def: ComponentDef = {
@@ -271,7 +265,6 @@ const lightingElementDef: ComponentDef = {
     render: BaseLightningElement.prototype.render,
 };
 
-// TODO: remove experimental public API getComponentDef
 interface PropDef {
     config: number;
     type: string;

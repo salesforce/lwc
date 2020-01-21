@@ -41,7 +41,7 @@ enum PropType {
 }
 interface PropCompilerDef {
     config: PropType; // 0 m
-    type: string; // TODO: #1301 - make this an enum
+    type: string; // TODO [#1301]: make this an enum
 }
 interface WireCompilerDef {
     method?: number;

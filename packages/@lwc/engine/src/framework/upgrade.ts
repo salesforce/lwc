@@ -27,7 +27,7 @@ import {
 } from './vm';
 import { ComponentConstructor } from './component';
 import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
-import { getComponentInternalDef,  setElementProto } from './def';
+import { getComponentInternalDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
