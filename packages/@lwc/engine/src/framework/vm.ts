@@ -32,7 +32,7 @@ import {
 import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback } from './invoker';
-import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from '../env/dom';
+import { ShadowRootInnerHTMLSetter } from '../env/dom';
 
 import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
@@ -46,12 +46,11 @@ import {
     endGlobalMeasure,
     GlobalMeasurementPhase,
 } from './performance-timing';
-import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElement } from './base-lightning-element';
-import { getComponentTag } from '../shared/format';
+import { getErrorComponentStack } from '../shared/format';
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -513,64 +512,16 @@ export function scheduleRehydration(vm: VM) {
     }
 }
 
-function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
-    let elm: Element | null = startingElement;
-    let vm: VM | undefined;
+function getErrorBoundaryVM(vm: VM): VM | undefined {
+    let currentVm: VM | null = vm;
 
-    while (!isNull(elm)) {
-        vm = getAssociatedVMIfPresent(elm);
-        if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
-            return vm;
+    while (!isNull(currentVm)) {
+        if (!isUndefined(currentVm.def.errorCallback)) {
+            return currentVm;
         }
-        elm = getParentOrHostElement(elm);
+
+        currentVm = vm.owner;
     }
-}
-
-/**
- * Returns the component stack. Used for errors messages only.
- *
- * @param {Element} startingElement
- *
- * @return {string} The component stack for errors.
- */
-export function getErrorComponentStack(startingElement: Element): string {
-    const wcStack: string[] = [];
-    let elm: Element | null = startingElement;
-
-    do {
-        const currentVm = getAssociatedVMIfPresent(elm);
-        if (!isUndefined(currentVm)) {
-            ArrayPush.call(wcStack, getComponentTag(currentVm));
-        }
-        elm = getParentOrHostElement(elm);
-    } while (!isNull(elm));
-    return wcStack.reverse().join('\n\t');
-}
-
-/**
- * Finds the parent of the specified element. If shadow DOM is enabled, finds
- * the host of the shadow root to escape the shadow boundary.
- */
-function getParentOrHostElement(elm: Element): Element | null {
-    const parentElement = parentElementGetter.call(elm);
-    // If parentElement is a shadow root, find the host instead
-    return isNull(parentElement) ? getHostElement(elm) : parentElement;
-}
-
-/**
- * Finds the host element, if it exists.
- */
-function getHostElement(elm: Element): Element | null {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isNull(parentElementGetter.call(elm)),
-            `getHostElement should only be called if the parent element of ${elm} is null`
-        );
-    }
-    const parentNode = parentNodeGetter.call(elm);
-    return parentNode instanceof ShadowRoot
-        ? ShadowRootHostGetter.call(parentNode as unknown)
-        : null;
 }
 
 /**
@@ -667,8 +618,8 @@ export function runWithBoundaryProtection(
     } finally {
         post();
         if (!isUndefined(error)) {
-            error.wcStack = error.wcStack || getErrorComponentStack(vm.elm);
-            const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner.elm);
+            error.wcStack = error.wcStack || getErrorComponentStack(vm);
+            const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner);
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }

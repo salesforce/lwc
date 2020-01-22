@@ -6,11 +6,6 @@
  */
 import { getOwnPropertyDescriptor } from '@lwc/shared';
 
-const ShadowRootHostGetter: (this: ShadowRoot) => Element | null = getOwnPropertyDescriptor(
-    ShadowRoot.prototype,
-    'host'
-)!.get!;
-
 const ShadowRootInnerHTMLSetter: (this: ShadowRoot, s: string) => void = getOwnPropertyDescriptor(
     ShadowRoot.prototype,
     'innerHTML'
@@ -19,4 +14,4 @@ const ShadowRootInnerHTMLSetter: (this: ShadowRoot, s: string) => void = getOwnP
 const dispatchEvent =
     'EventTarget' in window ? EventTarget.prototype.dispatchEvent : Node.prototype.dispatchEvent; // IE11
 
-export { dispatchEvent, ShadowRootHostGetter, ShadowRootInnerHTMLSetter };
+export { dispatchEvent, ShadowRootInnerHTMLSetter };

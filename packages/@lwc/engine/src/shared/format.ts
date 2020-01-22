@@ -6,7 +6,7 @@
  */
 import { isNull, ArrayJoin, ArrayPush, StringToLowerCase } from '@lwc/shared';
 
-import { VM, UninitializedVM } from '../framework/vm';
+import { UninitializedVM } from '../framework/vm';
 
 export function getComponentTag(vm: UninitializedVM): string {
     // Element.prototype.tagName getter might be poisoned. We need to use a try/catch to protect the
@@ -18,7 +18,7 @@ export function getComponentTag(vm: UninitializedVM): string {
     }
 }
 
-export function getComponentStack(vm: VM): string {
+export function getComponentStack(vm: UninitializedVM): string {
     const stack: string[] = [];
     let prefix = '';
 
@@ -30,4 +30,16 @@ export function getComponentStack(vm: VM): string {
     }
 
     return ArrayJoin.call(stack, '\n');
+}
+
+export function getErrorComponentStack(vm: UninitializedVM): string {
+    const wcStack: string[] = [];
+
+    let currentVm: UninitializedVM | null = vm;
+    while (!isNull(currentVm)) {
+        ArrayPush.call(wcStack, getComponentTag(currentVm));
+        currentVm = currentVm.owner;
+    }
+
+    return wcStack.reverse().join('\n\t');
 }

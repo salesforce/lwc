@@ -8,10 +8,11 @@ import { assert, isFunction, isUndefined } from '@lwc/shared';
 import { currentContext, establishContext } from './context';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
-import { getErrorComponentStack, VM, UninitializedVM, runWithBoundaryProtection } from './vm';
+import { VM, UninitializedVM, runWithBoundaryProtection } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { startMeasure, endMeasure } from './performance-timing';
+import { getErrorComponentStack } from '../shared/format';
 
 export let isInvokingRender: boolean = false;
 
@@ -80,7 +81,7 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
         }
         vmBeingConstructed = vmBeingConstructedInception;
         if (!isUndefined(error)) {
-            error.wcStack = getErrorComponentStack(vm.elm);
+            error.wcStack = getErrorComponentStack(vm);
             // re-throwing the original error annotated after restoring the context
             throw error; // eslint-disable-line no-unsafe-finally
         }
