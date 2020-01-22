@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5-with-errors';
-import camelcase from 'camelcase';
-
 import { ParserDiagnostics, generateCompilerError } from '@lwc/errors';
+
+import { toPropertyName } from '../shared/utils';
 
 import {
     EXPRESSION_SYMBOL_END,
@@ -289,13 +289,8 @@ function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
 }
 
 export function attributeToPropertyName(element: IRElement, attrName: string): string {
-    let propName = attrName;
-    if (shouldCamelCaseAttribute(element, attrName)) {
-        const attrToSplit = ATTRS_PROPS_TRANFORMS[propName] || propName;
-        propName = attrToSplit
-            .split('_')
-            .map(camelcase)
-            .join('_');
+    if (!shouldCamelCaseAttribute) {
+        return attrName;
     }
-    return propName;
+    return toPropertyName(ATTRS_PROPS_TRANFORMS[attrName] || attrName);
 }
