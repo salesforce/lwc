@@ -609,7 +609,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1124: _leading is not valid attribute for x-button. Attribute name must start with alphabetic character.',
+                    'LWC1124: _leading is not valid attribute for x-button. Attribute name must start with alphabetic character or a hyphen.',
             });
         });
 
@@ -635,7 +635,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1124: 2_under is not valid attribute for x-button. Attribute name must start with alphabetic character.',
+                    'LWC1124: 2_under is not valid attribute for x-button. Attribute name must start with alphabetic character or a hyphen.',
             });
         });
 

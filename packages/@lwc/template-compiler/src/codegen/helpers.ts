@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as t from '@babel/types';
-import toCamelCase from 'camelcase';
+import { toPropertyName } from '../shared/utils';
 
 import State from '../state';
 import { isElement, isComponentProp } from '../shared/ir';
@@ -15,7 +15,7 @@ import { kebabcaseToCamelcase } from '../shared/naming';
 import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
-    return t.identifier(`_${toCamelCase(name)}`);
+    return t.identifier(`_${toPropertyName(name)}`);
 }
 
 export { kebabcaseToCamelcase };
