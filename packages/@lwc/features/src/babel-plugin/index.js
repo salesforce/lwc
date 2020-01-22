@@ -38,6 +38,11 @@ module.exports = function({ types: t }) {
                     const didImportRuntimeFlags = specifiers.some(specifier => {
                         return specifier.local && specifier.local.name === RUNTIME_FLAGS_IDENTIFIER;
                     });
+                    if (didImportRuntimeFlags && !this.opts.prod) {
+                        throw new Error(
+                            `Invalid import of "${RUNTIME_FLAGS_IDENTIFIER}" from "${FEATURES_PACKAGE_NAME}". Use the default export from "${FEATURES_PACKAGE_NAME}" instead of the "${RUNTIME_FLAGS_IDENTIFIER}" export when implementing your feature behind a flag.`
+                        );
+                    }
                     if (!didImportRuntimeFlags) {
                         // Blindly import a binding for `runtimeFlags` if we haven't
                         // already. Tree-shaking will simply remove it if unused.
