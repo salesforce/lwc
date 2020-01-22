@@ -9,7 +9,7 @@ import * as t from '@babel/types';
 import * as esutils from 'esutils';
 import { isUndefined } from 'util';
 
-import { toCamelCase } from '../shared/utils';
+import { toPropertyName } from '../shared/utils';
 
 type RenderPrimitive =
     | 'iterator'
@@ -214,7 +214,7 @@ export default class CodeGen {
     }
 
     private _toValidIdentifier(name: string) {
-        return esutils.keyword.isIdentifierES6(name) ? name : toCamelCase(name);
+        return esutils.keyword.isIdentifierES6(name) ? name : toPropertyName(name);
     }
 
     private _renderApiCall(

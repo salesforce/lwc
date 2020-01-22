@@ -7,7 +7,7 @@
 import * as parse5 from 'parse5-with-errors';
 import { ParserDiagnostics, generateCompilerError } from '@lwc/errors';
 
-import { toCamelCase } from '../shared/utils';
+import { toPropertyName } from '../shared/utils';
 
 import {
     EXPRESSION_SYMBOL_END,
@@ -292,5 +292,5 @@ export function attributeToPropertyName(element: IRElement, attrName: string): s
     if (!shouldCamelCaseAttribute) {
         return attrName;
     }
-    return toCamelCase(ATTRS_PROPS_TRANFORMS[attrName] || attrName);
+    return toPropertyName(ATTRS_PROPS_TRANFORMS[attrName] || attrName);
 }
