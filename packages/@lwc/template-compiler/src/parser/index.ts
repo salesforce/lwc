@@ -761,7 +761,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                 warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
             }
 
-            // disallow attr name that ends with a special character.
             if (name.match(/[^a-z0-9]$/)) {
                 const node = element.__original as parse5.AST.Default.Element;
                 warnAt(ParserDiagnostics.ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER, [
@@ -771,7 +770,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                 return;
             }
 
-            // disallow attr name that doesn't start with optional hyphen followed by alphabetic char
             if (!/^-*[a-z]/.test(name)) {
                 const node = element.__original as parse5.AST.Default.Element;
                 warnAt(

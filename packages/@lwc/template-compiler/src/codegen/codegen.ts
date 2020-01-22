@@ -7,8 +7,9 @@
 import * as babylon from '@babel/parser';
 import * as t from '@babel/types';
 import * as esutils from 'esutils';
-import toCamelCase from 'camelcase';
 import { isUndefined } from 'util';
+
+import { toCamelCase } from '../shared/utils';
 
 type RenderPrimitive =
     | 'iterator'

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as t from '@babel/types';
-import toCamelCase from 'camelcase';
+import { toCamelCase } from '../shared/utils';
 
 import State from '../state';
 import { isElement, isComponentProp } from '../shared/ir';
