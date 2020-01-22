@@ -15,6 +15,7 @@
 import {
     ArrayReduce,
     assert,
+    assign,
     create,
     defineProperties,
     fields,
@@ -287,6 +288,7 @@ function BaseLightningElementConstructor(this: LightningElement) {
         mode,
         delegatesFocus: !!ctor.delegatesFocus,
     };
+    assign(shadowRootOptions, { '$$lwc-synthetic-shadow$$': true });
     const cmpRoot = elm.attachShadow(shadowRootOptions);
     // linking elm, shadow root and component with the VM
     setHiddenField(component, ViewModelReflection, vm);

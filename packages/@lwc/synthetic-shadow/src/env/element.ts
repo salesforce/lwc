@@ -7,17 +7,18 @@
 import { hasOwnProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 
 const {
-    hasAttribute,
+    addEventListener,
+    attachShadow,
     getAttribute,
-    setAttribute,
-    removeAttribute,
-    querySelectorAll,
     getBoundingClientRect,
     getElementsByTagName,
     getElementsByTagNameNS,
+    hasAttribute,
+    querySelectorAll,
+    removeAttribute,
+    removeEventListener,
+    setAttribute,
 } = Element.prototype;
-
-const { addEventListener, removeEventListener } = Element.prototype;
 
 const childElementCountGetter: (this: ParentNode) => number = getOwnPropertyDescriptor(
     Element.prototype,
@@ -77,6 +78,7 @@ const { getElementsByClassName } = HTMLElement.prototype;
 
 export {
     addEventListener,
+    attachShadow,
     removeEventListener,
     hasAttribute,
     getAttribute,

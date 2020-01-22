@@ -31,6 +31,7 @@ import {
     getFirstSlottedMatch,
 } from './traverse';
 import {
+    attachShadow as originalAttachShadow,
     childrenGetter,
     outerHTMLSetter,
     childElementCountGetter,
@@ -78,8 +79,15 @@ function outerHTMLGetterPatched(this: Element) {
     return getOuterHTML(this);
 }
 
-function attachShadowPatched(this: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
-    return attachShadow(this, options);
+function attachShadowPatched(
+    this: Element,
+    options: ShadowRootInit
+): SyntheticShadowRootInterface | ShadowRoot {
+    if (options['$$lwc-synthetic-shadow$$']) {
+        return attachShadow(this, options);
+    } else {
+        return originalAttachShadow.call(this, options);
+    }
 }
 
 function shadowRootGetterPatched(this: Element): SyntheticShadowRootInterface | null {
