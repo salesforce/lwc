@@ -125,7 +125,7 @@ pluginTester({
         },
         'should throw an error if runtimeFlags are imported': {
             error:
-                'Invalid import of "runtimeFlags" from "@lwc/features". Runtime flags can only be imported by the compiler.',
+                'Invalid import of "runtimeFlags" from "@lwc/features". Use the default export from "@lwc/features" instead of the "runtimeFlags" export when implementing your feature behind a flag.',
             code: `
                 import { runtimeFlags } from '@lwc/features';
 
