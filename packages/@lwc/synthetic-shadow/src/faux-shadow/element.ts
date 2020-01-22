@@ -13,6 +13,7 @@ import {
     getOwnPropertyDescriptor,
     hasOwnProperty,
     isNull,
+    isTrue,
     isUndefined,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
@@ -83,7 +84,8 @@ function attachShadowPatched(
     this: Element,
     options: ShadowRootInit
 ): SyntheticShadowRootInterface | ShadowRoot {
-    if (options['$$lwc-synthetic-shadow$$']) {
+    // To retain native behavior of the API, provide synthetic shadowRoot only when specified
+    if (isTrue(options['$$lwc-synthetic-mode$$'])) {
         return attachShadow(this, options);
     } else {
         return originalAttachShadow.call(this, options);

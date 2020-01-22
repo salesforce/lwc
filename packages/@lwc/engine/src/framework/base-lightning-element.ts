@@ -288,7 +288,7 @@ function BaseLightningElementConstructor(this: LightningElement) {
         mode,
         delegatesFocus: !!ctor.delegatesFocus,
     };
-    assign(shadowRootOptions, { '$$lwc-synthetic-shadow$$': true });
+    assign(shadowRootOptions, { '$$lwc-synthetic-mode$$': true });
     const cmpRoot = elm.attachShadow(shadowRootOptions);
     // linking elm, shadow root and component with the VM
     setHiddenField(component, ViewModelReflection, vm);
