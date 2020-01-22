@@ -40,7 +40,7 @@ module.exports = function({ types: t }) {
                     });
                     if (didImportRuntimeFlags && !this.opts.prod) {
                         throw new Error(
-                            `Invalid import of "${RUNTIME_FLAGS_IDENTIFIER}" from "${FEATURES_PACKAGE_NAME}". Runtime flags can only be imported by the compiler.`
+                            `Invalid import of "${RUNTIME_FLAGS_IDENTIFIER}" from "${FEATURES_PACKAGE_NAME}". Use the default export from "${FEATURES_PACKAGE_NAME}" instead of the "${RUNTIME_FLAGS_IDENTIFIER}" export when implementing your feature behind a flag.`
                         );
                     }
                     if (!didImportRuntimeFlags) {
