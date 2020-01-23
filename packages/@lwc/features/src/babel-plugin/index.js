@@ -69,7 +69,7 @@ module.exports = function({ types: t }) {
                     testPath = testPath.get('argument');
                 }
 
-                if (!testPath.isMemberExpression()) {
+                if (!testPath.isMemberExpression({ computed: false })) {
                     return;
                 }
 
