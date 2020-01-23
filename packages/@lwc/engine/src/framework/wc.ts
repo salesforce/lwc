@@ -36,7 +36,7 @@ export function buildCustomElementConstructor(
         owner: null,
     };
     if (isObject(options) && !isNull(options)) {
-        const { mode } = options as any;
+        const { mode } = options;
         if (mode === 'closed') {
             normalizedOptions.mode = mode;
         }

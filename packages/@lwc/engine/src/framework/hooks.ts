@@ -53,7 +53,7 @@ export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
         /**
          * Compiler will never produce a text property that is not string
          */
-        (vnode.elm as Node).nodeValue = text as string;
+        vnode.elm!.nodeValue = text!;
         if (process.env.NODE_ENV !== 'production') {
             lockDomMutation();
         }
@@ -64,7 +64,7 @@ export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: No
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    parentNode.insertBefore(vnode.elm as Node, referenceNode);
+    parentNode.insertBefore(vnode.elm!, referenceNode);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
@@ -74,7 +74,7 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    parentNode.removeChild(vnode.elm as Node);
+    parentNode.removeChild(vnode.elm!);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
@@ -100,7 +100,7 @@ enum LWCDOMMode {
 
 export function fallbackElmHook(vnode: VElement) {
     const { owner } = vnode;
-    const elm = vnode.elm as HTMLElement;
+    const elm = vnode.elm!;
     if (isTrue(useSyntheticShadow)) {
         const {
             data: { context },
@@ -153,7 +153,7 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
         owner.owner,
         noop,
         () => {
-            fn(vnode.elm as Element, oldVnode.children, children);
+            fn(vnode.elm!, oldVnode.children, children);
         },
         noop
     );
@@ -223,7 +223,7 @@ export function createChildrenHook(vnode: VElement) {
         const ch = children[j];
         if (ch != null) {
             ch.hook.create(ch);
-            ch.hook.insert(ch, elm as Element, null);
+            ch.hook.insert(ch, elm!, null);
         }
     }
 }

@@ -24,9 +24,9 @@ function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
     }
 }
 
-const emptyVNode = { data: {} };
+const emptyVNode = { data: {} } as VNode;
 
 export default {
-    create: (vnode: VNode) => updateStyleAttribute(emptyVNode as VNode, vnode),
+    create: (vnode: VNode) => updateStyleAttribute(emptyVNode, vnode),
     update: updateStyleAttribute,
 };

@@ -92,7 +92,7 @@ function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstr
         // be base.
         proto = p === proto ? BaseLightningElement : p;
     }
-    return proto as ComponentConstructor;
+    return proto!;
 }
 
 function createComponentDef(
@@ -136,8 +136,8 @@ function createComponentDef(
         render,
     } = proto;
     const superProto = getCtorProto(Ctor, subclassComponentName);
-    const superDef: ComponentDef | null =
-        (superProto as any) !== BaseLightningElement
+    const superDef =
+        superProto !== BaseLightningElement
             ? getComponentDef(superProto, subclassComponentName)
             : null;
     const SuperBridge = isNull(superDef) ? BaseBridgeElement : superDef.bridge;
@@ -281,7 +281,7 @@ export function getComponentConstructor(elm: HTMLElement): ComponentConstructor 
 
 // Only set prototype for public methods and properties
 // No DOM Patching occurs here
-export function setElementProto(elm: HTMLElement, def: ComponentDef) {
+export function setElementProto(elm: Element, def: ComponentDef) {
     setPrototypeOf(elm, def.bridge.prototype);
 }
 

@@ -181,10 +181,8 @@ const CAMEL_REGEX = /-([a-z])/g;
  */
 export function getPropNameFromAttrName(attrName: string): string {
     if (isUndefined(AttrNameToPropNameMap[attrName])) {
-        AttrNameToPropNameMap[attrName] = StringReplace.call(
-            attrName,
-            CAMEL_REGEX,
-            (g: string): string => g[1].toUpperCase()
+        AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, g =>
+            g[1].toUpperCase()
         );
     }
     return AttrNameToPropNameMap[attrName];
@@ -201,7 +199,7 @@ export function getAttrNameFromPropName(propName: string): string {
         PropNameToAttrNameMap[propName] = StringReplace.call(
             propName,
             CAPS_REGEX,
-            (match: string): string => '-' + match.toLowerCase()
+            match => '-' + match.toLowerCase()
         );
     }
     return PropNameToAttrNameMap[propName];

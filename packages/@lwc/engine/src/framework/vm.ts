@@ -278,7 +278,7 @@ export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
         }
     }
 
-    return maybeVm as VM | undefined;
+    return maybeVm;
 }
 
 function rehydrate(vm: VM) {

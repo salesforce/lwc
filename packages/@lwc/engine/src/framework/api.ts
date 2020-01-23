@@ -104,10 +104,10 @@ const SymbolIterator = Symbol.iterator;
 
 const TextHook: Hooks = {
     create: (vnode: VNode) => {
-        vnode.elm = document.createTextNode(vnode.text as string);
+        vnode.elm = document.createTextNode(vnode.text!);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
-            markNodeFromVNode(vnode.elm as Node);
+            markNodeFromVNode(vnode.elm);
         }
     },
     update: updateNodeHook,
@@ -121,7 +121,7 @@ const CommentHook: Hooks = {
         vnode.elm = document.createComment(vnode.text);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
-            markNodeFromVNode(vnode.elm as Node);
+            markNodeFromVNode(vnode.elm);
         }
     },
     update: updateNodeHook,
@@ -150,7 +150,7 @@ const ElementHook: Hooks = {
         }
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
-            markNodeFromVNode(vnode.elm as Element);
+            markNodeFromVNode(vnode.elm);
         }
         fallbackElmHook(vnode);
         createElmHook(vnode);
@@ -178,7 +178,7 @@ const CustomElementHook: Hooks = {
         vnode.elm = document.createElement(sel);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
-            markNodeFromVNode(vnode.elm as Element);
+            markNodeFromVNode(vnode.elm);
         }
         createViewModelHook(vnode);
         allocateChildrenHook(vnode);
@@ -235,12 +235,12 @@ function addNS(vnode: VElement) {
 }
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
-    ArrayPush.call((getVMBeingRendered() as VM).velements, vnode);
+    ArrayPush.call(getVMBeingRendered()!.velements, vnode);
 }
 
 // [h]tml node
 export function h(sel: string, data: ElementCompilerData, children: VNodes): VElement {
-    const vmBeingRendered = getVMBeingRendered();
+    const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
@@ -261,7 +261,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         if (data.style && !isString(data.style)) {
             logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
-                vmBeingRendered!
+                vmBeingRendered
             );
         }
         forEach.call(children, (childVnode: VNode | null | undefined) => {
@@ -289,7 +289,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         elm,
         key,
         hook: ElementHook,
-        owner: vmBeingRendered as VM,
+        owner: vmBeingRendered,
     };
     if (
         sel.length === 3 &&
@@ -354,12 +354,12 @@ export function c(
     sel: string,
     Ctor: ComponentConstructor,
     data: CustomElementCompilerData,
-    children?: VNodes
+    children: VNodes = EmptyArray
 ): VCustomElement {
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
-    const vmBeingRendered = getVMBeingRendered();
+    const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
         assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
@@ -380,7 +380,7 @@ export function c(
         if (data.style && !isString(data.style)) {
             logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
-                vmBeingRendered!
+                vmBeingRendered
             );
         }
         if (arguments.length === 4) {
@@ -402,7 +402,6 @@ export function c(
     }
     const { key } = data;
     let text, elm;
-    children = arguments.length === 3 ? EmptyArray : (children as VNodes);
     const vnode: VCustomElement = {
         sel,
         data,
@@ -413,7 +412,7 @@ export function c(
 
         hook: CustomElementHook,
         ctor: Ctor,
-        owner: vmBeingRendered as VM,
+        owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
     };
     addVNodeToChildLWC(vnode);
@@ -544,7 +543,7 @@ export function t(text: string): VText {
         key,
 
         hook: TextHook,
-        owner: getVMBeingRendered() as VM,
+        owner: getVMBeingRendered()!,
     };
 }
 
@@ -562,7 +561,7 @@ export function p(text: string): VComment {
         key,
 
         hook: CommentHook,
-        owner: getVMBeingRendered() as VM,
+        owner: getVMBeingRendered()!,
     };
 }
 
@@ -604,7 +603,7 @@ export function ll(
     id: string,
     context?: (...args: any[]) => any
 ): EventListener {
-    const vm: VM | null = getVMBeingRendered();
+    const vm = getVMBeingRendered();
     if (isNull(vm)) {
         throw new Error();
     }

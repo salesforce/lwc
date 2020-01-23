@@ -29,7 +29,7 @@ type ReactiveRecord = Record<PropertyKey, ObservedMemberPropertyRecords>;
 function getReactiveRecord(target: object): ReactiveRecord {
     let reactiveRecord = TargetToReactiveRecordMap.get(target);
     if (isUndefined(reactiveRecord)) {
-        const newRecord = create(null) as ReactiveRecord;
+        const newRecord: ReactiveRecord = create(null);
         reactiveRecord = newRecord;
         TargetToReactiveRecordMap.set(target, newRecord);
     }

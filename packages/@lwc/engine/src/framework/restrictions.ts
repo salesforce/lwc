@@ -148,7 +148,7 @@ function getNodeRestrictionsDescriptors(
 }
 
 function getElementRestrictionsDescriptors(
-    elm: HTMLElement,
+    elm: Element,
     options: RestrictionsOptions
 ): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
@@ -163,7 +163,7 @@ function getElementRestrictionsDescriptors(
             get(): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
-            set(this: HTMLElement, value: string) {
+            set(this: Element, value: string) {
                 if (isFalse(options.isPortal)) {
                     logError(
                         portalRestrictionErrorMessage('innerHTML', 'property'),
@@ -174,10 +174,10 @@ function getElementRestrictionsDescriptors(
             },
         }),
         outerHTML: generateAccessorDescriptor({
-            get(this: HTMLElement): string {
+            get(this: Element): string {
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
-            set(this: HTMLElement, _value: string) {
+            set(this: Element, _value: string) {
                 throw new TypeError(`Invalid attempt to set outerHTML on Element.`);
             },
         }),
@@ -477,7 +477,7 @@ export function markNodeFromVNode(node: Node) {
     (node as any).$fromTemplate$ = true;
 }
 
-export function patchElementWithRestrictions(elm: HTMLElement, options: RestrictionsOptions) {
+export function patchElementWithRestrictions(elm: Element, options: RestrictionsOptions) {
     defineProperties(elm, getElementRestrictionsDescriptors(elm, options));
 }
 

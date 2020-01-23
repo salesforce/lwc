@@ -80,7 +80,7 @@ export function registerDecorators(
     }
     if (wire) {
         for (const propName in wire) {
-            const wireDef: WireDef = wire[propName];
+            const wireDef = wire[propName];
             if (wireDef.method) {
                 // for decorated methods we need to do nothing
                 continue;

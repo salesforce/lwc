@@ -59,9 +59,9 @@ function update(oldVnode: VNode, vnode: VNode) {
     }
 }
 
-const emptyVNode = { data: {} };
+const emptyVNode = { data: {} } as VNode;
 
 export default {
-    create: (vnode: VNode) => update(emptyVNode as VNode, vnode),
+    create: (vnode: VNode) => update(emptyVNode, vnode),
     update,
 };
