@@ -239,5 +239,21 @@ pluginTester({
                 }
             `,
         },
+        'should not transform member expressions that are computed': {
+            code: `
+                import featureFlags from '@lwc/features';
+
+                if (featureFlags['ENABLE_FEATURE_TRUE']) {
+                    console.log("featureFlags['ENABLE_FEATURE_TRUE']");
+                }
+            `,
+            output: `
+                import featureFlags, { runtimeFlags } from '@lwc/features';
+
+                if (featureFlags['ENABLE_FEATURE_TRUE']) {
+                    console.log("featureFlags['ENABLE_FEATURE_TRUE']");
+                }
+            `,
+        },
     },
 });
