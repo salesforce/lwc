@@ -1,4 +1,22 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.15...v) (2019-12-23)
+# [](https://github.com/salesforce/lwc/compare/v1.1.16...v) (2020-01-23)
+
+
+### Bug Fixes
+
+* **features:** unary negation of null flag interpreted as boolean false ([#1683](https://github.com/salesforce/lwc/issues/1683)) ([dc7c1bd](https://github.com/salesforce/lwc/commit/dc7c1bd918ed39bfa3952530513411bb3e77e0ee))
+* **synthetic-shadow:** make Event constructor handle composed ([#1676](https://github.com/salesforce/lwc/issues/1676)) ([0baa228](https://github.com/salesforce/lwc/commit/0baa228aed54755a1601beb72641fc99cbacc771))
+* **wire:** add lowercase wirecontextevent ([#1679](https://github.com/salesforce/lwc/issues/1679)) ([a5d1077](https://github.com/salesforce/lwc/commit/a5d10777bbe650580fc133004f198e22ebe2eb2a))
+
+
+### Features
+
+* **features:** runtime flags can only be imported by compiler ([#1690](https://github.com/salesforce/lwc/issues/1690)) ([5936229](https://github.com/salesforce/lwc/commit/59362292e0b06ef3abf72ba16c2fdc133bd1ac47))
+* **template-compiler:** support leading hyphen in attr name ([#1687](https://github.com/salesforce/lwc/issues/1687)) ([242f0fb](https://github.com/salesforce/lwc/commit/242f0fb1a2ed4d0b7a3aa621d6257068ec1fa8ad))
+* computed feature flags are not supported ([#1694](https://github.com/salesforce/lwc/issues/1694)) ([f3c479d](https://github.com/salesforce/lwc/commit/f3c479dd4a77ed02e0264e877edfd856e01d7616))
+
+
+
+## [1.1.16](https://github.com/salesforce/lwc/compare/v1.1.15...v1.1.16) (2019-12-23)
 
 
 ### Bug Fixes
