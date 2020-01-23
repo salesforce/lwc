@@ -18,6 +18,7 @@ export function getComponentTag(vm: UninitializedVM): string {
     }
 }
 
+// TODO [#1695]: Unify getComponentStack and getErrorComponentStack
 export function getComponentStack(vm: UninitializedVM): string {
     const stack: string[] = [];
     let prefix = '';
