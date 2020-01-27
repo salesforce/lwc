@@ -76,29 +76,37 @@ const childrenGetter: (this: ParentNode) => HTMLCollectionOf<Element> = hasOwnPr
 // for all other browsers access the method from the parent Element interface
 const { getElementsByClassName } = HTMLElement.prototype;
 
+const shadowRootGetter: (this: Element) => ShadowRoot | null = hasOwnProperty.call(
+    Element.prototype,
+    'shadowRoot'
+)
+    ? getOwnPropertyDescriptor(Element.prototype, 'shadowRoot')!.get!
+    : () => null;
+
 export {
     addEventListener,
     attachShadow,
-    removeEventListener,
-    hasAttribute,
-    getAttribute,
-    setAttribute,
-    removeAttribute,
-    querySelectorAll,
-    getBoundingClientRect,
-    getElementsByTagName,
-    getElementsByClassName,
-    getElementsByTagNameNS,
-    tagNameGetter,
-    tabIndexGetter,
-    tabIndexSetter,
-    innerHTMLGetter,
-    innerHTMLSetter,
-    outerHTMLGetter,
-    outerHTMLSetter,
-    matches,
     childrenGetter,
     childElementCountGetter,
     firstElementChildGetter,
+    getAttribute,
+    getBoundingClientRect,
+    getElementsByClassName,
+    getElementsByTagName,
+    getElementsByTagNameNS,
+    hasAttribute,
+    innerHTMLGetter,
+    innerHTMLSetter,
     lastElementChildGetter,
+    matches,
+    outerHTMLGetter,
+    outerHTMLSetter,
+    querySelectorAll,
+    removeAttribute,
+    removeEventListener,
+    setAttribute,
+    shadowRootGetter,
+    tagNameGetter,
+    tabIndexGetter,
+    tabIndexSetter,
 };

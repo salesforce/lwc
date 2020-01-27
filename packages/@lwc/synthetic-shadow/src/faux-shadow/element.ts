@@ -17,12 +17,7 @@ import {
     isUndefined,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
-import {
-    attachShadow,
-    getShadowRoot,
-    SyntheticShadowRootInterface,
-    isHostElement,
-} from './shadow-root';
+import { attachShadow, getShadowRoot, isHostElement } from './shadow-root';
 import {
     getNodeOwner,
     getAllMatches,
@@ -34,12 +29,13 @@ import {
 import {
     attachShadow as originalAttachShadow,
     childrenGetter,
-    outerHTMLSetter,
     childElementCountGetter,
     firstElementChildGetter,
-    lastElementChildGetter,
     innerHTMLGetter,
+    lastElementChildGetter,
+    outerHTMLSetter,
     outerHTMLGetter,
+    shadowRootGetter as originalShadowRootGetter,
 } from '../env/element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
@@ -89,14 +85,14 @@ function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot
     }
 }
 
-function shadowRootGetterPatched(this: Element): SyntheticShadowRootInterface | null {
+function shadowRootGetterPatched(this: Element): ShadowRoot | null {
     if (isHostElement(this)) {
         const shadow = getShadowRoot(this);
         if (shadow.mode === 'open') {
             return shadow;
         }
     }
-    return null;
+    return originalShadowRootGetter.call(this);
 }
 
 function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {
