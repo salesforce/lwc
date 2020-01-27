@@ -1,5 +1,5 @@
 import NativeShadowParent from './x/NativeParent/NativeParent';
-import NativeShadowChild from './x/NativeChild/nativeChild';
+import NativeShadowChild from './x/NativeChild/NativeChild';
 
 describe('Event target retains native behavior in native shadow dom tree', () => {
     let parent;
