@@ -1,4 +1,8 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.4...v) (2020-01-27)
+# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.6...v) (2020-01-27)
+
+
+
+## [1.1.13-224.6](https://github.com/salesforce/lwc/compare/v1.1.13-224.4...v1.1.13-224.6) (2020-01-27)
 
 
 ### Features
