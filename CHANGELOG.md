@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.3...v) (2019-12-11)
+# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.4...v) (2020-01-27)
+
+
+### Features
+
+* **template-compiler:** support leading hyphen in attr name ([#1687](https://github.com/salesforce/lwc/issues/1687)) ([#1697](https://github.com/salesforce/lwc/issues/1697)) ([e42ada0](https://github.com/salesforce/lwc/commit/e42ada0))
+
+
+
+## [1.1.13-224.4](https://github.com/salesforce/lwc/compare/v1.1.13-224.3...v1.1.13-224.4) (2019-12-11)
 
 
 ### Bug Fixes
