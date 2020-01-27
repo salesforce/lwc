@@ -17,7 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { isNull } from '@lwc/shared';
 import { getOwnerDocument } from '../../shared/utils';
-import { SyntheticShadowRoot } from './../../faux-shadow/shadow-root';
+import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
     const composedPath: (Element | Document | Window)[] = [];

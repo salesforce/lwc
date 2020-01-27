@@ -80,10 +80,7 @@ function outerHTMLGetterPatched(this: Element) {
     return getOuterHTML(this);
 }
 
-function attachShadowPatched(
-    this: Element,
-    options: ShadowRootInit
-): SyntheticShadowRootInterface | ShadowRoot {
+function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot {
     // To retain native behavior of the API, provide synthetic shadowRoot only when specified
     if (isTrue(options['$$lwc-synthetic-mode$$'])) {
         return attachShadow(this, options);

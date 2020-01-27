@@ -36,7 +36,7 @@ import {
     getComponentAsString,
     getTemplateReactiveObserver,
 } from './component';
-import { ViewModelReflection, EmptyObject } from './utils';
+import { ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
 import { getComponentVM, VM } from './vm';
 import { valueObserved, valueMutated } from '../libs/mutation-tracker';
@@ -288,7 +288,9 @@ function BaseLightningElementConstructor(this: LightningElement) {
         mode,
         delegatesFocus: !!ctor.delegatesFocus,
     };
-    assign(shadowRootOptions, { '$$lwc-synthetic-mode$$': true });
+    if (useSyntheticShadow) {
+        assign(shadowRootOptions, { '$$lwc-synthetic-mode$$': true });
+    }
     const cmpRoot = elm.attachShadow(shadowRootOptions);
     // linking elm, shadow root and component with the VM
     setHiddenField(component, ViewModelReflection, vm);
