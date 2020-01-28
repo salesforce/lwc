@@ -78,7 +78,7 @@ function outerHTMLGetterPatched(this: Element) {
 
 function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot {
     // To retain native behavior of the API, provide synthetic shadowRoot only when specified
-    if (isTrue(options['$$lwc-synthetic-mode$$'])) {
+    if (isTrue(options['$$lwc-synthetic-mode$$']) || isUndefined(originalAttachShadow)) {
         return attachShadow(this, options);
     } else {
         return originalAttachShadow.call(this, options);
