@@ -18,7 +18,7 @@ describe('Event target retains native behavior in native shadow dom tree', () =>
         document.body.addEventListener('test', listener);
     });
     afterEach(() => {
-        document.body.removeEventListener(listener);
+        document.body.removeEventListener('test', listener);
         eventTargetAtBody = undefined;
     });
 
