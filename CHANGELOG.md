@@ -1,8 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.6...v) (2020-01-27)
+# [](https://github.com/salesforce/lwc/compare/v1.1.13-224.7...v) (2020-01-30)
+
+
+### Features
+
+* **synthetic-shadow:** preserve native behavior of attachShadow ([#1693](https://github.com/salesforce/lwc/issues/1693)) ([b30c96d](https://github.com/salesforce/lwc/commit/b30c96d))
 
 
 
-## [1.1.13-224.6](https://github.com/salesforce/lwc/compare/v1.1.13-224.4...v1.1.13-224.6) (2020-01-27)
+## [1.1.13-224.7](https://github.com/salesforce/lwc/compare/v1.1.13-224.4...v1.1.13-224.7) (2020-01-27)
 
 
 ### Features
