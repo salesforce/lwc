@@ -1,3 +1,5 @@
+import { createElement } from 'lwc';
+import LWCParent from 'x/lwcParent';
 import NativeShadowParent from './x/NativeParent/NativeParent';
 import NativeShadowChild from './x/NativeChild/NativeChild';
 
@@ -140,16 +142,26 @@ if (process.env.COMPAT !== true) {
         let child;
         let eventTargetAtBody;
         let container;
+        let lwcParent;
         const listener = evt => {
             eventTargetAtBody = evt.target;
         };
-        beforeEach(() => {
+        beforeEach(done => {
             parent = NativeShadowParent();
-            document.body.appendChild(parent);
             child = NativeShadowChild();
             container = parent.shadowRoot.querySelector('div');
             container.appendChild(child);
             document.body.addEventListener('test', listener);
+
+            // LWC tree
+            lwcParent = createElement('x-lwc-parent', { is: LWCParent });
+            document.body.appendChild(lwcParent);
+            const domManual = lwcParent.shadowRoot.querySelector('div');
+            domManual.appendChild(parent);
+            // Allow for portal elements to be adopted
+            return Promise.resolve().then(() => {
+                done();
+            });
         });
         afterEach(() => {
             document.body.removeEventListener('test', listener);
@@ -165,7 +177,10 @@ if (process.env.COMPAT !== true) {
                 const event = new CustomEvent('test', { bubbles: true });
                 parent.dispatchEvent(event);
                 expect(targetAtSource).toBe(parent);
-                expect(eventTargetAtBody).toBe(parent);
+
+                // Non-composed event should stop at shadow boundary
+                // TODO: #1700 - Listener should not be invoked
+                expect(eventTargetAtBody).toBeFalsy();
             });
 
             it('event dispatched inside root custom element', () => {
@@ -220,7 +235,7 @@ if (process.env.COMPAT !== true) {
                 const event = new CustomEvent('test', { bubbles: true, composed: true });
                 parent.dispatchEvent(event);
                 expect(targetAtSource).toBe(parent);
-                expect(eventTargetAtBody).toBe(parent);
+                expect(eventTargetAtBody).toBe(lwcParent);
             });
 
             it('event dispatched inside root custom element', () => {
@@ -242,7 +257,7 @@ if (process.env.COMPAT !== true) {
 
                 // composed event should bubble up to document
                 expect(targetAtParent).toBe(parent);
-                expect(eventTargetAtBody).toBe(parent);
+                expect(eventTargetAtBody).toBe(lwcParent);
             });
 
             it('event dispatched inside nested custom element', () => {
@@ -262,7 +277,7 @@ if (process.env.COMPAT !== true) {
                 // composed event should bubble up to document
                 expect(targetAtContainer).toBe(child);
                 expect(targetAtParent).toBe(parent);
-                expect(eventTargetAtBody).toBe(parent);
+                expect(eventTargetAtBody).toBe(lwcParent);
             });
         });
     });
