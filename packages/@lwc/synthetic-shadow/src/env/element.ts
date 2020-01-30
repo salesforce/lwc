@@ -8,7 +8,6 @@ import { hasOwnProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 
 const {
     addEventListener,
-    attachShadow,
     getAttribute,
     getBoundingClientRect,
     getElementsByTagName,
@@ -20,6 +19,16 @@ const {
     setAttribute,
 } = Element.prototype;
 
+const attachShadow: (init: ShadowRootInit) => ShadowRoot = hasOwnProperty.call(
+    Element.prototype,
+    'attachShadow'
+)
+    ? Element.prototype.attachShadow
+    : () => {
+          throw new TypeError(
+              'attachShadow() is not supported in current browser. Load the @lwc/synthetic-shadow polyfill and use Lightning Web Components'
+          );
+      };
 const childElementCountGetter: (this: ParentNode) => number = getOwnPropertyDescriptor(
     Element.prototype,
     'childElementCount'

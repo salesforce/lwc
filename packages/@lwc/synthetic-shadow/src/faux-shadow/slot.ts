@@ -136,18 +136,9 @@ defineProperties(HTMLSlotElement.prototype, {
                     : getFilteredSlotAssignedNodes(this);
                 return ArrayFilter.call(nodes, node => node instanceof Element);
             } else {
-                if (!isUndefined(originalAssignedElements)) {
-                    return originalAssignedElements.apply(this, ArraySlice.call(arguments) as [
-                        AssignedNodesOptions
-                    ]);
-                } else {
-                    if (process.env.NODE_ENV !== 'production') {
-                        throw new TypeError(
-                            '<slot> elements can only be used in a component template.'
-                        );
-                    }
-                    return [];
-                }
+                return originalAssignedElements.apply(this, ArraySlice.call(arguments) as [
+                    AssignedNodesOptions
+                ]);
             }
         },
         writable: true,
@@ -162,18 +153,9 @@ defineProperties(HTMLSlotElement.prototype, {
                     ? getFilteredSlotFlattenNodes(this)
                     : getFilteredSlotAssignedNodes(this);
             } else {
-                if (!isUndefined(originalAssignedNodes)) {
-                    return originalAssignedNodes.apply(this, ArraySlice.call(arguments) as [
-                        AssignedNodesOptions
-                    ]);
-                } else {
-                    if (process.env.NODE_ENV !== 'production') {
-                        throw new TypeError(
-                            '<slot> elements can only be used in a component template.'
-                        );
-                    }
-                    return [];
-                }
+                return originalAssignedNodes.apply(this, ArraySlice.call(arguments) as [
+                    AssignedNodesOptions
+                ]);
             }
         },
         writable: true,
