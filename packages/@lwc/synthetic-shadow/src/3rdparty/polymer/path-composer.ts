@@ -17,7 +17,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { isNull } from '@lwc/shared';
 import { getOwnerDocument } from '../../shared/utils';
-import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
     const composedPath: (Element | Document | Window)[] = [];
@@ -34,7 +33,7 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
         }
         if (!isNull(assignedSlot)) {
             current = assignedSlot;
-        } else if (current instanceof SyntheticShadowRoot && (composed || current !== startRoot)) {
+        } else if (current instanceof ShadowRoot && (composed || current !== startRoot)) {
             current = (current as ShadowRoot).host;
         } else {
             current = (current as Element).parentNode;
