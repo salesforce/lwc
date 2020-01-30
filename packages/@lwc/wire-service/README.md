@@ -16,6 +16,16 @@ The `@wire` decorator provides LWC components with a declarative mechanism to ex
 -   It is assumed all data mutates over time yet a given snapshot of data is immutable.
 -   A component receiving data does not own that data. It is comparable to a component receiving props does not own the props.
 
+## Setup
+
+In order to use the wire service, first register the wire service before any components are rendered:
+
+```js
+import { registerWireService } from '@lwc/wire-service';
+import { register } from 'lwc';
+registerWireService(register);
+```
+
 ## Example Use Of `@wire`
 
 Consider a component that wants to display the details of a todo item. It uses `@wire` to declare its data requirements.
