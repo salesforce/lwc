@@ -7,18 +7,28 @@
 import { hasOwnProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 
 const {
-    hasAttribute,
+    addEventListener,
     getAttribute,
-    setAttribute,
-    removeAttribute,
-    querySelectorAll,
     getBoundingClientRect,
     getElementsByTagName,
     getElementsByTagNameNS,
+    hasAttribute,
+    querySelectorAll,
+    removeAttribute,
+    removeEventListener,
+    setAttribute,
 } = Element.prototype;
 
-const { addEventListener, removeEventListener } = Element.prototype;
-
+const attachShadow: (init: ShadowRootInit) => ShadowRoot = hasOwnProperty.call(
+    Element.prototype,
+    'attachShadow'
+)
+    ? Element.prototype.attachShadow
+    : () => {
+          throw new TypeError(
+              'attachShadow() is not supported in current browser. Load the @lwc/synthetic-shadow polyfill and use Lightning Web Components'
+          );
+      };
 const childElementCountGetter: (this: ParentNode) => number = getOwnPropertyDescriptor(
     Element.prototype,
     'childElementCount'
@@ -75,28 +85,37 @@ const childrenGetter: (this: ParentNode) => HTMLCollectionOf<Element> = hasOwnPr
 // for all other browsers access the method from the parent Element interface
 const { getElementsByClassName } = HTMLElement.prototype;
 
+const shadowRootGetter: (this: Element) => ShadowRoot | null = hasOwnProperty.call(
+    Element.prototype,
+    'shadowRoot'
+)
+    ? getOwnPropertyDescriptor(Element.prototype, 'shadowRoot')!.get!
+    : () => null;
+
 export {
     addEventListener,
-    removeEventListener,
-    hasAttribute,
-    getAttribute,
-    setAttribute,
-    removeAttribute,
-    querySelectorAll,
-    getBoundingClientRect,
-    getElementsByTagName,
-    getElementsByClassName,
-    getElementsByTagNameNS,
-    tagNameGetter,
-    tabIndexGetter,
-    tabIndexSetter,
-    innerHTMLGetter,
-    innerHTMLSetter,
-    outerHTMLGetter,
-    outerHTMLSetter,
-    matches,
+    attachShadow,
     childrenGetter,
     childElementCountGetter,
     firstElementChildGetter,
+    getAttribute,
+    getBoundingClientRect,
+    getElementsByClassName,
+    getElementsByTagName,
+    getElementsByTagNameNS,
+    hasAttribute,
+    innerHTMLGetter,
+    innerHTMLSetter,
     lastElementChildGetter,
+    matches,
+    outerHTMLGetter,
+    outerHTMLSetter,
+    querySelectorAll,
+    removeAttribute,
+    removeEventListener,
+    setAttribute,
+    shadowRootGetter,
+    tagNameGetter,
+    tabIndexGetter,
+    tabIndexSetter,
 };
