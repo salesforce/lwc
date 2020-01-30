@@ -5,6 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const { assignedNodes, assignedElements } = HTMLSlotElement.prototype;
-
+let assignedNodes, assignedElements;
+if (typeof HTMLSlotElement !== 'undefined') {
+    assignedNodes = HTMLSlotElement.prototype.assignedNodes;
+    assignedElements = HTMLSlotElement.prototype.assignedElements;
+}
 export { assignedNodes, assignedElements };

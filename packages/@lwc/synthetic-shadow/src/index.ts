@@ -8,6 +8,7 @@
 // Collecting env references before patching anything
 import './env/node';
 import './env/element';
+import './env/slot';
 import './env/dom';
 import './env/document';
 import './env/window';
