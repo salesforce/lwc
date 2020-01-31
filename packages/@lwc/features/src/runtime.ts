@@ -21,12 +21,12 @@ function setFeatureFlag(name: string, value: FeatureFlagValue) {
     const isBoolean = isTrue(value) || isFalse(value);
     if (!isBoolean) {
         const message = `Failed to set the value "${value}" for the runtime feature flag "${name}". Runtime feature flags can only be set to a boolean value.`;
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV !== 'production') {
+            throw new TypeError(message);
+        } else {
             // eslint-disable-next-line no-console
             console.error(message);
             return;
-        } else {
-            throw new TypeError(message);
         }
     }
     if (isUndefined(features[name])) {
@@ -36,7 +36,10 @@ function setFeatureFlag(name: string, value: FeatureFlagValue) {
         );
         return;
     }
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV !== 'production') {
+        // Allow the same flag to be set more than once outside of production to enable testing
+        runtimeFlags[name] = value;
+    } else {
         // Disallow the same flag to be set more than once in production
         const runtimeValue = runtimeFlags[name];
         if (!isUndefined(runtimeValue)) {
@@ -47,9 +50,6 @@ function setFeatureFlag(name: string, value: FeatureFlagValue) {
             return;
         }
         Object.defineProperty(runtimeFlags, name, { value });
-    } else {
-        // Allow the same flag to be set more than once outside of production to enable testing
-        runtimeFlags[name] = value;
     }
 }
 
