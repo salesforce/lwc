@@ -1,25 +1,28 @@
 
 <template>
-    <x-boundary-child-constructor-throw if:true={getBoundaryChildConstructorThrow}></x-boundary-child-constructor-throw>
+    <x-boundary-child-constructor-throw if:true={state.boundaryChildConstructorThrow}></x-boundary-child-constructor-throw>
 
     <br>
-    <x-boundary-child-render-throw if:true={getBoundaryChildRenderThrow}></x-boundary-child-render-throw>
+    <x-boundary-child-render-throw if:true={state.boundaryChildRenderThrow}></x-boundary-child-render-throw>
 
     <br>
-    <x-boundary-child-rendered-throw if:true={getBoundaryChildRenderedThrow}></x-boundary-child-rendered-throw>
+    <x-boundary-child-rendered-throw if:true={state.boundaryChildRenderedThrow}></x-boundary-child-rendered-throw>
 
     <br>
-    <x-boundary-child-connected-throw if:true={getBoundaryChildConnectedThrow}></x-boundary-child-connected-throw>
+    <x-boundary-child-connected-throw if:true={state.boundaryChildConnectedThrow}></x-boundary-child-connected-throw>
 
     <br>
-    <x-boundary-child-slot-throw if:true={getBoundaryChildSlotThrow}></x-boundary-child-slot-throw>
+    <x-boundary-child-slot-throw if:true={state.boundaryChildSlotThrow}></x-boundary-child-slot-throw>
 
     <br>
-    <x-boundary-child-self-rehydrate-throw if:true={getBoundaryChildSelfRehydrateThrow}></x-boundary-child-self-rehydrate-throw>
+    <x-nested-boundary-child-throw if:true={state.boundaryChildThrow}></x-nested-boundary-child-throw>
 
     <br>
-    <x-nested-boundary-child-alt-view-throw if:true={getNestedBoundaryChildAltViewThrow}></x-nested-boundary-child-alt-view-throw>
+    <x-boundary-child-self-rehydrate-throw if:true={state.boundaryChildSelfRehydrateThrow}></x-boundary-child-self-rehydrate-throw>
 
     <br>
-    <x-boundary-alternative-view-throw if:true={getBoundaryAltViewThrow}></x-boundary-alternative-view-throw>
+    <x-nested-boundary-child-alt-view-throw if:true={state.nestedBoundaryChildAltViewThrow}></x-nested-boundary-child-alt-view-throw>
+
+    <br>
+    <x-boundary-alternative-view-throw if:true={state.boundaryAlternativeViewThrow}></x-boundary-alternative-view-throw>
 </template>

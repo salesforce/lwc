@@ -28,7 +28,7 @@ describe('error boundary', () => {
     });
 
     it('should render alternative view if child throws in renderedCallback()', () => {
-        elm.toggleFlag('boundary-child-rendered-throw');
+        elm.toggleFlag('boundaryChildRenderedThrow');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-rendered-throw')
                 .shadowRoot;
@@ -41,7 +41,7 @@ describe('error boundary', () => {
     });
 
     it('should render alternative view if child throws in render()', () => {
-        elm.toggleFlag('boundary-child-render-throw');
+        elm.toggleFlag('boundaryChildRenderThrow');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-render-throw')
                 .shadowRoot;
@@ -54,7 +54,7 @@ describe('error boundary', () => {
     });
 
     it('should render alternative view if child throws in constructor()', () => {
-        elm.toggleFlag('boundary-child-constructor-throw');
+        elm.toggleFlag('boundaryChildConstructorThrow');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-constructor-throw')
                 .shadowRoot;
@@ -68,7 +68,7 @@ describe('error boundary', () => {
     });
 
     it('should render alternative view if child throws in connectedCallback()', () => {
-        elm.toggleFlag('boundary-child-connected-throw');
+        elm.toggleFlag('boundaryChildConnectedThrow');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-connected-throw')
                 .shadowRoot;
@@ -81,7 +81,7 @@ describe('error boundary', () => {
     });
 
     it('should render alternative view if child slot throws in render()', () => {
-        elm.toggleFlag('boundary-child-slot-throw');
+        elm.toggleFlag('boundaryChildSlotThrow');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-slot-throw')
                 .shadowRoot;
@@ -93,8 +93,21 @@ describe('error boundary', () => {
         });
     });
 
+    it('should render alternative view if nested child throws in render()', () => {
+        elm.toggleFlag('boundaryChildThrow');
+        return waitForNestedRehydration().then(() => {
+            const innerShadowRoot = shadowRoot.querySelector('x-nested-boundary-child-throw')
+                .shadowRoot;
+            const altenativeView = innerShadowRoot.querySelector('.boundary-alt-view');
+            expect(altenativeView.textContent).toEqual('alternative view');
+
+            // ensure offender has been unmounted
+            expect(innerShadowRoot.querySelector('x-nested-grand-child-throw')).toBe(null);
+        });
+    });
+
     it('should render alternative view if child throws during self rehydration cycle', () => {
-        elm.toggleFlag('boundary-child-self-rehydrate-throw');
+        elm.toggleFlag('boundaryChildSelfRehydrateThrow');
         return Promise.resolve().then(() => {
             const innerShadowRoot = shadowRoot.querySelector(
                 'x-boundary-child-self-rehydrate-throw'
@@ -113,7 +126,7 @@ describe('error boundary', () => {
 
     // #1169 parent's errorCallback never invoked
     xit('should render parent boundary`s alternative view when child boundary fails to render its alternative view', () => {
-        elm.toggleFlag('nested-boundary-child-alt-view-throw');
+        elm.toggleFlag('nestedBoundaryChildAltViewThrow');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector(
                 'x-nested-boundary-child-alt-view-throw'
@@ -127,7 +140,7 @@ describe('error boundary', () => {
     });
 
     it('should fail to unmount alternatvie offender when root element is not a boundary', () => {
-        elm.toggleFlag('boundary-alternative-view-throw');
+        elm.toggleFlag('boundaryAlternativeViewThrow');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-alternative-view-throw')
                 .shadowRoot;
