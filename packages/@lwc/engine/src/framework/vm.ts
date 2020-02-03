@@ -520,7 +520,7 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
             return currentVm;
         }
 
-        currentVm = vm.owner;
+        currentVm = currentVm.owner;
     }
 }
 

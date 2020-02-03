@@ -93,6 +93,19 @@ describe('error boundary', () => {
         });
     });
 
+    it('should render alternative view if nested child throws in render()', () => {
+        elm.toggleFlag('boundary-child-throw');
+        return waitForNestedRehydration().then(() => {
+            const innerShadowRoot = shadowRoot.querySelector('x-nested-boundary-child-throw')
+                .shadowRoot;
+            const altenativeView = innerShadowRoot.querySelector('.boundary-alt-view');
+            expect(altenativeView.textContent).toEqual('alternative view');
+
+            // ensure offender has been unmounted
+            expect(innerShadowRoot.querySelector('x-nested-grand-child-throw')).toBe(null);
+        });
+    });
+
     it('should render alternative view if child throws during self rehydration cycle', () => {
         elm.toggleFlag('boundary-child-self-rehydrate-throw');
         return Promise.resolve().then(() => {
