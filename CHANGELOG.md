@@ -1,4 +1,14 @@
-# [](https://github.com/salesforce/lwc/compare/v1.2.1...v) (2020-01-25)
+# [](https://github.com/salesforce/lwc/compare/v1.2.1...v) (2020-02-03)
+
+
+### Bug Fixes
+
+* **engine:** infinite loop in getErrorBoundaryVM ([#1704](https://github.com/salesforce/lwc/issues/1704)) ([7102988](https://github.com/salesforce/lwc/commit/71029887d197f505945d5a544a9e298f627d0f99))
+
+
+### Features
+
+* **synthetic-shadow:** preserve native behavior of attachShadow ([#1693](https://github.com/salesforce/lwc/issues/1693)) ([#1702](https://github.com/salesforce/lwc/issues/1702)) ([ed43a4a](https://github.com/salesforce/lwc/commit/ed43a4a1f80f910bf219019e642c313f80f48f70))
 
 
 

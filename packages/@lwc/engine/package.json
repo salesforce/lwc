@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine",
-    "version": "1.1.13-224.5",
+    "version": "1.2.2",
     "description": "LWC Engine",
     "main": "dist/engine.cjs.js",
     "module": "dist/engine.js",
@@ -19,9 +19,9 @@
         "observable-membrane": "0.26.1"
     },
     "devDependencies": {
-        "@lwc/features": "1.1.13-224.5",
-        "@lwc/shared": "1.1.13-224.5",
-        "@lwc/template-compiler": "1.1.13-224.5"
+        "@lwc/features": "1.2.2",
+        "@lwc/shared": "1.2.2",
+        "@lwc/template-compiler": "1.2.2"
     },
     "lwc": {
         "modules": [
