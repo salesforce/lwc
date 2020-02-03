@@ -13,15 +13,11 @@ import {
     getOwnPropertyDescriptor,
     hasOwnProperty,
     isNull,
+    isTrue,
     isUndefined,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
-import {
-    attachShadow,
-    getShadowRoot,
-    SyntheticShadowRootInterface,
-    isHostElement,
-} from './shadow-root';
+import { attachShadow, getShadowRoot, isHostElement } from './shadow-root';
 import {
     getNodeOwner,
     getAllMatches,
@@ -31,13 +27,15 @@ import {
     getFirstSlottedMatch,
 } from './traverse';
 import {
+    attachShadow as originalAttachShadow,
     childrenGetter,
-    outerHTMLSetter,
     childElementCountGetter,
     firstElementChildGetter,
-    lastElementChildGetter,
     innerHTMLGetter,
+    lastElementChildGetter,
+    outerHTMLSetter,
     outerHTMLGetter,
+    shadowRootGetter as originalShadowRootGetter,
 } from '../env/element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
@@ -78,18 +76,23 @@ function outerHTMLGetterPatched(this: Element) {
     return getOuterHTML(this);
 }
 
-function attachShadowPatched(this: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
-    return attachShadow(this, options);
+function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot {
+    // To retain native behavior of the API, provide synthetic shadowRoot only when specified
+    if (isTrue((options as any)['$$lwc-synthetic-mode$$'])) {
+        return attachShadow(this, options);
+    } else {
+        return originalAttachShadow.call(this, options);
+    }
 }
 
-function shadowRootGetterPatched(this: Element): SyntheticShadowRootInterface | null {
+function shadowRootGetterPatched(this: Element): ShadowRoot | null {
     if (isHostElement(this)) {
         const shadow = getShadowRoot(this);
         if (shadow.mode === 'open') {
             return shadow;
         }
     }
-    return null;
+    return originalShadowRootGetter.call(this);
 }
 
 function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {

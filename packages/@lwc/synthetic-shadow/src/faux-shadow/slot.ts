@@ -6,21 +6,26 @@
  */
 import {
     assert,
+    createHiddenField,
+    defineProperties,
+    ArrayFilter,
     ArrayIndexOf,
     ArrayPush,
-    forEach,
-    isUndefined,
-    isTrue,
-    ArrayFilter,
-    isNull,
     ArrayReduce,
-    defineProperties,
-    createHiddenField,
+    ArraySlice,
+    forEach,
     getHiddenField,
+    isNull,
+    isTrue,
+    isUndefined,
     setHiddenField,
 } from '@lwc/shared';
 import { getAttribute, setAttribute } from '../env/element';
 import { dispatchEvent } from '../env/dom';
+import {
+    assignedNodes as originalAssignedNodes,
+    assignedElements as originalAssignedElements,
+} from '../env/slot';
 import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import {
     isSlotElement,
@@ -123,11 +128,18 @@ defineProperties(HTMLSlotElement.prototype, {
     },
     assignedElements: {
         value(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
-            const flatten = !isUndefined(options) && isTrue(options.flatten);
-            const nodes = flatten
-                ? getFilteredSlotFlattenNodes(this)
-                : getFilteredSlotAssignedNodes(this);
-            return ArrayFilter.call(nodes, node => node instanceof Element);
+            if (isNodeShadowed(this)) {
+                const flatten = !isUndefined(options) && isTrue(options.flatten);
+                const nodes = flatten
+                    ? getFilteredSlotFlattenNodes(this)
+                    : getFilteredSlotAssignedNodes(this);
+                return ArrayFilter.call(nodes, node => node instanceof Element);
+            } else {
+                return originalAssignedElements.apply(
+                    this,
+                    ArraySlice.call(arguments) as [AssignedNodesOptions]
+                );
+            }
         },
         writable: true,
         enumerable: true,
@@ -135,8 +147,17 @@ defineProperties(HTMLSlotElement.prototype, {
     },
     assignedNodes: {
         value(this: HTMLSlotElement, options?: AssignedNodesOptions): Node[] {
-            const flatten = !isUndefined(options) && isTrue(options.flatten);
-            return flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+            if (isNodeShadowed(this)) {
+                const flatten = !isUndefined(options) && isTrue(options.flatten);
+                return flatten
+                    ? getFilteredSlotFlattenNodes(this)
+                    : getFilteredSlotAssignedNodes(this);
+            } else {
+                return originalAssignedNodes.apply(
+                    this,
+                    ArraySlice.call(arguments) as [AssignedNodesOptions]
+                );
+            }
         },
         writable: true,
         enumerable: true,
