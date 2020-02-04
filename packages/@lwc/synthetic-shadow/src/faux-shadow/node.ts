@@ -514,16 +514,16 @@ export const getInternalChildNodes: (node: Node) => NodeListOf<ChildNode> =
 // IE11 extra patches for wrong prototypes
 if (hasOwnProperty.call(HTMLElement.prototype, 'contains')) {
     defineProperty(
-        HTMLElement.prototype,
+        Node.prototype,
         'contains',
-        getOwnPropertyDescriptor(Node.prototype, 'contains')!
+        getOwnPropertyDescriptor(HTMLElement.prototype, 'contains')!
     );
 }
 
 if (hasOwnProperty.call(HTMLElement.prototype, 'parentElement')) {
     defineProperty(
-        HTMLElement.prototype,
+        Node.prototype,
         'parentElement',
-        getOwnPropertyDescriptor(Node.prototype, 'parentElement')!
+        getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!
     );
 }
