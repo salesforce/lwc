@@ -42,9 +42,22 @@ import {
     eventTargetGetter,
     focusEventRelatedTargetGetter,
 } from '../env/dom';
-import { isDelegatingFocus } from './shadow-root';
+import { isDelegatingFocus, isHostElement } from './shadow-root';
 import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
 
+// NOTE: Not sure what to do about elements with the hidden attribute. These
+// elements should not be focusable but changing the value of the CSS display
+// property overrides the behavior. For instance, elements styled display: flex
+// will be displayed and will be focusable despite the hidden attribute's
+// presence. If this ever becomes an issue, we could potentially add a check to
+// verify that the element we focused on actually received focus, and move on
+// to the next candidate otherwise.
+// NOTE: details/summary - In Chrome, an empty <details> is focusable, but this
+// is not the case in Safari. Also, <summary> is focusable but only if it is a
+// child of <details>. If this ever becomes an issue, we should probably add
+// both <details> and <summary> to this selector and rely on the validation
+// check mentioned earlier to handle issues.
+// NOTE: object[data] and embed[src] should also be considered.
 const TabbableElementsQuery = `
     button:not([tabindex="-1"]):not([disabled]),
     [contenteditable]:not([tabindex="-1"]),
@@ -74,6 +87,9 @@ function isVisible(element: HTMLElement): boolean {
 // Determines if a particular element is tabbable, as opposed to simply focusable
 
 function isTabbable(element: HTMLElement): boolean {
+    if (isHostElement(element) && isDelegatingFocus(element)) {
+        return false;
+    }
     return matches.call(element, TabbableElementsQuery) && isVisible(element);
 }
 
