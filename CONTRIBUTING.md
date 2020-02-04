@@ -207,11 +207,11 @@ _note: If more changes are needed as part of the pull request, just keep committ
 
 ### <a name="commit"></a> Commit Message Conventions
 
-Git commit messages have to be formatted according to a well defined set of rules.  This leads to **more
-readable messages** that are easy to follow when looking through the **project history**.  In addition,
-these git commit messages are used to **generate the LWC change log**. It is important to keep in mind that malformed messages won't be reflected in the change log file.
+Git commit messages have to be formatted according to a well defined set of rules. This leads to **more
+readable messages** that are easy to follow when looking through the **project history**.
 
 #### Commit Message Format
+
 Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
 format that includes a **type**, a **scope** and a **subject**:
 
@@ -260,7 +260,8 @@ Must be one of the following:
 * **test**: Adding missing tests or correcting existing tests
 
 #### Commit Scope
-The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages.
+
+The scope should be the name of the npm package affected, as perceived by the person reading the changelog.
 
 There are currently a few exceptions to the "use package name" rule:
 
@@ -270,7 +271,8 @@ There are currently a few exceptions to the "use package name" rule:
 * none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`)
 
 #### Commit Subject
-The subject contains succinct description of the change:
+
+The subject contains a succinct description of the change:
 
 * use the imperative, present tense: "change" not "changed" nor "changes"
 * don't capitalize first letter
