@@ -20,9 +20,7 @@ import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/ty
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
 import modProps from './modules/props';
-import modComputedClassName from './modules/computed-class-attr';
 import modComputedStyle from './modules/computed-style-attr';
-import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
 import modContext from './modules/context';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
@@ -87,9 +85,7 @@ export function createElmHook(vnode: VElement) {
     // is set before type=radio.
     modAttrs.create(vnode);
     modProps.create(vnode);
-    modStaticClassName.create(vnode);
     modStaticStyle.create(vnode);
-    modComputedClassName.create(vnode);
     modComputedStyle.create(vnode);
     modContext.create(vnode);
 }
@@ -136,7 +132,6 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     // is set before type=radio.
     modAttrs.update(oldVnode, vnode);
     modProps.update(oldVnode, vnode);
-    modComputedClassName.update(oldVnode, vnode);
     modComputedStyle.update(oldVnode, vnode);
 }
 
@@ -210,9 +205,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
     // is set before type=radio.
     modAttrs.create(vnode);
     modProps.create(vnode);
-    modStaticClassName.create(vnode);
     modStaticStyle.create(vnode);
-    modComputedClassName.create(vnode);
     modComputedStyle.create(vnode);
     modContext.create(vnode);
 }
@@ -245,7 +238,6 @@ export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElem
     // is set before type=radio.
     modAttrs.update(oldVnode, vnode);
     modProps.update(oldVnode, vnode);
-    modComputedClassName.update(oldVnode, vnode);
     modComputedStyle.update(oldVnode, vnode);
 }
 
