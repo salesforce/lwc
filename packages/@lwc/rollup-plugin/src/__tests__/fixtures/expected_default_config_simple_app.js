@@ -59,8 +59,8 @@
         h: api_element
       } = $api;
       return [api_element("div", {
-        classMap: {
-          "container": true
+        attrs: {
+          class: "container"
         },
         key: 1
       }, [api_custom_element("x-foo", _xFoo, {

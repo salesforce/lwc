@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _aB,
       {
         props: {
-          class: "s2"
+          className: "s2"
         },
         key: 1
       },

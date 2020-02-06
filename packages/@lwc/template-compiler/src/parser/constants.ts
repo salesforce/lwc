@@ -161,24 +161,24 @@ export const DASHED_TAGNAME_ELEMENT_SET = new Set([
 ]);
 
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
-    // These have to be quoted because aria- attributes below are quoted
-    // Our linting doesn't like to mix quoted and un-quoted property names
     accesskey: 'accessKey',
-    readonly: 'readOnly',
-    tabindex: 'tabIndex',
     bgcolor: 'bgColor',
+    class: 'className',
     colspan: 'colSpan',
-    rowspan: 'rowSpan',
     contenteditable: 'contentEditable',
     crossorigin: 'crossOrigin',
     datetime: 'dateTime',
+    for: 'htmlFor',
     formaction: 'formAction',
     ismap: 'isMap',
     maxlength: 'maxLength',
     minlength: 'minLength',
     novalidate: 'noValidate',
+    readonly: 'readOnly',
+    rowspan: 'rowSpan',
+    tabindex: 'tabIndex',
     usemap: 'useMap',
-    for: 'htmlFor',
+
     // According to the following list, there are 48 aria attributes (of which 2 are deprecated):
     // https://www.w3.org/TR/wai-aria-1.1/#x6-6-definitions-of-states-and-properties-all-aria-attributes
     // This list of 46 non-deprecated aria attributes is consistent with the following proposal:

@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _xCmp,
       {
         props: {
-          class: "foo",
+          className: "foo",
           xClass: "bar"
         },
         key: 0

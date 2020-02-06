@@ -187,8 +187,8 @@
         api_element(
           "div",
           {
-            classMap: {
-              container: true
+            attrs: {
+              class: "container"
             },
             key: 1
           },

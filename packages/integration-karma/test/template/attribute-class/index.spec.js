@@ -34,11 +34,6 @@ describe('dynamic class attribute', () => {
         expect(target.className).toBe('foo bar');
     });
 
-    it('inconsistent spacing', () => {
-        const { target } = createDynamicClass('  foo   bar baz');
-        expect(target.className).toBe('foo bar baz');
-    });
-
     it('empty', () => {
         const { host, target } = createDynamicClass('foo');
 
@@ -64,17 +59,6 @@ describe('dynamic class attribute', () => {
         host.dynamicClass = 'baz buz';
         return Promise.resolve().then(() => {
             expect(target.className).toBe('baz buz');
-        });
-    });
-
-    it('preserves manually added classes', () => {
-        const { host, target } = createDynamicClass('foo');
-        target.classList.add('bar');
-        expect(target.className).toBe('foo bar');
-
-        host.dynamicClass = 'baz';
-        return Promise.resolve().then(() => {
-            expect(target.className).toBe('bar baz');
         });
     });
 });
