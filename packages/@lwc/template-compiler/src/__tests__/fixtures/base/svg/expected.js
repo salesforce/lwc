@@ -6,12 +6,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "svg",
       {
-        classMap: {
-          "slds-button__icon": true
-        },
         attrs: {
           viewBox: "0 0 5 5",
-          "aria-hidden": "true"
+          "aria-hidden": "true",
+          class: "slds-button__icon"
         },
         key: 1
       },

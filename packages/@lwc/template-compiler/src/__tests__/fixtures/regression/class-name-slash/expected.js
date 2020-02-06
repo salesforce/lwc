@@ -8,10 +8,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "x-cmp",
       _xCmp,
       {
-        classMap: {
-          foo: true
-        },
         props: {
+          class: "foo",
           xClass: "bar"
         },
         key: 0

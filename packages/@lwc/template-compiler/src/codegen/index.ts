@@ -441,30 +441,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
 
     function elementDataBag(element: IRElement, templateContainsId: boolean): t.ObjectExpression {
         const data: t.ObjectProperty[] = [];
-        const {
-            classMap,
-            className,
-            style,
-            styleMap,
-            attrs,
-            props,
-            on,
-            forKey,
-            locator,
-            lwc,
-        } = element;
-
-        // Class attibute defined via string
-        if (className) {
-            const { expression: classExpression } = bindExpression(className, element);
-            data.push(t.objectProperty(t.identifier('className'), classExpression));
-        }
-
-        // Class attribute defined via object
-        if (classMap) {
-            const classMapObj = objectToAST(classMap, () => t.booleanLiteral(true));
-            data.push(t.objectProperty(t.identifier('classMap'), classMapObj));
-        }
+        const { style, styleMap, attrs, props, on, forKey, locator, lwc } = element;
 
         // Style attribute defined via object
         if (styleMap) {

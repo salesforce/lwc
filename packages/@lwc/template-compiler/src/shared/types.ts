@@ -76,9 +76,6 @@ export interface IRElement {
 
     component?: string;
 
-    className?: TemplateExpression;
-    classMap?: { [name: string]: true };
-
     on?: { [name: string]: TemplateExpression };
 
     style?: TemplateExpression;

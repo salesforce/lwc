@@ -6,10 +6,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        classMap: {
-          foo: true,
-          bar: true,
-          "baz-fiz": true
+        attrs: {
+          class: "foo bar   baz-fiz"
         },
         key: 0
       },

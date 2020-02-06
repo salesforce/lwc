@@ -39,7 +39,7 @@ import {
     getForEachParent,
 } from './expression';
 
-import { parseStyleText, parseClassNames } from './style';
+import { parseStyleText } from './style';
 
 import { createElement, isCustomElement, createText } from '../shared/ir';
 
@@ -271,17 +271,6 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function applyStyle(element: IRElement) {
-        const classAttribute = getTemplateAttribute(element, 'class');
-        if (classAttribute) {
-            removeAttribute(element, 'class');
-
-            if (classAttribute.type === IRAttributeType.String) {
-                element.classMap = parseClassNames(classAttribute.value);
-            } else if (classAttribute.type === IRAttributeType.Expression) {
-                element.className = classAttribute.value;
-            }
-        }
-
         const styleAttribute = getTemplateAttribute(element, 'style');
         if (styleAttribute) {
             removeAttribute(element, 'style');

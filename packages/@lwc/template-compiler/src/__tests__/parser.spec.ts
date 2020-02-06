@@ -73,23 +73,6 @@ describe('parsing', () => {
 });
 
 describe('class and style', () => {
-    it('class attribute', () => {
-        const { root } = parseTemplate(
-            `<template><section class="foo bar   baz-fiz"></section></template>`
-        );
-        expect(root.children[0].classMap).toMatchObject({ bar: true, foo: true, 'baz-fiz': true });
-    });
-
-    it('dynamic class attribute', () => {
-        const { root } = parseTemplate(
-            `<template><section class={dynamicClass}></section></template>`
-        );
-        expect(root.children[0].className).toMatchObject({
-            type: 'Identifier',
-            name: 'dynamicClass',
-        });
-    });
-
     it('style attribute', () => {
         const { root } = parseTemplate(`<template>
             <section style="font-size: 12px; color: red; margin: 10px 5px 10px"></section>
@@ -686,7 +669,7 @@ describe('metadata', () => {
         const { state } = parseTemplate(
             `<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`
         );
-        expect(Array.from(state.ids)).toEqual(['visible', 'titleClass', 'text']);
+        expect(Array.from(state.ids)).toEqual(['visible', 'text', 'titleClass']);
     });
 
     it('usedIds with expression', () => {

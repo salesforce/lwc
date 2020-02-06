@@ -12,7 +12,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "p",
           {
-            className: $cmp.bar,
+            attrs: {
+              class: $cmp.bar
+            },
             key: 0
           },
           []

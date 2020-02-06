@@ -20,10 +20,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "a",
       {
-        classMap: {
-          test: true
-        },
         attrs: {
+          class: "test",
           "data-foo": "datafoo",
           "aria-hidden": "h",
           role: "presentation",
@@ -39,13 +37,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "ns-bar",
       _nsBar,
       {
-        classMap: {
-          r: true
-        },
         attrs: {
           "data-xx": "foo"
         },
         props: {
+          class: "r",
           ariaDescribedBy: `${api_scoped_id("ns-foo")}`,
           ariaHidden: "hidden",
           fooBar: "x",
@@ -61,10 +57,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "svg",
       {
-        classMap: {
-          cubano: true
-        },
         attrs: {
+          class: "cubano",
           focusable: "true"
         },
         key: 4
@@ -100,8 +94,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        className: $cmp.foo,
         attrs: {
+          class: $cmp.foo,
           "aria-hidden": "hidden"
         },
         key: 6

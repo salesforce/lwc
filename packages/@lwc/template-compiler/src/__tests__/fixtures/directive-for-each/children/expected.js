@@ -12,8 +12,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        classMap: {
-          s1: true
+        attrs: {
+          class: "s1"
         },
         key: 1
       },
@@ -34,8 +34,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        classMap: {
-          s2: true
+        attrs: {
+          class: "s2"
         },
         key: 4
       },
@@ -66,8 +66,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        classMap: {
-          s3: true
+        attrs: {
+          class: "s3"
         },
         key: 7
       },
@@ -93,8 +93,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        classMap: {
-          s4: true
+        attrs: {
+          class: "s4"
         },
         key: 10
       },

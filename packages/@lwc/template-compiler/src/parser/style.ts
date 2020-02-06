@@ -57,19 +57,3 @@ export function parseStyleText(cssText: string): StyleMap {
 
     return styleMap;
 }
-
-const CLASSNAME_DELIMITER = /\s+/;
-
-export function parseClassNames(classNames: string): ClassMap {
-    const classMap: ClassMap = {};
-
-    const classList = classNames.split(CLASSNAME_DELIMITER);
-    for (const className of classList) {
-        const normalizedClassName = className.trim();
-
-        if (normalizedClassName.length > 0) {
-            classMap[className] = true;
-        }
-    }
-    return classMap;
-}

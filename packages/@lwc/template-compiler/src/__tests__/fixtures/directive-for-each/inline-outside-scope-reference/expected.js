@@ -12,8 +12,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         return api_element(
           "div",
           {
-            classMap: {
-              "my-list": true
+            attrs: {
+              class: "my-list"
             },
             key: api_key(2, item.id)
           },

@@ -6,14 +6,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        className: $cmp.foo.c,
+        attrs: {
+          class: $cmp.foo.c
+        },
         key: 1
       },
       [
         api_element(
           "p",
           {
-            className: $cmp.bar.c,
+            attrs: {
+              class: $cmp.bar.c
+            },
             key: 0
           },
           []
