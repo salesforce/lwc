@@ -12,9 +12,3 @@ export interface Context {
     tplCache?: Template;
     [key: string]: any;
 }
-
-export let currentContext: Context = {};
-
-export function establishContext(ctx: Context) {
-    currentContext = ctx;
-}
