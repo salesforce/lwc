@@ -42,6 +42,9 @@ export function getVMBeingRendered(): VM | null {
 export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
+export function isVMBeingRendered(vm: VM) {
+    return vm === vmBeingRendered;
+}
 
 export { registerTemplate };
 export interface Template {
