@@ -257,7 +257,8 @@ function getShadowRootRestrictionsDescriptors(
                 const vm = getAssociatedVM(this);
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`
+                    `this.template.querySelector() cannot be called during the construction of the` +
+                        `custom element for ${vm} because no content has been rendered yet.`
                 );
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
@@ -269,7 +270,8 @@ function getShadowRootRestrictionsDescriptors(
                 const vm = getAssociatedVM(this);
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`
+                    `this.template.querySelectorAll() cannot be called during the construction of the` +
+                        ` custom element for ${vm} because no content has been rendered yet.`
                 );
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
@@ -383,7 +385,9 @@ function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
         tagName: generateAccessorDescriptor({
             get(this: ComponentInterface) {
                 throw new Error(
-                    `Usage of property \`tagName\` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.`
+                    `Usage of property \`tagName\` is disallowed because the component itself does` +
+                        ` not know which tagName will be used to create the element, therefore writing` +
+                        ` code that check for that value is error prone.`
                 );
             },
             configurable: true,
@@ -409,9 +413,8 @@ function getLightningElementPrototypeRestrictionsDescriptors(
 
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentTag(
-                        vm
-                    )} because no one is listening just yet.`
+                    `this.dispatchEvent() should not be called during the construction of the custom` +
+                        ` element for ${getComponentTag(vm)} because no one is listening just yet.`
                 );
 
                 if (!isNull(event) && isObject(event)) {
@@ -421,7 +424,9 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                         logError(
                             `Invalid event type "${type}" dispatched in element ${getComponentTag(
                                 vm
-                            )}. Event name must start with a lowercase letter and followed only lowercase letters, numbers, and underscores`,
+                            )}.` +
+                                ` Event name must start with a lowercase letter and followed only lowercase` +
+                                ` letters, numbers, and underscores`,
                             vm
                         );
                     }
@@ -435,23 +440,22 @@ function getLightningElementPrototypeRestrictionsDescriptors(
         isConnected: generateAccessorDescriptor({
             get(this: LightningElement) {
                 const vm = getAssociatedVM(this);
+                const componentTag = getComponentTag(vm);
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.isConnected cannot be accessed during the construction phase of the custom element for ${getComponentTag(
-                        vm
-                    )} because it is redundant. The value will always be false because the element has not been atttached to the DOM.`
+                    `this.isConnected cannot be accessed during the construction phase of the custom` +
+                        ` element for ${componentTag} because it is redundant. The value will always be` +
+                        ` false because the element has not been atttached to the DOM.`
                 );
                 assert.isFalse(
                     isVMBeingRendered(vm),
-                    `this.isConnected cannot be accessed during the rendering phase of the custom element for ${getComponentTag(
-                        vm
-                    )} because it is redundant. The value will always be true.`
+                    `this.isConnected cannot be accessed during the rendering phase of the custom` +
+                        ` element for ${componentTag} because it is redundant. The value will always be true.`
                 );
                 assert.isFalse(
                     isInvokingRenderedCallback(vm),
-                    `this.isConnected cannot be accessed during the renderedCallback of the custom element for ${getComponentTag(
-                        vm
-                    )} because it is redundant. The value will always be true.`
+                    `this.isConnected cannot be accessed during the renderedCallback of the custom` +
+                        ` element for ${componentTag} because it is redundant. The value will always be true.`
                 );
             },
         }),
