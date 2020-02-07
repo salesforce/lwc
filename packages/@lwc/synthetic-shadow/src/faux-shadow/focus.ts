@@ -59,11 +59,13 @@ import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared
 // check mentioned earlier to handle issues.
 // NOTE: object[data] and embed[src] should also be considered.
 const TabbableElementsQuery = `
+    a[href]:not([tabindex="-1"]),
+    area[href]:not([tabindex="-1"]),
     button:not([tabindex="-1"]):not([disabled]),
     [contenteditable]:not([tabindex="-1"]),
     video[controls]:not([tabindex="-1"]),
     audio[controls]:not([tabindex="-1"]),
-    [href]:not([tabindex="-1"]),
+    iframe:not([tabindex="-1"]),
     input:not([tabindex="-1"]):not([disabled]),
     select:not([tabindex="-1"]):not([disabled]),
     textarea:not([tabindex="-1"]):not([disabled]),
