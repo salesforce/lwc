@@ -26,9 +26,9 @@ import {
 import { LightningElement } from './base-lightning-element';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
-import { isBeingConstructed, isInvokingRender } from './invoker';
+import { isBeingConstructed, isInvokingRender, isInvokingRenderedCallback } from './invoker';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
-import { isUpdatingTemplate, getVMBeingRendered } from './template';
+import { isUpdatingTemplate, getVMBeingRendered, isVMBeingRendered } from './template';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
@@ -430,6 +430,29 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
                 return originalDispatchEvent.apply(this, arguments);
+            },
+        }),
+        isConnected: generateAccessorDescriptor({
+            get(this: LightningElement) {
+                const vm = getAssociatedVM(this);
+                assert.isFalse(
+                    isBeingConstructed(vm),
+                    `this.isConnected cannot be accessed during the construction phase of the custom element for ${getComponentTag(
+                        vm
+                    )} because it is redundant. The value will always be false because the element has not been atttached to the DOM.`
+                );
+                assert.isFalse(
+                    isVMBeingRendered(vm),
+                    `this.isConnected cannot be accessed during the rendering phase of the custom element for ${getComponentTag(
+                        vm
+                    )} because it is redundant. The value will always be true.`
+                );
+                assert.isFalse(
+                    isInvokingRenderedCallback(vm),
+                    `this.isConnected cannot be accessed during the renderedCallback of the custom element for ${getComponentTag(
+                        vm
+                    )} because it is redundant. The value will always be true.`
+                );
             },
         }),
     };

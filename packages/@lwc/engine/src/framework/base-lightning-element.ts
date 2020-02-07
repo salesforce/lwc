@@ -39,7 +39,7 @@ import { valueObserved, valueMutated } from '../libs/mutation-tracker';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
-import { Template, isUpdatingTemplate, getVMBeingRendered, isVMBeingRendered } from './template';
+import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
@@ -489,21 +489,6 @@ BaseLightningElementConstructor.prototype = {
 
     get isConnected(): boolean {
         const vm = getAssociatedVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.isConnected cannot be accessed during the construction phase of the custom element for ${getComponentTag(
-                    vm
-                )} because it is redundant. The value will always be false because the element has not been atttached to the DOM.`
-            );
-            assert.isFalse(
-                isVMBeingRendered(vm),
-                `this.isConnected cannot be accessed during the rendering phase of the custom element for ${getComponentTag(
-                    vm
-                )} because it is redundant. The value will always be true.`
-            );
-            // renderedCallback()
-        }
         const { elm } = vm;
         return elm.isConnected;
     },

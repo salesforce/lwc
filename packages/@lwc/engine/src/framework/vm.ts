@@ -31,7 +31,7 @@ import {
 } from './component';
 import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
 import { invokeServiceHook, Services } from './services';
-import { invokeComponentCallback } from './invoker';
+import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
 import { ShadowRootInnerHTMLSetter } from '../env/dom';
 
 import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
@@ -338,18 +338,7 @@ function runRenderedCallback(vm: VM) {
     if (rendered) {
         invokeServiceHook(vm, rendered);
     }
-    const { renderedCallback } = vm.def;
-    if (!isUndefined(renderedCallback)) {
-        if (process.env.NODE_ENV !== 'production') {
-            startMeasure('renderedCallback', vm);
-        }
-
-        invokeComponentCallback(vm, renderedCallback);
-
-        if (process.env.NODE_ENV !== 'production') {
-            endMeasure('renderedCallback', vm);
-        }
-    }
+    invokeComponentRenderedCallback(vm);
 }
 
 let rehydrateQueue: VM[] = [];
