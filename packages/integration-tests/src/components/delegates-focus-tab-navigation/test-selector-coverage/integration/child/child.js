@@ -90,9 +90,6 @@ export default class Child extends LightningElement {
     @api type;
 
     render() {
-        if (!map[this.type]) {
-            throw new Error(this.type);
-        }
         return map[this.type];
     }
 }
