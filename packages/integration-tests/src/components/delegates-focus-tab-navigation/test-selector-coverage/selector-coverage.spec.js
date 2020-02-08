@@ -8,28 +8,28 @@ const assert = require('assert');
 
 const URL = '/selector-coverage';
 
-const focusable = [
+const expected = [
     'anchorHref',
-    'areaHref',
+    // 'areaHref', // Focusable in all browsers except for Windows Chrome (80.0.3987.87)
     'audioControls',
     'button',
     'checkbox',
-    //    'detailsEmpty',
-    //    'embedSrc',
+    // 'detailsEmpty',
+    // 'embedSrc',
     'iframe',
     'iframeSrc',
     'input',
     'inputTime',
-    //    'objectData',
+    // 'objectData',
     'select',
     'selectMultiple',
     'selectOptgroup',
     'spanContenteditable',
     'spanTabindexZero',
-    //    'summaryInsideDetails',
-    //    'summaryInsideDetailsMultiple',
+    // 'summaryInsideDetails',
+    // 'summaryInsideDetailsMultiple',
     'svgAnchorHref',
-    //    'svgAnchorXlinkHref',
+    // 'svgAnchorXlinkHref',
     'textarea',
     'videoControls',
 ];
@@ -50,7 +50,7 @@ describe('selector coverage', () => {
 
         // Continue sequential focus navigation until we reach the last input
         // outside the table.
-        const visited = [];
+        const actual = [];
         let lastComponentType;
         let componentType;
 
@@ -75,11 +75,11 @@ describe('selector coverage', () => {
                 return rootNode.host.type;
             });
             if (componentType !== 'DONE' && componentType !== lastComponentType) {
-                visited.push(componentType);
+                actual.push(componentType);
                 lastComponentType = componentType;
             }
         } while (componentType !== 'DONE');
 
-        assert.deepEqual(focusable, visited);
+        assert.deepStrictEqual(actual, expected);
     });
 });
