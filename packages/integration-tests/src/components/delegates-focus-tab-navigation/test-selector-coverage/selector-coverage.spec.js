@@ -10,16 +10,15 @@ const URL = '/selector-coverage';
 
 const focusable = [
     'anchorHref',
-    'areaHrefSquare',
+    'areaHref',
     'audioControls',
     'button',
     'checkbox',
     //    'detailsEmpty',
     //    'embedSrc',
     'iframe',
-    //    'iframeSrc',
+    'iframeSrc',
     'input',
-    'inputTime',
     'inputTime',
     //    'objectData',
     'select',
@@ -51,22 +50,25 @@ describe('selector coverage', () => {
 
         // Continue sequential focus navigation until we reach the last input
         // outside the table.
-        const focusIds = [];
-        let focusId;
+        const visited = [];
+        let lastComponentType;
+        let componentType;
         do {
             browser.keys(['Tab']);
-            focusId = browser.execute(function() {
-                var active = document.activeElement;
-                while (active.shadowRoot) {
-                    active = active.shadowRoot.activeElement;
+            componentType = browser.execute(function() {
+                var activeElement = document.activeElement;
+                while (activeElement.shadowRoot) {
+                    activeElement = activeElement.shadowRoot.activeElement;
                 }
-                return active.dataset.focus;
+                var rootNode = activeElement.getRootNode();
+                return rootNode.host.type;
             });
-            if (focusId) {
-                focusIds.push(focusId);
+            if (componentType !== null && componentType !== lastComponentType) {
+                visited.push(componentType);
+                lastComponentType = componentType;
             }
-        } while (focusId);
+        } while (componentType);
 
-        assert.deepEqual(focusable, focusIds);
+        assert.deepEqual(focusable, visited);
     });
 });
