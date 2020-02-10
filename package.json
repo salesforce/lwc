@@ -21,16 +21,16 @@
     "release:ci:dist-tags": "./scripts/release_dist-tags.sh"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.3",
+    "@babel/core": "^7.8.4",
     "@babel/preset-typescript": "^7.8.3",
     "@commitlint/cli": "^8.3.5",
     "@rollup/plugin-replace": "^2.3.1",
     "@types/acorn": "^4.0.5",
-    "@types/jest": "^25.1.1",
+    "@types/jest": "^25.1.2",
     "@types/node": "^13.7.0",
-    "@typescript-eslint/eslint-plugin": "^2.18.0",
-    "@typescript-eslint/parser": "^2.18.0",
-    "aws-sdk": "^2.610.0",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
+    "aws-sdk": "^2.614.0",
     "babel-plugin-tester": "^8.0.1",
     "concurrently": "^5.1.0",
     "es5-proxy-compat": "^0.22.0",
@@ -78,8 +78,8 @@
     "node": ">=10"
   },
   "volta": {
-    "node": "12.14.1",
-    "yarn": "1.21.1"
+    "node": "12.15.0",
+    "yarn": "1.22.0"
   },
   "resolutions": {
     "set-value": "^2.0.1"
