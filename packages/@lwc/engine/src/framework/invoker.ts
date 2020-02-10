@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isFunction, isUndefined } from '@lwc/shared';
-import { currentContext, establishContext } from './context';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { VM, UninitializedVM, runWithBoundaryProtection } from './vm';
@@ -20,35 +19,26 @@ export let vmBeingConstructed: UninitializedVM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
     return vmBeingConstructed === vm;
 }
+const noop = () => void 0;
 
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
-    const { component, callHook, context, owner } = vm;
-    const ctx = currentContext;
+    const { component, callHook, owner } = vm;
     let result;
     runWithBoundaryProtection(
         vm,
         owner,
-        () => {
-            // pre
-            establishContext(context);
-        },
+        noop,
         () => {
             // job
             result = callHook(component, fn, args);
         },
-        () => {
-            // post
-            establishContext(ctx);
-        }
+        noop
     );
     return result;
 }
 
 export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentConstructor) {
     const vmBeingConstructedInception = vmBeingConstructed;
-    const { context } = vm;
-    const ctx = currentContext;
-    establishContext(context);
     let error;
     if (process.env.NODE_ENV !== 'production') {
         startMeasure('constructor', vm);
@@ -75,7 +65,6 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
     } catch (e) {
         error = Object(e);
     } finally {
-        establishContext(ctx);
         if (process.env.NODE_ENV !== 'production') {
             endMeasure('constructor', vm);
         }
@@ -93,10 +82,8 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         def: { render },
         callHook,
         component,
-        context,
         owner,
     } = vm;
-    const ctx = currentContext;
     const isRenderBeingInvokedInception = isInvokingRender;
     const vmBeingRenderedInception = getVMBeingRendered();
     let html: Template;
@@ -106,7 +93,6 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         owner,
         () => {
             // pre
-            establishContext(context);
             isInvokingRender = true;
             setVMBeingRendered(vm);
         },
@@ -119,7 +105,6 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         },
         () => {
             // post
-            establishContext(ctx);
             isInvokingRender = isRenderBeingInvokedInception;
             setVMBeingRendered(vmBeingRenderedInception);
         }
@@ -134,15 +119,11 @@ export function invokeEventListener(
     thisValue: undefined | ComponentInterface,
     event: Event
 ) {
-    const { callHook, owner, context } = vm;
-    const ctx = currentContext;
+    const { callHook, owner } = vm;
     runWithBoundaryProtection(
         vm,
         owner,
-        () => {
-            // pre
-            establishContext(context);
-        },
+        noop,
         () => {
             // job
             if (process.env.NODE_ENV !== 'production') {
@@ -153,9 +134,6 @@ export function invokeEventListener(
             }
             callHook(thisValue, fn, [event]);
         },
-        () => {
-            // post
-            establishContext(ctx);
-        }
+        noop
     );
 }
