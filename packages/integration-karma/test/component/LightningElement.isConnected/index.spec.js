@@ -54,7 +54,7 @@ describe('isConnected in life cycle callbacks', () => {
             createElement('x-test', { is: Test });
         }).toThrowErrorDev(
             Error,
-            /Assert Violation: this\.isConnected cannot be accessed during the construction phase of the custom element for <x-test> because it is redundant\. The value will always be false because the element has not been atttached to the DOM\./
+            /Assert Violation: this\.isConnected should not be accessed during the construction phase of the custom element <x-test>\. The value will always be false for Lightning Web Components constructed using lwc.createElement\(\)\./
         );
     });
     it('accessing isConnected in renderedCallback will throw', () => {
@@ -68,7 +68,7 @@ describe('isConnected in life cycle callbacks', () => {
             document.body.appendChild(elm);
         }).toThrowErrorDev(
             Error,
-            /Assert Violation: this\.isConnected cannot be accessed during the renderedCallback of the custom element for <x-test> because it is redundant\. The value will always be true\./
+            /Assert Violation: this\.isConnected should not be accessed during the renderedCallback of the custom element <x-test>\. The value will always be true\./
         );
     });
     it('isConnected in connectedCallback should return true', () => {

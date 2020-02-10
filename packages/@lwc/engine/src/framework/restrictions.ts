@@ -445,19 +445,19 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                 const componentTag = getComponentTag(vm);
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.isConnected cannot be accessed during the construction phase of the custom` +
-                        ` element for ${componentTag} because it is redundant. The value will always be` +
-                        ` false because the element has not been atttached to the DOM.`
+                    `this.isConnected should not be accessed during the construction phase of the custom` +
+                        ` element ${componentTag}. The value will always be` +
+                        ` false for Lightning Web Components constructed using lwc.createElement().`
                 );
                 assert.isFalse(
                     isVMBeingRendered(vm),
-                    `this.isConnected cannot be accessed during the rendering phase of the custom` +
-                        ` element for ${componentTag} because it is redundant. The value will always be true.`
+                    `this.isConnected should not be accessed during the rendering phase of the custom` +
+                        ` element ${componentTag}. The value will always be true.`
                 );
                 assert.isFalse(
                     isInvokingRenderedCallback(vm),
-                    `this.isConnected cannot be accessed during the renderedCallback of the custom` +
-                        ` element for ${componentTag} because it is redundant. The value will always be true.`
+                    `this.isConnected should not be accessed during the renderedCallback of the custom` +
+                        ` element ${componentTag}. The value will always be true.`
                 );
                 return originalIsConnectedGetter.call(this);
             },
