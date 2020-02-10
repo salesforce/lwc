@@ -166,6 +166,7 @@ export interface LightningElement {
     getElementsByTagName(tagNameOrWildCard: string): HTMLCollectionOf<Element>;
     getElementsByClassName(names: string): HTMLCollectionOf<Element>;
     classList: DOMTokenList;
+    isConnected: boolean;
     toString(): string;
 
     // LWC specifics

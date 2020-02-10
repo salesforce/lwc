@@ -21,6 +21,7 @@ import {
     toString,
     isObject,
     isNull,
+    getOwnPropertyDescriptor,
 } from '@lwc/shared';
 
 import { LightningElement } from './base-lightning-element';
@@ -405,6 +406,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
     }
 
     const originalDispatchEvent = proto.dispatchEvent;
+    const originalIsConnectedGetter = getOwnPropertyDescriptor(proto, 'isConnected')!.get!;
 
     const descriptors = {
         dispatchEvent: generateDataDescriptor({
@@ -457,6 +459,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                     `this.isConnected cannot be accessed during the renderedCallback of the custom` +
                         ` element for ${componentTag} because it is redundant. The value will always be true.`
                 );
+                return originalIsConnectedGetter.call(this);
             },
         }),
     };
