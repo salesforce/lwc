@@ -6,8 +6,8 @@
  */
 const fs = require('fs');
 const path = require('path');
+const pluginUtils = require('@rollup/pluginutils');
 const compiler = require('@lwc/compiler');
-const pluginUtils = require('rollup-pluginutils');
 const lwcResolver = require('@lwc/module-resolver');
 const { getModuleQualifiedName } = require('./utils');
 const { DEFAULT_OPTIONS, DEFAULT_MODE, DEFAULT_MODULES } = require('./constants');
