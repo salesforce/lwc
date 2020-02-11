@@ -87,10 +87,7 @@ function isVisible(element: HTMLElement): boolean {
     // The area element can be 0x0 and focusable. Hardcoding this is not ideal
     // but it will minimize changes in the current behavior.
     const isAreaElement = element.tagName === 'AREA';
-    return (
-        (noZeroSize || isAreaElement) &&
-        getComputedStyle(element).visibility !== 'hidden'
-    );
+    return (noZeroSize || isAreaElement) && getComputedStyle(element).visibility !== 'hidden';
 }
 
 // This function based on https://allyjs.io/data-tables/focusable.html
