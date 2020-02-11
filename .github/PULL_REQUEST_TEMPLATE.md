@@ -13,5 +13,5 @@ If yes, please describe the impact and migration path for existing applications.
 * Have tests for the proposed changes been added? ✅ / ❌
 * Have you followed [these instructions](../CONTRIBUTING.md#-commit-message-conventions) to clearly describe the issue being fixed or feature enhanced? ✅ / ❌
 
-## GUS work item(optional)
+## GUS work item
 <!--Work ID in text, no links -->
