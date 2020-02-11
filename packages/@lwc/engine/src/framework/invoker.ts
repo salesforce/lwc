@@ -19,6 +19,12 @@ export let vmBeingConstructed: UninitializedVM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
     return vmBeingConstructed === vm;
 }
+
+let vmInvokingRenderedCallback: VM | null = null;
+export function isInvokingRenderedCallback(vm: VM): boolean {
+    return vmInvokingRenderedCallback === vm;
+}
+
 const noop = () => void 0;
 
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
@@ -111,6 +117,40 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     );
     // If render() invocation failed, process errorCallback in boundary and return an empty template
     return renderInvocationSuccessful ? evaluateTemplate(vm, html!) : [];
+}
+
+export function invokeComponentRenderedCallback(vm: VM): void {
+    const {
+        def: { renderedCallback },
+        component,
+        callHook,
+        owner,
+    } = vm;
+    if (!isUndefined(renderedCallback)) {
+        const vmInvokingRenderedCallbackInception = vmInvokingRenderedCallback;
+        runWithBoundaryProtection(
+            vm,
+            owner,
+            () => {
+                vmInvokingRenderedCallback = vm;
+                // pre
+                if (process.env.NODE_ENV !== 'production') {
+                    startMeasure('renderedCallback', vm);
+                }
+            },
+            () => {
+                // job
+                callHook(component, renderedCallback!);
+            },
+            () => {
+                // post
+                if (process.env.NODE_ENV !== 'production') {
+                    endMeasure('renderedCallback', vm);
+                }
+                vmInvokingRenderedCallback = vmInvokingRenderedCallbackInception;
+            }
+        );
+    }
 }
 
 export function invokeEventListener(

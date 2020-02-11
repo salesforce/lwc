@@ -21,14 +21,15 @@ import {
     toString,
     isObject,
     isNull,
+    getOwnPropertyDescriptor,
 } from '@lwc/shared';
 
 import { LightningElement } from './base-lightning-element';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
-import { isBeingConstructed, isInvokingRender } from './invoker';
+import { isBeingConstructed, isInvokingRender, isInvokingRenderedCallback } from './invoker';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
-import { isUpdatingTemplate, getVMBeingRendered } from './template';
+import { isUpdatingTemplate, getVMBeingRendered, isVMBeingRendered } from './template';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
@@ -257,7 +258,8 @@ function getShadowRootRestrictionsDescriptors(
                 const vm = getAssociatedVM(this);
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`
+                    `this.template.querySelector() cannot be called during the construction of the` +
+                        `custom element for ${vm} because no content has been rendered yet.`
                 );
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
@@ -269,7 +271,8 @@ function getShadowRootRestrictionsDescriptors(
                 const vm = getAssociatedVM(this);
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`
+                    `this.template.querySelectorAll() cannot be called during the construction of the` +
+                        ` custom element for ${vm} because no content has been rendered yet.`
                 );
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
@@ -383,7 +386,9 @@ function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
         tagName: generateAccessorDescriptor({
             get(this: ComponentInterface) {
                 throw new Error(
-                    `Usage of property \`tagName\` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.`
+                    `Usage of property \`tagName\` is disallowed because the component itself does` +
+                        ` not know which tagName will be used to create the element, therefore writing` +
+                        ` code that check for that value is error prone.`
                 );
             },
             configurable: true,
@@ -401,6 +406,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
     }
 
     const originalDispatchEvent = proto.dispatchEvent;
+    const originalIsConnectedGetter = getOwnPropertyDescriptor(proto, 'isConnected')!.get!;
 
     const descriptors = {
         dispatchEvent: generateDataDescriptor({
@@ -409,9 +415,8 @@ function getLightningElementPrototypeRestrictionsDescriptors(
 
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentTag(
-                        vm
-                    )} because no one is listening just yet.`
+                    `this.dispatchEvent() should not be called during the construction of the custom` +
+                        ` element for ${getComponentTag(vm)} because no one is listening just yet.`
                 );
 
                 if (!isNull(event) && isObject(event)) {
@@ -421,7 +426,9 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                         logError(
                             `Invalid event type "${type}" dispatched in element ${getComponentTag(
                                 vm
-                            )}. Event name must start with a lowercase letter and followed only lowercase letters, numbers, and underscores`,
+                            )}.` +
+                                ` Event name must start with a lowercase letter and followed only lowercase` +
+                                ` letters, numbers, and underscores`,
                             vm
                         );
                     }
@@ -430,6 +437,29 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
                 return originalDispatchEvent.apply(this, arguments);
+            },
+        }),
+        isConnected: generateAccessorDescriptor({
+            get(this: LightningElement) {
+                const vm = getAssociatedVM(this);
+                const componentTag = getComponentTag(vm);
+                assert.isFalse(
+                    isBeingConstructed(vm),
+                    `this.isConnected should not be accessed during the construction phase of the custom` +
+                        ` element ${componentTag}. The value will always be` +
+                        ` false for Lightning Web Components constructed using lwc.createElement().`
+                );
+                assert.isFalse(
+                    isVMBeingRendered(vm),
+                    `this.isConnected should not be accessed during the rendering phase of the custom` +
+                        ` element ${componentTag}. The value will always be true.`
+                );
+                assert.isFalse(
+                    isInvokingRenderedCallback(vm),
+                    `this.isConnected should not be accessed during the renderedCallback of the custom` +
+                        ` element ${componentTag}. The value will always be true.`
+                );
+                return originalIsConnectedGetter.call(this);
             },
         }),
     };
