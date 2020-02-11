@@ -11,7 +11,6 @@ export default class RootParent extends LightningElement {
         boundaryChildThrow: false,
         boundaryChildSelfRehydrateThrow: false,
         boundaryAlternativeViewThrow: false,
-        nestedBoundaryChildAltViewThrow: false,
     };
 
     @api

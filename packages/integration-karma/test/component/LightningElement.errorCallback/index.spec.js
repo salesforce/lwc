@@ -124,22 +124,7 @@ describe('error boundary', () => {
         });
     });
 
-    // #1169 parent's errorCallback never invoked
-    xit('should render parent boundary`s alternative view when child boundary fails to render its alternative view', () => {
-        elm.toggleFlag('nestedBoundaryChildAltViewThrow');
-        return waitForNestedRehydration().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector(
-                'x-nested-boundary-child-alt-view-throw'
-            ).shadowRoot;
-            const altenativeView = innerShadowRoot.querySelector('.boundary-alt-view');
-            expect(altenativeView.textContent).toEqual('Host Boundary Alternative View');
-
-            // ensure offender has been unmounted
-            expect(innerShadowRoot.querySelector('x-nested-child-boundary-view-throw')).toBe(null);
-        });
-    });
-
-    it('should fail to unmount alternatvie offender when root element is not a boundary', () => {
+    it('should fail to unmount alternative offender when root element is not a boundary', () => {
         elm.toggleFlag('boundaryAlternativeViewThrow');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-alternative-view-throw')
