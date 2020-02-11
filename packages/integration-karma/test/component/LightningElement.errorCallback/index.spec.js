@@ -22,7 +22,7 @@ describe('error boundary', () => {
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.rendered-calback-altenative');
+            const alternativeView = elm.shadowRoot.querySelector('.rendered-callback-alternative');
 
             expect(alternativeView.textContent).toEqual('renderedCallback alternative view');
             expect(elm.shadowRoot.querySelector('x-child-rendered-throw')).toBe(null);
@@ -36,7 +36,7 @@ describe('error boundary', () => {
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.render-altenative');
+            const alternativeView = elm.shadowRoot.querySelector('.render-alternative');
 
             expect(alternativeView.textContent).toEqual('render alternative view');
             expect(elm.shadowRoot.querySelector('x-child-render-throw')).toBe(null);
@@ -50,7 +50,7 @@ describe('error boundary', () => {
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.constructor-altenative');
+            const alternativeView = elm.shadowRoot.querySelector('.constructor-alternative');
 
             expect(alternativeView.textContent).toEqual('constructor alternative view');
             expect(elm.shadowRoot.querySelector('x-child-constructor-throw')).toBe(null);
@@ -65,7 +65,7 @@ describe('error boundary', () => {
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.connected-callback-altenative');
+            const alternativeView = elm.shadowRoot.querySelector('.connected-callback-alternative');
 
             expect(alternativeView.textContent).toEqual('connectedCallback alternative view');
             expect(elm.shadowRoot.querySelector('x-child-connected-throw')).toBe(null);
@@ -77,7 +77,7 @@ describe('error boundary', () => {
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.slot-altenative');
+            const alternativeView = elm.shadowRoot.querySelector('.slot-alternative');
 
             expect(alternativeView.textContent).toEqual('slot alternative view');
             expect(elm.shadowRoot.querySelector('x-child-slot-host')).toBe(null);
@@ -110,7 +110,7 @@ describe('error boundary', () => {
         // Using a setTimeout instead of a Promise here because it takes multiple microtasks for the engine to render
         // the alternative view
         setTimeout(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.self-rehydrate-altenative');
+            const alternativeView = elm.shadowRoot.querySelector('.self-rehydrate-alternative');
 
             expect(alternativeView.textContent).toEqual('self rehydrate alternative view');
             expect(elm.shadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
