@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { Plugin } from 'rollup';
-import rollupPluginReplace from 'rollup-plugin-replace';
+import rollupPluginReplace from '@rollup/plugin-replace';
 
 import { NormalizedCompileOptions } from '../options';
 
@@ -15,13 +15,12 @@ export default function({ options }: { options: NormalizedCompileOptions }): Plu
     const patterns: { [pattern: string]: string } = {};
     if (env.NODE_ENV) {
         // Use JSON.stringify to add wrapping quotes around the env.NODE_ENV value. The
-        // rollup-plugin-replace is doing a simple search and replace in the code, the wrapping
+        // @rollup/plugin-replace is doing a simple search and replace in the code, the wrapping
         // quote are necessary other it will produce an identifier instead of a string.
         patterns[`process.env.NODE_ENV`] = JSON.stringify(env.NODE_ENV);
     }
 
     return rollupPluginReplace({
         values: patterns,
-        sourcemap: options.outputConfig.sourcemap,
     });
 }

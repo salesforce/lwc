@@ -9,7 +9,7 @@ module.exports = {
     plugins: [
         '<rootDir>/best-plugins/synthetic-shadow.js',
         ['@lwc/rollup-plugin', { rootDir: '<rootDir>/src/' }],
-        ['rollup-plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }],
+        ['@rollup/plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }],
         ['rollup-plugin-compat', {}],
     ],
     benchmarkOnClient: false,

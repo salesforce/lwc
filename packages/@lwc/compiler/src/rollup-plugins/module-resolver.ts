@@ -21,21 +21,22 @@ function isRelativeImport(id: string) {
     return id.startsWith('.');
 }
 
-function isImplicitCssImport(id: string, importee: string) {
+function isImplicitCssImport(source: string, importer: string | undefined) {
     return (
-        path.extname(id) === '.css' &&
-        path.extname(importee) === '.html' &&
-        path.basename(id, '.css') === path.basename(importee, '.html')
+        path.extname(source) === '.css' &&
+        importer &&
+        path.extname(importer) === '.html' &&
+        path.basename(source, '.css') === path.basename(importer, '.html')
     );
 }
 
-function isImplicitHTMLImport(importee: string, importer: string) {
+function isImplicitHTMLImport(source: string, importer: string | undefined) {
     return (
         importer &&
         path.extname(importer) === '.js' &&
-        path.extname(importee) === '.html' &&
-        path.dirname(importer) === path.dirname(importee) &&
-        path.basename(importer, '.js') === path.basename(importee, '.html')
+        path.extname(source) === '.html' &&
+        path.dirname(importer) === path.dirname(source) &&
+        path.basename(importer, '.js') === path.basename(source, '.html')
     );
 }
 
@@ -97,7 +98,7 @@ function generateModuleResolutionError(
 
 function generateEntryResolutionError(
     importee: string,
-    importer: string,
+    importer: string | undefined,
     options: NormalizedCompileOptions
 ) {
     const absPath = getAbsolutePath(importee, importer, options);
@@ -114,7 +115,11 @@ function generateEntryResolutionError(
           });
 }
 
-function getAbsolutePath(importee: string, importer: string, options: NormalizedCompileOptions) {
+function getAbsolutePath(
+    importee: string,
+    importer: string | undefined,
+    options: NormalizedCompileOptions
+) {
     const { baseDir, files } = options;
     const relPath = importer ? path.dirname(importer) : baseDir || '';
     return inferExtension(path.join(relPath, importee), files);
@@ -130,28 +135,25 @@ export default function({ options }: { options: NormalizedCompileOptions }): Plu
     return {
         name: 'lwc-module-resolver',
 
-        resolveId(importee: string, importer: string) {
+        resolveId(source: string, importer: string | undefined) {
             // Mark non-relative imports (eg. 'lwc' or 'x/foo') as external dependencies.
-            if (!isRelativeImport(importee) && importer) {
+            if (!isRelativeImport(source) && importer) {
                 return false;
             }
 
-            if (isFirstCharacterUppercased(importee)) {
+            if (isFirstCharacterUppercased(source)) {
                 throw generateCompilerError(
                     ModuleResolutionErrors.FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER,
                     {
-                        messageArgs: [
-                            importee,
-                            importee.charAt(0).toLowerCase() + importee.slice(1),
-                        ],
+                        messageArgs: [source, source.charAt(0).toLowerCase() + source.slice(1)],
                     }
                 );
             }
 
-            const absPath = getAbsolutePath(importee, importer, options);
+            const absPath = getAbsolutePath(source, importer, options);
 
             if (!fileExists(absPath, options)) {
-                if (isImplicitCssImport(importee, importer)) {
+                if (isImplicitCssImport(source, importer)) {
                     return IMPLICIT_DEFAULT_CSS_PATH;
                 }
 
@@ -160,8 +162,8 @@ export default function({ options }: { options: NormalizedCompileOptions }): Plu
                 }
 
                 throw importer
-                    ? generateModuleResolutionError(importee, importer, options)
-                    : generateEntryResolutionError(importee, importer, options);
+                    ? generateModuleResolutionError(source, importer, options)
+                    : generateEntryResolutionError(source, importer, options);
             }
             return absPath;
         },

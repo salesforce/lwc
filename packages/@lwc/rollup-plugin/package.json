@@ -16,7 +16,7 @@
     },
     "dependencies": {
         "@lwc/module-resolver": "1.2.2",
-        "rollup-pluginutils": "^2.0.1"
+        "@rollup/pluginutils": "^3.0.8"
     },
     "publishConfig": {
         "access": "public"
