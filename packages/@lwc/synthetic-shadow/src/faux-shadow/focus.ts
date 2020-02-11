@@ -77,10 +77,20 @@ const DidAddMouseDownListener = createHiddenField<boolean>(
     'synthetic-shadow'
 );
 
+// Due to browser differences, it is impossible to know what is focusable until
+// we actually try to focus it. We need to refactor our focus delegation logic
+// to verify whether or not the target was actually focused instead of trying
+// to predict focusability like we do here.
 function isVisible(element: HTMLElement): boolean {
     const { width, height } = getBoundingClientRect.call(element);
     const noZeroSize = width > 0 || height > 0;
-    return noZeroSize && getComputedStyle(element).visibility !== 'hidden';
+    // The area element can be 0x0 and focusable. Hardcoding this is not ideal
+    // but it will minimize changes in the current behavior.
+    const isAreaElement = element.tagName === 'AREA';
+    return (
+        (noZeroSize || isAreaElement) &&
+        getComputedStyle(element).visibility !== 'hidden'
+    );
 }
 
 // This function based on https://allyjs.io/data-tables/focusable.html
