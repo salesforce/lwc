@@ -2,7 +2,7 @@
 env_default: &env_default
   working_directory: ~/lwc
   docker:
-    - image: circleci/node:12.13.1-browsers
+    - image: circleci/node:12-browsers
 
 env_perf: &env_perf
   <<: *env_default
@@ -71,9 +71,7 @@ start_sauce_connect: &start_sauce_connect
     name: Install and start sauce connect
     background: true
     command: |
-        # Be mindful when upgrading the version of sauce connect. Saucelabs' support acknowledged that the 4.5.2 and
-        # 4.5.3 versions have some issues related to tunnel creation.
-        curl https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz -o saucelabs.tar.gz
+        curl https://saucelabs.com/downloads/sc-4.5.4-linux.tar.gz -o saucelabs.tar.gz
         tar -xzf saucelabs.tar.gz
         cd sc-*
         bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY} -i ${SAUCE_TUNNEL_ID}
