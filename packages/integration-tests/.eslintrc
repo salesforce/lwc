@@ -5,6 +5,7 @@
 
     "env": {
         "browser": true,
+        "driver": true,
         "mocha": true,
         "node": true
     }
