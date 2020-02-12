@@ -50,7 +50,7 @@ describe('issue #1031', () => {
                 .shadowRoot.querySelector('.second-outside');
         });
         secondOutside.click();
-        browser.keys(['Shift', 'Tab', 'Shift']); // host element
+        browser.keys(['Shift', 'Tab', 'Shift']); // <integration-parent>
         browser.keys(['Shift', 'Tab', 'Shift']); // first outside input
 
         var className = browser.execute(function() {

@@ -25,7 +25,9 @@ import {
     addEventListener,
     removeEventListener,
     tabIndexGetter,
+    tagNameGetter,
     getAttribute,
+    hasAttribute,
 } from '../env/element';
 import {
     compareDocumentPosition,
@@ -45,26 +47,36 @@ import {
 import { isDelegatingFocus, isHostElement } from './shadow-root';
 import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
 
-// NOTE: Not sure what to do about elements with the hidden attribute. These
-// elements should not be focusable but changing the value of the CSS display
-// property overrides the behavior. For instance, elements styled display: flex
-// will be displayed and will be focusable despite the hidden attribute's
-// presence. If this ever becomes an issue, we could potentially add a check to
-// verify that the element we focused on actually received focus, and move on
-// to the next candidate otherwise.
-const TabbableElementsQuery = `
-    a[href]:not([tabindex="-1"]),
-    area[href]:not([tabindex="-1"]),
-    button:not([tabindex="-1"]):not([disabled]),
-    [contenteditable]:not([tabindex="-1"]),
-    video[controls]:not([tabindex="-1"]),
-    audio[controls]:not([tabindex="-1"]),
-    iframe:not([tabindex="-1"]),
-    input:not([tabindex="-1"]):not([disabled]),
-    select:not([tabindex="-1"]):not([disabled]),
-    textarea:not([tabindex="-1"]):not([disabled]),
-    [tabindex="0"]
+const FocusableSelector = `
+    [contenteditable],
+    [tabindex],
+    a[href],
+    area[href],
+    audio[controls],
+    button,
+    iframe,
+    input,
+    select,
+    textarea,
+    video[controls]
 `;
+
+const formElementTagNames = new Set(['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA']);
+
+function filterSequentiallyFocusableElements(elements: Element[]): Element[] {
+    return elements.filter(element => {
+        if (hasAttribute.call(element, 'tabindex')) {
+            // Even though LWC only supports tabindex values of 0 or -1,
+            // passing through elements with tabindex="0" is a tighter criteria
+            // than filtering out elements based on tabindex="-1".
+            return getAttribute.call(element, 'tabindex') === '0';
+        }
+        if (formElementTagNames.has(tagNameGetter.call(element))) {
+            return !hasAttribute.call(element, 'disabled');
+        }
+        return true;
+    });
+}
 
 const DidAddMouseDownListener = createHiddenField<boolean>(
     'DidAddMouseDownListener',
@@ -93,7 +105,7 @@ function isTabbable(element: HTMLElement): boolean {
     if (isHostElement(element) && isDelegatingFocus(element)) {
         return false;
     }
-    return matches.call(element, TabbableElementsQuery) && isVisible(element);
+    return matches.call(element, FocusableSelector) && isVisible(element);
 }
 
 interface QuerySegments {
@@ -104,9 +116,11 @@ interface QuerySegments {
 
 function getTabbableSegments(host: HTMLElement): QuerySegments {
     const doc = getOwnerDocument(host);
-    const all = arrayFromCollection(documentQuerySelectorAll.call(doc, TabbableElementsQuery));
-    const inner = arrayFromCollection(
-        querySelectorAll.call(host, TabbableElementsQuery)
+    const all = filterSequentiallyFocusableElements(
+        arrayFromCollection(documentQuerySelectorAll.call(doc, FocusableSelector))
+    );
+    const inner = filterSequentiallyFocusableElements(
+        arrayFromCollection(querySelectorAll.call(host, FocusableSelector))
     ) as HTMLElement[];
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
