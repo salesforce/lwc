@@ -26,7 +26,7 @@ describe('sequential focus navigation coverage', () => {
             'button',
             'checkbox',
             // 'detailsEmpty', // focusable in chrome and firefox but not in safari
-            'embedSrc',
+            // 'embedSrc', // focusable in all browsers except for windows chrome
             'iframe',
             'iframeSrc',
             'input',
