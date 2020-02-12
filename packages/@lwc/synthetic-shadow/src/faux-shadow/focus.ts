@@ -42,15 +42,24 @@ import {
     eventTargetGetter,
     focusEventRelatedTargetGetter,
 } from '../env/dom';
-import { isDelegatingFocus } from './shadow-root';
+import { isDelegatingFocus, isHostElement } from './shadow-root';
 import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
 
+// NOTE: Not sure what to do about elements with the hidden attribute. These
+// elements should not be focusable but changing the value of the CSS display
+// property overrides the behavior. For instance, elements styled display: flex
+// will be displayed and will be focusable despite the hidden attribute's
+// presence. If this ever becomes an issue, we could potentially add a check to
+// verify that the element we focused on actually received focus, and move on
+// to the next candidate otherwise.
 const TabbableElementsQuery = `
+    a[href]:not([tabindex="-1"]),
+    area[href]:not([tabindex="-1"]),
     button:not([tabindex="-1"]):not([disabled]),
     [contenteditable]:not([tabindex="-1"]),
     video[controls]:not([tabindex="-1"]),
     audio[controls]:not([tabindex="-1"]),
-    [href]:not([tabindex="-1"]),
+    iframe:not([tabindex="-1"]),
     input:not([tabindex="-1"]):not([disabled]),
     select:not([tabindex="-1"]):not([disabled]),
     textarea:not([tabindex="-1"]):not([disabled]),
@@ -62,10 +71,17 @@ const DidAddMouseDownListener = createHiddenField<boolean>(
     'synthetic-shadow'
 );
 
+// Due to browser differences, it is impossible to know what is focusable until
+// we actually try to focus it. We need to refactor our focus delegation logic
+// to verify whether or not the target was actually focused instead of trying
+// to predict focusability like we do here.
 function isVisible(element: HTMLElement): boolean {
     const { width, height } = getBoundingClientRect.call(element);
     const noZeroSize = width > 0 || height > 0;
-    return noZeroSize && getComputedStyle(element).visibility !== 'hidden';
+    // The area element can be 0x0 and focusable. Hardcoding this is not ideal
+    // but it will minimize changes in the current behavior.
+    const isAreaElement = element.tagName === 'AREA';
+    return (noZeroSize || isAreaElement) && getComputedStyle(element).visibility !== 'hidden';
 }
 
 // This function based on https://allyjs.io/data-tables/focusable.html
@@ -74,6 +90,9 @@ function isVisible(element: HTMLElement): boolean {
 // Determines if a particular element is tabbable, as opposed to simply focusable
 
 function isTabbable(element: HTMLElement): boolean {
+    if (isHostElement(element) && isDelegatingFocus(element)) {
+        return false;
+    }
     return matches.call(element, TabbableElementsQuery) && isVisible(element);
 }
 

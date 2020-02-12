@@ -1,0 +1,9 @@
+<template>
+    area[href]
+    <img src="https://html.spec.whatwg.org/images/sample-usemap.png" usemap="#shapes">
+    <map name="shapes">
+        <!-- the hole in the red box has no href and should not be focusable -->
+        <area data-focus="area" shape="rect" coords="50,50,100,100">
+        <area data-focus="areaHref" shape="rect" coords="25,25,125,125" href="red.html" alt="square">
+    </map>
+</template>
