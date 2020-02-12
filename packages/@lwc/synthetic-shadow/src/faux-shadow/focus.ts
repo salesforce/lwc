@@ -52,12 +52,6 @@ import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared
 // presence. If this ever becomes an issue, we could potentially add a check to
 // verify that the element we focused on actually received focus, and move on
 // to the next candidate otherwise.
-// NOTE: details/summary - In Chrome, an empty <details> is focusable, but this
-// is not the case in Safari. Also, <summary> is focusable but only if it is a
-// child of <details>. If this ever becomes an issue, we should probably add
-// both <details> and <summary> to this selector and rely on the validation
-// check mentioned earlier to handle issues.
-// NOTE: object[data] and embed[src] should also be considered.
 const TabbableElementsQuery = `
     a[href]:not([tabindex="-1"]),
     area[href]:not([tabindex="-1"]),

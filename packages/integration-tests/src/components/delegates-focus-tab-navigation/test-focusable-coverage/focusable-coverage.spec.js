@@ -8,13 +8,6 @@ const assert = require('assert');
 
 const URL = '/focusable-coverage';
 
-// 'detailsEmpty',
-// 'embedSrc',
-// 'objectData',
-// 'summaryInsideDetails',
-// 'summaryInsideDetailsMultiple',
-// 'svgAnchorXlinkHref',
-
 describe('sequential focus navigation coverage', () => {
     beforeEach(() => {
         browser.url(URL);
@@ -32,16 +25,22 @@ describe('sequential focus navigation coverage', () => {
             'audioControls',
             'button',
             'checkbox',
+            // 'detailsEmpty', // focusable in chrome and firefox but not in safari
+            'embedSrc',
             'iframe',
             'iframeSrc',
             'input',
             'inputTime',
+            // 'objectData', // focusable in chrome and firefox but not in safari
             'select',
             'selectMultiple',
             'selectOptgroup',
             'spanContenteditable',
             'spanTabindexZero',
+            // 'summaryInsideDetails', // focusable in chrome/firefox/safari but only when inside <details>
+            // 'summaryInsideDetailsMultiple',
             'svgAnchorHref',
+            // 'svgAnchorXlinkHref', // a[xlink:href] should only be focusable when inside <svg>
             'textarea',
             'videoControls',
         ].forEach(type => {
@@ -57,8 +56,7 @@ describe('sequential focus navigation coverage', () => {
                 // Set the type
                 browser.execute(function(type) {
                     var container = document.querySelector('integration-focusable-coverage');
-                    var child = container.shadowRoot.querySelector('integration-child');
-                    child.type = type;
+                    container.type = type;
                 }, type);
 
                 browser.keys(['Tab']);

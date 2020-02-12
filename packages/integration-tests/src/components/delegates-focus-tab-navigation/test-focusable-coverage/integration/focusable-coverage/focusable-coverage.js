@@ -1,3 +1,5 @@
-import { LightningElement } from 'lwc';
+import { api, LightningElement } from 'lwc';
 
-export default class FocusableCoverage extends LightningElement {}
+export default class FocusableCoverage extends LightningElement {
+    @api type = 'anchorHref';
+}

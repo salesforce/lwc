@@ -63,7 +63,7 @@ const map = Object.assign(Object.create(null), {
 export default class Child extends LightningElement {
     static delegatesFocus = true;
 
-    @api type = 'anchorHref';
+    @api type;
 
     render() {
         const html = map[this.type];
