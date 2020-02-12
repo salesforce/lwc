@@ -21,6 +21,11 @@ describe('sequential focus navigation coverage', () => {
     });
 
     describe('should focus', () => {
+        // This test suite fails in ie11 for some unknown reason
+        if (browser.config.capabilities.commonName === 'ie11') {
+            return;
+        }
+
         [
             'anchorHref',
             'areaHref',
@@ -40,35 +45,33 @@ describe('sequential focus navigation coverage', () => {
             'textarea',
             'videoControls',
         ].forEach(type => {
-            if (driver.label !== 'sl_ie11') {
-                it(type, () => {
-                    // Click and focus on the first input
-                    const start = browser.$(function() {
-                        return document
-                            .querySelector('integration-focusable-coverage')
-                            .shadowRoot.querySelector('.start');
-                    });
-                    start.click();
-
-                    // Set the type
-                    browser.execute(function(type) {
-                        var container = document.querySelector('integration-focusable-coverage');
-                        var child = container.shadowRoot.querySelector('integration-child');
-                        child.type = type;
-                    }, type);
-
-                    browser.keys(['Tab']);
-
-                    const activeElementType = browser.execute(function() {
-                        const container = document.activeElement;
-                        const child = container.shadowRoot.activeElement;
-                        const elm = child.shadowRoot.activeElement;
-                        return elm.dataset.focus;
-                    });
-
-                    assert.strictEqual(activeElementType, type);
+            it(type, () => {
+                // Click and focus on the first input
+                const start = browser.$(function() {
+                    return document
+                        .querySelector('integration-focusable-coverage')
+                        .shadowRoot.querySelector('.start');
                 });
-            }
+                start.click();
+
+                // Set the type
+                browser.execute(function(type) {
+                    var container = document.querySelector('integration-focusable-coverage');
+                    var child = container.shadowRoot.querySelector('integration-child');
+                    child.type = type;
+                }, type);
+
+                browser.keys(['Tab']);
+
+                const activeElementType = browser.execute(function() {
+                    const container = document.activeElement;
+                    const child = container.shadowRoot.activeElement;
+                    const elm = child.shadowRoot.activeElement;
+                    return elm.dataset.focus;
+                });
+
+                assert.strictEqual(activeElementType, type);
+            });
         });
     });
 });
