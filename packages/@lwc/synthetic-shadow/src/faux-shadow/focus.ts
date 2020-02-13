@@ -20,6 +20,7 @@ import {
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
 import {
     matches,
+    querySelector,
     querySelectorAll,
     getBoundingClientRect,
     addEventListener,
@@ -115,22 +116,40 @@ interface QuerySegments {
 }
 
 export function hostElementFocus(this: HTMLElement) {
-    // Open an issue against TypeScript and add an LWC issue here
-    const rootNode = (this.getRootNode() as unknown) as DocumentOrShadowRoot;
+    const _rootNode = this.getRootNode();
+    if (_rootNode === this) {
+        // We invoke the focus() method even if the host is disconnected in order to eliminate
+        // observable differences for component authors between synthetic and native.
+        const focusable = querySelector.call(this, FocusableSelector) as HTMLElement;
+        if (!isNull(focusable)) {
+            // @ts-ignore type-mismatch
+            focusable.focus.apply(focusable, arguments);
+        } else {
+            // What do we do here? Nothing? Blur the currently focused element?
+        }
+        return;
+    }
+
+    // If the root node is not the host element then it's either the document or a shadow root.
+    const rootNode = (_rootNode as unknown) as DocumentOrShadowRoot;
     if (rootNode.activeElement === this) {
         // The focused element should not change if the focus method is invoked
         // on the shadow-including ancestor of the currently focused element.
         return;
     }
+
     const focusables = arrayFromCollection(
         querySelectorAll.call(this, FocusableSelector)
     ) as HTMLElement[];
 
     let didFocus = false;
     while (!didFocus && focusables.length !== 0) {
-        focusables.shift()?.focus();
+        const focusable = focusables.shift();
+        // @ts-ignore type-mismatch
+        focusable.focus.apply(focusable, arguments);
         didFocus = rootNode.activeElement === this;
     }
+
     if (!didFocus) {
         // What do we do here? Nothing? Blur the currently focused element?
     }
