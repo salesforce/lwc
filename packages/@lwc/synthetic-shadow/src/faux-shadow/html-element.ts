@@ -116,7 +116,9 @@ function blurPatched(this: HTMLElement) {
 function focusPatched(this: HTMLElement) {
     disableKeyboardFocusNavigationRoutines();
     // TODO [#1327]: Shadow DOM semantics for focus method
-    focus.call(this);
+    // Typescript does not like it when you treat the `arguments` object as an array
+    // @ts-ignore type-mismatch
+    focus.apply(this, arguments);
     enableKeyboardFocusNavigationRoutines();
 }
 
@@ -152,7 +154,9 @@ defineProperties(HTMLElement.prototype, {
     },
     focus: {
         value(this: HTMLElement) {
-            focusPatched.call(this);
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
+            focusPatched.apply(this, arguments);
         },
         enumerable: true,
         writable: true,
