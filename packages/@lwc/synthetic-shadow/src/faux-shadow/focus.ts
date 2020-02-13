@@ -114,6 +114,28 @@ interface QuerySegments {
     next: HTMLElement[];
 }
 
+export function hostElementFocus(this: HTMLElement) {
+    // Open an issue against TypeScript and add an LWC issue here
+    const rootNode = (this.getRootNode() as unknown) as DocumentOrShadowRoot;
+    if (rootNode.activeElement === this) {
+        // The focused element should not change if the focus method is invoked
+        // on the shadow-including ancestor of the currently focused element.
+        return;
+    }
+    const focusables = arrayFromCollection(
+        querySelectorAll.call(this, FocusableSelector)
+    ) as HTMLElement[];
+
+    let didFocus = false;
+    while (!didFocus && focusables.length !== 0) {
+        focusables.shift()?.focus();
+        didFocus = rootNode.activeElement === this;
+    }
+    if (!didFocus) {
+        // What do we do here? Nothing? Blur the currently focused element?
+    }
+}
+
 function getTabbableSegments(host: HTMLElement): QuerySegments {
     const doc = getOwnerDocument(host);
     const all = filterSequentiallyFocusableElements(
