@@ -124,8 +124,6 @@ export function hostElementFocus(this: HTMLElement) {
         if (!isNull(focusable)) {
             // @ts-ignore type-mismatch
             focusable.focus.apply(focusable, arguments);
-        } else {
-            // What do we do here? Nothing? Blur the currently focused element?
         }
         return;
     }
@@ -148,10 +146,6 @@ export function hostElementFocus(this: HTMLElement) {
         // @ts-ignore type-mismatch
         focusable.focus.apply(focusable, arguments);
         didFocus = rootNode.activeElement === this;
-    }
-
-    if (!didFocus) {
-        // What do we do here? Nothing? Blur the currently focused element?
     }
 }
 
