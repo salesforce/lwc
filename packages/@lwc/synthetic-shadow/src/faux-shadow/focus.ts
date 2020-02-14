@@ -142,10 +142,12 @@ export function hostElementFocus(this: HTMLElement) {
 
     let didFocus = false;
     while (!didFocus && focusables.length !== 0) {
-        const focusable = focusables.shift();
+        const focusable = focusables.shift() as HTMLElement;
         // @ts-ignore type-mismatch
         focusable.focus.apply(focusable, arguments);
-        didFocus = rootNode.activeElement === this;
+        // Get the root node of the current focusable in case it was slotted.
+        const currentRootNode = (focusable.getRootNode() as unknown) as DocumentOrShadowRoot;
+        didFocus = currentRootNode.activeElement === focusable;
     }
 }
 
