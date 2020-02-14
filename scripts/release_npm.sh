@@ -35,6 +35,12 @@ fi
 CMD_UPDATE_VERSION="lerna version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push"
 CMD_PUBLISH_PACKAGES="lerna publish ${PACKAGE_VERSION} ${TAG} --yes --exact --force-publish --no-git-tag-version --no-push --no-verify-access --no-verify-registry"
 
+# Update package version and build. This ensure the dist files are generated with the version that will be released.
+# The publish step will only publish, it does not build and generate the files with the provided version.
+echo $CMD_UPDATE_VERSION;
+$CMD_UPDATE_VERSION;
+yarn build;
+
 # Publish the packages to npm. Note that lerna cleans the working tree after this as of 3.0.4, so we need to reapply version
 # https://github.com/lerna/lerna/blob/3cbeeabcb443d9415bb86c4539652b85cd7b4025/commands/publish/index.js#L354-L363
 echo $CMD_PUBLISH_PACKAGES;
