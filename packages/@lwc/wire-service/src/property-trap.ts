@@ -42,12 +42,12 @@ function invokeConfigListeners(
 /**
  * Marks a reactive parameter as having changed.
  * @param cmp The component
- * @param reactiveParameter Reactive parameter that has changed
+ * @param reactiveParameters Reactive parameters that has changed
  * @param configContext The service context
  */
 export function updated(
     cmp: EventTarget,
-    reactiveParameter: ReactiveParameter,
+    reactiveParameters: Set<ReactiveParameter>,
     configContext: ConfigContext
 ) {
     if (!configContext.mutated) {
@@ -55,7 +55,7 @@ export function updated(
         // collect all prop changes via a microtask
         Promise.resolve().then(updatedFuture.bind(undefined, cmp, configContext));
     }
-    configContext.mutated.add(reactiveParameter);
+    configContext.mutated = new Set([...configContext.mutated, ...reactiveParameters]);
 }
 
 function updatedFuture(cmp: EventTarget, configContext: ConfigContext) {
@@ -109,17 +109,18 @@ export function getReactiveParameterValue(
 /**
  * Installs setter override to trap changes to a property, triggering the config listeners.
  * @param cmp The component
- * @param reactiveParameter Reactive parameter that defines the property to monitor
+ * @param reactiveParameters Reactive parameters with the same head, that defines the property to monitor
  * @param configContext The service context
  */
 export function installTrap(
     cmp: EventTarget,
-    reactiveParameter: ReactiveParameter,
+    reactiveParameters: Set<ReactiveParameter>,
     configContext: ConfigContext
 ) {
-    const callback = updated.bind(undefined, cmp, reactiveParameter, configContext);
-    const newDescriptor = getOverrideDescriptor(cmp, reactiveParameter.head, callback);
-    Object.defineProperty(cmp, reactiveParameter.head, newDescriptor);
+    const callback = updated.bind(undefined, cmp, reactiveParameters, configContext);
+    const reactiveParameterHead = reactiveParameters.values().next().value.head;
+    const newDescriptor = getOverrideDescriptor(cmp, reactiveParameterHead, callback);
+    Object.defineProperty(cmp, reactiveParameterHead, newDescriptor);
 }
 
 /**

@@ -168,19 +168,37 @@ export class WireEventTarget {
 
                 // setup listeners for all reactive parameters
                 const configContext = this._context[CONTEXT_ID][CONTEXT_UPDATED];
+                const reactiveParametersGroupByHead = new Map<string, Set<ReactiveParameter>>();
                 reactiveKeys.forEach(key => {
                     const reactiveParameter = buildReactiveParameter(reactives[key]);
-                    let configListenerMetadatas = configContext.listeners[reactiveParameter.head];
+                    const reactiveParameterHead = reactiveParameter.head;
+                    let configListenerMetadatas = configContext.listeners[reactiveParameterHead];
+
+                    if (!reactiveParametersGroupByHead.has(reactiveParameterHead)) {
+                        reactiveParametersGroupByHead.set(
+                            reactiveParameterHead,
+                            new Set<ReactiveParameter>()
+                        );
+                    }
+                    // reactiveParameter.head is set in the line above.
+                    const reactiveParametersWithSameHead = reactiveParametersGroupByHead.get(
+                        reactiveParameterHead
+                    )!;
+                    reactiveParametersWithSameHead.add(reactiveParameter);
+
                     if (!configListenerMetadatas) {
                         configListenerMetadatas = [configListenerMetadata];
-                        configContext.listeners[reactiveParameter.head] = configListenerMetadatas;
-                        installTrap(this._cmp, reactiveParameter, configContext);
+                        configContext.listeners[reactiveParameterHead] = configListenerMetadatas;
+                        installTrap(this._cmp, reactiveParametersWithSameHead, configContext);
                     } else {
                         configListenerMetadatas.push(configListenerMetadata);
                     }
-                    // enqueue to pickup default values
-                    updated(this._cmp, reactiveParameter, configContext);
                 });
+
+                // enqueue to pickup default values
+                for (const reactiveParametersWithSameHead of reactiveParametersGroupByHead.values()) {
+                    updated(this._cmp, reactiveParametersWithSameHead, configContext);
+                }
 
                 break;
             }
