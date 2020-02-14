@@ -16,7 +16,7 @@
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
     "test:ci": "yarn test --no-cache --coverage --runInBand",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
-    "test:performance": "lerna exec --scope perf-benchmarks -- best --runner remote",
+    "test:performance": "lerna exec --scope perf-benchmarks -- best --runner default",
     "release:ci:npm": "./scripts/release_npm.sh",
     "release:ci:dist-tags": "./scripts/release_dist-tags.sh"
   },
