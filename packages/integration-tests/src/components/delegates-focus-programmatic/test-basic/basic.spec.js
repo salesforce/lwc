@@ -6,7 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = '/basic-invocation';
+const URL = '/basic';
 
 describe('basic invocation', () => {
     beforeEach(() => {
@@ -15,9 +15,7 @@ describe('basic invocation', () => {
 
     it('should focus on the first programmatically focusable element', function() {
         const button = browser.$(function() {
-            return document
-                .querySelector('integration-basic-invocation')
-                .shadowRoot.querySelector('button');
+            return document.querySelector('integration-basic').shadowRoot.querySelector('button');
         });
         button.click();
         const className = browser.execute(function() {
