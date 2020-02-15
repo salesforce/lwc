@@ -19,6 +19,7 @@ module.exports = {
     ],
     benchmarkOnClient: false,
     benchmarkIterations: 60,
+    specs: { name: 'chrome.headless', version: '80' },
     runners: [
         {
             alias: 'default',
@@ -26,15 +27,11 @@ module.exports = {
         },
         {
             alias: 'remote',
-            runner: '@best/runner-hub',
+            runner: '@best/runner-remote',
             config: {
-                host: process.env.BEST_HUB_HOSTNAME,
+                uri: process.env.HUB_URI,
                 options: {
-                    query: { token: process.env.BEST_HUB_CLIENT_TOKEN },
-                },
-                spec: {
-                    browser: 'chrome',
-                    version: '76',
+                    authToken: process.env.HUB_AUTH_TOKEN,
                 },
             },
         },

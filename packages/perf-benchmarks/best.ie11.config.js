@@ -15,14 +15,14 @@ module.exports = {
     benchmarkOnClient: false,
     benchmarkIterations: 60,
     testPathIgnorePatterns: ['**/__benchmarks__/benchmark-table-wc/*.benchmark.js'],
-    runnerConfig: [
+    runners: [
         {
             runner: '@best/runner-headless',
-            name: 'default',
+            alias: 'default',
         },
         {
             runner: '@best/runner-remote',
-            name: 'remote',
+            alias: 'remote',
             config: {
                 host: 'https://best-ie11-pool.lwcjs.org:5000',
                 options: { path: '/best', rejectUnauthorized: false },
