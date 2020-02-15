@@ -28,11 +28,15 @@ function rollupFeaturesPlugin(prod) {
 function rollupConfig(config) {
     const { input, format, name, prod, target, targetDirectory, dir, debug = false } = config;
     const compatMode = target === 'es5';
+
     return {
         inputOptions: {
             input,
             plugins: [
-                prod && rollupReplace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+                prod &&
+                    rollupReplace({
+                        'process.env.NODE_ENV': JSON.stringify(debug ? 'prod_debug' : 'production'),
+                    }),
                 rollupFeaturesPlugin(prod),
                 compatMode && rollupTypescriptPlugin({ target, typescript, include: ['/**/*.js'] }),
                 prod && !debug && rollupTerser(),
