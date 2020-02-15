@@ -196,7 +196,7 @@ export class WireEventTarget {
                 });
 
                 // enqueue to pickup default values
-                reactiveParametersGroupByHead.forEach((reactiveParametersWithSameHead) => {
+                reactiveParametersGroupByHead.forEach(reactiveParametersWithSameHead => {
                     updated(this._cmp, reactiveParametersWithSameHead, configContext);
                 });
 

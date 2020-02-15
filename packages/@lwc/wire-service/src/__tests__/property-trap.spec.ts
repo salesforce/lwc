@@ -56,10 +56,12 @@ describe('installTrap', () => {
             prop1: '',
         },
     };
-    const reactiveParameter: ReactiveParameter = {
-        reference: 'prop1',
-        head: 'prop1',
-    };
+    const reactiveParameter: Set<ReactiveParameter> = new Set([
+        {
+            reference: 'prop1',
+            head: 'prop1',
+        },
+    ]);
 
     it('defaults to original value when setter installed', () => {
         class Target {
@@ -113,10 +115,12 @@ describe('installTrap', () => {
     });
 
     it('installs setter on cmp only for reactiveParameter.root', () => {
-        const dotNotationReactiveParameter: ReactiveParameter = {
-            reference: 'prop1.x.y',
-            head: 'prop1',
-        };
+        const dotNotationReactiveParameter: Set<ReactiveParameter> = new Set([
+            {
+                reference: 'prop1.x.y',
+                head: 'prop1',
+            },
+        ]);
         class Target {
             set prop1(value) {
                 /**/
@@ -132,10 +136,12 @@ describe('installTrap', () => {
 });
 
 describe('invokeConfigListeners', () => {
-    const reactiveParameter: ReactiveParameter = {
-        reference: 'prop1',
-        head: 'prop1',
-    };
+    const reactiveParameter: Set<ReactiveParameter> = new Set([
+        {
+            reference: 'prop1',
+            head: 'prop1',
+        },
+    ]);
 
     it('invokes listener with reactive parameter default value', () => {
         const expected = 'expected';

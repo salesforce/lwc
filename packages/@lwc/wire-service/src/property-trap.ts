@@ -55,7 +55,7 @@ export function updated(
         // collect all prop changes via a microtask
         Promise.resolve().then(updatedFuture.bind(undefined, cmp, configContext));
     }
-    reactiveParameters.forEach((reactiveParameter) => {
+    reactiveParameters.forEach(reactiveParameter => {
         configContext.mutated!.add(reactiveParameter);
     });
 }
