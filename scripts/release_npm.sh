@@ -40,12 +40,12 @@ CMD_PUBLISH_PACKAGES="lerna publish ${PACKAGE_VERSION} ${TAG} --yes --force-publ
 echo $CMD_UPDATE_VERSION;
 $CMD_UPDATE_VERSION;
 
+# Build to regenerate distribution files with new package version, commit the version changes
 echo "Building artifacts for v${PACKAGE_VERSION} and creating release commit"
 yarn build;
 git add CHANGELOG.md lerna.json packages/*;
 git commit -m "release: v${PACKAGE_VERSION}";
 
-# Publish the packages to npm. Note that lerna cleans the working tree after this as of 3.0.4, so we need to reapply version
-# https://github.com/lerna/lerna/blob/3cbeeabcb443d9415bb86c4539652b85cd7b4025/commands/publish/index.js#L354-L363
+# Publish the packages to npm.
 echo $CMD_PUBLISH_PACKAGES;
 $CMD_PUBLISH_PACKAGES;
