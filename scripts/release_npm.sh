@@ -21,7 +21,7 @@ if [ -z "${TAG_NAME}" ]; then
         exit 1;
 fi
 
-TAG="--npm-tag $TAG_NAME"
+TAG="--dist-tag $TAG_NAME"
 
 # Get the current version
 version=`lerna ls --json --scope @lwc/engine`
@@ -33,19 +33,19 @@ fi
 
 # Command to push the packages
 CMD_UPDATE_VERSION="lerna version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push"
-CMD_PUBLISH_PACKAGES="lerna publish ${PACKAGE_VERSION} ${TAG} --yes --exact --force-publish --no-git-tag-version --no-push --no-verify-access --no-verify-registry"
+CMD_PUBLISH_PACKAGES="lerna publish ${PACKAGE_VERSION} ${TAG} --yes --force-publish --no-git-tag-version --no-push --no-verify-access"
 
 # Update package version and build. This ensure the dist files are generated with the version that will be released.
 # The publish step will only publish, it does not build and generate the files with the provided version.
 echo $CMD_UPDATE_VERSION;
 $CMD_UPDATE_VERSION;
+
+echo "Building artifacts for v${PACKAGE_VERSION} and creating release commit"
 yarn build;
+git add CHANGELOG.md lerna.json packages/*;
+git commit -m "release: v${PACKAGE_VERSION}";
 
 # Publish the packages to npm. Note that lerna cleans the working tree after this as of 3.0.4, so we need to reapply version
 # https://github.com/lerna/lerna/blob/3cbeeabcb443d9415bb86c4539652b85cd7b4025/commands/publish/index.js#L354-L363
 echo $CMD_PUBLISH_PACKAGES;
 $CMD_PUBLISH_PACKAGES;
-
-# Update package version again for later commit during the "commit release" stage
-echo $CMD_UPDATE_VERSION;
-$CMD_UPDATE_VERSION;
