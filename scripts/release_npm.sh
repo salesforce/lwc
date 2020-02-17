@@ -43,7 +43,7 @@ $CMD_UPDATE_VERSION;
 # Build to regenerate distribution files with new package version, commit the version changes
 echo "Building artifacts for v${PACKAGE_VERSION} and creating release commit"
 yarn build;
-git add CHANGELOG.md lerna.json packages/*;
+git add lerna.json packages/*;
 git commit -m "release: v${PACKAGE_VERSION}";
 
 # Publish the packages to npm.
