@@ -13,6 +13,7 @@ import {
     getActiveElement,
     handleFocus,
     handleFocusIn,
+    hostElementFocus,
     ignoreFocus,
     ignoreFocusIn,
 } from './focus';
@@ -115,10 +116,16 @@ function blurPatched(this: HTMLElement) {
 
 function focusPatched(this: HTMLElement) {
     disableKeyboardFocusNavigationRoutines();
-    // TODO [#1327]: Shadow DOM semantics for focus method
+
+    if (isHostElement(this) && isDelegatingFocus(this)) {
+        hostElementFocus.call(this);
+        return;
+    }
+
     // Typescript does not like it when you treat the `arguments` object as an array
     // @ts-ignore type-mismatch
     focus.apply(this, arguments);
+
     enableKeyboardFocusNavigationRoutines();
 }
 
