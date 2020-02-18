@@ -1,6 +1,6 @@
 {
     "name": "@lwc/rollup-plugin",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "description": "Rollup plugin to compile LWC",
     "main": "src/index.js",
     "license": "MIT",
@@ -11,11 +11,11 @@
         "src/*.js"
     ],
     "devDependencies": {
-        "@lwc/compiler": "1.2.4",
-        "@lwc/engine": "1.2.4"
+        "@lwc/compiler": "1.2.5",
+        "@lwc/engine": "1.2.5"
     },
     "dependencies": {
-        "@lwc/module-resolver": "1.2.4",
+        "@lwc/module-resolver": "1.2.5",
         "@rollup/pluginutils": "^3.0.8"
     },
     "publishConfig": {
