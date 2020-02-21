@@ -114,13 +114,10 @@ describe('javascript relative import', () => {
 describe('multi-package-version', () => {
     it(`should find all modules`, () => {
         const entry = path.join(jsMultiVersion, 'src/main.js');
-        const rollupOptions = {
-            rootDir: jsMultiVersion,
-        };
 
-        return doRollup(entry, { compat: false }, rollupOptions).then(({ code }) => {
-            expect(code).toContain('"nested-button');
-            expect(code).toContain('"root-button');
+        return doRollup(entry, { compat: false }, {}).then(({ code }) => {
+            expect(code).toContain('"button:v1');
+            expect(code).toContain('"button:v2');
         });
     });
 });

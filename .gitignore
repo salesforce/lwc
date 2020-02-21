@@ -17,5 +17,8 @@ packages/integration-tests/errorShots/
 packages/integration-tests/results/
 packages/integration-tests/.env
 
+# custom node_modules for testing
 !packages/@lwc/module-resolver/src/__tests__/fixtures/multi-version/node_modules/
+!packages/@lwc/module-resolver/src/__tests__/fixtures/multi-version/node_modules/fancy-components/node_modules/
 !packages/@lwc/rollup-plugin/src/__tests__/fixtures/multi_version/node_modules/
+!packages/@lwc/rollup-plugin/src/__tests__/fixtures/multi_version/node_modules/fancy-components/node_modules/
