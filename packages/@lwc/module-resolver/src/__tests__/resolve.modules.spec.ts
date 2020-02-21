@@ -6,22 +6,23 @@
  */
 
 import path from 'path';
-import { resolveModules } from '../index';
+import { resolveModules, resolveModule } from '../index';
 
 const FIXTURE_MODULE_ENTRIES = ['ns/cssEntry', 'ns/htmlEntry', 'ns/jsEntry', 'ns/tsEntry'];
 
 describe('resolve modules', () => {
     it('from directory', () => {
         const modules = resolveModules({
-            rootDir: __dirname,
-            modules: [{ dir: 'fixtures/module-entries' }],
+            rootDir: path.join(__dirname, 'fixtures/module-entries'),
+            modules: [{ dir: 'modules' }],
         });
+
         const specifiers = modules.map(m => m.specifier);
         expect(specifiers).toEqual(FIXTURE_MODULE_ENTRIES);
     });
 
     it('from config', () => {
-        const moduleDir = path.join(__dirname, 'fixtures');
+        const moduleDir = path.join(__dirname, 'fixtures/module-entries/');
         const modules = resolveModules({ rootDir: moduleDir });
         const specifiers = modules.map(m => m.specifier);
         expect(specifiers).toEqual(FIXTURE_MODULE_ENTRIES);
@@ -57,5 +58,40 @@ describe('resolve modules', () => {
         const resolvedModules = resolveModules({ modules: [{ npm: '@lwc/engine' }] });
         const specifiers = resolvedModules.map(m => m.specifier);
         expect(specifiers).toEqual(['lwc']);
+    });
+});
+
+describe('resolve individual module', () => {
+    test('iterative resolution alias', () => {
+        const customImporter = path.join(
+            __dirname,
+            'fixtures/custom-resolution/custom-override.js'
+        );
+        const expectedImportee = 'custom-module';
+        const expectedEntry = path.join(__dirname, 'fixtures/custom-resolution/custom/module.js');
+
+        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter);
+
+        expect(moduleRegistryEntry).toBeDefined();
+        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
+        expect(moduleRegistryEntry.entry).toBe(expectedEntry);
+    });
+
+    test('iterative resolution npm', () => {
+        const customImporter = path.join(__dirname, 'fixtures/from-npm/src/modules/test.js');
+        const expectedImportee = 'lwc';
+        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter);
+
+        expect(moduleRegistryEntry).toBeDefined();
+        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
+    });
+
+    test('iterative resolution dir', () => {
+        const customImporter = path.join(__dirname, 'fixtures/module-entries/index.js');
+        const expectedImportee = 'ns/tsEntry';
+        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter);
+
+        expect(moduleRegistryEntry).toBeDefined();
+        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
     });
 });

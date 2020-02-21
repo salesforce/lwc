@@ -1,1 +1,4 @@
-export const foo = 1;
+import { fancyBar } from "fancy/bar";
+export function foo () {
+    return '>> ' + fancyBar;
+}

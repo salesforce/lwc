@@ -9,50 +9,26 @@
 import path from 'path';
 import fs from 'fs';
 import {
+    InnerResolverOptions,
+    RegistryEntry,
+    AliasModuleRecord,
+    ModuleRecord,
+    ModuleResolverConfig,
+    NpmModuleRecord,
+} from './types';
+import {
     getModuleEntry,
     normalizeConfig,
-    loadConfig,
+    getLwcConfig,
+    findFirstUpwardConfigPath,
     mergeModules,
     validateModuleRecord,
-    LWC_CONFIG_FILE,
     isDirModuleRecord,
     isNpmModuleRecord,
     isAliasModuleRecord,
+    validateNpmConfig,
+    loadPackageJson,
 } from './utils';
-
-export interface RegistryEntry {
-    entry: string;
-    specifier: string;
-    scope: string;
-}
-
-export interface AliasModuleRecord {
-    name: string;
-    path: string;
-}
-
-export interface DirModuleRecord {
-    dir: string;
-}
-
-export interface NpmModuleRecord {
-    npm: string;
-}
-
-export interface ModuleResolverConfig {
-    rootDir: string;
-    modules: ModuleRecord[];
-}
-
-export type ModuleRecord = AliasModuleRecord | DirModuleRecord | NpmModuleRecord;
-export interface LwcConfig {
-    modules: ModuleRecord[];
-}
-
-export interface InnerResolverOptions {
-    rootDir: string;
-    scopeDir: string;
-}
 
 function resolveModulesFromDir(
     relativeModuleDir: string,
@@ -77,7 +53,12 @@ function resolveModulesFromDir(
                 const entry = getModuleEntry(moduleDir, moduleName);
                 if (entry) {
                     const specifier = `${ns}/${moduleName}`;
-                    resolvedModules.push({ entry, specifier, scope: opts.rootDir });
+                    resolvedModules.push({
+                        entry,
+                        specifier,
+                        scope: opts.rootDir,
+                        version: opts.version,
+                    });
                 }
             });
         }
@@ -86,38 +67,63 @@ function resolveModulesFromDir(
     return resolvedModules;
 }
 
-function resolveModulesFromNpm(packageName: string, opts: InnerResolverOptions): RegistryEntry[] {
-    let resolvedModules: RegistryEntry[] = [];
-    try {
-        const pkgJsonPath = require.resolve(`${packageName}/package.json`, {
-            paths: [opts.rootDir],
-        });
-        const packageDir = path.dirname(pkgJsonPath);
-        const lwcConfigFile = path.join(packageDir, LWC_CONFIG_FILE);
+function resolveModulesFromNpm(
+    npmModuleRecord: NpmModuleRecord,
+    opts: InnerResolverOptions
+): RegistryEntry[] {
+    const { npm, map: aliasMapping } = npmModuleRecord;
+    const pkgJsonPath = require.resolve(`${npm}/package.json`, { paths: [opts.rootDir] });
+    const packageDir = path.dirname(pkgJsonPath);
+    const lwcConfig = getLwcConfig(packageDir);
+    const { version } = loadPackageJson(packageDir);
+    const innerOpts = { ...opts, rootDir: packageDir, scopeDir: opts.rootDir, version };
+    const resolvedModules: RegistryEntry[] = [];
 
-        if (fs.existsSync(lwcConfigFile)) {
-            resolvedModules = resolveModules({ rootDir: lwcConfigFile });
+    if (lwcConfig && lwcConfig.modules) {
+        validateNpmConfig(lwcConfig);
+        const exposedModules = lwcConfig.expose || [];
+        const modules = resolveModulesFromList(lwcConfig.modules, innerOpts);
+        if (!opts.skipExposeFilter) {
+            resolvedModules.push(...modules.filter(m => exposedModules.includes(m.specifier)));
         } else {
-            const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-            if (pkgJson.lwc) {
-                resolvedModules = resolveModulesFromList(pkgJson.lwc.modules, {
-                    rootDir: packageDir,
-                    scopeDir: opts.rootDir,
-                });
-            }
+            resolvedModules.push(...modules);
         }
-    } catch (e) {
-        /*noop*/
+
+        // Remapping some of the modules exposed
+        if (aliasMapping) {
+            resolvedModules.forEach(resolvedModule => {
+                Object.keys(aliasMapping).forEach(oldSpecififer => {
+                    if (resolvedModule.specifier === oldSpecififer) {
+                        resolvedModule.specifier = aliasMapping[oldSpecififer];
+                    }
+                });
+            });
+        }
     }
 
     return resolvedModules;
+}
+
+function resolveModulesFromAlias(
+    moduleRecord: AliasModuleRecord,
+    opts: InnerResolverOptions
+): RegistryEntry | undefined {
+    const { name: specifier, path: modulePath } = moduleRecord;
+    const entry = path.resolve(opts.rootDir, modulePath);
+    if (fs.existsSync(entry)) {
+        return {
+            entry,
+            specifier,
+            scope: opts.scopeDir || opts.rootDir,
+            version: opts.version,
+        };
+    }
 }
 
 function resolveModulesFromList(
     modules: ModuleRecord[],
     opts: InnerResolverOptions
 ): RegistryEntry[] {
-    const { rootDir, scopeDir } = opts;
     const resolvedModules: RegistryEntry[] = [];
 
     modules.forEach(moduleRecord => {
@@ -125,23 +131,12 @@ function resolveModulesFromList(
 
         if (isDirModuleRecord(moduleRecord)) {
             resolvedModules.push(...resolveModulesFromDir(moduleRecord.dir, opts));
-            return;
-        }
-
-        if (isNpmModuleRecord(moduleRecord)) {
-            resolvedModules.push(...resolveModulesFromNpm(moduleRecord.npm, opts));
-            return;
-        }
-
-        if (isAliasModuleRecord(moduleRecord)) {
-            const { name: specifier, path: modulePath } = moduleRecord;
-            const entry = path.resolve(rootDir, modulePath);
-            if (fs.existsSync(entry)) {
-                resolvedModules.push({
-                    entry,
-                    specifier,
-                    scope: scopeDir,
-                });
+        } else if (!opts.skipRecursiveNpm && isNpmModuleRecord(moduleRecord)) {
+            resolvedModules.push(...resolveModulesFromNpm(moduleRecord, opts));
+        } else if (isAliasModuleRecord(moduleRecord)) {
+            const aliasRecord = resolveModulesFromAlias(moduleRecord, opts);
+            if (aliasRecord) {
+                resolvedModules.push(aliasRecord);
             }
         }
     });
@@ -154,7 +149,66 @@ export function resolveModules(
 ): RegistryEntry[] {
     const normalizedConfig = normalizeConfig(resolverConfig);
     const { rootDir, modules } = normalizedConfig;
-    const rootConfig = loadConfig(rootDir);
-    const mergedModules = mergeModules(modules, rootConfig.modules);
-    return resolveModulesFromList(mergedModules, { rootDir, scopeDir: rootDir });
+    const configPath = findFirstUpwardConfigPath(rootDir);
+
+    if (!configPath) {
+        throw new Error(`Unable to find a configurations to start the resolution`);
+    }
+
+    const lwcConfig = getLwcConfig(configPath) || {};
+    const { version } = loadPackageJson(configPath);
+    const mergedModules = mergeModules(modules, lwcConfig.modules);
+    return resolveModulesFromList(mergedModules, {
+        rootDir,
+        scopeDir: rootDir,
+        skipExposeFilter: true,
+        version,
+    });
+}
+
+export function resolveModule(
+    importee: string,
+    importer: string,
+    ignoreCache = false
+): RegistryEntry | undefined {
+    if (importee.startsWith('.') || importee.startsWith('/')) {
+        return;
+    }
+
+    // Normalize to absolute path (based on current cwd)
+    importer = path.resolve(importer);
+
+    const configPath = findFirstUpwardConfigPath(importer);
+
+    if (!configPath) {
+        throw new Error(`Unable to find a configuration to resolve ${importee} from ${importer}`);
+    }
+    const lwcConfig = getLwcConfig(configPath, ignoreCache);
+    const modules = lwcConfig && lwcConfig.modules;
+
+    if (modules && modules.length) {
+        let resolvedRecord: RegistryEntry | undefined;
+        const { version } = loadPackageJson(configPath);
+
+        modules.some(moduleRecord => {
+            validateModuleRecord(moduleRecord);
+            const opts = { rootDir: configPath, scopeDir: configPath, version };
+            if (isAliasModuleRecord(moduleRecord)) {
+                resolvedRecord = resolveModulesFromAlias(moduleRecord, opts);
+            } else if (isDirModuleRecord(moduleRecord)) {
+                const modulesFromDir = resolveModulesFromDir(moduleRecord.dir, opts);
+                resolvedRecord = modulesFromDir.find(m => m.specifier === importee);
+            } else if (isNpmModuleRecord(moduleRecord)) {
+                const modulesFromNpm = resolveModulesFromNpm(moduleRecord, {
+                    ...opts,
+                    skipRecursiveNpm: true,
+                });
+                resolvedRecord = modulesFromNpm.find(m => m.specifier === importee);
+            }
+
+            return !!resolvedRecord;
+        });
+
+        return resolvedRecord;
+    }
 }

@@ -30,6 +30,9 @@
                 "name": "wire-service",
                 "path": "dist/wire-service.js"
             }
+        ],
+        "expose": [
+            "wire-service"
         ]
     },
     "publishConfig": {

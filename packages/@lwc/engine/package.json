@@ -29,6 +29,9 @@
                 "name": "lwc",
                 "path": "dist/engine.js"
             }
+        ],
+        "expose": [
+            "lwc"
         ]
     },
     "publishConfig": {

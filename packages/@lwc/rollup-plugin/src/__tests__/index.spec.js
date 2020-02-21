@@ -28,7 +28,7 @@ const tsImportsJsDir = path.join(fixturesDir, 'ts_imports_js/src');
 const jsImportsTsDir = path.join(fixturesDir, 'js_imports_ts/src');
 const jsMultiVersion = path.join(fixturesDir, 'multi_version');
 
-describe('default configuration', () => {
+describe.only('default configuration', () => {
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, { compat: false }).then(({ code: actual }) => {
@@ -36,6 +36,7 @@ describe('default configuration', () => {
             expect(pretty(actual)).toBe(pretty(expected));
         });
     });
+
     it(`simple app with CSS resolver`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         const rollupCompileOptions = {

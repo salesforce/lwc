@@ -10,7 +10,7 @@ const pluginUtils = require('@rollup/pluginutils');
 const compiler = require('@lwc/compiler');
 const lwcResolver = require('@lwc/module-resolver');
 const { getModuleQualifiedName } = require('./utils');
-const { DEFAULT_OPTIONS, DEFAULT_MODE, DEFAULT_MODULES } = require('./constants');
+const { DEFAULT_OPTIONS, DEFAULT_MODE } = require('./constants');
 
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
@@ -31,52 +31,15 @@ function isMixingJsAndTs(importerExt, importeeExt) {
     );
 }
 
-// From a list of modules resolved, create an Map for faster moduleId seach
-function createMapFromCollectedModules(modules) {
-    return modules.reduce((map, moduleRecord) => {
-        const id = moduleRecord.specifier;
-        const entry = map.get(id) || [];
-        entry.push(moduleRecord);
-        // We need to sort them by the longest scope so we find the most specific first
-        entry.sort((a, b) => b.scope.length - a.scope.length);
-        return map.set(id, entry);
-    }, new Map());
-}
-
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
 
-    // Closure to store the resolved modules
-    let resolvedModulesIndex = [];
-
     return {
         name: 'rollup-plugin-lwc-compiler',
 
-        options({ input }) {
-            const { modules: userModules = [], rootDir: rollupRootDir } = mergedPluginOptions;
-            const rootDir = rollupRootDir ? path.resolve(rollupRootDir) : rollupRootDir;
-            const defaultModulesDir = rootDir || path.dirname(input);
-            const modules = [...userModules, ...DEFAULT_MODULES, { dir: defaultModulesDir }];
-            const collectedModules = lwcResolver.resolveModules({ rootDir, modules });
-            resolvedModulesIndex = createMapFromCollectedModules(collectedModules);
-        },
-
         resolveId(importee, importer) {
-            // Resolve entry point if the import references a LWC module
-            if (resolvedModulesIndex.has(importee)) {
-                const matches = resolvedModulesIndex.get(importee);
-                if (matches.length > 1) {
-                    const match = matches.find(m => importer.startsWith(m.scope));
-                    if (match) {
-                        return match.entry;
-                    }
-                } else {
-                    return matches[0].entry;
-                }
-            }
-
             // Normalize relative import to absolute import
             if (importee.startsWith('.') && importer) {
                 const importerExt = path.extname(importer);
@@ -97,6 +60,11 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 }
 
                 return pluginUtils.addExtension(normalizedPath, ext);
+            } else {
+                const moduleRecord = lwcResolver.resolveModule(importee, importer);
+                if (moduleRecord) {
+                    return moduleRecord.entry;
+                }
             }
         },
 
