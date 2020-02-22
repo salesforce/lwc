@@ -115,10 +115,7 @@ const baseInputConfig = {
     },
     plugins: [
         entryPointResolverPlugin(),
-        rollupLwcCompilerPlugin({
-            exclude: `**/*${testSufix}`,
-            resolveFromPackages: false,
-        }),
+        rollupLwcCompilerPlugin({ exclude: `**/*${testSufix}` }),
         isCompat && rollupCompatPlugin({ polyfills: false }),
         isProd && rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
         testCaseComponentResolverPlugin(),

@@ -171,14 +171,16 @@ export function resolveModule(
     importer: string,
     ignoreCache = false
 ): RegistryEntry | undefined {
-    if (importee.startsWith('.') || importee.startsWith('/')) {
+    if (
+        !importer ||
+        importee.startsWith('.') ||
+        importee.startsWith('/') ||
+        !fs.existsSync(importer)
+    ) {
         return;
     }
 
-    // Normalize to absolute path (based on current cwd)
-    importer = path.resolve(importer);
-
-    const configPath = findFirstUpwardConfigPath(importer);
+    const configPath = findFirstUpwardConfigPath(path.resolve(importer));
 
     if (!configPath) {
         throw new Error(`Unable to find a configuration to resolve ${importee} from ${importer}`);
