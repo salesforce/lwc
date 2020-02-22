@@ -212,3 +212,5 @@ export function resolveModule(
         return resolvedRecord;
     }
 }
+
+export { isDirModuleRecord, isNpmModuleRecord, isAliasModuleRecord, validateModuleRecord };

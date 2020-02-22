@@ -10,7 +10,7 @@ const pluginUtils = require('@rollup/pluginutils');
 const compiler = require('@lwc/compiler');
 const lwcResolver = require('@lwc/module-resolver');
 const { getModuleQualifiedName } = require('./utils');
-const { DEFAULT_OPTIONS, DEFAULT_MODE } = require('./constants');
+const { DEFAULT_OPTIONS, DEFAULT_MODE, DEFAULT_MODULES } = require('./constants');
 
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
@@ -31,15 +31,59 @@ function isMixingJsAndTs(importerExt, importeeExt) {
     );
 }
 
+function validateUserModules(modules = []) {
+    if (modules.length) {
+        const hasNpmModuleRecords = modules.some(lwcResolver.isNpmModuleRecord);
+        if (hasNpmModuleRecords) {
+            throw new Error('Resolution of npm modules are not allowed in rollup config');
+        }
+    }
+}
+
+function validateResolvedModuleRecords(moduleRecords = []) {
+    const visited = new Set();
+    if (moduleRecords.length) {
+        moduleRecords.forEach(({ specifier, scope, version }) => {
+            const id = `${specifier}:${version}:${scope}`;
+            if (visited.has(id)) {
+                throw new Error(`Duplicated entry: ${id}`);
+            } else {
+                visited.add(id);
+            }
+        });
+    }
+}
+
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
 
+    let customResolvedModules;
+
     return {
         name: 'rollup-plugin-lwc-compiler',
+        options({ input }) {
+            const { modules: userModules = [], rootDir } = mergedPluginOptions;
+            const defaultModulesDir = rootDir ? path.resolve(rootDir) : path.dirname(input);
+            validateUserModules(userModules);
+            const modules = [...userModules, ...DEFAULT_MODULES, { dir: defaultModulesDir }];
+            const resolvedModules = lwcResolver.resolveModules({ rootDir, modules });
+            validateResolvedModuleRecords(resolvedModules);
+            customResolvedModules = resolvedModules.reduce(
+                (map, m) => ((map[m.specifier] = m.entry), map),
+                {}
+            );
+        },
 
         resolveId(importee, importer) {
+            // Custom resolved modules
+
+            const customEntry = customResolvedModules[importee];
+            if (customEntry) {
+                return customEntry;
+            }
+
             // Normalize relative import to absolute import
             if (importee.startsWith('.') && importer) {
                 const importerExt = path.extname(importer);
