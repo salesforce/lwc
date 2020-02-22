@@ -155,8 +155,8 @@ export function resolveModules(
         throw new Error(`Unable to find a configurations to start the resolution`);
     }
 
-    const lwcConfig = getLwcConfig(configPath) || {};
     const { version } = loadPackageJson(configPath);
+    const lwcConfig = normalizeConfig({ ...getLwcConfig(configPath), rootDir: configPath });
     const mergedModules = mergeModules(modules, lwcConfig.modules);
     return resolveModulesFromList(mergedModules, {
         rootDir,

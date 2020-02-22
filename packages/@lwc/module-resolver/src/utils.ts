@@ -98,9 +98,13 @@ export function getModuleEntry(moduleDir: string, moduleName: string): string | 
 export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleResolverConfig {
     const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
     const modules = config.modules || [];
+    const normalizedModules = modules.map(m =>
+        isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m
+    );
+
     return {
         ...DEFAULT_CONFIG,
-        modules,
+        modules: normalizedModules,
         rootDir,
     };
 }
