@@ -28,8 +28,8 @@
     "@types/acorn": "^4.0.5",
     "@types/jest": "^25.1.2",
     "@types/node": "^13.7.0",
-    "@typescript-eslint/eslint-plugin": "^2.19.0",
-    "@typescript-eslint/parser": "^2.19.0",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
     "aws-sdk": "^2.614.0",
     "babel-plugin-tester": "^8.0.1",
     "concurrently": "^5.1.0",
@@ -53,8 +53,8 @@
     "rollup-plugin-terser": "^5.2.0",
     "rollup-plugin-typescript": "^1.0.1",
     "semver": "^7.1.2",
-    "tslib": "^1.10.0",
-    "typescript": "^3.7.5",
+    "tslib": "^1.11.0",
+    "typescript": "^3.8.2",
     "worker-farm": "^1.7.0"
   },
   "husky": {
