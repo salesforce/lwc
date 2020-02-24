@@ -57,7 +57,6 @@ function createPreprocessor(config, emitter, logger) {
         }
 
         try {
-            console.log('!!');
             const bundle = await rollup({
                 input,
                 plugins,
