@@ -19,12 +19,12 @@ const PACKAGE_JSON = 'package.json';
 const DEFAULT_CONFIG: LwcConfig = { modules: [] };
 const LWC_CONFIG_FILE = 'lwc.config.json';
 
-function isObject(str: any): boolean {
-    return typeof str === 'object' && str !== null;
+function isObject(obj: any): boolean {
+    return typeof obj === 'object' && obj !== null;
 }
 
 export function validateModuleRecord(moduleRecord: ModuleRecord) {
-    if (isObject(moduleRecord)) {
+    if (!isObject(moduleRecord)) {
         throw new Error(`Found an invalid module record (${moduleRecord}). It must be an object`);
     }
 }
