@@ -57,7 +57,7 @@ describe('default configuration', () => {
 });
 
 describe('rollup with custom options', () => {
-    it.only(`should normalize rootDir when present and is a relative path`, () => {
+    it(`should normalize rootDir when present and is a relative path`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
 
         const rollupOptions = {
