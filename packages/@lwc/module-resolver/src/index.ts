@@ -79,7 +79,7 @@ function resolveModulesFromNpm(
     const innerOpts = { ...opts, rootDir: packageDir, scopeDir: opts.rootDir, version };
     const resolvedModules: RegistryEntry[] = [];
 
-    if (lwcConfig && lwcConfig.modules) {
+    if (lwcConfig?.modules) {
         validateNpmConfig(lwcConfig);
         const exposedModules = lwcConfig.expose || [];
         const modules = resolveModulesFromList(lwcConfig.modules, innerOpts);
