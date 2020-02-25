@@ -19,7 +19,9 @@
                 "path": "dist/synthetic-shadow.js"
             }
         ],
-        "expose": ["@lwc/synthetic-shadow"]
+        "expose": [
+            "@lwc/synthetic-shadow"
+        ]
     },
     "publishConfig": {
         "access": "public"
