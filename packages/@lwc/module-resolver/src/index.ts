@@ -88,17 +88,17 @@ function resolveModulesFromNpm(
         } else {
             resolvedModules.push(...modules);
         }
+    }
 
-        // Remapping some of the modules exposed
-        if (aliasMapping) {
-            resolvedModules.forEach(resolvedModule => {
-                Object.keys(aliasMapping).forEach(oldSpecififer => {
-                    if (resolvedModule.specifier === oldSpecififer) {
-                        resolvedModule.specifier = aliasMapping[oldSpecififer];
-                    }
-                });
+    // Remapping some of the modules exposed
+    if (aliasMapping) {
+        resolvedModules.forEach(resolvedModule => {
+            Object.keys(aliasMapping).forEach(oldSpecififer => {
+                if (resolvedModule.specifier === oldSpecififer) {
+                    resolvedModule.specifier = aliasMapping[oldSpecififer];
+                }
             });
-        }
+        });
     }
 
     return resolvedModules;
@@ -183,7 +183,9 @@ export function resolveModule(
     const configPath = findFirstUpwardConfigPath(path.resolve(importer));
 
     if (!configPath) {
-        throw new Error(`Unable to find an LWC configuration to resolve ${importee} from ${importer}`);
+        throw new Error(
+            `Unable to find an LWC configuration to resolve ${importee} from ${importer}`
+        );
     }
     const lwcConfig = getLwcConfig(configPath, ignoreCache);
     const modules = lwcConfig && lwcConfig.modules;
