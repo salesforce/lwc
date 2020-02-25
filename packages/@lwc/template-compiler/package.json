@@ -22,8 +22,6 @@
         "@babel/template": "~7.1.2",
         "@babel/traverse": "~7.1.5",
         "@babel/types": "~7.1.5",
-        "@lwc/errors": "1.3.1",
-        "@lwc/shared": "1.3.1",
         "esutils": "^2.0.3",
         "he": "^1.1.1",
         "parse5-with-errors": "4.0.3-beta1"

@@ -16,7 +16,6 @@
     "dependencies": {
         "@babel/helper-module-imports": "7.0.0",
         "@babel/plugin-proposal-class-properties": "7.1.0",
-        "@lwc/errors": "1.3.1",
         "line-column": "^1.0.2"
     },
     "devDependencies": {
