@@ -186,32 +186,6 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
     }
 
-    /**
-     * Generates the normalize expression of the spellcheck prop value ($cmp.expr) to a boolean value.
-     * RFC: https://github.com/salesforce/lwc-rfcs/pull/21
-     *
-     * Returns:
-     *     [expr] != null
-     *          ? [expr].toString().ToLowerCase() !== "false"
-     *          : true
-     */
-    genSpellcheckNormalizeExpression(expression: t.Expression): t.ConditionalExpression {
-        const conditionTest = t.binaryExpression('!=', expression, t.nullLiteral());
-        const truePath = t.binaryExpression(
-            '!==',
-            t.callExpression(
-                t.memberExpression(
-                    t.callExpression(t.memberExpression(expression, t.identifier('toString')), []),
-                    t.identifier('toLowerCase')
-                ),
-                []
-            ),
-            t.stringLiteral('false')
-        );
-
-        return t.conditionalExpression(conditionTest, truePath, t.booleanLiteral(true));
-    }
-
     getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
         return this._renderApiCall(RENDER_APIS.slot, [
             t.stringLiteral(slotName),
