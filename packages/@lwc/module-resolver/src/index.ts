@@ -183,7 +183,7 @@ export function resolveModule(
     const configPath = findFirstUpwardConfigPath(path.resolve(importer));
 
     if (!configPath) {
-        throw new Error(`Unable to find a configuration to resolve ${importee} from ${importer}`);
+        throw new Error(`Unable to find an LWC configuration to resolve ${importee} from ${importer}`);
     }
     const lwcConfig = getLwcConfig(configPath, ignoreCache);
     const modules = lwcConfig && lwcConfig.modules;
