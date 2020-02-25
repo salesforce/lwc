@@ -19,26 +19,26 @@ const PACKAGE_JSON = 'package.json';
 const DEFAULT_CONFIG: LwcConfig = { modules: [] };
 const LWC_CONFIG_FILE = 'lwc.config.json';
 
-export function isString(str: any): boolean {
-    return Object.prototype.toString.call(str) === '[object String]';
+function isObject(str: any): boolean {
+    return typeof str === 'object' && str !== null;
 }
 
 export function validateModuleRecord(moduleRecord: ModuleRecord) {
-    if (isString(moduleRecord)) {
-        throw new Error(`Found a string module record (${moduleRecord}). It must be an object`);
+    if (isObject(moduleRecord)) {
+        throw new Error(`Found an invalid module record (${moduleRecord}). It must be an object`);
     }
 }
 
 export function isNpmModuleRecord(moduleRecord: ModuleRecord): moduleRecord is NpmModuleRecord {
-    return (moduleRecord as NpmModuleRecord).npm !== undefined;
+    return 'npm' in moduleRecord;
 }
 
 export function isDirModuleRecord(moduleRecord: ModuleRecord): moduleRecord is DirModuleRecord {
-    return (moduleRecord as DirModuleRecord).dir !== undefined;
+    return 'dir' in moduleRecord;
 }
 
 export function isAliasModuleRecord(moduleRecord: ModuleRecord): moduleRecord is AliasModuleRecord {
-    return (moduleRecord as AliasModuleRecord).name !== undefined;
+    return 'name' in moduleRecord;
 }
 
 export function existsLwcConfig(configDir: string) {
