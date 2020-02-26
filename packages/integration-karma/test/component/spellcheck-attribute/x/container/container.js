@@ -1,5 +1,3 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement } from 'lwc';
 
-export default class Container extends LightningElement {
-    @api spellcheckValue;
-}
+export default class Container extends LightningElement {}
