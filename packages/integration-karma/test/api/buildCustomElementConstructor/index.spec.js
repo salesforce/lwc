@@ -1,4 +1,4 @@
-import { LightningElement, getComponentDef } from 'lwc';
+import { LightningElement } from 'lwc';
 
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
@@ -7,27 +7,18 @@ import LifecycleParent from 'x/lifecycleParent';
 // constructor.
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
-function testInvalidOptions(type, obj) {
-    it(`throws a ReferenceError if constructor is a ${type}`, () => {
-        expect(() => getComponentDef(obj)).toThrowError(
-            TypeError,
-            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration\./
-        );
-    });
-}
-
-testInvalidOptions('undefined', undefined);
-testInvalidOptions('null', null);
-testInvalidOptions('String', 'x-component');
-testInvalidOptions('Function', function() {});
-testInvalidOptions('Class not extending LightningElement', class Component {});
-testInvalidOptions('Object without the is property', {});
-
 it('should return a custom element', () => {
     class Test extends LightningElement {}
     const TestCustomElement = Test.CustomElement;
 
     expect(typeof TestCustomElement).toBe('function');
+});
+
+it('should throw when trying to claim abstract LightningElement as custom element', () => {
+    expect(() => LightningElement.CustomElement).toThrowError(
+        TypeError,
+        `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`
+    );
 });
 
 if (SUPPORTS_CUSTOM_ELEMENTS) {
