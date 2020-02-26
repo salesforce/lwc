@@ -42,7 +42,7 @@ return data;
 }
 function _objectSpread(target) {
 for (var i = 1; i < arguments.length; i++) {
-var source = arguments[i] != null ? arguments[i] : {};
+var source = arguments[i] != null ? Object(arguments[i]) : {};
 var ownKeys = Object.compatKeys(source);
 if (typeof Object.getOwnPropertySymbols === 'function') {
 ownKeys = __concat(ownKeys, __callKey1(Object.getOwnPropertySymbols(source), "filter", function (sym) {
@@ -189,9 +189,10 @@ return __callKey0(_context, "stop");
 }
 }, _callee, this);
 }));
-return function foo() {
+function foo() {
 return __callKey2(_foo, "apply", this, arguments);
-};
+}
+return foo;
 }()
 }]);
 return Foo;
