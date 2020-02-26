@@ -9,13 +9,13 @@ const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in wind
 
 it('should return a custom element', () => {
     class Test extends LightningElement {}
-    const TestCustomElement = Test.CustomElement;
+    const TestCustomElement = Test.CustomElementConstructor;
 
     expect(typeof TestCustomElement).toBe('function');
 });
 
 it('should throw when trying to claim abstract LightningElement as custom element', () => {
-    expect(() => LightningElement.CustomElement).toThrowError(
+    expect(() => LightningElement.CustomElementConstructor).toThrowError(
         TypeError,
         `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`
     );
@@ -25,7 +25,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
     it('should create a custom element with shadow mode set to "open" by default', () => {
         class Test extends LightningElement {}
 
-        const TestCustomElement = Test.CustomElement;
+        const TestCustomElement = Test.CustomElementConstructor;
         customElements.define('test-custom-element-default', TestCustomElement);
 
         const elm = document.createElement('test-custom-element-default');
@@ -37,7 +37,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
     describe('lifecycle', () => {
         beforeAll(() => {
-            const LifecycleParentCustomElement = LifecycleParent.CustomElement;
+            const LifecycleParentCustomElement = LifecycleParent.CustomElementConstructor;
             customElements.define('test-lifecycle-parent', LifecycleParentCustomElement);
         });
 
@@ -68,7 +68,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
     describe('attribute reflection', () => {
         beforeAll(() => {
-            const ReflectCustomElement = ReflectElement.CustomElement;
+            const ReflectCustomElement = ReflectElement.CustomElementConstructor;
             customElements.define('test-reflect', ReflectCustomElement);
         });
 
