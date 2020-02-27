@@ -22,6 +22,7 @@ export const defaultDefHTMLPropertyNames = [
     'hidden',
     'id',
     'lang',
+    'spellcheck',
     'tabIndex',
     'title',
 ];

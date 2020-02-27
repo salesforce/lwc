@@ -404,12 +404,16 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                         codeGen.genScopedFragId(expression),
                     ]);
                 }
+
                 return expression;
             }
 
             case IRAttributeType.String: {
                 if (attr.name === 'id') {
                     return codeGen.genScopedId(attr.value);
+                }
+                if (attr.name === 'spellcheck') {
+                    return t.booleanLiteral(attr.value.toLowerCase() !== 'false');
                 }
                 if (isIdReferencingAttribute(attr.name)) {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);

@@ -82,6 +82,7 @@ const GLOBAL_HTML_ATTRIBUTES = [
     'id',
     'lang',
     'role',
+    'spellcheck',
     'tabIndex',
     'title',
 ].sort();

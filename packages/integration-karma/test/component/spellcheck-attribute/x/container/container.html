@@ -1,0 +1,19 @@
+<template>
+    <x-simple spellcheck class="ce boolean-true-v"></x-simple>
+    <x-simple spellcheck="" class="ce empty-v"></x-simple>
+    <x-simple spellcheck="false" class="ce false-v"></x-simple>
+    <x-simple spellcheck="fAlSe" class="ce false-case-insensitive-v"></x-simple>
+    <x-simple spellcheck="true" class="ce true-v"></x-simple>
+    <x-simple spellcheck="null" class="ce null-v"></x-simple>
+    <x-simple spellcheck="0" class="ce falsy-v"></x-simple>
+    <x-simple spellcheck="truthy" class="ce truthy-v"></x-simple>
+
+    <div spellcheck class="boolean-true-v"></div>
+    <div spellcheck="" class="empty-v"></div>
+    <div spellcheck="false" class="false-v"></div>
+    <div spellcheck="fAlSe" class="false-case-insensitive-v"></div>
+    <div spellcheck="true" class="true-v"></div>
+    <div spellcheck="null" class="null-v"></div>
+    <div spellcheck="0" class="falsy-v"></div>
+    <div spellcheck="truthy" class="truthy-v"></div>
+</template>
