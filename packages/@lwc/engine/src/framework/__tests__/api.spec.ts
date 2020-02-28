@@ -158,22 +158,6 @@ describe('api', () => {
         });
     });
 
-    describe('#p()', () => {
-        it('should produce a comment', () => {
-            function html($api) {
-                return [$api.h('span', { key: 0 }, [api.p('miami')])];
-            }
-            class Foo extends LightningElement {
-                render() {
-                    return registerTemplate(html);
-                }
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
-            expect(elm.shadowRoot.querySelector('span').innerHTML).toEqual('<!--miami-->');
-        });
-    });
-
     describe('#k()', () => {
         it('should combine keys', () => {
             let k1, k2;
