@@ -13,6 +13,8 @@ import {
     DirModuleRecord,
     AliasModuleRecord,
     ModuleResolverConfig,
+    RegistryEntry,
+    InnerResolverOptions,
 } from './types';
 
 const PACKAGE_JSON = 'package.json';
@@ -21,6 +23,22 @@ const LWC_CONFIG_FILE = 'lwc.config.json';
 
 function isObject(obj: any): boolean {
     return typeof obj === 'object' && obj !== null;
+}
+
+export function validateImportee(importee: string) {
+    if (!importee) {
+        throw new Error(`Invalid importee ${importee}`);
+    }
+
+    if (importee.startsWith('.') || importee.startsWith('/')) {
+        throw new Error(`Unable to resolve relative paths for ${importee}`);
+    }
+}
+
+export function validateImporter(importer: string) {
+    if (!fs.existsSync(importer)) {
+        throw new Error(`Unable to find a config file for importer ${importer}`);
+    }
 }
 
 export function validateModuleRecord(moduleRecord: ModuleRecord) {
@@ -73,7 +91,7 @@ export function loadPackageJson(pkgDir: string): any {
     }
 }
 
-export function getEntry(moduleDir, moduleName, ext) {
+export function getEntry(moduleDir, moduleName, ext): string {
     return path.join(moduleDir, `${moduleName}.${ext}`);
 }
 
@@ -109,12 +127,15 @@ export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleRe
     };
 }
 
-function normalizeDirName(dirName: string) {
+function normalizeDirName(dirName: string): string {
     return dirName.endsWith('/') ? dirName : `${dirName}/`;
 }
 
 // User defined modules will have precedence over the ones defined elsewhere (ex. npm)
-export function mergeModules(userModules: ModuleRecord[], configModules: ModuleRecord[] = []) {
+export function mergeModules(
+    userModules: ModuleRecord[],
+    configModules: ModuleRecord[] = []
+): ModuleRecord[] {
     const visitedAlias = new Set();
     const visitedDirs = new Set();
     const visitedNpm = new Set();
@@ -144,7 +165,7 @@ export function mergeModules(userModules: ModuleRecord[], configModules: ModuleR
     return modules;
 }
 
-export function findFirstUpwardConfigPath(currentPath: string) {
+export function findFirstUpwardConfigPath(currentPath: string): string {
     if (fs.lstatSync(currentPath).isFile()) {
         currentPath = path.dirname(currentPath);
     }
@@ -171,9 +192,9 @@ export function findFirstUpwardConfigPath(currentPath: string) {
 
         parts.pop();
     }
-}
 
-const LWC_CONFIG_CACHE: Map<string, LwcConfig> = new Map();
+    throw new Error(`Unable to find any LWC configuration file from ${currentPath}`);
+}
 
 export function validateNpmConfig(config: LwcConfig) {
     if (config.modules && !config.expose) {
@@ -183,19 +204,18 @@ export function validateNpmConfig(config: LwcConfig) {
     }
 }
 
-export function getLwcConfig(dirPath: string, ignoreCache = false): LwcConfig | undefined {
-    const useCache = !ignoreCache;
-    if (useCache && LWC_CONFIG_CACHE.has(dirPath)) {
-        return LWC_CONFIG_CACHE.get(dirPath);
-    }
-
+export function getLwcConfig(dirPath: string): LwcConfig {
     const lwcConfig = existsLwcConfig(dirPath)
         ? loadLwcConfig(dirPath)
-        : loadPackageJson(dirPath).lwc;
-
-    if (lwcConfig && useCache) {
-        LWC_CONFIG_CACHE.set(dirPath, lwcConfig);
-    }
+        : loadPackageJson(dirPath).lwc || DEFAULT_CONFIG;
 
     return lwcConfig;
+}
+
+export function createRegistryEntry(entry, specifier, opts: InnerResolverOptions): RegistryEntry {
+    return {
+        entry,
+        specifier,
+        scope: opts.rootDir,
+    };
 }

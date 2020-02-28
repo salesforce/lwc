@@ -41,8 +41,4 @@ export interface LwcConfig {
 
 export interface InnerResolverOptions {
     rootDir: string;
-    scopeDir: string;
-    skipRecursiveNpm?: boolean;
-    skipExposeFilter?: boolean;
-    version?: string;
 }
