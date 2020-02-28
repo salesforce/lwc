@@ -39,7 +39,6 @@ import {
     VNodeData,
     VNodes,
     VElement,
-    VComment,
     VText,
     Hooks,
     Key,
@@ -88,7 +87,6 @@ export interface RenderAPI {
     i(items: any[], factory: () => VNode | VNode): VNodes;
     f(items: any[]): any[];
     t(text: string): VText;
-    p(text: string): VComment;
     d(value: any): VNode | null;
     b(fn: EventListener): EventListener;
     fb(fn: (...args: any[]) => any): (...args: any[]) => any;
@@ -113,20 +111,6 @@ const TextHook: Hooks = {
     update: updateNodeHook,
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for text nodes
-    remove: removeNodeHook,
-};
-
-const CommentHook: Hooks = {
-    create: (vnode: VComment) => {
-        vnode.elm = document.createComment(vnode.text);
-        linkNodeToShadow(vnode);
-        if (process.env.NODE_ENV !== 'production') {
-            markNodeFromVNode(vnode.elm);
-        }
-    },
-    update: updateNodeHook,
-    insert: insertNodeHook,
-    move: insertNodeHook, // same as insert for comment nodes
     remove: removeNodeHook,
 };
 
