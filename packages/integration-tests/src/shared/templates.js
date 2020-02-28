@@ -16,7 +16,7 @@ exports.todoApp = function(cmpName) {
         import { registerWireService, register as registerAdapter, ValueChangedEvent } from 'wire-service';
         import { createElement, register } from 'lwc';
         import Cmp from 'integration/${cmpName}';
-        import { getTodo, echoAdapter, getObservable } from 'todo';
+        import { getTodo, getObservable } from 'todo';
 
         registerWireService(register);
 
@@ -50,14 +50,6 @@ exports.todoApp = function(cmpName) {
                     subscription = observable.subscribe(observer);
                     return;
                 }
-            });
-        });
-        
-        registerAdapter(echoAdapter, function foo(wiredEventTarget) {
-            wiredEventTarget.dispatchEvent(new ValueChangedEvent({}));
-            wiredEventTarget.addEventListener('config', function(newConfig) {
-                debugger;
-                wiredEventTarget.dispatchEvent(new ValueChangedEvent(newConfig));
             });
         });
 

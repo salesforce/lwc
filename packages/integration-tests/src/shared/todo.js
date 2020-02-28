@@ -82,10 +82,8 @@
     }
 
     const getTodo = Symbol('getTodo');
-    const echoAdapter = Symbol('echoAdapter');
 
     exports.getTodo = getTodo;
-    exports.echoAdapter = echoAdapter;
     exports.getObservable = getObservable;
     Object.defineProperty(exports, '__esModule', { value: true });
 });
