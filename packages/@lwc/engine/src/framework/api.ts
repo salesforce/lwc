@@ -531,24 +531,6 @@ export function t(text: string): VText {
     };
 }
 
-// comment node
-export function p(text: string): VComment {
-    const data = EmptyObject;
-    const sel = '!';
-    let children, key, elm;
-    return {
-        sel,
-        data,
-        children,
-        text,
-        elm,
-        key,
-
-        hook: CommentHook,
-        owner: getVMBeingRendered()!,
-    };
-}
-
 // [d]ynamic value to produce a text vnode
 export function d(value: any): VNode | null {
     if (value == null) {
