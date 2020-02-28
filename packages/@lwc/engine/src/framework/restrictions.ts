@@ -499,14 +499,6 @@ interface RestrictionsOptions {
     isPortal?: boolean;
 }
 
-export function markNodeFromVNode(node: Node) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    (node as any).$fromTemplate$ = true;
-}
-
 export function patchElementWithRestrictions(elm: Element, options: RestrictionsOptions) {
     defineProperties(elm, getElementRestrictionsDescriptors(elm, options));
 }
