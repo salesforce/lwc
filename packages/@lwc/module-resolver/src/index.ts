@@ -17,7 +17,6 @@ import {
     isDirModuleRecord,
     isNpmModuleRecord,
     validateImportee,
-    validateImporter,
     getLwcConfig,
     getModuleEntry,
     normalizeConfig,
@@ -92,19 +91,6 @@ function resolveModuleFromNpm(
     }
 }
 
-export function resolveModule(importee: string, importer: string): RegistryEntry {
-    if (!fs.existsSync(importer)) {
-        throw new Error(`Unable to find a config file for importer ${importer}`);
-    }
-
-    const configPath = findFirstUpwardConfigPath(path.resolve(importer));
-    const lwcConfig = getLwcConfig(configPath);
-    return resolveModuleFromConfig(importee, importer, {
-        rootDir: configPath,
-        modules: lwcConfig.modules,
-    });
-}
-
 function resolveModuleRecordType(
     specifier: string,
     moduleRecord: ModuleRecord,
@@ -124,27 +110,28 @@ function resolveModuleRecordType(
     }
 }
 
-export function resolveModuleFromConfig(
+export function resolveModule(
     importee: string,
     importer: string,
-    config: Partial<ModuleResolverConfig>
+    config?: Partial<ModuleResolverConfig>
 ): RegistryEntry {
     validateImportee(importee);
-    validateImporter(importer);
 
-    const userConfig = normalizeConfig(config);
-    const configPath = findFirstUpwardConfigPath(path.resolve(importer));
-    const lwcConfig = getLwcConfig(configPath);
-    const modules = mergeModules(userConfig.modules, lwcConfig.modules);
+    const rootDir = findFirstUpwardConfigPath(path.resolve(importer));
+    const lwcConfig = getLwcConfig(rootDir);
+    let modules: ModuleRecord[] = lwcConfig.modules || [];
+
+    if (config) {
+        const userConfig = normalizeConfig(config);
+        modules = mergeModules(userConfig.modules, modules);
+    }
 
     if (modules.length === 0) {
         throw new Error(`Unable to resolve ${importee}: No ModuleRecords have been defined`);
     }
 
     for (const moduleRecord of modules) {
-        const registryEntry = resolveModuleRecordType(importee, moduleRecord, {
-            rootDir: configPath,
-        });
+        const registryEntry = resolveModuleRecordType(importee, moduleRecord, { rootDir });
         if (registryEntry) {
             return registryEntry;
         }

@@ -111,8 +111,8 @@ describe('javascript relative import', () => {
     });
 });
 
-describe('multi-package-version', () => {
-    it(`should find all modules`, () => {
+describe.only('multi-package-version', () => {
+    it.only(`should find all modules`, () => {
         const entry = path.join(jsMultiVersion, 'src/main.js');
 
         return doRollup(entry, { compat: false }, {}).then(({ code }) => {

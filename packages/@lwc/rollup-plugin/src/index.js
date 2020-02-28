@@ -40,50 +40,24 @@ function validateUserModules(modules = []) {
     }
 }
 
-function validateResolvedModuleRecords(moduleRecords = []) {
-    const visited = new Set();
-    if (moduleRecords.length) {
-        moduleRecords.forEach(({ specifier, scope, version }) => {
-            const id = `${specifier}:${version}:${scope}`;
-            if (visited.has(id)) {
-                throw new Error(`Duplicated entry: ${id}`);
-            } else {
-                visited.add(id);
-            }
-        });
-    }
-}
-
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
 
     let customResolvedModules;
+    let customRootDir;
 
     return {
         name: 'rollup-plugin-lwc-compiler',
         options({ input }) {
             const { modules: userModules = [], rootDir } = mergedPluginOptions;
-            const defaultModulesDir = rootDir ? path.resolve(rootDir) : path.dirname(input);
+            customRootDir = rootDir ? path.resolve(rootDir) : path.dirname(path.resolve(input));
             validateUserModules(userModules);
-            const modules = [...userModules, ...DEFAULT_MODULES, { dir: defaultModulesDir }];
-            const resolvedModules = lwcResolver.resolveModules({ rootDir, modules });
-            validateResolvedModuleRecords(resolvedModules);
-            customResolvedModules = resolvedModules.reduce(
-                (map, m) => ((map[m.specifier] = m.entry), map),
-                {}
-            );
+            customResolvedModules = [...userModules, ...DEFAULT_MODULES, { dir: customRootDir }];
         },
 
         resolveId(importee, importer) {
-            // Custom resolved modules
-
-            const customEntry = customResolvedModules[importee];
-            if (customEntry) {
-                return customEntry;
-            }
-
             // Normalize relative import to absolute import
             if (importee.startsWith('.') && importer) {
                 const importerExt = path.extname(importer);
@@ -105,9 +79,13 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
                 return pluginUtils.addExtension(normalizedPath, ext);
             } else {
-                const moduleRecord = lwcResolver.resolveModule(importee, importer);
-                if (moduleRecord) {
-                    return moduleRecord.entry;
+                try {
+                    return lwcResolver.resolveModule(importee, importer, {
+                        modules: customResolvedModules,
+                        rootDir: customRootDir,
+                    }).entry;
+                } catch (e) {
+                    // noop: let rollup plugins keep resolving
                 }
             }
         },

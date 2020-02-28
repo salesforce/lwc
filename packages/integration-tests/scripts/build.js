@@ -109,18 +109,20 @@ const globalModules = {
     todo: 'Todo',
 };
 
-const baseInputConfig = {
-    external: function(id) {
-        return id in globalModules;
-    },
-    plugins: [
-        entryPointResolverPlugin(),
-        rollupLwcCompilerPlugin({ exclude: `**/*${testSufix}` }),
-        isCompat && rollupCompatPlugin({ polyfills: false }),
-        isProd && rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
-        testCaseComponentResolverPlugin(),
-    ].filter(Boolean),
-};
+function createRollupInputConfig() {
+    return {
+        external: function(id) {
+            return id in globalModules;
+        },
+        plugins: [
+            entryPointResolverPlugin(),
+            rollupLwcCompilerPlugin({ exclude: `**/*${testSufix}` }),
+            isCompat && rollupCompatPlugin({ polyfills: false }),
+            isProd && rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+            testCaseComponentResolverPlugin(),
+        ].filter(Boolean),
+    };
+}
 
 const baseOutputConfig = { format: 'iife', globals: globalModules };
 
@@ -149,8 +151,8 @@ testEntries
     .reduce(async (promise, test) => {
         await promise;
         const { name: testName, path: testEntry, namespace: testNamespace } = test;
-        console.log(`Building integration test: ${testName}`);
-        const bundle = await rollup.rollup({ ...baseInputConfig, input: testEntry });
+        console.log(`Building integration test: ${testName} | ${testEntry}`);
+        const bundle = await rollup.rollup({ ...createRollupInputConfig(), input: testEntry });
 
         await bundle.write({
             ...baseOutputConfig,

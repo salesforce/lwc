@@ -35,12 +35,6 @@ export function validateImportee(importee: string) {
     }
 }
 
-export function validateImporter(importer: string) {
-    if (!fs.existsSync(importer)) {
-        throw new Error(`Unable to find a config file for importer ${importer}`);
-    }
-}
-
 export function validateModuleRecord(moduleRecord: ModuleRecord) {
     if (!isObject(moduleRecord)) {
         throw new Error(`Found an invalid module record (${moduleRecord}). It must be an object`);
@@ -166,8 +160,12 @@ export function mergeModules(
 }
 
 export function findFirstUpwardConfigPath(currentPath: string): string {
-    if (fs.lstatSync(currentPath).isFile()) {
-        currentPath = path.dirname(currentPath);
+    try {
+        if (fs.lstatSync(currentPath).isFile()) {
+            currentPath = path.dirname(currentPath);
+        }
+    } catch (e) {
+        // It might be a virtual file or path try to resolve it still
     }
 
     const parts = currentPath.split(path.sep);
