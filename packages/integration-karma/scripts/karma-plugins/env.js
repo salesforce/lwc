@@ -17,7 +17,6 @@ const path = require('path');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
 const ENV_FILENAME = path.resolve(DIST_DIR, 'env.js');
-const APP_SETUP_FILENAME = path.resolve(DIST_DIR, 'app_setup.js');
 
 function createEnvFile(lwcConfig) {
     if (!fs.existsSync(DIST_DIR)) {
@@ -36,23 +35,10 @@ function createEnvFile(lwcConfig) {
     fs.writeFileSync(ENV_FILENAME, content.join('\n'));
 }
 
-function createAppSetupFile() {
-    if (!fs.existsSync(DIST_DIR)) {
-        fs.mkdirSync(DIST_DIR);
-    }
-
-    const content = [`window.WireService.registerWireService(window.LWC.register);`];
-    fs.writeFileSync(APP_SETUP_FILENAME, content.join('\n'));
-}
-
 function initEnv(lwcConfig, files) {
     createEnvFile(lwcConfig);
     files.unshift({
         pattern: ENV_FILENAME,
-    });
-    createAppSetupFile();
-    files.push({
-        pattern: APP_SETUP_FILENAME,
     });
 }
 
