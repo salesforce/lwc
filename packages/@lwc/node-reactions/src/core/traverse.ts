@@ -38,7 +38,6 @@ function queueReactionsForSingleElement(
     }
 }
 
-const ShadowRootQuerySelectorAll = ShadowRoot.prototype.querySelectorAll;
 /**
  * Process nodes in a shadow tree
  */
@@ -47,11 +46,7 @@ function queueReactionsForShadowRoot(
     reactionTypes: QualifyingReactionTypes,
     reactionQueue: ReactionRecord[]
 ) {
-    queueReactionsForNodeList(
-        ShadowRootQuerySelectorAll.call(sr, `[${marker}]`),
-        reactionTypes,
-        reactionQueue
-    );
+    queueReactionsForNodeList(sr.querySelectorAll(`[${marker}]`), reactionTypes, reactionQueue);
 }
 
 /**

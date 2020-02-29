@@ -4,19 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    assert,
-    isFunction,
-    isNull,
-    isObject,
-    isUndefined,
-    toString,
-} from '@lwc/shared';
+import { assert, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
 import { reactWhenConnected, reactWhenDisconnected } from '@lwc/node-reactions';
 import {
     createVM,
     removeVM,
-    appendVM,
+    appendRootVM,
     getAssociatedVM,
     VMState,
     getAssociatedVMIfPresent,
@@ -34,8 +27,8 @@ interface CreateElementOptions {
     mode?: ShadowDomMode;
 }
 
-function connectedHook(this: HTMLElement) {
-    const vm = getAssociatedVM(this);
+function connectedHook(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
     startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
@@ -43,12 +36,12 @@ function connectedHook(this: HTMLElement) {
             `${vm} should be new or disconnected.`
         );
     }
-    appendVM(vm);
+    appendRootVM(vm);
     endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
 }
 
-function disconnectedHook(this: HTMLElement) {
-    const vm = getAssociatedVM(this);
+function disconnectedHook(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
     }

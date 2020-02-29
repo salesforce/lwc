@@ -7,7 +7,11 @@
 
 export type ReactionType = 1 /* connected */ | 2 /* disconnected */;
 
-export type ReactionCallback = (element: Element, reactionType: ReactionType) => void;
+export type ReactionCallback = (
+    this: undefined,
+    element: Element,
+    reactionType: ReactionType
+) => void;
 
 export interface ReactionRecord {
     type: ReactionType;
