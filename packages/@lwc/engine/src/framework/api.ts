@@ -62,6 +62,7 @@ import {
 } from './hooks';
 import { Services, invokeServiceHook } from './services';
 import { isComponentConstructor } from './def';
+import { attemptToRegisterTagName } from './local-registry';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -138,6 +139,7 @@ const ElementHook: Hooks<VElement> = {
 const CustomElementHook: Hooks<VCustomElement> = {
     create: vnode => {
         const { sel } = vnode;
+        attemptToRegisterTagName(sel);
         vnode.elm = document.createElement(sel);
         linkNodeToShadow(vnode);
         createViewModelHook(vnode);
