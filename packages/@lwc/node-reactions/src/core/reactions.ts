@@ -4,20 +4,32 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, fields, isTrue, isUndefined } from '@lwc/shared';
+import {
+    ArrayPush,
+    getHiddenField,
+    setHiddenField,
+    createHiddenField,
+    isTrue,
+    isUndefined,
+} from '@lwc/shared';
 import { ReactionCallback, ReactionRecord } from '../types';
-const { getHiddenField, setHiddenField, createFieldName } = fields;
 
 export const marker = 'data-node-reactions';
-const ConnectedRecordsLookup = createFieldName('connected-records-lookup', 'node-reactions');
-const DisconnectedRecordsLookup = createFieldName('disconnected-records-lookup', 'node-reactions');
-export const RegisteredFlag = createFieldName('registered-node', 'node-reactions');
+const ConnectedRecordsLookup = createHiddenField<ReactionRecord[] | undefined>(
+    'connected-records-lookup',
+    'node-reactions'
+);
+const DisconnectedRecordsLookup = createHiddenField<ReactionRecord[] | undefined>(
+    'disconnected-records-lookup',
+    'node-reactions'
+);
+export const RegisteredFlag = createHiddenField<boolean>('registered-node', 'node-reactions');
 const { setAttribute } = Element.prototype;
 
 export function reactWhenConnected(element: Element, callback: ReactionCallback) {
     const reactionRecord: ReactionRecord = { element, callback, type: 1 };
 
-    const reactionRecords: ReactionRecord[] = getHiddenField(element, ConnectedRecordsLookup);
+    const reactionRecords = getHiddenField(element, ConnectedRecordsLookup);
     if (isUndefined(reactionRecords)) {
         setHiddenField(element, ConnectedRecordsLookup, [reactionRecord]);
         setHiddenField(element, RegisteredFlag, true);
@@ -29,7 +41,7 @@ export function reactWhenConnected(element: Element, callback: ReactionCallback)
 
 export function reactWhenDisconnected(element: Element, callback: ReactionCallback) {
     const reactionRecord: ReactionRecord = { element, callback, type: 2 };
-    const reactionRecords: ReactionRecord[] = getHiddenField(element, DisconnectedRecordsLookup);
+    const reactionRecords = getHiddenField(element, DisconnectedRecordsLookup);
     if (isUndefined(reactionRecords)) {
         setHiddenField(element, DisconnectedRecordsLookup, [reactionRecord]);
         setHiddenField(element, RegisteredFlag, true);

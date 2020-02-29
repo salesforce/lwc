@@ -32,7 +32,6 @@ import {
     firstChildGetter,
     textContentGetter,
     childNodesGetter,
-    isConnected,
 } from '../env/node';
 import {
     getNodeOwner,
