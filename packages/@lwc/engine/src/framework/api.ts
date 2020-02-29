@@ -64,6 +64,7 @@ import {
 import { Services, invokeServiceHook } from './services';
 import { markNodeFromVNode } from './restrictions';
 import { isComponentConstructor } from './def';
+import { attemptToRegisterTagName } from './local-registry';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -161,6 +162,7 @@ const ElementHook: Hooks = {
 const CustomElementHook: Hooks = {
     create: (vnode: VCustomElement) => {
         const { sel } = vnode;
+        attemptToRegisterTagName(sel);
         vnode.elm = document.createElement(sel);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
