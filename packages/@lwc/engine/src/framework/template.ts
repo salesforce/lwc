@@ -180,7 +180,11 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                     context.tplCache = create(null);
 
                     const { stylesheets, stylesheetTokens } = html;
-                    if (!isUndefined(stylesheetTokens) && !isUndefined(stylesheets) && stylesheets.length > 0) {
+                    if (
+                        !isUndefined(stylesheetTokens) &&
+                        !isUndefined(stylesheets) &&
+                        stylesheets.length > 0
+                    ) {
                         applyStyle(vm, stylesheets, stylesheetTokens);
                     }
 

@@ -6,7 +6,7 @@
  */
 import { ArrayMap, assert, getOwnPropertyNames, isNull, isObject, isUndefined } from '@lwc/shared';
 import { ComponentConstructor } from './component';
-import { createVM, getAssociatedVM, CreateVMInit, removeVM, appendRootVM, VMState } from './vm';
+import { createVM, getAssociatedVM, CreateVMInit, removeVM, appendVM, VMState } from './vm';
 import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
@@ -57,7 +57,7 @@ export function buildCustomElementConstructor(
                     `${vm} should be new or disconnected.`
                 );
             }
-            appendRootVM(vm);
+            appendVM(vm);
         }
         disconnectedCallback() {
             const vm = getAssociatedVM(this);

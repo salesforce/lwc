@@ -137,11 +137,6 @@ export function rerenderVM(vm: VM) {
     rehydrate(vm);
 }
 
-export function appendRootVM(vm: VM) {
-    runConnectedCallback(vm);
-    rehydrate(vm);
-}
-
 export function appendVM(vm: VM) {
     runConnectedCallback(vm);
     rehydrate(vm);
@@ -170,7 +165,6 @@ function reset(vm: VM) {
 }
 
 // this method is triggered by the removal of a element from the DOM.
-// note: The remove routine is same for rootVMs and inner VMs, hence no special removeRootVM
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(

@@ -9,7 +9,7 @@ import { reactWhenConnected, reactWhenDisconnected } from '@lwc/node-reactions';
 import {
     createVM,
     removeVM,
-    appendRootVM,
+    appendVM,
     getAssociatedVM,
     VMState,
     getAssociatedVMIfPresent,
@@ -36,7 +36,7 @@ function connectedHook(elm: HTMLElement) {
             `${vm} should be new or disconnected.`
         );
     }
-    appendRootVM(vm);
+    appendVM(vm);
     endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
 }
 
