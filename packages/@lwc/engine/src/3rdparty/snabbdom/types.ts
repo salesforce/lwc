@@ -57,14 +57,6 @@ export interface VCustomElement extends VElement {
     clonedElement?: undefined;
 }
 
-export interface VComment extends VNode {
-    sel: string;
-    children: undefined;
-    elm: Comment | undefined;
-    text: string;
-    key: undefined;
-}
-
 export interface VText extends VNode {
     sel: undefined;
     children: undefined;
