@@ -26,9 +26,8 @@ import {
     getAssociatedVMIfPresent,
 } from './vm';
 import { ComponentConstructor } from './component';
-import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
+import { isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { getComponentDef, setElementProto } from './def';
-import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
@@ -73,13 +72,6 @@ assign(Node.prototype, {
     },
 });
 
-type ShadowDomMode = 'open' | 'closed';
-
-interface CreateElementOptions {
-    is: ComponentConstructor;
-    mode?: ShadowDomMode;
-}
-
 /**
  * EXPERIMENTAL: This function is almost identical to document.createElement
  * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
@@ -93,7 +85,13 @@ interface CreateElementOptions {
  * If the value of `is` attribute is not a constructor,
  * then it throws a TypeError.
  */
-export function createElement(sel: string, options: CreateElementOptions): HTMLElement {
+export function createElement(
+    sel: string,
+    options: {
+        is: ComponentConstructor;
+        mode?: 'open' | 'closed';
+    }
+): HTMLElement {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(
@@ -108,8 +106,6 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
             `"createElement" function expects a "is" option with a valid component constructor.`
         );
     }
-
-    const mode = options.mode !== 'closed' ? 'open' : 'closed';
 
     // Create element with correct tagName
     const element = document.createElement(sel);
@@ -127,12 +123,12 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
 
-    if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(element, EmptyObject);
-    }
-    // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(element, Ctor, { mode, isRoot: true, owner: null });
-    // Handle insertion and removal from the DOM manually
+    createVM(element, Ctor, {
+        mode: options.mode !== 'closed' ? 'open' : 'closed',
+        isRoot: true,
+        owner: null,
+    });
+
     setHiddenField(element, ConnectingSlot, () => {
         const vm = getAssociatedVM(element);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
@@ -143,9 +139,11 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         appendRootVM(vm);
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
+
     setHiddenField(element, DisconnectingSlot, () => {
         const vm = getAssociatedVM(element);
         removeRootVM(vm);
     });
+
     return element;
 }

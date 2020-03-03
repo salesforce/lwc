@@ -7,11 +7,9 @@
 import { ArrayMap, getOwnPropertyNames, isNull, isObject, isUndefined } from '@lwc/shared';
 import { ComponentConstructor } from './component';
 import { createVM, appendRootVM, removeRootVM, getAssociatedVM, CreateVMInit } from './vm';
-import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { HTMLElementConstructor } from './base-bridge-element';
-import { patchCustomElementWithRestrictions } from './restrictions';
 
 /**
  * This function builds a Web Component class from a LWC constructor
@@ -45,9 +43,6 @@ export function buildCustomElementConstructor(
         constructor() {
             super();
             createVM(this, Ctor, normalizedOptions);
-            if (process.env.NODE_ENV !== 'production') {
-                patchCustomElementWithRestrictions(this, EmptyObject);
-            }
         }
         connectedCallback() {
             const vm = getAssociatedVM(this);

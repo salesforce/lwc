@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
-import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
+import { EmptyArray, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
     createVM,
@@ -26,12 +26,7 @@ import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
 import modContext from './modules/context';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
-import {
-    patchCustomElementWithRestrictions,
-    patchElementWithRestrictions,
-    unlockDomMutation,
-    lockDomMutation,
-} from './restrictions';
+import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentDef, setElementProto } from './def';
 
 const noop = () => void 0;
@@ -197,9 +192,6 @@ export function createViewModelHook(vnode: VCustomElement) {
             isArray(vnode.children),
             `Invalid vnode for a custom element, it must have children defined.`
         );
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(elm, EmptyObject);
     }
 }
 
