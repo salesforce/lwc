@@ -144,8 +144,17 @@ export function rerenderVM(vm: VM) {
 }
 
 export function appendRootVM(vm: VM) {
+    startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+
+    // usually means moving the element from one place to another, which is observable via life-cycle hooks
+    if (vm.state === VMState.connected) {
+        removeRootVM(vm);
+    }
+
     runConnectedCallback(vm);
     rehydrate(vm);
+
+    endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
 }
 
 export function appendVM(vm: VM) {

@@ -22,13 +22,11 @@ import {
     removeRootVM,
     appendRootVM,
     getAssociatedVM,
-    VMState,
     getAssociatedVMIfPresent,
 } from './vm';
 import { ComponentConstructor } from './component';
 import { isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { getComponentDef, setElementProto } from './def';
-import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
 type NodeSlot = () => {};
@@ -131,13 +129,7 @@ export function createElement(
 
     setHiddenField(element, ConnectingSlot, () => {
         const vm = getAssociatedVM(element);
-        startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-        if (vm.state === VMState.connected) {
-            // usually means moving the element from one place to another, which is observable via life-cycle hooks
-            removeRootVM(vm);
-        }
         appendRootVM(vm);
-        endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
 
     setHiddenField(element, DisconnectingSlot, () => {
