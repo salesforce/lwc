@@ -127,46 +127,44 @@
      shadowAttribute: "x-foo_foo"
    });
 
-    var Foo =
-      /*#__PURE__*/
-      (function(_LightningElement) {
-        _inherits(Foo, _LightningElement);
+    var Foo = /*#__PURE__*/(function(_LightningElement) {
+      _inherits(Foo, _LightningElement);
 
-        function Foo() {
-          var _getPrototypeOf2, _getPrototypeOf3, _call;
+      function Foo() {
+        var _getPrototypeOf2, _getPrototypeOf3, _call;
 
-          var _this;
+        var _this;
 
-          _classCallCheck(this, Foo);
+        _classCallCheck(this, Foo);
 
-          for (
-            var _len = arguments.length, args = new Array(_len), _key = 0;
-            _key < _len;
-            _key++
-          ) {
-            __setKey(args, _key, arguments[_key]);
-          }
-
-          _this = _possibleConstructorReturn(
-            this,
-            __callKey2(
-              ((_getPrototypeOf3 = _getPrototypeOf2 = _getPrototypeOf(Foo)),
-              (_call = _getPrototypeOf3._ES5ProxyType
-                ? _getPrototypeOf3.get("call")
-                : _getPrototypeOf3.call)),
-              "apply",
-              _getPrototypeOf2,
-              __concat([this], args)
-            )
-          );
-
-          __setKey(_this, "x", void 0);
-
-          return _this;
+        for (
+          var _len = arguments.length, args = new Array(_len), _key = 0;
+          _key < _len;
+          _key++
+        ) {
+          __setKey(args, _key, arguments[_key]);
         }
 
-        return Foo;
-      })(lwc.LightningElement);
+        _this = _possibleConstructorReturn(
+          this,
+          __callKey2(
+            ((_getPrototypeOf3 = _getPrototypeOf2 = _getPrototypeOf(Foo)),
+            (_call = _getPrototypeOf3._ES5ProxyType
+              ? _getPrototypeOf3.get("call")
+              : _getPrototypeOf3.call)),
+            "apply",
+            _getPrototypeOf2,
+            __concat([this], args)
+          )
+        );
+
+        __setKey(_this, "x", void 0);
+
+        return _this;
+      }
+
+      return Foo;
+    })(lwc.LightningElement);
 
     lwc.registerDecorators(Foo, {
       publicProps: {
@@ -218,28 +216,26 @@
       shadowAttribute: "x-app_app"
     });
 
-    var App =
-      /*#__PURE__*/
-      (function(_LightningElement) {
-        _inherits(App, _LightningElement);
+    var App = /*#__PURE__*/(function(_LightningElement) {
+      _inherits(App, _LightningElement);
 
-        function App() {
-          var _this;
+      function App() {
+        var _this;
 
-          _classCallCheck(this, App);
+        _classCallCheck(this, App);
 
-          _this = _possibleConstructorReturn(
-            this,
-            __callKey1(_getPrototypeOf(App), "call", this)
-          );
+        _this = _possibleConstructorReturn(
+          this,
+          __callKey1(_getPrototypeOf(App), "call", this)
+        );
 
-          __setKey(_this, "list", []);
+        __setKey(_this, "list", []);
 
-          return _this;
-        }
+        return _this;
+      }
 
-        return App;
-      })(lwc.LightningElement);
+      return App;
+    })(lwc.LightningElement);
 
     var App$1 = lwc.registerComponent(App, {
       tmpl: _tmpl$1
