@@ -43,31 +43,4 @@ export function addCallbackToNextTick(callback: Callback) {
     ArrayPush.call(nextTickCallbackQueue, callback);
 }
 
-interface CircularModuleDependency {
-    <T>(): T;
-    readonly __circular__?: any;
-}
-
-export function isCircularModuleDependency(value: any): value is CircularModuleDependency {
-    return hasOwnProperty.call(value, '__circular__');
-}
-
-/**
- * When LWC is used in the context of an Aura application, the compiler produces AMD
- * modules, that doesn't resolve properly circular dependencies between modules. In order
- * to circumvent this issue, the module loader returns a factory with a symbol attached
- * to it.
- *
- * This method returns the resolved value if it received a factory as argument. Otherwise
- * it returns the original value.
- */
-export function resolveCircularModuleDependency(fn: CircularModuleDependency): any {
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isFunction(fn)) {
-            throw new TypeError(`Circular module dependency must be a function.`);
-        }
-    }
-    return fn();
-}
-
 export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');

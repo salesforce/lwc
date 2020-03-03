@@ -25,7 +25,6 @@ import {
     getAssociatedVMIfPresent,
 } from './vm';
 import { ComponentConstructor } from './component';
-import { isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { getComponentDef, setElementProto } from './def';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
@@ -98,15 +97,15 @@ export function createElement(
         );
     }
 
-    let Ctor = options.is;
+    const Ctor = options.is;
     if (!isFunction(Ctor)) {
         throw new TypeError(
             `"createElement" function expects a "is" option with a valid component constructor.`
         );
     }
 
-    // Create element with correct tagName
     const element = document.createElement(sel);
+
     if (!isUndefined(getAssociatedVMIfPresent(element))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
@@ -114,14 +113,10 @@ export function createElement(
         return element;
     }
 
-    if (isCircularModuleDependency(Ctor)) {
-        Ctor = resolveCircularModuleDependency(Ctor);
-    }
-
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
 
-    createVM(element, Ctor, {
+    createVM(element, def.ctor, {
         mode: options.mode !== 'closed' ? 'open' : 'closed',
         isRoot: true,
         owner: null,

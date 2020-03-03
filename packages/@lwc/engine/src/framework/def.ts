@@ -26,9 +26,9 @@ import {
     isNull,
     isUndefined,
     setPrototypeOf,
+    hasOwnProperty,
 } from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
-import { resolveCircularModuleDependency, isCircularModuleDependency } from './utils';
 import {
     ComponentConstructor,
     ErrorCallback,
@@ -68,6 +68,28 @@ export interface ComponentDef extends DecoratorMeta {
 }
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
+
+/**
+ * When LWC is used in the context of an Aura application, the compiler produces AMD
+ * modules, that doesn't resolve properly circular dependencies between modules. In order
+ * to circumvent this issue, the module loader returns a factory with a symbol attached
+ * to it.
+ *
+ * This method returns the resolved value if it received a factory as argument. Otherwise
+ * it returns the original value.
+ */
+function resolveCircularModuleDependency(fn: any): any {
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isFunction(fn)) {
+            throw new TypeError(`Circular module dependency must be a function.`);
+        }
+    }
+    return fn();
+}
+
+function isCircularModuleDependency(value: any): boolean {
+    return hasOwnProperty.call(value, '__circular__');
+}
 
 function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
@@ -236,15 +258,19 @@ export function isComponentConstructor(ctor: any): ctor is ComponentConstructor 
  * component metadata. This API is subject to change or being removed.
  */
 export function getComponentDef(Ctor: any, subclassComponentName?: string): ComponentDef {
+    if (!isComponentConstructor(Ctor)) {
+        throw new TypeError(
+            `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`
+        );
+    }
+
+    if (isCircularModuleDependency(Ctor)) {
+        Ctor = resolveCircularModuleDependency(Ctor);
+    }
+
     let def = CtorToDefMap.get(Ctor);
 
     if (isUndefined(def)) {
-        if (!isComponentConstructor(Ctor)) {
-            throw new TypeError(
-                `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`
-            );
-        }
-
         let meta = getComponentRegisteredMeta(Ctor);
         if (isUndefined(meta)) {
             // TODO [#1295]: remove this workaround after refactoring tests
