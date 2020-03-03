@@ -84,9 +84,7 @@ var foo = "bar";
 __callKey1(console, "log", foo);
 } // babel-plugin-transform-es2015-classes
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-classes/test/fixtures/loose/super-class/actual.js
-var Test =
-/*#__PURE__*/
-function (_Foo) {
+var Test = /*#__PURE__*/function (_Foo) {
 _inherits(Test, _Foo);
 function Test() {
 _classCallCheck(this, Test);
@@ -161,18 +159,14 @@ var string = "foo💩bar";
 var match = __callKey1(string, "match", /foo((?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))bar/);
 __callKey3(assert, "notEqual", string, match, ts); // babel-plugin-transform-async-to-generator
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-async-to-generator/test/fixtures/async-to-generator/async/actual.js
-var Foo =
-/*#__PURE__*/
-function () {
+var Foo = /*#__PURE__*/function () {
 function Foo() {
 _classCallCheck(this, Foo);
 }
 _createClass(Foo, [{
 key: "foo",
 value: function () {
-var _foo = _asyncToGenerator(
-/*#__PURE__*/
-__callKey1(_regeneratorRuntime, "mark", function _callee() {
+var _foo = _asyncToGenerator( /*#__PURE__*/__callKey1(_regeneratorRuntime, "mark", function _callee() {
 var wat;
 return __callKey3(_regeneratorRuntime, "wrap", function _callee$(_context) {
 while (1) {
