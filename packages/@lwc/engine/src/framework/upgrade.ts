@@ -17,13 +17,7 @@ import {
     getHiddenField,
     setHiddenField,
 } from '@lwc/shared';
-import {
-    createVM,
-    removeRootVM,
-    appendRootVM,
-    getAssociatedVM,
-    getAssociatedVMIfPresent,
-} from './vm';
+import { createVM, removeRootVM, appendRootVM, getAssociatedVMIfPresent } from './vm';
 import { ComponentConstructor } from './component';
 import { getComponentDef, setElementProto } from './def';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
@@ -46,8 +40,8 @@ function callNodeSlot(node: Node, slot: HiddenField<NodeSlot>): Node {
     return node; // for convenience
 }
 
-// monkey patching Node methods to be able to detect the insertions and removal of
-// root elements created via createElement.
+// Monkey patching Node methods to be able to detect the insertions and removal of root elements
+// created via createElement.
 assign(Node.prototype, {
     appendChild(newChild: Node): Node {
         const appendedNode = appendChild.call(this, newChild);
@@ -70,17 +64,15 @@ assign(Node.prototype, {
 });
 
 /**
- * EXPERIMENTAL: This function is almost identical to document.createElement
- * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
- * with the slightly difference that in the options, you can pass the `is`
- * property set to a Constructor instead of just a string value. The intent
- * is to allow the creation of an element controlled by LWC without having
- * to register the element as a custom element. E.g.:
+ * EXPERIMENTAL: This function is almost identical to document.createElement with the slightly
+ * difference that in the options, you can pass the `is` property set to a Constructor instead of
+ * just a string value. The intent is to allow the creation of an element controlled by LWC without
+ * having to register the element as a custom element.
  *
+ * @example
+ * ```
  * const el = createElement('x-foo', { is: FooCtor });
- *
- * If the value of `is` attribute is not a constructor,
- * then it throws a TypeError.
+ * ```
  */
 export function createElement(
     sel: string,
@@ -106,31 +98,23 @@ export function createElement(
 
     const element = document.createElement(sel);
 
+    // There is a possibility that a custom element is registered under tagName, in which case, the
+    // initialization is already carry on, and there is nothing else to do here.
     if (!isUndefined(getAssociatedVMIfPresent(element))) {
-        // There is a possibility that a custom element is registered under tagName,
-        // in which case, the initialization is already carry on, and there is nothing else
-        // to do here.
         return element;
     }
 
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
 
-    createVM(element, def.ctor, {
+    const vm = createVM(element, def.ctor, {
         mode: options.mode !== 'closed' ? 'open' : 'closed',
         isRoot: true,
         owner: null,
     });
 
-    setHiddenField(element, ConnectingSlot, () => {
-        const vm = getAssociatedVM(element);
-        appendRootVM(vm);
-    });
-
-    setHiddenField(element, DisconnectingSlot, () => {
-        const vm = getAssociatedVM(element);
-        removeRootVM(vm);
-    });
+    setHiddenField(element, ConnectingSlot, () => appendRootVM(vm));
+    setHiddenField(element, DisconnectingSlot, () => removeRootVM(vm));
 
     return element;
 }

@@ -204,7 +204,7 @@ export interface CreateVMInit {
     owner: VM | null;
 }
 
-export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: CreateVMInit) {
+export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: CreateVMInit): VM {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             elm instanceof HTMLElement,
@@ -261,6 +261,8 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
     }
+
+    return initializedVm;
 }
 
 function assertIsVM(obj: any): asserts obj is VM {
