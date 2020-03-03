@@ -32,7 +32,7 @@ export function buildCustomElementConstructor(
 ): HTMLElementConstructor {
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
     const mode =
-        !isUndefined(options) && !isUndefined(options.mode) && options.mode !== 'closed'
+        isUndefined(options) || isUndefined(options.mode) || options.mode !== 'closed'
             ? 'open'
             : 'closed';
 
