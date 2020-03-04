@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
+import { assert, isUndefined } from '@lwc/shared';
 import {
     CONTEXT_ID,
     CONTEXT_CONNECTED,
@@ -168,36 +168,42 @@ export class WireEventTarget {
 
                 // setup listeners for all reactive parameters
                 const configContext = this._context[CONTEXT_ID][CONTEXT_UPDATED];
-                const reactiveParametersGroupByHead = new Map<string, Set<ReactiveParameter>>();
+                const reactiveParametersGroupByHead: Record<string, Array<ReactiveParameter>> = {};
+
                 reactiveKeys.forEach(key => {
                     const reactiveParameter = buildReactiveParameter(reactives[key]);
                     const reactiveParameterHead = reactiveParameter.head;
                     let configListenerMetadatas = configContext.listeners[reactiveParameterHead];
 
-                    if (!reactiveParametersGroupByHead.has(reactiveParameterHead)) {
-                        reactiveParametersGroupByHead.set(
-                            reactiveParameterHead,
-                            new Set<ReactiveParameter>()
-                        );
+                    let reactiveParametersWithSameHead =
+                        reactiveParametersGroupByHead[reactiveParameterHead];
+
+                    if (isUndefined(reactiveParametersWithSameHead)) {
+                        reactiveParametersWithSameHead = [];
+                        reactiveParametersGroupByHead[
+                            reactiveParameterHead
+                        ] = reactiveParametersWithSameHead;
                     }
-                    // reactiveParameter.head is set in the line above.
-                    const reactiveParametersWithSameHead = reactiveParametersGroupByHead.get(
-                        reactiveParameterHead
-                    )!;
-                    reactiveParametersWithSameHead.add(reactiveParameter);
+
+                    reactiveParametersWithSameHead.push(reactiveParameter);
 
                     if (!configListenerMetadatas) {
                         configListenerMetadatas = [configListenerMetadata];
                         configContext.listeners[reactiveParameterHead] = configListenerMetadatas;
-                        installTrap(this._cmp, reactiveParametersWithSameHead, configContext);
+                        installTrap(
+                            this._cmp,
+                            reactiveParameterHead,
+                            reactiveParametersWithSameHead,
+                            configContext
+                        );
                     } else {
                         configListenerMetadatas.push(configListenerMetadata);
                     }
                 });
 
                 // enqueue to pickup default values
-                reactiveParametersGroupByHead.forEach(reactiveParametersWithSameHead => {
-                    updated(this._cmp, reactiveParametersWithSameHead, configContext);
+                Object.keys(reactiveParametersGroupByHead).forEach(head => {
+                    updated(this._cmp, reactiveParametersGroupByHead[head], configContext);
                 });
 
                 break;
