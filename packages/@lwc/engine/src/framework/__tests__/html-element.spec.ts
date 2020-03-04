@@ -37,116 +37,12 @@ describe('html-element', () => {
 
             expect(userDefinedTabIndexValue).toBe('0');
         }),
-            // TODO [#1257]: This test log multiple errors. We should fix this before migrating to expect().toLogError()
-            it.skip('should log console error when user land code changes attribute via querySelector', () => {
-                jest.spyOn(assertLogger, 'logError');
-
-                class Child extends LightningElement {}
-
-                const html = compileTemplate(
-                    `
-                <template>
-                    <x-child title="child title"></x-child>
-                </template>
-            `,
-                    {
-                        modules: {
-                            'x-child': Child,
-                        },
-                    }
-                );
-                class Parent extends LightningElement {
-                    render() {
-                        return html;
-                    }
-                }
-
-                const parentElm = createElement('x-parent', { is: Parent });
-                document.body.appendChild(parentElm);
-
-                const childElm = parentElm.shadowRoot.querySelector('x-child');
-                childElm.setAttribute('title', 'value from parent');
-
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
+            it('should not throw when accessing attribute in root elements', () => {
+                class Parent extends LightningElement {}
+                const elm = createElement('x-foo', { is: Parent });
+                document.body.appendChild(elm);
+                elm.setAttribute('tabindex', 1);
             });
-
-        // TODO [#1257]: This test log multiple errors. We should fix this before migrating to expect().toLogError()
-        it.skip('should log console error when user land code removes attribute via querySelector', () => {
-            jest.spyOn(assertLogger, 'logError');
-
-            class Child extends LightningElement {}
-
-            const html = compileTemplate(
-                `
-                <template>
-                    <x-child title="child title"></x-child>
-                </template>
-            `,
-                {
-                    modules: {
-                        'x-child': Child,
-                    },
-                }
-            );
-            class Parent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-
-            const parentElm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(parentElm);
-
-            const childElm = parentElm.shadowRoot.querySelector('x-child');
-            childElm.removeAttribute('title');
-
-            expect(assertLogger.logError).toBeCalled();
-            assertLogger.logError.mockRestore();
-        });
-
-        // TODO [#1257]: This test log multiple errors. We should fix this before migrating to expect().toLogError()
-        it.skip('should log error message when attribute is set via elm.setAttribute if reflective property is defined', () => {
-            jest.spyOn(assertLogger, 'logError');
-
-            class Child extends LightningElement {}
-
-            const html = compileTemplate(
-                `
-                <template>
-                    <x-child title="child title"></x-child>
-                </template>
-            `,
-                {
-                    modules: {
-                        'x-child': Child,
-                    },
-                }
-            );
-            class Parent extends LightningElement {
-                render() {
-                    return html;
-                }
-                renderedCallback() {
-                    this.template.querySelector('x-child').setAttribute('tabindex', 0);
-                }
-            }
-
-            const elm = createElement('x-foo', { is: Parent });
-            document.body.appendChild(elm);
-
-            return Promise.resolve().then(() => {
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            });
-        });
-
-        it('should not throw when accessing attribute in root elements', () => {
-            class Parent extends LightningElement {}
-            const elm = createElement('x-foo', { is: Parent });
-            document.body.appendChild(elm);
-            elm.setAttribute('tabindex', 1);
-        });
 
         it('should delete existing attribute prior rendering', () => {
             const def = class MyComponent extends LightningElement {};
@@ -1322,88 +1218,20 @@ describe('html-element', () => {
 
             expect(userDefinedTabIndexValue).toBe('0');
         }),
-            // TODO [#1257]: This test log multiple errors. We should fix this before migrating to expect().toLogError()
-            it.skip('should log console error when user land code changes attribute via querySelector', () => {
-                jest.spyOn(assertLogger, 'logError');
-
-                class Child extends LightningElement {}
-
-                const html = compileTemplate(
-                    `
-                <template>
-                    <x-child title="child title"></x-child>
-                </template>
-            `,
-                    {
-                        modules: {
-                            'x-child': Child,
-                        },
+            it('should log console error accessing props in constructor', () => {
+                class MyComponent extends LightningElement {
+                    constructor() {
+                        super();
+                        this.a = this.title;
                     }
+                }
+
+                expect(() => {
+                    createElement('prop-setter-title', { is: MyComponent });
+                }).toLogError(
+                    "`HTMLBridgeElement` constructor can't read the value of property `title` because the owner component hasn't set the value yet. Instead, use the `HTMLBridgeElement` constructor to set a default value for the property."
                 );
-                class Parent extends LightningElement {
-                    render() {
-                        return html;
-                    }
-                }
-
-                const parentElm = createElement('x-parent', { is: Parent });
-                document.body.appendChild(parentElm);
-
-                const childElm = parentElm.shadowRoot.querySelector('x-child');
-                childElm.setAttribute('title', 'value from parent');
-
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
             });
-
-        // TODO [#1257]: This test log multiple errors. We should fix this before migrating to expect().toLogError()
-        it.skip('should log console error when user land code removes attribute via querySelector', () => {
-            jest.spyOn(assertLogger, 'logError');
-
-            class Child extends LightningElement {}
-
-            const html = compileTemplate(
-                `
-                <template>
-                    <x-child title="child title"></x-child>
-                </template>
-            `,
-                {
-                    modules: {
-                        'x-child': Child,
-                    },
-                }
-            );
-            class Parent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-
-            const parentElm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(parentElm);
-
-            const childElm = parentElm.shadowRoot.querySelector('x-child');
-            childElm.removeAttribute('title');
-
-            expect(assertLogger.logError).toBeCalled();
-            assertLogger.logError.mockRestore();
-        });
-
-        it('should log console error accessing props in constructor', () => {
-            class MyComponent extends LightningElement {
-                constructor() {
-                    super();
-                    this.a = this.title;
-                }
-            }
-
-            expect(() => {
-                createElement('prop-setter-title', { is: MyComponent });
-            }).toLogError(
-                "`HTMLBridgeElement` constructor can't read the value of property `title` because the owner component hasn't set the value yet. Instead, use the `HTMLBridgeElement` constructor to set a default value for the property."
-            );
-        });
 
         it('should not log error message when arbitrary attribute is set via elm.setAttribute', () => {
             jest.spyOn(assertLogger, 'logError');
