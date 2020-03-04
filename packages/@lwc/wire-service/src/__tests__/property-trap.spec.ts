@@ -56,17 +56,19 @@ describe('installTrap', () => {
             prop1: '',
         },
     };
-    const reactiveParameter: ReactiveParameter = {
-        reference: 'prop1',
-        head: 'prop1',
-    };
+    const reactiveParametersGroupByHead: Array<ReactiveParameter> = [
+        {
+            reference: 'prop1',
+            head: 'prop1',
+        },
+    ];
 
     it('defaults to original value when setter installed', () => {
         class Target {
             prop1 = 'initial';
         }
         const cmp = new Target();
-        installTrap(cmp, reactiveParameter, context);
+        installTrap(cmp, 'prop1', reactiveParametersGroupByHead, context);
         expect(cmp.prop1).toBe('initial');
     });
 
@@ -76,7 +78,7 @@ describe('installTrap', () => {
             prop1;
         }
         const cmp = new Target();
-        installTrap(cmp, reactiveParameter, context);
+        installTrap(cmp, 'prop1', reactiveParametersGroupByHead, context);
         cmp.prop1 = expected;
         expect(cmp.prop1).toBe(expected);
     });
@@ -89,7 +91,7 @@ describe('installTrap', () => {
         }
         const original = Object.getOwnPropertyDescriptor(Target.prototype, 'prop1');
         const cmp = new Target();
-        installTrap(cmp, reactiveParameter, context);
+        installTrap(cmp, 'prop1', reactiveParametersGroupByHead, context);
         const descriptor = Object.getOwnPropertyDescriptor(cmp, 'prop1');
         expect(descriptor!.set).not.toBe(original!.set);
     });
@@ -106,17 +108,19 @@ describe('installTrap', () => {
             }
         }
         const cmp = new Target();
-        installTrap(cmp, reactiveParameter, context);
+        installTrap(cmp, 'prop1', reactiveParametersGroupByHead, context);
         cmp.prop1 = expected;
         expect(setter).toHaveBeenCalledTimes(1);
         expect(setter).toHaveBeenCalledWith(expected);
     });
 
     it('installs setter on cmp only for reactiveParameter.root', () => {
-        const dotNotationReactiveParameter: ReactiveParameter = {
-            reference: 'prop1.x.y',
-            head: 'prop1',
-        };
+        const dotNotationReactiveParameters: Array<ReactiveParameter> = [
+            {
+                reference: 'prop1.x.y',
+                head: 'prop1',
+            },
+        ];
         class Target {
             set prop1(value) {
                 /**/
@@ -124,7 +128,7 @@ describe('installTrap', () => {
         }
         const original = Object.getOwnPropertyDescriptor(Target.prototype, 'prop1');
         const cmp = new Target();
-        installTrap(cmp, dotNotationReactiveParameter, context);
+        installTrap(cmp, 'prop1', dotNotationReactiveParameters, context);
         const descriptor = Object.getOwnPropertyDescriptor(cmp, 'prop1');
         expect(descriptor!.set).not.toBe(original!.set);
         expect(Object.getOwnPropertyDescriptor(Target.prototype, 'prop1.x.y')).toBeUndefined();
@@ -132,10 +136,12 @@ describe('installTrap', () => {
 });
 
 describe('invokeConfigListeners', () => {
-    const reactiveParameter: ReactiveParameter = {
-        reference: 'prop1',
-        head: 'prop1',
-    };
+    const reactiveParametersGroupByHead: Array<ReactiveParameter> = [
+        {
+            reference: 'prop1',
+            head: 'prop1',
+        },
+    ];
 
     it('invokes listener with reactive parameter default value', () => {
         const expected = 'expected';
@@ -152,8 +158,8 @@ describe('invokeConfigListeners', () => {
             prop1 = expected;
         }
         const cmp = new Target();
-        installTrap(cmp, reactiveParameter, context);
-        updated(cmp, reactiveParameter, context);
+        installTrap(cmp, 'prop1', reactiveParametersGroupByHead, context);
+        updated(cmp, reactiveParametersGroupByHead, context);
         return Promise.resolve().then(() => {
             expect(listener).toHaveBeenCalledTimes(1);
             expect(listener.mock.calls[0][0]).toEqual({ param1: expected });
@@ -173,8 +179,8 @@ describe('invokeConfigListeners', () => {
             prop1;
         }
         const cmp = new Target();
-        installTrap(cmp, reactiveParameter, context);
-        updated(cmp, reactiveParameter, context);
+        installTrap(cmp, 'prop1', reactiveParametersGroupByHead, context);
+        updated(cmp, reactiveParametersGroupByHead, context);
         cmp.prop1 = expected;
         return Promise.resolve().then(() => {
             expect(listener).toHaveBeenCalledTimes(1);
@@ -197,7 +203,7 @@ describe('invokeConfigListeners', () => {
             prop1;
         }
         const cmp = new Target();
-        installTrap(cmp, reactiveParameter, context);
+        installTrap(cmp, 'prop1', reactiveParametersGroupByHead, context);
         cmp.prop1 = expected;
         return Promise.resolve().then(() => {
             expect(listener).toHaveBeenCalledTimes(0);
@@ -224,7 +230,7 @@ describe('invokeConfigListeners', () => {
             }
         }
         const cmp = new Target();
-        installTrap(cmp, reactiveParameter, context);
+        installTrap(cmp, 'prop1', reactiveParametersGroupByHead, context);
         cmp.prop1 = 'unexpected';
         return Promise.resolve().then(() => {
             expect(listener).toHaveBeenCalledTimes(1);

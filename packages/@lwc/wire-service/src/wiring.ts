@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
+import { assert, isUndefined } from '@lwc/shared';
 import {
     CONTEXT_ID,
     CONTEXT_CONNECTED,
@@ -168,18 +168,42 @@ export class WireEventTarget {
 
                 // setup listeners for all reactive parameters
                 const configContext = this._context[CONTEXT_ID][CONTEXT_UPDATED];
+                const reactiveParametersGroupByHead: Record<string, Array<ReactiveParameter>> = {};
+
                 reactiveKeys.forEach(key => {
                     const reactiveParameter = buildReactiveParameter(reactives[key]);
-                    let configListenerMetadatas = configContext.listeners[reactiveParameter.head];
+                    const reactiveParameterHead = reactiveParameter.head;
+                    let configListenerMetadatas = configContext.listeners[reactiveParameterHead];
+
+                    let reactiveParametersWithSameHead =
+                        reactiveParametersGroupByHead[reactiveParameterHead];
+
+                    if (isUndefined(reactiveParametersWithSameHead)) {
+                        reactiveParametersWithSameHead = [];
+                        reactiveParametersGroupByHead[
+                            reactiveParameterHead
+                        ] = reactiveParametersWithSameHead;
+                    }
+
+                    reactiveParametersWithSameHead.push(reactiveParameter);
+
                     if (!configListenerMetadatas) {
                         configListenerMetadatas = [configListenerMetadata];
-                        configContext.listeners[reactiveParameter.head] = configListenerMetadatas;
-                        installTrap(this._cmp, reactiveParameter, configContext);
+                        configContext.listeners[reactiveParameterHead] = configListenerMetadatas;
+                        installTrap(
+                            this._cmp,
+                            reactiveParameterHead,
+                            reactiveParametersWithSameHead,
+                            configContext
+                        );
                     } else {
                         configListenerMetadatas.push(configListenerMetadata);
                     }
-                    // enqueue to pickup default values
-                    updated(this._cmp, reactiveParameter, configContext);
+                });
+
+                // enqueue to pickup default values
+                Object.keys(reactiveParametersGroupByHead).forEach(head => {
+                    updated(this._cmp, reactiveParametersGroupByHead[head], configContext);
                 });
 
                 break;
