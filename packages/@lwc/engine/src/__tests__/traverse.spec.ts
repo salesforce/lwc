@@ -8,7 +8,7 @@ import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../';
 
 describe('#childNodes', () => {
-    it.skip('should always return an empty array for slots not rendering default content', () => {
+    it('should always return an empty array for slots not rendering default content', () => {
         const hasSlotTmpl = compileTemplate(`
             <template>
                 <slot>
@@ -27,6 +27,7 @@ describe('#childNodes', () => {
             <template>
                 <div>
                     <x-child-node-with-slot>
+                        <p></p>
                         <p></p>
                     </x-child-node-with-slot>
                 </div>
@@ -49,7 +50,9 @@ describe('#childNodes', () => {
         const slot = elm.shadowRoot
             .querySelector('x-child-node-with-slot')
             .shadowRoot.querySelector('slot');
-        expect(slot.childNodes).toHaveLength(0);
+        // Per spec, slot elements will retain default content
+        expect(slot.childNodes).toHaveLength(1);
+        expect(slot.assignedNodes()).toHaveLength(2);
     });
 
     it('should return correct elements for slots rendering default content', () => {
