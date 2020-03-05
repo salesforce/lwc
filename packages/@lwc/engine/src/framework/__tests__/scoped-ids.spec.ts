@@ -28,7 +28,7 @@ describe('scoped-ids', () => {
             }
         );
 
-        describe.skip('custom elements', () => {
+        describe('custom elements', () => {
             it('should render expected id attribute value when its value is set to `undefined`', () => {
                 class MyComponent extends LightningElement {
                     get identifier() {
@@ -42,9 +42,11 @@ describe('scoped-ids', () => {
                 const elm = createElement('x-foo', { is: MyComponent });
                 expect(() => {
                     document.body.appendChild(elm);
-                }).toLogError('Invalid id value "undefined". Expected a non-empty string.');
+                }).toLogError(
+                    'Invalid id value "undefined". The id attribute must contain a non-empty string.'
+                );
                 const child = elm.shadowRoot.querySelector('x-child');
-                expect(child.getAttribute('id')).toEqual('undefined');
+                expect(child.getAttribute('id')).toEqual(null);
             });
 
             it('should render the id attribute as a boolean attribute when its value is set to an empty string', () => {
@@ -60,9 +62,11 @@ describe('scoped-ids', () => {
                 const elm = createElement('x-foo', { is: MyComponent });
                 expect(() => {
                     document.body.appendChild(elm);
-                }).toLogError('Invalid id value "". Expected a non-empty string.');
+                }).toLogError(
+                    'Invalid id value "". The id attribute must contain a non-empty string.'
+                );
                 const child = elm.shadowRoot.querySelector('x-child');
-                expect(child.getAttribute('id')).toEqual('');
+                expect(child.getAttribute('id')).toEqual(null);
             });
         });
 
