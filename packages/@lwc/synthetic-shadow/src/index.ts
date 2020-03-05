@@ -19,7 +19,6 @@ import './polyfills/HTMLSlotElement/main';
 import './polyfills/document-shadow/main';
 import './polyfills/shadow-root/main';
 import './polyfills/event-listener/main';
-import './polyfills/click-event-composed/main'; // must come before event-composed
 import './polyfills/event-composed/main';
 import './polyfills/custom-event-composed/main';
 import './polyfills/focus-event-composed/main';
