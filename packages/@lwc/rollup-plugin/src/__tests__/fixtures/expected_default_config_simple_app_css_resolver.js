@@ -2,7 +2,7 @@
     'use strict';
 
    varResolver =
-     varResolver && varResolver.hasOwnProperty("default")
+     varResolver && Object.prototype.hasOwnProperty.call(varResolver, "default")
        ? varResolver["default"]
        : varResolver;
 
