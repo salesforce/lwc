@@ -676,8 +676,8 @@ export function allocateInSlot(vm: VM, children: VNodes) {
             const oldVNode = aChildren[i];
             if (!isNull(oldVNode) && !isUndefined(oldVNode.elm)) {
                 const newVNode = children[i];
-                ArrayPush.call(slottedNewChildren, oldVNode);
-                ArrayPush.call(slottedOldChildren, newVNode);
+                ArrayPush.call(slottedOldChildren, oldVNode);
+                ArrayPush.call(slottedNewChildren, newVNode);
             }
         }
         updateStaticChildren(vm.elm, slottedOldChildren, slottedNewChildren);
