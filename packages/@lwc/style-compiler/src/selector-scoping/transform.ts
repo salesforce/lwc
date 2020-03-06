@@ -96,7 +96,7 @@ function scopeSelector(selector: Selector) {
  */
 function transformHost(selector: Selector) {
     // Locate the first :host pseudo-class
-    const hostNode = findNode(selector, isHostPseudoClass) as Pseudo | undefined;
+    const hostNode = findNode(selector, isHostPseudoClass);
 
     if (hostNode) {
         // Store the original location of the :host in the selector
@@ -112,13 +112,13 @@ function transformHost(selector: Selector) {
 
         // Generate a unique contextualized version of the selector for each selector pass as argument
         // to the :host
-        const contextualSelectors = hostNode.nodes.map((contextSelectors: Selector) => {
+        const contextualSelectors = hostNode.nodes.map(contextSelectors => {
             const clonedSelector = selector.clone({}) as Selector;
             const clonedHostNode = clonedSelector.at(hostIndex) as Tag;
 
             // Add to the compound selector previously containing the :host pseudo class
             // the contextual selectors.
-            contextSelectors.each(node => {
+            (contextSelectors as Selector).each(node => {
                 trimNodeWhitespaces(node);
                 clonedSelector.insertAfter(clonedHostNode, node);
             });
@@ -134,13 +134,13 @@ function transformHost(selector: Selector) {
 export default function transformSelector(root: Root, transformConfig: SelectorScopingConfig) {
     validateSelectors(root);
 
-    root.each((selector: Selector) => {
-        scopeSelector(selector);
+    root.each(selector => {
+        scopeSelector(selector as Selector);
     });
 
     if (transformConfig.transformHost) {
-        root.each((selector: Selector) => {
-            transformHost(selector);
+        root.each(selector => {
+            transformHost(selector as Selector);
         });
     }
 }

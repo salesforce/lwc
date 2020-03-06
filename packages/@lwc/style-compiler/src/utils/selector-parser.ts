@@ -6,14 +6,14 @@
  */
 import { Node, Container } from 'postcss-selector-parser';
 
-export function findNode(
+export function findNode<T extends Node>(
     container: Container,
-    predicate: (node: Node) => boolean
-): Node | undefined {
+    predicate: (node: Node) => node is T
+): T | undefined {
     return container && container.nodes && container.nodes.find(predicate);
 }
 
-export function replaceNodeWith(oldNode: Node, ...newNodes: Node[]) {
+export function replaceNodeWith(oldNode: Node, ...newNodes: Node[]): void {
     if (newNodes.length) {
         const { parent } = oldNode;
 
@@ -29,7 +29,7 @@ export function replaceNodeWith(oldNode: Node, ...newNodes: Node[]) {
     }
 }
 
-export function trimNodeWhitespaces(node: Node) {
+export function trimNodeWhitespaces(node: Node): void {
     if (node && node.spaces) {
         node.spaces.before = '';
         node.spaces.after = '';

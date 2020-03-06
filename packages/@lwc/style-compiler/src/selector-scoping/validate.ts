@@ -35,9 +35,9 @@ function validateSelectors(root: Root) {
 }
 
 function validateAttribute(root: Root) {
-    root.walkAttributes((node: Attribute) => {
-        const { attribute: attributeName, sourceIndex } = node;
-        const isTemplateDirective = TEMPLATE_DIRECTIVES.some((directive: RegExp) => {
+    root.walkAttributes(node => {
+        const { attribute: attributeName, sourceIndex } = node as Attribute;
+        const isTemplateDirective = TEMPLATE_DIRECTIVES.some(directive => {
             return directive.test(attributeName);
         });
 
