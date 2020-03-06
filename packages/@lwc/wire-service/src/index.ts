@@ -15,7 +15,6 @@ import { assert } from '@lwc/shared';
 import { CONTEXT_ID, CONTEXT_CONNECTED, CONTEXT_DISCONNECTED, CONTEXT_UPDATED } from './constants';
 import { ElementDef } from './engine';
 import {
-    NoArgumentListener,
     WireEventTargetListener,
     Context,
     WireContext,
@@ -45,7 +44,7 @@ const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterF
  * Invokes the specified callbacks.
  * @param listeners functions to call
  */
-function invokeListener(listeners: NoArgumentListener[]): void {
+function invokeListener(listeners: WireEventTargetListener[]): void {
     for (let i = 0, len = listeners.length; i < len; ++i) {
         listeners[i].call(undefined);
     }
@@ -131,7 +130,7 @@ const wireService: Service = {
     },
 
     connected: (cmp, data, def, context) => {
-        let listeners: NoArgumentListener[];
+        let listeners: WireEventTargetListener[];
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(
                 !def.wire || context[CONTEXT_ID],
@@ -145,7 +144,7 @@ const wireService: Service = {
     },
 
     disconnected: (cmp, data, def, context) => {
-        let listeners: NoArgumentListener[];
+        let listeners: WireEventTargetListener[];
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(
                 !def.wire || context[CONTEXT_ID],

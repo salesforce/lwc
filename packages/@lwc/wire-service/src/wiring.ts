@@ -19,9 +19,7 @@ import { installTrap, updated } from './property-trap';
 import { ValueChangedEvent } from './value-changed-event';
 import { LinkContextEvent } from './link-context-event';
 
-export type NoArgumentListener = () => void;
-
-export type ConfigListener = (config: any) => void;
+export type WireEventTargetListener = (config?: any) => void;
 
 // a reactive parameter (WireDef.params.key) may be a dot-notation string to traverse into another @wire's target
 export interface ReactiveParameter {
@@ -31,7 +29,7 @@ export interface ReactiveParameter {
 }
 
 export interface ConfigListenerMetadata {
-    listener: ConfigListener;
+    listener: WireEventTargetListener;
     statics?: {
         [key: string]: any;
     };
@@ -54,16 +52,14 @@ export interface ConfigContext {
 }
 
 export interface WireContext {
-    [CONTEXT_CONNECTED]: NoArgumentListener[];
-    [CONTEXT_DISCONNECTED]: NoArgumentListener[];
+    [CONTEXT_CONNECTED]: WireEventTargetListener[];
+    [CONTEXT_DISCONNECTED]: WireEventTargetListener[];
     [CONTEXT_UPDATED]: ConfigContext;
 }
 
 export interface Context {
     [CONTEXT_ID]: WireContext;
 }
-
-export type WireEventTargetListener = NoArgumentListener | ConfigListener;
 
 function removeListener(listeners: WireEventTargetListener[], toRemove: WireEventTargetListener) {
     const idx = listeners.indexOf(toRemove);
@@ -74,7 +70,7 @@ function removeListener(listeners: WireEventTargetListener[], toRemove: WireEven
 
 function removeConfigListener(
     configListenerMetadatas: ConfigListenerMetadata[],
-    toRemove: ConfigListener
+    toRemove: WireEventTargetListener
 ) {
     for (let i = 0, len = configListenerMetadatas.length; i < len; i++) {
         if (configListenerMetadatas[i].listener === toRemove) {
@@ -99,7 +95,7 @@ function buildReactiveParameter(reference: string): ReactiveParameter {
     };
 }
 
-export class WireEventTarget implements EventTarget {
+export class WireEventTarget {
     _cmp: EventTarget;
     _def: ElementDef;
     _context: Context;
@@ -126,11 +122,11 @@ export class WireEventTarget implements EventTarget {
                 const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
                 if (process.env.NODE_ENV !== 'production') {
                     assert.isFalse(
-                        connectedListeners.includes(listener as NoArgumentListener),
+                        connectedListeners.includes(listener),
                         'must not call addEventListener("connect") with the same listener'
                     );
                 }
-                connectedListeners.push(listener as NoArgumentListener);
+                connectedListeners.push(listener);
                 break;
             }
 
@@ -138,11 +134,11 @@ export class WireEventTarget implements EventTarget {
                 const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
                 if (process.env.NODE_ENV !== 'production') {
                     assert.isFalse(
-                        disconnectedListeners.includes(listener as NoArgumentListener),
+                        disconnectedListeners.includes(listener),
                         'must not call addEventListener("disconnect") with the same listener'
                     );
                 }
-                disconnectedListeners.push(listener as NoArgumentListener);
+                disconnectedListeners.push(listener);
                 break;
             }
 
