@@ -419,24 +419,25 @@ const HTML_ELEMENT_ATTRIBUTE_MAP = {
     ],
 };
 
-export const HTML_ATTRIBUTE_ELEMENT_MAP: { [attr: string]: string[] } = Object.entries(
-    HTML_ELEMENT_ATTRIBUTE_MAP
-).reduce((accumulator, entry) => {
-    const element = entry[0];
-    const attributes = entry[1];
+export const HTML_ATTRIBUTE_ELEMENT_MAP = Object.entries(HTML_ELEMENT_ATTRIBUTE_MAP).reduce(
+    (accumulator, entry) => {
+        const element = entry[0];
+        const attributes = entry[1];
 
-    if (element !== '*') {
-        attributes.forEach(attribute => {
-            if (!hasOwnProperty.call(accumulator, attribute)) {
-                accumulator[attribute] = [];
-            }
+        if (element !== '*') {
+            attributes.forEach(attribute => {
+                if (!hasOwnProperty.call(accumulator, attribute)) {
+                    accumulator[attribute] = [];
+                }
 
-            accumulator[attribute].push(element);
-        });
-    }
+                accumulator[attribute].push(element);
+            });
+        }
 
-    return accumulator;
-}, {});
+        return accumulator;
+    },
+    {} as Record<string, string[]>
+);
 
 Object.values(HTML_ELEMENT_ATTRIBUTE_MAP['*']).forEach(
     globalAttribute => (HTML_ATTRIBUTE_ELEMENT_MAP[globalAttribute] = [])

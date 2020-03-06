@@ -89,7 +89,7 @@ export function destructuringAssignmentFromObject(
 
 export function memorizeHandler(
     codeGen: CodeGen,
-    element,
+    element: IRElement,
     componentHandler: t.Expression,
     handler: t.Expression
 ): t.Expression {
