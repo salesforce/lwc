@@ -20,10 +20,8 @@ import { ValueChangedEvent } from './value-changed-event';
 import { LinkContextEvent } from './link-context-event';
 
 export type NoArgumentListener = () => void;
-export interface ConfigListenerArgument {
-    [key: string]: any;
-}
-export type ConfigListener = (ConfigListenerArgument) => void;
+
+export type ConfigListener = (config: any) => void;
 
 // a reactive parameter (WireDef.params.key) may be a dot-notation string to traverse into another @wire's target
 export interface ReactiveParameter {
@@ -101,7 +99,7 @@ function buildReactiveParameter(reference: string): ReactiveParameter {
     };
 }
 
-export class WireEventTarget {
+export class WireEventTarget implements EventTarget {
     _cmp: EventTarget;
     _def: ElementDef;
     _context: Context;
@@ -254,9 +252,9 @@ export class WireEventTarget {
         if (evt instanceof ValueChangedEvent) {
             const value = evt.value;
             if (this._wireDef.method) {
-                this._cmp[this._wireTarget](value);
+                (this._cmp as any)[this._wireTarget](value);
             } else {
-                this._cmp[this._wireTarget] = value;
+                (this._cmp as any)[this._wireTarget] = value;
             }
             return false; // canceling signal since we don't want this to propagate
         } else if (evt instanceof LinkContextEvent) {
