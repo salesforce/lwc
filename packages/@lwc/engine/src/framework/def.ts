@@ -285,14 +285,11 @@ export function setElementProto(elm: Element, def: ComponentDef) {
     setPrototypeOf(elm, def.bridge.prototype);
 }
 
-// Typescript is inferring the wrong function type for this particular
-// overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-// @ts-ignore type-mismatch
-const HTML_PROPS: PropsDef = ArrayReduce.call(
+const HTML_PROPS = ArrayReduce.call(
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
-    (props: PropsDef, propName: string): PropsDef => {
+    (props, propName) => {
         const attrName = getAttrNameFromPropName(propName);
-        props[propName] = {
+        (props as PropsDef)[propName] = {
             config: 3,
             type: 'any',
             attr: attrName,
@@ -300,4 +297,4 @@ const HTML_PROPS: PropsDef = ArrayReduce.call(
         return props;
     },
     create(null)
-);
+) as PropsDef;

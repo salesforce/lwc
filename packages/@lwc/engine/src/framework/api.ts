@@ -99,8 +99,8 @@ const CHAR_G = 103;
 const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
-const TextHook: Hooks = {
-    create: (vnode: VNode) => {
+const TextHook: Hooks<VText> = {
+    create: vnode => {
         vnode.elm = document.createTextNode(vnode.text!);
         linkNodeToShadow(vnode);
     },
@@ -115,8 +115,8 @@ const TextHook: Hooks = {
 // to rehydrate when dirty, because sometimes the element is not inserted just yet,
 // which breaks some invariants. For that reason, we have the following for any
 // Custom Element that is inserted via a template.
-const ElementHook: Hooks = {
-    create: (vnode: VElement) => {
+const ElementHook: Hooks<VElement> = {
+    create: vnode => {
         const { data, sel, clonedElement } = vnode;
         const { ns } = data;
         // TODO [#1364]: supporting the ability to inject a cloned StyleElement via a vnode this is
@@ -132,25 +132,25 @@ const ElementHook: Hooks = {
         fallbackElmHook(vnode);
         createElmHook(vnode);
     },
-    update: (oldVnode: VElement, vnode: VElement) => {
+    update: (oldVnode, vnode) => {
         updateElmHook(oldVnode, vnode);
         updateChildrenHook(oldVnode, vnode);
     },
-    insert: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
+    insert: (vnode, parentNode, referenceNode) => {
         insertNodeHook(vnode, parentNode, referenceNode);
         createChildrenHook(vnode);
     },
-    move: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
+    move: (vnode, parentNode, referenceNode) => {
         insertNodeHook(vnode, parentNode, referenceNode);
     },
-    remove: (vnode: VElement, parentNode: Node) => {
+    remove: (vnode, parentNode) => {
         removeNodeHook(vnode, parentNode);
         removeElmHook(vnode);
     },
 };
 
-const CustomElementHook: Hooks = {
-    create: (vnode: VCustomElement) => {
+const CustomElementHook: Hooks<VCustomElement> = {
+    create: vnode => {
         const { sel } = vnode;
         vnode.elm = document.createElement(sel);
         linkNodeToShadow(vnode);
@@ -158,7 +158,7 @@ const CustomElementHook: Hooks = {
         allocateChildrenHook(vnode);
         createCustomElmHook(vnode);
     },
-    update: (oldVnode: VCustomElement, vnode: VCustomElement) => {
+    update: (oldVnode, vnode) => {
         updateCustomElmHook(oldVnode, vnode);
         // in fallback mode, the allocation will always set children to
         // empty and delegate the real allocation to the slot elements
@@ -169,7 +169,7 @@ const CustomElementHook: Hooks = {
         // this will update the shadowRoot
         rerenderCustomElmHook(vnode);
     },
-    insert: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
+    insert: (vnode, parentNode, referenceNode) => {
         insertNodeHook(vnode, parentNode, referenceNode);
         const vm = getAssociatedVM(vnode.elm!);
         if (process.env.NODE_ENV !== 'production') {
@@ -179,10 +179,10 @@ const CustomElementHook: Hooks = {
         createChildrenHook(vnode);
         insertCustomElmHook(vnode);
     },
-    move: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
+    move: (vnode, parentNode, referenceNode) => {
         insertNodeHook(vnode, parentNode, referenceNode);
     },
-    remove: (vnode: VCustomElement, parentNode: Node) => {
+    remove: (vnode, parentNode) => {
         removeNodeHook(vnode, parentNode);
         removeCustomElmHook(vnode);
     },
