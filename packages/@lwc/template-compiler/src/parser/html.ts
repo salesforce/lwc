@@ -11,15 +11,15 @@ import { CompilerDiagnostic, generateCompilerDiagnostic, ParserDiagnostics } fro
 
 import { VOID_ELEMENT_SET } from './constants';
 
-export type VisitorFn = (element: parse5.AST.Node) => void;
-
-export interface NodeVisitor {
-    enter?: VisitorFn;
-    exit?: VisitorFn;
+interface NodeVisitor<N extends parse5.AST.Default.Node> {
+    enter?: (node: N) => void;
+    exit?: (node: N) => void;
 }
 
-export interface Visitor {
-    [type: string]: NodeVisitor;
+interface Visitor {
+    Comment?: NodeVisitor<parse5.AST.Default.CommentNode>;
+    Text?: NodeVisitor<parse5.AST.Default.TextNode>;
+    Element?: NodeVisitor<parse5.AST.Default.Element>;
 }
 
 export const treeAdapter = parse5.treeAdapters.default;
@@ -91,7 +91,7 @@ export function parseHTML(source: string) {
 }
 
 export function traverseHTML(node: parse5.AST.Default.Node, visitor: Visitor): void {
-    let nodeVisitor: NodeVisitor;
+    let nodeVisitor: NodeVisitor<any> | undefined;
     switch (node.nodeName) {
         case '#comment':
             nodeVisitor = visitor.Comment;

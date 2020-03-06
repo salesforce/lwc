@@ -349,8 +349,8 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             const { expression: testExpression } = bindExpression(element.if!, element);
 
             return t.arrayExpression(
-                fragmentNodes.elements.map((child: t.Expression) =>
-                    applyInlineIf(element, child, testExpression)
+                fragmentNodes.elements.map(child =>
+                    child !== null ? applyInlineIf(element, child as any, testExpression) : null
                 )
             );
         } else {

@@ -53,7 +53,7 @@ export function isSlot(element: IRElement) {
 }
 
 export function containsDynamicChildren(element: IRElement) {
-    return element.children.some(isDynamic);
+    return element.children.some(child => isElement(child) && isDynamic(child));
 }
 
 export function isDynamic(element: IRElement): boolean {

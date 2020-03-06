@@ -3,7 +3,6 @@
 
     "compilerOptions": {
         "noImplicitAny": false,
-        "strictFunctionTypes": false,
 
         "outDir": "dist/commonjs",
         "declarationDir": "dist/types"
