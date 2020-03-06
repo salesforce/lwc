@@ -97,7 +97,13 @@ export function applyStyleAttributes(vm: VM, hostAttribute: string, shadowAttrib
     context.shadowAttribute = shadowAttribute;
 }
 
-function collectStylesheets(stylesheets, hostSelector, shadowSelector, isNative, aggregatorFn) {
+function collectStylesheets(
+    stylesheets: StylesheetFactory[],
+    hostSelector: string,
+    shadowSelector: string,
+    isNative: boolean,
+    aggregatorFn: (content: string) => void
+): void {
     forEach.call(stylesheets, sheet => {
         if (isArray(sheet)) {
             collectStylesheets(sheet, hostSelector, shadowSelector, isNative, aggregatorFn);

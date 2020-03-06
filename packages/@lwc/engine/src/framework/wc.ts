@@ -57,7 +57,7 @@ export function buildCustomElementConstructor(
             const vm = getAssociatedVM(this);
             removeRootVM(vm);
         }
-        attributeChangedCallback(attrName, oldValue, newValue) {
+        attributeChangedCallback(attrName: string, oldValue: string, newValue: string) {
             if (oldValue === newValue) {
                 // ignoring similar values for better perf
                 return;
@@ -77,7 +77,7 @@ export function buildCustomElementConstructor(
             }
             // reflect attribute change to the corresponding props when changed
             // from outside.
-            this[propName] = newValue;
+            (this as any)[propName] = newValue;
         }
         // collecting all attribute names from all public props to apply
         // the reflection from attributes to props via attributeChangedCallback.

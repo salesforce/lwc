@@ -131,11 +131,11 @@ function callHook(
 }
 
 function setHook(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
-    cmp[prop] = newValue;
+    (cmp as any)[prop] = newValue;
 }
 
 function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
-    return cmp[prop];
+    return (cmp as any)[prop];
 }
 
 export function rerenderVM(vm: VM) {

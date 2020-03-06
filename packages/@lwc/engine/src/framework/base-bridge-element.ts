@@ -60,7 +60,7 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
     return function(this: HTMLElement): any {
         const vm = getAssociatedVM(this);
         const { callHook, component } = vm;
-        const fn = component[methodName];
+        const fn = (component as any)[methodName];
         return callHook(vm.component, fn, ArraySlice.call(arguments));
     };
 }

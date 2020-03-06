@@ -151,13 +151,16 @@ function getPublicMethodsHash(
         return EmptyObject;
     }
     return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
+        const method = (target.prototype as any)[methodName];
+
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(
-                isFunction(target.prototype[methodName]),
-                `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`
+                isFunction(method),
+                `Component "${target.name}" should have a method \`${methodName}\` instead of ${method}.`
             );
         }
-        methodsHash[methodName] = target.prototype[methodName];
+
+        methodsHash[methodName] = method;
         return methodsHash;
     }, create(null));
 }

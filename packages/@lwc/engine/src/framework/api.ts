@@ -416,13 +416,13 @@ export function i(
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(
-            isUndefined(iterable[SymbolIterator]),
+            isUndefined((iterable as any)[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
                 iterable
             )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`
         );
     }
-    const iterator = iterable[SymbolIterator]();
+    const iterator = (iterable as any)[SymbolIterator]();
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(

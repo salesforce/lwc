@@ -52,9 +52,10 @@ function update(oldVnode: VNode, vnode: VNode) {
         // if it is the first time this element is patched, or the current value is different to the previous value...
         if (
             isFirstPatch ||
-            cur !== (isLiveBindingProp(sel as string, key) ? elm[key] : (oldProps as any)[key])
+            cur !==
+                (isLiveBindingProp(sel as string, key) ? (elm as any)[key] : (oldProps as any)[key])
         ) {
-            elm[key] = cur;
+            (elm as any)[key] = cur;
         }
     }
 }
