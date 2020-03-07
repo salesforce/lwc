@@ -1,0 +1,33 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "element",
+            "name": "svg",
+            "namespace": "http://www.w3.org/2000/svg",
+            "attributes": [],
+            "listeners": [],
+            "children": [
+                {
+                    "type": "element",
+                    "name": "circle",
+                    "namespace": "http://www.w3.org/2000/svg",
+                    "attributes": [
+                        {
+                            "type": "attribute",
+                            "name": "cx",
+                            "value": "50"
+                        },
+                        {
+                            "type": "attribute",
+                            "name": "cy",
+                            "value": "50"
+                        }
+                    ],
+                    "listeners": [],
+                    "children": []
+                }
+            ]
+        }
+    ]
+}

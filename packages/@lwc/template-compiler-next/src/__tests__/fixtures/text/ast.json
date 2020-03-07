@@ -1,0 +1,9 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "text",
+            "value": "Hello world!\n"
+        }
+    ]
+}

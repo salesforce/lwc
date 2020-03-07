@@ -1,0 +1,29 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "element",
+            "name": "div",
+            "attributes": [
+                {
+                    "type": "attribute",
+                    "name": "class",
+                    "value": {
+                        "type": "identifier",
+                        "name": "divClass"
+                    }
+                },
+                {
+                    "type": "attribute",
+                    "name": "style",
+                    "value": {
+                        "type": "identifier",
+                        "name": "divStyle"
+                    }
+                }
+            ],
+            "listeners": [],
+            "children": []
+        }
+    ]
+}

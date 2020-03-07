@@ -1,0 +1,25 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "for-block",
+            "expression": {
+                "type": "identifier",
+                "name": "items"
+            },
+            "item": {
+                "type": "identifier",
+                "name": "item"
+            },
+            "children": [
+                {
+                    "type": "text",
+                    "value": {
+                        "type": "identifier",
+                        "name": "item"
+                    }
+                }
+            ]
+        }
+    ]
+}

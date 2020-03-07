@@ -1,0 +1,17 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "element",
+            "name": "span",
+            "attributes": [],
+            "listeners": [],
+            "children": [
+                {
+                    "type": "text",
+                    "value": "test"
+                }
+            ]
+        }
+    ]
+}

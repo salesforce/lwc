@@ -75,7 +75,8 @@
     "packages/lwc",
     "packages/integration-karma",
     "packages/integration-tests",
-    "packages/perf-benchmarks"
+    "packages/perf-benchmarks",
+    "packages/playground"
   ],
   "engines": {
     "node": ">=10"

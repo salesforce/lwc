@@ -6,12 +6,11 @@
  */
 import { assert, isFunction, isUndefined } from '@lwc/shared';
 
-import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
+import { evaluateTemplate, setVMBeingRendered, getVMBeingRendered, TemplateFactory } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
 import { startMeasure, endMeasure } from './performance-timing';
 
-import { VNodes } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
 export let isInvokingRender: boolean = false;
@@ -84,17 +83,18 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
     }
 }
 
-export function invokeComponentRenderMethod(vm: VM): VNodes {
+export function invokeComponentRenderMethod(vm: VM): void {
     const {
         def: { render },
         callHook,
         component,
         owner,
     } = vm;
+
     const isRenderBeingInvokedInception = isInvokingRender;
     const vmBeingRenderedInception = getVMBeingRendered();
-    let html: Template;
-    let renderInvocationSuccessful = false;
+    let templateFactory: TemplateFactory;
+
     runWithBoundaryProtection(
         vm,
         owner,
@@ -106,8 +106,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         () => {
             // job
             vm.tro.observe(() => {
-                html = callHook(component, render);
-                renderInvocationSuccessful = true;
+                templateFactory = callHook(component, render);
             });
         },
         () => {
@@ -116,8 +115,8 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
             setVMBeingRendered(vmBeingRenderedInception);
         }
     );
-    // If render() invocation failed, process errorCallback in boundary and return an empty template
-    return renderInvocationSuccessful ? evaluateTemplate(vm, html!) : [];
+
+    evaluateTemplate(vm, templateFactory!);
 }
 
 export function invokeComponentRenderedCallback(vm: VM): void {

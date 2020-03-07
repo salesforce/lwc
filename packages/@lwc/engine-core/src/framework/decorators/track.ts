@@ -10,7 +10,7 @@ import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentInterface } from '../component';
-import { isUpdatingTemplate, getVMBeingRendered } from '../template';
+import { getVMBeingRendered } from '../template';
 
 /**
  * @track decorator function to mark field value as reactive in
@@ -48,12 +48,6 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
                 assert.invariant(
                     !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
-                        key
-                    )}`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
                         key
                     )}`
                 );

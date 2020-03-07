@@ -1,0 +1,23 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "element",
+            "name": "div",
+            "attributes": [
+                {
+                    "type": "attribute",
+                    "name": "class",
+                    "value": "foo bar"
+                },
+                {
+                    "type": "attribute",
+                    "name": "style",
+                    "value": "color: red;"
+                }
+            ],
+            "listeners": [],
+            "children": []
+        }
+    ]
+}

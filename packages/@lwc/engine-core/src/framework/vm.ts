@@ -10,13 +10,11 @@ import {
     ArrayUnshift,
     assert,
     create,
-    isArray,
     isFalse,
     isNull,
     isObject,
     isTrue,
     isUndefined,
-    keys,
     createHiddenField,
     getHiddenField,
     setHiddenField,
@@ -26,14 +24,14 @@ import {
 import {
     createComponent,
     renderComponent,
-    markComponentAsDirty,
+    // markComponentAsDirty,
     getTemplateReactiveObserver,
 } from './component';
-import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
+import { addCallbackToNextTick, EmptyArray } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
 
-import { Template } from './template';
+import { Template, TemplateFactory } from './template';
 import { ComponentDef } from './def';
 import { ComponentInterface } from './component';
 import {
@@ -43,26 +41,15 @@ import {
     endGlobalMeasure,
     GlobalMeasurementPhase,
 } from './performance-timing';
-import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { LightningElement } from './base-lightning-element';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { Renderer, HostNode, HostElement } from './renderer';
 
-import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
-import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
 type ShadowRootMode = 'open' | 'closed';
-
-export interface TemplateCache {
-    [key: string]: any;
-}
-
-export interface SlotSet {
-    [key: string]: VNodes;
-}
 
 export enum VMState {
     created,
@@ -75,11 +62,6 @@ export interface Context {
     hostAttribute: string | undefined;
     /** The attribute name used on all the elements rendered in the shadow tree to scope the style. */
     shadowAttribute: string | undefined;
-    /** The VNode injected in all the shadow trees to apply the associated component stylesheets. */
-    styleVNode: VNode | null;
-    /** Object used by the template function to store information that can be reused between
-     *  different render cycle of the same template. */
-    tplCache: TemplateCache;
     /** List of wire hooks that are invoked when the component gets connected. */
     wiredConnecting: Array<() => void>;
     /** List of wire hooks that are invoked when the component gets disconnected. */
@@ -104,18 +86,8 @@ export interface VM<N = HostNode, E = HostElement> {
     /** Component state, analogous to Element.isConnected */
     /** The component connection state. */
     state: VMState;
-    /** The list of VNodes associated with the shadow tree. */
-    children: VNodes;
-    /** The list of adopted children VNodes. */
-    aChildren: VNodes;
-    /** The list of custom elements VNodes currently rendered in the shadow tree. We keep track of
-     * those elements to efficiently unmount them when the parent component is disconnected without
-     * having to traverse the VNode tree. */
-    velements: VCustomElement[];
     /** The component public properties. */
     cmpProps: { [name: string]: any };
-    /** The mapping between the slot names and the slotted VNodes. */
-    cmpSlots: SlotSet;
     /** The component internal reactive properties. */
     cmpFields: { [name: string]: any };
     /** Flag indicating if the component has been scheduled for rerendering. */
@@ -124,7 +96,9 @@ export interface VM<N = HostNode, E = HostElement> {
     isDirty: boolean;
     /** The shadow DOM mode. */
     mode: ShadowRootMode;
-    /** The template method returning the VDOM tree. */
+    /** The current template factory associated with the component. */
+    cmpTemplateFactory: TemplateFactory | null;
+    /** The current template associated with the component. */
     cmpTemplate: Template | null;
     /** The component instance. */
     component: ComponentInterface;
@@ -257,20 +231,15 @@ export function createVM<HostNode, HostElement>(
         mode,
         owner,
         renderer,
-        children: EmptyArray,
-        aChildren: EmptyArray,
-        velements: EmptyArray,
         cmpProps: create(null),
         cmpFields: create(null),
-        cmpSlots: create(null),
         oar: create(null),
         cmpTemplate: null,
+        cmpTemplateFactory: null,
 
         context: {
             hostAttribute: undefined,
             shadowAttribute: undefined,
-            styleVNode: null,
-            tplCache: EmptyObject,
             wiredConnecting: EmptyArray,
             wiredDisconnecting: EmptyArray,
         },
@@ -337,44 +306,44 @@ export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
 
 function rehydrate(vm: VM) {
     if (isTrue(vm.isDirty)) {
-        const children = renderComponent(vm);
-        patchShadowRoot(vm, children);
+        renderComponent(vm);
+        patchShadowRoot(vm);
     }
 }
 
-function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { cmpRoot, children: oldCh } = vm;
+function patchShadowRoot(vm: VM) {
+    // const { cmpRoot, children: oldCh } = vm;
 
-    // caching the new children collection
-    vm.children = newCh;
+    // // caching the new children collection
+    // vm.children = newCh;
 
-    if (newCh.length > 0 || oldCh.length > 0) {
-        // patch function mutates vnodes by adding the element reference,
-        // however, if patching fails it contains partial changes.
-        if (oldCh !== newCh) {
-            const fn = hasDynamicChildren(newCh) ? updateDynamicChildren : updateStaticChildren;
-            runWithBoundaryProtection(
-                vm,
-                vm,
-                () => {
-                    // pre
-                    if (process.env.NODE_ENV !== 'production') {
-                        startMeasure('patch', vm);
-                    }
-                },
-                () => {
-                    // job
-                    fn(cmpRoot, oldCh, newCh);
-                },
-                () => {
-                    // post
-                    if (process.env.NODE_ENV !== 'production') {
-                        endMeasure('patch', vm);
-                    }
-                }
-            );
-        }
-    }
+    // if (newCh.length > 0 || oldCh.length > 0) {
+    //     // patch function mutates vnodes by adding the element reference,
+    //     // however, if patching fails it contains partial changes.
+    //     if (oldCh !== newCh) {
+    //         const fn = hasDynamicChildren(newCh) ? updateDynamicChildren : updateStaticChildren;
+    //         runWithBoundaryProtection(
+    //             vm,
+    //             vm,
+    //             () => {
+    //                 // pre
+    //                 if (process.env.NODE_ENV !== 'production') {
+    //                     startMeasure('patch', vm);
+    //                 }
+    //             },
+    //             () => {
+    //                 // job
+    //                 fn(cmpRoot, oldCh, newCh);
+    //             },
+    //             () => {
+    //                 // post
+    //                 if (process.env.NODE_ENV !== 'production') {
+    //                     endMeasure('patch', vm);
+    //                 }
+    //             }
+    //         );
+    //     }
+    // }
 
     if (vm.state === VMState.connected) {
         // If the element is connected, that means connectedCallback was already issued, and
@@ -501,78 +470,18 @@ function runDisconnectedCallback(vm: VM) {
 }
 
 function runShadowChildNodesDisconnectedCallback(vm: VM) {
-    const { velements: vCustomElementCollection } = vm;
-
-    // Reporting disconnection for every child in inverse order since they are
-    // inserted in reserved order.
-    for (let i = vCustomElementCollection.length - 1; i >= 0; i -= 1) {
-        const { elm } = vCustomElementCollection[i];
-
-        // There are two cases where the element could be undefined:
-        // * when there is an error during the construction phase, and an error
-        //   boundary picks it, there is a possibility that the VCustomElement
-        //   is not properly initialized, and therefore is should be ignored.
-        // * when slotted custom element is not used by the element where it is
-        //   slotted into it, as  a result, the custom element was never
-        //   initialized.
-        if (!isUndefined(elm)) {
-            const childVM = getAssociatedVMIfPresent(elm);
-
-            // The VM associated with the element might be associated undefined
-            // in the case where the VM failed in the middle of its creation,
-            // eg: constructor throwing before invoking super().
-            if (!isUndefined(childVM)) {
-                resetComponentStateWhenRemoved(childVM);
-            }
-        }
-    }
+    // eslint-disable-next-line
+    console.warn('TODO: runShadowChildNodesDisconnectedCallback');
 }
 
 function runLightChildNodesDisconnectedCallback(vm: VM) {
-    const { aChildren: adoptedChildren } = vm;
-    recursivelyDisconnectChildren(adoptedChildren);
+    // eslint-disable-next-line
+    console.warn('TODO: runLightChildNodesDisconnectedCallback');
 }
 
-/**
- * The recursion doesn't need to be a complete traversal of the vnode graph,
- * instead it can be partial, when a custom element vnode is found, we don't
- * need to continue into its children because by attempting to disconnect the
- * custom element itself will trigger the removal of anything slotted or anything
- * defined on its shadow.
- */
-function recursivelyDisconnectChildren(vnodes: VNodes) {
-    for (let i = 0, len = vnodes.length; i < len; i += 1) {
-        const vnode: VCustomElement | VNode | null = vnodes[i];
-        if (!isNull(vnode) && isArray(vnode.children) && !isUndefined(vnode.elm)) {
-            // vnode is a VElement with children
-            if (isUndefined((vnode as any).ctor)) {
-                // it is a VElement, just keep looking (recursively)
-                recursivelyDisconnectChildren(vnode.children);
-            } else {
-                // it is a VCustomElement, disconnect it and ignore its children
-                resetComponentStateWhenRemoved(getAssociatedVM(vnode.elm as HTMLElement));
-            }
-        }
-    }
-}
-
-// This is a super optimized mechanism to remove the content of the shadowRoot without having to go
-// into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
-// children VNodes might not be representing the current state of the DOM.
 export function resetShadowRoot(vm: VM) {
-    const { children, cmpRoot, renderer } = vm;
-
-    for (let i = 0, len = children.length; i < len; i++) {
-        const child = children[i];
-
-        if (!isNull(child) && !isUndefined(child.elm)) {
-            renderer.remove(child.elm, cmpRoot);
-        }
-    }
-    vm.children = EmptyArray;
-
-    runShadowChildNodesDisconnectedCallback(vm);
-    vm.velements = EmptyArray;
+    // eslint-disable-next-line
+    console.warn('TODO: resetShadowRoot')
 }
 
 export function scheduleRehydration(vm: VM) {
@@ -597,61 +506,6 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
         }
 
         currentVm = currentVm.owner;
-    }
-}
-
-// slow path routine
-// NOTE: we should probably more this routine to the synthetic shadow folder
-// and get the allocation to be cached by in the elm instead of in the VM
-export function allocateInSlot(vm: VM, children: VNodes) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isObject(vm.cmpSlots),
-            `When doing manual allocation, there must be a cmpSlots object available.`
-        );
-    }
-    const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null));
-    for (let i = 0, len = children.length; i < len; i += 1) {
-        const vnode = children[i];
-        if (isNull(vnode)) {
-            continue;
-        }
-        const { data } = vnode;
-        const slotName = ((data.attrs && data.attrs.slot) || '') as string;
-        const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
-        // re-keying the vnodes is necessary to avoid conflicts with default content for the slot
-        // which might have similar keys. Each vnode will always have a key that
-        // starts with a numeric character from compiler. In this case, we add a unique
-        // notation for slotted vnodes keys, e.g.: `@foo:1:1`
-        if (!isUndefined(vnode.key)) {
-            vnode.key = `@${slotName}:${vnode.key}`;
-        }
-        ArrayPush.call(vnodes, vnode);
-    }
-    if (isFalse(vm.isDirty)) {
-        // We need to determine if the old allocation is really different from the new one
-        // and mark the vm as dirty
-        const oldKeys = keys(oldSlots);
-        if (oldKeys.length !== keys(cmpSlots).length) {
-            markComponentAsDirty(vm);
-            return;
-        }
-        for (let i = 0, len = oldKeys.length; i < len; i += 1) {
-            const key = oldKeys[i];
-            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
-                markComponentAsDirty(vm);
-                return;
-            }
-            const oldVNodes = oldSlots[key];
-            const vnodes = cmpSlots[key];
-            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
-                if (oldVNodes[j] !== vnodes[j]) {
-                    markComponentAsDirty(vm);
-                    return;
-                }
-            }
-        }
     }
 }
 

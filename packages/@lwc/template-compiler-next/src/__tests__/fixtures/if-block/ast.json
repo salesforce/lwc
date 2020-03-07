@@ -1,0 +1,33 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "if-block",
+            "modifier": "true",
+            "condition": {
+                "type": "identifier",
+                "name": "isTrue"
+            },
+            "children": [
+                {
+                    "type": "text",
+                    "value": "I am true\n    "
+                }
+            ]
+        },
+        {
+            "type": "if-block",
+            "modifier": "false",
+            "condition": {
+                "type": "identifier",
+                "name": "isFalse"
+            },
+            "children": [
+                {
+                    "type": "text",
+                    "value": "I am false\n    "
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,72 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "component",
+            "name": "foo-bar",
+            "listeners": [],
+            "slottedContent": {
+                "default": [
+                    {
+                        "type": "text",
+                        "value": "Before Text\n        "
+                    },
+                    {
+                        "type": "element",
+                        "name": "div",
+                        "attributes": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "text",
+                                "value": "In default slot"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "text",
+                        "value": "After Text\n    "
+                    }
+                ],
+                "named": [
+                    {
+                        "type": "element",
+                        "name": "div",
+                        "attributes": [
+                            {
+                                "type": "attribute",
+                                "name": "slot",
+                                "value": "named"
+                            }
+                        ],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "text",
+                                "value": "In named slot1"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "element",
+                        "name": "div",
+                        "attributes": [
+                            {
+                                "type": "attribute",
+                                "name": "slot",
+                                "value": "named"
+                            }
+                        ],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "text",
+                                "value": "In named slot2"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

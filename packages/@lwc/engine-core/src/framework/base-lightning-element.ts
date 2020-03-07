@@ -34,7 +34,7 @@ import {
     patchCustomElementWithRestrictions,
 } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
-import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
+import { getVMBeingRendered, TemplateFactory } from './template';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { HTMLElementConstructor } from './base-bridge-element';
@@ -90,10 +90,6 @@ function createBridgeToElementDescriptor(
                 assert.invariant(
                     !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `When updating the template of ${vmBeingRendered}, one of the accessors used by the template has side effects on the state of ${vm}.${propName}`
                 );
                 assert.isFalse(
                     isBeingConstructed(vm),
@@ -159,7 +155,9 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     template: ShadowRoot;
-    render(): Template;
+    render(): TemplateFactory;
+
+    // Callbacks
     connectedCallback?(): void;
     disconnectedCallback?(): void;
     renderedCallback?(): void;
@@ -254,10 +252,6 @@ BaseLightningElementConstructor.prototype = {
             assert.invariant(
                 !isInvokingRender,
                 `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`
-            );
-            assert.invariant(
-                !isUpdatingTemplate,
-                `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`
             );
             assert.invariant(
                 isFunction(listener),
@@ -508,8 +502,7 @@ BaseLightningElementConstructor.prototype = {
         // Authors should rely on this.template instead.
         return null;
     },
-
-    render(): Template {
+    render(): TemplateFactory {
         const vm = getAssociatedVM(this);
         return vm.def.template;
     },

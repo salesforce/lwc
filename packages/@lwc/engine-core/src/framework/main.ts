@@ -29,12 +29,11 @@ export {
 
 // Internal APIs used by compiled code -------------------------------------------------------------
 export { registerComponent } from './component';
-export { registerTemplate } from './secure-template';
 export { registerDecorators } from './decorators/register';
 
 // Mics. internal APIs -----------------------------------------------------------------------------
 export { unwrap } from './membrane';
-export { sanitizeAttribute } from './secure-template';
+export { sanitizeAttribute } from './template';
 export { getComponentDef, isComponentConstructor } from './def';
 
 // Types -------------------------------------------------------------------------------------------

@@ -16,7 +16,7 @@ import {
 import { ComponentInterface } from '../component';
 import { getAssociatedVM, rerenderVM, VM } from '../vm';
 import { addCallbackToNextTick } from '../utils';
-import { isUpdatingTemplate, getVMBeingRendered } from '../template';
+import { getVMBeingRendered } from '../template';
 
 /**
  * @api decorator to mark public fields and public methods in
@@ -56,12 +56,6 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
                 assert.invariant(
                     !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
-                        key
-                    )}`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
                         key
                     )}`
                 );
@@ -140,12 +134,6 @@ export function createPublicAccessorDescriptor(
                 assert.invariant(
                     !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
-                        key
-                    )}`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
                         key
                     )}`
                 );

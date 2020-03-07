@@ -18,7 +18,6 @@ export {
     unwrap,
     setFeatureFlag,
     setFeatureFlagForTest,
-    registerTemplate,
     registerComponent,
     registerDecorators,
     sanitizeAttribute,

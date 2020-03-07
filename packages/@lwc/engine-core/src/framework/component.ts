@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isFalse, isFunction, isUndefined } from '@lwc/shared';
+import { assert, isFalse, isFunction, isUndefined } from '@lwc/shared';
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
@@ -12,10 +12,9 @@ import {
     invokeEventListener,
 } from './invoker';
 import { VM, scheduleRehydration } from './vm';
-import { VNodes } from '../3rdparty/snabbdom/types';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
-import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
+import { getVMBeingRendered, TemplateFactory } from './template';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -31,10 +30,10 @@ export interface ComponentConstructor extends LightningElementConstructor {
 
 export interface ComponentMeta {
     readonly name: string;
-    readonly template?: Template;
+    readonly template?: TemplateFactory;
 }
 
-const signedTemplateMap: Map<ComponentConstructor, Template> = new Map();
+const signedTemplateMap: Map<ComponentConstructor, TemplateFactory> = new Map();
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
@@ -42,7 +41,7 @@ const signedTemplateMap: Map<ComponentConstructor, Template> = new Map();
  */
 export function registerComponent(
     Ctor: ComponentConstructor,
-    { tmpl }: { tmpl: Template }
+    { tmpl }: { tmpl: TemplateFactory }
 ): ComponentConstructor {
     signedTemplateMap.set(Ctor, tmpl);
     // chaining this method as a way to wrap existing assignment of component constructor easily,
@@ -50,7 +49,7 @@ export function registerComponent(
     return Ctor;
 }
 
-export function getComponentRegisteredTemplate(Ctor: ComponentConstructor): Template | undefined {
+export function getComponentRegisteredTemplate(Ctor: ComponentConstructor): TemplateFactory | undefined {
     return signedTemplateMap.get(Ctor);
 }
 
@@ -75,23 +74,16 @@ export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     });
 }
 
-export function renderComponent(vm: VM): VNodes {
+export function renderComponent(vm: VM): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
 
     vm.tro.reset();
-    const vnodes = invokeComponentRenderMethod(vm);
+    invokeComponentRenderMethod(vm);
+    
     vm.isDirty = false;
     vm.isScheduled = false;
-
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isArray(vnodes),
-            `${vm}.render() should always return an array of vnodes instead of ${vnodes}`
-        );
-    }
-    return vnodes;
 }
 
 export function markComponentAsDirty(vm: VM) {
@@ -104,10 +96,6 @@ export function markComponentAsDirty(vm: VM) {
         assert.isFalse(
             isInvokingRender,
             `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`
-        );
-        assert.isFalse(
-            isUpdatingTemplate,
-            `markComponentAsDirty() for ${vm} cannot be called while updating template of ${vmBeingRendered}.`
         );
     }
     vm.isDirty = true;

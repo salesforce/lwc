@@ -28,11 +28,14 @@ import {
 } from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
 import { EmptyObject } from './utils';
-import { ComponentConstructor, ErrorCallback, getComponentRegisteredTemplate } from './component';
-import { Template } from './template';
+import {
+    ComponentConstructor,
+    ErrorCallback,
+    getComponentRegisteredTemplate,
+} from './component';
+import { defaultTemplateFactory, TemplateFactory } from './template';
 import { BaseLightningElement, lightningBasedDescriptors } from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
-import { defaultEmptyTemplate } from './secure-template';
 
 import {
     BaseBridgeElement,
@@ -51,14 +54,14 @@ export interface ComponentDef {
     props: PropertyDescriptorMap;
     propsConfig: Record<string, PropType>;
     methods: PropertyDescriptorMap;
-    template: Template;
+    template: TemplateFactory;
     ctor: ComponentConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
     errorCallback?: ErrorCallback;
-    render: () => Template;
+    render: () => TemplateFactory;
 }
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
@@ -139,11 +142,14 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     errorCallback = errorCallback || superDef.errorCallback;
     render = render || superDef.render;
 
-    const template = getComponentRegisteredTemplate(Ctor) || superDef.template;
+    let template = getComponentRegisteredTemplate(Ctor) || superDef.template;
     const name = Ctor.name || superDef.name;
 
     // installing observed fields into the prototype.
     defineProperties(proto, observedFields);
+    if (isUndefined(template)) {
+        template = defaultTemplateFactory;
+    }
 
     const def: ComponentDef = {
         ctor: Ctor,
@@ -246,7 +252,7 @@ const lightingElementDef: ComponentDef = {
     methods: EmptyObject,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
-    template: defaultEmptyTemplate,
+    template: defaultTemplateFactory,
     render: BaseLightningElement.prototype.render,
 };
 

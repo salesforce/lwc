@@ -1,0 +1,36 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "element",
+            "name": "div",
+            "attributes": [],
+            "listeners": [
+                {
+                    "type": "listener",
+                    "name": "click",
+                    "handler": {
+                        "type": "identifier",
+                        "name": "handleClick"
+                    }
+                }
+            ],
+            "children": []
+        },
+        {
+            "type": "component",
+            "name": "foo-bar",
+            "listeners": [
+                {
+                    "type": "listener",
+                    "name": "click",
+                    "handler": {
+                        "type": "identifier",
+                        "name": "handleClick"
+                    }
+                }
+            ],
+            "slottedContent": {}
+        }
+    ]
+}
