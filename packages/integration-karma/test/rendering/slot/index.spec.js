@@ -42,27 +42,26 @@ describe('slot diffing algorithm', () => {
             });
     });
 
-    it('should trigger slot change in child', function() {
+    it('should trigger slot change in child', function(done) {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
-        return Promise.resolve()
-            .then(() => {
-                elm.updateElementInDefaultSlot();
-                elm.updateElementInNamedSlot();
+        elm.updateElementInDefaultSlot();
+        elm.updateElementInNamedSlot();
 
-                return Promise.resolve();
-            })
-            .then(() => {
-                const xChild = elm.shadowRoot.querySelector('x-child');
-                const { defaultCalledTimes, namedCalledTimes } = xChild.getSlotChangeEventCalls();
+        // Need the setTimeout because on IE11 the slotchange is not guarantied to be triggered in the next tick.
+        setTimeout(() => {
+            const xChild = elm.shadowRoot.querySelector('x-child');
+            const { defaultCalledTimes, namedCalledTimes } = xChild.getSlotChangeEventCalls();
 
-                expect(defaultCalledTimes).toBe(1);
-                expect(namedCalledTimes).toBe(1);
+            expect(defaultCalledTimes).toBe(1);
+            expect(namedCalledTimes).toBe(1);
 
-                expect(elm.shadowRoot.querySelector('p.default-slot').textContent).toEqual('1');
-                expect(elm.shadowRoot.querySelector('p.named-slot').textContent).toEqual('1');
-                expect(xChild.getRenderedTimes()).toBe(1);
-            });
+            expect(elm.shadowRoot.querySelector('p.default-slot').textContent).toEqual('1');
+            expect(elm.shadowRoot.querySelector('p.named-slot').textContent).toEqual('1');
+            expect(xChild.getRenderedTimes()).toBe(1);
+
+            done();
+        }, 10);
     });
 });
