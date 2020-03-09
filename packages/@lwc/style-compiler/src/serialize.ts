@@ -74,7 +74,7 @@ export default function serialize(result: postcss.LazyResult, config: Config): s
 
 function reduceTokens(tokens: Token[]): Token[] {
     return [{ type: TokenType.text, value: '' }, ...tokens, { type: TokenType.text, value: '' }]
-        .reduce((acc, token) => {
+        .reduce((acc: Token[], token: Token) => {
             const prev = acc[acc.length - 1];
             if (token.type === TokenType.text && prev && prev.type === TokenType.text) {
                 prev.value += token.value;
@@ -82,7 +82,7 @@ function reduceTokens(tokens: Token[]): Token[] {
             } else {
                 return [...acc, token];
             }
-        }, [] as Token[])
+        }, [])
         .filter(t => t.value !== '');
 }
 
@@ -91,9 +91,20 @@ function normalizeString(str: string) {
 }
 
 function generateExpressionFromTokens(tokens: Token[]): string {
-    return tokens
-        .map(({ type, value }) => (type === TokenType.text ? JSON.stringify(value) : value))
-        .join(' + ');
+    const serializedTokens = reduceTokens(tokens).map(({ type, value }) =>
+        type === TokenType.text ? JSON.stringify(value) : value
+    );
+
+    if (serializedTokens.length === 0) {
+        return '';
+    } else if (serializedTokens.length === 1) {
+        return serializedTokens[0];
+    } else {
+        // #1726 Using Array.prototype.join() instead of a standard "+" operator to concatenate the
+        // string to avoid running into a maximum call stack error when the stylesheet is parsed
+        // again by the bundler.
+        return `[${serializedTokens.join(', ')}].join('')`;
+    }
 }
 
 function serializeCss(
@@ -107,14 +118,13 @@ function serializeCss(
 
     // Walk though all nodes in the CSS...
     postcss.stringify(result.root, (part, node, nodePosition) => {
-        // When consuming the beggining of a rule, first we tokenize the selector
+        // When consuming the beginning of a rule, first we tokenize the selector
         if (node && node.type === 'rule' && nodePosition === 'start') {
             currentRuleTokens.push(...tokenizeCssSelector(normalizeString(part)));
 
             // When consuming the end of a rule we normalize it and produce a new one
         } else if (node && node.type === 'rule' && nodePosition === 'end') {
             currentRuleTokens.push({ type: TokenType.text, value: part });
-            currentRuleTokens = reduceTokens(currentRuleTokens);
 
             // If we are in fakeShadow we dont want to have :host selectors
             if ((node as any)._isHostNative) {
@@ -126,7 +136,7 @@ function serializeCss(
 
                 tokens.push({
                     type: TokenType.expression,
-                    value: `(${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${tmpHostExpression}) : (${exprToken}))`,
+                    value: `(${SHADOW_DOM_ENABLED_IDENTIFIER} ? ${tmpHostExpression} : ${exprToken})`,
                 });
 
                 tmpHostExpression = null;
@@ -171,11 +181,7 @@ function serializeCss(
         }
     });
 
-    const buffer = reduceTokens(tokens)
-        .map(t => (t.type === TokenType.text ? JSON.stringify(t.value) : t.value))
-        .join(' + ');
-
-    return buffer;
+    return generateExpressionFromTokens(tokens);
 }
 
 // TODO [#1288]: this code needs refactor, it could be simpler by using a native post-css walker
