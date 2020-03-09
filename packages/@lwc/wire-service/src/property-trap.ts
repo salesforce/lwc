@@ -93,7 +93,7 @@ export function getReactiveParameterValue(
     cmp: EventTarget,
     reactiveParameter: ReactiveParameter
 ): any {
-    let value: any = cmp[reactiveParameter.head];
+    let value = (cmp as any)[reactiveParameter.head];
     if (!reactiveParameter.tail) {
         return value;
     }
@@ -161,7 +161,7 @@ export function findDescriptor(
  * @param callback A function to invoke when the prop's value changes
  * @return A property descriptor
  */
-function getOverrideDescriptor(cmp: Object, prop: string, callback: () => void) {
+function getOverrideDescriptor(cmp: EventTarget, prop: string, callback: () => void) {
     const descriptor = findDescriptor(cmp, prop);
     let enumerable;
     let get;
@@ -169,19 +169,19 @@ function getOverrideDescriptor(cmp: Object, prop: string, callback: () => void) 
     // This does not cover the override of existing descriptors at the instance level
     // and that's ok because eventually we will not need to do any of these :)
     if (descriptor === null || (descriptor.get === undefined && descriptor.set === undefined)) {
-        let value = cmp[prop];
+        let value = (cmp as any)[prop];
         enumerable = true;
         get = function() {
             return value;
         };
-        set = function(newValue) {
+        set = function(newValue: any) {
             value = newValue;
             callback();
         };
     } else {
         const { set: originalSet, get: originalGet } = descriptor;
         enumerable = descriptor.enumerable;
-        set = function(newValue) {
+        set = function(newValue: any) {
             if (originalSet) {
                 originalSet.call(cmp, newValue);
             }

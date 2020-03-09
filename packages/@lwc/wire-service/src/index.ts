@@ -15,7 +15,6 @@ import { assert } from '@lwc/shared';
 import { CONTEXT_ID, CONTEXT_CONNECTED, CONTEXT_DISCONNECTED, CONTEXT_UPDATED } from './constants';
 import { ElementDef } from './engine';
 import {
-    NoArgumentListener,
     WireEventTargetListener,
     Context,
     WireContext,
@@ -23,6 +22,12 @@ import {
 } from './wiring';
 import { ValueChangedEvent } from './value-changed-event';
 import { LinkContextEvent } from './link-context-event';
+
+interface Service {
+    wiring(cmp: EventTarget, data: object, def: ElementDef, context: Context): void;
+    connected(cmp: EventTarget, data: object, def: ElementDef, context: Context): void;
+    disconnected(cmp: EventTarget, data: object, def: ElementDef, context: Context): void;
+}
 
 export interface WireEventTarget {
     dispatchEvent(evt: ValueChangedEvent): boolean;
@@ -39,7 +44,7 @@ const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterF
  * Invokes the specified callbacks.
  * @param listeners functions to call
  */
-function invokeListener(listeners: NoArgumentListener[]) {
+function invokeListener(listeners: WireEventTargetListener[]): void {
     for (let i = 0, len = listeners.length; i < len; ++i) {
         listeners[i].call(undefined);
     }
@@ -51,8 +56,8 @@ function invokeListener(listeners: NoArgumentListener[]) {
  * This service is registered with the engine's service API. It connects service
  * callbacks to wire adapter lifecycle events.
  */
-const wireService = {
-    wiring: (cmp: EventTarget, data: object, def: ElementDef, context: Context) => {
+const wireService: Service = {
+    wiring: (cmp, data, def, context) => {
         const wireContext: WireContext = (context[CONTEXT_ID] = Object.create(null));
         wireContext[CONTEXT_CONNECTED] = [];
         wireContext[CONTEXT_DISCONNECTED] = [];
@@ -114,17 +119,18 @@ const wireService = {
                     wireDef,
                     wireTarget
                 );
+
                 adapterFactory({
                     dispatchEvent: wireEventTarget.dispatchEvent.bind(wireEventTarget),
                     addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),
                     removeEventListener: wireEventTarget.removeEventListener.bind(wireEventTarget),
-                } as WireEventTarget);
+                });
             }
         }
     },
 
-    connected: (cmp: EventTarget, data: object, def: ElementDef, context: Context) => {
-        let listeners: NoArgumentListener[];
+    connected: (cmp, data, def, context) => {
+        let listeners: WireEventTargetListener[];
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(
                 !def.wire || context[CONTEXT_ID],
@@ -137,8 +143,8 @@ const wireService = {
         invokeListener(listeners);
     },
 
-    disconnected: (cmp: EventTarget, data: object, def: ElementDef, context: Context) => {
-        let listeners: NoArgumentListener[];
+    disconnected: (cmp, data, def, context) => {
+        let listeners: WireEventTargetListener[];
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(
                 !def.wire || context[CONTEXT_ID],
@@ -155,14 +161,14 @@ const wireService = {
 /**
  * Registers the wire service.
  */
-export function registerWireService(registerService: (object) => void) {
+export function registerWireService(registerService: (service: Service) => void): void {
     registerService(wireService);
 }
 
 /**
  * Registers a wire adapter.
  */
-export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
+export function register(adapterId: any, adapterFactory: WireAdapterFactory): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(adapterId, 'adapter id must be truthy');
         assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a callable');
