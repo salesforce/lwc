@@ -18,18 +18,15 @@ function paste() {
     browser.keys(['Shift', 'Insert', 'Shift']);
 }
 
-describe('clipboard-event-composed', () => {
+describe('clipboard-event-composed polyfill', () => {
     beforeEach(() => {
         browser.url(URL);
     });
 
     it('copy event should be composed', () => {
-        const input = browser.$(function() {
-            var container = document.querySelector('integration-clipboard-event-composed');
-            var child = container.shadowRoot.querySelector('integration-child');
-            return child.shadowRoot.querySelector('input');
+        browser.$(function() {
+            window.getSelection().selectAllChildren(document.body);
         });
-        input.doubleClick();
 
         copy();
 
@@ -43,12 +40,9 @@ describe('clipboard-event-composed', () => {
 
     // The cut() function is not working as expected.
     it.skip('cut event should be composed', () => {
-        const input = browser.$(function() {
-            var container = document.querySelector('integration-clipboard-event-composed');
-            var child = container.shadowRoot.querySelector('integration-child');
-            return child.shadowRoot.querySelector('input');
+        browser.$(function() {
+            window.getSelection().selectAllChildren(document.body);
         });
-        input.doubleClick();
 
         cut();
 
@@ -60,12 +54,9 @@ describe('clipboard-event-composed', () => {
     });
 
     it('paste event should be composed', () => {
-        const input = browser.$(function() {
-            var container = document.querySelector('integration-clipboard-event-composed');
-            var child = container.shadowRoot.querySelector('integration-child');
-            return child.shadowRoot.querySelector('input');
+        browser.$(function() {
+            window.getSelection().selectAllChildren(document.body);
         });
-        input.doubleClick();
 
         copy();
         paste();
