@@ -12,7 +12,7 @@ export const LWC_CONFIG_FILE = 'lwc.config.json';
 
 const DEFAULT_CONFIG: LwcConfig = { modules: [] };
 
-export function isString(str) {
+export function isString(str: any): boolean {
     return Object.prototype.toString.call(str) === '[object String]';
 }
 
@@ -29,11 +29,11 @@ export function loadConfig(configPath: string): LwcConfig {
     }
 }
 
-export function getEntry(moduleDir, moduleName, ext) {
+export function getEntry(moduleDir: string, moduleName: string, ext: string): string {
     return path.join(moduleDir, `${moduleName}.${ext}`);
 }
 
-export function getModuleEntry(moduleDir, moduleName) {
+export function getModuleEntry(moduleDir: string, moduleName: string): string | undefined {
     const entryJS = getEntry(moduleDir, moduleName, 'js');
     const entryTS = getEntry(moduleDir, moduleName, 'ts');
     const entryHTML = getEntry(moduleDir, moduleName, 'html');
