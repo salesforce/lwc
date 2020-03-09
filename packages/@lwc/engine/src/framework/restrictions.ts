@@ -408,7 +408,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
     const originalDispatchEvent = proto.dispatchEvent;
     const originalIsConnectedGetter = getOwnPropertyDescriptor(proto, 'isConnected')!.get!;
 
-    const descriptors = {
+    const descriptors: PropertyDescriptorMap = {
         dispatchEvent: generateDataDescriptor({
             value(this: LightningElement, event: Event): boolean {
                 const vm = getAssociatedVM(this);

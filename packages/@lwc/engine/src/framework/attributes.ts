@@ -46,7 +46,7 @@ const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'useMap',
 ];
 
-function offsetPropertyErrorMessage(name) {
+function offsetPropertyErrorMessage(name: string): string {
     return `Using the \`${name}\` property is an anti-pattern because it rounds the value to an integer. Instead, use the \`getBoundingClientRect\` method to obtain fractional values for the size of an element and its position relative to the viewport.`;
 }
 

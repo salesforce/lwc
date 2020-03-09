@@ -35,8 +35,7 @@ export interface VNode {
     parentElm?: Element;
     text: string | undefined;
     key: Key | undefined;
-
-    hook: Hooks;
+    hook: Hooks<any>;
     owner: VM;
 }
 
@@ -79,21 +78,15 @@ export interface VNodeData {
     ns?: string; // for SVGs
 }
 
-export type CreateHook = (vNode: VNode) => void;
-export type InsertHook = (vNode: VNode, parentNode: Node, referenceNode: Node | null) => void;
-export type MoveHook = (vNode: VNode, parentNode: Node, referenceNode: Node | null) => void;
-export type UpdateHook = (oldVNode: VNode, vNode: VNode) => void;
-export type RemoveHook = (vNode: VNode, parentNode: Node) => void;
-
-export interface Hooks {
-    create: CreateHook;
-    insert: InsertHook;
-    move: MoveHook;
-    update: UpdateHook;
-    remove: RemoveHook;
+export interface Hooks<N extends VNode> {
+    create: (vNode: N) => void;
+    insert: (vNode: N, parentNode: Node, referenceNode: Node | null) => void;
+    move: (vNode: N, parentNode: Node, referenceNode: Node | null) => void;
+    update: (oldVNode: N, vNode: N) => void;
+    remove: (vNode: N, parentNode: Node) => void;
 }
 
-export interface Module {
-    create?: CreateHook;
-    update?: UpdateHook;
+export interface Module<N extends VNode> {
+    create?: (vNode: N) => void;
+    update?: (oldVNode: N, vNode: N) => void;
 }

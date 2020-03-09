@@ -10,7 +10,7 @@ import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { valueObserved, valueMutated, ReactiveObserver } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';
-import { getAssociatedVM, rerenderVM } from '../vm';
+import { getAssociatedVM, rerenderVM, VM } from '../vm';
 import { getDecoratorsRegisteredMeta } from './register';
 import { addCallbackToNextTick } from '../utils';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
@@ -115,7 +115,7 @@ function createPublicPropertyDescriptor(
 class AccessorReactiveObserver extends ReactiveObserver {
     private value: any;
     private debouncing: boolean = false;
-    constructor(vm, set) {
+    constructor(vm: VM, set: (v: any) => void) {
         super(() => {
             if (isFalse(this.debouncing)) {
                 this.debouncing = true;

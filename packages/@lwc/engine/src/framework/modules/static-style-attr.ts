@@ -22,7 +22,7 @@ function createStyleAttribute(vnode: VNode) {
     const { style } = elm as HTMLElement;
 
     for (const name in styleMap) {
-        style[name] = styleMap[name];
+        (style as any)[name] = styleMap[name];
     }
 }
 

@@ -9,7 +9,7 @@ import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
-import { ComponentConstructor, ComponentInterface } from '../component';
+import { ComponentInterface } from '../component';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
 /**
@@ -18,11 +18,10 @@ import { isUpdatingTemplate, getVMBeingRendered } from '../template';
  * decorator.
  */
 export default function track(
-    target: ComponentConstructor,
+    target: any,
     prop: PropertyKey,
-    descriptor: PropertyDescriptor | undefined
-): PropertyDescriptor;
-export default function track(target: any, prop?, descriptor?): any {
+    descriptor?: PropertyDescriptor
+): any {
     if (arguments.length === 1) {
         return reactiveMembrane.getProxy(target);
     }

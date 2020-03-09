@@ -12,8 +12,8 @@ import { valueMutated, valueObserved } from '../libs/mutation-tracker';
 export function createObservedFieldsDescriptorMap(fields: PropertyKey[]): PropertyDescriptorMap {
     return ArrayReduce.call(
         fields,
-        (acc: PropertyDescriptorMap, field) => {
-            acc[field] = createObservedFieldPropertyDescriptor(field);
+        (acc, field) => {
+            (acc as PropertyDescriptorMap)[field] = createObservedFieldPropertyDescriptor(field);
 
             return acc;
         },

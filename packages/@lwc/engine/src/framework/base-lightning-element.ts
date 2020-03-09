@@ -525,20 +525,17 @@ BaseLightningElementConstructor.prototype = {
     },
 };
 
-// Typescript is inferring the wrong function type for this particular
-// overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-// @ts-ignore type-mismatch
-const baseDescriptors: PropertyDescriptorMap = ArrayReduce.call(
+const baseDescriptors = ArrayReduce.call(
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
-    (descriptors: PropertyDescriptorMap, propName: string) => {
-        descriptors[propName] = createBridgeToElementDescriptor(
+    (descriptors, propName) => {
+        (descriptors as PropertyDescriptorMap)[propName] = createBridgeToElementDescriptor(
             propName,
             HTMLElementOriginalDescriptors[propName]
         );
         return descriptors;
     },
     create(null)
-);
+) as PropertyDescriptorMap;
 
 defineProperties(BaseLightningElementConstructor.prototype, baseDescriptors);
 
