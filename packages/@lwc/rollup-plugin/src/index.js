@@ -84,7 +84,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                         modules: customResolvedModules,
                         rootDir: customRootDir,
                     }).entry;
-                } catch (e) {
+                } catch {
                     // noop: let rollup plugins keep resolving
                 }
             }
