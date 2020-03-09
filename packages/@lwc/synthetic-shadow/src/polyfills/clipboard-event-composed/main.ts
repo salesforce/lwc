@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assign, create, defineProperties, isUndefined } from '@lwc/shared';
+import { assign, create, defineProperties } from '@lwc/shared';
 
-if (!isUndefined(typeof ClipboardEvent)) {
+if (typeof ClipboardEvent !== 'undefined') {
     const isComposedType = assign(create(null), {
         copy: 1,
         cut: 1,
