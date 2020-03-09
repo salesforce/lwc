@@ -53,7 +53,7 @@ export function isSlot(element: IRElement) {
 }
 
 export function containsDynamicChildren(element: IRElement) {
-    return element.children.some(isDynamic);
+    return element.children.some(child => isElement(child) && isDynamic(child));
 }
 
 export function isDynamic(element: IRElement): boolean {
@@ -89,7 +89,7 @@ export function destructuringAssignmentFromObject(
 
 export function memorizeHandler(
     codeGen: CodeGen,
-    element,
+    element: IRElement,
     componentHandler: t.Expression,
     handler: t.Expression
 ): t.Expression {

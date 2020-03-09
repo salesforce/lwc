@@ -4,35 +4,38 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-class Node<T> {
-    public previous: Node<T>;
-    public data: T;
 
-    constructor(data: T, previous: Node<T>) {
-        this.previous = previous;
-        this.data = data;
-    }
+interface Node<T> {
+    previous: Node<T> | null;
+    data: T;
 }
 
-// tslint:disable-next-line:max-classes-per-file
-export default class Stack<TData> {
-    private topNode: Node<TData>;
+export default class Stack<T> {
+    private topNode: Node<T> | null = null;
 
-    public push(value: TData): void {
-        // create a new Node and add it to the top
-        const node = new Node<TData>(value, this.topNode);
-        this.topNode = node;
+    private getTopNode(): Node<T> {
+        if (!this.topNode) {
+            throw new Error('Stack is empty');
+        }
+
+        return this.topNode;
     }
 
-    public pop(): TData {
-        // remove the top node from the stack.
-        // the node at the top now is the one before it
-        const poppedNode = this.topNode;
-        this.topNode = poppedNode.previous;
-        return poppedNode.data;
+    push(value: T): void {
+        this.topNode = {
+            previous: this.topNode,
+            data: value,
+        };
     }
 
-    public peek(): TData {
-        return this.topNode.data;
+    pop(): T {
+        const { data, previous } = this.getTopNode();
+
+        this.topNode = previous;
+        return data;
+    }
+
+    peek(): T {
+        return this.getTopNode().data;
     }
 }

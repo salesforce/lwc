@@ -79,7 +79,7 @@ function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: 
         const lwcObject: t.ObjectProperty[] = Object.keys(lwc)
             .filter(key => !DISALLOWED_LWC_DIRECTIVES.has(key))
             .map(key => {
-                return t.objectProperty(t.identifier(key), t.stringLiteral(lwc[key]));
+                return t.objectProperty(t.identifier(key), t.stringLiteral((lwc as any)[key]));
             });
 
         const lwcObj = t.objectProperty(t.identifier('lwc'), t.objectExpression(lwcObject));
@@ -349,8 +349,8 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             const { expression: testExpression } = bindExpression(element.if!, element);
 
             return t.arrayExpression(
-                fragmentNodes.elements.map((child: t.Expression) =>
-                    applyInlineIf(element, child, testExpression)
+                fragmentNodes.elements.map(child =>
+                    child !== null ? applyInlineIf(element, child as any, testExpression) : null
                 )
             );
         } else {

@@ -14,15 +14,14 @@ import {
     HTMLText,
 } from './types';
 
-export type VisitorFn = (element: IRNode) => void;
-
-export interface NodeVisitor {
-    enter?: VisitorFn;
-    exit?: VisitorFn;
+export interface NodeVisitor<T extends IRNode> {
+    enter?: (element: T) => void;
+    exit?: (element: T) => void;
 }
 
 export interface Visitor {
-    [type: string]: NodeVisitor;
+    text?: NodeVisitor<IRText>;
+    element?: NodeVisitor<IRElement>;
 }
 
 export function createElement(tag: string, original: HTMLElement): IRElement {
@@ -53,8 +52,7 @@ export function isCustomElement(node: IRNode): boolean {
 }
 
 export function traverse(node: IRNode, visitor: Visitor): void {
-    const nodeVisitor = visitor[node.type] || {};
-    const { enter, exit } = nodeVisitor;
+    const { enter, exit }: NodeVisitor<any> = visitor[node.type] || {};
 
     if (enter) {
         enter(node);
