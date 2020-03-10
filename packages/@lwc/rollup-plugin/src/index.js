@@ -31,15 +31,6 @@ function isMixingJsAndTs(importerExt, importeeExt) {
     );
 }
 
-function validateUserModules(modules = []) {
-    if (modules.length) {
-        const hasNpmModuleRecords = modules.some(lwcResolver.isNpmModuleRecord);
-        if (hasNpmModuleRecords) {
-            throw new Error('Resolution of npm modules are not allowed in rollup config');
-        }
-    }
-}
-
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
@@ -53,7 +44,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
         options({ input }) {
             const { modules: userModules = [], rootDir } = mergedPluginOptions;
             customRootDir = rootDir ? path.resolve(rootDir) : path.dirname(path.resolve(input));
-            validateUserModules(userModules);
             customResolvedModules = [...userModules, ...DEFAULT_MODULES, { dir: customRootDir }];
         },
 

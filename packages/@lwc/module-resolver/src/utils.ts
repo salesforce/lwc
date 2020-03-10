@@ -89,7 +89,7 @@ export function getEntry(moduleDir: string, moduleName: string, ext: string): st
     return path.join(moduleDir, `${moduleName}.${ext}`);
 }
 
-export function getModuleEntry(moduleDir: string, moduleName: string): string | undefined {
+export function getModuleEntry(moduleDir: string, moduleName: string): string {
     const entryJS = getEntry(moduleDir, moduleName, 'js');
     const entryTS = getEntry(moduleDir, moduleName, 'ts');
     const entryHTML = getEntry(moduleDir, moduleName, 'html');
@@ -104,6 +104,8 @@ export function getModuleEntry(moduleDir: string, moduleName: string): string | 
         return entryHTML;
     } else if (fs.existsSync(entryCSS)) {
         return entryCSS;
+    } else {
+        throw new Error(`Unable to find a valid entry point for ${moduleDir}/${moduleName}`);
     }
 }
 
@@ -194,8 +196,12 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
     throw new Error(`Unable to find any LWC configuration file from ${currentPath}`);
 }
 
-export function validateNpmConfig(config: LwcConfig) {
-    if (config.modules && !config.expose) {
+export function validateNpmConfig(config: LwcConfig): asserts config is Required<LwcConfig> {
+    if (!config.modules) {
+        throw new Error('Missing "modules" property for a npm config');
+    }
+
+    if (!config.expose) {
         throw new Error(
             'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.'
         );

@@ -53,14 +53,20 @@ function resolveModuleFromDir(
 ): RegistryEntry | undefined {
     const { dir } = moduleRecord;
     const absModuleDir = path.isAbsolute(dir) ? dir : path.join(opts.rootDir, dir);
-    const [ns, name] = specifier.split('/');
+    const parts = specifier.split('/');
 
-    if (ns && name) {
-        const moduleDir = path.join(absModuleDir, ns, name);
+    if (parts.length !== 2) {
+        // We skip resolution but can't throw since other ModuleEntry types might come after
+        return;
+    }
+
+    const [ns, name] = parts;
+    const moduleDir = path.join(absModuleDir, ns, name);
+
+    // If the module dir does not exist, we skip the resolution but dont throw since it can be resolved later
+    if (fs.existsSync(moduleDir)) {
         const entry = getModuleEntry(moduleDir, name);
-        if (entry) {
-            return createRegistryEntry(entry, specifier, opts);
-        }
+        return createRegistryEntry(entry, specifier, opts);
     }
 }
 
@@ -73,28 +79,24 @@ function resolveModuleFromNpm(
     const pkgJsonPath = require.resolve(`${npm}/package.json`, { paths: [opts.rootDir] });
     const packageDir = path.dirname(pkgJsonPath);
     const lwcConfig = getLwcConfig(packageDir);
-    const modules = lwcConfig && lwcConfig.modules;
 
-    if (modules) {
-        validateNpmConfig(lwcConfig);
-        const exposedModules = lwcConfig.expose || [];
-        if (exposedModules.includes(specifier)) {
-            for (const moduleRecord of modules) {
-                if (!isNpmModuleRecord(moduleRecord)) {
-                    const registryEntry = resolveModuleRecordType(specifier, moduleRecord, {
-                        rootDir: packageDir,
-                    });
-                    if (registryEntry) {
-                        if (aliasMapping && aliasMapping[specifier]) {
-                            registryEntry.specifier = aliasMapping[specifier];
-                        }
-                        return registryEntry;
+    validateNpmConfig(lwcConfig);
+    if (lwcConfig.expose.includes(specifier)) {
+        for (const moduleRecord of lwcConfig.modules) {
+            if (!isNpmModuleRecord(moduleRecord)) {
+                const registryEntry = resolveModuleRecordType(specifier, moduleRecord, {
+                    rootDir: packageDir,
+                });
+                if (registryEntry) {
+                    if (aliasMapping && aliasMapping[specifier]) {
+                        registryEntry.specifier = aliasMapping[specifier];
                     }
+                    return registryEntry;
                 }
             }
-
-            throw new Error(`Unable to find ${specifier} under package ${npmModuleRecord.npm}`);
         }
+
+        throw new Error(`Unable to find ${specifier} under package ${npmModuleRecord.npm}`);
     }
 }
 
