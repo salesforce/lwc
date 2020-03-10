@@ -85,7 +85,7 @@ export function loadPackageJson(pkgDir: string): any {
     }
 }
 
-export function getEntry(moduleDir, moduleName, ext): string {
+export function getEntry(moduleDir: string, moduleName: string, ext: string): string {
     return path.join(moduleDir, `${moduleName}.${ext}`);
 }
 
@@ -210,7 +210,11 @@ export function getLwcConfig(dirPath: string): LwcConfig {
     return lwcConfig;
 }
 
-export function createRegistryEntry(entry, specifier, opts: InnerResolverOptions): RegistryEntry {
+export function createRegistryEntry(
+    entry: string,
+    specifier: string,
+    opts: InnerResolverOptions
+): RegistryEntry {
     return {
         entry,
         specifier,
