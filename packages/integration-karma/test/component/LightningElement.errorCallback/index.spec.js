@@ -1,153 +1,134 @@
 import { createElement } from 'lwc';
-import XErrorBoundary from 'x/errorBoundary';
+
+import XBoundaryChildConstructorThrow from 'x/boundaryChildConstructorThrow';
+import XBoundaryChildConnectedThrow from 'x/boundaryChildConnectedThrow';
+import XBoundaryChildRenderThrow from 'x/boundaryChildRenderThrow';
+import XBoundaryChildRenderedThrow from 'x/boundaryChildRenderedThrow';
+import XBoundaryChildSlotThrow from 'x/boundaryChildSlotThrow';
+import XNestedBoundaryChildThrow from 'x/nestedBoundaryChildThrow';
+import XBoundaryChildSelfRehydrateThrow from 'x/boundaryChildSelfRehydrateThrow';
+import XBoundaryAlternativeViewThrow from 'x/boundaryAlternativeViewThrow';
+
 import XChildConstructorThrowDuringInit from 'x/childConstructorThrowDuringInit';
 import XChildRenderThrowDuringInit from 'x/childRenderThrowDuringInit';
 import XChildRenderedThrowDuringInit from 'x/childRenderedThrowDuringInit';
 import XChildConnectedThrowDuringInit from 'x/childConnectedThrowDuringInit';
 
-// Wait for a macrotask because the test has to wait for a nested rehydration(async) to complete.
-// tl;dr
-// The tests are setup in a way where, each test component is enabled by changing a
-// tracked property on the container('x-error-boundary-suite'). This triggers an rehydration.
-// Next, there is an intermediate component that has errorCallback() to handle errors in the nested
-// child's life cycle. The intermediate component triggers a self rehydration by changing its state
-// in the errorCallback()
-function waitForNestedRehydration() {
-    return new Promise(resolve => {
-        setTimeout(resolve);
-    });
-}
-
 describe('error boundary', () => {
-    let elm;
-    let shadowRoot;
-    beforeEach(() => {
-        elm = createElement('x-error-boundary-suite', { is: XErrorBoundary });
-        document.body.appendChild(elm);
-        shadowRoot = elm.shadowRoot;
-    });
-
     it('should render alternative view if child throws in renderedCallback()', () => {
-        elm.toggleFlag('boundaryChildRenderedThrow');
-        return waitForNestedRehydration().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-rendered-throw')
-                .shadowRoot;
-            const altenativeView = innerShadowRoot.querySelector('.rendered-calback-altenative');
-            expect(altenativeView.textContent).toEqual('renderedCallback alternative view');
+        const elm = createElement('x-boundary-child-rendered-throw', {
+            is: XBoundaryChildRenderedThrow,
+        });
+        document.body.appendChild(elm);
 
-            // ensure offender has been unmounted
-            expect(innerShadowRoot.querySelector('x-child-rendered-throw')).toBe(null);
+        return Promise.resolve().then(() => {
+            const alternativeView = elm.shadowRoot.querySelector('.rendered-callback-alternative');
+
+            expect(alternativeView.textContent).toEqual('renderedCallback alternative view');
+            expect(elm.shadowRoot.querySelector('x-child-rendered-throw')).toBe(null);
         });
     });
 
     it('should render alternative view if child throws in render()', () => {
-        elm.toggleFlag('boundaryChildRenderThrow');
-        return waitForNestedRehydration().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-render-throw')
-                .shadowRoot;
-            const altenativeView = innerShadowRoot.querySelector('.render-altenative');
-            expect(altenativeView.textContent).toEqual('render alternative view');
+        const elm = createElement('x-boundary-child-render-throw', {
+            is: XBoundaryChildRenderThrow,
+        });
+        document.body.appendChild(elm);
 
-            // ensure offender has been unmounted
-            expect(innerShadowRoot.querySelector('x-child-render-throw')).toBe(null);
+        return Promise.resolve().then(() => {
+            const alternativeView = elm.shadowRoot.querySelector('.render-alternative');
+
+            expect(alternativeView.textContent).toEqual('render alternative view');
+            expect(elm.shadowRoot.querySelector('x-child-render-throw')).toBe(null);
         });
     });
 
     it('should render alternative view if child throws in constructor()', () => {
-        elm.toggleFlag('boundaryChildConstructorThrow');
-        return waitForNestedRehydration().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-constructor-throw')
-                .shadowRoot;
-            const altenativeView = innerShadowRoot.querySelector('.constructor-altenative');
-            expect(altenativeView.textContent).toEqual('constructor alternative view');
+        const elm = createElement('x-boundary-child-constructor-throw', {
+            is: XBoundaryChildConstructorThrow,
+        });
+        document.body.appendChild(elm);
 
-            // ensure offender has been unmounted
-            expect(innerShadowRoot.querySelector('x-child-constructor-throw')).toBe(null);
-            expect(innerShadowRoot.querySelector('x-child-constructor-wrapper')).toBe(null);
+        return Promise.resolve().then(() => {
+            const alternativeView = elm.shadowRoot.querySelector('.constructor-alternative');
+
+            expect(alternativeView.textContent).toEqual('constructor alternative view');
+            expect(elm.shadowRoot.querySelector('x-child-constructor-throw')).toBe(null);
+            expect(elm.shadowRoot.querySelector('x-child-constructor-wrapper')).toBe(null);
         });
     });
 
     it('should render alternative view if child throws in connectedCallback()', () => {
-        elm.toggleFlag('boundaryChildConnectedThrow');
-        return waitForNestedRehydration().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-connected-throw')
-                .shadowRoot;
-            const altenativeView = innerShadowRoot.querySelector('.connected-callback-altenative');
-            expect(altenativeView.textContent).toEqual('connectedCallback alternative view');
+        const elm = createElement('x-boundary-child-connected-throw', {
+            is: XBoundaryChildConnectedThrow,
+        });
+        document.body.appendChild(elm);
 
-            // ensure offender has been unmounted
-            expect(innerShadowRoot.querySelector('x-child-connected-throw')).toBe(null);
+        return Promise.resolve().then(() => {
+            const alternativeView = elm.shadowRoot.querySelector('.connected-callback-alternative');
+
+            expect(alternativeView.textContent).toEqual('connectedCallback alternative view');
+            expect(elm.shadowRoot.querySelector('x-child-connected-throw')).toBe(null);
         });
     });
 
     it('should render alternative view if child slot throws in render()', () => {
-        elm.toggleFlag('boundaryChildSlotThrow');
-        return waitForNestedRehydration().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-slot-throw')
-                .shadowRoot;
-            const altenativeView = innerShadowRoot.querySelector('.slot-altenative');
-            expect(altenativeView.textContent).toEqual('slot alternative view');
+        const elm = createElement('x-boundary-child-slot-throw', { is: XBoundaryChildSlotThrow });
+        document.body.appendChild(elm);
 
-            // ensure offender has been unmounted
-            expect(innerShadowRoot.querySelector('x-child-slot-host')).toBe(null);
+        return Promise.resolve().then(() => {
+            const alternativeView = elm.shadowRoot.querySelector('.slot-alternative');
+
+            expect(alternativeView.textContent).toEqual('slot alternative view');
+            expect(elm.shadowRoot.querySelector('x-child-slot-host')).toBe(null);
         });
     });
 
     it('should render alternative view if nested child throws in render()', () => {
-        elm.toggleFlag('boundaryChildThrow');
-        return waitForNestedRehydration().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector('x-nested-boundary-child-throw')
-                .shadowRoot;
-            const altenativeView = innerShadowRoot.querySelector('.boundary-alt-view');
-            expect(altenativeView.textContent).toEqual('alternative view');
-
-            // ensure offender has been unmounted
-            expect(innerShadowRoot.querySelector('x-nested-grand-child-throw')).toBe(null);
+        const elm = createElement('x-nested-boundary-child-throw', {
+            is: XNestedBoundaryChildThrow,
         });
-    });
+        document.body.appendChild(elm);
 
-    it('should render alternative view if child throws during self rehydration cycle', () => {
-        elm.toggleFlag('boundaryChildSelfRehydrateThrow');
         return Promise.resolve().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector(
-                'x-boundary-child-self-rehydrate-throw'
-            ).shadowRoot;
-            const deepNestedHost = innerShadowRoot.querySelector('x-child-self-rehydrate-throw');
-            deepNestedHost.incrementCounter();
-            return waitForNestedRehydration().then(() => {
-                const altenativeView = innerShadowRoot.querySelector('.self-rehydrate-altenative');
-                expect(altenativeView.textContent).toEqual('self rehydrate alternative view');
+            const alternativeView = elm.shadowRoot.querySelector('.boundary-alt-view');
 
-                // ensure offender has been unmounted
-                expect(innerShadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
-            });
+            expect(alternativeView.textContent).toEqual('alternative view');
+            expect(elm.shadowRoot.querySelector('x-nested-grand-child-throw')).toBe(null);
         });
     });
 
-    // #1169 parent's errorCallback never invoked
-    xit('should render parent boundary`s alternative view when child boundary fails to render its alternative view', () => {
-        elm.toggleFlag('nestedBoundaryChildAltViewThrow');
-        return waitForNestedRehydration().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector(
-                'x-nested-boundary-child-alt-view-throw'
-            ).shadowRoot;
-            const altenativeView = innerShadowRoot.querySelector('.boundary-alt-view');
-            expect(altenativeView.textContent).toEqual('Host Boundary Alternative View');
+    it('should render alternative view if child throws during self rehydration cycle', done => {
+        const elm = createElement('x-boundary-child-self-rehydrate-throw', {
+            is: XBoundaryChildSelfRehydrateThrow,
+        });
+        document.body.appendChild(elm);
 
-            // ensure offender has been unmounted
-            expect(innerShadowRoot.querySelector('x-nested-child-boundary-view-throw')).toBe(null);
+        const child = elm.shadowRoot.querySelector('x-child-self-rehydrate-throw');
+        child.incrementCounter();
+
+        // Using a setTimeout instead of a Promise here because it takes multiple microtasks for the engine to render
+        // the alternative view
+        setTimeout(() => {
+            const alternativeView = elm.shadowRoot.querySelector('.self-rehydrate-alternative');
+
+            expect(alternativeView.textContent).toEqual('self rehydrate alternative view');
+            expect(elm.shadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
+
+            done();
         });
     });
 
-    it('should fail to unmount alternatvie offender when root element is not a boundary', () => {
-        elm.toggleFlag('boundaryAlternativeViewThrow');
-        return waitForNestedRehydration().then(() => {
-            const innerShadowRoot = shadowRoot.querySelector('x-boundary-alternative-view-throw')
-                .shadowRoot;
+    it('should fail to unmount alternative offender when root element is not a boundary', () => {
+        const elm = createElement('x-boundary-alternative-view-throw', {
+            is: XBoundaryAlternativeViewThrow,
+        });
+        document.body.appendChild(elm);
 
+        return Promise.resolve().then(() => {
             // ensure offender still exists since boundary failed to recover
             expect(
-                innerShadowRoot
+                elm.shadowRoot
                     .querySelector('x-alt-child-boundary-view-throw')
                     .shadowRoot.querySelector('x-post-error-child-view')
             ).not.toBe(null);
