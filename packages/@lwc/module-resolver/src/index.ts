@@ -32,18 +32,21 @@ import {
 } from './utils';
 
 function resolveModuleFromAlias(
+    specifier: string,
     moduleRecord: AliasModuleRecord,
     opts: InnerResolverOptions
-): RegistryEntry {
-    const { name: specifier, path: modulePath } = moduleRecord;
-    const entry = path.resolve(opts.rootDir, modulePath);
-    if (!fs.existsSync(entry)) {
-        throw new Error(
-            `Unable to find AliasModuleRecord for "${specifier}". File ${entry} does not exist`
-        );
-    }
+): RegistryEntry | undefined {
+    const { name, path: modulePath } = moduleRecord;
+    if (specifier === name) {
+        const entry = path.resolve(opts.rootDir, modulePath);
+        if (!fs.existsSync(entry)) {
+            throw new Error(
+                `Unable to find AliasModuleRecord for "${specifier}". File ${entry} does not exist`
+            );
+        }
 
-    return createRegistryEntry(entry, specifier, opts);
+        return createRegistryEntry(entry, specifier, opts);
+    }
 }
 
 function resolveModuleFromDir(
@@ -108,8 +111,8 @@ function resolveModuleRecordType(
     const { rootDir } = opts;
     validateModuleRecord(moduleRecord);
 
-    if (isAliasModuleRecord(moduleRecord) && moduleRecord.name === specifier) {
-        return resolveModuleFromAlias(moduleRecord, { rootDir });
+    if (isAliasModuleRecord(moduleRecord)) {
+        return resolveModuleFromAlias(specifier, moduleRecord, { rootDir });
     } else if (isDirModuleRecord(moduleRecord)) {
         return resolveModuleFromDir(specifier, moduleRecord, { rootDir });
     } else if (isNpmModuleRecord(moduleRecord)) {
