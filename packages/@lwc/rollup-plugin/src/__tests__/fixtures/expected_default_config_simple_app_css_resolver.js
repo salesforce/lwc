@@ -7,13 +7,13 @@
        : varResolver;
 
    function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-     return (
-       "\n" +
+     return [
+       "\n",
        (nativeShadow
-         ? ":host {color: " + varResolver("--lwc-my-color") + ";}"
-         : hostSelector + " {color: " + varResolver("--lwc-my-color") + ";}") +
-       "\n"
-     );
+         ? [":host {color: ", varResolver("--lwc-my-color"), ";}"].join('')
+         : [hostSelector, " {color: ", varResolver("--lwc-my-color"), ";}" ].join('')),
+        "\n"
+       ].join('');
    }
    var _implicitStylesheets = [stylesheet];
 
