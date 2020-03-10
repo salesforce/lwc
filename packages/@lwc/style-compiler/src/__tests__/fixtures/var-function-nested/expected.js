@@ -1,5 +1,5 @@
 import varResolver from "custom-properties-resolver";
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return "div" + shadowSelector + " {background: " + varResolver("--lwc-color",varResolver("--lwc-other","black")) + ";}\n";
+  return ["div", shadowSelector, " {background: ", varResolver("--lwc-color",varResolver("--lwc-other","black")), ";}\n"].join('');
 }
 export default [stylesheet];
