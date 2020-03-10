@@ -94,7 +94,7 @@ describe('object mutations', () => {
         });
     });
 
-    it('should not log an error when setting tracked value to null', function() {
+    it('should not log an error when setting tracked value to null', () => {
         const elm = createElement('x-foo-tracked-null', { is: SetTrackedValueToNull });
 
         expect(() => document.body.appendChild(elm)).not.toLogErrorDev();
@@ -134,7 +134,7 @@ describe('array mutations', () => {
 });
 
 describe('non-observable values', () => {
-    it('should not throw error when accessing a non-observable property from tracked property when not rendering', function() {
+    it('should not throw an error when accessing a non-observable property from a tracked property when not rendering', () => {
         const elm = createElement('x-foo', { is: NonObservable });
         elm.foo = new Map();
         expect(() => {

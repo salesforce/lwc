@@ -106,7 +106,7 @@ describe('inheritance', () => {
     });
 });
 
-it('should not log an error when initializing api value to null', function() {
+it('should not log an error when initializing api value to null', () => {
     const elm = createElement('x-foo-init-api', { is: NullInitialValue });
 
     expect(() => document.body.appendChild(elm)).not.toLogErrorDev();

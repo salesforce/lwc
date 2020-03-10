@@ -10,6 +10,19 @@ import NonReflectedTabIndex from 'x/nonReflectedTabIndex';
 import ReflectedTabIndex from 'x/reflectedTabIndex';
 import SetAttribute from 'x/setAttribute';
 import AccessAttributeInConstructor from 'x/accessAttributeInConstructor';
+import AttributeIsReactive, {
+    resetRenderCount as resetReactiveRenderCount,
+    renderCount as attributeIsReactiveRenderCount,
+} from 'x/attributeIsReactive';
+import AttributeMutations, {
+    resetCounters as resetAttributeMutationsCounters,
+    attributeSetterCounter,
+    attributeRenderCounter,
+    attributeGetterCounter,
+} from 'x/attributeMutations';
+import AttributeSetInConstructor, {
+    propertyAndValueToSetInConstructor,
+} from 'x/attributeSetInConstructor';
 
 describe('global HTML Properties', () => {
     it('should return null during construction', () => {
@@ -40,6 +53,91 @@ describe('global HTML Properties', () => {
         document.body.appendChild(elm);
 
         expect(elm.getAttribute('title')).not.toBe('parent title');
+    });
+
+    const cases = [
+        { prop: 'accessKey', value: 'accessKey' },
+        { prop: 'dir', value: 'ltr' },
+        { prop: 'hidden', value: true },
+        { prop: 'id', value: 'id' },
+        { prop: 'lang', value: 'en' },
+        { prop: 'title', value: 'title' },
+    ];
+
+    cases.forEach(testCase => {
+        const { prop, value } = testCase;
+        describe(`#${prop}`, () => {
+            if (prop !== 'hidden') {
+                it(`should reflect ${prop} attribute by default`, () => {
+                    const element = createElement(`prop-reflect-${prop}`, { is: Test });
+                    element[prop] = value;
+                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, prop)).toBe(value);
+                });
+            }
+
+            it(`should return correct value from native ${prop} getter`, () => {
+                const element = createElement(`prop-getter-${prop}`, { is: Test });
+                element[prop] = value;
+                expect(element[prop]).toBe(value);
+            });
+
+            it(`${prop} should be reactive by default`, () => {
+                resetReactiveRenderCount();
+                const element = createElement(`prop-${prop}-reactive`, { is: AttributeIsReactive });
+                document.body.appendChild(element);
+
+                element[prop] = value;
+                return Promise.resolve().then(() => {
+                    expect(attributeIsReactiveRenderCount).toBe(2);
+                    expect(element.shadowRoot.querySelector(`div.${prop}`).textContent).toBe(
+                        `${value}`
+                    );
+                });
+            });
+            it('should throw an error when setting default value in constructor', () => {
+                propertyAndValueToSetInConstructor(prop, value);
+                expect(() => {
+                    createElement('x-foo', { is: AttributeSetInConstructor });
+                }).toThrowErrorDev(Error, /The result must not have attributes./);
+            });
+            describe('attribute custom getter/setter', () => {
+                beforeEach(() => {
+                    resetAttributeMutationsCounters();
+                });
+                it('should call setter defined in component', () => {
+                    const element = createElement(`prop-setter-${prop}`, {
+                        is: AttributeMutations,
+                    });
+                    element[prop] = value;
+
+                    expect(attributeSetterCounter).toBe(1);
+                });
+                it('should not be reactive when defining own setter', () => {
+                    const element = createElement(`prop-setter-${prop}-reactive`, {
+                        is: AttributeMutations,
+                    });
+                    document.body.appendChild(element);
+
+                    element[prop] = value;
+                    return Promise.resolve().then(() => {
+                        expect(attributeRenderCounter).toBe(1);
+                    });
+                });
+                it('should call getter defined in component', () => {
+                    const element = createElement(`prop-getter-${prop}-imperative`, {
+                        is: AttributeMutations,
+                    });
+
+                    expect(element[prop]).toBe(`${value}`);
+                    expect(attributeGetterCounter).toBe(1);
+                });
+            });
+        });
+    });
+    it(`should reflect hidden attribute by default`, () => {
+        const element = createElement(`prop-reflect-hidden`, { is: Test });
+        element.hidden = true;
+        expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'hidden')).toBe('');
     });
 });
 
@@ -127,9 +225,10 @@ it('should set user specified value during setAttribute call', () => {
 
 it('should log console error accessing props in constructor', () => {
     expect(() => {
-        createElement('prop-setter-title', { is: AccessAttributeInConstructor });
+        createElement('prop-getter-title', { is: AccessAttributeInConstructor });
     }).toLogErrorDev(
-        /\[LWC error\]: `HTMLBridgeElement` constructor can't read the value of property `title` because the owner component hasn't set the value yet. Instead, use the `HTMLBridgeElement` constructor to set a default value for the property./
+        // #1767: Error message in IE11 will show the constructor name as 'undefined'
+        /\[LWC error\]: `[a-zA-Z_]*` constructor can't read the value of property `title` because the owner component hasn't set the value yet. Instead, use the `[a-zA-Z_]*` constructor to set a default value for the property./
     );
 });
 

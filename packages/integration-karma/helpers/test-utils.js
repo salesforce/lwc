@@ -330,11 +330,25 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         register = {};
     }
 
+    // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposed. This method
+    // filters this node.
+    function getHostChildNodes(host) {
+        var filtered = [];
+        const childNodes = host.childNodes;
+        for (var i = 0; i < childNodes.length; i++) {
+            var n = childNodes[i];
+            if (!(n.nodeType === Node.COMMENT_NODE && n.tagName.startsWith('#shadow-root'))) {
+                filtered.push(n);
+            }
+        }
+        return filtered;
+    }
     return {
         registerForLoad: registerForLoad,
         clearRegister: clearRegister,
         load: load,
         extractDataIds: extractDataIds,
         extractShadowDataIds: extractShadowDataIds,
+        getHostChildNodes: getHostChildNodes,
     };
 })(LWC, jasmine, beforeAll);

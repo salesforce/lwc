@@ -1,4 +1,5 @@
 import { createElement } from 'lwc';
+import { getHostChildNodes } from 'test-utils';
 
 import Slotted from 'x/slotted';
 import SlottedParent from 'x/slottedParent';
@@ -7,14 +8,6 @@ import UnslottedParent from 'x/unslottedParent';
 import HasNoSlot from 'x/hasNoSlot';
 import Parent from 'x/parent';
 import SimpleParent from 'x/simpleParent';
-
-// #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposed. This method
-// filters this node.
-function getHostChildNodes(host) {
-    return [...host.childNodes].filter(n => {
-        return n.nodeType !== Node.COMMENT_NODE && !n.tagName.startsWith('#shadow-root');
-    });
-}
 
 describe('Node.childNodes', () => {
     it('should return the right children Nodes - x-slotted', () => {
@@ -85,7 +78,7 @@ describe('Node.childNodes', () => {
         const elm = createElement('x-has-no-slot', { is: HasNoSlot });
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('div');
-        const childNodes = child.childNodes;
+        const childNodes = getHostChildNodes(child);
         expect(childNodes.length).toBe(1);
         expect(childNodes[0]).toBe(elm.shadowRoot.querySelector('p'));
     });
@@ -94,7 +87,7 @@ describe('Node.childNodes', () => {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-has-no-slot');
-        const childNodes = child.childNodes;
+        const childNodes = getHostChildNodes(child);
         expect(childNodes.length).toBe(0);
     });
 
@@ -102,7 +95,7 @@ describe('Node.childNodes', () => {
         const elm = createElement('x-slotted-parent', { is: SlottedParent });
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-has-slot');
-        const childNodes = child.childNodes;
+        const childNodes = getHostChildNodes(child);
         expect(childNodes.length).toBe(2);
     });
 
@@ -110,7 +103,7 @@ describe('Node.childNodes', () => {
         const elm = createElement('x-parent', { is: TextSlottedParent });
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-has-slot');
-        const childNodes = child.childNodes;
+        const childNodes = getHostChildNodes(child);
         expect(childNodes.length).toBe(1);
         expect(childNodes[0].nodeType).toBe(3);
         expect(childNodes[0].textContent).toBe('text');
@@ -120,14 +113,14 @@ describe('Node.childNodes', () => {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-text');
-        const childNodes = child.childNodes;
+        const childNodes = getHostChildNodes(child);
         expect(childNodes.length).toBe(0);
     });
 
     it('should not return dynamic child text from within template', () => {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
-        const childNodes = elm.shadowRoot.querySelector('x-dynamic-text').childNodes;
+        const childNodes = getHostChildNodes(elm.shadowRoot.querySelector('x-dynamic-text'));
         expect(childNodes.length).toBe(0);
     });
 
