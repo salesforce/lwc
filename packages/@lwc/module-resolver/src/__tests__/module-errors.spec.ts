@@ -75,4 +75,38 @@ describe('resolve individual module', () => {
             )
         );
     });
+
+    test('throw on null importee', () => {
+        function run() {
+            resolveModule(null);
+        }
+        expect(run).toThrow('Invalid importee');
+    });
+
+    test('throw on relative paths', () => {
+        function run() {
+            resolveModule('./some-path');
+        }
+        expect(run).toThrow('Unable to resolve relative paths for ./some-path');
+    });
+
+    test('throw on absolute paths', () => {
+        function run() {
+            resolveModule('/some-path');
+        }
+        expect(run).toThrow('Unable to resolve relative paths for /some-path');
+    });
+
+    test('throw on invalid mdoule record', () => {
+        function run() {
+            const customImporter = path.join(__dirname, 'fixtures/errors/empty/empty.js');
+            const expectedImportee = 'empty';
+
+            resolveModule(expectedImportee, customImporter, {
+                modules: [{}],
+            });
+        }
+
+        expect(run).toThrow('Invalid moduleRecord type');
+    });
 });

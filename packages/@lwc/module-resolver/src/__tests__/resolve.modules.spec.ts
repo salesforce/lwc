@@ -41,4 +41,26 @@ describe('resolve individual module', () => {
         expect(moduleRegistryEntry).toBeDefined();
         expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
     });
+
+    test('combine partial module resolution configuration', () => {
+        const customImporter = path.join(
+            __dirname,
+            'fixtures/custom-resolution/custom-override.js'
+        );
+        const expectedImportee = 'custom-module-b';
+        const expectedEntry = path.join(__dirname, 'fixtures/custom-resolution/custom/module-b.js');
+
+        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter, {
+            modules: [
+                {
+                    name: 'custom-module-b',
+                    path: 'custom/module-b.js',
+                },
+            ],
+        });
+
+        expect(moduleRegistryEntry).toBeDefined();
+        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
+        expect(moduleRegistryEntry.entry).toBe(expectedEntry);
+    });
 });
