@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayMap, getOwnPropertyNames, isUndefined } from '@lwc/shared';
+
 import { ComponentConstructor } from './component';
-import { createVM, appendRootVM, removeRootVM, getAssociatedVM } from './vm';
+import { createVM, connectRootElement, disconnectedRootElement } from './vm';
 import { getComponentDef } from './def';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { HTMLElementConstructor } from './base-bridge-element';
@@ -46,12 +47,10 @@ export function buildCustomElementConstructor(
             });
         }
         connectedCallback() {
-            const vm = getAssociatedVM(this);
-            appendRootVM(vm);
+            connectRootElement(this);
         }
         disconnectedCallback() {
-            const vm = getAssociatedVM(this);
-            removeRootVM(vm);
+            disconnectedRootElement(this);
         }
         attributeChangedCallback(attrName: string, oldValue: string, newValue: string) {
             if (oldValue === newValue) {

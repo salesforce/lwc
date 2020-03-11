@@ -17,17 +17,24 @@ import {
     getHiddenField,
     setHiddenField,
 } from '@lwc/shared';
-import { createVM, removeRootVM, appendRootVM, getAssociatedVMIfPresent } from './vm';
-import { ComponentConstructor } from './component';
-import { getComponentDef, setElementProto } from './def';
+
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
-type NodeSlot = () => {};
+import {
+    getAssociatedVMIfPresent,
+    createVM,
+    connectRootElement,
+    disconnectedRootElement,
+} from './vm';
+import { ComponentConstructor } from './component';
+import { getComponentDef, setElementProto } from './def';
 
-const ConnectingSlot = createHiddenField<NodeSlot>('connecting', 'engine');
-const DisconnectingSlot = createHiddenField<NodeSlot>('disconnecting', 'engine');
+type NodeSlotCallback = (element: Node) => {};
 
-function callNodeSlot(node: Node, slot: HiddenField<NodeSlot>): Node {
+const ConnectingSlot = createHiddenField<NodeSlotCallback>('connecting', 'engine');
+const DisconnectingSlot = createHiddenField<NodeSlotCallback>('disconnecting', 'engine');
+
+function callNodeSlot(node: Node, slot: HiddenField<NodeSlotCallback>): Node {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
     }
@@ -35,8 +42,9 @@ function callNodeSlot(node: Node, slot: HiddenField<NodeSlot>): Node {
     const fn = getHiddenField(node, slot);
 
     if (!isUndefined(fn)) {
-        fn();
+        fn(node);
     }
+
     return node; // for convenience
 }
 
@@ -107,14 +115,14 @@ export function createElement(
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
 
-    const vm = createVM(element, def.ctor, {
+    createVM(element, def.ctor, {
         mode: options.mode !== 'closed' ? 'open' : 'closed',
         isRoot: true,
         owner: null,
     });
 
-    setHiddenField(element, ConnectingSlot, () => appendRootVM(vm));
-    setHiddenField(element, DisconnectingSlot, () => removeRootVM(vm));
+    setHiddenField(element, ConnectingSlot, connectRootElement);
+    setHiddenField(element, DisconnectingSlot, disconnectedRootElement);
 
     return element;
 }
