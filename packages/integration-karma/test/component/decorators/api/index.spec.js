@@ -7,6 +7,7 @@ import ConstructorGetterAccess from 'x/constructorGetterAccess';
 import Reactivity from 'x/reactivity';
 import Methods from 'x/methods';
 import Inheritance from 'x/inheritance';
+import NullInitialValue from 'x/nullInitialValue';
 
 describe('properties', () => {
     it('should expose class properties with the api decorator', () => {
@@ -103,4 +104,10 @@ describe('inheritance', () => {
         expect(elm.childMethod()).toBe('child');
         expect(elm.overriddenMethod()).toBe('overridden - child');
     });
+});
+
+it('should not log an error when initializing api value to null', () => {
+    const elm = createElement('x-foo-init-api', { is: NullInitialValue });
+
+    expect(() => document.body.appendChild(elm)).not.toLogErrorDev();
 });
