@@ -134,7 +134,7 @@ describe('array mutations', () => {
 });
 
 describe('non-observable values', () => {
-    it('should not throw an error when accessing a non-observable property from a tracked property when not rendering', () => {
+    it('should not throw an error when accessing a non-observable property from a tracked property before rendering', () => {
         const elm = createElement('x-foo', { is: NonObservable });
         elm.foo = new Map();
         expect(() => {
