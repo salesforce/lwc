@@ -58,11 +58,11 @@ describe('api', () => {
         it('should throw for anything other than vnode and null', () => {
             expect(() => {
                 api.h('p', { key: 0 }, ['text']);
-            });
+            }).toThrow();
 
             expect(() => {
                 api.h('p', {}, [undefined]);
-            });
+            }).toThrow();
         });
     });
 
