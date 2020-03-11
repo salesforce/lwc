@@ -10,14 +10,13 @@ import { resolveModule } from '../index';
 
 describe('resolve individual module', () => {
     test('throw when no modules are empty', () => {
+        const customImporter = path.join(__dirname, 'fixtures/errors/empty/empty.js');
         function run() {
-            const customImporter = path.join(__dirname, 'fixtures/errors/empty/empty.js');
             const expectedImportee = 'empty';
-
             resolveModule(expectedImportee, customImporter);
         }
 
-        expect(run).toThrow('Unable to resolve empty: No ModuleRecords have been defined');
+        expect(run).toThrow('Unable to resolve empty from ' + customImporter);
     });
 
     test('throw when alias has no path', () => {
