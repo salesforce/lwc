@@ -142,10 +142,6 @@ export function resolveModule(
         modules = mergeModules(userConfig.modules, modules);
     }
 
-    if (modules.length === 0) {
-        throw new Error(`Unable to resolve ${importee}: No ModuleRecords have been defined`);
-    }
-
     for (const moduleRecord of modules) {
         const registryEntry = resolveModuleRecordType(importee, moduleRecord, { rootDir });
         if (registryEntry) {
