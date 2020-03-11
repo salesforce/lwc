@@ -41,4 +41,38 @@ describe('resolve individual module', () => {
         expect(moduleRegistryEntry).toBeDefined();
         expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
     });
+
+    test('manual config alias', () => {
+        const customImporter = path.join(__dirname, 'fixtures/no-config/custom-override.js');
+        const expectedImportee = 'no-config';
+
+        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter, {
+            modules: [
+                {
+                    name: 'no-config',
+                    path: customImporter,
+                },
+            ],
+        });
+
+        expect(moduleRegistryEntry).toBeDefined();
+        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
+    });
+
+    test('manual config dir', () => {
+        const customImporter = path.join(__dirname, 'fixtures/no-config/custom-override.js');
+        const expectedImportee = 'foo/bar';
+
+        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter, {
+            modules: [
+                {
+                    dir: 'fixtures/no-config/modules',
+                },
+            ],
+            rootDir: __dirname,
+        });
+
+        expect(moduleRegistryEntry).toBeDefined();
+        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
+    });
 });

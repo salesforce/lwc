@@ -113,7 +113,6 @@ function resolveModuleRecordType(
     opts: InnerResolverOptions
 ): RegistryEntry | undefined {
     const { rootDir } = opts;
-    validateModuleRecord(moduleRecord);
 
     if (isAliasModuleRecord(moduleRecord)) {
         return resolveModuleFromAlias(specifier, moduleRecord, { rootDir });
@@ -122,7 +121,7 @@ function resolveModuleRecordType(
     } else if (isNpmModuleRecord(moduleRecord)) {
         return resolveModuleFromNpm(specifier, moduleRecord, opts);
     } else {
-        throw new Error(`Invalid moduleRecord type ${moduleRecord}`);
+        throw new Error(`Invalid moduleRecord type ${JSON.stringify(moduleRecord)}`);
     }
 }
 
@@ -143,6 +142,7 @@ export function resolveModule(
     }
 
     for (const moduleRecord of modules) {
+        validateModuleRecord(moduleRecord);
         const registryEntry = resolveModuleRecordType(importee, moduleRecord, { rootDir });
         if (registryEntry) {
             return registryEntry;

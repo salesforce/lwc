@@ -66,10 +66,6 @@ export function loadLwcConfig(configDir: string): LwcConfig {
     try {
         return JSON.parse(fs.readFileSync(configFile, 'utf8'));
     } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn(
-            `[module-resolver] Error parsing JSON on file: "${configFile}", ignoring config file.`
-        );
         return DEFAULT_CONFIG;
     }
 }
@@ -79,8 +75,6 @@ export function loadPackageJson(pkgDir: string): any {
     try {
         return JSON.parse(fs.readFileSync(pkgFile, 'utf8'));
     } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn(`[module-resolver] Error parsing package.json on dir: "${pkgDir}"`);
         return {};
     }
 }

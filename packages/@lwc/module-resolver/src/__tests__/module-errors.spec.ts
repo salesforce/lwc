@@ -9,6 +9,16 @@ import path from 'path';
 import { resolveModule } from '../index';
 
 describe('resolve individual module', () => {
+    test('throw when no importee', () => {
+        const customImporter = path.join(__dirname, 'fixtures/errors/empty/empty.js');
+        function run() {
+            const expectedImportee = undefined;
+            resolveModule(expectedImportee, customImporter);
+        }
+
+        expect(run).toThrow('Invalid importee undefined');
+    });
+
     test('throw when no modules are empty', () => {
         const customImporter = path.join(__dirname, 'fixtures/errors/empty/empty.js');
         function run() {
@@ -73,5 +83,16 @@ describe('resolve individual module', () => {
                 'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.'
             )
         );
+    });
+
+    test('throw when incorrect moduleRecord type', () => {
+        function run() {
+            const customImporter = path.join(__dirname, 'fixtures/errors/npm/index.js');
+            resolveModule('npm-error', customImporter, {
+                modules: [{ unknownType: 'test ' }],
+            });
+        }
+
+        expect(run).toThrow(new Error('Invalid moduleRecord type {"unknownType":"test "}'));
     });
 });
