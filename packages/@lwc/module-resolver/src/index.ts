@@ -82,20 +82,24 @@ function resolveModuleFromNpm(
     const pkgJsonPath = require.resolve(`${npm}/package.json`, { paths: [opts.rootDir] });
     const packageDir = path.dirname(pkgJsonPath);
     const lwcConfig = getLwcConfig(packageDir);
+    const hasAliasMapping = aliasMapping && aliasMapping[specifier];
 
     validateNpmConfig(lwcConfig);
-    if (lwcConfig.expose.includes(specifier)) {
+
+    if (lwcConfig.expose.includes(specifier) || hasAliasMapping) {
         for (const moduleRecord of lwcConfig.modules) {
-            if (!isNpmModuleRecord(moduleRecord)) {
-                const registryEntry = resolveModuleRecordType(specifier, moduleRecord, {
+            const registryEntry = resolveModuleRecordType(
+                aliasMapping && aliasMapping[specifier] ? aliasMapping[specifier] : specifier,
+                moduleRecord,
+                {
                     rootDir: packageDir,
-                });
-                if (registryEntry) {
-                    if (aliasMapping && aliasMapping[specifier]) {
-                        registryEntry.specifier = aliasMapping[specifier];
-                    }
-                    return registryEntry;
                 }
+            );
+            if (registryEntry) {
+                if (aliasMapping && aliasMapping[specifier]) {
+                    registryEntry.specifier = aliasMapping[specifier];
+                }
+                return registryEntry;
             }
         }
 
