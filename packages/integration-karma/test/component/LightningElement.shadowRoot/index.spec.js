@@ -13,5 +13,5 @@ it('should be able to access the shadowRoot property from outside the component'
     document.body.appendChild(el);
 
     expect(el.shadowRoot).not.toBe(null);
-    expect(el.shadowRoot instanceof ShadowRoot);
+    expect(el.shadowRoot).toBeInstanceOf(ShadowRoot);
 });

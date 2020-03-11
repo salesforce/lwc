@@ -97,11 +97,12 @@
         {
             "files": [
                 "**/__tests__/**",
-                "**/__mocks__/**"
+                "**/__mocks__/**",
+                "**/integration-karma/**"
             ],
 
             "env": {
-                "jest": true
+                "jest": true,
             },
 
             "rules": {

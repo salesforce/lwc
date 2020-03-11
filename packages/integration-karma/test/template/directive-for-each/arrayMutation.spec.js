@@ -16,7 +16,7 @@ describe('Testing array primitives', () => {
     function testReactivity(testCase, expectedItems, fn) {
         it(`check ${testCase} reactivity`, function() {
             fn(elm);
-            Promise.resolve().then(function() {
+            return Promise.resolve().then(function() {
                 var list = Array.prototype.slice.call(elm.shadowRoot.querySelectorAll('li'));
 
                 var textList = list.map(function(li) {
