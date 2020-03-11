@@ -2,6 +2,8 @@ import { createElement } from 'lwc';
 
 import Parent from 'x/parent';
 
+import RoleTester, { roleSetterCallCount } from 'x/roleTester';
+
 let parent;
 
 beforeAll(() => {
@@ -23,4 +25,13 @@ it('should disable default behavior of DOM reflection when invoking a custom AOM
 it('should reflect AOM attribute for native element', () => {
     const elm = parent.shadowRoot.querySelector('div');
     expect(elm.getAttribute('aria-label')).toBe('KIX to HKG');
+});
+
+describe('#role', () => {
+    it('should call setter when defined', () => {
+        const element = createElement('prop-getter-aria-role', { is: RoleTester });
+        document.body.appendChild(element);
+        element.role = 'tab';
+        expect(roleSetterCallCount).toBe(1);
+    });
 });

@@ -2,6 +2,8 @@ import { createElement } from 'lwc';
 
 import Properties from 'x/properties';
 import SideEffect from 'x/sideEffect';
+import NonObservable from 'x/nonObservable';
+import SetTrackedValueToNull from 'x/setTrackedValueToNull';
 
 it('rerenders the component when a track property is updated - literal', () => {
     const elm = createElement('x-properties', { is: Properties });
@@ -91,6 +93,12 @@ describe('object mutations', () => {
             expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
         });
     });
+
+    it('should not log an error when setting tracked value to null', () => {
+        const elm = createElement('x-foo-tracked-null', { is: SetTrackedValueToNull });
+
+        expect(() => document.body.appendChild(elm)).not.toLogErrorDev();
+    });
 });
 
 describe('array mutations', () => {
@@ -122,5 +130,15 @@ describe('array mutations', () => {
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('.array').textContent).toBe('4123');
         });
+    });
+});
+
+describe('non-observable values', () => {
+    it('should not throw an error when accessing a non-observable property from a tracked property before rendering', () => {
+        const elm = createElement('x-foo', { is: NonObservable });
+        elm.foo = new Map();
+        expect(() => {
+            elm.foo;
+        }).not.toThrow();
     });
 });
