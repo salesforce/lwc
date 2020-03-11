@@ -11,9 +11,7 @@ const URL = '/clipboard-event-composed';
 function copy() {
     browser.keys(['Control', 'Insert', 'Control']);
 }
-function cut() {
-    browser.keys(['Control', 'Delete', 'Control']);
-}
+
 function paste() {
     browser.keys(['Shift', 'Insert', 'Shift']);
 }
@@ -38,21 +36,6 @@ describe('clipboard-event-composed polyfill', () => {
             });
 
             assert.strictEqual(didHandleCopy, true);
-        });
-
-        // The cut() function is not working as expected.
-        it.skip('cut event should be composed', () => {
-            browser.$(function() {
-                window.getSelection().selectAllChildren(document.body);
-            });
-
-            cut();
-
-            const didHandleCut = browser.execute(() => {
-                var container = document.querySelector('integration-clipboard-event-composed');
-                return container.didHandleCut();
-            });
-            assert.strictEqual(didHandleCut, true);
         });
 
         it('paste event should be composed', () => {
