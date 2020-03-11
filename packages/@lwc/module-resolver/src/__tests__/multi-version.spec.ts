@@ -15,6 +15,27 @@ describe('resolve modules iteratibly', () => {
         const moduleImportee = 'fancy/bar';
 
         const moduleRecord = resolveModule(moduleImportee, moduleImporter);
-        expect(moduleRecord).toBeDefined();
+
+        expect(moduleRecord).toEqual({
+            entry: path.join(
+                __dirname,
+                'fixtures/multi-version/node_modules/fancy-components/src/modules/fancy/bar/bar.js'
+            ),
+            scope: path.join(__dirname, 'fixtures/multi-version/node_modules/fancy-components'),
+            specifier: 'fancy/bar',
+        });
+    });
+
+    it('side load an alias record', () => {
+        const moduleImporter = path.join(__dirname, 'fixtures/multi-version/index.js');
+        const moduleImportee = 'custom-module';
+
+        const moduleRecord = resolveModule(moduleImportee, moduleImporter);
+
+        expect(moduleRecord).toEqual({
+            specifier: moduleImportee,
+            scope: path.join(__dirname, 'fixtures/multi-version'),
+            entry: path.join(__dirname, 'fixtures/multi-version/src/custom/module.js'),
+        });
     });
 });
