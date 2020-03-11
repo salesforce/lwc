@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import fs from 'fs';
 import path from 'path';
 import {
     LwcConfig,
@@ -202,6 +201,16 @@ export function validateNpmConfig(config: LwcConfig): asserts config is Required
     }
 }
 
+export function validateNpmAlias(exposed: string[], map: { [key: string]: string }) {
+    Object.keys(map).forEach(specifier => {
+        if (!exposed.includes(specifier)) {
+            throw new Error(
+                `Unable to apply mapping: The specifier "${specifier}" is not exposed by the npm module`
+            );
+        }
+    });
+}
+
 export function getLwcConfig(dirPath: string): LwcConfig {
     const lwcConfig = existsLwcConfig(dirPath)
         ? loadLwcConfig(dirPath)
@@ -220,4 +229,18 @@ export function createRegistryEntry(
         specifier,
         scope: opts.rootDir,
     };
+}
+
+export function remapList(exposed: string[], map: { [key: string]: string }): string[] {
+    return exposed.reduce((renamed, item) => {
+        renamed.push(map[item] || item);
+        return renamed;
+    }, [] as string[]);
+}
+
+export function transposeObject(map: { [key: string]: string }): { [key: string]: string } {
+    return Object.entries(map).reduce(
+        (r, [key, value]) => ((r[value] = key), r),
+        {} as { [key: string]: string }
+    );
 }

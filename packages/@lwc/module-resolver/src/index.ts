@@ -29,6 +29,9 @@ import {
     normalizeConfig,
     validateNpmConfig,
     mergeModules,
+    remapList,
+    transposeObject,
+    validateNpmAlias,
 } from './utils';
 
 function resolveModuleFromAlias(
@@ -82,22 +85,31 @@ function resolveModuleFromNpm(
     const pkgJsonPath = require.resolve(`${npm}/package.json`, { paths: [opts.rootDir] });
     const packageDir = path.dirname(pkgJsonPath);
     const lwcConfig = getLwcConfig(packageDir);
-    const hasAliasMapping = aliasMapping && aliasMapping[specifier];
 
     validateNpmConfig(lwcConfig);
+    let exposedModules = lwcConfig.expose;
+    let reverseMapping;
 
-    if (lwcConfig.expose.includes(specifier) || hasAliasMapping) {
+    if (aliasMapping) {
+        validateNpmAlias(lwcConfig.expose, aliasMapping);
+        exposedModules = remapList(lwcConfig.expose, aliasMapping);
+        reverseMapping = transposeObject(aliasMapping);
+    }
+
+    if (exposedModules.includes(specifier)) {
         for (const moduleRecord of lwcConfig.modules) {
+            const aliasedSpecifier = reverseMapping && reverseMapping[specifier];
             const registryEntry = resolveModuleRecordType(
-                aliasMapping && aliasMapping[specifier] ? aliasMapping[specifier] : specifier,
+                aliasedSpecifier || specifier,
                 moduleRecord,
                 {
                     rootDir: packageDir,
                 }
             );
+
             if (registryEntry) {
-                if (aliasMapping && aliasMapping[specifier]) {
-                    registryEntry.specifier = aliasMapping[specifier];
+                if (aliasedSpecifier) {
+                    registryEntry.specifier = specifier;
                 }
                 return registryEntry;
             }

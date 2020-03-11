@@ -11,7 +11,7 @@ import { resolveModule } from '../index';
 describe('resolve mapped modules', () => {
     test('mapped alias', () => {
         const customImporter = path.join(__dirname, 'fixtures/mapping/index.js');
-        const expectedImportee = 'foo-common-utils';
+        const expectedImportee = 'foo-common-util';
         const expectedEntry = path.join(
             __dirname,
             'fixtures/mapping/node_modules/lwc-modules-foo/src/common-util.js'
@@ -20,13 +20,13 @@ describe('resolve mapped modules', () => {
         const moduleRegistryEntry = resolveModule(expectedImportee, customImporter);
 
         expect(moduleRegistryEntry).toBeDefined();
-        expect(moduleRegistryEntry.specifier).toBe('common-util');
+        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
         expect(moduleRegistryEntry.entry).toBe(expectedEntry);
     });
 
     test('mapped npm alias', () => {
         const customImporter = path.join(__dirname, 'fixtures/mapping/index.js');
-        const expectedImportee = 'bar-common-utils';
+        const expectedImportee = 'bar-common-util';
         const expectedEntry = path.join(
             __dirname,
             'fixtures/mapping/node_modules/lwc-modules-bar/node_modules/common-util/src/common-util.js'
@@ -35,27 +35,20 @@ describe('resolve mapped modules', () => {
         const moduleRegistryEntry = resolveModule(expectedImportee, customImporter);
 
         expect(moduleRegistryEntry).toBeDefined();
-        expect(moduleRegistryEntry.specifier).toBe('common-util');
+        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
         expect(moduleRegistryEntry.entry).toBe(expectedEntry);
     });
 
-    test('multiple mappings to the same module', () => {
+    test('validate multiple', () => {
         const customImporter = path.join(__dirname, 'fixtures/mapping/index.js');
-        const expectedEntry = path.join(
-            __dirname,
-            'fixtures/mapping/node_modules/multi-module-mapping/src/mod.js'
+        function run() {
+            resolveModule('alias-error', customImporter);
+        }
+
+        expect(run).toThrow(
+            new Error(
+                'Unable to apply mapping: The specifier "non-existing" is not exposed by the npm module'
+            )
         );
-
-        const moduleRegistryEntryA = resolveModule('a-mod', customImporter);
-
-        expect(moduleRegistryEntryA).toBeDefined();
-        expect(moduleRegistryEntryA.specifier).toBe('mod');
-        expect(moduleRegistryEntryA.entry).toBe(expectedEntry);
-
-        const moduleRegistryEntryB = resolveModule('b-mod', customImporter);
-
-        expect(moduleRegistryEntryB).toBeDefined();
-        expect(moduleRegistryEntryB.specifier).toBe('mod');
-        expect(moduleRegistryEntryB.entry).toBe(expectedEntry);
     });
 });
