@@ -50,7 +50,6 @@ import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdo
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElement } from './base-lightning-element';
-import { patchCustomElementWithRestrictions } from './restrictions';
 import { getErrorComponentStack } from '../shared/format';
 
 export interface SlotSet {
@@ -257,10 +256,6 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
     // link component to the wire service
     const initializedVm = uninitializedVm as VM;
     linkComponent(initializedVm);
-
-    if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(elm);
-    }
 
     return initializedVm;
 }
