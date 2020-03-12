@@ -1,6 +1,6 @@
 {
     "name": "@lwc/errors",
-    "version": "1.3.9",
+    "version": "1.3.10",
     "description": "LWC Error Utilities",
     "main": "dist/commonjs/index.js",
     "license": "MIT",
