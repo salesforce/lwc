@@ -5,74 +5,86 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
 import { resolveModule } from '../index';
+import { fixture } from './test-utils';
 
-describe('resolve individual module', () => {
-    test('iterative resolution alias', () => {
-        const customImporter = path.join(
-            __dirname,
-            'fixtures/custom-resolution/custom-override.js'
-        );
-        const expectedImportee = 'custom-module';
-        const expectedEntry = path.join(__dirname, 'fixtures/custom-resolution/custom/module.js');
+describe('standard resolution', () => {
+    test('alias module', () => {
+        const specifier = 'custom-module';
+        const importer = fixture('custom-resolution/custom-override.js');
 
-        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter);
-
-        expect(moduleRegistryEntry).toBeDefined();
-        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
-        expect(moduleRegistryEntry.entry).toBe(expectedEntry);
+        // XTODO: It's strange that the module specifier is identical! When does this module specifier
+        // is used if not when there is a module alias.
+        expect(resolveModule(specifier, importer)).toEqual({
+            specifier,
+            scope: fixture('custom-resolution'),
+            entry: fixture('custom-resolution/custom/module.js'),
+        });
     });
 
-    test('iterative resolution npm', () => {
-        const customImporter = path.join(__dirname, 'fixtures/from-npm/src/modules/test.js');
-        const expectedImportee = 'lwc';
-        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter);
+    // XTODO: add test to resolve not scoped NPM packages
+    test('npm module', () => {
+        const specifier = 'lwc';
+        const importer = fixture('from-npm/src/modules/test.js');
 
-        expect(moduleRegistryEntry).toBeDefined();
-        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
+        expect(resolveModule(specifier, importer)).toEqual({
+            specifier,
+            scope: fixture('from-npm/node_modules/@lwc/engine'),
+            entry: fixture('from-npm/node_modules/@lwc/engine/engine.js'),
+        });
     });
 
-    test('iterative resolution dir', () => {
-        const customImporter = path.join(__dirname, 'fixtures/module-entries/index.js');
-        const expectedImportee = 'ns/tsEntry';
-        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter);
+    // XTODO: add test to resolve multiple modules from the same directory
+    test('dir module', () => {
+        const specifier = 'ns/jsEntry';
+        const importer = fixture('module-entries/index.js');
 
-        expect(moduleRegistryEntry).toBeDefined();
-        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
+        expect(resolveModule(specifier, importer)).toEqual({
+            specifier,
+            scope: fixture('module-entries'),
+            entry: fixture('module-entries/modules/ns/jsEntry/jsEntry.js'),
+        });
     });
+});
 
-    test('manual config alias', () => {
-        const customImporter = path.join(__dirname, 'fixtures/no-config/custom-override.js');
-        const expectedImportee = 'no-config';
-
-        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter, {
+describe('resolution override', () => {
+    // XTODO: Add test about how the configs are merged and how overrides and existing modules are \
+    // resolved.
+    test('alias module override', () => {
+        const specifier = 'no-config';
+        const importer = fixture('no-config/custom-override.js');
+        const options = {
             modules: [
                 {
                     name: 'no-config',
-                    path: customImporter,
+                    path: fixture('no-config/custom/module.js'),
                 },
             ],
-        });
+        };
 
-        expect(moduleRegistryEntry).toBeDefined();
-        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
+        expect(resolveModule(specifier, importer, options)).toEqual({
+            specifier,
+            scope: fixture('no-config'),
+            entry: fixture('no-config/custom/module.js'),
+        });
     });
 
-    test('manual config dir', () => {
-        const customImporter = path.join(__dirname, 'fixtures/no-config/custom-override.js');
-        const expectedImportee = 'foo/bar';
-
-        const moduleRegistryEntry = resolveModule(expectedImportee, customImporter, {
+    test('dir module override', () => {
+        const specifier = 'foo/bar';
+        const importer = fixture('no-config/custom-override.js');
+        const options = {
+            rootDir: fixture('no-config'),
             modules: [
                 {
-                    dir: 'fixtures/no-config/modules',
+                    dir: 'modules',
                 },
             ],
-            rootDir: __dirname,
-        });
+        };
 
-        expect(moduleRegistryEntry).toBeDefined();
-        expect(moduleRegistryEntry.specifier).toBe(expectedImportee);
+        expect(resolveModule(specifier, importer, options)).toEqual({
+            specifier,
+            scope: fixture('no-config'),
+            entry: fixture('no-config/modules/foo/bar/bar.css'),
+        });
     });
 });
