@@ -23,6 +23,7 @@ import './polyfills/click-event-composed/main'; // must come before event-compos
 import './polyfills/event-composed/main';
 import './polyfills/custom-event-composed/main';
 import './polyfills/focus-event-composed/main';
+import './polyfills/clipboard-event-composed/main';
 import './polyfills/iframe-content-window/main';
 import './polyfills/mutation-observer/main';
 
