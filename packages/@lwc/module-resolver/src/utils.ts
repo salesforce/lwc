@@ -41,14 +41,14 @@ export function isDirModuleRecord(moduleRecord: ModuleRecord): moduleRecord is D
 }
 
 export function isAliasModuleRecord(moduleRecord: ModuleRecord): moduleRecord is AliasModuleRecord {
-    return 'name' in moduleRecord;
+    return 'name' in moduleRecord && 'path' in moduleRecord;
 }
 
-export function existsLwcConfig(configDir: string) {
+function existsLwcConfig(configDir: string) {
     return fs.existsSync(path.join(configDir, LWC_CONFIG_FILE));
 }
 
-export function loadLwcConfig(configDir: string): LwcConfig {
+function loadLwcConfig(configDir: string): LwcConfig {
     const configFile = path.join(configDir, LWC_CONFIG_FILE);
     if (!fs.existsSync(configFile)) {
         return DEFAULT_CONFIG;
@@ -61,7 +61,7 @@ export function loadLwcConfig(configDir: string): LwcConfig {
     }
 }
 
-export function loadPackageJson(pkgDir: string): any {
+function loadPackageJson(pkgDir: string): any {
     const pkgFile = path.join(pkgDir, PACKAGE_JSON);
     try {
         return JSON.parse(fs.readFileSync(pkgFile, 'utf8'));
@@ -70,7 +70,7 @@ export function loadPackageJson(pkgDir: string): any {
     }
 }
 
-export function getEntry(moduleDir: string, moduleName: string, ext: string): string {
+function getEntry(moduleDir: string, moduleName: string, ext: string): string {
     return path.join(moduleDir, `${moduleName}.${ext}`);
 }
 
@@ -102,7 +102,6 @@ export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleRe
     );
 
     return {
-        ...DEFAULT_CONFIG,
         modules: normalizedModules,
         rootDir,
     };
@@ -224,15 +223,15 @@ export function createRegistryEntry(
 }
 
 export function remapList(exposed: string[], map: { [key: string]: string }): string[] {
-    return exposed.reduce((renamed, item) => {
+    return exposed.reduce((renamed: string[], item) => {
         renamed.push(map[item] || item);
         return renamed;
-    }, [] as string[]);
+    }, []);
 }
 
 export function transposeObject(map: { [key: string]: string }): { [key: string]: string } {
     return Object.entries(map).reduce(
-        (r, [key, value]) => ((r[value] = key), r),
-        {} as { [key: string]: string }
+        (r: { [key: string]: string }, [key, value]) => ((r[value] = key), r),
+        {}
     );
 }

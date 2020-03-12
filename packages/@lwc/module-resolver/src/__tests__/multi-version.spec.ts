@@ -35,6 +35,17 @@ describe('multi version', () => {
         });
     });
 
+    test('resolve "ui/icon" from root', () => {
+        const specifier = 'ui/icon';
+        const importer = fixture('multi-version/index.js');
+
+        expect(resolveModule(specifier, importer)).toEqual({
+            specifier,
+            scope: fixture('multi-version/node_modules/@ui/components'),
+            entry: fixture('multi-version/node_modules/@ui/components/src/modules/ui/icon/icon.js'),
+        });
+    });
+
     test('resolve "ui/button" from "fancy-component" module', () => {
         const specifier = 'ui/button';
         const importer = fixture('multi-version/node_modules/fancy-components/index.js');
@@ -50,15 +61,12 @@ describe('multi version', () => {
         });
     });
 
-    // XTODO: This test shouldn't be part of the multi version suite.
-    test('side load an alias record', () => {
-        const specifier = 'custom-module';
-        const importer = fixture('multi-version/index.js');
+    test('can\t resolve "ui/icon" from "fancy-component" module', () => {
+        const specifier = 'ui/icon';
+        const importer = fixture('multi-version/node_modules/fancy-components/index.js');
 
-        expect(resolveModule(specifier, importer)).toEqual({
-            specifier,
-            scope: fixture('multi-version'),
-            entry: fixture('multi-version/src/custom/module.js'),
-        });
+        expect(() => resolveModule(specifier, importer)).toThrow(
+            `Unable to resolve "${specifier}" from "${importer}"`
+        );
     });
 });

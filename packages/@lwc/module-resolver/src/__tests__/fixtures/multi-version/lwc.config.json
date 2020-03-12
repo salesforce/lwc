@@ -1,12 +1,7 @@
 {
     "modules": [
-        { "name": "does-not", "path": "exist" },
-        {
-            "name": "custom-module",
-            "path": "src/custom/module.js"
-        },
-        { "dir" : "src/modules" },
         { "npm" :"fancy-components" },
-        { "npm" : "@ui/components" }
+        { "npm" : "@ui/components" },
+        { "dir" : "src/modules" }
     ]
 }
