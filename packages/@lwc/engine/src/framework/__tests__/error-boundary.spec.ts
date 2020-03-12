@@ -815,7 +815,7 @@ describe('error boundary component', () => {
 
                     const elm = createElement('inner-error-boundary', { is: InnerErrorBoundary });
                     document.body.appendChild(elm);
-                    Promise.resolve().then(() => {
+                    return Promise.resolve().then(() => {
                         // waiting for the alternative view to kick in
                         const p = elm.shadowRoot
                             .querySelector('post-error-child-content')

@@ -11,70 +11,59 @@ function waitForSlotChange() {
 let parent;
 let child;
 
-beforeEach(() => {
+beforeEach(async () => {
     parent = createElement('x-parent', { is: Parent });
     document.body.appendChild(parent);
     child = parent.shadowRoot.querySelector('x-child');
+
+    await waitForSlotChange();
 });
 
 it('should fire slotchange on initial render', () => {
-    return waitForSlotChange().then(() => {
-        expect(child.getSlotChangeCount()).toBe(1);
-    });
+    expect(child.getSlotChangeCount()).toBe(1);
 });
 
 it('should fire non-composed slotchange', () => {
-    return waitForSlotChange().then(() => {
-        expect(parent.getSlotChangeCount()).toBe(0);
-    });
+    expect(parent.getSlotChangeCount()).toBe(0);
 });
 
 it('should fire slotchange on add', () => {
-    const firedFirstSlotchange = waitForSlotChange();
-    const addNewElementToSlot = firedFirstSlotchange.then(() => {
-        child.setSlotChangeCount(0);
-        parent.add();
-    });
-    const firedSecondSlotchange = addNewElementToSlot.then(waitForSlotChange);
-    return firedSecondSlotchange.then(() => {
+    child.setSlotChangeCount(0);
+    parent.add();
+
+    return waitForSlotChange().then(() => {
         expect(child.getSlotChangeCount()).toBe(1);
     });
 });
 
 it('should fire slotchange on remove', () => {
-    const firedFirstSlotChange = waitForSlotChange();
-    const removeElementsFromSlot = firedFirstSlotChange.then(() => {
-        child.setSlotChangeCount(0);
-        parent.clear();
-    });
-    const firedSecondSlotchange = removeElementsFromSlot.then(waitForSlotChange);
-    return firedSecondSlotchange.then(() => {
+    child.setSlotChangeCount(0);
+    parent.clear();
+
+    return waitForSlotChange().then(() => {
         expect(child.getSlotChangeCount()).toBe(1);
     });
 });
 
 it('should fire slotchange on replace', () => {
-    const firedFirstSlotChange = waitForSlotChange();
-    const replaceElementInSlot = firedFirstSlotChange.then(() => {
-        child.setSlotChangeCount(0);
-        parent.replace();
-    });
-    const firedSecondSlotchange = replaceElementInSlot.then(waitForSlotChange);
-    return firedSecondSlotchange.then(() => {
+    child.setSlotChangeCount(0);
+    parent.replace();
+
+    return waitForSlotChange().then(() => {
         expect(child.getSlotChangeCount()).toBe(1);
     });
 });
 
 it('should fire slotchange when listener added programmatically', () => {
     let count = 0;
-    const firedFirstSlotChange = waitForSlotChange();
-    const addNewElementToSlot = firedFirstSlotChange.then(() => {
-        child.shadowRoot.querySelector('slot').addEventListener('slotchange', () => {
-            count += 1;
-        });
-        parent.add();
+
+    child.shadowRoot.querySelector('slot').addEventListener('slotchange', () => {
+        count += 1;
     });
-    return addNewElementToSlot.then(waitForSlotChange).then(() => {
+
+    parent.add();
+
+    return waitForSlotChange().then(() => {
         expect(count).toBe(1);
     });
 });
