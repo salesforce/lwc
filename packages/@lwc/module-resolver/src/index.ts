@@ -23,7 +23,6 @@ import {
     isAliasModuleRecord,
     isDirModuleRecord,
     isNpmModuleRecord,
-    validateImportee,
     getLwcConfig,
     getModuleEntry,
     normalizeConfig,
@@ -115,7 +114,7 @@ function resolveModuleFromNpm(
             }
         }
 
-        throw new Error(`Unable to find ${specifier} under package ${npmModuleRecord.npm}`);
+        throw new Error(`Unable to find "${specifier}" under package "${npmModuleRecord.npm}"`);
     }
 }
 
@@ -142,12 +141,28 @@ export function resolveModule(
     importer: string,
     config?: Partial<ModuleResolverConfig>
 ): RegistryEntry {
-    validateImportee(importee);
+    if (typeof importee !== 'string') {
+        throw new TypeError(
+            `The importee argument must be a string. Received type ${typeof importee}`
+        );
+    }
+
+    if (typeof importer !== 'string') {
+        throw new TypeError(
+            `The importer argument must be a string. Received type ${typeof importer}`
+        );
+    }
+
+    if (importee.startsWith('.') || importee.startsWith('/')) {
+        throw new TypeError(
+            `The importee argument must be a valid LWC module name. Received "${importee}"`
+        );
+    }
 
     const rootDir = findFirstUpwardConfigPath(path.resolve(importer));
     const lwcConfig = getLwcConfig(rootDir);
-    let modules: ModuleRecord[] = lwcConfig.modules || [];
 
+    let modules = lwcConfig.modules || [];
     if (config) {
         const userConfig = normalizeConfig(config);
         modules = mergeModules(userConfig.modules, modules);
@@ -161,7 +176,7 @@ export function resolveModule(
         }
     }
 
-    throw new Error(`Unable to resolve ${importee} from ${importer}`);
+    throw new Error(`Unable to resolve "${importee}" from "${importer}"`);
 }
 
 export { isDirModuleRecord, isNpmModuleRecord, isAliasModuleRecord, validateModuleRecord };

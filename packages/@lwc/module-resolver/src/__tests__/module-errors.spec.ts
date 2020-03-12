@@ -9,14 +9,27 @@ import { resolveModule } from '../index';
 import { fixture } from './test-utils';
 
 describe('parameters checks', () => {
-    test('throw when no importee', () => {
-        expect(() => (resolveModule as any)()).toThrow('Invalid importee undefined');
+    test('throw when importer is not a string', () => {
+        expect(() => (resolveModule as any)()).toThrow(
+            'The importee argument must be a string. Received type undefined'
+        );
     });
 
-    test('throw when no importee', () => {
-        // XTODO: The error message is not valid
+    test('throw when no importee is not a string', () => {
         expect(() => (resolveModule as any)('test')).toThrow(
-            'The "path" argument must be of type string. Received undefined'
+            'The importer argument must be a string. Received type undefined'
+        );
+    });
+
+    test('throw when passing a relative path', () => {
+        expect(() => resolveModule('./test', '.')).toThrow(
+            'The importee argument must be a valid LWC module name. Received "./test"'
+        );
+    });
+
+    test('throw when passing an absolute path', () => {
+        expect(() => resolveModule('/test', '.')).toThrow(
+            'The importee argument must be a valid LWC module name. Received "/test"'
         );
     });
 
@@ -29,21 +42,32 @@ describe('parameters checks', () => {
 });
 
 describe('resolution errors', () => {
-    test('throw if no lwc config is present in the path', () => {
+    test('throw when no lwc config is present in the path', () => {
         const specifier = 'missing';
-        const importer = '/non-existing/non-existent.js';
+        const importer = '/errors/non/existent/module.js';
 
         expect(() => resolveModule(specifier, importer)).toThrow(
-            `Unable to find any LWC configuration file from ${importer}`
+            `Unable to find any LWC configuration file from "${importer}"`
         );
     });
 
-    test('throw when modules are empty', () => {
+    test('throw when a lwc.config.json without package.json', () => {
+        const specifier = 'missing';
+        const importer = fixture('errors/invalid-lwc-config/invalid-lwc-config.js');
+
+        expect(() => resolveModule(specifier, importer)).toThrow(
+            `"lwc.config.json" must be at the package root level along with the "package.json". No "package.json" found at "${fixture(
+                'errors/invalid-lwc-config/package.json'
+            )}"`
+        );
+    });
+
+    test("throw when a module can't be resolved", () => {
         const specifier = 'empty';
         const importer = fixture('errors/empty/empty.js');
 
         expect(() => resolveModule(specifier, importer)).toThrow(
-            `Unable to resolve ${specifier} from ${importer}`
+            `Unable to resolve "${specifier}" from "${importer}"`
         );
     });
 
@@ -54,7 +78,7 @@ describe('resolution errors', () => {
 
         // XTODO: This shouldn't fail the same way than the rest.
         expect(() => resolveModule(specifier, importer)).toThrow(
-            `Unable to resolve ${specifier} from ${importer}`
+            `Unable to resolve "${specifier}" from "${importer}"`
         );
     });
 
@@ -64,7 +88,7 @@ describe('resolution errors', () => {
         const importer = fixture('custom-resolution/custom-override.js');
 
         expect(() => resolveModule(specifier, importer)).toThrow(
-            `Unable to resolve ${specifier} from ${importer}`
+            `Unable to resolve "${specifier}" from "${importer}"`
         );
     });
 

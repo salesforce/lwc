@@ -26,16 +26,6 @@ function isObject(obj: any): boolean {
     return typeof obj === 'object' && obj !== null;
 }
 
-export function validateImportee(importee: string) {
-    if (!importee) {
-        throw new Error(`Invalid importee ${importee}`);
-    }
-
-    if (importee.startsWith('.') || importee.startsWith('/')) {
-        throw new Error(`Unable to resolve relative paths for ${importee}`);
-    }
-}
-
 export function validateModuleRecord(moduleRecord: ModuleRecord) {
     if (!isObject(moduleRecord)) {
         throw new Error(`Found an invalid module record (${moduleRecord}). It must be an object`);
@@ -100,7 +90,7 @@ export function getModuleEntry(moduleDir: string, moduleName: string): string {
     } else if (fs.existsSync(entryCSS)) {
         return entryCSS;
     } else {
-        throw new Error(`Unable to find a valid entry point for ${moduleDir}/${moduleName}`);
+        throw new Error(`Unable to find a valid entry point for "${moduleDir}/${moduleName}"`);
     }
 }
 
@@ -161,7 +151,7 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
         if (fs.lstatSync(currentPath).isFile()) {
             currentPath = path.dirname(currentPath);
         }
-    } catch (e) {
+    } catch {
         // It might be a virtual file or path try to resolve it still
     }
 
@@ -177,7 +167,7 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
 
         if (dirHasLwcConfig && !dirHasPkgJson) {
             throw new Error(
-                'LWC config must be at the package root level (at the same package.json level)'
+                `"lwc.config.json" must be at the package root level along with the "package.json". No "package.json" found at "${pkgJsonPath}"`
             );
         }
 
@@ -188,7 +178,7 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
         parts.pop();
     }
 
-    throw new Error(`Unable to find any LWC configuration file from ${currentPath}`);
+    throw new Error(`Unable to find any LWC configuration file from "${currentPath}"`);
 }
 
 export function validateNpmConfig(config: LwcConfig): asserts config is Required<LwcConfig> {
