@@ -16,7 +16,7 @@ it('should return an instance of DOMTokenList', () => {
     const elm = createElement('x-test', { is: XTest });
     document.body.appendChild(elm);
 
-    expect(elm.getClassList() instanceof DOMTokenList);
+    expect(elm.getClassList()).toBeInstanceOf(DOMTokenList);
 });
 
 it('should return of classed applied from the outside', () => {

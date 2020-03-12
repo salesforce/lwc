@@ -72,9 +72,11 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
 
     const pluginTester = (name, actual, expected) =>
         test(name, () => transformTest(actual, expected));
-    pluginTester.only = (name, actual, expected) =>
-        test.only(name, () => transformTest(actual, expected));
     pluginTester.skip = name => test.skip(name);
+    pluginTester.only = (name, actual, expected) => {
+        // eslint-disable-next-line jest/no-focused-tests
+        test.only(name, () => transformTest(actual, expected));
+    };
 
     return pluginTester;
 }
