@@ -1,7 +1,6 @@
 {
     "modules": [
-        { "npm" : "@lwc/engine" },
-        { "npm": "@lwc/wire-service" },
-        { "npm" :"@lwc/synthetic-shadow" }
+        { "npm" : "deps" },
+        { "npm" : "@scoped/deps" }
     ]
 }
