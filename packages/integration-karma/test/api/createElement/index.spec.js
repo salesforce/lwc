@@ -91,7 +91,7 @@ if (process.env.NATIVE_SHADOW) {
         // retrieve it by accessing the template property from the class.
         const shadowRoot = elm.getShadowRoot();
 
-        expect(shadowRoot).toBeInstanceof(ShadowRoot);
+        expect(shadowRoot).toBeInstanceOf(ShadowRoot);
         expect(shadowRoot.mode).toBe('closed');
     });
 }
