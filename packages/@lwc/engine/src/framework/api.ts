@@ -25,13 +25,7 @@ import {
 import { logError } from '../shared/logger';
 import { invokeEventListener, invokeComponentCallback } from './invoker';
 import { getVMBeingRendered } from './template';
-import {
-    EmptyArray,
-    resolveCircularModuleDependency,
-    isCircularModuleDependency,
-    EmptyObject,
-    useSyntheticShadow,
-} from './utils';
+import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
 import { getAssociatedVM, runConnectedCallback, SlotSet, VM, VMState } from './vm';
 import { ComponentConstructor } from './component';
 import {
@@ -330,9 +324,6 @@ export function c(
     data: CustomElementCompilerData,
     children: VNodes = EmptyArray
 ): VCustomElement {
-    if (isCircularModuleDependency(Ctor)) {
-        Ctor = resolveCircularModuleDependency(Ctor);
-    }
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);

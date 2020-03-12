@@ -78,7 +78,7 @@ function portalRestrictionErrorMessage(name: string, type: string) {
 
 function getNodeRestrictionsDescriptors(
     node: Node,
-    options: RestrictionsOptions
+    options: RestrictionsOptions = {}
 ): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -186,10 +186,7 @@ function getElementRestrictionsDescriptors(
     return descriptors;
 }
 
-function getShadowRootRestrictionsDescriptors(
-    sr: ShadowRoot,
-    options: RestrictionsOptions
-): PropertyDescriptorMap {
+function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -200,7 +197,7 @@ function getShadowRootRestrictionsDescriptors(
     const originalQuerySelector = sr.querySelector;
     const originalQuerySelectorAll = sr.querySelectorAll;
     const originalAddEventListener = sr.addEventListener;
-    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(sr, options);
+    const descriptors = getNodeRestrictionsDescriptors(sr);
     const originalInnerHTMLDescriptor = getPropertyDescriptor(sr, 'innerHTML')!;
     const originalTextContentDescriptor = getPropertyDescriptor(sr, 'textContent')!;
     assign(descriptors, {
@@ -301,15 +298,12 @@ function getShadowRootRestrictionsDescriptors(
 // Custom Elements Restrictions:
 // -----------------------------
 
-function getCustomElementRestrictionsDescriptors(
-    elm: HTMLElement,
-    options: RestrictionsOptions
-): PropertyDescriptorMap {
+function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm, options);
+    const descriptors = getNodeRestrictionsDescriptors(elm);
 
     const originalAddEventListener = elm.addEventListener;
     const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
@@ -505,12 +499,12 @@ export function patchElementWithRestrictions(elm: Element, options: Restrictions
 
 // This routine will prevent access to certain properties on a shadow root instance to guarantee
 // that all components will work fine in IE11 and other browsers without shadow dom support.
-export function patchShadowRootWithRestrictions(sr: ShadowRoot, options: RestrictionsOptions) {
-    defineProperties(sr, getShadowRootRestrictionsDescriptors(sr, options));
+export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
+    defineProperties(sr, getShadowRootRestrictionsDescriptors(sr));
 }
 
-export function patchCustomElementWithRestrictions(elm: HTMLElement, options: RestrictionsOptions) {
-    const restrictionsDescriptors = getCustomElementRestrictionsDescriptors(elm, options);
+export function patchCustomElementWithRestrictions(elm: HTMLElement) {
+    const restrictionsDescriptors = getCustomElementRestrictionsDescriptors(elm);
     const elmProto = getPrototypeOf(elm);
     setPrototypeOf(elm, create(elmProto, restrictionsDescriptors));
 }
