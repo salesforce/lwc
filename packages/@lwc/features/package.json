@@ -1,6 +1,6 @@
 {
     "name": "@lwc/features",
-    "version": "1.3.7",
+    "version": "1.3.8",
     "description": "LWC Features Flags",
     "main": "dist/flags.cjs.js",
     "module": "dist/flags.js",
@@ -16,7 +16,7 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/shared": "1.3.7"
+        "@lwc/shared": "1.3.8"
     },
     "publishConfig": {
         "access": "public"
