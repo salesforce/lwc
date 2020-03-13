@@ -6,6 +6,15 @@
  */
 import * as path from 'path';
 
+// Declare custom jest matchers.
+declare global {
+    namespace jest {
+        interface Matchers<R> {
+            toThrowErrorWithType(ctor: typeof Error, message: string): R;
+        }
+    }
+}
+
 export function fixture(relPath: string): string {
     return path.resolve(__dirname, 'fixtures', relPath);
 }

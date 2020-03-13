@@ -10,32 +10,37 @@ import { fixture } from './test-utils';
 
 describe('parameters checks', () => {
     test('throw when importer is not a string', () => {
-        expect(() => (resolveModule as any)()).toThrow(
+        expect(() => (resolveModule as any)()).toThrowErrorWithType(
+            TypeError,
             'The importee argument must be a string. Received type undefined'
         );
     });
 
     test('throw when no importee is not a string', () => {
-        expect(() => (resolveModule as any)('test')).toThrow(
+        expect(() => (resolveModule as any)('test')).toThrowErrorWithType(
+            TypeError,
             'The importer argument must be a string. Received type undefined'
         );
     });
 
     test('throw when passing a relative path', () => {
-        expect(() => resolveModule('./test', '.')).toThrow(
+        expect(() => resolveModule('./test', '.')).toThrowErrorWithType(
+            TypeError,
             'The importee argument must be a valid LWC module name. Received "./test"'
         );
     });
 
     test('throw when passing an absolute path', () => {
-        expect(() => resolveModule('/test', '.')).toThrow(
+        expect(() => resolveModule('/test', '.')).toThrowErrorWithType(
+            TypeError,
             'The importee argument must be a valid LWC module name. Received "/test"'
         );
     });
 
     test('throw when incorrect moduleRecord type', () => {
         const opts = { modules: [{ unknownType: 'test ' }] };
-        expect(() => (resolveModule as any)('test', '', opts)).toThrow(
+        expect(() => (resolveModule as any)('test', '', opts)).toThrowErrorWithType(
+            Error,
             'Invalid moduleRecord type {"unknownType":"test "}'
         );
     });
