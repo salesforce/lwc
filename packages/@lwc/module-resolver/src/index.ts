@@ -42,19 +42,22 @@ function resolveModuleFromAlias(
     opts: InnerResolverOptions
 ): RegistryEntry | undefined {
     const { name, path: modulePath } = moduleRecord;
-    if (specifier === name) {
-        const entry = path.resolve(opts.rootDir, modulePath);
-        if (!fs.existsSync(entry)) {
-            throw new LwcConfigError(
-                `Invalid npm module record "${JSON.stringify(
-                    moduleRecord
-                )}", file ${entry} does not exist`,
-                { scope: opts.rootDir }
-            );
-        }
 
-        return createRegistryEntry(entry, specifier, opts);
+    if (specifier !== name) {
+        return;
     }
+
+    const entry = path.resolve(opts.rootDir, modulePath);
+    if (!fs.existsSync(entry)) {
+        throw new LwcConfigError(
+            `Invalid alias module record "${JSON.stringify(
+                moduleRecord
+            )}", file "${entry}" does not exist`,
+            { scope: opts.rootDir }
+        );
+    }
+
+    return createRegistryEntry(entry, specifier, opts);
 }
 
 function resolveModuleFromDir(

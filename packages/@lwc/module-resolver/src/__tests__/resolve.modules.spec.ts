@@ -56,12 +56,13 @@ describe('alias resolution', () => {
         const specifier = 'aliased';
         const importer = fixture('errors/missing-aliased-file/index.js');
 
-        // XTODO: Investigate error
-        expect(() => resolveModule('test', importer)).toThrowErrorWithType(
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
             LwcConfigError,
             `Invalid LWC configuration in "${fixture(
                 'errors/missing-aliased-file'
-            )}". Unknown module record "{"alias":"${specifier}","path":"./missing.js"}"`
+            )}". Invalid alias module record "{"name":"aliased","path":"./missing.js"}", file "${fixture(
+                'errors/missing-aliased-file/missing.js'
+            )}" does not exist`
         );
     });
 });
