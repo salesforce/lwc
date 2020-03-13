@@ -78,22 +78,32 @@ describe('dir resolution', () => {
         });
     });
 
-    // XTODO: Enable this test
-    test.skip("throw an error when the dir doesn't exists", () => {
+    test("throw an error when the dir doesn't exists", () => {
         const specifier = 'test';
         const importer = fixture('errors/missing-dir/index.js');
 
-        // XTODO: This should throw an error loud and clear!
-        expect(() => resolveModule(specifier, importer)).toThrow(`TODO missing error`);
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
+            LwcConfigError,
+            `Invalid LWC configuration in "${fixture(
+                'errors/missing-dir'
+            )}". Invalid dir module record "{"dir":"./missing"}", directory ${fixture(
+                'errors/missing-dir/missing'
+            )} doesn't exists`
+        );
     });
 
-    // XTODO: Enable this test
-    test.skip('throw an error when there is no entry file', () => {
+    test('throw an error when there is no entry file', () => {
         const specifier = 'foo/bar';
         const importer = fixture('errors/missing-dir-entry/index.js');
 
-        // XTODO: This should throw an error loud and clear!
-        expect(() => resolveModule(specifier, importer)).toThrow(`TODO missing error`);
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
+            LwcConfigError,
+            `Invalid LWC configuration in "${fixture(
+                'errors/missing-dir-entry'
+            )}". Unable to find a valid entry point for "${fixture(
+                'errors/missing-dir-entry/modules/foo/bar/bar'
+            )}"`
+        );
     });
 });
 

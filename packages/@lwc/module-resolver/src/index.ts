@@ -63,22 +63,35 @@ function resolveModuleFromDir(
     opts: InnerResolverOptions
 ): RegistryEntry | undefined {
     const { dir } = moduleRecord;
-    const absModuleDir = path.isAbsolute(dir) ? dir : path.join(opts.rootDir, dir);
-    const parts = specifier.split('/');
 
+    const absModuleDir = path.isAbsolute(dir) ? dir : path.join(opts.rootDir, dir);
+
+    if (!fs.existsSync(absModuleDir)) {
+        throw new LwcConfigError(
+            `Invalid dir module record "${JSON.stringify(
+                moduleRecord
+            )}", directory ${absModuleDir} doesn't exists`,
+            { scope: opts.rootDir }
+        );
+    }
+
+    // A module dir record can only resolve module specifier with the following form "[ns]/[name]".
+    // We can early exit if the required specifier doesn't match.
+    const parts = specifier.split('/');
     if (parts.length !== 2) {
-        // We skip resolution but can't throw since other ModuleEntry types might come after
         return;
     }
 
     const [ns, name] = parts;
     const moduleDir = path.join(absModuleDir, ns, name);
 
-    // If the module dir does not exist, we skip the resolution but dont throw since it can be resolved later
-    if (fs.existsSync(moduleDir)) {
-        const entry = getModuleEntry(moduleDir, name, opts);
-        return createRegistryEntry(entry, specifier, opts);
+    // Exit if the expected module directory doesn't exists.
+    if (!fs.existsSync(moduleDir)) {
+        return;
     }
+
+    const entry = getModuleEntry(moduleDir, name, opts);
+    return createRegistryEntry(entry, specifier, opts);
 }
 
 function resolveModuleFromNpm(
