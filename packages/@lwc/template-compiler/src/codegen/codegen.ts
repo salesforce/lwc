@@ -7,7 +7,6 @@
 import * as babylon from '@babel/parser';
 import * as t from '@babel/types';
 import * as esutils from 'esutils';
-import toCamelCase from 'camelcase';
 
 import { toPropertyName } from '../shared/utils';
 
@@ -18,7 +17,6 @@ type RenderPrimitive =
     | 'slot'
     | 'customElement'
     | 'bind'
-    | 'functionBind'
     | 'text'
     | 'dynamic'
     | 'dynamicCtor'
@@ -40,7 +38,6 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     customElement: { name: 'c', alias: 'api_custom_element' },
     dynamicCtor: { name: 'dc', alias: 'api_dynamic_component' },
     bind: { name: 'b', alias: 'api_bind' },
-    functionBind: { name: 'fb', alias: 'function_bind' },
     text: { name: 't', alias: 'api_text' },
     dynamic: { name: 'd', alias: 'api_dynamic' },
     key: { name: 'k', alias: 'api_key' },
@@ -144,10 +141,6 @@ export default class CodeGen {
 
     genBind(handler: t.Expression) {
         return this._renderApiCall(RENDER_APIS.bind, [handler]);
-    }
-
-    genFunctionBind(fn: t.Expression) {
-        return this._renderApiCall(RENDER_APIS.functionBind, [fn]);
     }
 
     genFlatten(children: t.Expression[]) {

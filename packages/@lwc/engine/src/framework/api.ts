@@ -6,7 +6,6 @@
  */
 import {
     ArrayPush,
-    ArraySlice,
     assert,
     create as ObjectCreate,
     forEach,
@@ -23,7 +22,7 @@ import {
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
-import { invokeEventListener, invokeComponentCallback } from './invoker';
+import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
 import { getAssociatedVM, runConnectedCallback, SlotSet, VM, VMState } from './vm';
@@ -81,7 +80,6 @@ export interface RenderAPI {
     t(text: string): VText;
     d(value: any): VNode | null;
     b(fn: EventListener): EventListener;
-    fb(fn: (...args: any[]) => any): (...args: any[]) => any;
     k(compilerKey: number, iteratorValue: any): string | void;
 }
 
@@ -527,18 +525,6 @@ export function b(fn: EventListener): EventListener {
     const vm: VM = vmBeingRendered;
     return function(event: Event) {
         invokeEventListener(vm, fn, vm.component, event);
-    };
-}
-
-// [f]unction_[b]ind
-export function fb(fn: (...args: any[]) => any): () => any {
-    const vmBeingRendered = getVMBeingRendered();
-    if (isNull(vmBeingRendered)) {
-        throw new Error();
-    }
-    const vm: VM = vmBeingRendered;
-    return function() {
-        return invokeComponentCallback(vm, fn, ArraySlice.call(arguments));
     };
 }
 

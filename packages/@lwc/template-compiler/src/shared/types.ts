@@ -38,11 +38,6 @@ export interface ForEach {
     index?: TemplateIdentifier;
 }
 
-export interface Locator {
-    id: string;
-    context?: TemplateExpression;
-}
-
 export interface ForIterator {
     expression: TemplateExpression;
     iterator: TemplateIdentifier;
