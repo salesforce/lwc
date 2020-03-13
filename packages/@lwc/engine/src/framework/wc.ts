@@ -12,8 +12,11 @@ import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { HTMLElementConstructor } from './base-bridge-element';
 
 /**
- * EXPERIMENTAL: This function builds a Web Component class from a LWC constructor so it can be
+ * This function builds a Web Component class from a LWC constructor so it can be
  * registered as a new element via customElements.define() at any given time.
+ *
+ * @deprecated since version 1.3.11
+ * Will be deleted in version 1.4.0
  *
  * @example
  * ```
@@ -24,6 +27,18 @@ import { HTMLElementConstructor } from './base-bridge-element';
  * const elm = document.createElement('x-foo');
  * ```
  */
+export function deprecatedBuildCustomElementConstructor(
+    Ctor: ComponentConstructor
+): HTMLElementConstructor {
+    /* eslint-disable-next-line no-console */
+    console.error(
+        'Deprecated function called: "buildCustomElementConstructor" function is deprecated and it will be removed in v1.4.0.' +
+            'Please use "CustomElementConstructor" property from a LWC constructor instead.'
+    );
+
+    return Ctor.CustomElementConstructor;
+}
+
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
     const mode = 'open';

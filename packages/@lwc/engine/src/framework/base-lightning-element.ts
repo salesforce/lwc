@@ -49,6 +49,7 @@ import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { buildCustomElementConstructor } from './wc';
+import { HTMLElementConstructor } from './base-bridge-element';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -144,6 +145,7 @@ interface ComponentHooks {
 export interface LightningElementConstructor {
     new (): LightningElement;
     readonly prototype: LightningElement;
+    readonly CustomElementConstructor: HTMLElementConstructor;
 }
 
 export declare var LightningElement: LightningElementConstructor;
