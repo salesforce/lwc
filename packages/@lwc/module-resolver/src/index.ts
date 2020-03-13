@@ -152,10 +152,8 @@ function resolveModuleFromNpm(
         }
 
         throw new LwcConfigError(
-            `Unable to find "${specifier}" under package "${npmModuleRecord.npm}"`,
-            {
-                scope: opts.rootDir,
-            }
+            `Unable to find "${specifier}" under npm package "${npmModuleRecord.npm}"`,
+            { scope: packageDir }
         );
     }
 }

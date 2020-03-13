@@ -168,6 +168,18 @@ describe('NPM resolution', () => {
             )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.`
         );
     });
+
+    test("throw when npm package can't resolve exposed module", () => {
+        const specifier = 'exposed';
+        const importer = fixture('errors/missing-npm-exposed-module');
+
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
+            LwcConfigError,
+            `Invalid LWC configuration in "${fixture(
+                'errors/missing-npm-exposed-module/node_modules/deps'
+            )}". Unable to find "exposed" under npm package "deps"`
+        );
+    });
 });
 
 describe('resolution override', () => {
