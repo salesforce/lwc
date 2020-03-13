@@ -41,8 +41,8 @@ describe('parameters checks', () => {
     });
 });
 
-describe('standard resolution', () => {
-    test('alias module', () => {
+describe('alias resolution', () => {
+    test('resolve the alias module', () => {
         const specifier = 'custom-module';
         const importer = fixture('custom-resolution/custom-override.js');
 
@@ -53,8 +53,19 @@ describe('standard resolution', () => {
         });
     });
 
-    // XTODO: add test to resolve multiple modules from the same directory
-    test('dir module', () => {
+    test("throw an error when the aliased path doesn't exists", () => {
+        const specifier = 'aliased';
+        const importer = fixture('errors/missing-aliased-file/index.js');
+
+        // XTODO: add more details here.
+        expect(() => resolveModule(specifier, importer)).toThrow(
+            `Invalid moduleRecord type {"alias":"${specifier}","path":"./missing.js"}`
+        );
+    });
+});
+
+describe('dir resolution', () => {
+    test('resolve a module form the dir', () => {
         const specifier = 'ns/jsEntry';
         const importer = fixture('module-entries/index.js');
 
@@ -63,6 +74,24 @@ describe('standard resolution', () => {
             scope: fixture('module-entries'),
             entry: fixture('module-entries/modules/ns/jsEntry/jsEntry.js'),
         });
+    });
+
+    // XTODO: Enable this test
+    test.skip("throw an error when the dir doesn't exists", () => {
+        const specifier = 'test';
+        const importer = fixture('errors/missing-dir/index.js');
+
+        // XTODO: This should throw an error loud and clear!
+        expect(() => resolveModule(specifier, importer)).toThrow(`TODO missing error`);
+    });
+
+    // XTODO: Enable this test
+    test.skip('throw an error when there is no entry file', () => {
+        const specifier = 'foo/bar';
+        const importer = fixture('errors/missing-dir-entry/index.js');
+
+        // XTODO: This should throw an error loud and clear!
+        expect(() => resolveModule(specifier, importer)).toThrow(`TODO missing error`);
     });
 });
 
