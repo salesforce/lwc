@@ -8,39 +8,6 @@
 import { resolveModule } from '../index';
 import { fixture } from './test-utils';
 
-describe('parameters checks', () => {
-    test('throw when importer is not a string', () => {
-        expect(() => (resolveModule as any)()).toThrow(
-            'The importee argument must be a string. Received type undefined'
-        );
-    });
-
-    test('throw when no importee is not a string', () => {
-        expect(() => (resolveModule as any)('test')).toThrow(
-            'The importer argument must be a string. Received type undefined'
-        );
-    });
-
-    test('throw when passing a relative path', () => {
-        expect(() => resolveModule('./test', '.')).toThrow(
-            'The importee argument must be a valid LWC module name. Received "./test"'
-        );
-    });
-
-    test('throw when passing an absolute path', () => {
-        expect(() => resolveModule('/test', '.')).toThrow(
-            'The importee argument must be a valid LWC module name. Received "/test"'
-        );
-    });
-
-    test('throw when incorrect moduleRecord type', () => {
-        const opts = { modules: [{ unknownType: 'test ' }] };
-        expect(() => (resolveModule as any)('test', '', opts)).toThrow(
-            'Invalid moduleRecord type {"unknownType":"test "}'
-        );
-    });
-});
-
 describe('resolution errors', () => {
     test('throw when no lwc config is present in the path', () => {
         const specifier = 'missing';
@@ -86,16 +53,6 @@ describe('resolution errors', () => {
 
         expect(() => resolveModule(specifier, importer)).toThrow(
             `Unable to resolve "${specifier}" from "${importer}"`
-        );
-    });
-
-    // XTODO: This error message is not helpfull, it would be great to add the location.
-    test('throw when npm package has no expose property', () => {
-        const specifier = 'npm-error';
-        const importer = fixture('errors/npm/index.js');
-
-        expect(() => resolveModule(specifier, importer)).toThrow(
-            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.'
         );
     });
 });

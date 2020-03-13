@@ -81,7 +81,24 @@ function resolveModuleFromNpm(
     opts: InnerResolverOptions
 ): RegistryEntry | undefined {
     const { npm, map: aliasMapping } = npmModuleRecord;
-    const pkgJsonPath = require.resolve(`${npm}/package.json`, { paths: [opts.rootDir] });
+
+    let pkgJsonPath;
+    try {
+        pkgJsonPath = require.resolve(`${npm}/package.json`, { paths: [opts.rootDir] });
+    } catch (error) {
+        // If the module "package.json" can't be found, throw an an invalid config error. Otherwise
+        // rethrow the original error.
+        if (error.code === 'MODULE_NOT_FOUND') {
+            throw new Error(
+                `Invalid npm module record "${JSON.stringify(
+                    npmModuleRecord
+                )}". Can't resolve "${npm}" npm module from "${opts.rootDir}"`
+            );
+        }
+
+        throw error;
+    }
+
     const packageDir = path.dirname(pkgJsonPath);
     const lwcConfig = getLwcConfig(packageDir);
 

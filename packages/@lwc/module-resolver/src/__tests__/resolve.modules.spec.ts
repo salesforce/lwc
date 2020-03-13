@@ -8,6 +8,39 @@
 import { resolveModule } from '../index';
 import { fixture } from './test-utils';
 
+describe('parameters checks', () => {
+    test('throw when importer is not a string', () => {
+        expect(() => (resolveModule as any)()).toThrow(
+            'The importee argument must be a string. Received type undefined'
+        );
+    });
+
+    test('throw when no importee is not a string', () => {
+        expect(() => (resolveModule as any)('test')).toThrow(
+            'The importer argument must be a string. Received type undefined'
+        );
+    });
+
+    test('throw when passing a relative path', () => {
+        expect(() => resolveModule('./test', '.')).toThrow(
+            'The importee argument must be a valid LWC module name. Received "./test"'
+        );
+    });
+
+    test('throw when passing an absolute path', () => {
+        expect(() => resolveModule('/test', '.')).toThrow(
+            'The importee argument must be a valid LWC module name. Received "/test"'
+        );
+    });
+
+    test('throw when incorrect moduleRecord type', () => {
+        const opts = { modules: [{ unknownType: 'test ' }] };
+        expect(() => (resolveModule as any)('test', '', opts)).toThrow(
+            'Invalid moduleRecord type {"unknownType":"test "}'
+        );
+    });
+});
+
 describe('standard resolution', () => {
     test('alias module', () => {
         const specifier = 'custom-module';
@@ -56,7 +89,38 @@ describe('NPM resolution', () => {
         });
     });
 
-    // XTODO: Add test when node_modules can't be found.
+    test("throw when npm package doesn't exists", () => {
+        const specifier = 'deps';
+        const importer = fixture('errors/missing-npm-package/index.js');
+
+        expect(() => resolveModule(specifier, importer)).toThrow(
+            `Invalid npm module record "{"npm":"missing-deps"}". Can't resolve "missing-deps" npm module from "${fixture(
+                'errors/missing-npm-package/'
+            )}"`
+        );
+    });
+
+    test('throw when missing lwc config in resolved npm package', () => {
+        const specifier = 'deps';
+        const importer = fixture('errors/missing-npm-package-lwc-config/index.js');
+
+        // XTODO: This error message should be different in this case here, the referenced package
+        // doesn't include any LWC config. Because of this, we should throw an error stating that
+        // the referenced package is not compatible with LWC.
+        expect(() => resolveModule(specifier, importer)).toThrow(
+            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.'
+        );
+    });
+
+    // XTODO: This error message is not helpfull, it would be great to add the location.
+    test('throw when npm package has no expose property', () => {
+        const specifier = 'npm-error';
+        const importer = fixture('errors/npm/index.js');
+
+        expect(() => resolveModule(specifier, importer)).toThrow(
+            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.'
+        );
+    });
 });
 
 describe('resolution override', () => {
