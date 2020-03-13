@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+const diff = require('jest-diff');
+
 expect.extend({
     toThrowErrorWithType(received, ctor, message) {
         let error;
@@ -17,7 +19,7 @@ expect.extend({
 
         if (error === undefined) {
             return {
-                message: () => 'received function did not throw',
+                message: () => 'Received function did not throw',
                 pass: false,
             };
         }
@@ -25,22 +27,27 @@ expect.extend({
         if (error === null || typeof error !== 'object' || error.constructor !== ctor) {
             return {
                 message: () =>
-                    `expected function to throw an instance of "${ctor.name}" but thrown and instance of "${error.constructor.name}"`,
+                    `Expected function to throw an instance of\n\n` +
+                    `Expected ${this.utils.printExpected(ctor.name)}\n` +
+                    `Received ${this.utils.printReceived(error.constructor.name)}`,
                 pass: false,
             };
         }
 
         if (error.message !== message) {
+            const errorDiff = diff.diffStringsUnified(message, error.message);
             return {
                 message: () =>
-                    `expected function to throw an error with message: "${message}" but thrown an error with "${error.message}"`,
+                    `Expected function to throw an error with message\n\n` +
+                    `Difference ${errorDiff}\n` +
+                    `Expected ${this.utils.printExpected(message)}\n` +
+                    `Received ${this.utils.printReceived(error.message)}`,
                 pass: false,
             };
         }
 
         return {
-            message: () =>
-                `expected function not to throw a "${ctor.name}" error with message "${message}"`,
+            message: () => `Expected function not to throw an error`,
             pass: true,
         };
     },

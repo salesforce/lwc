@@ -7,6 +7,8 @@
 import path from 'path';
 import fs from 'fs';
 
+import { LwcConfigError } from './errors';
+
 import {
     LwcConfig,
     ModuleRecord,
@@ -26,9 +28,12 @@ function isObject(obj: any): boolean {
     return typeof obj === 'object' && obj !== null;
 }
 
-export function validateModuleRecord(moduleRecord: ModuleRecord) {
+export function validateModuleRecord(moduleRecord: ModuleRecord, opts: InnerResolverOptions) {
     if (!isObject(moduleRecord)) {
-        throw new Error(`Found an invalid module record (${moduleRecord}). It must be an object`);
+        throw new LwcConfigError(
+            `Unexpected module record, expected an object but received ${typeof moduleRecord}`,
+            { scope: opts.rootDir }
+        );
     }
 }
 
@@ -74,7 +79,11 @@ function getEntry(moduleDir: string, moduleName: string, ext: string): string {
     return path.join(moduleDir, `${moduleName}.${ext}`);
 }
 
-export function getModuleEntry(moduleDir: string, moduleName: string): string {
+export function getModuleEntry(
+    moduleDir: string,
+    moduleName: string,
+    opts: InnerResolverOptions
+): string {
     const entryJS = getEntry(moduleDir, moduleName, 'js');
     const entryTS = getEntry(moduleDir, moduleName, 'ts');
     const entryHTML = getEntry(moduleDir, moduleName, 'html');
@@ -89,9 +98,12 @@ export function getModuleEntry(moduleDir: string, moduleName: string): string {
         return entryHTML;
     } else if (fs.existsSync(entryCSS)) {
         return entryCSS;
-    } else {
-        throw new Error(`Unable to find a valid entry point for "${moduleDir}/${moduleName}"`);
     }
+
+    throw new LwcConfigError(
+        `Unable to find a valid entry point for "${moduleDir}/${moduleName}"`,
+        { scope: opts.rootDir }
+    );
 }
 
 export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleResolverConfig {
@@ -165,8 +177,9 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
         const dirHasLwcConfig = fs.existsSync(configJsonPath);
 
         if (dirHasLwcConfig && !dirHasPkgJson) {
-            throw new Error(
-                `"lwc.config.json" must be at the package root level along with the "package.json". No "package.json" found at "${pkgJsonPath}"`
+            throw new LwcConfigError(
+                `"lwc.config.json" must be at the package root level along with the "package.json".`,
+                { scope: upwardsPath }
             );
         }
 
@@ -177,26 +190,37 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
         parts.pop();
     }
 
-    throw new Error(`Unable to find any LWC configuration file from "${currentPath}"`);
+    throw new LwcConfigError(`Unable to find any LWC configuration file.`, { scope: currentPath });
 }
 
-export function validateNpmConfig(config: LwcConfig): asserts config is Required<LwcConfig> {
+export function validateNpmConfig(
+    config: LwcConfig,
+    opts: InnerResolverOptions
+): asserts config is Required<LwcConfig> {
     if (!config.modules) {
-        throw new Error('Missing "modules" property for a npm config');
+        throw new LwcConfigError('Missing "modules" property for a npm config', {
+            scope: opts.rootDir,
+        });
     }
 
     if (!config.expose) {
-        throw new Error(
-            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.'
+        throw new LwcConfigError(
+            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.',
+            { scope: opts.rootDir }
         );
     }
 }
 
-export function validateNpmAlias(exposed: string[], map: { [key: string]: string }) {
+export function validateNpmAlias(
+    exposed: string[],
+    map: { [key: string]: string },
+    opts: InnerResolverOptions
+) {
     Object.keys(map).forEach(specifier => {
         if (!exposed.includes(specifier)) {
-            throw new Error(
-                `Unable to apply mapping: The specifier "${specifier}" is not exposed by the npm module`
+            throw new LwcConfigError(
+                `Unable to apply mapping: The specifier "${specifier}" is not exposed by the npm module`,
+                { scope: opts.rootDir }
             );
         }
     });
