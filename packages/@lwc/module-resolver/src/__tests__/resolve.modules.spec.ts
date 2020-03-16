@@ -168,6 +168,30 @@ describe('NPM resolution', () => {
         );
     });
 
+    test("throw when npm package config doesn't have modules property", () => {
+        const specifier = 'exposed';
+        const importer = fixture('errors/missing-npm-module-config');
+
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'errors/missing-npm-module-config/node_modules/deps'
+            )}". Missing "modules" property for a npm config`
+        );
+    });
+
+    test("throw when npm package config doesn't have expose property", () => {
+        const specifier = 'exposed';
+        const importer = fixture('errors/missing-npm-expose-config');
+
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'errors/missing-npm-expose-config/node_modules/deps'
+            )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.`
+        );
+    });
+
     test("throw when npm package can't resolve exposed module", () => {
         const specifier = 'exposed';
         const importer = fixture('errors/missing-npm-exposed-module');

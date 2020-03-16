@@ -11,7 +11,6 @@ import fs from 'fs';
 import {
     createRegistryEntry,
     findFirstUpwardConfigPath,
-    validateModuleRecord,
     isAliasModuleRecord,
     isDirModuleRecord,
     isNpmModuleRecord,
@@ -214,7 +213,6 @@ export function resolveModule(
     }
 
     for (const moduleRecord of modules) {
-        validateModuleRecord(moduleRecord, { rootDir });
         const registryEntry = resolveModuleRecordType(importee, moduleRecord, { rootDir });
         if (registryEntry) {
             return registryEntry;
@@ -223,5 +221,3 @@ export function resolveModule(
 
     throw new NoLwcModuleFound(importee, importer);
 }
-
-export { isDirModuleRecord, isNpmModuleRecord, isAliasModuleRecord, validateModuleRecord };

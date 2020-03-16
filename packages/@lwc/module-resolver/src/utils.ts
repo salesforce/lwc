@@ -24,19 +24,6 @@ const PACKAGE_JSON = 'package.json';
 const DEFAULT_CONFIG: LwcConfig = { modules: [] };
 const LWC_CONFIG_FILE = 'lwc.config.json';
 
-function isObject(obj: any): boolean {
-    return typeof obj === 'object' && obj !== null;
-}
-
-export function validateModuleRecord(moduleRecord: ModuleRecord, opts: InnerResolverOptions) {
-    if (!isObject(moduleRecord)) {
-        throw new LwcConfigError(
-            `Unexpected module record, expected an object but received ${typeof moduleRecord}`,
-            { scope: opts.rootDir }
-        );
-    }
-}
-
 export function isNpmModuleRecord(moduleRecord: ModuleRecord): moduleRecord is NpmModuleRecord {
     return 'npm' in moduleRecord;
 }
