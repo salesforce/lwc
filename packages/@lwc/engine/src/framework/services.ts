@@ -19,7 +19,6 @@ type ServiceCallback = (
 ) => void;
 interface ServiceDef {
     wiring?: ServiceCallback;
-    locator?: ServiceCallback;
     connected?: ServiceCallback;
     disconnected?: ServiceCallback;
     rendered?: ServiceCallback;
@@ -27,19 +26,12 @@ interface ServiceDef {
 
 export const Services: {
     wiring?: ServiceCallback[];
-    locator?: ServiceCallback[];
     connected?: ServiceCallback[];
     disconnected?: ServiceCallback[];
     rendered?: ServiceCallback[];
 } = create(null);
 
-const hooks: Array<keyof ServiceDef> = [
-    'wiring',
-    'locator',
-    'rendered',
-    'connected',
-    'disconnected',
-];
+const hooks: Array<keyof ServiceDef> = ['wiring', 'rendered', 'connected', 'disconnected'];
 
 /**
  * EXPERIMENTAL: This function allows for the registration of "services"

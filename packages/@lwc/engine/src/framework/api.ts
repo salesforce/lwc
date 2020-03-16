@@ -6,7 +6,6 @@
  */
 import {
     ArrayPush,
-    ArraySlice,
     assert,
     create as ObjectCreate,
     forEach,
@@ -23,7 +22,7 @@ import {
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
-import { invokeEventListener, invokeComponentCallback } from './invoker';
+import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
 import { getAssociatedVM, runConnectedCallback, SlotSet, VM, VMState } from './vm';
@@ -57,7 +56,6 @@ import {
     removeCustomElmHook,
     markAsDynamicChildren,
 } from './hooks';
-import { Services, invokeServiceHook } from './services';
 import { isComponentConstructor } from './def';
 
 export interface ElementCompilerData extends VNodeData {
@@ -82,8 +80,6 @@ export interface RenderAPI {
     t(text: string): VText;
     d(value: any): VNode | null;
     b(fn: EventListener): EventListener;
-    fb(fn: (...args: any[]) => any): (...args: any[]) => any;
-    ll(originalHandler: EventListener, id: string, provider?: () => any): EventListener;
     k(compilerKey: number, iteratorValue: any): string | void;
 }
 
@@ -529,58 +525,6 @@ export function b(fn: EventListener): EventListener {
     const vm: VM = vmBeingRendered;
     return function(event: Event) {
         invokeEventListener(vm, fn, vm.component, event);
-    };
-}
-
-// [f]unction_[b]ind
-export function fb(fn: (...args: any[]) => any): () => any {
-    const vmBeingRendered = getVMBeingRendered();
-    if (isNull(vmBeingRendered)) {
-        throw new Error();
-    }
-    const vm: VM = vmBeingRendered;
-    return function() {
-        return invokeComponentCallback(vm, fn, ArraySlice.call(arguments));
-    };
-}
-
-// [l]ocator_[l]istener function
-export function ll(
-    originalHandler: EventListener,
-    id: string,
-    context?: (...args: any[]) => any
-): EventListener {
-    const vm = getVMBeingRendered();
-    if (isNull(vm)) {
-        throw new Error();
-    }
-    // bind the original handler with b() so we can call it
-    // after resolving the locator
-    const eventListener = b(originalHandler);
-    // create a wrapping handler to resolve locator, and
-    // then invoke the original handler.
-    return function(event: Event) {
-        // located service for the locator metadata
-        const {
-            context: { locator },
-        } = vm;
-        if (!isUndefined(locator)) {
-            const { locator: locatorService } = Services;
-            if (locatorService) {
-                locator.resolved = {
-                    target: id,
-                    host: locator.id,
-                    targetContext: isFunction(context) && context(),
-                    hostContext: isFunction(locator.context) && locator.context(),
-                };
-                // a registered `locator` service will be invoked with
-                // access to the context.locator.resolved, which will contain:
-                // outer id, outer context, inner id, and inner context
-                invokeServiceHook(vm, locatorService);
-            }
-        }
-        // invoke original event listener via b()
-        eventListener(event);
     };
 }
 

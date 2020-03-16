@@ -171,7 +171,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                 applyIf(element);
                 applyStyle(element);
                 applyHandlers(element);
-                applyLocator(element);
                 applyComponent(element);
                 applySlot(element);
                 applyKey(element, elementNode.__location);
@@ -449,65 +448,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
 
         lwcOpts.dom = lwcDomAttribute.value as LWCDirectiveDomMode;
-    }
-
-    function applyLocator(element: IRElement) {
-        const locatorIdAttribute = getTemplateAttribute(element, 'locator:id');
-        const locatorContextAttribute = getTemplateAttribute(element, 'locator:context');
-
-        if (!locatorIdAttribute && !locatorContextAttribute) {
-            return;
-        }
-
-        if (!locatorIdAttribute && locatorContextAttribute) {
-            removeAttribute(element, locatorContextAttribute.name);
-            return warnOnElement(
-                ParserDiagnostics.LOCATOR_CONTEXT_MUST_BE_USED_WITH_LOCATOR_ID,
-                element.__original
-            );
-        }
-
-        if (locatorIdAttribute) {
-            removeAttribute(element, locatorIdAttribute.name);
-            if (locatorContextAttribute) {
-                removeAttribute(element, locatorContextAttribute.name);
-            }
-
-            if (locatorIdAttribute.type !== IRAttributeType.String) {
-                return warnAt(
-                    ParserDiagnostics.LOCATOR_ID_SHOULD_BE_STRING,
-                    [],
-                    locatorIdAttribute.location
-                );
-            }
-            const id = locatorIdAttribute.value;
-
-            let context: TemplateExpression | undefined;
-
-            if (locatorContextAttribute !== undefined) {
-                if (locatorContextAttribute.type !== IRAttributeType.Expression) {
-                    return warnAt(
-                        ParserDiagnostics.LOCATOR_CONTEXT_SHOULD_BE_EXPRESSION,
-                        [],
-                        locatorContextAttribute.location
-                    );
-                } else {
-                    context = locatorContextAttribute.value;
-                    if (isMemberExpression(context)) {
-                        return warnAt(
-                            ParserDiagnostics.LOCATOR_CONTEXT_CANNOT_BE_MEMBER_EXPRESSION,
-                            [],
-                            locatorContextAttribute.location
-                        );
-                    }
-                }
-            }
-
-            element.locator = {
-                id,
-                context,
-            };
-        }
     }
 
     function validateInlineStyleElement(element: IRElement) {
