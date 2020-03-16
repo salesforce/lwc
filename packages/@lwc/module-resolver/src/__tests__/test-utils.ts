@@ -6,6 +6,9 @@
  */
 import * as path from 'path';
 
+export const LWC_CONFIG_ERROR_CODE = 'LWC_CONFIG_ERROR';
+export const NO_LWC_MODULE_FOUND_CODE = 'NO_LWC_MODULE_FOUND';
+
 export function fixture(relPath: string): string {
     return path.resolve(__dirname, 'fixtures', relPath);
 }

@@ -6,7 +6,7 @@
  */
 
 import { resolveModule } from '../index';
-import { fixture } from './test-utils';
+import { fixture, NO_LWC_MODULE_FOUND_CODE } from './test-utils';
 
 describe('multi version', () => {
     test('resolve "fancy/bar" from root', () => {
@@ -65,7 +65,8 @@ describe('multi version', () => {
         const specifier = 'ui/icon';
         const importer = fixture('multi-version/node_modules/fancy-components/index.js');
 
-        expect(() => resolveModule(specifier, importer)).toThrow(
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            NO_LWC_MODULE_FOUND_CODE,
             `Unable to resolve "${specifier}" from "${importer}"`
         );
     });

@@ -6,9 +6,7 @@
  */
 
 import { resolveModule } from '../index';
-import { LwcConfigError } from '../errors';
-
-import { fixture } from './test-utils';
+import { fixture, LWC_CONFIG_ERROR_CODE } from './test-utils';
 
 describe('parameters checks', () => {
     test('throw when importer is not a string', () => {
@@ -56,8 +54,8 @@ describe('alias resolution', () => {
         const specifier = 'aliased';
         const importer = fixture('errors/missing-aliased-file/index.js');
 
-        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
-            LwcConfigError,
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/missing-aliased-file'
             )}". Invalid alias module record "{"name":"aliased","path":"./missing.js"}", file "${fixture(
@@ -83,8 +81,8 @@ describe('dir resolution', () => {
         const specifier = 'test';
         const importer = fixture('errors/missing-dir/index.js');
 
-        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
-            LwcConfigError,
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/missing-dir'
             )}". Invalid dir module record "{"dir":"./missing"}", directory ${fixture(
@@ -97,8 +95,8 @@ describe('dir resolution', () => {
         const specifier = 'foo/bar';
         const importer = fixture('errors/missing-dir-entry/index.js');
 
-        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
-            LwcConfigError,
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/missing-dir-entry'
             )}". Unable to find a valid entry point for "${fixture(
@@ -135,8 +133,8 @@ describe('NPM resolution', () => {
         const specifier = 'deps';
         const importer = fixture('errors/missing-npm-package/index.js');
 
-        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
-            LwcConfigError,
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/missing-npm-package'
             )}". Invalid npm module record "{"npm":"missing-deps"}", "missing-deps" npm module can't be resolved`
@@ -150,8 +148,8 @@ describe('NPM resolution', () => {
         // XTODO: This error message should be different in this case here, the referenced package
         // doesn't include any LWC config. Because of this, we should throw an error stating that
         // the referenced package is not compatible with LWC.
-        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
-            LwcConfigError,
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/missing-npm-package-lwc-config/node_modules/deps'
             )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.`
@@ -162,8 +160,8 @@ describe('NPM resolution', () => {
         const specifier = 'npm-error';
         const importer = fixture('errors/npm/index.js');
 
-        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
-            LwcConfigError,
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/npm/node_modules/npm-error'
             )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.`
@@ -174,8 +172,8 @@ describe('NPM resolution', () => {
         const specifier = 'exposed';
         const importer = fixture('errors/missing-npm-exposed-module');
 
-        expect(() => resolveModule(specifier, importer)).toThrowErrorWithType(
-            LwcConfigError,
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/missing-npm-exposed-module/node_modules/deps'
             )}". Unable to find "exposed" under npm package "deps"`
@@ -228,8 +226,8 @@ describe('resolution override', () => {
         const importer = fixture('no-config');
         const opts: any = { modules: [{}] };
 
-        expect(() => resolveModule('test', importer, opts)).toThrowErrorWithType(
-            LwcConfigError,
+        expect(() => resolveModule('test', importer, opts)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${importer}". Unknown module record "{}"`
         );
     });

@@ -6,7 +6,7 @@
  */
 
 import { resolveModule } from '../index';
-import { fixture } from './test-utils';
+import { fixture, LWC_CONFIG_ERROR_CODE } from './test-utils';
 
 describe('resolve mapped modules', () => {
     test('mapped alias', () => {
@@ -37,9 +37,11 @@ describe('resolve mapped modules', () => {
         const specifier = 'alias-error';
         const importer = fixture('mapping/index.js');
 
-        // XTODO: Improve this error message, we need details about which NPM module is invalid.
-        expect(() => resolveModule(specifier, importer)).toThrow(
-            `Unable to apply mapping: The specifier "non-existing" is not exposed by the npm module`
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'mapping/node_modules/multi-module-mapping'
+            )}". Unable to apply mapping: The specifier "non-existing" is not exposed by the npm module`
         );
     });
 });
