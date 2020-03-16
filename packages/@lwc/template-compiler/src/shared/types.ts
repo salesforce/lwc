@@ -38,11 +38,6 @@ export interface ForEach {
     index?: TemplateIdentifier;
 }
 
-export interface Locator {
-    id: string;
-    context?: TemplateExpression;
-}
-
 export interface ForIterator {
     expression: TemplateExpression;
     iterator: TemplateIdentifier;
@@ -94,7 +89,6 @@ export interface IRElement {
     forOf?: ForIterator;
     forKey?: TemplateExpression;
 
-    locator?: Locator;
     lwc?: LWCDirectives;
 
     slotName?: string;

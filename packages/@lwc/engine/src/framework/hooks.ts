@@ -24,7 +24,6 @@ import modComputedClassName from './modules/computed-class-attr';
 import modComputedStyle from './modules/computed-style-attr';
 import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
-import modContext from './modules/context';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef, setElementProto } from './def';
@@ -86,7 +85,6 @@ export function createElmHook(vnode: VElement) {
     modStaticStyle.create(vnode);
     modComputedClassName.create(vnode);
     modComputedStyle.create(vnode);
-    modContext.create(vnode);
 }
 
 enum LWCDOMMode {
@@ -219,7 +217,6 @@ export function createCustomElmHook(vnode: VCustomElement) {
     modStaticStyle.create(vnode);
     modComputedClassName.create(vnode);
     modComputedStyle.create(vnode);
-    modContext.create(vnode);
 }
 
 export function createChildrenHook(vnode: VElement) {

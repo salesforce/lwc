@@ -70,8 +70,8 @@ const TEMPLATE_FUNCTION = template(
 
 const DISALLOWED_LWC_DIRECTIVES = new Set(['dynamic']);
 
-function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: CodeGen) {
-    const { lwc, locator } = element;
+function generateContext(element: IRElement, data: t.ObjectProperty[]) {
+    const { lwc } = element;
     const contextExpressions: t.ObjectProperty[] = [];
 
     // LWC
@@ -84,29 +84,6 @@ function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: 
 
         const lwcObj = t.objectProperty(t.identifier('lwc'), t.objectExpression(lwcObject));
         contextExpressions.push(lwcObj);
-    }
-
-    // Locators
-    if (locator) {
-        const locatorObject: t.ObjectProperty[] = [];
-        const locatorId = t.objectProperty(t.identifier('id'), t.stringLiteral(locator.id));
-        locatorObject.push(locatorId);
-        if (locator.context) {
-            let locatorContextFunction = bindExpression(locator.context, element).expression;
-            locatorContextFunction = codeGen.genFunctionBind(locatorContextFunction);
-            locatorContextFunction = memorizeHandler(
-                codeGen,
-                element,
-                locator.context,
-                locatorContextFunction
-            );
-            locatorObject.push(t.objectProperty(t.identifier('context'), locatorContextFunction));
-        }
-        const contextObj = t.objectProperty(
-            t.identifier('locator'),
-            t.objectExpression(locatorObject)
-        );
-        contextExpressions.push(contextObj);
     }
 
     data.push(t.objectProperty(t.identifier('context'), t.objectExpression(contextExpressions)));
@@ -445,18 +422,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
 
     function elementDataBag(element: IRElement, templateContainsId: boolean): t.ObjectExpression {
         const data: t.ObjectProperty[] = [];
-        const {
-            classMap,
-            className,
-            style,
-            styleMap,
-            attrs,
-            props,
-            on,
-            forKey,
-            locator,
-            lwc,
-        } = element;
+        const { classMap, className, style, styleMap, attrs, props, on, forKey, lwc } = element;
 
         // Class attibute defined via string
         if (className) {
@@ -503,8 +469,8 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
 
-        if (lwc || locator) {
-            generateContext(element, data, codeGen);
+        if (lwc) {
+            generateContext(element, data);
         }
 
         // Key property on VNode
@@ -528,17 +494,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         if (on) {
             const onObj = objectToAST(on, key => {
                 const { expression: componentHandler } = bindExpression(on[key], element);
-                let handler: t.Expression;
-                if (locator !== undefined && key === 'click') {
-                    let locatorContext: t.Expression | undefined;
-                    if (locator.context) {
-                        locatorContext = bindExpression(locator.context, element).expression;
-                        locatorContext = codeGen.genFunctionBind(locatorContext);
-                    }
-                    handler = codeGen.genLocatorBind(componentHandler, locator.id, locatorContext);
-                } else {
-                    handler = codeGen.genBind(componentHandler);
-                }
+                let handler: t.Expression = codeGen.genBind(componentHandler);
 
                 handler = memorizeHandler(codeGen, element, componentHandler, handler);
 
