@@ -33,7 +33,7 @@ export function deprecatedBuildCustomElementConstructor(
     /* eslint-disable-next-line no-console */
     console.error(
         'Deprecated function called: "buildCustomElementConstructor" function is deprecated and it will be removed in v1.4.0.' +
-            'Please use "CustomElementConstructor" property from a LWC constructor instead.'
+            'Please use "CustomElementConstructor" static property of the component constructor to access the corresponding custom element constructor instead.'
     );
 
     return Ctor.CustomElementConstructor;
