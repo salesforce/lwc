@@ -69,7 +69,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 }
 
                 return pluginUtils.addExtension(normalizedPath, ext);
-            } else {
+            } else if (importer) {
                 try {
                     return resolveModule(importee, importer, {
                         modules: customResolvedModules,
