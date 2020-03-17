@@ -11,9 +11,9 @@ import { fixture, NO_LWC_MODULE_FOUND_CODE } from './test-utils';
 describe('multi version', () => {
     test('resolve "fancy/bar" from root', () => {
         const specifier = 'fancy/bar';
-        const importer = fixture('multi-version/index.js');
+        const dirname = fixture('multi-version');
 
-        expect(resolveModule(specifier, importer)).toEqual({
+        expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
             scope: fixture('multi-version/node_modules/fancy-components'),
             entry: fixture(
@@ -24,9 +24,9 @@ describe('multi version', () => {
 
     test('resolve "ui/button" from root', () => {
         const specifier = 'ui/button';
-        const importer = fixture('multi-version/index.js');
+        const dirname = fixture('multi-version');
 
-        expect(resolveModule(specifier, importer)).toEqual({
+        expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
             scope: fixture('multi-version/node_modules/@ui/components'),
             entry: fixture(
@@ -37,9 +37,9 @@ describe('multi version', () => {
 
     test('resolve "ui/icon" from root', () => {
         const specifier = 'ui/icon';
-        const importer = fixture('multi-version/index.js');
+        const dirname = fixture('multi-version');
 
-        expect(resolveModule(specifier, importer)).toEqual({
+        expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
             scope: fixture('multi-version/node_modules/@ui/components'),
             entry: fixture('multi-version/node_modules/@ui/components/src/modules/ui/icon/icon.js'),
@@ -48,9 +48,9 @@ describe('multi version', () => {
 
     test('resolve "ui/button" from "fancy-component" module', () => {
         const specifier = 'ui/button';
-        const importer = fixture('multi-version/node_modules/fancy-components/index.js');
+        const dirname = fixture('multi-version/node_modules/fancy-components');
 
-        expect(resolveModule(specifier, importer)).toEqual({
+        expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
             scope: fixture(
                 'multi-version/node_modules/fancy-components/node_modules/@ui/components'
@@ -63,7 +63,7 @@ describe('multi version', () => {
 
     test('can\t resolve "ui/icon" from "fancy-component" module', () => {
         const specifier = 'ui/icon';
-        const importer = fixture('multi-version/node_modules/fancy-components/index.js');
+        const importer = fixture('multi-version/node_modules/fancy-components');
 
         expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
             NO_LWC_MODULE_FOUND_CODE,

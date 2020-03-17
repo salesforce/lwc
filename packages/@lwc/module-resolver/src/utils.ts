@@ -117,16 +117,8 @@ export function mergeModules(
     return modules;
 }
 
-export function findFirstUpwardConfigPath(currentPath: string): string {
-    try {
-        if (fs.lstatSync(currentPath).isFile()) {
-            currentPath = path.dirname(currentPath);
-        }
-    } catch {
-        // It might be a virtual file or path try to resolve it still
-    }
-
-    const parts = currentPath.split(path.sep);
+export function findFirstUpwardConfigPath(dirname: string): string {
+    const parts = dirname.split(path.sep);
 
     while (parts.length > 1) {
         const upwardsPath = parts.join(path.sep);
@@ -150,7 +142,7 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
         parts.pop();
     }
 
-    throw new LwcConfigError(`Unable to find any LWC configuration file`, { scope: currentPath });
+    throw new LwcConfigError(`Unable to find any LWC configuration file`, { scope: dirname });
 }
 
 export function validateNpmConfig(

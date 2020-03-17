@@ -11,9 +11,9 @@ import { fixture, LWC_CONFIG_ERROR_CODE } from './test-utils';
 describe('resolve mapped modules', () => {
     test('mapped alias', () => {
         const specifier = 'foo-common-util';
-        const importer = fixture('mapping/index.js');
+        const dirname = fixture('mapping');
 
-        expect(resolveModule(specifier, importer)).toEqual({
+        expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
             scope: fixture('mapping/node_modules/lwc-modules-foo'),
             entry: fixture('mapping/node_modules/lwc-modules-foo/src/common-util.js'),
@@ -22,9 +22,9 @@ describe('resolve mapped modules', () => {
 
     test('mapped npm alias', () => {
         const specifier = 'bar-common-util';
-        const importer = fixture('mapping/index.js');
+        const dirname = fixture('mapping');
 
-        expect(resolveModule(specifier, importer)).toEqual({
+        expect(resolveModule(specifier, dirname)).toEqual({
             specifier,
             scope: fixture('mapping/node_modules/lwc-modules-bar/node_modules/common-util'),
             entry: fixture(
@@ -35,9 +35,9 @@ describe('resolve mapped modules', () => {
 
     test('validate multiple', () => {
         const specifier = 'alias-error';
-        const importer = fixture('mapping/index.js');
+        const dirname = fixture('mapping');
 
-        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+        expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'mapping/node_modules/multi-module-mapping'

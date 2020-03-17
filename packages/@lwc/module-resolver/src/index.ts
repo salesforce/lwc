@@ -182,7 +182,7 @@ function resolveModuleRecordType(
 
 export function resolveModule(
     importee: string,
-    importer: string,
+    dirname: string,
     config?: Partial<ModuleResolverConfig>
 ): RegistryEntry {
     if (typeof importee !== 'string') {
@@ -191,9 +191,9 @@ export function resolveModule(
         );
     }
 
-    if (typeof importer !== 'string') {
+    if (typeof dirname !== 'string') {
         throw new TypeError(
-            `The importer argument must be a string. Received type ${typeof importer}`
+            `The dirname argument must be a string. Received type ${typeof dirname}`
         );
     }
 
@@ -203,7 +203,7 @@ export function resolveModule(
         );
     }
 
-    const rootDir = findFirstUpwardConfigPath(path.resolve(importer));
+    const rootDir = findFirstUpwardConfigPath(path.resolve(dirname));
     const lwcConfig = getLwcConfig(rootDir);
 
     let modules = lwcConfig.modules || [];
@@ -219,5 +219,5 @@ export function resolveModule(
         }
     }
 
-    throw new NoLwcModuleFound(importee, importer);
+    throw new NoLwcModuleFound(importee, dirname);
 }
