@@ -24,7 +24,7 @@ console.log(result);
 **Parameters:**
 
 -   `specifier` (string, required): The module specifier that should be resolved.
--   `importer` (string, required): The file importing the module. This file is used an the entry point from where the `specifier` should be resolved.
+-   `dirname` (string, required): The directory from where the specifier should be resolved.
 -   `options` (object, optional):
-    -   `rootDir` (string, optional): TODO
-    -   `modules` (`ModuleRecord`, optional): TODO
+    -   `modules` (ModuleRecord[], optional, default: `[]`): Injects module records to the resolved resolved configuration.
+    -   `rootDir` (string, optional, default: `process.cwd()`): Should only be used when the `modules` option is set. Defines from where the modules overrides should be resolved.
