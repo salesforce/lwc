@@ -2,7 +2,7 @@
   'use strict';
 
   function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-    return "\n" + (nativeShadow ? (":host {color: var(--lwc-my-color);}") : (hostSelector + " {color: var(--lwc-my-color);}")) + "\n";
+    return ["\n", (nativeShadow ? (":host {color: var(--lwc-my-color);}") : [hostSelector, " {color: var(--lwc-my-color);}"].join('')), "\n"].join('');
   }
   var _implicitStylesheets = [stylesheet];
 
