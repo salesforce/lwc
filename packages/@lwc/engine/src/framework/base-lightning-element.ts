@@ -549,10 +549,13 @@ const baseDescriptors = ArrayReduce.call(
 
 defineProperties(BaseLightningElementConstructor.prototype, baseDescriptors);
 
-const ComponentConstructorAsCustomElementConstructorMap = new Map();
+const ComponentConstructorAsCustomElementConstructorMap = new Map<
+    ComponentConstructor,
+    HTMLElementConstructor
+>();
 
-function getCustomElementConstructor(Ctor: ComponentConstructor): HTMLElement {
-    if ((Ctor as any) === BaseLightningElementConstructor) {
+function getCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
+    if (Ctor === BaseLightningElement) {
         throw new TypeError(
             `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`
         );

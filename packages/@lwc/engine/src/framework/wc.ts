@@ -16,7 +16,6 @@ import { HTMLElementConstructor } from './base-bridge-element';
  * registered as a new element via customElements.define() at any given time.
  *
  * @deprecated since version 1.3.11
- * Will be deleted in version 1.4.0
  *
  * @example
  * ```
@@ -30,24 +29,25 @@ import { HTMLElementConstructor } from './base-bridge-element';
 export function deprecatedBuildCustomElementConstructor(
     Ctor: ComponentConstructor
 ): HTMLElementConstructor {
-    /* eslint-disable-next-line no-console */
-    console.error(
-        'Deprecated function called: "buildCustomElementConstructor" function is deprecated and it will be removed in v1.4.0.' +
-            'Please use "CustomElementConstructor" static property of the component constructor to access the corresponding custom element constructor instead.'
-    );
+    if (process.env.NODE_ENV !== 'production') {
+        /* eslint-disable-next-line no-console */
+        console.warn(
+            'Deprecated function called: "buildCustomElementConstructor" function is deprecated and it will be removed.' +
+                `Use "${Ctor.name}.CustomElementConstructor" static property of the component constructor to access the corresponding custom element constructor instead.`
+        );
+    }
 
     return Ctor.CustomElementConstructor;
 }
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
-    const mode = 'open';
 
     return class extends BaseElement {
         constructor() {
             super();
             createVM(this, Ctor, {
-                mode,
+                mode: 'open',
                 isRoot: true,
                 owner: null,
             });
