@@ -145,26 +145,11 @@ describe('NPM resolution', () => {
         const specifier = 'deps';
         const importer = fixture('errors/missing-npm-package-lwc-config/index.js');
 
-        // XTODO: This error message should be different in this case here, the referenced package
-        // doesn't include any LWC config. Because of this, we should throw an error stating that
-        // the referenced package is not compatible with LWC.
         expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/missing-npm-package-lwc-config/node_modules/deps'
-            )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.`
-        );
-    });
-
-    test('throw when npm package has no expose property', () => {
-        const specifier = 'npm-error';
-        const importer = fixture('errors/npm/index.js');
-
-        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
-            LWC_CONFIG_ERROR_CODE,
-            `Invalid LWC configuration in "${fixture(
-                'errors/npm/node_modules/npm-error'
-            )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.`
+            )}". Missing "modules" property for a npm config`
         );
     });
 
@@ -188,7 +173,7 @@ describe('NPM resolution', () => {
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/missing-npm-expose-config/node_modules/deps'
-            )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.`
+            )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains`
         );
     });
 

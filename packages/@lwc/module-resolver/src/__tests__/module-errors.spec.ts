@@ -15,7 +15,7 @@ describe('resolution errors', () => {
 
         expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
-            `Invalid LWC configuration in "${importer}". Unable to find any LWC configuration file.`
+            `Invalid LWC configuration in "${importer}". Unable to find any LWC configuration file`
         );
     });
 
@@ -27,7 +27,7 @@ describe('resolution errors', () => {
             LWC_CONFIG_ERROR_CODE,
             `Invalid LWC configuration in "${fixture(
                 'errors/invalid-lwc-config'
-            )}". "lwc.config.json" must be at the package root level along with the "package.json".`
+            )}". "lwc.config.json" must be at the package root level along with the "package.json"`
         );
     });
 

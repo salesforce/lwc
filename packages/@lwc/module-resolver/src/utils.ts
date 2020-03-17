@@ -21,7 +21,6 @@ import {
 } from './types';
 
 const PACKAGE_JSON = 'package.json';
-const DEFAULT_CONFIG: LwcConfig = { modules: [] };
 const LWC_CONFIG_FILE = 'lwc.config.json';
 
 export function isNpmModuleRecord(moduleRecord: ModuleRecord): moduleRecord is NpmModuleRecord {
@@ -34,32 +33,6 @@ export function isDirModuleRecord(moduleRecord: ModuleRecord): moduleRecord is D
 
 export function isAliasModuleRecord(moduleRecord: ModuleRecord): moduleRecord is AliasModuleRecord {
     return 'name' in moduleRecord && 'path' in moduleRecord;
-}
-
-function existsLwcConfig(configDir: string) {
-    return fs.existsSync(path.join(configDir, LWC_CONFIG_FILE));
-}
-
-function loadLwcConfig(configDir: string): LwcConfig {
-    const configFile = path.join(configDir, LWC_CONFIG_FILE);
-    if (!fs.existsSync(configFile)) {
-        return DEFAULT_CONFIG;
-    }
-
-    try {
-        return JSON.parse(fs.readFileSync(configFile, 'utf8'));
-    } catch (e) {
-        return DEFAULT_CONFIG;
-    }
-}
-
-function loadPackageJson(pkgDir: string): any {
-    const pkgFile = path.join(pkgDir, PACKAGE_JSON);
-    try {
-        return JSON.parse(fs.readFileSync(pkgFile, 'utf8'));
-    } catch (e) {
-        return {};
-    }
 }
 
 function getEntry(moduleDir: string, moduleName: string, ext: string): string {
@@ -165,7 +138,7 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
 
         if (dirHasLwcConfig && !dirHasPkgJson) {
             throw new LwcConfigError(
-                `"lwc.config.json" must be at the package root level along with the "package.json".`,
+                `"lwc.config.json" must be at the package root level along with the "package.json"`,
                 { scope: upwardsPath }
             );
         }
@@ -177,7 +150,7 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
         parts.pop();
     }
 
-    throw new LwcConfigError(`Unable to find any LWC configuration file.`, { scope: currentPath });
+    throw new LwcConfigError(`Unable to find any LWC configuration file`, { scope: currentPath });
 }
 
 export function validateNpmConfig(
@@ -192,7 +165,7 @@ export function validateNpmConfig(
 
     if (!config.expose) {
         throw new LwcConfigError(
-            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.',
+            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains',
             { scope: opts.rootDir }
         );
     }
@@ -213,12 +186,15 @@ export function validateNpmAlias(
     });
 }
 
-export function getLwcConfig(dirPath: string): LwcConfig {
-    const lwcConfig = existsLwcConfig(dirPath)
-        ? loadLwcConfig(dirPath)
-        : loadPackageJson(dirPath).lwc || DEFAULT_CONFIG;
+export function getLwcConfig(dirname: string): LwcConfig {
+    const packageJsonPath = path.resolve(dirname, PACKAGE_JSON);
+    const lwcConfigPath = path.resolve(dirname, LWC_CONFIG_FILE);
 
-    return lwcConfig;
+    if (fs.existsSync(lwcConfigPath)) {
+        return require(lwcConfigPath);
+    } else {
+        return require(packageJsonPath).lwc ?? {};
+    }
 }
 
 export function createRegistryEntry(
