@@ -8,7 +8,8 @@ const fs = require('fs');
 const path = require('path');
 const pluginUtils = require('@rollup/pluginutils');
 const compiler = require('@lwc/compiler');
-const lwcResolver = require('@lwc/module-resolver');
+const { resolveModule } = require('@lwc/module-resolver');
+
 const { getModuleQualifiedName } = require('./utils');
 const { DEFAULT_OPTIONS, DEFAULT_MODE, DEFAULT_MODULES } = require('./constants');
 
@@ -68,14 +69,16 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 }
 
                 return pluginUtils.addExtension(normalizedPath, ext);
-            } else {
+            } else if (importer) {
                 try {
-                    return lwcResolver.resolveModule(importee, importer, {
+                    return resolveModule(importee, importer, {
                         modules: customResolvedModules,
                         rootDir: customRootDir,
                     }).entry;
-                } catch {
-                    // noop: let rollup plugins keep resolving
+                } catch (err) {
+                    if (err.code !== 'NO_LWC_MODULE_FOUND') {
+                        throw err;
+                    }
                 }
             }
         },

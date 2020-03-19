@@ -7,6 +7,8 @@
 import path from 'path';
 import fs from 'fs';
 
+import { LwcConfigError } from './errors';
+
 import {
     LwcConfig,
     ModuleRecord,
@@ -19,28 +21,7 @@ import {
 } from './types';
 
 const PACKAGE_JSON = 'package.json';
-const DEFAULT_CONFIG: LwcConfig = { modules: [] };
 const LWC_CONFIG_FILE = 'lwc.config.json';
-
-function isObject(obj: any): boolean {
-    return typeof obj === 'object' && obj !== null;
-}
-
-export function validateImportee(importee: string) {
-    if (!importee) {
-        throw new Error(`Invalid importee ${importee}`);
-    }
-
-    if (importee.startsWith('.') || importee.startsWith('/')) {
-        throw new Error(`Unable to resolve relative paths for ${importee}`);
-    }
-}
-
-export function validateModuleRecord(moduleRecord: ModuleRecord) {
-    if (!isObject(moduleRecord)) {
-        throw new Error(`Found an invalid module record (${moduleRecord}). It must be an object`);
-    }
-}
 
 export function isNpmModuleRecord(moduleRecord: ModuleRecord): moduleRecord is NpmModuleRecord {
     return 'npm' in moduleRecord;
@@ -51,40 +32,18 @@ export function isDirModuleRecord(moduleRecord: ModuleRecord): moduleRecord is D
 }
 
 export function isAliasModuleRecord(moduleRecord: ModuleRecord): moduleRecord is AliasModuleRecord {
-    return 'name' in moduleRecord;
+    return 'name' in moduleRecord && 'path' in moduleRecord;
 }
 
-export function existsLwcConfig(configDir: string) {
-    return fs.existsSync(path.join(configDir, LWC_CONFIG_FILE));
-}
-
-export function loadLwcConfig(configDir: string): LwcConfig {
-    const configFile = path.join(configDir, LWC_CONFIG_FILE);
-    if (!fs.existsSync(configFile)) {
-        return DEFAULT_CONFIG;
-    }
-
-    try {
-        return JSON.parse(fs.readFileSync(configFile, 'utf8'));
-    } catch (e) {
-        return DEFAULT_CONFIG;
-    }
-}
-
-export function loadPackageJson(pkgDir: string): any {
-    const pkgFile = path.join(pkgDir, PACKAGE_JSON);
-    try {
-        return JSON.parse(fs.readFileSync(pkgFile, 'utf8'));
-    } catch (e) {
-        return {};
-    }
-}
-
-export function getEntry(moduleDir: string, moduleName: string, ext: string): string {
+function getEntry(moduleDir: string, moduleName: string, ext: string): string {
     return path.join(moduleDir, `${moduleName}.${ext}`);
 }
 
-export function getModuleEntry(moduleDir: string, moduleName: string): string {
+export function getModuleEntry(
+    moduleDir: string,
+    moduleName: string,
+    opts: InnerResolverOptions
+): string {
     const entryJS = getEntry(moduleDir, moduleName, 'js');
     const entryTS = getEntry(moduleDir, moduleName, 'ts');
     const entryHTML = getEntry(moduleDir, moduleName, 'html');
@@ -99,9 +58,12 @@ export function getModuleEntry(moduleDir: string, moduleName: string): string {
         return entryHTML;
     } else if (fs.existsSync(entryCSS)) {
         return entryCSS;
-    } else {
-        throw new Error(`Unable to find a valid entry point for ${moduleDir}/${moduleName}`);
     }
+
+    throw new LwcConfigError(
+        `Unable to find a valid entry point for "${moduleDir}/${moduleName}"`,
+        { scope: opts.rootDir }
+    );
 }
 
 export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleResolverConfig {
@@ -112,7 +74,6 @@ export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleRe
     );
 
     return {
-        ...DEFAULT_CONFIG,
         modules: normalizedModules,
         rootDir,
     };
@@ -156,16 +117,8 @@ export function mergeModules(
     return modules;
 }
 
-export function findFirstUpwardConfigPath(currentPath: string): string {
-    try {
-        if (fs.lstatSync(currentPath).isFile()) {
-            currentPath = path.dirname(currentPath);
-        }
-    } catch (e) {
-        // It might be a virtual file or path try to resolve it still
-    }
-
-    const parts = currentPath.split(path.sep);
+export function findFirstUpwardConfigPath(dirname: string): string {
+    const parts = dirname.split(path.sep);
 
     while (parts.length > 1) {
         const upwardsPath = parts.join(path.sep);
@@ -176,8 +129,9 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
         const dirHasLwcConfig = fs.existsSync(configJsonPath);
 
         if (dirHasLwcConfig && !dirHasPkgJson) {
-            throw new Error(
-                'LWC config must be at the package root level (at the same package.json level)'
+            throw new LwcConfigError(
+                `"lwc.config.json" must be at the package root level along with the "package.json"`,
+                { scope: upwardsPath }
             );
         }
 
@@ -188,37 +142,51 @@ export function findFirstUpwardConfigPath(currentPath: string): string {
         parts.pop();
     }
 
-    throw new Error(`Unable to find any LWC configuration file from ${currentPath}`);
+    throw new LwcConfigError(`Unable to find any LWC configuration file`, { scope: dirname });
 }
 
-export function validateNpmConfig(config: LwcConfig): asserts config is Required<LwcConfig> {
+export function validateNpmConfig(
+    config: LwcConfig,
+    opts: InnerResolverOptions
+): asserts config is Required<LwcConfig> {
     if (!config.modules) {
-        throw new Error('Missing "modules" property for a npm config');
+        throw new LwcConfigError('Missing "modules" property for a npm config', {
+            scope: opts.rootDir,
+        });
     }
 
     if (!config.expose) {
-        throw new Error(
-            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.'
+        throw new LwcConfigError(
+            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains',
+            { scope: opts.rootDir }
         );
     }
 }
 
-export function validateNpmAlias(exposed: string[], map: { [key: string]: string }) {
+export function validateNpmAlias(
+    exposed: string[],
+    map: { [key: string]: string },
+    opts: InnerResolverOptions
+) {
     Object.keys(map).forEach(specifier => {
         if (!exposed.includes(specifier)) {
-            throw new Error(
-                `Unable to apply mapping: The specifier "${specifier}" is not exposed by the npm module`
+            throw new LwcConfigError(
+                `Unable to apply mapping: The specifier "${specifier}" is not exposed by the npm module`,
+                { scope: opts.rootDir }
             );
         }
     });
 }
 
-export function getLwcConfig(dirPath: string): LwcConfig {
-    const lwcConfig = existsLwcConfig(dirPath)
-        ? loadLwcConfig(dirPath)
-        : loadPackageJson(dirPath).lwc || DEFAULT_CONFIG;
+export function getLwcConfig(dirname: string): LwcConfig {
+    const packageJsonPath = path.resolve(dirname, PACKAGE_JSON);
+    const lwcConfigPath = path.resolve(dirname, LWC_CONFIG_FILE);
 
-    return lwcConfig;
+    if (fs.existsSync(lwcConfigPath)) {
+        return require(lwcConfigPath);
+    } else {
+        return require(packageJsonPath).lwc ?? {};
+    }
 }
 
 export function createRegistryEntry(
@@ -234,15 +202,15 @@ export function createRegistryEntry(
 }
 
 export function remapList(exposed: string[], map: { [key: string]: string }): string[] {
-    return exposed.reduce((renamed, item) => {
+    return exposed.reduce((renamed: string[], item) => {
         renamed.push(map[item] || item);
         return renamed;
-    }, [] as string[]);
+    }, []);
 }
 
 export function transposeObject(map: { [key: string]: string }): { [key: string]: string } {
     return Object.entries(map).reduce(
-        (r, [key, value]) => ((r[value] = key), r),
-        {} as { [key: string]: string }
+        (r: { [key: string]: string }, [key, value]) => ((r[value] = key), r),
+        {}
     );
 }

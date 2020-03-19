@@ -1,9 +1,0 @@
-{
-    "name": "npm-error",
-    "private": true,
-    "version": "0.0.1",
-    "main": "index.js",
-    "dependencies": {
-        "npm-error": "1.0.0"
-    }
-}

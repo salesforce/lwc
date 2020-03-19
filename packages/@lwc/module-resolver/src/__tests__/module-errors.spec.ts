@@ -5,94 +5,63 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
 import { resolveModule } from '../index';
+import { fixture, NO_LWC_MODULE_FOUND_CODE, LWC_CONFIG_ERROR_CODE } from './test-utils';
 
-describe('resolve individual module', () => {
-    test('throw when no importee', () => {
-        const customImporter = path.join(__dirname, 'fixtures/errors/empty/empty.js');
-        function run() {
-            const expectedImportee = undefined;
-            resolveModule(expectedImportee, customImporter);
-        }
+describe('resolution errors', () => {
+    test('throw when no lwc config is present in the path', () => {
+        const specifier = 'missing';
+        const importer = '/errors/non/existent/module.js';
 
-        expect(run).toThrow('Invalid importee undefined');
-    });
-
-    test('throw when no modules are empty', () => {
-        const customImporter = path.join(__dirname, 'fixtures/errors/empty/empty.js');
-        function run() {
-            const expectedImportee = 'empty';
-            resolveModule(expectedImportee, customImporter);
-        }
-
-        expect(run).toThrow('Unable to resolve empty from ' + customImporter);
-    });
-
-    test('throw when alias has no path', () => {
-        const customImporter = path.join(
-            __dirname,
-            'fixtures/errors/invalid-alias/invalid-alias.js'
-        );
-
-        function run() {
-            const expectedImportee = 'invalid-alias';
-
-            resolveModule(expectedImportee, customImporter);
-        }
-
-        expect(run).toThrow('Unable to resolve invalid-alias from ' + customImporter);
-    });
-
-    test('throw with invalid module record', () => {
-        const customImporter = path.join(
-            __dirname,
-            'fixtures/errors/invalid-alias/invalid-record.js'
-        );
-
-        function run() {
-            const expectedImportee = 'invalid-record';
-
-            resolveModule(expectedImportee, customImporter);
-        }
-
-        expect(run).toThrow('Unable to resolve invalid-record from ' + customImporter);
-    });
-
-    test('throw when no module record exists', () => {
-        const customImporter = path.join(
-            __dirname,
-            'fixtures/custom-resolution/custom-override.js'
-        );
-
-        function run() {
-            resolveModule('does-not-exist', customImporter);
-        }
-
-        expect(run).toThrow('Unable to resolve does-not-exist from ' + customImporter);
-    });
-
-    test('throw when npm package has no expose property', () => {
-        function run() {
-            const customImporter = path.join(__dirname, 'fixtures/errors/npm/index.js');
-            resolveModule('npm-error', customImporter);
-        }
-
-        expect(run).toThrow(
-            new Error(
-                'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains.'
-            )
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${importer}". Unable to find any LWC configuration file`
         );
     });
 
-    test('throw when incorrect moduleRecord type', () => {
-        function run() {
-            const customImporter = path.join(__dirname, 'fixtures/errors/npm/index.js');
-            resolveModule('npm-error', customImporter, {
-                modules: [{ unknownType: 'test ' }],
-            });
-        }
+    test('throw when a lwc.config.json without package.json', () => {
+        const specifier = 'missing';
+        const importer = fixture('errors/invalid-lwc-config/invalid-lwc-config.js');
 
-        expect(run).toThrow(new Error('Invalid moduleRecord type {"unknownType":"test "}'));
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'errors/invalid-lwc-config'
+            )}". "lwc.config.json" must be at the package root level along with the "package.json"`
+        );
+    });
+
+    test('throw when unknown module', () => {
+        const specifier = 'something';
+        const importer = fixture('errors/invalid-record/invalid-record.js');
+
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'errors/invalid-record'
+            )}". Unknown module record "{}"`
+        );
+    });
+
+    test('throw when alias module has not pass has no path', () => {
+        const specifier = 'something';
+        const importer = fixture('errors/invalid-alias/invalid-alias.js');
+
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'errors/invalid-alias'
+            )}". Unknown module record "{"name":"something"}"`
+        );
+    });
+
+    test("throw when a module can't be resolved", () => {
+        const specifier = 'empty';
+        const importer = fixture('errors/empty/empty.js');
+
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            NO_LWC_MODULE_FOUND_CODE,
+            `Unable to resolve "${specifier}" from "${importer}"`
+        );
     });
 });

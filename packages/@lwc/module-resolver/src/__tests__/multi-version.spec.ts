@@ -5,37 +5,69 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
 import { resolveModule } from '../index';
+import { fixture, NO_LWC_MODULE_FOUND_CODE } from './test-utils';
 
-describe('resolve modules iteratibly', () => {
-    it('load the right version', () => {
-        const multiVersionFixture = path.join(__dirname, 'fixtures/multi-version');
-        const moduleImporter = path.join(multiVersionFixture, 'src/modules/root/foo/foo.js');
-        const moduleImportee = 'fancy/bar';
+describe('multi version', () => {
+    test('resolve "fancy/bar" from root', () => {
+        const specifier = 'fancy/bar';
+        const dirname = fixture('multi-version');
 
-        const moduleRecord = resolveModule(moduleImportee, moduleImporter);
-
-        expect(moduleRecord).toEqual({
-            entry: path.join(
-                __dirname,
-                'fixtures/multi-version/node_modules/fancy-components/src/modules/fancy/bar/bar.js'
+        expect(resolveModule(specifier, dirname)).toEqual({
+            specifier,
+            scope: fixture('multi-version/node_modules/fancy-components'),
+            entry: fixture(
+                'multi-version/node_modules/fancy-components/src/modules/fancy/bar/bar.js'
             ),
-            scope: path.join(__dirname, 'fixtures/multi-version/node_modules/fancy-components'),
-            specifier: 'fancy/bar',
         });
     });
 
-    it('side load an alias record', () => {
-        const moduleImporter = path.join(__dirname, 'fixtures/multi-version/index.js');
-        const moduleImportee = 'custom-module';
+    test('resolve "ui/button" from root', () => {
+        const specifier = 'ui/button';
+        const dirname = fixture('multi-version');
 
-        const moduleRecord = resolveModule(moduleImportee, moduleImporter);
-
-        expect(moduleRecord).toEqual({
-            specifier: moduleImportee,
-            scope: path.join(__dirname, 'fixtures/multi-version'),
-            entry: path.join(__dirname, 'fixtures/multi-version/src/custom/module.js'),
+        expect(resolveModule(specifier, dirname)).toEqual({
+            specifier,
+            scope: fixture('multi-version/node_modules/@ui/components'),
+            entry: fixture(
+                'multi-version/node_modules/@ui/components/src/modules/ui/button/button.js'
+            ),
         });
+    });
+
+    test('resolve "ui/icon" from root', () => {
+        const specifier = 'ui/icon';
+        const dirname = fixture('multi-version');
+
+        expect(resolveModule(specifier, dirname)).toEqual({
+            specifier,
+            scope: fixture('multi-version/node_modules/@ui/components'),
+            entry: fixture('multi-version/node_modules/@ui/components/src/modules/ui/icon/icon.js'),
+        });
+    });
+
+    test('resolve "ui/button" from "fancy-component" module', () => {
+        const specifier = 'ui/button';
+        const dirname = fixture('multi-version/node_modules/fancy-components');
+
+        expect(resolveModule(specifier, dirname)).toEqual({
+            specifier,
+            scope: fixture(
+                'multi-version/node_modules/fancy-components/node_modules/@ui/components'
+            ),
+            entry: fixture(
+                'multi-version/node_modules/fancy-components/node_modules/@ui/components/src/modules/ui/button/button.js'
+            ),
+        });
+    });
+
+    test('can\t resolve "ui/icon" from "fancy-component" module', () => {
+        const specifier = 'ui/icon';
+        const importer = fixture('multi-version/node_modules/fancy-components');
+
+        expect(() => resolveModule(specifier, importer)).toThrowErrorWithCode(
+            NO_LWC_MODULE_FOUND_CODE,
+            `Unable to resolve "${specifier}" from "${importer}"`
+        );
     });
 });
