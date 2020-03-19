@@ -10,7 +10,11 @@ const DEFAULT_OPTIONS = {
     sourcemap: false,
 };
 
-const DEFAULT_MODULES = ['@lwc/engine', '@lwc/synthetic-shadow', '@lwc/wire-service'];
+const DEFAULT_MODULES = [
+    { npm: '@lwc/engine' },
+    { npm: '@lwc/synthetic-shadow' },
+    { npm: '@lwc/wire-service' },
+];
 
 module.exports = {
     DEFAULT_OPTIONS,

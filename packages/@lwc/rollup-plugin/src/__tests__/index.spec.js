@@ -26,6 +26,7 @@ const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
 const tsAppDir = path.join(fixturesDir, 'ts_simple_app/src');
 const tsImportsJsDir = path.join(fixturesDir, 'ts_imports_js/src');
 const jsImportsTsDir = path.join(fixturesDir, 'js_imports_ts/src');
+const jsMultiVersion = path.join(fixturesDir, 'multi_version');
 
 describe('default configuration', () => {
     it(`simple app`, () => {
@@ -35,6 +36,7 @@ describe('default configuration', () => {
             expect(pretty(actual)).toBe(pretty(expected));
         });
     });
+
     it(`simple app with CSS resolver`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         const rollupCompileOptions = {
@@ -105,6 +107,17 @@ describe('javascript relative import', () => {
         expect.assertions(1);
         return doRollup(entry, { compat: false }).catch(error => {
             expect(error).toEqual(new Error('Importing a .ts file into a .js is not supported'));
+        });
+    });
+});
+
+describe.only('multi-package-version', () => {
+    it.only(`should find all modules`, () => {
+        const entry = path.join(jsMultiVersion, 'src/main.js');
+
+        return doRollup(entry, { compat: false }, {}).then(({ code }) => {
+            expect(code).toContain('"button:v1');
+            expect(code).toContain('"button:v2');
         });
     });
 });

@@ -5,57 +5,231 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
-import { resolveModules } from '../index';
+import { resolveModule } from '../index';
+import { fixture, LWC_CONFIG_ERROR_CODE } from './test-utils';
 
-const FIXTURE_MODULE_ENTRIES = ['ns/cssEntry', 'ns/htmlEntry', 'ns/jsEntry', 'ns/tsEntry'];
+describe('parameters checks', () => {
+    test('throw when importer is not a string', () => {
+        expect(() => (resolveModule as any)()).toThrowErrorWithType(
+            TypeError,
+            'The importee argument must be a string. Received type undefined'
+        );
+    });
 
-describe('resolve modules', () => {
-    it('from directory', () => {
-        const modules = resolveModules({
-            rootDir: __dirname,
-            modules: ['fixtures/module-entries'],
+    test('throw when dirname is not a string', () => {
+        expect(() => (resolveModule as any)('test')).toThrowErrorWithType(
+            TypeError,
+            'The dirname argument must be a string. Received type undefined'
+        );
+    });
+
+    test('throw when passing a relative path', () => {
+        expect(() => resolveModule('./test', '.')).toThrowErrorWithType(
+            TypeError,
+            'The importee argument must be a valid LWC module name. Received "./test"'
+        );
+    });
+
+    test('throw when passing an absolute path', () => {
+        expect(() => resolveModule('/test', '.')).toThrowErrorWithType(
+            TypeError,
+            'The importee argument must be a valid LWC module name. Received "/test"'
+        );
+    });
+});
+
+describe('alias resolution', () => {
+    test('resolve the alias module', () => {
+        const specifier = 'custom-module';
+        const dirname = fixture('custom-resolution');
+
+        expect(resolveModule(specifier, dirname)).toEqual({
+            specifier,
+            scope: dirname,
+            entry: fixture('custom-resolution/custom/module.js'),
         });
-        const specifiers = modules.map(m => m.specifier);
-        expect(specifiers).toStrictEqual(FIXTURE_MODULE_ENTRIES);
     });
 
-    it('from config', () => {
-        const moduleDir = path.join(__dirname, 'fixtures');
-        const modules = resolveModules({ rootDir: moduleDir });
-        const specifiers = modules.map(m => m.specifier);
-        expect(specifiers).toStrictEqual(FIXTURE_MODULE_ENTRIES);
-    });
+    test("throw an error when the aliased path doesn't exists", () => {
+        const specifier = 'aliased';
+        const dirname = fixture('errors/missing-aliased-file');
 
-    it('from config resolving to npm', () => {
-        const moduleDir = path.join(__dirname, 'fixtures/from-npm');
-        const modules = resolveModules({ rootDir: moduleDir });
-        const specifiers = modules.map(m => m.specifier);
-        expect(specifiers).toStrictEqual(['lwc', 'wire-service', '@lwc/synthetic-shadow']);
+        expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${dirname}". Invalid alias module record "{"name":"aliased","path":"./missing.js"}", file "${fixture(
+                'errors/missing-aliased-file/missing.js'
+            )}" does not exist`
+        );
     });
+});
 
-    it('from config resolving to custom modules', () => {
-        const moduleDir = path.join(__dirname, 'fixtures/custom-resolution');
-        const modules = resolveModules({ rootDir: moduleDir });
-        const specifiers = modules.map(m => m.specifier);
-        expect(specifiers).toStrictEqual(['custom-module']);
-    });
+describe('dir resolution', () => {
+    test('resolve a module form the dir', () => {
+        const specifier = 'ns/jsEntry';
+        const dirname = fixture('module-entries');
 
-    it('with configuration overrides resolving to custom modules', () => {
-        const moduleDir = path.join(__dirname, 'fixtures/custom-resolution');
-        const modules = resolveModules({
-            rootDir: moduleDir,
-            modules: [{ name: 'custom-module', path: 'custom-override.js' }],
+        expect(resolveModule(specifier, dirname)).toEqual({
+            specifier,
+            scope: dirname,
+            entry: fixture('module-entries/modules/ns/jsEntry/jsEntry.js'),
         });
-        const specifiers = modules.map(m => m.specifier);
-        const entries = modules.map(m => m.entry);
-        expect(specifiers).toStrictEqual(['custom-module']);
-        expect(entries).toStrictEqual([path.join(moduleDir, 'custom-override.js')]);
     });
 
-    it('from api configuration', () => {
-        const modules = resolveModules({ modules: ['@lwc/engine'] });
-        const specifiers = modules.map(m => m.specifier);
-        expect(specifiers).toStrictEqual(['lwc']);
+    test("throw an error when the dir doesn't exists", () => {
+        const specifier = 'test';
+        const dirname = fixture('errors/missing-dir');
+
+        expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${dirname}". Invalid dir module record "{"dir":"./missing"}", directory ${fixture(
+                'errors/missing-dir/missing'
+            )} doesn't exists`
+        );
+    });
+
+    test('throw an error when there is no entry file', () => {
+        const specifier = 'foo/bar';
+        const dirname = fixture('errors/missing-dir-entry');
+
+        expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${dirname}". Unable to find a valid entry point for "${fixture(
+                'errors/missing-dir-entry/modules/foo/bar/bar'
+            )}"`
+        );
+    });
+});
+
+describe('NPM resolution', () => {
+    test('npm module', () => {
+        const specifier = 'deps';
+        const dirname = fixture('from-npm');
+
+        expect(resolveModule(specifier, dirname)).toEqual({
+            specifier,
+            scope: fixture('from-npm/node_modules/deps'),
+            entry: fixture('from-npm/node_modules/deps/deps.js'),
+        });
+    });
+
+    test('scoped npm module', () => {
+        const specifier = 'scoped-deps';
+        const dirname = fixture('from-npm');
+
+        expect(resolveModule(specifier, dirname)).toEqual({
+            specifier,
+            scope: fixture('from-npm/node_modules/@scoped/deps'),
+            entry: fixture('from-npm/node_modules/@scoped/deps/scoped-deps.js'),
+        });
+    });
+
+    test("throw when npm package doesn't exists", () => {
+        const specifier = 'deps';
+        const dirname = fixture('errors/missing-npm-package');
+
+        expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${dirname}". Invalid npm module record "{"npm":"missing-deps"}", "missing-deps" npm module can't be resolved`
+        );
+    });
+
+    test('throw when missing lwc config in resolved npm package', () => {
+        const specifier = 'deps';
+        const dirname = fixture('errors/missing-npm-package-lwc-config');
+
+        expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'errors/missing-npm-package-lwc-config/node_modules/deps'
+            )}". Missing "modules" property for a npm config`
+        );
+    });
+
+    test("throw when npm package config doesn't have modules property", () => {
+        const specifier = 'exposed';
+        const dirname = fixture('errors/missing-npm-module-config');
+
+        expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'errors/missing-npm-module-config/node_modules/deps'
+            )}". Missing "modules" property for a npm config`
+        );
+    });
+
+    test("throw when npm package config doesn't have expose property", () => {
+        const specifier = 'exposed';
+        const dirname = fixture('errors/missing-npm-expose-config');
+
+        expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'errors/missing-npm-expose-config/node_modules/deps'
+            )}". Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains`
+        );
+    });
+
+    test("throw when npm package can't resolve exposed module", () => {
+        const specifier = 'exposed';
+        const dirname = fixture('errors/missing-npm-exposed-module');
+
+        expect(() => resolveModule(specifier, dirname)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${fixture(
+                'errors/missing-npm-exposed-module/node_modules/deps'
+            )}". Unable to find "exposed" under npm package "deps"`
+        );
+    });
+});
+
+describe('resolution override', () => {
+    // XTODO: Add test about how the configs are merged and how overrides and existing modules are \
+    // resolved.
+    test('alias module override', () => {
+        const specifier = 'no-config';
+        const dirname = fixture('no-config');
+        const options = {
+            modules: [
+                {
+                    name: 'no-config',
+                    path: fixture('no-config/custom/module.js'),
+                },
+            ],
+        };
+
+        expect(resolveModule(specifier, dirname, options)).toEqual({
+            specifier,
+            scope: dirname,
+            entry: fixture('no-config/custom/module.js'),
+        });
+    });
+
+    test('dir module override', () => {
+        const specifier = 'foo/bar';
+        const dirname = fixture('no-config');
+        const options = {
+            rootDir: dirname,
+            modules: [
+                {
+                    dir: 'modules',
+                },
+            ],
+        };
+
+        expect(resolveModule(specifier, dirname, options)).toEqual({
+            specifier,
+            scope: dirname,
+            entry: fixture('no-config/modules/foo/bar/bar.css'),
+        });
+    });
+
+    test('throw when the option module is invalid', () => {
+        const dirname = fixture('no-config');
+        const opts: any = { modules: [{}] };
+
+        expect(() => resolveModule('test', dirname, opts)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${dirname}". Unknown module record "{}"`
+        );
     });
 });

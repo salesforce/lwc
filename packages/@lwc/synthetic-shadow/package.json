@@ -18,6 +18,9 @@
                 "name": "@lwc/synthetic-shadow",
                 "path": "dist/synthetic-shadow.js"
             }
+        ],
+        "expose": [
+            "@lwc/synthetic-shadow"
         ]
     },
     "publishConfig": {

@@ -23,8 +23,8 @@
     tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
   }
   tmpl.stylesheetTokens = {
-    hostAttribute: "x-foo_foo-host",
-    shadowAttribute: "x-foo_foo"
+    hostAttribute: "ts-foo_foo-host",
+    shadowAttribute: "ts-foo_foo"
   };
 
   class Foo extends lwc.LightningElement {
@@ -43,7 +43,7 @@
     }
   });
 
-  var _xFoo = lwc.registerComponent(Foo, {
+  var _tsFoo = lwc.registerComponent(Foo, {
     tmpl: _tmpl
   });
 
@@ -57,7 +57,7 @@
         "container": true
       },
       key: 1
-    }, [api_custom_element("x-foo", _xFoo, {
+    }, [api_custom_element("ts-foo", _tsFoo, {
       props: {
         "x": "1"
       },
@@ -68,22 +68,16 @@
   var _tmpl$1 = lwc.registerTemplate(tmpl$1);
   tmpl$1.stylesheets = [];
   tmpl$1.stylesheetTokens = {
-    hostAttribute: "x-app_app-host",
-    shadowAttribute: "x-app_app"
+    hostAttribute: "ts-app_app-host",
+    shadowAttribute: "ts-app_app"
   };
 
   class App extends lwc.LightningElement {
     constructor() {
       super();
-      this.list = void 0;
-      this.list = [];
     }
 
   }
-
-  lwc.registerDecorators(App, {
-    fields: ["list"]
-  });
 
   var App$1 = lwc.registerComponent(App, {
     tmpl: _tmpl$1
@@ -95,7 +89,7 @@
 
   // @ts-ignore
   const container = document.getElementById('main');
-  const element = lwc.createElement('x-app', {
+  const element = lwc.createElement('ts-app', {
     is: App$1
   });
   container.appendChild(element); // testing relative import works

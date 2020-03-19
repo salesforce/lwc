@@ -8,7 +8,8 @@ const fs = require('fs');
 const path = require('path');
 const pluginUtils = require('@rollup/pluginutils');
 const compiler = require('@lwc/compiler');
-const lwcResolver = require('@lwc/module-resolver');
+const { resolveModule } = require('@lwc/module-resolver');
+
 const { getModuleQualifiedName } = require('./utils');
 const { DEFAULT_OPTIONS, DEFAULT_MODE, DEFAULT_MODULES } = require('./constants');
 
@@ -36,26 +37,18 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
 
-    // Closure to store the resolved modules
-    let modulePaths = {};
+    let customResolvedModules;
+    let customRootDir;
 
     return {
         name: 'rollup-plugin-lwc-compiler',
-
         options({ input }) {
             const { modules: userModules = [], rootDir } = mergedPluginOptions;
-            const defaultModulesDir = rootDir ? path.resolve(rootDir) : path.dirname(input);
-            const modules = [...userModules, ...DEFAULT_MODULES, defaultModulesDir];
-            const resolvedModules = lwcResolver.resolveModules({ rootDir, modules });
-            modulePaths = resolvedModules.reduce((map, m) => ((map[m.specifier] = m), map), {});
+            customRootDir = rootDir ? path.resolve(rootDir) : path.dirname(path.resolve(input));
+            customResolvedModules = [...userModules, ...DEFAULT_MODULES, { dir: customRootDir }];
         },
 
         resolveId(importee, importer) {
-            // Resolve entry point if the import references a LWC module
-            if (modulePaths[importee]) {
-                return modulePaths[importee].entry;
-            }
-
             // Normalize relative import to absolute import
             if (importee.startsWith('.') && importer) {
                 const importerExt = path.extname(importer);
@@ -76,6 +69,17 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 }
 
                 return pluginUtils.addExtension(normalizedPath, ext);
+            } else if (importer) {
+                try {
+                    return resolveModule(importee, importer, {
+                        modules: customResolvedModules,
+                        rootDir: customRootDir,
+                    }).entry;
+                } catch (err) {
+                    if (err.code !== 'NO_LWC_MODULE_FOUND') {
+                        throw err;
+                    }
+                }
             }
         },
 

@@ -4,36 +4,46 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import fs from 'fs';
 import path from 'path';
-import { LwcConfig, ModuleResolverConfig, ModuleRecord, ModuleRecordObject } from '.';
+import fs from 'fs';
 
-export const LWC_CONFIG_FILE = 'lwc.config.json';
+import { LwcConfigError } from './errors';
 
-const DEFAULT_CONFIG: LwcConfig = { modules: [] };
+import {
+    LwcConfig,
+    ModuleRecord,
+    NpmModuleRecord,
+    DirModuleRecord,
+    AliasModuleRecord,
+    ModuleResolverConfig,
+    RegistryEntry,
+    InnerResolverOptions,
+} from './types';
 
-export function isString(str: any): boolean {
-    return Object.prototype.toString.call(str) === '[object String]';
+const PACKAGE_JSON = 'package.json';
+const LWC_CONFIG_FILE = 'lwc.config.json';
+
+export function isNpmModuleRecord(moduleRecord: ModuleRecord): moduleRecord is NpmModuleRecord {
+    return 'npm' in moduleRecord;
 }
 
-export function loadConfig(configPath: string): LwcConfig {
-    const configFile = path.join(configPath, LWC_CONFIG_FILE);
-    if (!fs.existsSync(configFile)) {
-        return DEFAULT_CONFIG;
-    }
-
-    try {
-        return JSON.parse(fs.readFileSync(path.join(configPath, LWC_CONFIG_FILE), 'utf8'));
-    } catch (e) {
-        return DEFAULT_CONFIG;
-    }
+export function isDirModuleRecord(moduleRecord: ModuleRecord): moduleRecord is DirModuleRecord {
+    return 'dir' in moduleRecord;
 }
 
-export function getEntry(moduleDir: string, moduleName: string, ext: string): string {
+export function isAliasModuleRecord(moduleRecord: ModuleRecord): moduleRecord is AliasModuleRecord {
+    return 'name' in moduleRecord && 'path' in moduleRecord;
+}
+
+function getEntry(moduleDir: string, moduleName: string, ext: string): string {
     return path.join(moduleDir, `${moduleName}.${ext}`);
 }
 
-export function getModuleEntry(moduleDir: string, moduleName: string): string | undefined {
+export function getModuleEntry(
+    moduleDir: string,
+    moduleName: string,
+    opts: InnerResolverOptions
+): string {
     const entryJS = getEntry(moduleDir, moduleName, 'js');
     const entryTS = getEntry(moduleDir, moduleName, 'ts');
     const entryHTML = getEntry(moduleDir, moduleName, 'html');
@@ -49,36 +59,158 @@ export function getModuleEntry(moduleDir: string, moduleName: string): string | 
     } else if (fs.existsSync(entryCSS)) {
         return entryCSS;
     }
+
+    throw new LwcConfigError(
+        `Unable to find a valid entry point for "${moduleDir}/${moduleName}"`,
+        { scope: opts.rootDir }
+    );
 }
 
 export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleResolverConfig {
     const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
     const modules = config.modules || [];
+    const normalizedModules = modules.map(m =>
+        isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m
+    );
+
     return {
-        ...DEFAULT_CONFIG,
-        modules,
+        modules: normalizedModules,
         rootDir,
     };
 }
 
-// The modules can be either string or ModuleRecordObject { name, path }
-//
-// user define modules will have precedence over the ones defined elsewhere (ex. npm)
-export function mergeModules(userModules: ModuleRecord[], configModules: ModuleRecord[]) {
-    const visited = new Set();
-    const modules = userModules;
+function normalizeDirName(dirName: string): string {
+    return dirName.endsWith('/') ? dirName : `${dirName}/`;
+}
+
+// User defined modules will have precedence over the ones defined elsewhere (ex. npm)
+export function mergeModules(
+    userModules: ModuleRecord[],
+    configModules: ModuleRecord[] = []
+): ModuleRecord[] {
+    const visitedAlias = new Set();
+    const visitedDirs = new Set();
+    const visitedNpm = new Set();
+    const modules = userModules.slice();
 
     // Visit the user modules to created an index with the name as keys
     userModules.forEach(m => {
-        visited.add(isString(m) ? m : (m as ModuleRecordObject).name);
+        if (isAliasModuleRecord(m)) {
+            visitedAlias.add(m.name);
+        } else if (isDirModuleRecord(m)) {
+            visitedDirs.add(normalizeDirName(m.dir));
+        } else if (isNpmModuleRecord(m)) {
+            visitedNpm.add(m.npm);
+        }
     });
 
     configModules.forEach(m => {
-        // Collect all of the modules unless they been already defined in userland
-        if (isString(m) || !visited.has((m as ModuleRecordObject).name)) {
+        if (
+            (isAliasModuleRecord(m) && !visitedAlias.has(m.name)) ||
+            (isDirModuleRecord(m) && !visitedDirs.has(normalizeDirName(m.dir))) ||
+            (isNpmModuleRecord(m) && !visitedNpm.has(m.npm))
+        ) {
             modules.push(m);
         }
     });
 
     return modules;
+}
+
+export function findFirstUpwardConfigPath(dirname: string): string {
+    const parts = dirname.split(path.sep);
+
+    while (parts.length > 1) {
+        const upwardsPath = parts.join(path.sep);
+        const pkgJsonPath = path.join(upwardsPath, PACKAGE_JSON);
+        const configJsonPath = path.join(upwardsPath, LWC_CONFIG_FILE);
+
+        const dirHasPkgJson = fs.existsSync(pkgJsonPath);
+        const dirHasLwcConfig = fs.existsSync(configJsonPath);
+
+        if (dirHasLwcConfig && !dirHasPkgJson) {
+            throw new LwcConfigError(
+                `"lwc.config.json" must be at the package root level along with the "package.json"`,
+                { scope: upwardsPath }
+            );
+        }
+
+        if (dirHasPkgJson) {
+            return path.dirname(pkgJsonPath);
+        }
+
+        parts.pop();
+    }
+
+    throw new LwcConfigError(`Unable to find any LWC configuration file`, { scope: dirname });
+}
+
+export function validateNpmConfig(
+    config: LwcConfig,
+    opts: InnerResolverOptions
+): asserts config is Required<LwcConfig> {
+    if (!config.modules) {
+        throw new LwcConfigError('Missing "modules" property for a npm config', {
+            scope: opts.rootDir,
+        });
+    }
+
+    if (!config.expose) {
+        throw new LwcConfigError(
+            'Missing "expose" attribute: An imported npm package must explicitly define all the modules that it contains',
+            { scope: opts.rootDir }
+        );
+    }
+}
+
+export function validateNpmAlias(
+    exposed: string[],
+    map: { [key: string]: string },
+    opts: InnerResolverOptions
+) {
+    Object.keys(map).forEach(specifier => {
+        if (!exposed.includes(specifier)) {
+            throw new LwcConfigError(
+                `Unable to apply mapping: The specifier "${specifier}" is not exposed by the npm module`,
+                { scope: opts.rootDir }
+            );
+        }
+    });
+}
+
+export function getLwcConfig(dirname: string): LwcConfig {
+    const packageJsonPath = path.resolve(dirname, PACKAGE_JSON);
+    const lwcConfigPath = path.resolve(dirname, LWC_CONFIG_FILE);
+
+    if (fs.existsSync(lwcConfigPath)) {
+        return require(lwcConfigPath);
+    } else {
+        return require(packageJsonPath).lwc ?? {};
+    }
+}
+
+export function createRegistryEntry(
+    entry: string,
+    specifier: string,
+    opts: InnerResolverOptions
+): RegistryEntry {
+    return {
+        entry,
+        specifier,
+        scope: opts.rootDir,
+    };
+}
+
+export function remapList(exposed: string[], map: { [key: string]: string }): string[] {
+    return exposed.reduce((renamed: string[], item) => {
+        renamed.push(map[item] || item);
+        return renamed;
+    }, []);
+}
+
+export function transposeObject(map: { [key: string]: string }): { [key: string]: string } {
+    return Object.entries(map).reduce(
+        (r: { [key: string]: string }, [key, value]) => ((r[value] = key), r),
+        {}
+    );
 }

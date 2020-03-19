@@ -4,117 +4,220 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/* eslint-env node */
 
 import path from 'path';
 import fs from 'fs';
+
 import {
+    createRegistryEntry,
+    findFirstUpwardConfigPath,
+    isAliasModuleRecord,
+    isDirModuleRecord,
+    isNpmModuleRecord,
+    getLwcConfig,
     getModuleEntry,
     normalizeConfig,
-    loadConfig,
-    isString,
+    validateNpmConfig,
     mergeModules,
-    LWC_CONFIG_FILE,
+    remapList,
+    transposeObject,
+    validateNpmAlias,
 } from './utils';
+import { NoLwcModuleFound, LwcConfigError } from './errors';
 
-export interface RegistryEntry {
-    entry: string;
-    specifier: string;
-}
+import {
+    RegistryEntry,
+    AliasModuleRecord,
+    InnerResolverOptions,
+    ModuleRecord,
+    DirModuleRecord,
+    ModuleResolverConfig,
+    NpmModuleRecord,
+} from './types';
 
-export interface ModuleRegistryMap {
-    [key: string]: RegistryEntry;
-}
-export interface ModuleRecordObject {
-    name: string;
-    path: string;
-}
+function resolveModuleFromAlias(
+    specifier: string,
+    moduleRecord: AliasModuleRecord,
+    opts: InnerResolverOptions
+): RegistryEntry | undefined {
+    const { name, path: modulePath } = moduleRecord;
 
-export interface ModuleResolverConfig {
-    rootDir: string;
-    modules: ModuleRecord[];
-}
-
-export type ModuleRecord = string | ModuleRecordObject;
-export interface LwcConfig {
-    modules: ModuleRecord[];
-}
-
-function resolveModulesFromDir(modulesDir: string): RegistryEntry[] {
-    const namespaces = fs.readdirSync(modulesDir);
-    const resolvedModules: RegistryEntry[] = [];
-    namespaces.forEach(ns => {
-        if (ns[0] !== '.' && fs.lstatSync(path.join(modulesDir, ns)).isDirectory()) {
-            const namespacedModuleDir = path.join(modulesDir, ns);
-            const modules = fs.readdirSync(namespacedModuleDir);
-            modules.forEach(moduleName => {
-                const moduleDir = path.join(namespacedModuleDir, moduleName);
-                const entry = getModuleEntry(moduleDir, moduleName);
-                if (entry) {
-                    const specifier = `${ns}/${moduleName}`;
-                    resolvedModules.push({ entry, specifier });
-                }
-            });
-        }
-    });
-
-    return resolvedModules;
-}
-
-function resolveModulesFromNpm(packageName: string): RegistryEntry[] {
-    let resolvedModules: RegistryEntry[] = [];
-    try {
-        const pkgJsonPath = require.resolve(`${packageName}/package.json`);
-        const packageDir = path.dirname(pkgJsonPath);
-        const lwcConfigFile = path.join(packageDir, LWC_CONFIG_FILE);
-
-        if (fs.existsSync(lwcConfigFile)) {
-            resolvedModules = resolveModules({ rootDir: lwcConfigFile });
-        } else {
-            const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-            if (pkgJson.lwc) {
-                resolvedModules = resolveModulesFromList(pkgJson.lwc.modules, { root: packageDir });
-            }
-        }
-    } catch (e) {
-        /*noop*/
+    if (specifier !== name) {
+        return;
     }
 
-    return resolvedModules;
+    const entry = path.resolve(opts.rootDir, modulePath);
+    if (!fs.existsSync(entry)) {
+        throw new LwcConfigError(
+            `Invalid alias module record "${JSON.stringify(
+                moduleRecord
+            )}", file "${entry}" does not exist`,
+            { scope: opts.rootDir }
+        );
+    }
+
+    return createRegistryEntry(entry, specifier, opts);
 }
 
-function resolveModulesFromList(
-    modules: ModuleRecord[],
-    { root }: { root: string }
-): RegistryEntry[] {
-    const resolvedModules: RegistryEntry[] = [];
-    modules.forEach(moduleId => {
-        if (!isString(moduleId)) {
-            const { name: specifier, path: modulePath } = moduleId as ModuleRecordObject;
-            const entry = path.resolve(root, modulePath);
-            if (fs.existsSync(entry)) {
-                resolvedModules.push({ entry, specifier });
-            }
-        } else {
-            const absPath = path.resolve(root, moduleId as string);
-            // If the moduleRecord is a string check first in the file directory
-            if (fs.existsSync(absPath)) {
-                resolvedModules.push(...resolveModulesFromDir(absPath));
-            } else {
-                // Otherwise, try to see if is an npm package
-                resolvedModules.push(...resolveModulesFromNpm(moduleId as string));
+function resolveModuleFromDir(
+    specifier: string,
+    moduleRecord: DirModuleRecord,
+    opts: InnerResolverOptions
+): RegistryEntry | undefined {
+    const { dir } = moduleRecord;
+
+    const absModuleDir = path.isAbsolute(dir) ? dir : path.join(opts.rootDir, dir);
+
+    if (!fs.existsSync(absModuleDir)) {
+        throw new LwcConfigError(
+            `Invalid dir module record "${JSON.stringify(
+                moduleRecord
+            )}", directory ${absModuleDir} doesn't exists`,
+            { scope: opts.rootDir }
+        );
+    }
+
+    // A module dir record can only resolve module specifier with the following form "[ns]/[name]".
+    // We can early exit if the required specifier doesn't match.
+    const parts = specifier.split('/');
+    if (parts.length !== 2) {
+        return;
+    }
+
+    const [ns, name] = parts;
+    const moduleDir = path.join(absModuleDir, ns, name);
+
+    // Exit if the expected module directory doesn't exists.
+    if (!fs.existsSync(moduleDir)) {
+        return;
+    }
+
+    const entry = getModuleEntry(moduleDir, name, opts);
+    return createRegistryEntry(entry, specifier, opts);
+}
+
+function resolveModuleFromNpm(
+    specifier: string,
+    npmModuleRecord: NpmModuleRecord,
+    opts: InnerResolverOptions
+): RegistryEntry | undefined {
+    const { npm, map: aliasMapping } = npmModuleRecord;
+
+    let pkgJsonPath;
+    try {
+        pkgJsonPath = require.resolve(`${npm}/package.json`, { paths: [opts.rootDir] });
+    } catch (error) {
+        // If the module "package.json" can't be found, throw an an invalid config error. Otherwise
+        // rethrow the original error.
+        if (error.code === 'MODULE_NOT_FOUND') {
+            throw new LwcConfigError(
+                `Invalid npm module record "${JSON.stringify(
+                    npmModuleRecord
+                )}", "${npm}" npm module can't be resolved`,
+                { scope: opts.rootDir }
+            );
+        }
+
+        throw error;
+    }
+
+    const packageDir = path.dirname(pkgJsonPath);
+    const lwcConfig = getLwcConfig(packageDir);
+
+    validateNpmConfig(lwcConfig, { rootDir: packageDir });
+    let exposedModules = lwcConfig.expose;
+    let reverseMapping;
+
+    if (aliasMapping) {
+        validateNpmAlias(lwcConfig.expose, aliasMapping, { rootDir: packageDir });
+        exposedModules = remapList(lwcConfig.expose, aliasMapping);
+        reverseMapping = transposeObject(aliasMapping);
+    }
+
+    if (exposedModules.includes(specifier)) {
+        for (const moduleRecord of lwcConfig.modules) {
+            const aliasedSpecifier = reverseMapping && reverseMapping[specifier];
+            const registryEntry = resolveModuleRecordType(
+                aliasedSpecifier || specifier,
+                moduleRecord,
+                {
+                    rootDir: packageDir,
+                }
+            );
+
+            if (registryEntry) {
+                if (aliasedSpecifier) {
+                    registryEntry.specifier = specifier;
+                }
+                return registryEntry;
             }
         }
-    });
 
-    return resolvedModules;
+        throw new LwcConfigError(
+            `Unable to find "${specifier}" under npm package "${npmModuleRecord.npm}"`,
+            { scope: packageDir }
+        );
+    }
 }
 
-export function resolveModules(
-    resolverConfig: Partial<ModuleResolverConfig> = {}
-): RegistryEntry[] {
-    const normalizedConfig = normalizeConfig(resolverConfig);
-    const rootConfig = loadConfig(normalizedConfig.rootDir);
-    const modules = mergeModules(normalizedConfig.modules, rootConfig.modules);
-    return resolveModulesFromList(modules, { root: normalizedConfig.rootDir });
+function resolveModuleRecordType(
+    specifier: string,
+    moduleRecord: ModuleRecord,
+    opts: InnerResolverOptions
+): RegistryEntry | undefined {
+    const { rootDir } = opts;
+
+    if (isAliasModuleRecord(moduleRecord)) {
+        return resolveModuleFromAlias(specifier, moduleRecord, { rootDir });
+    } else if (isDirModuleRecord(moduleRecord)) {
+        return resolveModuleFromDir(specifier, moduleRecord, { rootDir });
+    } else if (isNpmModuleRecord(moduleRecord)) {
+        return resolveModuleFromNpm(specifier, moduleRecord, opts);
+    }
+
+    throw new LwcConfigError(`Unknown module record "${JSON.stringify(moduleRecord)}"`, {
+        scope: rootDir,
+    });
+}
+
+export function resolveModule(
+    importee: string,
+    dirname: string,
+    config?: Partial<ModuleResolverConfig>
+): RegistryEntry {
+    if (typeof importee !== 'string') {
+        throw new TypeError(
+            `The importee argument must be a string. Received type ${typeof importee}`
+        );
+    }
+
+    if (typeof dirname !== 'string') {
+        throw new TypeError(
+            `The dirname argument must be a string. Received type ${typeof dirname}`
+        );
+    }
+
+    if (importee.startsWith('.') || importee.startsWith('/')) {
+        throw new TypeError(
+            `The importee argument must be a valid LWC module name. Received "${importee}"`
+        );
+    }
+
+    const rootDir = findFirstUpwardConfigPath(path.resolve(dirname));
+    const lwcConfig = getLwcConfig(rootDir);
+
+    let modules = lwcConfig.modules || [];
+    if (config) {
+        const userConfig = normalizeConfig(config);
+        modules = mergeModules(userConfig.modules, modules);
+    }
+
+    for (const moduleRecord of modules) {
+        const registryEntry = resolveModuleRecordType(importee, moduleRecord, { rootDir });
+        if (registryEntry) {
+            return registryEntry;
+        }
+    }
+
+    throw new NoLwcModuleFound(importee, dirname);
 }

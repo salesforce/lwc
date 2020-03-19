@@ -1,0 +1,22 @@
+{
+    "modules": [
+       {
+           "npm" : "lwc-modules-foo",
+           "map": {
+               "common-util": "foo-common-util"
+           }
+       },
+       {
+           "npm" : "lwc-modules-bar",
+           "map": {
+               "common-util": "bar-common-util"
+           }
+       },
+       {
+           "npm": "multi-module-mapping",
+           "map": {
+               "non-existing": "should-be-mod"
+           }
+       }
+    ]
+}

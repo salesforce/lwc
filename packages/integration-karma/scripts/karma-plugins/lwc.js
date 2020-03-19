@@ -39,9 +39,6 @@ function createPreprocessor(config, emitter, logger) {
 
         const plugins = [
             lwcRollupPlugin({
-                // Disable package resolution to avoid lookup in the node_modules directory to boost the initial compilation
-                // time.
-                resolveFromPackages: false,
                 experimentalDynamicComponent: {
                     loader: 'test-utils',
                     strict: true,

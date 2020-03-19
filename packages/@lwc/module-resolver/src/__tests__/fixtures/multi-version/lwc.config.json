@@ -1,0 +1,7 @@
+{
+    "modules": [
+        { "npm" :"fancy-components" },
+        { "npm" : "@ui/components" },
+        { "dir" : "src/modules" }
+    ]
+}

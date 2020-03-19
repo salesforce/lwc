@@ -1,0 +1,12 @@
+{
+    "lwc": {
+        "modules": [
+            {
+                "dir": "simple_app/src"
+            },
+            {
+                "dir": "ts_simple_app/src"
+            }
+        ]
+    }
+}
