@@ -29,9 +29,14 @@
             {
                 "name": "wire-service",
                 "path": "dist/wire-service.js"
+            },
+            {
+                "name": "@lwc/wire-service",
+                "path": "dist/wire-service.js"
             }
         ],
         "expose": [
+            "@lwc/wire-service",
             "wire-service"
         ]
     },
