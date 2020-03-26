@@ -202,8 +202,8 @@ export function resolveModule(
             `The importee argument must be a valid LWC module name. Received "${importee}"`
         );
     }
-
-    const rootDir = findFirstUpwardConfigPath(path.resolve(dirname));
+    const customRootDir = config && config.rootDir ? config.rootDir : null;
+    const rootDir = findFirstUpwardConfigPath(path.resolve(customRootDir || dirname));
     const lwcConfig = getLwcConfig(rootDir);
 
     let modules = lwcConfig.modules || [];

@@ -1,0 +1,15 @@
+{
+    "name": "@lwc/engine",
+    "private": true,
+    "lwc": {
+        "modules": [
+            {
+                "name": "deps",
+                "path": "deps.js"
+            }
+        ],
+        "expose": [
+            "deps"
+        ]
+    }
+}

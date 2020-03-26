@@ -112,6 +112,32 @@ describe('NPM resolution', () => {
         });
     });
 
+    test('npm linked module', () => {
+        const specifier = 'deps';
+        const dirname = fixture('linked/module-a');
+
+        expect(resolveModule(specifier, dirname)).toEqual({
+            specifier,
+            scope: fixture('linked/module-b'),
+            entry: fixture('linked/module-b/deps.js'),
+        });
+    });
+
+    test('npm with rootDir', () => {
+        const specifier = 'deps';
+        const dirname = fixture('some-other-path');
+
+        expect(
+            resolveModule(specifier, dirname, {
+                rootDir: fixture('from-npm'),
+            })
+        ).toEqual({
+            specifier,
+            scope: fixture('from-npm/node_modules/deps'),
+            entry: fixture('from-npm/node_modules/deps/deps.js'),
+        });
+    });
+
     test('scoped npm module', () => {
         const specifier = 'scoped-deps';
         const dirname = fixture('from-npm');

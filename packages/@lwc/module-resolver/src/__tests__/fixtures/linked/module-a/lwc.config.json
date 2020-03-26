@@ -1,0 +1,7 @@
+{
+    "modules": [
+        { "name": "mod", "path": "mod.js" },
+        { "npm" : "deps" },
+        { "npm" : "@scoped/deps" }
+    ]
+}
