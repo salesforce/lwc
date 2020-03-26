@@ -35,8 +35,8 @@ const config = istanbul.config.loadObject({
 
     check: {
         global: {
-            statements: 50,
-            lines: 50,
+            statements: 83,
+            lines: 83,
         },
     },
 });
