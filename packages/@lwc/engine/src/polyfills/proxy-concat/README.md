@@ -13,7 +13,7 @@ console.log(res[1]);
 console.log(res[2]);
 console.log(res[3]);
 
-// Expected ouptut
+// Expected output
 1
 2
 3

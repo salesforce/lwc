@@ -194,7 +194,7 @@ The compiler configuration object is always normalized to apply necessary defaul
             NODE_ENV: 'development'
         },
     },
-    stylesheeConfig: {
+    stylesheetConfig: {
         customProperties: {
             allowDefinition: false,
             resolution: { type: 'native' }
@@ -239,7 +239,7 @@ export interface NormalizedOutputConfig extends OutputConfig {
 
 ### Transformations
 
-There are several transformational phases that take place during compilation followed by a bundling phase. The Compiler utilizes [Rollup.js](https://rollupjs.org/guide/en) and its plugin system, which enables us to change its behaviour at key points in the bundling process. LWC compilation pipeline consists of the following plugins:
+There are several transformational phases that take place during compilation followed by a bundling phase. The Compiler utilizes [Rollup.js](https://rollupjs.org/guide/en) and its plugin system, which enables us to change its behavior at key points in the bundling process. LWC compilation pipeline consists of the following plugins:
 
 _Replace_ - replace code (ex: process.env.NODE === ‘production’ will be replaced with true or false depending on the mode).
 

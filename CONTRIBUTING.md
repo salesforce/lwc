@@ -46,7 +46,7 @@ yarn build
 
 ### Unit Testing LWC
 
-When developing LWC, utilize [jest](https://jestjs.io/en/) unit testing to provide test coverage for new functionality. To run the jest tests use the follwing command from the root directory:
+When developing LWC, utilize [jest](https://jestjs.io/en/) unit testing to provide test coverage for new functionality. To run the jest tests use the following command from the root directory:
 
 ```bash
 yarn test
@@ -136,7 +136,7 @@ git commit or git cz
 git push origin <name-of-the-feature>
 ```
 Commit your changes using a descriptive commit message that follows our [Commit Message Guidelines](#commit). Adherence to these conventions is necessary because release notes are automatically generated from these messages.
-NOTE: optional use of _git cz_ command triggers interactive semantic commit, which prompts user with commit related quetions, such as commit type, scope, description, and breaking changes. Use of _git cz_ is optional but recommended to ensure format consistency.
+NOTE: optional use of _git cz_ command triggers interactive semantic commit, which prompts user with commit related questions, such as commit type, scope, description, and breaking changes. Use of _git cz_ is optional but recommended to ensure format consistency.
 
 The above commands will commit the files into your feature branch. You can keep
 pushing new changes into the same branch until you are ready to create a pull
@@ -173,7 +173,7 @@ the ones related to the files you make changes to!
 
 #### Run tests
 
-Test your change by running the unit tests and integration tests. Insructions [here](#testing).
+Test your change by running the unit tests and integration tests. Instructions [here](#testing).
 
 ### Create a pull request
 
