@@ -1,0 +1,6 @@
+{
+    "modules": [
+        { "dir" : "src/modules" }
+    ],
+    "expose": ["linked/cmp"]
+}

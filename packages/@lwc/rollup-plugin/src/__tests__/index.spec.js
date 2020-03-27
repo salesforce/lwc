@@ -27,6 +27,7 @@ const tsAppDir = path.join(fixturesDir, 'ts_simple_app/src');
 const tsImportsJsDir = path.join(fixturesDir, 'ts_imports_js/src');
 const jsImportsTsDir = path.join(fixturesDir, 'js_imports_ts/src');
 const jsMultiVersion = path.join(fixturesDir, 'multi_version');
+const linked = path.join(fixturesDir, 'linked/module-a');
 
 describe('default configuration', () => {
     it(`simple app`, () => {
@@ -118,6 +119,23 @@ describe('multi-package-version', () => {
         return doRollup(entry, { compat: false }).then(({ code }) => {
             expect(code).toContain('"button:v1');
             expect(code).toContain('"button:v2');
+        });
+    });
+});
+
+describe('linked version', () => {
+    it(`should find linked modules`, () => {
+        const entry = path.join(linked, 'src/main.js');
+
+        return doRollup(
+            entry,
+            { compat: false },
+            {
+                rootDir: linked,
+            }
+        ).then(({ code }) => {
+            expect(code).toContain('"linked"');
+            expect(code).toContain('"button');
         });
     });
 });

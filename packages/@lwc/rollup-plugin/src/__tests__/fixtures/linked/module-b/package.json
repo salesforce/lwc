@@ -1,0 +1,10 @@
+{
+    "name": "linked-module-b",
+    "private": true,
+    "version": "0.0.1",
+    "main": "index.js",
+    "dependencies": {
+        "fancy-components": "1.0.0",
+        "@ui/components": "2.0.0"
+    }
+}
