@@ -115,7 +115,7 @@ describe('multi-package-version', () => {
     it(`should find all modules`, () => {
         const entry = path.join(jsMultiVersion, 'src/main.js');
 
-        return doRollup(entry, { compat: false }, {}).then(({ code }) => {
+        return doRollup(entry, { compat: false }).then(({ code }) => {
             expect(code).toContain('"button:v1');
             expect(code).toContain('"button:v2');
         });
