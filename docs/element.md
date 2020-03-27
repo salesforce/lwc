@@ -2,7 +2,7 @@
 
 ## getBoundingClientRect()
 
-The returned value is a DOMRect object which is the union of the rectangles returned by getClientRects() for the HOST element, i.e., the CSS border-boxes associated with the element. This object is computed everytime you call this API.
+The returned value is a DOMRect object which is the union of the rectangles returned by getClientRects() for the HOST element, i.e., the CSS border-boxes associated with the element. This object is computed every time you call this API.
 
 Official Documentation: https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
 

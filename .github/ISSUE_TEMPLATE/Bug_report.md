@@ -15,7 +15,7 @@ If LWC specific issue, update playground link with your example
 https://developer.salesforce.com/docs/component-library/tools/playground
 
 <!--
-if specific code snipet, paste the example here
+if specific code snippet, paste the example here
 -->
 ```js
 const your => (code) => here;
