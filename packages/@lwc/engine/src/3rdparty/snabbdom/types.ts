@@ -54,6 +54,7 @@ export interface VCustomElement extends VElement {
     mode: 'closed' | 'open';
     ctor: any;
     clonedElement?: undefined;
+    aChildren?: VNodes;
 }
 
 export interface VText extends VNode {

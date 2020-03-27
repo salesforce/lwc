@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 import XTest from 'x/test';
 import XSlotted from 'x/slotted';
 import NestedRenderConditional from 'x/nestedRenderConditional';
+import MultipleSlot from 'x/multipleSlot';
 
 describe('if:true directive', () => {
     it('should render if the value is truthy', () => {
@@ -126,6 +127,28 @@ describe('if:true directive', () => {
                 });
         });
     }
+
+    it('should render slot content multiple levels deep when toggled 2 times', () => {
+        const elm = createElement('x-multiple-slot', { is: MultipleSlot });
+        document.body.appendChild(elm);
+        elm.shadowRoot.querySelector('.textToggle').click();
+
+        return Promise.resolve()
+            .then(() => {
+                expect(elm.shadowRoot.textContent).toContain('text in multiple level slot');
+                // hide the slot
+                elm.shadowRoot.querySelector('.textToggle').click();
+                return Promise.resolve();
+            })
+            .then(() => {
+                // show the slot
+                elm.shadowRoot.querySelector('.textToggle').click();
+                return Promise.resolve();
+            })
+            .then(() => {
+                expect(elm.shadowRoot.textContent).toContain('text in multiple level slot');
+            });
+    });
 });
 
 describe('if:false directive', () => {

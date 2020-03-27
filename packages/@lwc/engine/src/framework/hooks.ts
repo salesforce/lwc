@@ -161,11 +161,17 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
 
 export function allocateChildrenHook(vnode: VCustomElement) {
     const vm = getAssociatedVM(vnode.elm!);
-    const { children } = vnode;
+    // When allocating slotted custom element children, we need to look for a previous allocation
+    // in case the vnode is being reused, because the vnode children will be emptied in this routine
+    // when called with a newly created vnode.
+    const children = vnode.aChildren || vnode.children;
+
     vm.aChildren = children;
     if (isTrue(useSyntheticShadow)) {
         // slow path
         allocateInSlot(vm, children);
+        // save the allocated children in case this vnode is reused.
+        vnode.aChildren = children;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
         vnode.children = EmptyArray;
     }
