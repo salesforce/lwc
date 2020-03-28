@@ -21,6 +21,7 @@ import './polyfills/shadow-root/main';
 import './polyfills/event-listener/main';
 import './polyfills/event-composed/main';
 import './polyfills/custom-event-composed/main';
+import './polyfills/focus-event-composed/main';
 import './polyfills/clipboard-event-composed/main';
 import './polyfills/iframe-content-window/main';
 import './polyfills/mutation-observer/main';
