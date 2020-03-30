@@ -1,0 +1,17 @@
+{
+    "name": "linked",
+    "lwc": {
+        "modules": [
+            {
+                "name": "linked",
+                "path": "./linked.js"
+            },
+            {
+                "npm": "shared"
+            }
+        ],
+        "expose": [
+            "linked"
+        ]
+    }
+}

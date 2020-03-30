@@ -11,6 +11,9 @@
     "files": [
         "dist/"
     ],
+    "dependencies": {
+        "resolve": "^1.15.1"
+    },
     "publishConfig": {
         "access": "public"
     }

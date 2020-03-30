@@ -180,6 +180,30 @@ describe('NPM resolution', () => {
             )}". Unable to find "exposed" under npm package "deps"`
         );
     });
+
+    describe('symlink', () => {
+        test('resolve symlinked package', () => {
+            const specifier = 'linked';
+            const dirname = fixture('symlink/app');
+
+            expect(resolveModule(specifier, dirname)).toEqual({
+                specifier,
+                scope: fixture('symlink/app/node_modules/linked'),
+                entry: fixture('symlink/app/node_modules/linked/linked.js'),
+            });
+        });
+
+        test('resolve shared module from symlinked package', () => {
+            const specifier = 'shared';
+            const dirname = fixture('symlink/app/node_modules/linked');
+
+            expect(resolveModule(specifier, dirname)).toEqual({
+                specifier,
+                scope: fixture('symlink/app/node_modules/shared'),
+                entry: fixture('symlink/app/node_modules/shared/shared.js'),
+            });
+        });
+    });
 });
 
 describe('resolution override', () => {
