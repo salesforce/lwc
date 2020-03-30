@@ -128,7 +128,7 @@ describe('if:true directive', () => {
         });
     }
 
-    it('should render slot content multiple levels deep when toggled 2 times', () => {
+    it('should continue rendering content for nested slots after multiple rehydrations', () => {
         const elm = createElement('x-multiple-slot', { is: MultipleSlot });
         document.body.appendChild(elm);
         elm.shadowRoot.querySelector('.textToggle').click();
@@ -138,12 +138,11 @@ describe('if:true directive', () => {
                 expect(elm.shadowRoot.textContent).toContain('text in multiple level slot');
                 // hide the slot
                 elm.shadowRoot.querySelector('.textToggle').click();
-                return Promise.resolve();
             })
             .then(() => {
+                expect(elm.shadowRoot.textContent).not.toContain('text in multiple level slot');
                 // show the slot
                 elm.shadowRoot.querySelector('.textToggle').click();
-                return Promise.resolve();
             })
             .then(() => {
                 expect(elm.shadowRoot.textContent).toContain('text in multiple level slot');

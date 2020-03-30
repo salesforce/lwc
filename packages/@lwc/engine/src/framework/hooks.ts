@@ -161,9 +161,16 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
 
 export function allocateChildrenHook(vnode: VCustomElement) {
     const vm = getAssociatedVM(vnode.elm!);
-    // When allocating slotted custom element children, we need to look for a previous allocation
-    // in case the vnode is being reused, because the vnode children will be emptied in this routine
-    // when called with a newly created vnode.
+    // A component with slots will re-render because:
+    // 1- There is a change of the internal state.
+    // 2- There is a change on the external api (ex: slots)
+    //
+    // In case #1, the vnodes in the cmpSlots will be reused since they didn't changed. This routine emptied the
+    // slotted children when those VCustomElement were rendered and therefore in subsequent calls to allocate children
+    // in a reused VCustomElement, there won't be any slotted children.
+    // For those cases, we will use the reference for allocated children stored when rendering the fresh VCustomElement.
+    //
+    // In case #2, we will always get a fresh VCustomElement.
     const children = vnode.aChildren || vnode.children;
 
     vm.aChildren = children;

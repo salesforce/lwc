@@ -54,6 +54,10 @@ export interface VCustomElement extends VElement {
     mode: 'closed' | 'open';
     ctor: any;
     clonedElement?: undefined;
+    // This VCustomElement may be reused when is part of the slot content in another slotted VCustomElement.
+    // Since the slotted vnodes of this VCustomElement are emptied when first allocated (synthetic-shadow only),
+    // when this VCustomElement is reused in the future it will render incorrectly the slotted content.
+    // This property is to keep reference of the allocated children by this VCustomElement.
     aChildren?: VNodes;
 }
 
