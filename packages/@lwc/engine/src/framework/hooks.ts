@@ -154,11 +154,24 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
 
 export function allocateChildrenHook(vnode: VCustomElement) {
     const vm = getAssociatedVM(vnode.elm!);
-    const { children } = vnode;
+    // A component with slots will re-render because:
+    // 1- There is a change of the internal state.
+    // 2- There is a change on the external api (ex: slots)
+    //
+    // In case #1, the vnodes in the cmpSlots will be reused since they didn't changed. This routine emptied the
+    // slotted children when those VCustomElement were rendered and therefore in subsequent calls to allocate children
+    // in a reused VCustomElement, there won't be any slotted children.
+    // For those cases, we will use the reference for allocated children stored when rendering the fresh VCustomElement.
+    //
+    // In case #2, we will always get a fresh VCustomElement.
+    const children = vnode.aChildren || vnode.children;
+
     vm.aChildren = children;
     if (isTrue(useSyntheticShadow)) {
         // slow path
         allocateInSlot(vm, children);
+        // save the allocated children in case this vnode is reused.
+        vnode.aChildren = children;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
         vnode.children = EmptyArray;
     }
