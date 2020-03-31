@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 import XTest from 'x/test';
 import XSlotted from 'x/slotted';
 import NestedRenderConditional from 'x/nestedRenderConditional';
+import MultipleSlot from 'x/multipleSlot';
 
 describe('if:true directive', () => {
     it('should render if the value is truthy', () => {
@@ -126,6 +127,40 @@ describe('if:true directive', () => {
                 });
         });
     }
+
+    it('should continue rendering content for nested slots after multiple rehydrations', () => {
+        const elm = createElement('x-multiple-slot', { is: MultipleSlot });
+        document.body.appendChild(elm);
+        const multipleSlotLevel1 = elm.shadowRoot.querySelector('x-multiple-slot-level1');
+        const textToggleButton = elm.shadowRoot.querySelector('.textToggle');
+
+        textToggleButton.click();
+
+        return Promise.resolve()
+            .then(() => {
+                const multipleSlotLevel2 = multipleSlotLevel1.shadowRoot
+                    .querySelector('slot')
+                    .assignedElements()[0];
+
+                expect(multipleSlotLevel2.textContent).toContain('text in multiple level slot');
+                // hide the slot
+                textToggleButton.click();
+            })
+            .then(() => {
+                const slotLevel1 = multipleSlotLevel1.shadowRoot.querySelector('slot');
+
+                expect(slotLevel1).toBe(null);
+                // show the slot
+                textToggleButton.click();
+            })
+            .then(() => {
+                const multipleSlotLevel2 = multipleSlotLevel1.shadowRoot
+                    .querySelector('slot')
+                    .assignedElements()[0];
+
+                expect(multipleSlotLevel2.textContent).toContain('text in multiple level slot');
+            });
+    });
 });
 
 describe('if:false directive', () => {
