@@ -414,6 +414,14 @@ defineProperties(Node.prototype, {
     },
     contains: {
         value(this: Node, otherNode: Node): boolean {
+            // 1. Node.prototype.contains() returns true if otherNode is an inclusive descendant
+            //    spec: https://dom.spec.whatwg.org/#dom-node-contains
+            // 2. This normalizes the behavior of this api across all browsers.
+            //    In IE11, a disconnected dom element without children invoking contains() on self, returns false
+            if (this === otherNode) {
+                return true;
+            }
+
             if (!featureFlags.ENABLE_NODE_PATCH) {
                 if (otherNode == null) {
                     return false;

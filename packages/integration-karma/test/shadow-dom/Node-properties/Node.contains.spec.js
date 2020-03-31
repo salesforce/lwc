@@ -75,4 +75,50 @@ describe('Node.contains', () => {
         expect(div.contains(undefined)).toBe(false);
         expect(div.contains(null)).toBe(false);
     });
+
+    describe('connected nodes', () => {
+        it('should return true for self, when self is a simple dom node', () => {
+            const div = document.createElement('div');
+            document.body.appendChild(div);
+            expect(div.contains(div)).toBe(true);
+        });
+
+        it('should return true for self, when self is a shadowed node', () => {
+            const elm = createElement('x-foo', { is: Test });
+            document.body.appendChild(elm);
+            const div = elm.shadowRoot.querySelector('div');
+            expect(div.contains(div)).toBe(true);
+        });
+
+        it('should return true for self, when self is a custom element', () => {
+            const elm = createElement('x-foo', { is: Test });
+            document.body.appendChild(elm);
+            expect(elm.contains(elm)).toBe(true);
+        });
+
+        it('should return true for self, when self is a shadowRoot', () => {
+            const elm = createElement('x-foo', { is: Test });
+            document.body.appendChild(elm);
+            const shadowRoot = elm.shadowRoot;
+            expect(shadowRoot.contains(shadowRoot)).toBe(true);
+        });
+    });
+
+    describe('disconnected nodes', () => {
+        it('should return true for self, when self is a simple dom node', () => {
+            const div = document.createElement('div');
+            expect(div.contains(div)).toBe(true);
+        });
+
+        it('should return true for self, when self is a custom element', () => {
+            const elm = createElement('x-foo', { is: Test });
+            expect(elm.contains(elm)).toBe(true);
+        });
+
+        it('should return true for self, when self is a shadowRoot', () => {
+            const elm = createElement('x-foo', { is: Test });
+            const shadowRoot = elm.shadowRoot;
+            expect(shadowRoot.contains(shadowRoot)).toBe(true);
+        });
+    });
 });
