@@ -181,7 +181,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     }
 }
 
-function customElementConnectedHook(elm: HTMLElement) {
+function customElementConnectedHook(elm: Element) {
     const vm = getAssociatedVM(elm);
     if (process.env.NODE_ENV !== 'production') {
         // Either the vm was just created or the node is being moved to another subtree
@@ -193,7 +193,7 @@ function customElementConnectedHook(elm: HTMLElement) {
     appendVM(vm);
 }
 
-function customElementDisconnectedHook(elm: HTMLElement) {
+function customElementDisconnectedHook(elm: Element) {
     const vm = getAssociatedVM(elm);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);

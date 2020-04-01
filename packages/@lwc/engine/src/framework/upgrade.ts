@@ -28,7 +28,7 @@ interface CreateElementOptions {
     mode?: ShadowDomMode;
 }
 
-function connectedHook(elm: HTMLElement) {
+function connectedHook(elm: Element) {
     const vm = getAssociatedVM(elm);
     startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     if (process.env.NODE_ENV !== 'production') {
@@ -41,7 +41,7 @@ function connectedHook(elm: HTMLElement) {
     endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
 }
 
-function disconnectedHook(elm: HTMLElement) {
+function disconnectedHook(elm: Element) {
     const vm = getAssociatedVM(elm);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
