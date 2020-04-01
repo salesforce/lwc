@@ -84,6 +84,7 @@
     "yarn": "1.22.4"
   },
   "resolutions": {
-    "set-value": "^3.0.1"
+    "set-value": "^3.0.1",
+    "micromatch": "^4.0.2"
   }
 }
