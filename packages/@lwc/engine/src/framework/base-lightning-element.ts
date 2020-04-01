@@ -24,12 +24,15 @@ import {
     isNull,
     isObject,
     seal,
+    defineProperty,
+    isUndefined,
 } from '@lwc/shared';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import {
     ComponentInterface,
     getWrappedComponentsListener,
     getTemplateReactiveObserver,
+    ComponentConstructor,
 } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
 import { associateVM, getAssociatedVM, VM } from './vm';
@@ -45,6 +48,8 @@ import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
+import { buildCustomElementConstructor } from './wc';
+import { HTMLElementConstructor } from './base-bridge-element';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -140,6 +145,7 @@ interface ComponentHooks {
 export interface LightningElementConstructor {
     new (): LightningElement;
     readonly prototype: LightningElement;
+    readonly CustomElementConstructor: HTMLElementConstructor;
 }
 
 export declare var LightningElement: LightningElementConstructor;
@@ -542,6 +548,41 @@ const baseDescriptors = ArrayReduce.call(
 ) as PropertyDescriptorMap;
 
 defineProperties(BaseLightningElementConstructor.prototype, baseDescriptors);
+
+const ComponentConstructorAsCustomElementConstructorMap = new Map<
+    ComponentConstructor,
+    HTMLElementConstructor
+>();
+
+function getCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
+    if (Ctor === BaseLightningElement) {
+        throw new TypeError(
+            `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`
+        );
+    }
+    let ce = ComponentConstructorAsCustomElementConstructorMap.get(Ctor);
+    if (isUndefined(ce)) {
+        ce = buildCustomElementConstructor(Ctor);
+        ComponentConstructorAsCustomElementConstructorMap.set(Ctor, ce);
+    }
+    return ce;
+}
+
+/**
+ * This static getter builds a Web Component class from a LWC constructor
+ * so it can be registered as a new element via customElements.define()
+ * at any given time. E.g.:
+ *
+ *      import Foo from 'ns/foo';
+ *      customElements.define('x-foo', Foo.CustomElementConstructor);
+ *      const elm = document.createElement('x-foo');
+ *
+ */
+defineProperty(BaseLightningElementConstructor, 'CustomElementConstructor', {
+    get() {
+        return getCustomElementConstructor(this);
+    },
+});
 
 if (process.env.NODE_ENV !== 'production') {
     patchLightningElementPrototypeWithRestrictions(BaseLightningElementConstructor.prototype);

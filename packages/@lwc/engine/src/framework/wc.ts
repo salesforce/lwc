@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayMap, getOwnPropertyNames, isUndefined } from '@lwc/shared';
-
 import { ComponentConstructor } from './component';
 import { createVM, connectRootElement, disconnectedRootElement } from './vm';
 import { getComponentDef } from './def';
@@ -13,8 +12,10 @@ import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { HTMLElementConstructor } from './base-bridge-element';
 
 /**
- * EXPERIMENTAL: This function builds a Web Component class from a LWC constructor so it can be
+ * This function builds a Web Component class from a LWC constructor so it can be
  * registered as a new element via customElements.define() at any given time.
+ *
+ * @deprecated since version 1.3.11
  *
  * @example
  * ```
@@ -25,23 +26,28 @@ import { HTMLElementConstructor } from './base-bridge-element';
  * const elm = document.createElement('x-foo');
  * ```
  */
-export function buildCustomElementConstructor(
-    Ctor: ComponentConstructor,
-    options?: {
-        mode?: 'open' | 'closed';
-    }
+export function deprecatedBuildCustomElementConstructor(
+    Ctor: ComponentConstructor
 ): HTMLElementConstructor {
+    if (process.env.NODE_ENV !== 'production') {
+        /* eslint-disable-next-line no-console */
+        console.warn(
+            'Deprecated function called: "buildCustomElementConstructor" function is deprecated and it will be removed.' +
+                `Use "${Ctor.name}.CustomElementConstructor" static property of the component constructor to access the corresponding custom element constructor instead.`
+        );
+    }
+
+    return Ctor.CustomElementConstructor;
+}
+
+export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
-    const mode =
-        isUndefined(options) || isUndefined(options.mode) || options.mode !== 'closed'
-            ? 'open'
-            : 'closed';
 
     return class extends BaseElement {
         constructor() {
             super();
             createVM(this, Ctor, {
-                mode,
+                mode: 'open',
                 isRoot: true,
                 owner: null,
             });
