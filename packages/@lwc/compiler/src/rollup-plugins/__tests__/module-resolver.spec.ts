@@ -41,7 +41,7 @@ describe('module resolver', () => {
 
         expect(success).toBe(true);
         expect(pretify(result.code)).toBe(
-            pretify(`define('x/class_and_template', ['exports', 'lwc'], function (exports, lwc) {
+            pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
                 function tmpl($api, $cmp, $slotset, $ctx) {
                     const {
                         t: api_text,
@@ -66,8 +66,7 @@ describe('module resolver', () => {
                     }
                 }
 
-                exports.default = Test;
-                Object.defineProperty(exports, '__esModule', { value: true });
+                return Test;
             });`)
         );
     });
@@ -91,7 +90,7 @@ describe('module resolver', () => {
         const { success, result } = await compile(noOutputConfig);
         expect(success).toBe(true);
         expect(pretify(result.code)).toBe(
-            pretify(`define('x/class_and_template', ['exports', 'lwc'], function (exports, lwc) {
+            pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
                 function tmpl($api, $cmp, $slotset, $ctx) {
                     const {
                         t: api_text,
@@ -116,8 +115,7 @@ describe('module resolver', () => {
                     }
                 }
 
-                exports.default = Test;
-                Object.defineProperty(exports, '__esModule', { value: true });
+                return Test;
             });`)
         );
     });
