@@ -6,6 +6,7 @@
  */
 import { appendVM, removeVM, getAssociatedVMIfPresent } from './vm';
 import { isUndefined } from '@lwc/shared';
+import { startGlobalMeasure, GlobalMeasurementPhase, endGlobalMeasure } from './performance-timing';
 
 const globalRegisteredNames: Set<string> = new Set();
 const isCustomElementsRegistryAvailable = typeof customElements !== 'undefined';
@@ -22,7 +23,9 @@ function attemptToDefineNewCustomElementRouter(tagName: string): boolean {
             connectedCallback() {
                 const vm = getAssociatedVMIfPresent(this);
                 if (!isUndefined(vm)) {
+                    startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
                     appendVM(vm);
+                    endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
                 }
             }
             disconnectedCallback() {
