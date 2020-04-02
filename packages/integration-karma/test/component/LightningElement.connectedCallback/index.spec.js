@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
 import Test from 'x/test';
-import ConnectedCallbackThrow from 'x/connectedCallbackThrow';
+import ParentWithThrowingChild from 'x/parentWithThrowingChild';
 import XSlottedParent from 'x/slottedParent';
 import XParent from 'x/parent';
 
@@ -40,18 +40,13 @@ testConnectSlot('Node.replaceChild', elm => {
 });
 
 it('should associate the component stack when the invocation throws', () => {
-    const elm = createElement('x-connected-callback-throw', { is: ConnectedCallbackThrow });
+    const elm = createElement('x-parent-with-throwing-child', { is: ParentWithThrowingChild });
 
-    let error;
-    try {
-        document.body.appendChild(elm);
-    } catch (e) {
-        error = e;
-    }
+    document.body.appendChild(elm);
 
-    expect(error).not.toBe(undefined);
-    expect(error.message).toBe('throw in connected');
-    expect(error.wcStack).toBe('<x-connected-callback-throw>');
+    expect(elm.error).not.toBe(undefined);
+    expect(elm.error.message).toBe('throw in connected');
+    expect(elm.error.wcStack).toMatch(/<x-connected-callback-throw>/);
 });
 
 describe('addEventListner in `connectedCallback`', () => {

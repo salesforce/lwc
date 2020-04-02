@@ -184,45 +184,58 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         };
     }
 
+    function spyGlobalErrors() {
+        var originalHandler = window.onerror;
+
+        var result = {
+            error: undefined,
+            reset: function() {
+                window.onerror = originalHandler;
+            },
+        };
+
+        window.onerror = function() {
+            result.error = arguments[4];
+        };
+
+        return result;
+    }
+    function matchMessage(expectedMessage, message) {
+        if (typeof expectedMessage === 'string') {
+            return message === expectedMessage;
+        } else {
+            return expectedMessage.test(message);
+        }
+    }
+
+    function matchError(expectedErrorCtor, error) {
+        return error instanceof expectedErrorCtor;
+    }
+
+    function throwDescription(thrown) {
+        return thrown.name + ' with message "' + thrown.message + '"';
+    }
+
+    function verifyMatcherParams(actual, expectedErrorCtor, expectedMessage) {
+        if (typeof actual !== 'function') {
+            throw new Error('Expected a function to compare.');
+        } else if (
+            typeof expectedErrorCtor !== 'function' ||
+            expectedErrorCtor.prototype instanceof Error
+        ) {
+            throw new Error('Expected an error constructor.');
+        } else if (typeof expectedMessage !== 'string' && !(expectedMessage instanceof RegExp)) {
+            throw new Error('Expected a string or a RegExp to compare the thrown error against.');
+        }
+    }
     var customMatchers = {
         toLogErrorDev: consoleDevMatcherFactory('error'),
         toThrowErrorDev: function toThrowErrorDev() {
             return {
                 compare: function(actual, expectedErrorCtor, expectedMessage) {
-                    function matchMessage(message) {
-                        if (typeof expectedMessage === 'string') {
-                            return message === expectedMessage;
-                        } else {
-                            return expectedMessage.test(message);
-                        }
-                    }
-
-                    function matchError(error) {
-                        return error instanceof expectedErrorCtor && matchMessage(error.message);
-                    }
-
-                    function throwDescription(thrown) {
-                        return thrown.name + ' with message "' + thrown.message + '"';
-                    }
-
-                    if (typeof actual !== 'function') {
-                        throw new Error('Expected function to throw error.');
-                    } else if (
-                        typeof actual !== 'function' ||
-                        expectedErrorCtor.prototype instanceof Error
-                    ) {
-                        throw new Error('Expected an error constructor.');
-                    } else if (
-                        typeof expectedMessage !== 'string' &&
-                        !(expectedMessage instanceof RegExp)
-                    ) {
-                        throw new Error(
-                            'Expected a string or a RegExp to compare the thrown error against.'
-                        );
-                    }
+                    verifyMatcherParams(actual, expectedErrorCtor, expectedMessage);
 
                     let thrown;
-
                     try {
                         actual();
                     } catch (error) {
@@ -248,7 +261,10 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
                                     expectedMessage +
                                     '".'
                             );
-                        } else if (!matchError(thrown)) {
+                        } else if (
+                            !matchError(expectedErrorCtor, thrown) ||
+                            !matchMessage(expectedMessage, thrown.message)
+                        ) {
                             return fail(
                                 'Expected function to throw an ' +
                                     expectedErrorCtor.name +
@@ -261,6 +277,59 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
                         } else {
                             return pass();
                         }
+                    }
+                },
+            };
+        },
+        // Errors that occur during the component connection and disconnection are not handled by a try catch
+        // block. This is because the error of web components is thrown in a different context
+        // Reference: https://github.com/open-wc/open-wc/blob/master/docs/faq/unit-testing-init-error.md#setting-up-your-component-for-testing
+        //  https://github.com/open-wc/open-wc/issues/228
+        // LWC uses native web components for node-reactions. So this routine sniffs errors by attaching
+        // an error handler at the window
+        toThrowGlobalError: function toThrowGlobalError() {
+            return {
+                compare: function(actual, expectedErrorCtor, expectedMessage) {
+                    verifyMatcherParams(actual, expectedErrorCtor, expectedMessage);
+
+                    var spy = spyGlobalErrors();
+                    let thrown;
+
+                    try {
+                        actual();
+                    } catch (error) {
+                        thrown = error;
+                    } finally {
+                        spy.reset();
+                        // Verify there were no other errors thrown during init
+                        if (thrown === undefined) {
+                            thrown = spy.error;
+                        }
+                    }
+
+                    if (thrown === undefined) {
+                        return fail(
+                            'Expected function to throw an ' +
+                                expectedErrorCtor.name +
+                                ' error in development mode with message "' +
+                                expectedMessage +
+                                '".'
+                        );
+                    } else if (
+                        !matchError(expectedErrorCtor, thrown) ||
+                        !matchMessage(expectedMessage, thrown.message)
+                    ) {
+                        return fail(
+                            'Expected function to throw an ' +
+                                expectedErrorCtor.name +
+                                ' error in development mode with message "' +
+                                expectedMessage +
+                                '", but it threw ' +
+                                throwDescription(thrown) +
+                                '.'
+                        );
+                    } else {
+                        return pass();
                     }
                 },
             };

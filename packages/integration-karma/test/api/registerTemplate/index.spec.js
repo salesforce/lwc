@@ -22,7 +22,7 @@ it('should throw if a component tries to use a template that is not registered',
 
     expect(() => {
         document.body.appendChild(elm);
-    }).toThrowError(TypeError, /Invalid template returned by the render\(\) method on \[.*\]\./);
+    }).toThrowGlobalError(Error, /Invalid template returned by the render\(\) method on \[.*\]\./);
 });
 
 it('should not throw if the template is registered first', () => {

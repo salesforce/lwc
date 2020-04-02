@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 
 import Slotted from 'x/slotted';
 import Test from 'x/test';
-import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
+import DisconnectingParent from 'x/disconnectingParent';
 import DualTemplate from 'x/dualTemplate';
 import ExplicitRender from 'x/explicitRender';
 
@@ -146,19 +146,14 @@ describe('disconnectedCallback for host with slots', () => {
 });
 
 it('should associate the component stack when the invocation throws', () => {
-    const elm = createElement('x-disconnected-callback-throw', { is: DisconnectedCallbackThrow });
-    document.body.appendChild(elm);
+    const parent = createElement('x-parent-with-throwing-child', { is: DisconnectingParent });
+    document.body.appendChild(parent);
+    const elm = parent.shadowRoot.querySelector('x-disconnected-callback-throw');
+    parent.shadowRoot.removeChild(elm);
 
-    let error;
-    try {
-        document.body.removeChild(elm);
-    } catch (e) {
-        error = e;
-    }
-
-    expect(error).not.toBe(undefined);
-    expect(error.message).toBe('throw in disconnected');
-    expect(error.wcStack).toBe('<x-disconnected-callback-throw>');
+    expect(parent.error).not.toBe(undefined);
+    expect(parent.error.message).toBe('throw in disconnected');
+    expect(parent.error.wcStack).toMatch(/<x-disconnected-callback-throw>/);
 });
 
 describe('disconnectedCallback for components with a explicit render()', () => {

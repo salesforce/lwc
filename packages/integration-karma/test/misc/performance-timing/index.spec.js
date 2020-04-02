@@ -177,19 +177,29 @@ if (isUserTimingSupported) {
                                 label: /<x-child> - constructor/,
                             },
                             {
-                                label: /<x-child> - render/,
-                            },
-                            {
-                                label: /<x-child> - patch/,
+                                label: /lwc-hydrate/,
+                                children: [
+                                    {
+                                        label: /<x-child> - render/,
+                                    },
+                                    {
+                                        label: /<x-child> - patch/,
+                                    },
+                                ],
                             },
                             {
                                 label: /<x-child> - constructor/,
                             },
                             {
-                                label: /<x-child> - render/,
-                            },
-                            {
-                                label: /<x-child> - patch/,
+                                label: /lwc-hydrate/,
+                                children: [
+                                    {
+                                        label: /<x-child> - render/,
+                                    },
+                                    {
+                                        label: /<x-child> - patch/,
+                                    },
+                                ],
                             },
                         ],
                     },

@@ -66,7 +66,7 @@ describe('isConnected in life cycle callbacks', () => {
         const elm = createElement('x-test', { is: Test });
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrowErrorDev(
+        }).toThrowGlobalError(
             Error,
             /Assert Violation: this\.isConnected should not be accessed during the renderedCallback of the custom element <x-test>\. The value will always be true\./
         );

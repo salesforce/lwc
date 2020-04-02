@@ -39,7 +39,7 @@ it('should throw an error if event handler is not a function', () => {
 
     expect(() => {
         document.body.appendChild(elm);
-    }).toThrowError(
+    }).toThrowGlobalError(
         Error,
         /Invariant Violation: Invalid second argument for this\.addEventListener\(\) in \[.*\] for event "click"\. Expected an EventListener but received undefined\./
     );

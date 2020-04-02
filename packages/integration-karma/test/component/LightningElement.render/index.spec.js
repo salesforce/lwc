@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
 import DynamicTemplate, { template1, template2 } from 'x/dynamicTemplate';
-import RenderThrow from 'x/renderThrow';
+import ParentWithThrowingChild from 'x/parentWithThrowingChild';
 
 function testInvalidTemplate(type, template) {
     it(`throws an error if returns ${type}`, () => {
@@ -12,7 +12,10 @@ function testInvalidTemplate(type, template) {
         // Once the error is fixed, we should add the error message to the assertion.
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrow();
+        }).toThrowGlobalError(
+            Error,
+            /evaluateTemplate\(\) second argument must be an imported template/
+        );
     });
 }
 
@@ -29,25 +32,20 @@ it(`throws an error if returns an invalid template`, () => {
 
     expect(() => {
         document.body.appendChild(elm);
-    }).toThrowError(
+    }).toThrowGlobalError(
         Error,
         /Invalid template returned by the render\(\) method on .+\. It must return an imported template \(e\.g\.: `import html from "\.\/undefined.html"`\), instead, it has returned: .+\./
     );
 });
 
 it('should associate the component stack when the invocation throws', () => {
-    const elm = createElement('x-render-throw', { is: RenderThrow });
+    const elm = createElement('x-child-render-throw', { is: ParentWithThrowingChild });
 
-    let error;
-    try {
-        document.body.appendChild(elm);
-    } catch (e) {
-        error = e;
-    }
+    document.body.appendChild(elm);
 
-    expect(error).not.toBe(undefined);
-    expect(error.message).toBe('throw in render');
-    expect(error.wcStack).toBe('<x-render-throw>');
+    expect(elm.error).not.toBe(undefined);
+    expect(elm.error.message).toBe('throw in render');
+    expect(elm.error.wcStack).toMatch('<x-render-throw>');
 });
 
 it('supports returning a template', () => {
