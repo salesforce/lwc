@@ -21,18 +21,18 @@
     "release:ci:dist-tags": "./scripts/release_dist-tags.sh"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.7",
-    "@babel/preset-env": "^7.8.7",
-    "@babel/preset-typescript": "^7.8.3",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-typescript": "^7.9.0",
     "@commitlint/cli": "^8.3.5",
     "@rollup/plugin-replace": "^2.3.1",
     "@types/acorn": "^4.0.5",
     "@types/jest": "^25.1.4",
-    "@types/node": "^13.9.1",
-    "@typescript-eslint/eslint-plugin": "^2.24.0",
-    "@typescript-eslint/parser": "^2.24.0",
-    "aws-sdk": "^2.641.0",
-    "babel-plugin-tester": "^8.0.1",
+    "@types/node": "^13.9.8",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "aws-sdk": "^2.651.0",
+    "babel-plugin-tester": "^9.0.0",
     "concurrently": "^5.1.0",
     "es5-proxy-compat": "^0.22.0",
     "eslint": "^6.8.0",
@@ -43,9 +43,9 @@
     "husky": "^4.2.3",
     "is-ci": "^2.0.0",
     "isbinaryfile": "^4.0.5",
-    "jest": "^25.1.0",
+    "jest": "^25.2.4",
     "lerna": "^3.20.2",
-    "lint-staged": "^10.0.8",
+    "lint-staged": "^10.1.1",
     "mime-types": "^2.1.26",
     "prettier": "^1.19.1",
     "rollup": "^1.32.1",
@@ -84,6 +84,7 @@
     "yarn": "1.22.4"
   },
   "resolutions": {
-    "set-value": "^3.0.1"
+    "set-value": "^3.0.1",
+    "micromatch": "^4.0.2"
   }
 }
