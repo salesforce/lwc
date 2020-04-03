@@ -302,7 +302,7 @@ describe('html-element', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrowError(/render\(\) method has side effects on the state/);
+            }).toThrowGlobalError(/render\(\) method has side effects on the state/);
         });
 
         it('should throw if setting tabIndex during construction', function() {
@@ -1051,7 +1051,7 @@ describe('html-element', () => {
         describe('#accessKey', () => {
             it('should reflect attribute by default', () => {
                 class MyComponent extends LightningElement {}
-                const element = createElement('prop-reflect-accessKey', { is: MyComponent });
+                const element = createElement('prop-reflect-accesskey', { is: MyComponent });
                 element.accessKey = 'accessKey';
                 expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'accesskey')).toBe(
                     'accessKey'
@@ -1060,7 +1060,7 @@ describe('html-element', () => {
 
             it('should return correct value from getter', () => {
                 class MyComponent extends LightningElement {}
-                const element = createElement('prop-getter-accessKey', { is: MyComponent });
+                const element = createElement('prop-getter-accesskey', { is: MyComponent });
                 element.accessKey = 'accessKey';
                 expect(element.accessKey).toBe('accessKey');
             });
@@ -1080,7 +1080,7 @@ describe('html-element', () => {
                     publicProps: { accessKey: {} },
                 });
 
-                const element = createElement('prop-setter-accessKey', { is: MyComponent });
+                const element = createElement('prop-setter-accesskey', { is: MyComponent });
                 element.accessKey = 'accessKey';
 
                 expect(count).toBe(1);
@@ -1104,7 +1104,7 @@ describe('html-element', () => {
                     }
                 }
 
-                const element = createElement('prop-setter-accessKey-reactive', {
+                const element = createElement('prop-setter-accesskey-reactive', {
                     is: MyComponent,
                 });
                 document.body.appendChild(element);
@@ -1126,7 +1126,7 @@ describe('html-element', () => {
                 registerDecorators(MyComponent, {
                     publicProps: { accessKey: {} },
                 });
-                const element = createElement('prop-getter-accessKey-imperative', {
+                const element = createElement('prop-getter-accesskey-imperative', {
                     is: MyComponent,
                 });
                 expect(element.accessKey).toBe('accessKey');
@@ -1149,8 +1149,7 @@ describe('html-element', () => {
                         renderCount++;
                     }
                 }
-
-                const element = createElement('prop-accessKey-reactive', { is: MyComponent });
+                const element = createElement('prop-accesskey-reactive', { is: MyComponent });
                 document.body.appendChild(element);
 
                 element.accessKey = 'accessKey';

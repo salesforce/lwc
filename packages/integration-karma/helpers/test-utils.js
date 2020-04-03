@@ -196,6 +196,7 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
 
         window.onerror = function() {
             result.error = arguments[4];
+            return true;
         };
 
         return result;

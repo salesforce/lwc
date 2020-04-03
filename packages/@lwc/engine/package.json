@@ -16,8 +16,7 @@
         "types/"
     ],
     "dependencies": {
-        "observable-membrane": "0.26.1",
-        "@lwc/node-reactions": "1.3.7-226.4"
+        "observable-membrane": "0.26.1"
     },
     "devDependencies": {
         "@lwc/features": "1.3.7-226.4",

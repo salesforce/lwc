@@ -212,7 +212,7 @@ describe('error boundary component', () => {
 
                         expect(() => {
                             document.body.appendChild(boundaryElm);
-                        }).toThrow(`Boundary Render Throw`);
+                        }).toThrowGlobalError(`Boundary Render Throw`);
                     }),
                     it('should not affect error boundary siblings when boundary child throws inside render', () => {
                         class BoundaryChild extends LightningElement {
@@ -388,7 +388,7 @@ describe('error boundary component', () => {
 
                         expect(() => {
                             document.body.appendChild(boundaryElm);
-                        }).toThrow();
+                        }).toThrowGlobalError();
                     }),
                     it('should unomunt child error boundary component if it throws inside errorCallback', () => {
                         class ChildBoundaryContent extends LightningElement {
@@ -648,7 +648,7 @@ describe('error boundary component', () => {
 
                         expect(() => {
                             document.body.appendChild(boundaryElm);
-                        }).toThrow();
+                        }).toThrowGlobalError();
                     }),
                     it('should not affect error boundary siblings when boundary child throws inside connectedCallback', () => {
                         class BoundaryChild extends LightningElement {
@@ -757,7 +757,7 @@ describe('error boundary component', () => {
 
                 expect(() => {
                     document.body.appendChild(elm);
-                }).toThrowError(`Boundary failed to recover`);
+                }).toThrowGlobalError(`Boundary failed to recover`);
             }),
                 it('should show alternative view after initial error', () => {
                     class PreErrorChildContent extends LightningElement {

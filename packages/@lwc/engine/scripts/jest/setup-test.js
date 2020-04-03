@@ -11,6 +11,7 @@ const chalk = require('chalk');
 
 const { LEGACY_TEST_EXCEPTIONS } = require('./legacy-test-exceptions');
 const { toLogError } = require('./matchers/log-error');
+const { toThrowGlobalError } = require('./matchers/global-error');
 
 // Extract original methods from console
 const { error: originalError } = console;
@@ -66,4 +67,5 @@ afterEach(() => {
 // Register custom console matchers in jasmine
 expect.extend({
     toLogError,
+    toThrowGlobalError,
 });

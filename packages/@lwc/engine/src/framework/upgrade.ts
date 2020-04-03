@@ -4,49 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
-import { reactWhenConnected, reactWhenDisconnected } from '@lwc/node-reactions';
-import {
-    createVM,
-    removeVM,
-    appendVM,
-    getAssociatedVM,
-    VMState,
-    getAssociatedVMIfPresent,
-} from './vm';
+import { isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
+import { createVM, getAssociatedVMIfPresent } from './vm';
 import { ComponentConstructor } from './component';
 import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
-import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
-import { attemptToRegisterTagName, isTagNameRegistered } from './local-registry';
+import { registerTagName } from './local-registry';
 
 type ShadowDomMode = 'open' | 'closed';
 
 interface CreateElementOptions {
     is: ComponentConstructor;
     mode?: ShadowDomMode;
-}
-
-function connectedHook(elm: Element) {
-    const vm = getAssociatedVM(elm);
-    startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            vm.state === VMState.created || vm.state === VMState.disconnected,
-            `${vm} should be new or disconnected.`
-        );
-    }
-    appendVM(vm);
-    endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-}
-
-function disconnectedHook(elm: Element) {
-    const vm = getAssociatedVM(elm);
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
-    }
-    removeVM(vm);
 }
 
 /**
@@ -79,7 +49,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     }
 
     const mode = options.mode !== 'closed' ? 'open' : 'closed';
-    attemptToRegisterTagName(sel);
+    registerTagName(sel);
 
     // Create element with correct tagName
     const element = document.createElement(sel);
@@ -102,10 +72,5 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     }
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
-    // Handle insertion and removal from the DOM manually when needed
-    if (!isTagNameRegistered(sel)) {
-        reactWhenConnected(element, connectedHook);
-        reactWhenDisconnected(element, disconnectedHook);
-    }
     return element;
 }

@@ -227,7 +227,7 @@ describe('wire.ts', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrow();
+            }).toThrowGlobalError();
         });
     });
 

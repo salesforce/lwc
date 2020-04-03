@@ -190,7 +190,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrow('Key must be a string or number.');
+            }).toThrowGlobalError('Key must be a string or number.');
         });
     });
 
