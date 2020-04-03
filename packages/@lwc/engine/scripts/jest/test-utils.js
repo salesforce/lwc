@@ -27,15 +27,6 @@ function compileTemplate(source, config = {}) {
     return registerTemplate(templateFactory(modules));
 }
 
-/**
- * Strip out data markers added by @lwc/node-reactions
- * @param {string} str
- */
-function stripNodeReactionsMarker(str) {
-    return str.replace(/ data-node-reactions(="")*/gm, '');
-}
-
 module.exports = {
     compileTemplate,
-    stripNodeReactionsMarker,
 };
