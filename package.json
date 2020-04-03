@@ -43,6 +43,7 @@
     "is-ci": "^2.0.0",
     "isbinaryfile": "^4.0.4",
     "jest": "^25.1.0",
+    "jest-environment-jsdom-sixteen": "^1.0.3",
     "lerna": "^3.20.2",
     "lint-staged": "^10.0.8",
     "mime-types": "^2.1.26",
