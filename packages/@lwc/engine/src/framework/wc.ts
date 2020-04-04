@@ -32,7 +32,6 @@ export function buildCustomElementConstructor(
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
     const normalizedOptions: CreateVMInit = {
         mode: 'open',
-        isRoot: true,
         owner: null,
     };
     if (isObject(options) && !isNull(options)) {

@@ -88,7 +88,6 @@ export interface UninitializedVM {
     getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
     isScheduled: boolean;
     isDirty: boolean;
-    isRoot: boolean;
     mode: 'open' | 'closed';
     toString(): string;
 
@@ -179,7 +178,6 @@ export function removeVM(vm: VM) {
 export interface CreateVMInit {
     mode: 'open' | 'closed';
     // custom settings for now
-    isRoot?: boolean;
     owner: VM | null;
 }
 
@@ -191,7 +189,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         );
     }
     const def = getComponentDef(Ctor);
-    const { isRoot, mode, owner } = options;
+    const { mode, owner } = options;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
         // component creation index is defined once, and never reset, it can
@@ -200,7 +198,6 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         state: VMState.created,
         isScheduled: false,
         isDirty: true,
-        isRoot: isTrue(isRoot),
         mode,
         def,
         owner,

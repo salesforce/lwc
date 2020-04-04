@@ -71,6 +71,6 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         patchCustomElementWithRestrictions(element, EmptyObject);
     }
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(element, Ctor, { mode, isRoot: true, owner: null });
+    createVM(element, Ctor, { mode, owner: null });
     return element;
 }

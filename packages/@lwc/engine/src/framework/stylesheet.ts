@@ -71,20 +71,20 @@ function insertGlobalStyle(styleContent: string) {
  */
 export function resetStyle(vm: VM): void {
     const { context, elm, cmpRoot } = vm;
+    const { hostAttribute, styleElement } = context;
 
     // Remove the style attribute currently applied to the host element.
-    const oldHostAttribute = context.hostAttribute;
-    if (!isUndefined(oldHostAttribute)) {
-        removeAttribute.call(elm, oldHostAttribute);
+    if (!isUndefined(hostAttribute)) {
+        removeAttribute.call(elm, hostAttribute);
     }
 
     // Reset the scoping attributes associated to the context.
     context.hostAttribute = context.shadowAttribute = undefined;
 
     // removing style tag if present
-    if (!isNull(context.styleVNode) && !isUndefined(context.styleVNode)) {
-        cmpRoot.removeChild(context.styleVNode);
-        context.styleVNode = null;
+    if (!isNull(styleElement) && !isUndefined(styleElement)) {
+        cmpRoot.removeChild(styleElement);
+        context.styleElement = null;
     }
 }
 
@@ -105,7 +105,7 @@ export function applyStyle(
     context.shadowAttribute = shadowAttribute;
 
     // Caching style vnode so it can be removed when needed
-    const styleElm = (context.styleVNode = evaluateCSS(
+    const styleElm = (context.styleElement = evaluateCSS(
         vm,
         stylesheets,
         hostAttribute,
