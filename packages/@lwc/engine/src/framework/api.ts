@@ -47,7 +47,7 @@ import {
 import {
     createViewModelHook,
     fallbackElmHook,
-    rerenderCustomElmHook,
+    renderCustomElmHook,
     createChildrenHook,
     updateNodeHook,
     insertNodeHook,
@@ -155,7 +155,7 @@ const CustomElementHook: Hooks<VCustomElement> = {
         // will happen, but in native, it does allocate the light dom
         updateChildrenHook(oldVnode, vnode);
         // this will update the shadowRoot
-        rerenderCustomElmHook(vnode);
+        renderCustomElmHook(vnode);
     },
     insert: (vnode, parentNode, referenceNode) => {
         insertNodeHook(vnode, parentNode, referenceNode);

@@ -10,7 +10,7 @@ import { ComponentConstructor } from './component';
 import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
-import { registerTagName } from './local-registry';
+import { registerTagName, isScopedElement } from './local-registry';
 
 type ShadowDomMode = 'open' | 'closed';
 
@@ -59,6 +59,10 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         // to do here.
         return element;
     }
+    if (!isScopedElement(element)) {
+        // Someone else claimed this custom element, most likely a native web component
+        return element;
+    }
 
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
@@ -71,6 +75,6 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         patchCustomElementWithRestrictions(element, EmptyObject);
     }
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(element, Ctor, { mode, owner: null });
+    createVM(element, def, { mode, owner: null });
     return element;
 }

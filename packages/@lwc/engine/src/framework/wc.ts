@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, assert, getOwnPropertyNames, isNull, isObject, isUndefined } from '@lwc/shared';
+import { ArrayMap, getOwnPropertyNames, isNull, isObject, isUndefined } from '@lwc/shared';
 import { ComponentConstructor } from './component';
-import { createVM, getAssociatedVM, CreateVMInit, removeVM, appendVM, VMState } from './vm';
+import { createVM, getAssociatedVM, CreateVMInit, removeVM, appendVM, renderVM } from './vm';
 import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
@@ -29,7 +29,8 @@ export function buildCustomElementConstructor(
     Ctor: ComponentConstructor,
     options?: ShadowRootInit
 ): HTMLElementConstructor {
-    const { props, bridge: BaseElement } = getComponentDef(Ctor);
+    const def = getComponentDef(Ctor);
+    const { props, bridge: BaseElement } = def;
     const normalizedOptions: CreateVMInit = {
         mode: 'open',
         owner: null,
@@ -43,26 +44,18 @@ export function buildCustomElementConstructor(
     return class extends BaseElement {
         constructor() {
             super();
-            createVM(this, Ctor, normalizedOptions);
+            createVM(this, def, normalizedOptions);
             if (process.env.NODE_ENV !== 'production') {
                 patchCustomElementWithRestrictions(this, EmptyObject);
             }
         }
         connectedCallback() {
             const vm = getAssociatedVM(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(
-                    vm.state === VMState.created || vm.state === VMState.disconnected,
-                    `${vm} should be new or disconnected.`
-                );
-            }
             appendVM(vm);
+            renderVM(vm);
         }
         disconnectedCallback() {
             const vm = getAssociatedVM(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
-            }
             removeVM(vm);
         }
         attributeChangedCallback(attrName: string, oldValue: string, newValue: string) {

@@ -7,7 +7,7 @@
 import { assert, isArray, isTrue, isUndefined } from '@lwc/shared';
 import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
 import {
-    rerenderVM,
+    renderVM,
     createVM,
     getAssociatedVM,
     allocateInSlot,
@@ -31,6 +31,7 @@ import {
     lockDomMutation,
 } from './restrictions';
 import { getComponentDef, setElementProto } from './def';
+import { isScopedElement } from './local-registry';
 
 const noop = () => void 0;
 
@@ -184,6 +185,10 @@ export function createViewModelHook(vnode: VCustomElement) {
         // to do here since this hook is called right after invoking `document.createElement`.
         return;
     }
+    if (!isScopedElement(elm)) {
+        // Someone else claimed this custom element, most likely a native web component
+        return;
+    }
     const { mode, ctor, owner } = vnode;
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
@@ -193,7 +198,7 @@ export function createViewModelHook(vnode: VCustomElement) {
         // into each element from the template, so they can be styled accordingly.
         setElementShadowToken(elm, shadowAttribute);
     }
-    createVM(elm, ctor, {
+    createVM(elm, def, {
         mode,
         owner,
     });
@@ -234,15 +239,9 @@ export function createChildrenHook(vnode: VElement) {
     }
 }
 
-export function rerenderCustomElmHook(vnode: VCustomElement) {
+export function renderCustomElmHook(vnode: VCustomElement) {
     const vm = getAssociatedVM(vnode.elm!);
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isArray(vnode.children),
-            `Invalid vnode for a custom element, it must have children defined.`
-        );
-    }
-    rerenderVM(vm);
+    renderVM(vm);
 }
 
 export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
