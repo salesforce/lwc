@@ -26,8 +26,8 @@ import {
     getAssociatedVMIfPresent,
 } from './vm';
 import { ComponentConstructor } from './component';
+import { getComponentInternalDef, setElementProto } from './def';
 import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
-import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
@@ -124,7 +124,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         Ctor = resolveCircularModuleDependency(Ctor);
     }
 
-    const def = getComponentDef(Ctor);
+    const def = getComponentInternalDef(Ctor);
     setElementProto(element, def);
 
     if (process.env.NODE_ENV !== 'production') {
