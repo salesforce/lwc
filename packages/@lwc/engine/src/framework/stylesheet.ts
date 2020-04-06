@@ -47,7 +47,7 @@ function getCachedStyleElement(styleContent: string): HTMLStyleElement {
     if (isUndefined(fragment)) {
         fragment = document.createDocumentFragment();
         const styleElm = createStyleElement(styleContent);
-        fragment.appendChild(styleElm);
+        fragment.insertBefore(styleElm, null);
         CachedStyleFragments[styleContent] = fragment;
     }
 
@@ -62,7 +62,7 @@ function insertGlobalStyle(styleContent: string) {
     if (isUndefined(InsertedGlobalStyleContent[styleContent])) {
         InsertedGlobalStyleContent[styleContent] = true;
         const elm = createStyleElement(styleContent);
-        globalStyleParent.appendChild(elm);
+        globalStyleParent.insertBefore(elm, null);
     }
 }
 
@@ -98,7 +98,6 @@ export function applyStyle(
 ): void {
     const { context, elm, cmpRoot } = vm;
     const { hostAttribute, shadowAttribute } = stylesheetTokens;
-    // Remove the style attribute currently applied to the host element.
     setAttribute.call(elm, hostAttribute, '');
 
     context.hostAttribute = hostAttribute;
@@ -112,7 +111,7 @@ export function applyStyle(
         shadowAttribute
     ));
     if (!isNull(styleElm)) {
-        cmpRoot.appendChild(styleElm);
+        cmpRoot.insertBefore(styleElm, null);
     }
 }
 

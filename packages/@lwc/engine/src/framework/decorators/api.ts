@@ -10,7 +10,7 @@ import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { valueObserved, valueMutated, ReactiveObserver } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';
-import { getAssociatedVM, rerenderVM, VM } from '../vm';
+import { getAssociatedVM, renderVM, VM } from '../vm';
 import { getDecoratorsRegisteredMeta } from './register';
 import { addCallbackToNextTick } from '../utils';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
@@ -132,7 +132,7 @@ class AccessorReactiveObserver extends ReactiveObserver {
                             // immediate rehydration due to a setter driven mutation, otherwise
                             // the component will get rendered on the second tick, which it is not
                             // desirable.
-                            rerenderVM(vm);
+                            renderVM(vm);
                         }
                     }
                 });

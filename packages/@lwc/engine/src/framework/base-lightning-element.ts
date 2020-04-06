@@ -26,7 +26,10 @@ import {
     seal,
 } from '@lwc/shared';
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { patchLightningElementPrototypeWithRestrictions } from './restrictions';
+import {
+    patchLightningElementPrototypeWithRestrictions,
+    patchCustomElementWithRestrictions,
+} from './restrictions';
 import {
     ComponentInterface,
     getWrappedComponentsListener,
@@ -290,6 +293,7 @@ function BaseLightningElementConstructor(this: LightningElement) {
     if (process.env.NODE_ENV !== 'production') {
         patchComponentWithRestrictions(component);
         patchShadowRootWithRestrictions(cmpRoot, EmptyObject);
+        patchCustomElementWithRestrictions(elm, EmptyObject);
     }
     return this as LightningElement;
 }

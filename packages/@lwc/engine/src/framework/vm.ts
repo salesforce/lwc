@@ -20,14 +20,7 @@ import {
     getHiddenField,
     setHiddenField,
 } from '@lwc/shared';
-import { getComponentDef } from './def';
-import {
-    createComponent,
-    linkComponent,
-    renderComponent,
-    ComponentConstructor,
-    markComponentAsDirty,
-} from './component';
+import { createComponent, linkComponent, renderComponent, markComponentAsDirty } from './component';
 import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
@@ -54,12 +47,6 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
-export enum VMState {
-    created,
-    connected,
-    disconnected,
-}
-
 export interface UninitializedVM {
     /** Component Element Back-pointer */
     readonly elm: HTMLElement;
@@ -71,8 +58,6 @@ export interface UninitializedVM {
     readonly owner: VM | null;
     /** Component Creation Index */
     idx: number;
-    /** Component state, analogous to Element.isConnected */
-    state: VMState;
     data: VNodeData;
     /** Shadow Children List */
     children: VNodes;
@@ -132,46 +117,34 @@ function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
     return (cmp as any)[prop];
 }
 
-export function rerenderVM(vm: VM) {
+// just in case the component comes back, with this we guarantee re-rendering it
+// while preventing any attempt to rehydration until after reinsertion.
+function resetReactiveListeners(vm: VM) {
+    const { oar, tro } = vm;
+    // Making sure that any observing record will not trigger the rehydration on this vm
+    tro.reset();
+    // Making sure that any observing accessor record will not trigger the setter to be reinvoked
+    for (const key in oar) {
+        oar[key].reset();
+    }
+    // this guarantees that if the component is reused/reinserted, it will be re-rendered.
+    // it should be re-rendered because we are disconnecting the reactivity
+    // linking, so mutations are not automatically reflected on the state
+    // of disconnected components.
+    vm.isDirty = true;
+}
+
+export function renderVM(vm: VM) {
     rehydrate(vm);
 }
 
 export function appendVM(vm: VM) {
     runConnectedCallback(vm);
-    rehydrate(vm);
-}
-
-// just in case the component comes back, with this we guarantee re-rendering it
-// while preventing any attempt to rehydration until after reinsertion.
-function reset(vm: VM) {
-    const { state } = vm;
-    if (state !== VMState.disconnected) {
-        const { oar, tro } = vm;
-        // Making sure that any observing record will not trigger the rehydration on this vm
-        tro.reset();
-        // Making sure that any observing accessor record will not trigger the setter to be reinvoked
-        for (const key in oar) {
-            oar[key].reset();
-        }
-    }
-    if (isFalse(vm.isDirty)) {
-        // this guarantees that if the component is reused/reinserted, it will be re-rendered.
-        // it should be re-rendered because we are disconnecting the reactivity
-        // linking, so mutations are not automatically reflected on the state
-        // of disconnected components.
-        vm.isDirty = true;
-    }
 }
 
 // this method is triggered by the removal of a element from the DOM.
 export function removeVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            vm.state === VMState.connected || vm.state === VMState.disconnected,
-            `${vm} must have been connected.`
-        );
-    }
-    reset(vm);
+    resetReactiveListeners(vm);
     runDisconnectedCallback(vm);
 }
 
@@ -181,21 +154,19 @@ export interface CreateVMInit {
     owner: VM | null;
 }
 
-export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: CreateVMInit) {
+export function createVM(elm: HTMLElement, def: ComponentDef, options: CreateVMInit) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             elm instanceof HTMLElement,
             `VM creation requires a DOM element instead of ${elm}.`
         );
     }
-    const def = getComponentDef(Ctor);
     const { mode, owner } = options;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
         // component creation index is defined once, and never reset, it can
         // be preserved from one insertion to another without any issue
         idx,
-        state: VMState.created,
         isScheduled: false,
         isDirty: true,
         mode,
@@ -226,7 +197,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
     }
 
     // create component instance associated to the vm and the element
-    createComponent(uninitializedVm, Ctor);
+    createComponent(uninitializedVm, def.ctor);
 
     // link component to the wire service
     const initializedVm = uninitializedVm as VM;
@@ -308,13 +279,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
             );
         }
     }
-    if (vm.state === VMState.connected) {
-        // If the element is connected, that means connectedCallback was already issued, and
-        // any successive rendering should finish with the call to renderedCallback, otherwise
-        // the connectedCallback will take care of calling it in the right order at the end of
-        // the current rehydration process.
-        runRenderedCallback(vm);
-    }
+    runRenderedCallback(vm);
 }
 
 function runRenderedCallback(vm: VM) {
@@ -363,11 +328,6 @@ function flushRehydrationQueue() {
 }
 
 function runConnectedCallback(vm: VM) {
-    const { state } = vm;
-    if (state === VMState.connected) {
-        return; // nothing to do since it was already connected
-    }
-    vm.state = VMState.connected;
     // reporting connection
     const { connected } = Services;
     if (connected) {
@@ -388,10 +348,6 @@ function runConnectedCallback(vm: VM) {
 }
 
 function runDisconnectedCallback(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
-    }
-    vm.state = VMState.disconnected;
     // reporting disconnection
     const { disconnected } = Services;
     if (disconnected) {

@@ -209,6 +209,8 @@ it('should call parent and children lifecycle hooks in correct order when parent
     // child:renderedCallback is not invoked because the elements are reused by the diffing algo
     expect(window.timingBuffer).toEqual([
         'parent:connectedCallback',
+        'child:renderedCallback',
+        'child:renderedCallback',
         'parent:renderedCallback',
         'child:connectedCallback',
         'child:connectedCallback',
