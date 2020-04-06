@@ -4,15 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isTrue, isUndefined } from '@lwc/shared';
-import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
+import { isTrue, isUndefined } from '@lwc/shared';
+import { EmptyArray, useSyntheticShadow } from './utils';
 import {
     renderVM,
     createVM,
     getAssociatedVM,
     allocateInSlot,
     runWithBoundaryProtection,
-    getAssociatedVMIfPresent,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -24,14 +23,9 @@ import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
 import modContext from './modules/context';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
-import {
-    patchCustomElementWithRestrictions,
-    patchElementWithRestrictions,
-    unlockDomMutation,
-    lockDomMutation,
-} from './restrictions';
+import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentDef, setElementProto } from './def';
-import { isScopedElement } from './local-registry';
+import { isUpgradableElement } from './local-registry';
 
 const noop = () => void 0;
 
@@ -179,14 +173,10 @@ export function allocateChildrenHook(vnode: VCustomElement) {
 
 export function createViewModelHook(vnode: VCustomElement) {
     const elm = vnode.elm as HTMLElement;
-    if (!isUndefined(getAssociatedVMIfPresent(elm))) {
-        // There is a possibility that a custom element is registered under tagName,
-        // in which case, the initialization is already carry on, and there is nothing else
-        // to do here since this hook is called right after invoking `document.createElement`.
-        return;
-    }
-    if (!isScopedElement(elm)) {
-        // Someone else claimed this custom element, most likely a native web component
+    if (!isUpgradableElement(elm)) {
+        // Someone else claimed this custom element,
+        // most likely a native web component or an LWC
+        // component registered as a web component.
         return;
     }
     const { mode, ctor, owner } = vnode;
@@ -202,16 +192,6 @@ export function createViewModelHook(vnode: VCustomElement) {
         mode,
         owner,
     });
-    if (process.env.NODE_ENV !== 'production') {
-        const vm = getAssociatedVM(elm);
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        assert.isTrue(
-            isArray(vnode.children),
-            `Invalid vnode for a custom element, it must have children defined.`
-        );
-
-        patchCustomElementWithRestrictions(elm, EmptyObject);
-    }
 }
 
 export function createCustomElmHook(vnode: VCustomElement) {

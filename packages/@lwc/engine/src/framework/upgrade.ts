@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
-import { createVM, getAssociatedVMIfPresent } from './vm';
+import { isFunction, isNull, isObject, toString } from '@lwc/shared';
+import { createVM } from './vm';
 import { ComponentConstructor } from './component';
-import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
+import { isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { getComponentDef, setElementProto } from './def';
-import { patchCustomElementWithRestrictions } from './restrictions';
-import { registerTagName, isScopedElement } from './local-registry';
+import { registerTagName, isUpgradableElement } from './local-registry';
 
 type ShadowDomMode = 'open' | 'closed';
 
@@ -53,14 +52,10 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
 
     // Create element with correct tagName
     const element = document.createElement(sel);
-    if (!isUndefined(getAssociatedVMIfPresent(element))) {
-        // There is a possibility that a custom element is registered under tagName,
-        // in which case, the initialization is already carry on, and there is nothing else
-        // to do here.
-        return element;
-    }
-    if (!isScopedElement(element)) {
-        // Someone else claimed this custom element, most likely a native web component
+    if (!isUpgradableElement(element)) {
+        // Someone else claimed this custom element,
+        // most likely a native web component or an LWC
+        // component registered as a web component.
         return element;
     }
 
@@ -70,11 +65,6 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
 
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
-
-    if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(element, EmptyObject);
-    }
-    // In case the element is not initialized already, we need to carry on the manual creation
     createVM(element, def, { mode, owner: null });
     return element;
 }

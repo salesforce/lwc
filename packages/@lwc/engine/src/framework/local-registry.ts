@@ -11,11 +11,11 @@ import { startGlobalMeasure, GlobalMeasurementPhase, endGlobalMeasure } from './
 const globalRegisteredNames: Set<string> = new Set();
 
 /**
- * LWC Scoped Element reference to an element that was created
+ * LWC Upgradable Element reference to an element that was created
  * via the scoped registry mechanism, and that is ready to be
  * upgrade by calling createVM operation on it.
  */
-class LWCScopedElement extends HTMLElement {
+class LWCUpgradableElement extends HTMLElement {
     connectedCallback() {
         const vm = getAssociatedVMIfPresent(this);
         if (!isUndefined(vm)) {
@@ -33,12 +33,12 @@ class LWCScopedElement extends HTMLElement {
     }
 }
 
-function defineNewCustomElementRouter(tagName: string): boolean {
+function defineUpgradableElement(tagName: string): boolean {
     if (!isUndefined(customElements.get(tagName))) {
         // someone else already defined this element
         return false;
     }
-    customElements.define(tagName, class extends LWCScopedElement {});
+    customElements.define(tagName, class extends LWCUpgradableElement {});
     globalRegisteredNames.add(tagName);
     return true;
 }
@@ -47,13 +47,13 @@ export function registerTagName(tagName: string) {
     if (isTagNameRegistered(tagName)) {
         return true;
     }
-    defineNewCustomElementRouter(tagName);
+    defineUpgradableElement(tagName);
 }
 
 export function isTagNameRegistered(tagName: string): boolean {
     return globalRegisteredNames.has(tagName);
 }
 
-export function isScopedElement(elm: HTMLElement): boolean {
-    return elm instanceof LWCScopedElement;
+export function isUpgradableElement(elm: HTMLElement): boolean {
+    return elm instanceof LWCUpgradableElement;
 }
