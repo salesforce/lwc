@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { LightningElement, api, getComponentDef } from 'lwc';
 
 import PublicProperties from 'x/publicProperties';
@@ -6,13 +7,6 @@ import PublicMethods from 'x/publicMethods';
 import PublicPropertiesInheritance from 'x/publicPropertiesInheritance';
 import PublicMethodsInheritance from 'x/publicMethodsInheritance';
 
-import WireProperties from 'x/wireProperties';
-import WireMethods from 'x/wireMethods';
-import WirePropertiesInheritance from 'x/wirePropertiesInheritance';
-import WireMethodsInheritance from 'x/wireMethodsInheritance';
-
-import wireAdapter from 'x/wireAdapter';
-
 function testInvalidComponentConstructor(name, ctor) {
     it(`should throw for ${name}`, () => {
         expect(() => getComponentDef(ctor)).toThrowError(
@@ -20,6 +14,36 @@ function testInvalidComponentConstructor(name, ctor) {
         );
     });
 }
+
+beforeAll(function() {
+    const getNormalizedFunctionAsString = fn => fn.toString().replace(/(\s|\n)/g, '');
+
+    jasmine.addMatchers({
+        toEqualWireSettings: function() {
+            return {
+                compare: function(actual, expected) {
+                    Object.keys(actual).forEach(currentKey => {
+                        const normalizedActual = Object.assign({}, actual[currentKey], {
+                            config: getNormalizedFunctionAsString(actual[currentKey].config),
+                        });
+
+                        const normalizedExpected = Object.assign({}, expected[currentKey], {
+                            config: getNormalizedFunctionAsString(
+                                expected[currentKey].config || function() {}
+                            ),
+                        });
+
+                        expect(normalizedActual).toEqual(normalizedExpected);
+                    });
+
+                    return {
+                        pass: true,
+                    };
+                },
+            };
+        },
+    });
+});
 
 testInvalidComponentConstructor('null', null);
 testInvalidComponentConstructor('undefined', undefined);
@@ -145,7 +169,7 @@ describe('@api', () => {
         expect(props).toEqual(
             jasmine.objectContaining({
                 parentProp: {
-                    config: 0,
+                    config: 3,
                     type: 'any',
                     attr: 'parent-prop',
                 },
@@ -169,118 +193,6 @@ describe('@api', () => {
             parentMethod: Object.getPrototypeOf(PublicMethodsInheritance.prototype).parentMethod,
             overriddenInChild: PublicMethodsInheritance.prototype.overriddenInChild,
             childMethod: PublicMethodsInheritance.prototype.childMethod,
-        });
-    });
-});
-
-describe('@wire', () => {
-    it('should return the wired properties in wire object', () => {
-        const { wire } = getComponentDef(WireProperties);
-        expect(wire).toEqual({
-            foo: {
-                adapter: wireAdapter,
-            },
-            bar: {
-                adapter: wireAdapter,
-                static: {
-                    a: true,
-                },
-                params: {},
-            },
-            baz: {
-                adapter: wireAdapter,
-                static: {
-                    b: true,
-                },
-                params: {
-                    c: 'foo',
-                },
-            },
-        });
-    });
-
-    it('should return the wired methods in the wire object with a method flag', () => {
-        const { wire } = getComponentDef(WireMethods);
-        expect(wire).toEqual({
-            foo: {
-                adapter: wireAdapter,
-                method: 1,
-            },
-            bar: {
-                adapter: wireAdapter,
-                static: {
-                    a: true,
-                },
-                params: {},
-                method: 1,
-            },
-            baz: {
-                adapter: wireAdapter,
-                static: {
-                    b: true,
-                },
-                params: {
-                    c: 'foo',
-                },
-                method: 1,
-            },
-        });
-    });
-
-    it('should inherit wire properties from the base class', () => {
-        const { wire } = getComponentDef(WirePropertiesInheritance);
-        expect(wire).toEqual({
-            parentProp: {
-                adapter: wireAdapter,
-                static: {
-                    parent: true,
-                },
-                params: {},
-            },
-            overriddenInChild: {
-                adapter: wireAdapter,
-                static: {
-                    child: true,
-                },
-                params: {},
-            },
-            childProp: {
-                adapter: wireAdapter,
-                static: {
-                    child: true,
-                },
-                params: {},
-            },
-        });
-    });
-
-    it('should inherit the wire methods from the case class', () => {
-        const { wire } = getComponentDef(WireMethodsInheritance);
-        expect(wire).toEqual({
-            parentMethod: {
-                adapter: wireAdapter,
-                static: {
-                    parent: true,
-                },
-                params: {},
-                method: 1,
-            },
-            overriddenInChild: {
-                adapter: wireAdapter,
-                static: {
-                    child: true,
-                },
-                params: {},
-                method: 1,
-            },
-            childMethod: {
-                adapter: wireAdapter,
-                static: {
-                    child: true,
-                },
-                params: {},
-                method: 1,
-            },
         });
     });
 });
