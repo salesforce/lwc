@@ -25,7 +25,7 @@ import modContext from './modules/context';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentDef, setElementProto } from './def';
-import { isUpgradableElement } from './local-registry';
+import { isUpgradableElement } from './upgradable-element';
 
 const noop = () => void 0;
 
@@ -191,6 +191,7 @@ export function createViewModelHook(vnode: VCustomElement) {
     createVM(elm, def, {
         mode,
         owner,
+        isRoot: false,
     });
 }
 

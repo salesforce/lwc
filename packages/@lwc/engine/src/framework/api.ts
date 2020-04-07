@@ -62,7 +62,7 @@ import {
 } from './hooks';
 import { Services, invokeServiceHook } from './services';
 import { isComponentConstructor } from './def';
-import { registerTagName } from './local-registry';
+import { registerTagName } from './upgradable-element';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;

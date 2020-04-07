@@ -73,6 +73,8 @@ export interface UninitializedVM {
     getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
     isScheduled: boolean;
     isDirty: boolean;
+    isConnected: boolean;
+    isRoot: boolean;
     mode: 'open' | 'closed';
     toString(): string;
 
@@ -139,11 +141,13 @@ export function renderVM(vm: VM) {
 }
 
 export function appendVM(vm: VM) {
+    vm.isConnected = true;
     runConnectedCallback(vm);
 }
 
 // this method is triggered by the removal of a element from the DOM.
 export function removeVM(vm: VM) {
+    vm.isConnected = false;
     resetReactiveListeners(vm);
     runDisconnectedCallback(vm);
 }
@@ -152,6 +156,7 @@ export interface CreateVMInit {
     mode: 'open' | 'closed';
     // custom settings for now
     owner: VM | null;
+    isRoot: boolean;
 }
 
 export function createVM(elm: HTMLElement, def: ComponentDef, options: CreateVMInit) {
@@ -161,7 +166,7 @@ export function createVM(elm: HTMLElement, def: ComponentDef, options: CreateVMI
             `VM creation requires a DOM element instead of ${elm}.`
         );
     }
-    const { mode, owner } = options;
+    const { mode, owner, isRoot } = options;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
         // component creation index is defined once, and never reset, it can
@@ -169,6 +174,8 @@ export function createVM(elm: HTMLElement, def: ComponentDef, options: CreateVMI
         idx,
         isScheduled: false,
         isDirty: true,
+        isConnected: false,
+        isRoot,
         mode,
         def,
         owner,
@@ -243,7 +250,17 @@ function rehydrate(vm: VM) {
             `rehydration can only happen after ${vm} was patched the first time.`
         );
     }
-    if (isTrue(vm.isDirty)) {
+    /**
+     * The only case in which isDirty can be true, and isConnected is false during
+     * the rehydrate case is when an element is removed and re-inserted, and any
+     * custom element inside its shadow is not reported as connected yet, but it
+     * is pending to be rehydrated. It we rehydrate it under those circumstances
+     * it will have the wrong order, breaking the invariant that connectedCallback
+     * should always be issued before renderedCallback. Instead, we skip the rendering
+     * of the child element, which is eventually going to happen when connectedCallback
+     * on the child is issued.
+     */
+    if (isTrue(vm.isDirty) && isTrue(vm.isConnected)) {
         const children = renderComponent(vm);
         patchShadowRoot(vm, children);
     }

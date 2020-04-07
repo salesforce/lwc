@@ -32,6 +32,7 @@ export function buildCustomElementConstructor(
     const normalizedOptions: CreateVMInit = {
         mode: 'open',
         owner: null,
+        isRoot: true,
     };
     if (isObject(options) && !isNull(options)) {
         const { mode } = options;

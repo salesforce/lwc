@@ -9,7 +9,7 @@ import { createVM } from './vm';
 import { ComponentConstructor } from './component';
 import { isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { getComponentDef, setElementProto } from './def';
-import { registerTagName, isUpgradableElement } from './local-registry';
+import { registerTagName, isUpgradableElement } from './upgradable-element';
 
 type ShadowDomMode = 'open' | 'closed';
 
@@ -65,6 +65,6 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
 
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
-    createVM(element, def, { mode, owner: null });
+    createVM(element, def, { mode, owner: null, isRoot: true });
     return element;
 }

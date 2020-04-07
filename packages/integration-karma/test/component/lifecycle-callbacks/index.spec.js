@@ -206,14 +206,13 @@ it('should call parent and children lifecycle hooks in correct order when parent
 
     resetTimingBuffer();
     document.body.appendChild(elm);
-    // child:renderedCallback is not invoked because the elements are reused by the diffing algo
     expect(window.timingBuffer).toEqual([
         'parent:connectedCallback',
-        'child:renderedCallback',
-        'child:renderedCallback',
         'parent:renderedCallback',
         'child:connectedCallback',
+        'child:renderedCallback',
         'child:connectedCallback',
+        'child:renderedCallback',
     ]);
 });
 

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { appendVM, removeVM, getAssociatedVMIfPresent, renderVM } from './vm';
-import { isUndefined } from '@lwc/shared';
+import { isUndefined, isTrue } from '@lwc/shared';
 import { startGlobalMeasure, GlobalMeasurementPhase, endGlobalMeasure } from './performance-timing';
 
 const globalRegisteredNames: Set<string> = new Set();
@@ -19,10 +19,15 @@ class LWCUpgradableElement extends HTMLElement {
     connectedCallback() {
         const vm = getAssociatedVMIfPresent(this);
         if (!isUndefined(vm)) {
-            startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+            const { isRoot } = vm;
+            if (isTrue(isRoot)) {
+                startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+            }
             appendVM(vm);
             renderVM(vm);
-            endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+            if (isTrue(isRoot)) {
+                endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+            }
         }
     }
     disconnectedCallback() {
