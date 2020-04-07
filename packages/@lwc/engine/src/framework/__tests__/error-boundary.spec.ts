@@ -979,7 +979,7 @@ describe('error boundary component', () => {
                         }
                     }
                     registerDecorators(PreErrorChildContent, {
-                        publicProps: { foo: { config: 1 } },
+                        publicProps: { foo: { config: 3 } },
                     });
                     const baseTmpl = compileTemplate(
                         `

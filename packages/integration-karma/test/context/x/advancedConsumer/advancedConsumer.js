@@ -1,8 +1,8 @@
 import { LightningElement, wire, api } from 'lwc';
-import { Provider } from 'x/advancedProvider';
+import { WireAdapter } from 'x/advancedProvider';
 
 export default class ConsumerElement extends LightningElement {
-    @wire(Provider) context;
+    @wire(WireAdapter) context;
 
     @api getIdentity() {
         return this.context;
