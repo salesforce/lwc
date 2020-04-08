@@ -320,7 +320,7 @@ function flushRehydrationQueue() {
     }
     const vms: VM[] = rehydrateQueue.sort((a: VM, b: VM): number => a.idx - b.idx);
     rehydrateQueue = []; // reset to a new queue
-    for (let i = 0, len = vms.length; i < len; i += 1) {
+    for (let i = 0, len = vms.length; i < len; i++) {
         const vm = vms[i];
         try {
             rehydrate(vm);
@@ -396,9 +396,9 @@ function resetShadowRootAfterError(vm: VM) {
         if (!isNull(vnode)) {
             const { elm } = vnode;
             if (!isUndefined(elm)) {
-                // the concern here is that this routine might
-                // throw and we have one flow that does not
-                // have protection (recovering from error boundary)
+                // As this routine is being run post-error in a component routine, any futher errors
+                // that may occur while resetting the component's shadow root can be safely ignored
+                // For example: if a child element's disconnected callback throws an error
                 try {
                     cmpRoot.removeChild(elm);
                 } catch (e) {

@@ -113,7 +113,7 @@ const TextHook: Hooks<VText> = {
 // which breaks some invariants. For that reason, we have the following for any
 // Custom Element that is inserted via a template.
 const ElementHook: Hooks<VElement> = {
-    create: (vnode: VElement) => {
+    create: vnode => {
         const { data, sel } = vnode;
         const { ns } = data;
         vnode.elm = isUndefined(ns)

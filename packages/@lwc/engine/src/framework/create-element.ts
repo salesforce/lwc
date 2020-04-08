@@ -53,8 +53,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     // Create element with correct tagName
     const element = document.createElement(sel);
     if (!isUpgradableElement(element)) {
-        // Someone else claimed this custom element,
-        // most likely a native web component or an LWC
+        // Someone else claimed this custom element, most likely a native web component or an LWC
         // component registered as a web component.
         return element;
     }

@@ -295,7 +295,7 @@ function BaseLightningElementConstructor(this: LightningElement) {
         patchShadowRootWithRestrictions(cmpRoot, EmptyObject);
         patchCustomElementWithRestrictions(elm, EmptyObject);
     }
-    return this as LightningElement;
+    return this;
 }
 
 // HTML Element - The Good Parts

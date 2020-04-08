@@ -161,8 +161,9 @@ function doEventsBubbleToDocFrag() {
 describe('event propagation in disconnected tree', () => {
     it('propagate event from a child element in a document fragment', () => {
         const fragment = document.createDocumentFragment();
+        // An lwc element is not hydrated until it is "connected to the document", hence setup the test
+        // component by appending it to the document and move the tree under a documentFragment for testing
         const nodes = createShadowTree(document.body);
-        // Add to body and then move to fragment because lwc element is not hydrated until it is connected to the document
         fragment.appendChild(nodes['x-shadow-tree']);
         const logs = dispatchEventWithLog(
             nodes.span,

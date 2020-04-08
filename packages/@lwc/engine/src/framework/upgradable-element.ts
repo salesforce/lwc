@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { appendVM, removeVM, getAssociatedVMIfPresent, renderVM } from './vm';
 import { isUndefined, isTrue } from '@lwc/shared';
+import { appendVM, removeVM, getAssociatedVMIfPresent, renderVM } from './vm';
 import { startGlobalMeasure, GlobalMeasurementPhase, endGlobalMeasure } from './performance-timing';
 
+// Using a local set object is much faster than looking up for tags in the custom element registry
 const globalRegisteredNames: Set<string> = new Set();
 
 /**
@@ -48,11 +49,11 @@ function defineUpgradableElement(tagName: string): boolean {
     return true;
 }
 
-export function registerTagName(tagName: string) {
+export function registerTagName(tagName: string): boolean {
     if (isTagNameRegistered(tagName)) {
         return true;
     }
-    defineUpgradableElement(tagName);
+    return defineUpgradableElement(tagName);
 }
 
 export function isTagNameRegistered(tagName: string): boolean {

@@ -165,7 +165,7 @@ export function allocateVMChildrenHook(vnode: VCustomElement) {
 }
 
 export function createViewModelHook(vnode: VCustomElement) {
-    const elm = vnode.elm as HTMLElement;
+    const elm = vnode.elm!;
     const { mode, ctor, owner } = vnode;
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
