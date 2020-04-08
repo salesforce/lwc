@@ -6,13 +6,7 @@
  */
 import { isTrue, isUndefined } from '@lwc/shared';
 import { EmptyArray, useSyntheticShadow } from './utils';
-import {
-    renderVM,
-    createVM,
-    getAssociatedVM,
-    allocateInSlot,
-    runWithBoundaryProtection,
-} from './vm';
+import { createVM, getAssociatedVM, allocateInSlot, runWithBoundaryProtection } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
@@ -25,7 +19,6 @@ import modContext from './modules/context';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentDef, setElementProto } from './def';
-import { isUpgradableElement } from './upgradable-element';
 
 const noop = () => void 0;
 
@@ -147,7 +140,7 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
     );
 }
 
-export function allocateChildrenHook(vnode: VCustomElement) {
+export function allocateVMChildrenHook(vnode: VCustomElement) {
     const vm = getAssociatedVM(vnode.elm!);
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.
@@ -173,21 +166,9 @@ export function allocateChildrenHook(vnode: VCustomElement) {
 
 export function createViewModelHook(vnode: VCustomElement) {
     const elm = vnode.elm as HTMLElement;
-    if (!isUpgradableElement(elm)) {
-        // Someone else claimed this custom element,
-        // most likely a native web component or an LWC
-        // component registered as a web component.
-        return;
-    }
     const { mode, ctor, owner } = vnode;
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
-    if (isTrue(useSyntheticShadow)) {
-        const { shadowAttribute } = owner.context;
-        // when running in synthetic shadow mode, we need to set the shadowToken value
-        // into each element from the template, so they can be styled accordingly.
-        setElementShadowToken(elm, shadowAttribute);
-    }
     createVM(elm, def, {
         mode,
         owner,
@@ -218,11 +199,6 @@ export function createChildrenHook(vnode: VElement) {
             ch.hook.insert(ch, elm!, null);
         }
     }
-}
-
-export function renderCustomElmHook(vnode: VCustomElement) {
-    const vm = getAssociatedVM(vnode.elm!);
-    renderVM(vm);
 }
 
 export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {

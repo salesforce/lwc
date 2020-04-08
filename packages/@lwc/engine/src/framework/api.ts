@@ -32,7 +32,7 @@ import {
     EmptyObject,
     useSyntheticShadow,
 } from './utils';
-import { SlotSet, VM } from './vm';
+import { SlotSet, VM, getAssociatedVMIfPresent, renderVM } from './vm';
 import { ComponentConstructor } from './component';
 import {
     VNode,
@@ -47,7 +47,6 @@ import {
 import {
     createViewModelHook,
     fallbackElmHook,
-    renderCustomElmHook,
     createChildrenHook,
     updateNodeHook,
     insertNodeHook,
@@ -57,12 +56,12 @@ import {
     createCustomElmHook,
     updateCustomElmHook,
     updateChildrenHook,
-    allocateChildrenHook,
+    allocateVMChildrenHook,
     markAsDynamicChildren,
 } from './hooks';
 import { Services, invokeServiceHook } from './services';
 import { isComponentConstructor } from './def';
-import { registerTagName } from './upgradable-element';
+import { registerTagName, isUpgradableElement } from './upgradable-element';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -140,22 +139,32 @@ const CustomElementHook: Hooks<VCustomElement> = {
     create: vnode => {
         const { sel } = vnode;
         registerTagName(sel);
-        vnode.elm = document.createElement(sel);
+        const elm = (vnode.elm = document.createElement(sel));
         linkNodeToShadow(vnode);
-        createViewModelHook(vnode);
-        allocateChildrenHook(vnode);
+        fallbackElmHook(vnode);
+        // If this `sel` is claimed by a custom element,
+        // most likely a native web component or an LWC
+        // component registered as a web component. We don't
+        // need to create a VM for it.
+        if (isUpgradableElement(elm)) {
+            createViewModelHook(vnode);
+            allocateVMChildrenHook(vnode);
+        }
         createCustomElmHook(vnode);
     },
     update: (oldVnode, vnode) => {
         updateCustomElmHook(oldVnode, vnode);
-        // in fallback mode, the allocation will always set children to
-        // empty and delegate the real allocation to the slot elements
-        allocateChildrenHook(vnode);
-        // in fallback mode, the children will be always empty, so, nothing
-        // will happen, but in native, it does allocate the light dom
+        const vm = getAssociatedVMIfPresent(vnode.elm!);
+        if (!isUndefined(vm)) {
+            // in fallback mode, the allocation will always set children to
+            // empty and delegate the real allocation to the slot elements
+            allocateVMChildrenHook(vnode);
+        }
         updateChildrenHook(oldVnode, vnode);
-        // this will update the shadowRoot
-        renderCustomElmHook(vnode);
+        if (!isUndefined(vm)) {
+            // this will update the shadowRoot content
+            renderVM(vm);
+        }
     },
     insert: (vnode, parentNode, referenceNode) => {
         insertNodeHook(vnode, parentNode, referenceNode);
