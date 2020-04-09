@@ -39,25 +39,24 @@ class LWCUpgradableElement extends HTMLElement {
     }
 }
 
-function defineUpgradableElement(tagName: string): boolean {
+function defineUpgradableElement(tagName: string) {
     // Should never get a tag with upper case letter at this point, the compiler should
     // produce only tags with lowercase letters
     // But, for backwards compatibility, we will lower case the tag
     tagName = tagName.toLowerCase();
     if (!isUndefined(customElements.get(tagName))) {
         // someone else already defined this element
-        return false;
+        return;
     }
     customElements.define(tagName, class extends LWCUpgradableElement {});
     globalRegisteredNames.add(tagName);
-    return true;
 }
 
-export function registerTagName(tagName: string): boolean {
+export function registerTagName(tagName: string) {
     if (isTagNameRegistered(tagName)) {
         return true;
     }
-    return defineUpgradableElement(tagName);
+    defineUpgradableElement(tagName);
 }
 
 export function isTagNameRegistered(tagName: string): boolean {
