@@ -40,6 +40,10 @@ class LWCUpgradableElement extends HTMLElement {
 }
 
 function defineUpgradableElement(tagName: string): boolean {
+    // Should never get a tag with upper case letter at this point, the compiler should
+    // produce only tags with lowercase letters
+    // But, for backwards compatibility, we will lower case the tag
+    tagName = tagName.toLowerCase();
     if (!isUndefined(customElements.get(tagName))) {
         // someone else already defined this element
         return false;
