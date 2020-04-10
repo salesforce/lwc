@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, getOwnPropertyNames, isUndefined } from '@lwc/shared';
+import { isUndefined, keys } from '@lwc/shared';
 import { ComponentConstructor } from './component';
 import { createVM, connectRootElement, disconnectedRootElement } from './vm';
-import { getComponentDef } from './def';
-import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
+import { getAttrNameFromPropName, isAttributeLocked } from './attributes';
+import { getComponentInternalDef } from './def';
 import { HTMLElementConstructor } from './base-bridge-element';
 
 /**
@@ -41,8 +41,14 @@ export function deprecatedBuildCustomElementConstructor(
 }
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
-    const { props, bridge: BaseElement } = getComponentDef(Ctor);
+    const { props, bridge: BaseElement } = getComponentInternalDef(Ctor);
 
+    // generating the hash table for attributes to avoid duplicate fields
+    // and facilitate validation and false positives in case of inheritance.
+    const attributeToPropMap: Record<string, string> = {};
+    for (const propName in props) {
+        attributeToPropMap[getAttrNameFromPropName(propName)] = propName;
+    }
     return class extends BaseElement {
         constructor() {
             super();
@@ -63,8 +69,8 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 // ignoring similar values for better perf
                 return;
             }
-            const propName = getPropNameFromAttrName(attrName);
-            if (isUndefined(props[propName])) {
+            const propName = attributeToPropMap[attrName];
+            if (isUndefined(propName)) {
                 // ignoring unknown attributes
                 return;
             }
@@ -82,9 +88,6 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
         }
         // collecting all attribute names from all public props to apply
         // the reflection from attributes to props via attributeChangedCallback.
-        static observedAttributes = ArrayMap.call(
-            getOwnPropertyNames(props),
-            propName => props[propName].attr
-        );
+        static observedAttributes = keys(attributeToPropMap);
     };
 }

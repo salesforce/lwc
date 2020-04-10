@@ -1,6 +1,6 @@
 import { LightningElement, wire } from 'lwc';
-import { Provider } from 'x/simpleProvider';
+import { WireAdapter } from 'x/simpleProvider';
 
 export default class ConsumerElement extends LightningElement {
-    @wire(Provider) context;
+    @wire(WireAdapter) context;
 }

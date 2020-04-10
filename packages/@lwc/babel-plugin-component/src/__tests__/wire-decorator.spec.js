@@ -40,6 +40,181 @@ describe('Transform property', () => {
                       },
                       static: {
                         key2: ["fixed", "array"]
+                      },
+                      hasParams: true,
+                      config: function($cmp) {
+                        return {
+                          key2: ["fixed", "array"],
+                          key1: $cmp.prop1
+                        };
+                      }
+                    }
+                  }
+                });
+
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`,
+            },
+        }
+    );
+
+    pluginTest(
+        'transforms named imports from static imports',
+        `
+        import { wire } from 'lwc';
+        import importedValue from "ns/module";
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: importedValue })
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import importedValue from "ns/module";
+                import { getFoo } from "data-service";
+                
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {},
+                      static: {
+                        key1: importedValue
+                      },
+                      hasParams: false,
+                      config: function($cmp) {
+                        return {
+                          key1: importedValue
+                        };
+                      }
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`,
+            },
+        }
+    );
+
+    pluginTest(
+        'transforms parameters with 2 levels deep (foo.bar)',
+        `
+        import { wire } from 'lwc';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: "$prop1.prop2", key2: ["fixed", 'array'], key3: "$p1.p2" })
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { getFoo } from "data-service";
+
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {
+                        key1: "prop1.prop2",
+                        key3: "p1.p2"
+                      },
+                      static: {
+                        key2: ["fixed", "array"]
+                      },
+                      hasParams: true,
+                      config: function($cmp) {
+                        let v1 = $cmp.prop1;
+                        let v2 = $cmp.p1;
+                        return {
+                          key2: ["fixed", "array"],
+                          key1: v1 != null ? v1.prop2 : undefined,
+                          key3: v2 != null ? v2.p2 : undefined
+                        };
+                      }
+                    }
+                  }
+                });
+
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`,
+            },
+        }
+    );
+
+    pluginTest(
+        'transforms parameters with multiple levels deep',
+        `
+        import { wire } from 'lwc';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: "$prop1.prop2.prop3.prop4", key2: ["fixed", 'array']})
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { getFoo } from "data-service";
+
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {
+                        key1: "prop1.prop2.prop3.prop4"
+                      },
+                      static: {
+                        key2: ["fixed", "array"]
+                      },
+                      hasParams: true,
+                      config: function($cmp) {
+                        let v1 = $cmp.prop1;
+                        return {
+                          key2: ["fixed", "array"],
+                          key1: 
+                            v1 != null &&
+                            (v1 = v1.prop2) != null &&
+                            (v1 = v1.prop3) != null
+                              ? v1.prop4
+                              : undefined
+                        };
                       }
                     }
                   }
@@ -88,6 +263,15 @@ describe('Transform property', () => {
                       static: {
                         key3: "fixed",
                         key4: ["fixed", "array"]
+                      },
+                      hasParams: true,
+                      config: function($cmp) {
+                        return {
+                          key3: "fixed",
+                          key4: ["fixed", "array"],
+                          key1: $cmp.prop,
+                          key2: $cmp.prop
+                        };
                       }
                     }
                   }
@@ -171,7 +355,11 @@ describe('Transform property', () => {
                     wiredProp: {
                       adapter: getFoo,
                       params: {},
-                      static: {}
+                      static: {},
+                      hasParams: false,
+                      config: function($cmp) {
+                        return {};
+                      }
                     }
                   }
                 });
@@ -185,7 +373,7 @@ describe('Transform property', () => {
     );
 
     pluginTest(
-        'decorator accepts a member epxression',
+        'decorator accepts a member expression',
         `
       import { wire } from 'lwc';
       import { Foo } from 'data-service';
@@ -212,7 +400,11 @@ describe('Transform property', () => {
                   wiredProp: {
                     adapter: Foo.Bar,
                     params: {},
-                    static: {}
+                    static: {},
+                    hasParams: false,
+                    config: function($cmp) {
+                      return {};
+                    }
                   }
                 }
               });
@@ -253,7 +445,11 @@ describe('Transform property', () => {
                 wiredProp: {
                   adapter: Foo.Bar,
                   params: {},
-                  static: {}
+                  static: {},
+                  hasParams: false,
+                  config: function($cmp) {
+                    return {};
+                  }
                 }
               }
             });
@@ -314,7 +510,11 @@ describe('Transform property', () => {
                     _registerDecorators(Test, {
                       wire: {
                         wiredProp: {
-                          adapter: getFoo
+                          adapter: getFoo,
+                          hasParams: false,
+                          config: function($cmp) {
+                            return {};
+                          }
                         }
                       }
                     });
@@ -391,6 +591,114 @@ describe('Transform property', () => {
                     length: 58,
                     start: 105,
                 },
+            },
+        }
+    );
+
+    pluginTest(
+        "config function should use bracket notation for param when it's definition has invalid identifier as segment",
+        `
+        import { api, wire } from 'lwc';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: "$prop1.a b", key2: "$p1.p2" })
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import _tmpl from "./test.html";
+                    import { registerComponent as _registerComponent } from "lwc";
+                    import { getFoo } from "data-service";
+
+                    class Test {
+                      constructor() {
+                        this.wiredProp = void 0;
+                      }
+                    }
+
+                    _registerDecorators(Test, {
+                      wire: {
+                        wiredProp: {
+                          adapter: getFoo,
+                          params: {
+                            key1: "prop1.a b",
+                            key2: "p1.p2"
+                          },
+                          static: {},
+                          hasParams: true,
+                          config: function($cmp) {
+                            let v1 = $cmp["prop1"];
+                            let v2 = $cmp.p1;
+                            return {
+                              key1: v1 != null ? v1["a b"] : undefined,
+                              key2: v2 != null ? v2.p2 : undefined
+                            };
+                          }
+                        }
+                      }
+                    });
+
+                    export default _registerComponent(Test, {
+                      tmpl: _tmpl
+                    });
+`,
+            },
+        }
+    );
+
+    pluginTest(
+        'config function should use bracket notation when param definition has empty segment',
+        `
+        import { api, wire } from 'lwc';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: "$prop1..prop2", key2: ["fixed", 'array']})
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import _tmpl from "./test.html";
+                    import { registerComponent as _registerComponent } from "lwc";
+                    import { getFoo } from "data-service";
+
+                    class Test {
+                      constructor() {
+                        this.wiredProp = void 0;
+                      }
+                    }
+
+                    _registerDecorators(Test, {
+                      wire: {
+                        wiredProp: {
+                          adapter: getFoo,
+                          params: {
+                            key1: "prop1..prop2"
+                          },
+                          static: {
+                            key2: ["fixed", "array"]
+                          },
+                          hasParams: true,
+                          config: function($cmp) {
+                            let v1 = $cmp["prop1"];
+                            return {
+                              key2: ["fixed", "array"],
+                              key1: v1 != null && (v1 = v1[""]) != null ? v1["prop2"] : undefined
+                            };
+                          }
+                        }
+                      }
+                    });
+
+                    export default _registerComponent(Test, {
+                      tmpl: _tmpl
+                    });
+`,
             },
         }
     );
@@ -479,6 +787,13 @@ describe('Transform property', () => {
                       },
                       static: {
                         key2: ["fixed"]
+                      },
+                      hasParams: true,
+                      config: function($cmp) {
+                        return {
+                          key2: ["fixed"],
+                          key1: $cmp.prop1
+                        };
                       }
                     },
                     wired2: {
@@ -488,6 +803,13 @@ describe('Transform property', () => {
                       },
                       static: {
                         key2: ["array"]
+                      },
+                      hasParams: true,
+                      config: function($cmp) {
+                        return {
+                          key2: ["array"],
+                          key1: $cmp.prop1
+                        };
                       }
                     }
                   }
@@ -535,7 +857,14 @@ describe('Transform method', () => {
                       static: {
                         key2: ["fixed"]
                       },
-                      method: 1
+                      method: 1,
+                      hasParams: true,
+                      config: function($cmp) {
+                        return {
+                          key2: ["fixed"],
+                          key1: $cmp.prop1
+                        };
+                      }
                     }
                   }
                 });
