@@ -29,7 +29,7 @@ it('should throw an error if the parameter is not an instance of Event', () => {
 
     expect(() => {
         elm.dispatch('event');
-    }).toThrowError(Error);
+    }).toThrowError();
 });
 
 it('should throw when event is dispatched during construction', function() {
