@@ -50,7 +50,8 @@ function getGeneratedConfig(t, wiredValue) {
         //       In such cases where the param does not have proper notation, the config generated will use the bracket
         //       notation to match the current behavior (that most likely end up resolving that param as undefined).
         const isInvalidMemberExpr = memberExprPaths.some(
-            maybeIdentifier => !t.isValidES3Identifier(maybeIdentifier)
+            maybeIdentifier =>
+                !(t.isValidES3Identifier(maybeIdentifier) && maybeIdentifier.length > 0)
         );
         const memberExprPropertyGen = !isInvalidMemberExpr ? t.identifier : t.StringLiteral;
 
