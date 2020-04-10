@@ -37,6 +37,7 @@ function testAriaProperty(property, attribute) {
     });
 }
 
+// test is this passes on the ci
 const ariaPropertiesMapping = {
     ariaAutoComplete: 'aria-autocomplete',
     ariaChecked: 'aria-checked',
