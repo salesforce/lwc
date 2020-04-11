@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isUndefined, ArrayPush, getOwnPropertyNames, defineProperty } from '@lwc/shared';
+import { ArrayPush, assert, defineProperty, getOwnPropertyNames, isUndefined } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
-import { VM, runWithBoundaryProtection } from './vm';
+import { runWithBoundaryProtection, VM } from './vm';
 import { invokeComponentCallback } from './invoker';
 import { dispatchEvent } from '../env/dom';
 
@@ -155,7 +155,27 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
         // This wire has dynamic parameters: we wait for the component instance is created and its values set
         // in order to call the update(config) method.
         Promise.resolve().then(() => {
-            computeConfigAndUpdate = createConfigWatcher(vm, wireDef, updateConnectorConfig);
+            // there is a special case: when all the config params are undefined, the config on the
+            // wire adapter should not be called until one of them changes.
+            const initialConfig = configCallback(component);
+            const hasValidConfig = Object.keys(initialConfig).some(
+                key => !isUndefined(initialConfig[key])
+            );
+
+            if (hasValidConfig) {
+                // fast lane, no extra call in the stack.
+                computeConfigAndUpdate = createConfigWatcher(vm, wireDef, updateConnectorConfig);
+            } else {
+                let callable: any = () => {
+                    callable = updateConnectorConfig;
+                };
+                // In this case all the config was undefined, still, we need to add the reactiveObserver(computeConfig)
+                // but we can't do one without the other, thus this extra function which introduces a level of
+                // indirection to callable, which the first time that is call, skip calling the update.
+                computeConfigAndUpdate = createConfigWatcher(vm, wireDef, config => {
+                    callable(config);
+                });
+            }
 
             computeConfigAndUpdate();
         });
