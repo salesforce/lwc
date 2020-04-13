@@ -91,11 +91,12 @@ export interface WireAdapterConstructor {
     new (callback: dataCallback): WireAdapter;
 }
 
-function isEmptyOrValidConfig(config: Record<string, any>): boolean {
-    const configKeys = Object.keys(config);
-    const hasValidConfig = configKeys.some(key => !isUndefined(config[key]));
+function isEmptyConfig(config: Record<string, any>): boolean {
+    return Object.keys(config).length === 0;
+}
 
-    return configKeys.length === 0 || hasValidConfig;
+function isValidConfig(config: Record<string, any>): boolean {
+    return Object.keys(config).some(key => !isUndefined(config[key]));
 }
 
 export class WireAdapter {
@@ -196,7 +197,7 @@ export class WireAdapter {
             // Note: In the legacy adapters with static config, this check is not enforced, they always get called.
             // Ex: @wire(foo, { bar: undefined })
             // With this functionality, adapters with static and dynamic($) parameters will be treated the same.
-            if (!isEmptyOrValidConfig(config)) {
+            if (!(isEmptyConfig(config) || isValidConfig(config))) {
                 return;
             }
         }
