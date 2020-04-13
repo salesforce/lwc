@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ValueChangedEvent } from './value-changed-event';
+import { isUndefined } from '@lwc/shared';
 
 const { freeze, defineProperty, isExtensible } = Object;
 
@@ -90,6 +91,13 @@ export interface WireAdapterConstructor {
     new (callback: dataCallback): WireAdapter;
 }
 
+function isEmptyOrValidConfig(config: Record<string, any>): boolean {
+    const configKeys = Object.keys(config);
+    const hasValidConfig = configKeys.some(key => !isUndefined(config[key]));
+
+    return configKeys.length === 0 || hasValidConfig;
+}
+
 export class WireAdapter {
     private callback: dataCallback;
     private readonly wiredElementHost: EventTarget;
@@ -116,6 +124,7 @@ export class WireAdapter {
      *
      */
     private currentConfig?: ConfigListenerArgument;
+    private isFirstUpdate: boolean = true;
 
     constructor(callback: dataCallback) {
         this.callback = callback;
@@ -179,6 +188,19 @@ export class WireAdapter {
     protected eventTarget: WireEventTarget;
 
     update(config: Record<string, any>) {
+        if (this.isFirstUpdate) {
+            // this is a special case for legacy wire adapters: when all the config params are undefined,
+            // the config on the wire adapter should not be called until one of them changes.
+            this.isFirstUpdate = false;
+
+            // Note: In the legacy adapters with static config, this check is not enforced, they always get called.
+            // Ex: @wire(foo, { bar: undefined })
+            // With this functionality, adapters with static and dynamic($) parameters will be treated the same.
+            if (!isEmptyOrValidConfig(config)) {
+                return;
+            }
+        }
+
         this.currentConfig = config;
         forEach.call(this.configuring, listener => {
             listener.call(undefined, config);
