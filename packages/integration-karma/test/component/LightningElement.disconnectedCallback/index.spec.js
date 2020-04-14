@@ -7,9 +7,9 @@ import DualTemplate from 'x/dualTemplate';
 import ExplicitRender from 'x/explicitRender';
 
 function testDisconnectSlot(name, fn) {
-    it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, done => {
+    it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, (done) => {
         const elm = createElement('x-test', { is: Test });
-        elm.disconnect = function(context) {
+        elm.disconnect = function (context) {
             expect(context instanceof Test).toBe(true);
             done();
         };
@@ -19,18 +19,18 @@ function testDisconnectSlot(name, fn) {
 }
 
 describe('disconnectedCallback should be invoked for Node APIs', () => {
-    testDisconnectSlot('Node.removeChild', elm => {
+    testDisconnectSlot('Node.removeChild', (elm) => {
         document.body.appendChild(elm);
         document.body.removeChild(elm);
     });
 
-    testDisconnectSlot('Node.replaceChild', elm => {
+    testDisconnectSlot('Node.replaceChild', (elm) => {
         const newChild = document.createElement('div');
         document.body.appendChild(elm);
         document.body.replaceChild(newChild, elm);
     });
 
-    testDisconnectSlot('Node.appendChild', elm => {
+    testDisconnectSlot('Node.appendChild', (elm) => {
         const sibling = document.createElement('div');
         document.body.appendChild(elm);
         document.body.appendChild(sibling);
@@ -38,7 +38,7 @@ describe('disconnectedCallback should be invoked for Node APIs', () => {
         sibling.appendChild(elm);
     });
 
-    testDisconnectSlot('Node.insertBefore', elm => {
+    testDisconnectSlot('Node.insertBefore', (elm) => {
         const container = document.createElement('div');
         document.body.appendChild(elm);
         document.body.appendChild(container);
@@ -51,18 +51,18 @@ describe('disconnectedCallback should be invoked for Node APIs', () => {
 });
 
 xdescribe('#1102 - disconnectedCallback should be invoked for ChildNode APIs', () => {
-    testDisconnectSlot('ChildNode.remove', elm => {
+    testDisconnectSlot('ChildNode.remove', (elm) => {
         document.body.appendChild(elm);
         elm.remove();
     });
 
-    testDisconnectSlot('ChildNode.replaceWith', elm => {
+    testDisconnectSlot('ChildNode.replaceWith', (elm) => {
         const newChild = document.createElement('div');
         document.body.appendChild(elm);
         elm.replaceWith(newChild);
     });
 
-    testDisconnectSlot('ChildNode.after', elm => {
+    testDisconnectSlot('ChildNode.after', (elm) => {
         const container = document.createElement('div');
         document.body.appendChild(elm);
         document.body.appendChild(container);
@@ -72,7 +72,7 @@ xdescribe('#1102 - disconnectedCallback should be invoked for ChildNode APIs', (
         p.after(elm);
     });
 
-    testDisconnectSlot('ChildNode.before', elm => {
+    testDisconnectSlot('ChildNode.before', (elm) => {
         const container = document.createElement('div');
         document.body.appendChild(elm);
         document.body.appendChild(container);

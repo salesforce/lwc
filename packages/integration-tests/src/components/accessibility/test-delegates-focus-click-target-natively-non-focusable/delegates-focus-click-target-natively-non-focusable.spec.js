@@ -14,7 +14,7 @@ describe('when the click target is natively non-focusable', () => {
     });
 
     it('should apply focus to natively focusable parent (button) when click target is custom element', () => {
-        const input = browser.$(function() {
+        const input = browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-click-target-natively-non-focusable')
                 .shadowRoot.querySelector('.head');
@@ -22,7 +22,7 @@ describe('when the click target is natively non-focusable', () => {
         input.click();
 
         // Click on the custom element wrapped by the button
-        const child = browser.$(function() {
+        const child = browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-click-target-natively-non-focusable')
                 .shadowRoot.querySelector('integration-parent')
@@ -30,7 +30,7 @@ describe('when the click target is natively non-focusable', () => {
         });
         child.click();
 
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             return document
                 .activeElement.shadowRoot.activeElement.shadowRoot.activeElement.className;
         });
@@ -40,7 +40,7 @@ describe('when the click target is natively non-focusable', () => {
     });
 
     it('should apply focus to natively focusable parent (button) when click target is span element', () => {
-        const input = browser.$(function() {
+        const input = browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-click-target-natively-non-focusable')
                 .shadowRoot.querySelector('.head');
@@ -48,7 +48,7 @@ describe('when the click target is natively non-focusable', () => {
         input.click();
 
         // Click on the span wrapped by the button
-        const span = browser.$(function() {
+        const span = browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-click-target-natively-non-focusable')
                 .shadowRoot.querySelector('integration-parent')
@@ -56,7 +56,7 @@ describe('when the click target is natively non-focusable', () => {
         });
         span.click();
 
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             return document
                 .activeElement.shadowRoot.activeElement.shadowRoot.activeElement.className;
         });

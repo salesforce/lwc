@@ -27,7 +27,7 @@ describe('rollup plugin lwc-minify', () => {
 
         expect(result.map).not.toBeNull();
 
-        await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
+        await SourceMapConsumer.with(result!.map, null, (sourceMapConsumer) => {
             const commentInOutputPosition = sourceMapConsumer.generatedPositionFor({
                 line: 2,
                 column: 0,

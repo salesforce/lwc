@@ -58,7 +58,7 @@ describe('events', () => {
 
             class MyComponent extends LightningElement {
                 renderedCallback() {
-                    this.template.addEventListener('click', event => {
+                    this.template.addEventListener('click', (event) => {
                         event.stopPropagation();
                     });
                 }
@@ -179,7 +179,7 @@ describe('events', () => {
             elm.setAttribute('data-target', 'x-root');
             const divWithClickHandler = document.createElement('div');
             let target;
-            divWithClickHandler.addEventListener('click', function(event) {
+            divWithClickHandler.addEventListener('click', function (event) {
                 target = event.target;
             });
             divWithClickHandler.appendChild(elm);
@@ -204,7 +204,7 @@ describe('events', () => {
             `);
 
             let target;
-            document.addEventListener('click', function(event) {
+            document.addEventListener('click', function (event) {
                 target = event.target;
             });
             const elm = createElement('x-root', { is: Root });
@@ -297,7 +297,7 @@ describe('events', () => {
 
             class Root extends LightningElement {
                 renderedCallback() {
-                    this.template.addEventListener('click', event => {
+                    this.template.addEventListener('click', (event) => {
                         target = event.target;
                     });
                     this.template.querySelector('.container').innerHTML = `<span><a></a></span>`;
@@ -331,7 +331,7 @@ describe('events', () => {
                 }
                 renderedCallback() {
                     let domEvent;
-                    this.addEventListener('change', e => {
+                    this.addEventListener('change', (e) => {
                         domEvent = e;
                         expect(e.target).toBe(this.template.host);
                     });
@@ -515,7 +515,7 @@ describe('events', () => {
             let target;
             class Root extends LightningElement {
                 connectedCallback() {
-                    this.template.addEventListener('bubblesnotcomposed', evt => {
+                    this.template.addEventListener('bubblesnotcomposed', (evt) => {
                         listenerCalled = true;
                         target = evt.target;
                     });
@@ -556,7 +556,7 @@ describe('events', () => {
         it('Issue#941: an object type EventListener works on standard html nodes outside custom element', () => {
             let target;
             const eventListener = {
-                handleEvent: function(evt) {
+                handleEvent: function (evt) {
                     expect(this).toBe(eventListener);
                     target = evt.target;
                 },
@@ -583,7 +583,7 @@ describe('events', () => {
                 renderedCallback() {
                     const button = this.template.querySelector('button');
                     const eventListener = {
-                        handleEvent: function(evt) {
+                        handleEvent: function (evt) {
                             expect(this).toBe(eventListener);
                             expect(evt.target).toBe(button);
                         },

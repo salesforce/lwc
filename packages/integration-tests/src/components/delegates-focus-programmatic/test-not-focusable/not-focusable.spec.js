@@ -13,21 +13,21 @@ describe('when there are no focusable elements in the shadow', () => {
         browser.url(URL);
     });
 
-    it('should not change the currently focused element', function() {
-        const first = browser.$(function() {
+    it('should not change the currently focused element', function () {
+        const first = browser.$(function () {
             return document
                 .querySelector('integration-not-focusable')
                 .shadowRoot.querySelector('.first');
         });
         first.click();
 
-        browser.execute(function() {
+        browser.execute(function () {
             var container = document.querySelector('integration-not-focusable');
             var child = container.shadowRoot.querySelector('integration-child');
             child.focus();
         });
 
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             return document.activeElement.shadowRoot.activeElement.className;
         });
         assert.equal(className, 'first');

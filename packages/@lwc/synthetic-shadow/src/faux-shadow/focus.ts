@@ -65,7 +65,7 @@ const FocusableSelector = `
 const formElementTagNames = new Set(['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA']);
 
 function filterSequentiallyFocusableElements(elements: Element[]): Element[] {
-    return elements.filter(element => {
+    return elements.filter((element) => {
         if (hasAttribute.call(element, 'tabindex')) {
             // Even though LWC only supports tabindex values of 0 or -1,
             // passing through elements with tabindex="0" is a tighter criteria

@@ -10,7 +10,7 @@ if (process.env.COMPAT !== true) {
         let child;
         let eventTargetAtBody;
         let container;
-        const listener = evt => {
+        const listener = (evt) => {
             eventTargetAtBody = evt.target;
         };
         beforeEach(() => {
@@ -29,7 +29,7 @@ if (process.env.COMPAT !== true) {
         describe('composed:false', () => {
             it('event dispatched at root custom element', () => {
                 let targetAtSource;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtSource = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true });
@@ -40,12 +40,12 @@ if (process.env.COMPAT !== true) {
 
             it('event dispatched inside root custom element', () => {
                 let targetAtParent;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtParent = evt.target;
                 });
 
                 let targetAtContainer;
-                container.addEventListener('test', evt => {
+                container.addEventListener('test', (evt) => {
                     targetAtContainer = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true });
@@ -62,12 +62,12 @@ if (process.env.COMPAT !== true) {
 
             it('event dispatched inside nested custom element', () => {
                 let targetAtParent;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtParent = evt.target;
                 });
 
                 let targetAtContainer;
-                container.addEventListener('test', evt => {
+                container.addEventListener('test', (evt) => {
                     targetAtContainer = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true });
@@ -84,7 +84,7 @@ if (process.env.COMPAT !== true) {
         describe('composed:true', () => {
             it('event dispatched at root custom element', () => {
                 let targetAtSource;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtSource = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true, composed: true });
@@ -95,12 +95,12 @@ if (process.env.COMPAT !== true) {
 
             it('event dispatched inside root custom element', () => {
                 let targetAtParent;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtParent = evt.target;
                 });
 
                 let targetAtContainer;
-                container.addEventListener('test', evt => {
+                container.addEventListener('test', (evt) => {
                     targetAtContainer = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true, composed: true });
@@ -117,12 +117,12 @@ if (process.env.COMPAT !== true) {
 
             it('event dispatched inside nested custom element', () => {
                 let targetAtParent;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtParent = evt.target;
                 });
 
                 let targetAtContainer;
-                container.addEventListener('test', evt => {
+                container.addEventListener('test', (evt) => {
                     targetAtContainer = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true, composed: true });
@@ -143,10 +143,10 @@ if (process.env.COMPAT !== true) {
         let eventTargetAtBody;
         let container;
         let lwcParent;
-        const listener = evt => {
+        const listener = (evt) => {
             eventTargetAtBody = evt.target;
         };
-        beforeEach(done => {
+        beforeEach((done) => {
             parent = NativeShadowParent();
             child = NativeShadowChild();
             container = parent.shadowRoot.querySelector('div');
@@ -171,7 +171,7 @@ if (process.env.COMPAT !== true) {
         describe('composed:false', () => {
             it('event dispatched at root custom element', () => {
                 let targetAtSource;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtSource = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true });
@@ -185,12 +185,12 @@ if (process.env.COMPAT !== true) {
 
             it('event dispatched inside root custom element', () => {
                 let targetAtParent;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtParent = evt.target;
                 });
 
                 let targetAtContainer;
-                container.addEventListener('test', evt => {
+                container.addEventListener('test', (evt) => {
                     targetAtContainer = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true });
@@ -207,12 +207,12 @@ if (process.env.COMPAT !== true) {
 
             it('event dispatched inside nested custom element', () => {
                 let targetAtParent;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtParent = evt.target;
                 });
 
                 let targetAtContainer;
-                container.addEventListener('test', evt => {
+                container.addEventListener('test', (evt) => {
                     targetAtContainer = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true });
@@ -229,7 +229,7 @@ if (process.env.COMPAT !== true) {
         describe('composed:true', () => {
             it('event dispatched at root custom element', () => {
                 let targetAtSource;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtSource = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true, composed: true });
@@ -240,12 +240,12 @@ if (process.env.COMPAT !== true) {
 
             it('event dispatched inside root custom element', () => {
                 let targetAtParent;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtParent = evt.target;
                 });
 
                 let targetAtContainer;
-                container.addEventListener('test', evt => {
+                container.addEventListener('test', (evt) => {
                     targetAtContainer = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true, composed: true });
@@ -262,12 +262,12 @@ if (process.env.COMPAT !== true) {
 
             it('event dispatched inside nested custom element', () => {
                 let targetAtParent;
-                parent.addEventListener('test', evt => {
+                parent.addEventListener('test', (evt) => {
                     targetAtParent = evt.target;
                 });
 
                 let targetAtContainer;
-                container.addEventListener('test', evt => {
+                container.addEventListener('test', (evt) => {
                     targetAtContainer = evt.target;
                 });
                 const event = new CustomEvent('test', { bubbles: true, composed: true });

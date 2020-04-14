@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-window.TestUtils = (function(lwc, jasmine, beforeAll) {
+window.TestUtils = (function (lwc, jasmine, beforeAll) {
     function pass() {
         return {
             pass: true,
@@ -33,26 +33,26 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         };
 
         window.console = {
-            log: function() {
+            log: function () {
                 calls.log.push(Array.prototype.slice.call(arguments));
             },
-            warn: function() {
+            warn: function () {
                 calls.warn.push(Array.prototype.slice.call(arguments));
             },
-            error: function() {
+            error: function () {
                 calls.error.push(Array.prototype.slice.call(arguments));
             },
-            group: function() {
+            group: function () {
                 calls.group.push(Array.prototype.slice.call(arguments));
             },
-            groupEnd: function() {
+            groupEnd: function () {
                 calls.groupEnd.push(Array.prototype.slice.call(arguments));
             },
         };
 
         return {
             calls: calls,
-            reset: function() {
+            reset: function () {
                 window.console = originalConsole;
             },
         };
@@ -76,7 +76,7 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
 
                     var callsArgs = spy.calls[internalMethodName || methodName];
                     var formattedCalls = callsArgs
-                        .map(function(arg) {
+                        .map(function (arg) {
                             return '"' + formatConsoleCall(arg) + '"';
                         })
                         .join(', ');
@@ -88,7 +88,7 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
                     }
                     return {
                         pass: false,
-                        message: function() {
+                        message: function () {
                             return 'Expect no message but received:\n' + formattedCalls;
                         },
                     };
@@ -123,7 +123,7 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
 
                     var callsArgs = spy.calls[internalMethodName || methodName];
                     var formattedCalls = callsArgs
-                        .map(function(callArgs) {
+                        .map(function (callArgs) {
                             return '"' + formatConsoleCall(callArgs) + '"';
                         })
                         .join(', ');
@@ -188,7 +188,7 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         toLogErrorDev: consoleDevMatcherFactory('error'),
         toThrowErrorDev: function toThrowErrorDev() {
             return {
-                compare: function(actual, expectedErrorCtor, expectedMessage) {
+                compare: function (actual, expectedErrorCtor, expectedMessage) {
                     function matchMessage(message) {
                         if (typeof expectedMessage === 'string') {
                             return message === expectedMessage;
@@ -267,7 +267,7 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         },
     };
 
-    beforeAll(function() {
+    beforeAll(function () {
         jasmine.addMatchers(customMatchers);
     });
 
@@ -333,7 +333,7 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
     // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposed. This method
     // filters this node.
     function getHostChildNodes(host) {
-        return Array.prototype.slice.call(host.childNodes).filter(function(n) {
+        return Array.prototype.slice.call(host.childNodes).filter(function (n) {
             return !(n.nodeType === Node.COMMENT_NODE && n.tagName.startsWith('#shadow-root'));
         });
     }

@@ -9,7 +9,7 @@ import rollupPluginReplace from '@rollup/plugin-replace';
 
 import { NormalizedCompileOptions } from '../options';
 
-export default function({ options }: { options: NormalizedCompileOptions }): Plugin {
+export default function ({ options }: { options: NormalizedCompileOptions }): Plugin {
     const { env } = options.outputConfig;
 
     const patterns: { [pattern: string]: string } = {};

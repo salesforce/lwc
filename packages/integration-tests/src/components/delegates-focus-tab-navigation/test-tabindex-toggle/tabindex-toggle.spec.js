@@ -12,8 +12,8 @@ describe('Tab navigation without tabindex', () => {
         browser.url(URL);
     });
 
-    it('should support tabindex toggling', function() {
-        const secondOutside = browser.$(function() {
+    it('should support tabindex toggling', function () {
+        const secondOutside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-toggle')
                 .shadowRoot.querySelector('.second-outside');
@@ -21,7 +21,7 @@ describe('Tab navigation without tabindex', () => {
         secondOutside.click();
         browser.keys(['Tab']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
@@ -30,7 +30,7 @@ describe('Tab navigation without tabindex', () => {
         assert.equal(className, 'first-inside');
 
         // Toggle the tabindex <x-child tabindex="-1">
-        const toggle = browser.$(function() {
+        const toggle = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-toggle')
                 .shadowRoot.querySelector('.toggle');
@@ -40,7 +40,7 @@ describe('Tab navigation without tabindex', () => {
         secondOutside.click();
         browser.keys(['Tab']);
 
-        className = browser.execute(function() {
+        className = browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
@@ -53,7 +53,7 @@ describe('Tab navigation without tabindex', () => {
         secondOutside.click();
         browser.keys(['Tab']);
 
-        className = browser.execute(function() {
+        className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;

@@ -12,9 +12,9 @@ describe('Delegates focus', () => {
         browser.url(URL);
     });
 
-    it('should focus the input when clicked', function() {
+    it('should focus the input when clicked', function () {
         browser
-            .$(function() {
+            .$(function () {
                 return document
                     .querySelector('integration-shift-tab-into-negative-tabindex')
                     .shadowRoot.querySelector('.bottom');
@@ -23,7 +23,7 @@ describe('Delegates focus', () => {
 
         browser.keys(['Shift', 'Tab', 'Shift']); // tab backwards over integration-child
 
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             const container = document.activeElement;
             const activeElement = container.shadowRoot.activeElement;
             return activeElement.className;

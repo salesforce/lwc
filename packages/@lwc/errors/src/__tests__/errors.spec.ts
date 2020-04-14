@@ -43,7 +43,7 @@ expect.extend({
 });
 
 function traverseErrorInfo(object, fn: (errorInfo: LWCErrorInfo, path: string) => void, path) {
-    Object.keys(object).forEach(key => {
+    Object.keys(object).forEach((key) => {
         const property = object[key];
         if (property && hasOwnProperty.call(property, 'code')) {
             fn(property as LWCErrorInfo, `${path}.${key}`);

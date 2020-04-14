@@ -32,7 +32,7 @@ function testAria(type, create) {
         });
 
         it('should transform only the aria attributes that can have idref values', () => {
-            elm.shadowRoot.querySelectorAll('li').forEach(li => {
+            elm.shadowRoot.querySelectorAll('li').forEach((li) => {
                 const ariaAttrName = li.className;
                 const id = elm.shadowRoot.querySelector('ul').getAttribute('id');
                 if (ID_REFERENCING_ARIA_ATTRS.has(ariaAttrName)) {

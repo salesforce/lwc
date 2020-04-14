@@ -49,9 +49,9 @@ const observerConfig: MutationObserverInit = { childList: true };
 const SlotChangeKey = createHiddenField<boolean>('slotchange', 'synthetic-shadow');
 
 function initSlotObserver() {
-    return new MutationObserver(mutations => {
+    return new MutationObserver((mutations) => {
         const slots: Node[] = [];
-        forEach.call(mutations, mutation => {
+        forEach.call(mutations, (mutation) => {
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
                     mutation.type === 'childList',
@@ -133,7 +133,7 @@ defineProperties(HTMLSlotElement.prototype, {
                 const nodes = flatten
                     ? getFilteredSlotFlattenNodes(this)
                     : getFilteredSlotAssignedNodes(this);
-                return ArrayFilter.call(nodes, node => node instanceof Element);
+                return ArrayFilter.call(nodes, (node) => node instanceof Element);
             } else {
                 return originalAssignedElements.apply(
                     this,

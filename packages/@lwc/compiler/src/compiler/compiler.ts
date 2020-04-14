@@ -53,7 +53,7 @@ export async function compile(options: CompileOptions): Promise<CompilerOutput> 
 }
 
 function hasError(diagnostics: CompilerDiagnostic[]) {
-    return diagnostics.some(d => {
+    return diagnostics.some((d) => {
         return d.level === DiagnosticLevel.Error || d.level === DiagnosticLevel.Fatal;
     });
 }

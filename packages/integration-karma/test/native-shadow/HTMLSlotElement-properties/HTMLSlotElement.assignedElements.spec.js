@@ -5,7 +5,7 @@ import NativeSlottedBasic from './x/NativeBasic/NativeBasic';
 function testAssignedElements(testDescription, container) {
     describe(testDescription, () => {
         let nativeSlottedBasic;
-        beforeEach(done => {
+        beforeEach((done) => {
             nativeSlottedBasic = NativeSlottedBasic();
             container.appendChild(nativeSlottedBasic);
             // Allow for portal elements to be adopted

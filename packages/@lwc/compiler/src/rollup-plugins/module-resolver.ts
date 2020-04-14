@@ -47,7 +47,8 @@ function isFirstCharacterUppercased(importee: string) {
 
 function inferExtension(fileName: string, files: BundleFiles) {
     if (!path.extname(fileName)) {
-        const ext = VALID_EXTENSIONS.find(ext => hasOwnProperty.call(files, fileName + ext)) || '';
+        const ext =
+            VALID_EXTENSIONS.find((ext) => hasOwnProperty.call(files, fileName + ext)) || '';
         return fileName + ext;
     }
     return fileName;
@@ -131,7 +132,7 @@ function getCaseIgnoredFilenameMatch(files: { [key: string]: string }, nameToMat
     );
 }
 
-export default function({ options }: { options: NormalizedCompileOptions }): Plugin {
+export default function ({ options }: { options: NormalizedCompileOptions }): Plugin {
     return {
         name: 'lwc-module-resolver',
 

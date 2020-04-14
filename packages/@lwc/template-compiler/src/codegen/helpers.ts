@@ -34,7 +34,7 @@ export function objectToAST(
     valueMapper: (key: string) => t.Expression
 ): t.ObjectExpression {
     return t.objectExpression(
-        Object.keys(obj).map(key => t.objectProperty(t.stringLiteral(key), valueMapper(key)))
+        Object.keys(obj).map((key) => t.objectProperty(t.stringLiteral(key), valueMapper(key)))
     );
 }
 
@@ -53,7 +53,7 @@ export function isSlot(element: IRElement) {
 }
 
 export function containsDynamicChildren(element: IRElement) {
-    return element.children.some(child => isElement(child) && isDynamic(child));
+    return element.children.some((child) => isElement(child) && isDynamic(child));
 }
 
 export function isDynamic(element: IRElement): boolean {
@@ -68,7 +68,7 @@ export function isDynamic(element: IRElement): boolean {
  */
 export function shouldFlatten(element: IRElement): boolean {
     return element.children.some(
-        child =>
+        (child) =>
             isElement(child) &&
             (isDynamic(child) ||
                 !!child.forEach ||
@@ -123,7 +123,7 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
             t.identifier('slots')
         );
 
-        const slotsArray = t.arrayExpression(state.slots.map(slot => t.stringLiteral(slot)));
+        const slotsArray = t.arrayExpression(state.slots.map((slot) => t.stringLiteral(slot)));
 
         const slotsMetadata = t.assignmentExpression('=', slotsProperty, slotsArray);
         metadataExpressions.push(t.expressionStatement(slotsMetadata));

@@ -21,7 +21,7 @@ module.exports = {
                 const isAssertCallExpression = sourceCode.getText(node).startsWith('assert.');
 
                 if (isAssertCallExpression) {
-                    const isGuarded = context.getAncestors().some(ancestor => {
+                    const isGuarded = context.getAncestors().some((ancestor) => {
                         return (
                             ancestor.type === 'IfStatement' &&
                             sourceCode.getText(ancestor.test) ===

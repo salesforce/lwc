@@ -22,7 +22,7 @@ const CSS_NANO_PRESET_OPTIONS = {
  * We may switch back to cssnano if/when they decide to go back to a synchronous API:
  * https://github.com/cssnano/cssnano/issues/68
  */
-export default function() {
+export default function () {
     const { plugins } = cssnanoPreset(CSS_NANO_PRESET_OPTIONS);
 
     return plugins

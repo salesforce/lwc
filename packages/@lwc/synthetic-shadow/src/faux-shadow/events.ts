@@ -183,7 +183,7 @@ function getWrappedShadowRootListener(
     }
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
-        shadowRootWrappedListener = function(event: Event) {
+        shadowRootWrappedListener = function (event: Event) {
             // * if the event is dispatched directly on the host, it is not observable from root
             // * if the event is dispatched in an element that does not belongs to the shadow and it is not composed,
             //   it is not observable from the root
@@ -223,7 +223,7 @@ function getWrappedCustomElementListener(elm: Element, listener: EventListener):
     }
     let customElementWrappedListener = customElementEventListenerMap.get(listener);
     if (isUndefined(customElementWrappedListener)) {
-        customElementWrappedListener = function(event: Event) {
+        customElementWrappedListener = function (event: Event) {
             if (isValidEventForCustomElement(event)) {
                 // all handlers on the custom element should be called with undefined 'this'
                 listener.call(elm, event);

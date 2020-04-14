@@ -8,12 +8,12 @@ const assert = require('assert');
 const URL = '/related-target';
 
 function getRootEvents() {
-    return browser.execute(function() {
+    return browser.execute(function () {
         return document.querySelector('integration-related-target').getEvents();
     }).value;
 }
 function getRootInput() {
-    return browser.$(function() {
+    return browser.$(function () {
         return document
             .querySelector('integration-related-target')
             .shadowRoot.querySelector('input');
@@ -21,7 +21,7 @@ function getRootInput() {
 }
 
 function getChildEvents() {
-    return browser.execute(function() {
+    return browser.execute(function () {
         return document
             .querySelector('integration-related-target')
             .shadowRoot.querySelector('integration-parent')
@@ -30,7 +30,7 @@ function getChildEvents() {
     }).value;
 }
 function getChildInput() {
-    return browser.$(function() {
+    return browser.$(function () {
         return document
             .querySelector('integration-related-target')
             .shadowRoot.querySelector('integration-parent')
@@ -47,7 +47,7 @@ if (process.env.COMPAT === 'false') {
         });
 
         describe('when focus moves downwards in a shadow tree', () => {
-            it('should retarget for blur', function() {
+            it('should retarget for blur', function () {
                 getRootInput().click();
                 getChildInput().click();
 
@@ -56,7 +56,7 @@ if (process.env.COMPAT === 'false') {
                 assert.strictEqual(`${type},${relatedTarget}`, 'blur,INTEGRATION-PARENT');
             });
 
-            it('should not retarget for focus', function() {
+            it('should not retarget for focus', function () {
                 getRootInput().click();
                 getChildInput().click();
 
@@ -67,7 +67,7 @@ if (process.env.COMPAT === 'false') {
         });
 
         describe('when focus moves upwards in a shadow tree', () => {
-            it('should retarget for focus', function() {
+            it('should retarget for focus', function () {
                 getChildInput().click();
                 getRootInput().click();
 
@@ -76,7 +76,7 @@ if (process.env.COMPAT === 'false') {
                 assert.strictEqual(`${type},${relatedTarget}`, 'focus,INTEGRATION-PARENT');
             });
 
-            it('should not retarget for blur', function() {
+            it('should not retarget for blur', function () {
                 getChildInput().click();
                 getRootInput().click();
 
@@ -87,10 +87,10 @@ if (process.env.COMPAT === 'false') {
         });
 
         it('should be `undefined` if the event lacks a relatedTarget getter', () => {
-            const relatedTarget = browser.execute(function() {
+            const relatedTarget = browser.execute(function () {
                 var relatedTarget = null;
                 var container = document.querySelector('integration-related-target');
-                container.addEventListener('foo', function(event) {
+                container.addEventListener('foo', function (event) {
                     relatedTarget = event.relatedTarget;
                 });
                 container.dispatchEvent(new CustomEvent('foo'));

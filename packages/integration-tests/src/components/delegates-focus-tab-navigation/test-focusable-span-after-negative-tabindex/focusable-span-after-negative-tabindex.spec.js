@@ -12,9 +12,9 @@ describe('Delegates focus', () => {
         browser.url(URL);
     });
 
-    it('should focus the input when clicked', function() {
+    it('should focus the input when clicked', function () {
         browser
-            .$(function() {
+            .$(function () {
                 return document
                     .querySelector('integration-focusable-span-after-negative-tabindex')
                     .shadowRoot.querySelector('.first');
@@ -23,7 +23,7 @@ describe('Delegates focus', () => {
 
         browser.keys(['Tab']); // tab over integration-child
 
-        const tagName = browser.execute(function() {
+        const tagName = browser.execute(function () {
             var container = document.activeElement;
             var activeElement = container.shadowRoot.activeElement;
             return activeElement.tagName;

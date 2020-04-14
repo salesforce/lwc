@@ -14,14 +14,14 @@ describe('Retarget relatedTarget', () => {
     });
 
     it('should have correct relatedTarget from slotted input', () => {
-        browser.execute(function() {
+        browser.execute(function () {
             document
                 .querySelector('integration-retarget-slotted-input-related-target')
                 .shadowRoot.querySelector('.slotted-input')
                 .focus();
         });
         browser.keys(['Shift', 'Tab', 'Shift']);
-        const indicator = browser.$(function() {
+        const indicator = browser.$(function () {
             return document
                 .querySelector('integration-retarget-slotted-input-related-target')
                 .shadowRoot.querySelector('integration-parent')

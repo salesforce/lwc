@@ -59,7 +59,7 @@ describe('watcher', () => {
             document.body.appendChild(elm);
             elm.updateRound();
 
-            return Promise.resolve().then(_ => {
+            return Promise.resolve().then((_) => {
                 // parent slotted into child, not need to rerender child
                 expect(counter).toBe(1);
             });

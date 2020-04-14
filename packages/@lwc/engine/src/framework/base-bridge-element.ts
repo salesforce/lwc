@@ -34,7 +34,7 @@ const cachedSetterByKey: Record<string, (this: HTMLElement, newValue: any) => an
 function createGetter(key: string) {
     let fn = cachedGetterByKey[key];
     if (isUndefined(fn)) {
-        fn = cachedGetterByKey[key] = function(this: HTMLElement): any {
+        fn = cachedGetterByKey[key] = function (this: HTMLElement): any {
             const vm = getAssociatedVM(this);
             const { getHook } = vm;
             return getHook(vm.component, key);
@@ -46,7 +46,7 @@ function createGetter(key: string) {
 function createSetter(key: string) {
     let fn = cachedSetterByKey[key];
     if (isUndefined(fn)) {
-        fn = cachedSetterByKey[key] = function(this: HTMLElement, newValue: any): any {
+        fn = cachedSetterByKey[key] = function (this: HTMLElement, newValue: any): any {
             const vm = getAssociatedVM(this);
             const { setHook } = vm;
             newValue = reactiveMembrane.getReadOnlyProxy(newValue);
@@ -57,7 +57,7 @@ function createSetter(key: string) {
 }
 
 function createMethodCaller(methodName: string): (...args: any[]) => any {
-    return function(this: HTMLElement): any {
+    return function (this: HTMLElement): any {
         const vm = getAssociatedVM(this);
         const { callHook, component } = vm;
         const fn = (component as any)[methodName];
@@ -88,7 +88,7 @@ export function HTMLBridgeElementFactory(
     if (isFunction(SuperClass)) {
         HTMLBridgeElement = class extends SuperClass {};
     } else {
-        HTMLBridgeElement = function() {
+        HTMLBridgeElement = function () {
             // Bridge classes are not supposed to be instantiated directly in
             // browsers that do not support web components.
             throw new TypeError('Illegal constructor');

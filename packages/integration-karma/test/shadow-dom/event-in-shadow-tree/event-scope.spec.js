@@ -17,7 +17,7 @@ function dispatchEventWithLog(target, event) {
     for (var node = target; node; node = node.parentNode || node.host) {
         node.addEventListener(
             event.type,
-            function(event) {
+            function (event) {
                 log.push([this, event.target, event.composedPath()]);
             }.bind(node)
         );

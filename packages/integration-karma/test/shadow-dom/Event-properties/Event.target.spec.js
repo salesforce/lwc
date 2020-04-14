@@ -4,7 +4,7 @@ import XEventHandlingParent from 'x/eventHandlingParent';
 import XDocumentEventListener from 'x/documentEventListener';
 import XParentWithDynamicChild from 'x/parentWithDynamicChild';
 
-it('Async event target should be root node', function() {
+it('Async event target should be root node', function () {
     const elm = createElement('x-async-event-target', { is: XAsyncEventTarget });
     document.body.appendChild(elm);
     const triggerElm = elm.shadowRoot.querySelector('x-child');
@@ -15,7 +15,7 @@ it('Async event target should be root node', function() {
     });
 });
 
-it('parent should receive composed event with correct target', function() {
+it('parent should receive composed event with correct target', function () {
     const elm = createElement('x-parent', { is: XEventHandlingParent });
     document.body.appendChild(elm);
     const child = elm.shadowRoot.querySelector('x-event-dispatching-child');
@@ -28,7 +28,7 @@ it('parent should receive composed event with correct target', function() {
 
 describe('event.target on document event listener', () => {
     let actual;
-    const listener = evt => {
+    const listener = (evt) => {
         actual = evt.target.tagName.toLowerCase();
     };
     beforeAll(() => {
@@ -37,7 +37,7 @@ describe('event.target on document event listener', () => {
     afterAll(() => {
         document.removeEventListener('click', listener);
     });
-    it('should return correct target', function() {
+    it('should return correct target', function () {
         const elm = createElement('x-document-event-listener', { is: XDocumentEventListener });
         document.body.appendChild(elm);
         elm.shadowRoot.querySelector('button').click();
@@ -61,8 +61,8 @@ describe('should not retarget event', () => {
             child = elm.shadowRoot.querySelector('x-child-with-out-lwc-dom-manual');
             originalTarget = child.shadowRoot.querySelector('span');
         });
-        it('when original target node is not keyed and event is accessed async (W-6586380)', done => {
-            elm.eventListener = evt => {
+        it('when original target node is not keyed and event is accessed async (W-6586380)', (done) => {
+            elm.eventListener = (evt) => {
                 expect(evt.currentTarget).toBe(elm.shadowRoot.querySelector('div'));
                 expect(evt.target).toBe(child);
                 setTimeout(() => {
@@ -78,7 +78,7 @@ describe('should not retarget event', () => {
         describe('received at a global listener', () => {
             let actualCurrentTarget;
             let actualTarget;
-            const globalListener = evt => {
+            const globalListener = (evt) => {
                 actualCurrentTarget = evt.currentTarget;
                 actualTarget = evt.target;
             };

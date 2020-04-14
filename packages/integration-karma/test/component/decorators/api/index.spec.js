@@ -48,7 +48,7 @@ describe('properties', () => {
         document.body.appendChild(elm);
 
         expect(() => {
-            elm.mutateCmp(cmp => {
+            elm.mutateCmp((cmp) => {
                 cmp.publicProp.x = 1;
             });
         }).toThrowError();

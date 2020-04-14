@@ -40,7 +40,7 @@ export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
             // context is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
             filtered = ArrayFilter.call(
                 unfilteredNodes,
-                elm => getNodeNearestOwnerKey(elm) === ownerKey
+                (elm) => getNodeNearestOwnerKey(elm) === ownerKey
             );
         }
     } else if (context instanceof HTMLBodyElement) {
@@ -48,7 +48,7 @@ export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
         filtered = ArrayFilter.call(
             unfilteredNodes,
             // TODO [#1222]: remove global bypass
-            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
+            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
         );
     } else {
         // `context` is outside the lwc boundary, return unfiltered list.

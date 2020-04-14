@@ -12,8 +12,8 @@ describe('Internal tab navigation when tabindex -1', () => {
         browser.url(URL);
     });
 
-    it('should navigate (forward)', function() {
-        const secondInside = browser.$(function() {
+    it('should navigate (forward)', function () {
+        const secondInside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-internal')
                 .shadowRoot.querySelector('integration-child')
@@ -22,7 +22,7 @@ describe('Internal tab navigation when tabindex -1', () => {
         secondInside.click();
         browser.keys(['Tab']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
@@ -32,8 +32,8 @@ describe('Internal tab navigation when tabindex -1', () => {
         assert.equal(className, 'third-inside');
     });
 
-    it('should navigate (backward)', function() {
-        const secondInside = browser.$(function() {
+    it('should navigate (backward)', function () {
+        const secondInside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-internal')
                 .shadowRoot.querySelector('integration-child')
@@ -42,7 +42,7 @@ describe('Internal tab navigation when tabindex -1', () => {
         secondInside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;

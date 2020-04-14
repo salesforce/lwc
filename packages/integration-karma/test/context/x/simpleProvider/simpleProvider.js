@@ -94,5 +94,5 @@ export function setCustomContext(target, newValue) {
     const contextData = getContextData(target);
     // in this example, all consumers get the same context value
     contextData.value = newValue;
-    contextData.consumers.forEach(consumer => consumer.provide({ value: newValue }));
+    contextData.consumers.forEach((consumer) => consumer.provide({ value: newValue }));
 }

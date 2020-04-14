@@ -10,7 +10,7 @@ function mockRenderApi() {
     let id = 0;
     const calls = [];
 
-    const mock = name => (...args) => {
+    const mock = (name) => (...args) => {
         id++;
 
         calls.push([`${name}#${id}`, args]);

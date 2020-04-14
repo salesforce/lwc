@@ -101,7 +101,7 @@ function getCapabilities() {
     const userBrowsers = args.browsers;
 
     if (userBrowsers) {
-        filtered = filtered.filter(b => {
+        filtered = filtered.filter((b) => {
             return userBrowsers.includes(b.commonName);
         });
 
@@ -112,7 +112,7 @@ function getCapabilities() {
         }
     }
 
-    return filtered.map(capability => {
+    return filtered.map((capability) => {
         return {
             ...capability,
             tunnelIdentifier: tunnelId,

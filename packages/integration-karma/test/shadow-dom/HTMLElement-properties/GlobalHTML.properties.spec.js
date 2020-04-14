@@ -64,7 +64,7 @@ describe('global HTML Properties', () => {
         { prop: 'title', value: 'title' },
     ];
 
-    cases.forEach(testCase => {
+    cases.forEach((testCase) => {
         const { prop, value } = testCase;
         describe(`#${prop}`, () => {
             if (prop !== 'hidden') {
@@ -141,15 +141,15 @@ describe('global HTML Properties', () => {
     });
 });
 
-describe('#tabIndex', function() {
-    it('should have a valid value during connectedCallback', function() {
+describe('#tabIndex', function () {
+    it('should have a valid value during connectedCallback', function () {
         const elm = createElement('x-foo', { is: TabIndexTester });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
         expect(elm.tabIndexInConnectedCallback).toBe(3);
     });
 
-    it('should have a valid value after initial render', function() {
+    it('should have a valid value after initial render', function () {
         const elm = createElement('x-foo', { is: TabIndexTester });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
@@ -157,7 +157,7 @@ describe('#tabIndex', function() {
         expect(elm.getTabIndex()).toBe(3);
     });
 
-    it('should set tabindex correctly', function() {
+    it('should set tabindex correctly', function () {
         const elm = createElement('x-foo', { is: TabIndexSetInConnectedCallback });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
@@ -166,7 +166,7 @@ describe('#tabIndex', function() {
         expect(elm.getTabIndex()).toBe(2);
     });
 
-    it('should not trigger render cycle', function() {
+    it('should not trigger render cycle', function () {
         const elm = createElement('x-foo', { is: TabIndexSetInConnectedCallback });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
@@ -175,7 +175,7 @@ describe('#tabIndex', function() {
         });
     });
 
-    it('should allow parent component to overwrite internally set tabIndex', function() {
+    it('should allow parent component to overwrite internally set tabIndex', function () {
         const elm = createElement('x-foo', { is: TabIndexSetInConnectedCallback });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
@@ -185,14 +185,14 @@ describe('#tabIndex', function() {
         expect(elm.getTabIndex()).toBe(4);
     });
 
-    it('should throw if setting tabIndex during render', function() {
+    it('should throw if setting tabIndex during render', function () {
         const elm = createElement('x-foo', { is: TabIndexSetInRender });
         expect(() => {
             document.body.appendChild(elm);
         }).toThrowErrorDev(Error, /render\(\) method has side effects on the state of/);
     });
 
-    it('should throw if setting tabIndex during construction', function() {
+    it('should throw if setting tabIndex during construction', function () {
         expect(() => {
             createElement('x-foo', { is: TabIndexSetInConstructor });
         }).toThrowErrorDev(Error, /The result must not have attributes./);

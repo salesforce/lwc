@@ -21,7 +21,7 @@ const { DecoratorErrors } = require('@lwc/errors');
 const DECORATOR_TRANSFORMS = [api, wire, track];
 
 function isLwcDecoratorName(name) {
-    return DECORATOR_TRANSFORMS.some(transform => transform.name === name);
+    return DECORATOR_TRANSFORMS.some((transform) => transform.name === name);
 }
 
 /** Returns a list of all the references to an identifier */
@@ -52,7 +52,7 @@ function getLwcDecorators(importSpecifiers) {
         .reduce((acc, { name, path }) => {
             // Get a list of all the  local references
             const local = path.get('imported');
-            const references = getReferences(local).map(reference => ({
+            const references = getReferences(local).map((reference) => ({
                 name,
                 reference,
             }));
@@ -94,7 +94,7 @@ function getLwcDecorators(importSpecifiers) {
 /** Group decorator per class */
 function groupDecorator(decorators) {
     return decorators.reduce((acc, decorator) => {
-        const classPath = decorator.path.findParent(node => node.isClass());
+        const classPath = decorator.path.findParent((node) => node.isClass());
 
         if (acc.has(classPath)) {
             acc.set(classPath, [...acc.get(classPath), decorator]);
@@ -180,7 +180,7 @@ function decorators({ types: t }) {
         },
 
         Decorator(path) {
-            const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map(transform => transform.name);
+            const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name);
 
             throw generateError(path.parentPath, {
                 errorInfo: DecoratorErrors.INVALID_DECORATOR,

@@ -56,7 +56,7 @@ describe('Composed events', () => {
 });
 
 describe('Events on Custom Elements', () => {
-    it('attaches click event handler to custom element from within (wc-compat)', function() {
+    it('attaches click event handler to custom element from within (wc-compat)', function () {
         let cmp;
         const result = [];
         function clicked(ev) {
@@ -85,7 +85,7 @@ describe('Events on Custom Elements', () => {
         expect(result).toHaveLength(1);
     });
 
-    it('should dispatch internal listeners first', function() {
+    it('should dispatch internal listeners first', function () {
         let cmp;
         const result = [];
         function clicked1() {
@@ -118,7 +118,7 @@ describe('Events on Custom Elements', () => {
         expect(result).toEqual([1, 2]);
     });
 
-    it('should preserve behavior of stopimmidiatepropagation() for internal listeners', function() {
+    it('should preserve behavior of stopimmidiatepropagation() for internal listeners', function () {
         let cmp;
         const result = [];
         function clicked1(ev) {
@@ -152,7 +152,7 @@ describe('Events on Custom Elements', () => {
         expect(result).toEqual([1]);
     });
 
-    it('should preserve behavior of stopimmidiatepropagation() for external listeners', function() {
+    it('should preserve behavior of stopimmidiatepropagation() for external listeners', function () {
         let cmp;
         const result = [];
         function clicked1(ev) {
@@ -186,7 +186,7 @@ describe('Events on Custom Elements', () => {
         expect(result).toEqual([1]);
     });
 
-    it('attaches custom event handler to custom element from within (wc-compat)', function() {
+    it('attaches custom event handler to custom element from within (wc-compat)', function () {
         let cmp;
         const result = [];
         function tested(ev) {
@@ -215,7 +215,7 @@ describe('Events on Custom Elements', () => {
         expect(result).toHaveLength(1);
     });
 
-    it('should expose template as context to the event handler when defined from within (wc-compat)', function() {
+    it('should expose template as context to the event handler when defined from within (wc-compat)', function () {
         let cmp;
         const result = [];
         function clicked() {
@@ -321,7 +321,7 @@ describe('Events on Custom Elements', () => {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should add event listeners in constructor when created via createElement', function() {
+    it('should add event listeners in constructor when created via createElement', function () {
         let count = 0;
 
         const html = compileTemplate(`
@@ -332,7 +332,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends LightningElement {
             constructor() {
                 super();
-                this.template.addEventListener('c-event', function() {
+                this.template.addEventListener('c-event', function () {
                     count += 1;
                 });
             }
@@ -354,7 +354,7 @@ describe('Events on Custom Elements', () => {
         expect(count).toBe(1);
     });
 
-    it('should add event listeners in connectedCallback when created via createElement', function() {
+    it('should add event listeners in connectedCallback when created via createElement', function () {
         let count = 0;
 
         const html = compileTemplate(`
@@ -364,7 +364,7 @@ describe('Events on Custom Elements', () => {
         `);
         class MyComponent extends LightningElement {
             connectedCallback() {
-                this.template.addEventListener('c-event', function() {
+                this.template.addEventListener('c-event', function () {
                     count += 1;
                 });
             }
@@ -386,7 +386,7 @@ describe('Events on Custom Elements', () => {
         expect(count).toBe(1);
     });
 
-    it('should add event listeners in connectedCallback when created via render', function() {
+    it('should add event listeners in connectedCallback when created via render', function () {
         let count = 0;
 
         const childTmpl = compileTemplate(`
@@ -396,7 +396,7 @@ describe('Events on Custom Elements', () => {
         `);
         class MyChild extends LightningElement {
             connectedCallback() {
-                this.template.addEventListener('c-event', function() {
+                this.template.addEventListener('c-event', function () {
                     count += 1;
                 });
             }
@@ -441,7 +441,7 @@ describe('Events on Custom Elements', () => {
         expect(count).toBe(1);
     });
 
-    it('should add event listeners in constructor when created via render', function() {
+    it('should add event listeners in constructor when created via render', function () {
         let count = 0;
 
         const childTmpl = compileTemplate(`
@@ -452,7 +452,7 @@ describe('Events on Custom Elements', () => {
         class MyChild extends LightningElement {
             constructor() {
                 super();
-                this.template.addEventListener('c-event', function() {
+                this.template.addEventListener('c-event', function () {
                     count += 1;
                 });
             }
@@ -541,7 +541,7 @@ describe('Events on Custom Elements', () => {
 
         class MyComponent extends LightningElement {
             connectedCallback() {
-                this.addEventListener('click', function() {
+                this.addEventListener('click', function () {
                     expect(this).toBe(undefined);
                 });
             }
@@ -595,7 +595,7 @@ describe('Events on Custom Elements', () => {
         `);
         class MyComponent extends LightningElement {
             connectedCallback() {
-                this.addEventListener('click', function() {
+                this.addEventListener('click', function () {
                     expect(this).toBe(undefined);
                 });
             }
@@ -628,7 +628,7 @@ describe('Events on Custom Elements', () => {
         `);
         class MyComponent extends LightningElement {
             connectedCallback() {
-                this.addEventListener('click', function(evt) {
+                this.addEventListener('click', function (evt) {
                     expect(evt.target).toBe(elm);
                 });
             }
@@ -653,7 +653,7 @@ describe('Events on Custom Elements', () => {
         `);
         class MyComponent extends LightningElement {
             connectedCallback() {
-                this.addEventListener('click', function(evt) {
+                this.addEventListener('click', function (evt) {
                     expect(evt.target).toBe(elm);
                 });
             }
@@ -691,7 +691,7 @@ describe('Events on Custom Elements', () => {
                     div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
                 });
 
-                this.template.addEventListener('foo', evt => {
+                this.template.addEventListener('foo', (evt) => {
                     expect(evt.target).toBe(this.template.querySelector('div'));
                 });
             }
@@ -766,7 +766,7 @@ describe('Component events', () => {
                 this.addEventListener('click', () => {
                     this.dispatchEvent(new CustomEvent('foo'));
                 });
-                this.addEventListener('foo', evt => {
+                this.addEventListener('foo', (evt) => {
                     expect(evt.target).toBe(elm);
                 });
             }
@@ -795,7 +795,7 @@ describe('Component events', () => {
         // expect().toThrowError() is not enough in the case where an Error is thrown during event
         // dispatching. In the case of event, the only way to catch the error to add an event listener
         // at the page level.
-        const errorHandler = jest.fn(evt => evt.preventDefault());
+        const errorHandler = jest.fn((evt) => evt.preventDefault());
         window.addEventListener('error', errorHandler);
 
         const buttonEl = element.shadowRoot.querySelector('button');
@@ -821,7 +821,7 @@ describe('Shadow Root events', () => {
         `);
         class MyComponent extends LightningElement {
             connectedCallback() {
-                this.template.addEventListener('click', evt => {
+                this.template.addEventListener('click', (evt) => {
                     expect(evt.target).toBe(this.template.querySelector('div'));
                 });
             }
@@ -854,7 +854,7 @@ describe('Shadow Root events', () => {
         class MyComponent extends LightningElement {
             connectedCallback() {
                 const template = this.template;
-                this.template.addEventListener('click', function() {
+                this.template.addEventListener('click', function () {
                     expect(this).toBe(template);
                 });
             }
@@ -984,7 +984,7 @@ describe('Shadow Root events', () => {
         );
         class Child extends LightningElement {
             connectedCallback() {
-                this.template.addEventListener('click', evt => {
+                this.template.addEventListener('click', (evt) => {
                     expect(evt.target.tagName).toBe('X-GRAND-CHILD');
                     expect(evt.currentTarget).toBe(this.template);
                 });
@@ -1014,10 +1014,7 @@ describe('Shadow Root events', () => {
         const elm = createElement('x-root', { is: Root });
         document.body.appendChild(elm);
 
-        elm.shadowRoot
-            .querySelector('x-child')
-            .shadowRoot.querySelector('x-grand-child')
-            .click();
+        elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('x-grand-child').click();
     });
 
     it('should have correct target when native event gets dispatched from within shadow root event handler', () => {

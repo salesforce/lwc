@@ -1,4 +1,4 @@
-export default function() {
+export default function () {
     const child = document.createElement('x-native-child');
     const sr = child.attachShadow({ mode: 'open' });
     const h2 = document.createElement('h2');

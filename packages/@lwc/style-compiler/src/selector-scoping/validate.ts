@@ -11,7 +11,7 @@ const UNSUPPORTED_SELECTORS = new Set(['::slotted', ':root', ':host-context']);
 const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iterator:*/];
 
 function validateSelectors(root: Root) {
-    root.walk(node => {
+    root.walk((node) => {
         const { value, sourceIndex } = node;
 
         if (value) {
@@ -35,9 +35,9 @@ function validateSelectors(root: Root) {
 }
 
 function validateAttribute(root: Root) {
-    root.walkAttributes(node => {
+    root.walkAttributes((node) => {
         const { attribute: attributeName, sourceIndex } = node as Attribute;
-        const isTemplateDirective = TEMPLATE_DIRECTIVES.some(directive => {
+        const isTemplateDirective = TEMPLATE_DIRECTIVES.some((directive) => {
             return directive.test(attributeName);
         });
 

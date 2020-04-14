@@ -12,15 +12,15 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
         browser.url(URL);
     });
 
-    it('should continue delegating focus (forward)', function() {
-        const secondInside = browser.$(function() {
+    it('should continue delegating focus (forward)', function () {
+        const secondInside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero-after-inside-click')
                 .shadowRoot.querySelector('integration-child')
                 .shadowRoot.querySelector('.second-inside');
         });
         secondInside.click();
-        const secondOutside = browser.$(function() {
+        const secondOutside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero-after-inside-click')
                 .shadowRoot.querySelector('.second-outside');
@@ -29,7 +29,7 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
 
         browser.keys(['Tab']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
@@ -39,15 +39,15 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
         assert.equal(className, 'first-inside');
     });
 
-    it('should continue delegating focus (backward)', function() {
-        const secondInside = browser.$(function() {
+    it('should continue delegating focus (backward)', function () {
+        const secondInside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero-after-inside-click')
                 .shadowRoot.querySelector('integration-child')
                 .shadowRoot.querySelector('.second-inside');
         });
         secondInside.click();
-        const thirdOutside = browser.$(function() {
+        const thirdOutside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero-after-inside-click')
                 .shadowRoot.querySelector('.third-outside');
@@ -55,7 +55,7 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
         thirdOutside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;

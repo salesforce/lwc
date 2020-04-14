@@ -36,7 +36,7 @@ export default function serialize(result: postcss.LazyResult, config: Config): s
     );
     const minify = Boolean(config.outputConfig && config.outputConfig.minify);
     const useVarResolver = messages.some(isVarFunctionMessage);
-    const importedStylesheets = messages.filter(isImportMessage).map(message => message.id);
+    const importedStylesheets = messages.filter(isImportMessage).map((message) => message.id);
 
     let buffer = '';
 
@@ -83,7 +83,7 @@ function reduceTokens(tokens: Token[]): Token[] {
                 return [...acc, token];
             }
         }, [])
-        .filter(t => t.value !== '');
+        .filter((t) => t.value !== '');
 }
 
 function normalizeString(str: string) {

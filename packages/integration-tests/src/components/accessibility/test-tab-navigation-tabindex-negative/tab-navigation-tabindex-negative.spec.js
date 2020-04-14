@@ -12,8 +12,8 @@ describe('Tab navigation when tabindex -1', () => {
         browser.url(URL);
     });
 
-    it('should skip shadow (forward)', function() {
-        const secondInput = browser.$(function() {
+    it('should skip shadow (forward)', function () {
+        const secondInput = browser.$(function () {
             return document
                 .querySelector('integration-tab-navigation-tabindex-negative')
                 .shadowRoot.querySelector('.second-outside');
@@ -21,7 +21,7 @@ describe('Tab navigation when tabindex -1', () => {
         secondInput.click();
         browser.keys(['Tab']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
@@ -30,8 +30,8 @@ describe('Tab navigation when tabindex -1', () => {
         assert.equal(className, 'third-outside');
     });
 
-    it('should skip shadow (backward)', function() {
-        const thirdInput = browser.$(function() {
+    it('should skip shadow (backward)', function () {
+        const thirdInput = browser.$(function () {
             return document
                 .querySelector('integration-tab-navigation-tabindex-negative')
                 .shadowRoot.querySelector('.third-outside');
@@ -39,7 +39,7 @@ describe('Tab navigation when tabindex -1', () => {
         thirdInput.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;

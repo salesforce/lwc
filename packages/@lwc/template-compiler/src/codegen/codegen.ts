@@ -74,7 +74,7 @@ export default class CodeGen {
             const parsed = babylon.parse(src, { sourceType: 'module' });
             const inlineStylesAst = parsed.program.body;
 
-            inlineStylesAst.forEach(node => {
+            inlineStylesAst.forEach((node) => {
                 if (t.isImportDeclaration(node)) {
                     importDeclarations.push(node);
                 } else if (t.isExportDefaultDeclaration(node)) {

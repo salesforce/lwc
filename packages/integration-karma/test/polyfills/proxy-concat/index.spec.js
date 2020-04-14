@@ -74,7 +74,7 @@ it('should invoke get traps for length, 0 and 1', () => {
     // ensure consistent behavior regardless with we use the Native or the COMPAT version of Proxy.
     //    Native Proxy => ['length', '0', '1']
     //    Native Proxy => ['length', 0, 1]
-    const getKeys = getCalls.map(item => String(item[1]));
+    const getKeys = getCalls.map((item) => String(item[1]));
 
     // Instead of comparing all the items using .toEqual(), we look if specific elements are present in the accessed
     // keys. On older versions of Chrome and Firefox we are running a strange mode where the served code is COMPAT,

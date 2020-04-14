@@ -12,7 +12,7 @@ const ComponentClass = AdapterConsumer;
 const AdapterId = EchoWireAdapter;
 
 function filterCalls(echoAdapterSpy, methodType) {
-    return echoAdapterSpy.filter(call => call.method === methodType);
+    return echoAdapterSpy.filter((call) => call.method === methodType);
 }
 
 describe('wiring', () => {
@@ -184,7 +184,7 @@ describe('wiring', () => {
                 });
         });
 
-        it('should trigger component rerender when field is updated', done => {
+        it('should trigger component rerender when field is updated', (done) => {
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
@@ -257,8 +257,8 @@ describe('wired methods', () => {
 
         // No need to wait for next tick, the wire only has static config.
         const calls = filterCalls(spy, 'update');
-        const getCallByName = name => {
-            return calls.filter(call => name === call.args[0].name)[0];
+        const getCallByName = (name) => {
+            return calls.filter((call) => name === call.args[0].name)[0];
         };
 
         expect(calls.length).toBe(3);

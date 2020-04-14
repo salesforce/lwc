@@ -45,7 +45,7 @@ describe('dynamic nodes', () => {
         span.classList.add('manual-span');
         const div = elm.shadowRoot.querySelector('div');
         div.appendChild(span);
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(resolve);
         }).then(() => {
             expect(document.querySelector('span.manual-span')).toBe(null);
@@ -64,7 +64,7 @@ describe('dynamic nodes', () => {
             h2.classList.add('manual-h2');
             const div = elm.shadowRoot.querySelector('.in-the-shadow');
             div.appendChild(h2);
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 setTimeout(resolve);
             }).then(() => {
                 expect(document.querySelector('h2.manual-h2')).toBe(h2);

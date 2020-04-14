@@ -25,7 +25,7 @@ function isBindingReference(path, scope) {
     return !!(binding && binding.referencePaths.includes(path));
 }
 
-module.exports = function({ types: t }) {
+module.exports = function ({ types: t }) {
     return {
         name: 'babel-plugin-lwc-features',
         visitor: {
@@ -35,7 +35,7 @@ module.exports = function({ types: t }) {
                     const specifiers = path.node.specifiers;
 
                     // Check if we've already imported runtime flags
-                    const didImportRuntimeFlags = specifiers.some(specifier => {
+                    const didImportRuntimeFlags = specifiers.some((specifier) => {
                         return specifier.local && specifier.local.name === RUNTIME_FLAGS_IDENTIFIER;
                     });
                     if (didImportRuntimeFlags && !this.opts.prod) {

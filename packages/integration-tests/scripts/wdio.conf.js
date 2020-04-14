@@ -21,9 +21,9 @@ const suiteFolders = path.resolve(__dirname, '../', 'src/components');
         }>
     }
 */
-const suites = fs.readdirSync(suiteFolders).map(suiteName => {
+const suites = fs.readdirSync(suiteFolders).map((suiteName) => {
     const suitePath = path.resolve(suiteFolders, suiteName);
-    const specs = fs.readdirSync(suitePath).map(specFolderName => {
+    const specs = fs.readdirSync(suitePath).map((specFolderName) => {
         const testBasePath = path.basename(specFolderName).replace('test-', '');
         return {
             mount: `/${testBasePath}`,
@@ -61,7 +61,7 @@ exports.config = {
     staticServerPort: port,
     staticServerFolders: [
         { mount: '/', path: './public' },
-        ...suites.flatMap(suite => suite.specs),
+        ...suites.flatMap((suite) => suite.specs),
     ],
 
     framework: 'mocha',

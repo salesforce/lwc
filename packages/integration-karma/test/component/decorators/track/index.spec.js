@@ -11,7 +11,7 @@ it('rerenders the component when a track property is updated - literal', () => {
 
     expect(elm.shadowRoot.querySelector('.prop').textContent).toBe('0');
 
-    elm.mutateCmp(cmp => (cmp.prop = 1));
+    elm.mutateCmp((cmp) => (cmp.prop = 1));
     return Promise.resolve().then(() => {
         expect(elm.shadowRoot.querySelector('.prop').textContent).toBe('1');
     });
@@ -23,7 +23,7 @@ it('rerenders the component when a track property is updated - object', () => {
 
     expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('0');
 
-    elm.mutateCmp(cmp => (cmp.obj.value = 1));
+    elm.mutateCmp((cmp) => (cmp.obj.value = 1));
     return Promise.resolve().then(() => {
         expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
     });
@@ -49,7 +49,7 @@ describe('object mutations', () => {
 
         expect(elm.shadowRoot.querySelector('.nested-obj').textContent).toBe('0');
 
-        elm.mutateCmp(cmp => (cmp.nestedObj.value.nestedValue = 1));
+        elm.mutateCmp((cmp) => (cmp.nestedObj.value.nestedValue = 1));
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('.nested-obj').textContent).toBe('1');
         });
@@ -59,7 +59,7 @@ describe('object mutations', () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
-        elm.mutateCmp(cmp => {
+        elm.mutateCmp((cmp) => {
             delete cmp.obj.value;
         });
         return Promise.resolve().then(() => {
@@ -71,7 +71,7 @@ describe('object mutations', () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
-        elm.mutateCmp(cmp => {
+        elm.mutateCmp((cmp) => {
             Object.defineProperty(cmp.obj, 'value', {
                 value: 1,
             });
@@ -85,7 +85,7 @@ describe('object mutations', () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
-        elm.mutateCmp(cmp => {
+        elm.mutateCmp((cmp) => {
             cmp.obj = { value: 1 };
             Object.freeze(cmp.obj);
         });
@@ -106,7 +106,7 @@ describe('array mutations', () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
-        elm.mutateCmp(cmp => cmp.array.push(4));
+        elm.mutateCmp((cmp) => cmp.array.push(4));
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('.array').textContent).toBe('1234');
         });
@@ -116,7 +116,7 @@ describe('array mutations', () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
-        elm.mutateCmp(cmp => cmp.array.pop());
+        elm.mutateCmp((cmp) => cmp.array.pop());
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('.array').textContent).toBe('12');
         });
@@ -126,7 +126,7 @@ describe('array mutations', () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
-        elm.mutateCmp(cmp => cmp.array.unshift(4));
+        elm.mutateCmp((cmp) => cmp.array.unshift(4));
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('.array').textContent).toBe('4123');
         });

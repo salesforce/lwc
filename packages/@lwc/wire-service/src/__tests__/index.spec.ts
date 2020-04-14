@@ -200,7 +200,7 @@ describe('WireEventTarget from register', () => {
     });
 
     describe('removeEventListener', () => {
-        ['connect', 'disconnect', 'config'].forEach(eventType => {
+        ['connect', 'disconnect', 'config'].forEach((eventType) => {
             it(`should remove listener from the queue for ${eventType} event`, () => {
                 const eventToAdapterMethod = {
                     connect: 'connect',

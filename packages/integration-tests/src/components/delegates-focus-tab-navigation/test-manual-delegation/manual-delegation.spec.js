@@ -12,8 +12,8 @@ describe('Tab navigation when component passes tabindex attribute to an internal
         browser.url(URL);
     });
 
-    it('should focus on internal element when tabbing forward from a sibling element', function() {
-        const secondOutside = browser.$(function() {
+    it('should focus on internal element when tabbing forward from a sibling element', function () {
+        const secondOutside = browser.$(function () {
             return document
                 .querySelector('integration-manual-delegation')
                 .shadowRoot.querySelector('.second-outside');
@@ -21,7 +21,7 @@ describe('Tab navigation when component passes tabindex attribute to an internal
         secondOutside.click();
         browser.keys(['Tab']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
@@ -30,8 +30,8 @@ describe('Tab navigation when component passes tabindex attribute to an internal
         assert.equal(className, 'first-inside');
     });
 
-    it('should focus on internal element when tabbing backwards from a sibling element', function() {
-        const thirdOutside = browser.$(function() {
+    it('should focus on internal element when tabbing backwards from a sibling element', function () {
+        const thirdOutside = browser.$(function () {
             return document
                 .querySelector('integration-manual-delegation')
                 .shadowRoot.querySelector('.third-outside');
@@ -39,7 +39,7 @@ describe('Tab navigation when component passes tabindex attribute to an internal
         thirdOutside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;

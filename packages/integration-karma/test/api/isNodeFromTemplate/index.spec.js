@@ -54,7 +54,7 @@ it('should return true on elements manually inserted in the DOM inside an elemen
     if (!process.env.NATIVE_SHADOW) {
         expect(isNodeFromTemplate(div)).toBe(false); // it is false sync because MO hasn't pick up the element yet
     }
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         setTimeout(resolve);
     }).then(() => {
         expect(isNodeFromTemplate(div)).toBe(true); // it is true async because MO has already pick up the element
@@ -72,7 +72,7 @@ if (!process.env.NATIVE_SHADOW) {
         const span = document.createElement('span');
         elm.shadowRoot.querySelector('h2').appendChild(span);
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(resolve);
         }).then(() => {
             expect(isNodeFromTemplate(span)).toBe(false);

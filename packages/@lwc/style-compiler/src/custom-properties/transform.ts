@@ -9,7 +9,7 @@ import parseValue from 'postcss-value-parser';
 import { varFunctionMessage } from '../utils/message';
 
 export default function process(root: Root, result: Result) {
-    root.walkDecls(decl => {
+    root.walkDecls((decl) => {
         const valueRoot = parseValue(decl.value);
         let varFound = false;
         valueRoot.walk(({ type, value }) => {

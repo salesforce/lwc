@@ -76,7 +76,7 @@ function getFiles(lwcConfig) {
  * More details here:
  * https://karma-runner.github.io/3.0/config/configuration-file.html
  */
-module.exports = config => {
+module.exports = (config) => {
     const lwcConfig = getLwcConfig(config);
 
     config.set({

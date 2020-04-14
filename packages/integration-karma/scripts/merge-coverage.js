@@ -45,7 +45,7 @@ const reporter = istanbul.createReporter(config);
 reporter.addAll(['html', 'json', 'text']);
 reporter.write(coverageMap);
 
-istanbul.checkCoverage.run(config, err => {
+istanbul.checkCoverage.run(config, (err) => {
     if (err) {
         console.log(err);
         process.exit(1);

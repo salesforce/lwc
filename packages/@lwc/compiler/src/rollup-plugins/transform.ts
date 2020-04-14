@@ -10,7 +10,7 @@ import { transformFile } from '../transformers/transformer';
 
 import { NormalizedCompileOptions } from '../options';
 
-export default function({ options }: { options: NormalizedCompileOptions }): Plugin {
+export default function ({ options }: { options: NormalizedCompileOptions }): Plugin {
     return {
         name: 'lwc-file-transform',
         transform(src: string, id: string) {

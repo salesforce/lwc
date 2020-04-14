@@ -33,7 +33,7 @@ function shouldTransformSelector(rule: Rule) {
 }
 
 function selectorProcessorFactory(config: PluginConfig, transformConfig: SelectorScopingConfig) {
-    return postCssSelector(root => {
+    return postCssSelector((root) => {
         validateIdSelectors(root);
 
         transformSelectorScoping(root, transformConfig);
@@ -61,7 +61,7 @@ export default postcss.plugin<PluginConfig>('postcss-plugin-lwc', (config = {}) 
 
         transformCustomProperties(root, result);
 
-        root.walkRules(rule => {
+        root.walkRules((rule) => {
             if (!shouldTransformSelector(rule)) {
                 return;
             }

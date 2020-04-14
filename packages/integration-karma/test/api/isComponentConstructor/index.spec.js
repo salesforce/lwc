@@ -10,7 +10,7 @@ testInvalidComponentConstructor('null', null);
 testInvalidComponentConstructor('undefined', undefined);
 testInvalidComponentConstructor('String', 'component');
 testInvalidComponentConstructor('Object', {});
-testInvalidComponentConstructor('Function', function() {});
+testInvalidComponentConstructor('Function', function () {});
 testInvalidComponentConstructor('Class', class Foo {});
 
 it('should return true if when passing a class inheriting from LightningElement', () => {

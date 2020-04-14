@@ -69,7 +69,7 @@ function validateWireParameters(path) {
 }
 
 function validateUsageWithOtherDecorators(path, decorators) {
-    decorators.forEach(decorator => {
+    decorators.forEach((decorator) => {
         if (
             path !== decorator.path &&
             decorator.name === WIRE_DECORATOR &&

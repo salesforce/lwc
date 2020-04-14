@@ -13,14 +13,14 @@ describe('when the component overrides the focus method', () => {
         browser.url(URL);
     });
 
-    it('should continue custom focus behavior', function() {
-        browser.execute(function() {
+    it('should continue custom focus behavior', function () {
+        browser.execute(function () {
             return document
                 .querySelector('integration-backwards-compatible')
                 .shadowRoot.querySelector('integration-child')
                 .focus();
         });
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             var active = document.activeElement;
             while (active.shadowRoot) {
                 active = active.shadowRoot.activeElement;

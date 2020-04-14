@@ -14,7 +14,7 @@ describe('Retarget relatedTarget', () => {
     it('should not throw when relatedTarget is null', () => {
         browser.keys(['Tab']);
         browser.waitUntil(() => {
-            const text = browser.execute(function() {
+            const text = browser.execute(function () {
                 return document
                     .querySelector('integration-retarget-null-related-target')
                     .shadowRoot.querySelector('.related-target-tabname').textContent;

@@ -36,29 +36,29 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
         });
     }
 
-    testContentWindowProperty('postMessage', contentWindow =>
+    testContentWindowProperty('postMessage', (contentWindow) =>
         contentWindow.postMessage('foo', '*')
     );
-    testContentWindowProperty('focus', contentWindow => contentWindow.focus());
-    testContentWindowProperty('blur', contentWindow => contentWindow.blur());
-    testContentWindowProperty('close', contentWindow => contentWindow.close());
-    testContentWindowProperty('closed', contentWindow => contentWindow.closed);
-    testContentWindowProperty('frames', contentWindow => contentWindow.frames);
-    testContentWindowProperty('length', contentWindow => contentWindow.length);
-    testContentWindowProperty('location', contentWindow => {
+    testContentWindowProperty('focus', (contentWindow) => contentWindow.focus());
+    testContentWindowProperty('blur', (contentWindow) => contentWindow.blur());
+    testContentWindowProperty('close', (contentWindow) => contentWindow.close());
+    testContentWindowProperty('closed', (contentWindow) => contentWindow.closed);
+    testContentWindowProperty('frames', (contentWindow) => contentWindow.frames);
+    testContentWindowProperty('length', (contentWindow) => contentWindow.length);
+    testContentWindowProperty('location', (contentWindow) => {
         contentWindow.location;
         contentWindow.location = 'http://example.com';
     });
-    testContentWindowProperty('opener', contentWindow => contentWindow.opener);
-    testContentWindowProperty('parent', contentWindow => contentWindow.parent);
-    testContentWindowProperty('self', contentWindow => contentWindow.self);
-    testContentWindowProperty('top', contentWindow => contentWindow.top);
-    testContentWindowProperty('window', contentWindow => contentWindow.window);
+    testContentWindowProperty('opener', (contentWindow) => contentWindow.opener);
+    testContentWindowProperty('parent', (contentWindow) => contentWindow.parent);
+    testContentWindowProperty('self', (contentWindow) => contentWindow.self);
+    testContentWindowProperty('top', (contentWindow) => contentWindow.top);
+    testContentWindowProperty('window', (contentWindow) => contentWindow.window);
 
-    testSameOriginContentWindowProperty('addEventListener', contentWindow =>
+    testSameOriginContentWindowProperty('addEventListener', (contentWindow) =>
         contentWindow.addEventListener('resize', () => {})
     );
-    testSameOriginContentWindowProperty('removeEventListener', contentWindow => {
+    testSameOriginContentWindowProperty('removeEventListener', (contentWindow) => {
         contentWindow.removeEventListener('resize', () => {});
     });
 });

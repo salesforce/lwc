@@ -14,7 +14,7 @@ function dispatchEventWithLog(target, event) {
     for (var node = target; node; node = node.parentNode || node.host) {
         node.addEventListener(
             event.type,
-            function(event) {
+            function (event) {
                 log.push([this, event.target, event.composedPath()]);
             }.bind(node)
         );
@@ -67,7 +67,7 @@ describe('event propagation in simple shadow tree', () => {
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
         // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(resolve);
         }).then(() => {
             const logs = dispatchEventWithLog(
@@ -241,7 +241,7 @@ describe('event propagation in nested shadow tree', () => {
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
         // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(resolve);
         }).then(() => {
             const logs = dispatchEventWithLog(

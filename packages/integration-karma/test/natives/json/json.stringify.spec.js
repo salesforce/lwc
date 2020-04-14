@@ -1,5 +1,5 @@
 describe('JSON.stringify on proxies', () => {
-    it('should return proper value for simple object', function() {
+    it('should return proper value for simple object', function () {
         const arr = new Proxy(
             {
                 x: 'x',
@@ -12,14 +12,14 @@ describe('JSON.stringify on proxies', () => {
         expect(actual).toBe('{"x":"x","y":"y"}');
     });
 
-    it('should return proper value for simple array', function() {
+    it('should return proper value for simple array', function () {
         const arr = new Proxy([1, 2], {});
 
         const actual = JSON.stringify(arr);
         expect(actual).toBe('[1,2]');
     });
 
-    it('should return proper value for complex object', function() {
+    it('should return proper value for complex object', function () {
         const obj = new Proxy(
             {
                 string: 'x',
@@ -39,7 +39,7 @@ describe('JSON.stringify on proxies', () => {
         );
     });
 
-    it('should return proper value for nested proxies', function() {
+    it('should return proper value for nested proxies', function () {
         const nested = new Proxy(
             {
                 x: new Proxy({ y: true }, {}),

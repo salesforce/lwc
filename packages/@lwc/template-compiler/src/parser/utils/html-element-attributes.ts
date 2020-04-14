@@ -425,7 +425,7 @@ export const HTML_ATTRIBUTE_ELEMENT_MAP = Object.entries(HTML_ELEMENT_ATTRIBUTE_
         const attributes = entry[1];
 
         if (element !== '*') {
-            attributes.forEach(attribute => {
+            attributes.forEach((attribute) => {
                 if (!hasOwnProperty.call(accumulator, attribute)) {
                     accumulator[attribute] = [];
                 }
@@ -440,5 +440,5 @@ export const HTML_ATTRIBUTE_ELEMENT_MAP = Object.entries(HTML_ELEMENT_ATTRIBUTE_
 );
 
 Object.values(HTML_ELEMENT_ATTRIBUTE_MAP['*']).forEach(
-    globalAttribute => (HTML_ATTRIBUTE_ELEMENT_MAP[globalAttribute] = [])
+    (globalAttribute) => (HTML_ATTRIBUTE_ELEMENT_MAP[globalAttribute] = [])
 );

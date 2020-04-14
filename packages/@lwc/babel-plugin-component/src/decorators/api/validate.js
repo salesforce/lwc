@@ -17,7 +17,7 @@ const { generateError } = require('../../utils');
 
 function validateConflict(path, decorators) {
     const isPublicFieldTracked = decorators.some(
-        decorator =>
+        (decorator) =>
             decorator.name === TRACK_DECORATOR &&
             decorator.path.parentPath.node === path.parentPath.node
     );
@@ -84,7 +84,7 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
     // keep track of visited class methods
     const visitedMethods = new Set();
 
-    decorators.forEach(decorator => {
+    decorators.forEach((decorator) => {
         const { path, type } = decorator;
 
         // since we are validating get/set we only look at @api methods

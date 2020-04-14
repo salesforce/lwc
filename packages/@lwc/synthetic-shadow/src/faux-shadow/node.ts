@@ -262,7 +262,7 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
     nativeGetRootNode
 )
     ? nativeGetRootNode
-    : function(this: Node): Node {
+    : function (this: Node): Node {
           let node = this;
           let nodeParent: Node | null;
           while (!isNull((nodeParent = parentNodeGetter.call(node)))) {
@@ -497,7 +497,7 @@ export function isExternalChildNodeAccessorFlagOn(): boolean {
 }
 export const getInternalChildNodes: (node: Node) => NodeListOf<ChildNode> =
     process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)
-        ? function(node) {
+        ? function (node) {
               internalChildNodeAccessorFlag = true;
               let childNodes;
               let error = null;
@@ -515,7 +515,7 @@ export const getInternalChildNodes: (node: Node) => NodeListOf<ChildNode> =
               }
               return childNodes as NodeListOf<ChildNode>;
           }
-        : function(node) {
+        : function (node) {
               return node.childNodes;
           };
 

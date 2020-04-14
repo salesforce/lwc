@@ -12,8 +12,8 @@ describe('Tab navigation when tabindex 0', () => {
         browser.url(URL);
     });
 
-    it('should delegate focus (forward)', function() {
-        const secondOutside = browser.$(function() {
+    it('should delegate focus (forward)', function () {
+        const secondOutside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero')
                 .shadowRoot.querySelector('.second-outside');
@@ -21,7 +21,7 @@ describe('Tab navigation when tabindex 0', () => {
         secondOutside.click();
         browser.keys(['Tab']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
@@ -31,8 +31,8 @@ describe('Tab navigation when tabindex 0', () => {
         assert.equal(className, 'first-inside');
     });
 
-    it('should delegate focus (backward)', function() {
-        const thirdOutside = browser.$(function() {
+    it('should delegate focus (backward)', function () {
+        const thirdOutside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero')
                 .shadowRoot.querySelector('.third-outside');
@@ -40,7 +40,7 @@ describe('Tab navigation when tabindex 0', () => {
         thirdOutside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;

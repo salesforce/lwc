@@ -34,7 +34,7 @@ function getSiblingGetSetPair(propertyPath, propertyName, type) {
     const siblingType = type === 'getter' ? 'set' : 'get';
     const klassBody = propertyPath.parentPath.get('body');
     const siblingNode = klassBody.find(
-        classMethodPath =>
+        (classMethodPath) =>
             classMethodPath !== propertyPath &&
             classMethodPath.isClassMethod({ kind: siblingType }) &&
             classMethodPath.node.key.name === propertyName

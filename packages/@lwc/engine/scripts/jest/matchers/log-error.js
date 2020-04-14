@@ -39,7 +39,7 @@ function createMatcher(methodName) {
             if (this.isNot) {
                 if (receivedMessages.length > 0) {
                     const formattedMessages = receivedMessages
-                        .map(message => this.utils.printReceived(message))
+                        .map((message) => this.utils.printReceived(message))
                         .join('\n\n');
 
                     return {
@@ -80,7 +80,7 @@ function createMatcher(methodName) {
                     }
                 } else {
                     const formattedMessages = receivedMessages
-                        .map(message => this.utils.printReceived(message))
+                        .map((message) => this.utils.printReceived(message))
                         .join('\n\n');
 
                     return {

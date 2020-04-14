@@ -11,13 +11,13 @@ describe('Delegate focus with tabindex 0', () => {
         browser.url(URL);
     });
 
-    it('should correctly focus on the input, not custom element', function() {
+    it('should correctly focus on the input, not custom element', function () {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
 
         browser.waitUntil(
             () => {
-                const active = browser.$(function() {
+                const active = browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
                 });
 
@@ -28,12 +28,12 @@ describe('Delegate focus with tabindex 0', () => {
         );
     });
 
-    it('should correctly focus on the previous element when shift tabbing', function() {
+    it('should correctly focus on the previous element when shift tabbing', function () {
         browser.keys(['Tab']);
 
         browser.waitUntil(
             () => {
-                const active = browser.$(function() {
+                const active = browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement;
                 });
 
@@ -47,7 +47,7 @@ describe('Delegate focus with tabindex 0', () => {
 
         browser.waitUntil(
             () => {
-                const active = browser.$(function() {
+                const active = browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
                 });
 
@@ -61,7 +61,7 @@ describe('Delegate focus with tabindex 0', () => {
 
         browser.waitUntil(
             () => {
-                const active = browser.$(function() {
+                const active = browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement;
                 });
                 return active.getText() === 'first button';

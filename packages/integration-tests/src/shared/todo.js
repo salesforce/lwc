@@ -16,7 +16,7 @@ function getSubject(initialValue, initialError) {
     }
 
     var observable = {
-        subscribe: function(obs) {
+        subscribe: function (obs) {
             observer = obs;
             if (initialValue) {
                 next(initialValue);
@@ -25,7 +25,7 @@ function getSubject(initialValue, initialError) {
                 error(initialError);
             }
             return {
-                unsubscribe: function() {},
+                unsubscribe: function () {},
             };
         },
     };
@@ -55,7 +55,7 @@ var TODO = [
     // intentionally skip 5
     generateTodo(6, false),
     generateTodo(7, false),
-].reduce(function(acc, value) {
+].reduce(function (acc, value) {
     acc[value.id] = value;
     return acc;
 }, {});
@@ -74,32 +74,32 @@ function getObservable(config) {
     return getSubject(todo).observable;
 }
 
-const getTodo = function() {};
+const getTodo = function () {};
 
 register(getTodo, function getTodoWireAdapter(wiredEventTarget) {
     var subscription;
     var config;
     wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error: undefined }));
     var observer = {
-        next: function(data) {
+        next: function (data) {
             wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: data, error: undefined }));
         },
-        error: function(error) {
+        error: function (error) {
             wiredEventTarget.dispatchEvent(
                 new ValueChangedEvent({ data: undefined, error: error })
             );
         },
     };
-    wiredEventTarget.addEventListener('connect', function() {
+    wiredEventTarget.addEventListener('connect', function () {
         var observable = getObservable(config);
         if (observable) {
             subscription = observable.subscribe(observer);
         }
     });
-    wiredEventTarget.addEventListener('disconnect', function() {
+    wiredEventTarget.addEventListener('disconnect', function () {
         subscription.unsubscribe();
     });
-    wiredEventTarget.addEventListener('config', function(newConfig) {
+    wiredEventTarget.addEventListener('config', function (newConfig) {
         config = newConfig;
         if (subscription) {
             subscription.unsubscribe();

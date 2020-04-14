@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Event target in slot elements', () => {
-    it('should receive event with correct target in slotted custom element', function() {
+    it('should receive event with correct target in slotted custom element', function () {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
@@ -19,7 +19,7 @@ describe('Event target in slot elements', () => {
         });
     });
 
-    it('should receive event with correct target for slotted native element', function() {
+    it('should receive event with correct target for slotted native element', function () {
         const elm = createElement('x-container', { is: Container });
         elm.isNativeElement = true;
         document.body.appendChild(elm);

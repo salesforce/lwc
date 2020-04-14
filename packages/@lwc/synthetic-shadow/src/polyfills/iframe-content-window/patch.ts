@@ -14,7 +14,7 @@ export default function apply() {
         'contentWindow'
     ) as PropertyDescriptor;
     const { get: originalGetter } = desc;
-    desc.get = function(this: HTMLIFrameElement): WindowProxy | null {
+    desc.get = function (this: HTMLIFrameElement): WindowProxy | null {
         const original = (originalGetter as any).call(this);
         // If the original iframe element is not a keyed node, then do not wrap it
         if (isNull(original) || isUndefined(getNodeOwnerKey(this))) {

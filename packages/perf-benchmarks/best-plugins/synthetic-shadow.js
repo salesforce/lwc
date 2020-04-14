@@ -9,7 +9,7 @@ const SYNTHETIC_IMPORT = 'import "@lwc/synthetic-shadow";';
  * BEST-ROLLUP-PLUGIN
  * This module make sure all test run with synthetic-shadow enabled
  */
-module.exports = function() {
+module.exports = function () {
     let input;
     return {
         name: 'synthetic-shadow',

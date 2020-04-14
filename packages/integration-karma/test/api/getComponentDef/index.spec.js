@@ -15,21 +15,21 @@ function testInvalidComponentConstructor(name, ctor) {
     });
 }
 
-beforeAll(function() {
-    const getNormalizedFunctionAsString = fn => fn.toString().replace(/(\s|\n)/g, '');
+beforeAll(function () {
+    const getNormalizedFunctionAsString = (fn) => fn.toString().replace(/(\s|\n)/g, '');
 
     jasmine.addMatchers({
-        toEqualWireSettings: function() {
+        toEqualWireSettings: function () {
             return {
-                compare: function(actual, expected) {
-                    Object.keys(actual).forEach(currentKey => {
+                compare: function (actual, expected) {
+                    Object.keys(actual).forEach((currentKey) => {
                         const normalizedActual = Object.assign({}, actual[currentKey], {
                             config: getNormalizedFunctionAsString(actual[currentKey].config),
                         });
 
                         const normalizedExpected = Object.assign({}, expected[currentKey], {
                             config: getNormalizedFunctionAsString(
-                                expected[currentKey].config || function() {}
+                                expected[currentKey].config || function () {}
                             ),
                         });
 
@@ -49,7 +49,7 @@ testInvalidComponentConstructor('null', null);
 testInvalidComponentConstructor('undefined', undefined);
 testInvalidComponentConstructor('String', 'component');
 testInvalidComponentConstructor('Object', {});
-testInvalidComponentConstructor('Function', function() {});
+testInvalidComponentConstructor('Function', function () {});
 testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
 
 const GLOBAL_HTML_ATTRIBUTES = [
@@ -200,7 +200,7 @@ describe('@api', () => {
 describe('circular dependencies', () => {
     // Emulates an AMD module with circular dependency.
     function circularDependency(klass) {
-        const ctor = function() {
+        const ctor = function () {
             return klass;
         };
         ctor.__circular__ = true;

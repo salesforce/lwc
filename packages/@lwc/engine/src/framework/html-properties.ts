@@ -24,7 +24,7 @@ forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
         HTMLElementOriginalDescriptors[propName] = descriptor;
     }
 });
-forEach.call(defaultDefHTMLPropertyNames, propName => {
+forEach.call(defaultDefHTMLPropertyNames, (propName) => {
     // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
     // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
     // this category, so, better to be sure.

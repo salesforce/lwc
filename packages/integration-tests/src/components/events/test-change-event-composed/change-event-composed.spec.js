@@ -13,9 +13,9 @@ describe('Composed change event', () => {
         browser.url(URL);
     });
 
-    it('should be composed: false', function() {
+    it('should be composed: false', function () {
         // Force native "change" event to fire
-        browser.execute(function() {
+        browser.execute(function () {
             document
                 .querySelector('integration-change-event-composed')
                 .shadowRoot.querySelector('input')
@@ -23,7 +23,7 @@ describe('Composed change event', () => {
         });
         browser.keys('foo');
         $('body').click();
-        const div = browser.$(function() {
+        const div = browser.$(function () {
             return document
                 .querySelector('integration-change-event-composed')
                 .shadowRoot.querySelector('.verify-not-composed');

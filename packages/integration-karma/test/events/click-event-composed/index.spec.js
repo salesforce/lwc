@@ -8,7 +8,7 @@ it('should set the composed property to true when invoking click() on an element
     const elm = document.createElement('div');
     document.body.appendChild(elm);
 
-    elm.addEventListener('click', evt => {
+    elm.addEventListener('click', (evt) => {
         clickEvent = evt;
     });
 
@@ -23,7 +23,7 @@ it('should let the event bubble through the shadow root when invoking click() on
 
     const elm = createElement('x-test', { is: Test });
     document.body.appendChild(elm);
-    elm.addEventListener('click', evt => {
+    elm.addEventListener('click', (evt) => {
         clickEvent = evt;
     });
 

@@ -45,7 +45,7 @@ export class WireAdapter {
 function createNewConsumerMeta(consumer) {
     // identity must be an object that can't be proxified otherwise we
     // loose the identity when tracking the value.
-    const identity = Object.freeze(_ => {
+    const identity = Object.freeze((_) => {
         throw new Error(`Invalid Invocation`);
     });
     // default value is undefined

@@ -29,7 +29,7 @@ function moduleNameToImport(name: string): t.ImportDeclaration {
 }
 
 function generateSecureImports(additionalImports: string[]): t.ImportDeclaration {
-    const imports = additionalImports.map(additionalImport => {
+    const imports = additionalImports.map((additionalImport) => {
         return t.importSpecifier(t.identifier(additionalImport), t.identifier(additionalImport));
     });
 
@@ -50,7 +50,7 @@ function generateInlineStylesImports(state: State) {
 }
 
 export function format(templateFn: t.FunctionDeclaration, state: State): t.Program {
-    const imports = state.dependencies.map(cmpClassName => moduleNameToImport(cmpClassName));
+    const imports = state.dependencies.map((cmpClassName) => moduleNameToImport(cmpClassName));
 
     const metadata = generateTemplateMetadata(state);
 

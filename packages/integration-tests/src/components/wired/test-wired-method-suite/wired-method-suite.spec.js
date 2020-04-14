@@ -14,7 +14,7 @@ describe('Component with a wired method', () => {
     });
 
     it('should display data correctly', () => {
-        const todoText = browser.execute(function() {
+        const todoText = browser.execute(function () {
             return document
                 .querySelector('integration-wired-method-suite')
                 .shadowRoot.querySelector('integration-wired-method').shadowRoot.textContent;
@@ -23,7 +23,7 @@ describe('Component with a wired method', () => {
     });
 
     it('should update data correctly', () => {
-        browser.execute(function() {
+        browser.execute(function () {
             document
                 .querySelector('integration-wired-method-suite')
                 .shadowRoot.querySelector('button')
@@ -31,7 +31,7 @@ describe('Component with a wired method', () => {
         });
         browser.waitUntil(
             () => {
-                const todoText = browser.execute(function() {
+                const todoText = browser.execute(function () {
                     return document
                         .querySelector('integration-wired-method-suite')
                         .shadowRoot.querySelector(

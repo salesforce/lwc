@@ -104,7 +104,7 @@ export default class Store {
     }
 
     delete(id) {
-        const idx = this.data.findIndex(d => d.id == id);
+        const idx = this.data.findIndex((d) => d.id == id);
         this.data.splice(idx, 1);
     }
 
@@ -140,7 +140,7 @@ export default class Store {
             const d4 = this.data[4];
             const d9 = this.data[9];
 
-            var newData = this.data.map(function(data, i) {
+            var newData = this.data.map(function (data, i) {
                 if (i === 4) {
                     return d9;
                 } else if (i === 9) {

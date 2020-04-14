@@ -39,7 +39,7 @@ function testInvalidComponentConstructor(type, isValue) {
     });
 }
 
-testInvalidComponentConstructor('Function', function() {});
+testInvalidComponentConstructor('Function', function () {});
 testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
 
 it('returns an HTMLElement', () => {

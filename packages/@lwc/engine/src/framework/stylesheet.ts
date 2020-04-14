@@ -104,7 +104,7 @@ function collectStylesheets(
     isNative: boolean,
     aggregatorFn: (content: string) => void
 ): void {
-    forEach.call(stylesheets, sheet => {
+    forEach.call(stylesheets, (sheet) => {
         if (isArray(sheet)) {
             collectStylesheets(sheet, hostSelector, shadowSelector, isNative, aggregatorFn);
         } else {
@@ -126,7 +126,7 @@ export function evaluateCSS(
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
 
-        collectStylesheets(stylesheets, hostSelector, shadowSelector, false, textContent => {
+        collectStylesheets(stylesheets, hostSelector, shadowSelector, false, (textContent) => {
             insertGlobalStyle(textContent);
         });
 
@@ -136,7 +136,7 @@ export function evaluateCSS(
         // empty shadow selector since it is not really needed.
 
         let buffer = '';
-        collectStylesheets(stylesheets, emptyString, emptyString, true, textContent => {
+        collectStylesheets(stylesheets, emptyString, emptyString, true, (textContent) => {
             buffer += textContent;
         });
 

@@ -248,7 +248,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     ): parse5.AST.Default.Element | undefined {
         // Filter all the empty text nodes
         const validRoots = documentFragment.childNodes.filter(
-            child =>
+            (child) =>
                 treeAdapter.isElementNode(child) ||
                 (treeAdapter.isTextNode(child) &&
                     treeAdapter.getTextNodeContent(child).trim().length)
@@ -258,7 +258,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             warnOnElement(ParserDiagnostics.MULTIPLE_ROOTS_FOUND, documentFragment.childNodes[1]);
         }
 
-        const templateTag = documentFragment.childNodes.find(child =>
+        const templateTag = documentFragment.childNodes.find((child) =>
             treeAdapter.isElementNode(child)
         );
 
@@ -436,7 +436,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             hasOwnProperty.call(LWCDirectiveDomMode, lwcDomAttribute.value) === false
         ) {
             const possibleValues = Object.keys(LWCDirectiveDomMode)
-                .map(value => `"${value}"`)
+                .map((value) => `"${value}"`)
                 .join(', or ');
             return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [
                 possibleValues,
@@ -689,7 +689,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     function applyAttributes(element: IRElement) {
         const { tag, attrsList } = element;
 
-        attrsList.forEach(rawAttr => {
+        attrsList.forEach((rawAttr) => {
             const attr = getTemplateAttribute(element, attributeName(rawAttr));
             if (!attr) {
                 return;
@@ -838,7 +838,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         const { tag, attrsList } = element;
         const node = element.__original as parse5.AST.Default.Element;
 
-        attrsList.forEach(attr => {
+        attrsList.forEach((attr) => {
             const attrName = attr.name;
 
             if (isProhibitedIsAttribute(attrName)) {

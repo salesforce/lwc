@@ -12,15 +12,15 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         browser.url(URL);
     });
 
-    it('should continue skipping elements (forward)', function() {
-        const secondInside = browser.$(function() {
+    it('should continue skipping elements (forward)', function () {
+        const secondInside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
                 .shadowRoot.querySelector('.second-inside');
         });
         secondInside.click();
-        const secondOutside = browser.$(function() {
+        const secondOutside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('.second-outside');
@@ -28,7 +28,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         secondOutside.click();
         browser.keys(['Tab']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
@@ -37,8 +37,8 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         assert.equal(className, 'third-outside');
     });
 
-    it('should continue skipping elements after navigating out (forward)', function() {
-        const secondInside = browser.$(function() {
+    it('should continue skipping elements after navigating out (forward)', function () {
+        const secondInside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
@@ -48,7 +48,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         browser.keys(['Tab']); // third inside
         browser.keys(['Tab']); // third outside
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
@@ -57,15 +57,15 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         assert.equal(className, 'third-outside');
     });
 
-    it('should continue skipping elements (backward)', function() {
-        const secondInside = browser.$(function() {
+    it('should continue skipping elements (backward)', function () {
+        const secondInside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
                 .shadowRoot.querySelector('.second-inside');
         });
         secondInside.click();
-        const thirdOutside = browser.$(function() {
+        const thirdOutside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('.third-outside');
@@ -73,7 +73,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         thirdOutside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
@@ -82,8 +82,8 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         assert.equal(className, 'second-outside');
     });
 
-    it('should continue skipping elements after navigating out (backwards)', function() {
-        const secondInside = browser.$(function() {
+    it('should continue skipping elements after navigating out (backwards)', function () {
+        const secondInside = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
@@ -93,7 +93,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         browser.keys(['Shift', 'Tab', 'Shift']); // first inside
         browser.keys(['Shift', 'Tab', 'Shift']); // second outside
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;

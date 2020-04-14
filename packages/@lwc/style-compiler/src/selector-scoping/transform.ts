@@ -41,7 +41,7 @@ function scopeSelector(selector: Selector) {
 
     // Split the selector per compound selector. Compound selectors are interleaved with combinator nodes.
     // https://drafts.csswg.org/selectors-4/#typedef-complex-selector
-    selector.each(node => {
+    selector.each((node) => {
         if (isCombinator(node)) {
             compoundSelectors.push([]);
         } else {
@@ -112,13 +112,13 @@ function transformHost(selector: Selector) {
 
         // Generate a unique contextualized version of the selector for each selector pass as argument
         // to the :host
-        const contextualSelectors = hostNode.nodes.map(contextSelectors => {
+        const contextualSelectors = hostNode.nodes.map((contextSelectors) => {
             const clonedSelector = selector.clone({}) as Selector;
             const clonedHostNode = clonedSelector.at(hostIndex) as Tag;
 
             // Add to the compound selector previously containing the :host pseudo class
             // the contextual selectors.
-            (contextSelectors as Selector).each(node => {
+            (contextSelectors as Selector).each((node) => {
                 trimNodeWhitespaces(node);
                 clonedSelector.insertAfter(clonedHostNode, node);
             });
@@ -134,12 +134,12 @@ function transformHost(selector: Selector) {
 export default function transformSelector(root: Root, transformConfig: SelectorScopingConfig) {
     validateSelectors(root);
 
-    root.each(selector => {
+    root.each((selector) => {
         scopeSelector(selector as Selector);
     });
 
     if (transformConfig.transformHost) {
-        root.each(selector => {
+        root.each((selector) => {
             transformHost(selector as Selector);
         });
     }

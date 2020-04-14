@@ -12,15 +12,15 @@ describe('shadow root element from point should return correct element', () => {
         browser.url(URL);
     });
 
-    it('should return correct shadow elements', function() {
-        browser.execute(function() {
+    it('should return correct shadow elements', function () {
+        browser.execute(function () {
             document
                 .querySelector('integration-element-from-point')
                 .shadowRoot.querySelector('.shadow-element-from-point')
                 .click();
         });
         browser.waitUntil(() => {
-            const indicator = browser.$(function() {
+            const indicator = browser.$(function () {
                 return document
                     .querySelector('integration-element-from-point')
                     .shadowRoot.querySelector('.correct-shadow-element-indicator');
@@ -29,15 +29,15 @@ describe('shadow root element from point should return correct element', () => {
         });
     });
 
-    it('should return correct document elements', function() {
-        browser.execute(function() {
+    it('should return correct document elements', function () {
+        browser.execute(function () {
             document
                 .querySelector('integration-element-from-point')
                 .shadowRoot.querySelector('.document-from-point')
                 .click();
         });
         browser.waitUntil(() => {
-            const indicator = browser.$(function() {
+            const indicator = browser.$(function () {
                 return document
                     .querySelector('integration-element-from-point')
                     .shadowRoot.querySelector('.correct-document-element-indicator');

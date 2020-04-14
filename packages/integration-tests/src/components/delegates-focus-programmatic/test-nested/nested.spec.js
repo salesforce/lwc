@@ -13,12 +13,12 @@ describe('when the only focusable element is in a nested shadow', () => {
         browser.url(URL);
     });
 
-    it('should apply focus in the nested shadow', function() {
-        const button = browser.$(function() {
+    it('should apply focus in the nested shadow', function () {
+        const button = browser.$(function () {
             return document.querySelector('integration-nested').shadowRoot.querySelector('button');
         });
         button.click();
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             var active = document.activeElement;
             while (active.shadowRoot) {
                 active = active.shadowRoot.activeElement;

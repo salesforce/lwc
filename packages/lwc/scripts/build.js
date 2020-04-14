@@ -41,7 +41,7 @@ function buildEngineTargets(targets) {
     const dir = path.join(distDirectory, 'engine');
     const engineConfig = { input, name, targetName, dir };
 
-    return targets.map(bundleConfig => buildBundleConfig(engineConfig, bundleConfig));
+    return targets.map((bundleConfig) => buildBundleConfig(engineConfig, bundleConfig));
 }
 
 function buildSyntheticShadow(targets) {
@@ -51,7 +51,7 @@ function buildSyntheticShadow(targets) {
     const dir = path.join(distDirectory, 'synthetic-shadow');
     const engineConfig = { input, name, targetName, dir };
 
-    return targets.map(bundleConfig => buildBundleConfig(engineConfig, bundleConfig));
+    return targets.map((bundleConfig) => buildBundleConfig(engineConfig, bundleConfig));
 }
 
 function buildWireService(targets) {
@@ -61,7 +61,7 @@ function buildWireService(targets) {
     const dir = path.join(distDirectory, 'wire-service');
     const engineConfig = { input, name, targetName, dir };
 
-    return targets.map(bundleConfig => buildBundleConfig(engineConfig, bundleConfig));
+    return targets.map((bundleConfig) => buildBundleConfig(engineConfig, bundleConfig));
 }
 
 // -- Build -------------------------------------------------------------------

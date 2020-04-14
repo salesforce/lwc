@@ -162,13 +162,13 @@ forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
     PropNameToAttrNameMap[propName] = attrName;
 });
 
-forEach.call(defaultDefHTMLPropertyNames, propName => {
+forEach.call(defaultDefHTMLPropertyNames, (propName) => {
     const attrName = StringToLowerCase.call(propName);
     AttrNameToPropNameMap[attrName] = propName;
     PropNameToAttrNameMap[propName] = attrName;
 });
 
-forEach.call(HTMLPropertyNamesWithLowercasedReflectiveAttributes, propName => {
+forEach.call(HTMLPropertyNamesWithLowercasedReflectiveAttributes, (propName) => {
     const attrName = StringToLowerCase.call(propName);
     AttrNameToPropNameMap[attrName] = propName;
     PropNameToAttrNameMap[propName] = attrName;
@@ -182,7 +182,7 @@ const CAMEL_REGEX = /-([a-z])/g;
  */
 export function getPropNameFromAttrName(attrName: string): string {
     if (isUndefined(AttrNameToPropNameMap[attrName])) {
-        AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, g =>
+        AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (g) =>
             g[1].toUpperCase()
         );
     }
@@ -200,7 +200,7 @@ export function getAttrNameFromPropName(propName: string): string {
         PropNameToAttrNameMap[propName] = StringReplace.call(
             propName,
             CAPS_REGEX,
-            match => '-' + match.toLowerCase()
+            (match) => '-' + match.toLowerCase()
         );
     }
     return PropNameToAttrNameMap[propName];
