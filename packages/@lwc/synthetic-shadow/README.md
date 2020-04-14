@@ -8,8 +8,10 @@ This is a polyfill for ShadowRoot that was tailor-made for LWC in order to meet 
 
 -   Default content for `<slot>` elements is always empty.
 -   `slotchange` is only available directly on the slot (it doesn't bubble as in the case of the native implementation)
--   Dispatch events directly on the ShadowRoot instance are not allowed because they will always leak into the host, and we have no way to contain them.
+-   Dispatching events directly on the `ShadowRoot` instance isn't allowed because the events will always leak into the host, and we have no way to contain them.
+-   If you use `MutationObserver` to watch changes in a DOM tree, disconnect it or you may cause a memory leak. Note that a component can observe mutations only in its own template. It can't observe mutations within the shadow tree of other custom elements. 
 
 ## Missing features
 
 TBD
+
