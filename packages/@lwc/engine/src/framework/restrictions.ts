@@ -305,7 +305,6 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
     }
     const descriptors = getNodeRestrictionsDescriptors(elm);
 
-    const originalAddEventListener = elm.addEventListener;
     const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
     const originalTextContentDescriptor = getPropertyDescriptor(elm, 'textContent')!;
@@ -333,39 +332,6 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
             },
             set(this: HTMLElement, _value: string) {
                 throw new TypeError(`Invalid attempt to set textContent on HTMLElement.`);
-            },
-        }),
-        addEventListener: generateDataDescriptor({
-            value(
-                this: HTMLElement,
-                type: string,
-                listener: EventListener,
-                options?: boolean | AddEventListenerOptions
-            ) {
-                const vmBeingRendered = getVMBeingRendered();
-                assert.invariant(
-                    !isInvokingRender,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${toString(
-                        this
-                    )} by adding an event listener for "${type}".`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${toString(
-                        elm
-                    )} by adding an event listener for "${type}".`
-                );
-                // TODO [#420]: this is triggered when the component author attempts to add a listener
-                // programmatically into a lighting element node
-                if (!isUndefined(options)) {
-                    logError(
-                        'The `addEventListener` method in `LightningElement` does not support any options.',
-                        getAssociatedVMIfPresent(this)
-                    );
-                }
-                // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-ignore type-mismatch
-                return originalAddEventListener.apply(this, arguments);
             },
         }),
     });
@@ -399,6 +365,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
         throw new ReferenceError();
     }
 
+    const originalAddEventListener = proto.addEventListener;
     const originalDispatchEvent = proto.dispatchEvent;
     const originalIsConnectedGetter = getOwnPropertyDescriptor(proto, 'isConnected')!.get!;
 
@@ -454,6 +421,37 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                         ` element ${componentTag}. The value will always be true.`
                 );
                 return originalIsConnectedGetter.call(this);
+            },
+        }),
+        addEventListener: generateDataDescriptor({
+            value(
+                this: LightningElement,
+                type: string,
+                listener: EventListener,
+                options?: boolean | AddEventListenerOptions
+            ) {
+                const vm = getAssociatedVM(this);
+                const vmBeingRendered = getVMBeingRendered();
+                const componentTag = getComponentTag(vm);
+                assert.invariant(
+                    !isInvokingRender,
+                    `${vmBeingRendered}.render() method has side effects on the state of ${componentTag} by adding an event listener for "${type}".`
+                );
+                assert.invariant(
+                    !isUpdatingTemplate,
+                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${componentTag} by adding an event listener for "${type}".`
+                );
+                // TODO [#420]: this is triggered when the component author attempts to add a listener
+                // programmatically into a lighting component instance
+                if (!isUndefined(options)) {
+                    logError(
+                        'The `addEventListener` method in `LightningElement` does not support any options.',
+                        vm
+                    );
+                }
+                // Typescript does not like it when you treat the `arguments` object as an array
+                // @ts-ignore type-mismatch
+                return originalAddEventListener.apply(this, arguments);
             },
         }),
     };
