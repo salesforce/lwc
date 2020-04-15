@@ -194,7 +194,7 @@ export function createViewModelHook(vnode: VCustomElement) {
         // into each element from the template, so they can be styled accordingly.
         setElementShadowToken(elm, shadowAttribute);
     }
-    createVM(elm, ctor, {
+    createVM(elm, def.ctor, {
         mode,
         owner,
     });
