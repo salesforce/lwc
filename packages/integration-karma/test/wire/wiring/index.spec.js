@@ -8,6 +8,8 @@ import { BroadcastAdapter } from 'x/broadcastAdapter';
 
 import InheritedMethods from 'x/inheritedMethods';
 
+import WireWithApi from 'x/wireWithApi';
+
 const ComponentClass = AdapterConsumer;
 const AdapterId = EchoWireAdapter;
 
@@ -210,6 +212,27 @@ describe('wiring', () => {
                         done();
                     }, 5);
                 });
+        });
+
+        it('should not trigger update when api value is re-set', done => {
+            const elm = createElement('x-same-config', { is: WireWithApi });
+            elm.a = 5;
+
+            const spy = [];
+            EchoWireAdapter.setSpy(spy);
+
+            setTimeout(() => {
+                expect(spy.length).toBe(1); // first update
+                expect(elm.result).toBe(5);
+
+                elm.a = 5;
+
+                setTimeout(() => {
+                    expect(spy.length).toBe(1); // no extra call with the config
+
+                    done();
+                }, 0);
+            }, 0);
         });
     });
 });

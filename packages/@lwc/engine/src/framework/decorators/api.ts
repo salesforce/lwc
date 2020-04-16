@@ -67,9 +67,11 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
                     )}`
                 );
             }
-            vm.cmpProps[key] = newValue;
 
-            componentValueMutated(vm, key);
+            if (vm.cmpProps[key] !== newValue) {
+                vm.cmpProps[key] = newValue;
+                componentValueMutated(vm, key);
+            }
         },
         enumerable: true,
         configurable: true,

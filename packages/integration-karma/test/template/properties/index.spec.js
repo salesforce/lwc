@@ -16,6 +16,7 @@ describe('live properties', () => {
             expect(elm.shadowRoot.querySelector('input').checked).toBe(true);
         });
 
+        // This test is relying in the fact we force re-rerender when api values change.
         it('should use the DOM value for diffing', () => {
             const elm = createElement('live-input-checked', { is: InputChecked });
             elm.checkedValue = true;
