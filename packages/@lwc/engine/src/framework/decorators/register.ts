@@ -14,6 +14,7 @@ import {
     getOwnPropertyDescriptor,
     toString,
     isFalse,
+    keys,
 } from '@lwc/shared';
 import { ComponentConstructor } from '../component';
 import { internalWireFieldDecorator } from './wire';
@@ -48,7 +49,7 @@ interface WireCompilerDef {
     method?: number;
     adapter: WireAdapterConstructor;
     config: ConfigCallback;
-    hasParams: boolean;
+    params?: Record<string, any>;
 }
 interface RegisterDecoratorMeta {
     readonly publicMethods?: MethodCompilerMeta;
@@ -216,7 +217,9 @@ export function registerDecorators(
     }
     if (!isUndefined(wire)) {
         for (const fieldOrMethodName in wire) {
-            const { adapter, method, config: configCallback, hasParams } = wire[fieldOrMethodName];
+            const { adapter, method, config: configCallback, params = {} } = wire[
+                fieldOrMethodName
+            ];
             descriptor = getOwnPropertyDescriptor(proto, fieldOrMethodName);
             if (method === 1) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -230,7 +233,7 @@ export function registerDecorators(
                     throw new Error();
                 }
                 wiredMethods[fieldOrMethodName] = descriptor;
-                storeWiredMethodMeta(descriptor, adapter, configCallback, hasParams);
+                storeWiredMethodMeta(descriptor, adapter, configCallback, keys(params));
             } else {
                 if (process.env.NODE_ENV !== 'production') {
                     assert.isTrue(
@@ -241,7 +244,7 @@ export function registerDecorators(
                 }
                 descriptor = internalWireFieldDecorator(fieldOrMethodName);
                 wiredFields[fieldOrMethodName] = descriptor;
-                storeWiredFieldMeta(descriptor, adapter, configCallback, hasParams);
+                storeWiredFieldMeta(descriptor, adapter, configCallback, keys(params));
                 defineProperty(proto, fieldOrMethodName, descriptor);
             }
         }

@@ -41,8 +41,9 @@ function createConfigWatcher(
     callbackWhenConfigIsReady: (newConfig: ConfigValue) => void
 ) {
     const { component } = vm;
-    const { configCallback } = wireDef;
+    const { configCallback, params } = wireDef;
     let hasPendingConfig: boolean = false;
+    let lastConfig: Record<string, any>;
     // creating the reactive observer for reactive params when needed
     const ro = new ReactiveObserver(() => {
         if (hasPendingConfig === false) {
@@ -63,7 +64,12 @@ function createConfigWatcher(
         // eslint-disable-next-line lwc-internal/no-invalid-todo
         // TODO: dev-mode validation of config based on the adapter.configSchema
         // @ts-ignore it is assigned in the observe() callback
-        callbackWhenConfigIsReady(config);
+        const newConfig = config;
+
+        if (isUndefined(lastConfig) || params.some(key => newConfig[key] !== lastConfig[key])) {
+            lastConfig = newConfig;
+            callbackWhenConfigIsReady(newConfig);
+        }
     };
     return callback;
 }
@@ -106,7 +112,7 @@ function createContextWatcher(
 }
 
 function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
-    const { method, adapter, configCallback, hasParams } = wireDef;
+    const { method, adapter, configCallback, params } = wireDef;
     const { component } = vm;
     const dataCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
@@ -151,7 +157,7 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
         updateConnectorConfig(configCallback(component));
     };
 
-    if (hasParams) {
+    if (params.length > 0) {
         // This wire has dynamic parameters: we wait for the component instance is created and its values set
         // in order to call the update(config) method.
         Promise.resolve().then(() => {
@@ -195,7 +201,7 @@ type WireAdapterSchemaValue = 'optional' | 'required';
 interface WireDef {
     method?: (data: any) => void;
     adapter: WireAdapterConstructor;
-    hasParams: boolean;
+    params: string[];
     configCallback: ConfigCallback;
 }
 
@@ -229,7 +235,7 @@ export function storeWiredMethodMeta(
     descriptor: PropertyDescriptor,
     adapter: WireAdapterConstructor,
     configCallback: ConfigCallback,
-    hasParams: boolean
+    params: string[]
 ) {
     // support for callable adapters
     if ((adapter as any).adapter) {
@@ -240,7 +246,7 @@ export function storeWiredMethodMeta(
         adapter,
         method,
         configCallback,
-        hasParams,
+        params,
     };
     WireMetaMap.set(descriptor, def);
 }
@@ -249,7 +255,7 @@ export function storeWiredFieldMeta(
     descriptor: PropertyDescriptor,
     adapter: WireAdapterConstructor,
     configCallback: ConfigCallback,
-    hasParams: boolean
+    params: string[]
 ) {
     // support for callable adapters
     if ((adapter as any).adapter) {
@@ -258,7 +264,7 @@ export function storeWiredFieldMeta(
     const def: WireFieldDef = {
         adapter,
         configCallback,
-        hasParams,
+        params,
     };
     WireMetaMap.set(descriptor, def);
 }

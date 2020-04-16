@@ -41,7 +41,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed", "array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key2: ["fixed", "array"],
@@ -94,7 +93,6 @@ describe('Transform property', () => {
                       static: {
                         key1: importedValue
                       },
-                      hasParams: false,
                       config: function($cmp) {
                         return {
                           key1: importedValue
@@ -147,7 +145,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed", "array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         let v1 = $cmp.prop1;
                         let v2 = $cmp.p1;
@@ -203,7 +200,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed", "array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         let v1 = $cmp.prop1;
                         return {
@@ -264,7 +260,6 @@ describe('Transform property', () => {
                         key3: "fixed",
                         key4: ["fixed", "array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key3: "fixed",
@@ -356,7 +351,6 @@ describe('Transform property', () => {
                       adapter: getFoo,
                       params: {},
                       static: {},
-                      hasParams: false,
                       config: function($cmp) {
                         return {};
                       }
@@ -401,7 +395,6 @@ describe('Transform property', () => {
                     adapter: Foo.Bar,
                     params: {},
                     static: {},
-                    hasParams: false,
                     config: function($cmp) {
                       return {};
                     }
@@ -446,7 +439,6 @@ describe('Transform property', () => {
                   adapter: Foo.Bar,
                   params: {},
                   static: {},
-                  hasParams: false,
                   config: function($cmp) {
                     return {};
                   }
@@ -511,7 +503,6 @@ describe('Transform property', () => {
                       wire: {
                         wiredProp: {
                           adapter: getFoo,
-                          hasParams: false,
                           config: function($cmp) {
                             return {};
                           }
@@ -628,7 +619,6 @@ describe('Transform property', () => {
                             key2: "p1.p2"
                           },
                           static: {},
-                          hasParams: true,
                           config: function($cmp) {
                             let v1 = $cmp["prop1"];
                             let v2 = $cmp.p1;
@@ -683,7 +673,6 @@ describe('Transform property', () => {
                           static: {
                             key2: ["fixed", "array"]
                           },
-                          hasParams: true,
                           config: function($cmp) {
                             let v1 = $cmp["prop1"];
                             return {
@@ -788,7 +777,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key2: ["fixed"],
@@ -804,7 +792,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key2: ["array"],
@@ -858,7 +845,6 @@ describe('Transform method', () => {
                         key2: ["fixed"]
                       },
                       method: 1,
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key2: ["fixed"],

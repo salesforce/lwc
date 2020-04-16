@@ -8,6 +8,8 @@ import { BroadcastAdapter } from 'x/broadcastAdapter';
 
 import InheritedMethods from 'x/inheritedMethods';
 
+import SameConfigComponent from 'x/sameConfig';
+
 const ComponentClass = AdapterConsumer;
 const AdapterId = EchoWireAdapter;
 
@@ -210,6 +212,29 @@ describe('wiring', () => {
                         done();
                     }, 5);
                 });
+        });
+
+        it('should not trigger update when config does not change', done => {
+            const elm = createElement('x-same-config', { is: SameConfigComponent });
+            elm.a = 3;
+            elm.b = 2;
+
+            const spy = [];
+            EchoWireAdapter.setSpy(spy);
+
+            setTimeout(() => {
+                expect(spy.length).toBe(1); // first update
+                expect(elm.result).toBe(5);
+
+                elm.a = 1;
+                elm.b = 4;
+
+                setTimeout(() => {
+                    expect(spy.length).toBe(1); // no extra call with the config
+
+                    done();
+                }, 0);
+            }, 0);
         });
     });
 });

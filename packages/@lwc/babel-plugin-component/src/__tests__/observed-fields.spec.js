@@ -61,7 +61,6 @@ describe('observed fields', () => {
                   wire: {
                     wiredProp: {
                       adapter: createElement,
-                      hasParams: false,
                       config: function($cmp) {
                         return {};
                       }
@@ -119,7 +118,6 @@ describe('observed fields', () => {
                   wire: {
                     function: {
                       adapter: createElement,
-                      hasParams: false,
                       config: function($cmp) {
                          return {};
                       }
@@ -312,7 +310,6 @@ describe('observed fields', () => {
                     wire: {
                       wiredProp: {
                         adapter: createElement,
-                        hasParams: false,
                         config: function($cmp) {
                           return {};
                         }
