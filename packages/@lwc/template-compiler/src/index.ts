@@ -43,7 +43,7 @@ export default function compile(source: string, config: Config): TemplateCompile
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
-            warning => warning.level === DiagnosticLevel.Error
+            (warning) => warning.level === DiagnosticLevel.Error
         );
 
         if (!hasParsingError && parsingResults.root) {

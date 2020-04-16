@@ -10,7 +10,7 @@ function testConnectSlot(name, fn) {
         let thisValue;
 
         const elm = createElement('x-test', { is: Test });
-        elm.connect = function(context) {
+        elm.connect = function (context) {
             isConnected = true;
             thisValue = context;
         };
@@ -22,17 +22,17 @@ function testConnectSlot(name, fn) {
     });
 }
 
-testConnectSlot('Node.appendChild', elm => {
+testConnectSlot('Node.appendChild', (elm) => {
     document.body.appendChild(elm);
 });
 
-testConnectSlot('Node.insertBefore', elm => {
+testConnectSlot('Node.insertBefore', (elm) => {
     const child = document.createElement('div');
     document.body.appendChild(child);
     document.body.insertBefore(elm, child);
 });
 
-testConnectSlot('Node.replaceChild', elm => {
+testConnectSlot('Node.replaceChild', (elm) => {
     const child = document.createElement('div');
     document.body.appendChild(child);
     document.body.replaceChild(elm, child);
@@ -54,7 +54,7 @@ it('should associate the component stack when the invocation throws', () => {
 });
 
 describe('addEventListner in `connectedCallback`', () => {
-    it('clicking force button should update value', function() {
+    it('clicking force button should update value', function () {
         const elm = createElement('x-slotted-parent', { is: XSlottedParent });
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-child');

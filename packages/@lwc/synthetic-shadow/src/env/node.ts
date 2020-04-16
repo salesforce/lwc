@@ -77,7 +77,7 @@ const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = hasOwnPrope
 
 const isConnected = hasOwnProperty.call(Node.prototype, 'isConnected')
     ? getOwnPropertyDescriptor(Node.prototype, 'isConnected')!.get!
-    : function(this: Node): boolean {
+    : function (this: Node): boolean {
           const doc = ownerDocumentGetter.call(this);
           // IE11
           return (

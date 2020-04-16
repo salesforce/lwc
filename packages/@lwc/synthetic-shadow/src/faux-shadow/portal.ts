@@ -18,7 +18,7 @@ import { setShadowToken, getShadowToken } from './shadow-token';
 const DomManualPrivateKey = '$$DomManualKey$$';
 
 // Resolver function used when a node is removed from within a portal
-const DocumentResolverFn = function() {} as ShadowRootResolver;
+const DocumentResolverFn = function () {} as ShadowRootResolver;
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -57,8 +57,8 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
 }
 
 function initPortalObserver() {
-    return new MutationObserver(mutations => {
-        forEach.call(mutations, mutation => {
+    return new MutationObserver((mutations) => {
+        forEach.call(mutations, (mutation) => {
             /**
              * This routine will process all nodes added or removed from elm (which is marked as a portal)
              * When adding a node to the portal element, we should add the ownership.

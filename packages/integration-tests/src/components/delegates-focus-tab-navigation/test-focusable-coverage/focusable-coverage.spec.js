@@ -43,10 +43,10 @@ describe('sequential focus navigation coverage', () => {
             // 'svgAnchorXlinkHref', // a[xlink:href] should only be focusable when inside <svg>
             'textarea',
             'videoControls',
-        ].forEach(type => {
+        ].forEach((type) => {
             it(type, () => {
                 // Click and focus on the first input
-                const start = browser.$(function() {
+                const start = browser.$(function () {
                     return document
                         .querySelector('integration-focusable-coverage')
                         .shadowRoot.querySelector('.start');
@@ -54,14 +54,14 @@ describe('sequential focus navigation coverage', () => {
                 start.click();
 
                 // Set the type
-                browser.execute(function(type) {
+                browser.execute(function (type) {
                     var container = document.querySelector('integration-focusable-coverage');
                     container.type = type;
                 }, type);
 
                 browser.keys(['Tab']);
 
-                const activeElementType = browser.execute(function() {
+                const activeElementType = browser.execute(function () {
                     const container = document.activeElement;
                     const child = container.shadowRoot.activeElement;
                     const elm = child.shadowRoot.activeElement;

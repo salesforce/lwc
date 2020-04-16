@@ -20,7 +20,7 @@ export function getGlobalThis() {
     try {
         // eslint-disable-next-line no-extend-native
         Object.defineProperty(Object.prototype, '__magic__', {
-            get: function() {
+            get: function () {
                 return this;
             },
             configurable: true,

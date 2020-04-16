@@ -13,25 +13,25 @@ describe('Invoking the focus method of a host element', () => {
         browser.url(URL);
     });
 
-    it('should apply focus to the host element (tabindex -1)', function() {
+    it('should apply focus to the host element (tabindex -1)', function () {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
         browser
-            .$(function() {
+            .$(function () {
                 return document
                     .querySelector('integration-delegates-focus-focus-method-on-host-element')
                     .shadowRoot.querySelector('input');
             })
             .click();
 
-        browser.execute(function() {
+        browser.execute(function () {
             document
                 .querySelector('integration-delegates-focus-focus-method-on-host-element')
                 .shadowRoot.querySelector('integration-button.negative')
                 .focus();
         });
 
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             var container = document.querySelector(
                 'integration-delegates-focus-focus-method-on-host-element'
             );
@@ -42,24 +42,24 @@ describe('Invoking the focus method of a host element', () => {
         assert.equal(className, 'negative');
     });
 
-    it('should apply focus to the host element (tabindex 0)', function() {
+    it('should apply focus to the host element (tabindex 0)', function () {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        browser.execute(function() {
+        browser.execute(function () {
             return document
                 .querySelector('integration-delegates-focus-focus-method-on-host-element')
                 .shadowRoot.querySelector('input')
                 .click();
         });
 
-        browser.execute(function() {
+        browser.execute(function () {
             document
                 .querySelector('integration-delegates-focus-focus-method-on-host-element')
                 .shadowRoot.querySelector('integration-button.zero')
                 .focus();
         });
 
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             var container = document.querySelector(
                 'integration-delegates-focus-focus-method-on-host-element'
             );
@@ -70,24 +70,24 @@ describe('Invoking the focus method of a host element', () => {
         assert.equal(className, 'zero');
     });
 
-    it('should apply focus to the host element (no tabindex)', function() {
+    it('should apply focus to the host element (no tabindex)', function () {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        browser.execute(function() {
+        browser.execute(function () {
             return document
                 .querySelector('integration-delegates-focus-focus-method-on-host-element')
                 .shadowRoot.querySelector('input')
                 .click();
         });
 
-        browser.execute(function() {
+        browser.execute(function () {
             document
                 .querySelector('integration-delegates-focus-focus-method-on-host-element')
                 .shadowRoot.querySelector('integration-button.none')
                 .focus();
         });
 
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             var container = document.querySelector(
                 'integration-delegates-focus-focus-method-on-host-element'
             );

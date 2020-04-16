@@ -10,7 +10,7 @@ beforeEach(() => {
 
 function waitForMacroTask(fn) {
     // waiting for the macro-task first, then micro-task
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         setTimeout(() => {
             resolve();
         });

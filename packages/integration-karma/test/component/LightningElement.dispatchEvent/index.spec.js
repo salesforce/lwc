@@ -10,7 +10,7 @@ function testDispatchEvent(type, name, dispatchedEvent) {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
-        elm.addEventListener(name, event => {
+        elm.addEventListener(name, (event) => {
             receivedEvent = event;
         });
         elm.dispatch(dispatchedEvent);
@@ -32,7 +32,7 @@ it('should throw an error if the parameter is not an instance of Event', () => {
     }).toThrowError();
 });
 
-it('should throw when event is dispatched during construction', function() {
+it('should throw when event is dispatched during construction', function () {
     class Test extends LightningElement {
         constructor() {
             super();

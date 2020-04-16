@@ -18,7 +18,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
         browser.waitUntil(
             () => {
-                const activeFromDocument = browser.$(function() {
+                const activeFromDocument = browser.$(function () {
                     return document.activeElement;
                 });
 
@@ -33,7 +33,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
         browser.waitUntil(
             () => {
-                const activeFromShadow = browser.$(function() {
+                const activeFromShadow = browser.$(function () {
                     return document.querySelector(
                         'integration-delegates-focus-false-negative-tab-index'
                     ).shadowRoot.activeElement;

@@ -267,7 +267,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         const ownerKey = getNodeOwnerKey(this);
         if (!isUndefined(ownerKey)) {
             // `this` is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
-            const elm = ArrayFind.call(nodeList, elm => getNodeNearestOwnerKey(elm) === ownerKey);
+            const elm = ArrayFind.call(nodeList, (elm) => getNodeNearestOwnerKey(elm) === ownerKey);
             return isUndefined(elm) ? null : elm;
         } else {
             if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
@@ -280,7 +280,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
             const contextNearestOwnerKey = getNodeNearestOwnerKey(this);
             const elm = ArrayFind.call(
                 nodeList,
-                elm => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
+                (elm) => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
             );
             return isUndefined(elm) ? null : elm;
         }
@@ -296,7 +296,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         const elm = ArrayFind.call(
             nodeList,
             // TODO [#1222]: remove global bypass
-            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
         return isUndefined(elm) ? null : elm;
     }
@@ -327,14 +327,14 @@ function getFilteredArrayOfNodes<T extends Node>(
             // context is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
             filtered = ArrayFilter.call(
                 unfilteredNodes,
-                elm => getNodeNearestOwnerKey(elm) === ownerKey
+                (elm) => getNodeNearestOwnerKey(elm) === ownerKey
             );
         } else if (shadowDomSemantic === ShadowDomSemantic.Enabled) {
             // context is inside a shadow, we dont know which one.
             const contextNearestOwnerKey = getNodeNearestOwnerKey(context);
             filtered = ArrayFilter.call(
                 unfilteredNodes,
-                elm => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
+                (elm) => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
             );
         } else {
             // context is manually inserted without lwc:dom-manual and ShadowDomSemantics is off, return everything
@@ -346,7 +346,7 @@ function getFilteredArrayOfNodes<T extends Node>(
             filtered = ArrayFilter.call(
                 unfilteredNodes,
                 // TODO [#1222]: remove global bypass
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
+                (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
             );
         } else {
             // `context` is outside the lwc boundary and patch is not enabled.

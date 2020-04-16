@@ -34,7 +34,9 @@ function createPreprocessor(config, emitter, logger) {
 
         // Wrap all the tests into a describe block with the file stricture name
         const ancestorDirectories = path.relative(basePath, suiteDir).split(path.sep);
-        const intro = ancestorDirectories.map(tag => `describe("${tag}", function () {`).join('\n');
+        const intro = ancestorDirectories
+            .map((tag) => `describe("${tag}", function () {`)
+            .join('\n');
         const outro = ancestorDirectories.map(() => `});`).join('\n');
 
         const plugins = [

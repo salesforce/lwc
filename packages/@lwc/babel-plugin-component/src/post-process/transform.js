@@ -53,14 +53,14 @@ module.exports = function postProcess({ types: t }) {
         const nonDecoratedFields = body
             .get('body')
             .filter(
-                path =>
+                (path) =>
                     t.isClassProperty(path.node) &&
                     !isLWCNode(path.node) &&
                     !path.node.static &&
                     t.isIdentifier(path.node.key) &&
                     !(decoratedIdentifiers.indexOf(path.node.key.name) >= 0)
             )
-            .map(path => path.node.key.name);
+            .map((path) => path.node.key.name);
 
         return nonDecoratedFields.length
             ? t.objectProperty(t.identifier('fields'), t.valueToNode(nonDecoratedFields))

@@ -5,7 +5,7 @@ function getType(recordId, recordUi) {
     const { apiName } = record;
     const recordTypeInfos = recordUi.objectInfos[apiName].recordTypeInfos;
     const keys = Object.keys(recordTypeInfos);
-    const masterRecordTypeId = keys.find(id => {
+    const masterRecordTypeId = keys.find((id) => {
         return recordTypeInfos[id].master;
     });
 

@@ -16,7 +16,7 @@ describe('api', () => {
         class Foo extends LightningElement {}
 
         it('should call the Ctor factory for circular dependencies', () => {
-            const factory = function() {
+            const factory = function () {
                 class Foo extends LightningElement {
                     xyz() {
                         return 1;
@@ -42,7 +42,7 @@ describe('api', () => {
             }).toThrowError(/className/);
         });
 
-        it('should throw an error when createElement is called without Ctor', function() {
+        it('should throw an error when createElement is called without Ctor', function () {
             expect(() => {
                 createElement('x-foo');
             }).toThrow();
@@ -98,32 +98,32 @@ describe('api', () => {
             expect(vnodes).toEqual([false, false, true]);
         });
 
-        it('should handle arrays', function() {
+        it('should handle arrays', function () {
             const o = [1, 2];
-            const vnodes = api.i(o, item => item + 'a');
+            const vnodes = api.i(o, (item) => item + 'a');
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
-        it('should handle Sets', function() {
+        it('should handle Sets', function () {
             const o = new Set();
             o.add(1);
             o.add(2);
-            const vnodes = api.i(o, item => item + 'a');
+            const vnodes = api.i(o, (item) => item + 'a');
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
-        it('should handle Map', function() {
+        it('should handle Map', function () {
             const o = new Map();
             o.set('foo', 1);
             o.set('bar', 2);
-            const vnodes = api.i(o, item => item + 'a');
+            const vnodes = api.i(o, (item) => item + 'a');
             expect(vnodes).toEqual(['foo,1a', 'bar,2a']);
         });
 
-        it('should handle proxies objects', function() {
+        it('should handle proxies objects', function () {
             const array = [1, 2];
             const o = new Proxy(array, {});
-            const vnodes = api.i(o, item => item + 'a');
+            const vnodes = api.i(o, (item) => item + 'a');
             expect(vnodes).toEqual(['1a', '2a']);
         });
 

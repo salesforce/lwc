@@ -10,7 +10,7 @@ export default class Test extends LightningElement {
     }
     set items(items) {
         this.originalItems = items;
-        this.normalizedItems = items.map(item => {
+        this.normalizedItems = items.map((item) => {
             const normalizedItem = {
                 key: `id-${item}`,
                 label: item,

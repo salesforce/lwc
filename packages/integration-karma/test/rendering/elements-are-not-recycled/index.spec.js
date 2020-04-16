@@ -7,7 +7,7 @@ import Container from 'x/container';
 // In the synthetic shadow however, slot content will be not be present in the DOM when not rendered.
 
 describe('custom elements', () => {
-    it('should not be reused when slotted', function() {
+    it('should not be reused when slotted', function () {
         const elm = createElement('x-container', { is: Container });
         elm.isCustomElement = true;
         document.body.appendChild(elm);
@@ -38,7 +38,7 @@ describe('custom elements', () => {
 
 describe('elements', () => {
     if (!process.env.NATIVE_SHADOW) {
-        it('should not be reused when slotted', function() {
+        it('should not be reused when slotted', function () {
             const elm = createElement('x-container', { is: Container });
             elm.isElement = true;
             document.body.appendChild(elm);
@@ -63,7 +63,7 @@ describe('elements', () => {
         });
     }
 
-    it('should not add listener multiple times', function() {
+    it('should not add listener multiple times', function () {
         const elm = createElement('x-container', { is: Container });
         elm.isElement = true;
         document.body.appendChild(elm);
@@ -95,13 +95,13 @@ describe('elements', () => {
 });
 
 if (process.env.NATIVE_SHADOW) {
-    it('should render same styles for custom element instances', function() {
+    it('should render same styles for custom element instances', function () {
         const elm = createElement('x-container', { is: Container });
         elm.isStyleCheck = true;
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
-            const styles = Array.from(elm.shadowRoot.querySelectorAll('x-simple')).map(xSimple =>
+            const styles = Array.from(elm.shadowRoot.querySelectorAll('x-simple')).map((xSimple) =>
                 xSimple.shadowRoot.querySelector('style')
             );
 

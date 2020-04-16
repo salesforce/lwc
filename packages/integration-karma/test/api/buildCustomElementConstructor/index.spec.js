@@ -99,7 +99,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             elm.setAttribute('number', 10);
             document.body.appendChild(elm);
 
-            elm.runInComponentContext(cmp => {
+            elm.runInComponentContext((cmp) => {
                 cmp.setAttribute('title', 'foo');
                 cmp.setAttribute('number', 10);
             });

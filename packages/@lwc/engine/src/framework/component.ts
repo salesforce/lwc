@@ -122,7 +122,7 @@ export function getWrappedComponentsListener(vm: VM, listener: EventListener): E
     }
     let wrappedListener = cmpEventListenerMap.get(listener);
     if (isUndefined(wrappedListener)) {
-        wrappedListener = function(event: Event) {
+        wrappedListener = function (event: Event) {
             invokeEventListener(vm, listener, undefined, event);
         };
         cmpEventListenerMap.set(listener, wrappedListener);

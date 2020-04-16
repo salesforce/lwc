@@ -109,7 +109,7 @@ function getSauceConfig(config) {
 }
 
 function getMatchingBrowsers({ compat, nativeShadow }) {
-    return SAUCE_BROWSERS.filter(browser => {
+    return SAUCE_BROWSERS.filter((browser) => {
         return (
             browser.compat === compat &&
             (!nativeShadow || browser.nativeShadowCompatible === nativeShadow)
@@ -117,7 +117,7 @@ function getMatchingBrowsers({ compat, nativeShadow }) {
     });
 }
 
-module.exports = config => {
+module.exports = (config) => {
     localConfig(config);
 
     const sauceConfig = getSauceConfig(config);
@@ -130,7 +130,7 @@ module.exports = config => {
     config.set({
         sauceLabs: sauceConfig,
 
-        browsers: matchingBrowsers.map(browser => browser.label),
+        browsers: matchingBrowsers.map((browser) => browser.label),
         customLaunchers: matchingBrowsers.reduce((acc, browser) => {
             const { label, browserName, platform, version } = browser;
             return {

@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Dynamic text nodes rendering duplicate text', () => {
-    it('should not render duplicate text', function() {
+    it('should not render duplicate text', function () {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 

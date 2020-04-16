@@ -108,9 +108,7 @@ import { register, ValueChangedEvent } from 'wire-service';
 
 // Imperative access.
 export function getTodo(config) {
-    return getObservable(config)
-        .map(makeReadOnlyMembrane)
-        .toPromise();
+    return getObservable(config).map(makeReadOnlyMembrane).toPromise();
 }
 
 // Declarative access: register a wire adapter factory for  @wire(getTodo).
@@ -119,7 +117,7 @@ register(getTodo, function getTodoWireAdapterFactory(eventTarget) {
     let config;
 
     // Invoked when config is updated.
-    eventTarget.addListener('config', newConfig => {
+    eventTarget.addListener('config', (newConfig) => {
         // Capture config for use during subscription.
         config = newConfig;
     });
@@ -130,11 +128,11 @@ register(getTodo, function getTodoWireAdapterFactory(eventTarget) {
         subscription = getObservable(config)
             .map(makeReadOnlyMembrane)
             .subscribe({
-                next: data =>
+                next: (data) =>
                     wiredEventTarget.dispatchEvent(
                         new ValueChangedEvent({ data, error: undefined })
                     ),
-                error: error =>
+                error: (error) =>
                     wiredEventTarget.dispatchEvent(
                         new ValueChangedEvent({ data: undefined, error })
                     ),

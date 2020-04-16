@@ -42,7 +42,7 @@ export default function templateTransform(
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }
 
-    const fatalError = result.warnings.find(warning => warning.level === DiagnosticLevel.Error);
+    const fatalError = result.warnings.find((warning) => warning.level === DiagnosticLevel.Error);
     if (fatalError) {
         throw CompilerError.from(fatalError, { filename });
     }

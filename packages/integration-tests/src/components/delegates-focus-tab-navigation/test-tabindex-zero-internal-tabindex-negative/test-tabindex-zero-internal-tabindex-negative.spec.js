@@ -12,8 +12,8 @@ describe('Tab navigation when tabindex 0', () => {
         browser.url(URL);
     });
 
-    it('should skip internal elements contained by a negative tabindex subtree when delegating focus (forward)', function() {
-        const firstInput = browser.$(function() {
+    it('should skip internal elements contained by a negative tabindex subtree when delegating focus (forward)', function () {
+        const firstInput = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero-internal-tabindex-negative')
                 .shadowRoot.querySelector('.first');
@@ -22,7 +22,7 @@ describe('Tab navigation when tabindex 0', () => {
 
         browser.keys(['Tab']);
 
-        var tagName = browser.execute(function() {
+        var tagName = browser.execute(function () {
             var container = document.activeElement;
             var parent = container.shadowRoot.activeElement;
             var input = parent.shadowRoot.activeElement;
@@ -32,8 +32,8 @@ describe('Tab navigation when tabindex 0', () => {
         assert.equal(tagName, 'INPUT');
     });
 
-    it('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', function() {
-        const lastInput = browser.$(function() {
+    it('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', function () {
+        const lastInput = browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero-internal-tabindex-negative')
                 .shadowRoot.querySelector('.last');
@@ -42,7 +42,7 @@ describe('Tab navigation when tabindex 0', () => {
 
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var tagName = browser.execute(function() {
+        var tagName = browser.execute(function () {
             var container = document.activeElement;
             var parent = container.shadowRoot.activeElement;
             var input = parent.shadowRoot.activeElement;

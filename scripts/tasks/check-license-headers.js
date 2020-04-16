@@ -20,9 +20,9 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 const { isBinaryFileSync } = require('isbinaryfile');
 
-const getFileContents = path => fs.readFileSync(path, { encoding: 'utf-8' });
-const isDirectory = path => fs.lstatSync(path).isDirectory();
-const createRegExp = pattern => new RegExp(pattern);
+const getFileContents = (path) => fs.readFileSync(path, { encoding: 'utf-8' });
+const isDirectory = (path) => fs.lstatSync(path).isDirectory();
+const createRegExp = (pattern) => new RegExp(pattern);
 
 const IGNORED_EXTENSIONS = [
     'lock',
@@ -79,7 +79,7 @@ const IGNORED_EXTENSIONS = [
     'ipynb',
     'htm',
     'toml',
-].map(extension => createRegExp(`.${extension}$`));
+].map((extension) => createRegExp(`.${extension}$`));
 
 const GENERIC_IGNORED_PATTERNS = [
     '(^|/)\\.[^/]+(/|$)',
@@ -129,14 +129,12 @@ function needsCopyrightHeader(file) {
 }
 
 function check() {
-    const allFiles = execSync('git ls-files', { encoding: 'utf-8' })
-        .trim()
-        .split('\n');
+    const allFiles = execSync('git ls-files', { encoding: 'utf-8' }).trim().split('\n');
 
     const invalidFiles = allFiles.filter(
-        file =>
-            INCLUDED_PATTERNS.some(pattern => pattern.test(file)) &&
-            !IGNORED_PATTERNS.some(pattern => pattern.test(file)) &&
+        (file) =>
+            INCLUDED_PATTERNS.some((pattern) => pattern.test(file)) &&
+            !IGNORED_PATTERNS.some((pattern) => pattern.test(file)) &&
             !isDirectory(file) &&
             !isBinaryFileSync(file) &&
             needsCopyrightHeader(file)

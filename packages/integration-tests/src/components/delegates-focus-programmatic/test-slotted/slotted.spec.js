@@ -13,20 +13,20 @@ describe('when the first focusable element is slotted', () => {
         browser.url(URL);
     });
 
-    it('should apply focus to slotted element', function() {
-        const first = browser.$(function() {
+    it('should apply focus to slotted element', function () {
+        const first = browser.$(function () {
             return document.querySelector('integration-slotted').shadowRoot.querySelector('.first');
         });
         first.click();
 
-        browser.execute(function() {
+        browser.execute(function () {
             return document
                 .querySelector('integration-slotted')
                 .shadowRoot.querySelector('integration-child')
                 .focus();
         });
 
-        const className = browser.execute(function() {
+        const className = browser.execute(function () {
             var active = document.activeElement;
             while (active.shadowRoot) {
                 active = active.shadowRoot.activeElement;

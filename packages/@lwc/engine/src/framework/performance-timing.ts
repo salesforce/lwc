@@ -61,13 +61,13 @@ function noop() {
 
 export const startMeasure = !isUserTimingSupported
     ? noop
-    : function(phase: MeasurementPhase, vm: UninitializedVM) {
+    : function (phase: MeasurementPhase, vm: UninitializedVM) {
           const markName = getMarkName(phase, vm);
           start(markName);
       };
 export const endMeasure = !isUserTimingSupported
     ? noop
-    : function(phase: MeasurementPhase, vm: UninitializedVM) {
+    : function (phase: MeasurementPhase, vm: UninitializedVM) {
           const markName = getMarkName(phase, vm);
           const measureName = getMeasureName(phase, vm);
           end(measureName, markName);
@@ -75,13 +75,13 @@ export const endMeasure = !isUserTimingSupported
 
 export const startGlobalMeasure = !isUserTimingSupported
     ? noop
-    : function(phase: GlobalMeasurementPhase, vm?: UninitializedVM) {
+    : function (phase: GlobalMeasurementPhase, vm?: UninitializedVM) {
           const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
           start(markName);
       };
 export const endGlobalMeasure = !isUserTimingSupported
     ? noop
-    : function(phase: GlobalMeasurementPhase, vm?: UninitializedVM) {
+    : function (phase: GlobalMeasurementPhase, vm?: UninitializedVM) {
           const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
           end(phase, markName);
       };

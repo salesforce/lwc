@@ -8,7 +8,7 @@ function waitForStyleToBeApplied() {
     // Using a timeout instead of a Promise.resolve to wait for the MutationObserver to be triggered.
     // The Promise polyfill on COMPAT browsers is based on MutationObserver. There are some timing issues between
     // Promise.resolve and MutationObserver callback invocation.
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         setTimeout(resolve);
     });
 }
@@ -28,23 +28,23 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
         });
     }
 
-    testErrorOnDomMutation('appendChild', elm => {
+    testErrorOnDomMutation('appendChild', (elm) => {
         const child = document.createElement('div');
         elm.appendChild(child);
     });
 
-    testErrorOnDomMutation('insertBefore', elm => {
+    testErrorOnDomMutation('insertBefore', (elm) => {
         const child = document.createElement('div');
         const span = elm.firstElementChild;
         elm.insertBefore(child, span);
     });
 
-    testErrorOnDomMutation('removeChild', elm => {
+    testErrorOnDomMutation('removeChild', (elm) => {
         const span = elm.firstElementChild;
         elm.removeChild(span);
     });
 
-    testErrorOnDomMutation('replaceChild', elm => {
+    testErrorOnDomMutation('replaceChild', (elm) => {
         const child = document.createElement('div');
         const span = elm.firstElementChild;
         elm.replaceChild(child, span);
@@ -67,12 +67,12 @@ describe('dom mutation with the lwc:dom="manual" directive', () => {
         });
     }
 
-    testAllowDomMutationWithLwcDomDirective('appendChild', elm => {
+    testAllowDomMutationWithLwcDomDirective('appendChild', (elm) => {
         const child = document.createElement('div');
         elm.appendChild(child);
     });
 
-    testAllowDomMutationWithLwcDomDirective('innerHTML', elm => {
+    testAllowDomMutationWithLwcDomDirective('innerHTML', (elm) => {
         elm.innerHTML = `<div></div>`;
     });
 

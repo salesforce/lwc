@@ -69,7 +69,7 @@ export function getModuleEntry(
 export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleResolverConfig {
     const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
     const modules = config.modules || [];
-    const normalizedModules = modules.map(m =>
+    const normalizedModules = modules.map((m) =>
         isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m
     );
 
@@ -94,7 +94,7 @@ export function mergeModules(
     const modules = userModules.slice();
 
     // Visit the user modules to created an index with the name as keys
-    userModules.forEach(m => {
+    userModules.forEach((m) => {
         if (isAliasModuleRecord(m)) {
             visitedAlias.add(m.name);
         } else if (isDirModuleRecord(m)) {
@@ -104,7 +104,7 @@ export function mergeModules(
         }
     });
 
-    configModules.forEach(m => {
+    configModules.forEach((m) => {
         if (
             (isAliasModuleRecord(m) && !visitedAlias.has(m.name)) ||
             (isDirModuleRecord(m) && !visitedDirs.has(normalizeDirName(m.dir))) ||
@@ -168,7 +168,7 @@ export function validateNpmAlias(
     map: { [key: string]: string },
     opts: InnerResolverOptions
 ) {
-    Object.keys(map).forEach(specifier => {
+    Object.keys(map).forEach((specifier) => {
         if (!exposed.includes(specifier)) {
             throw new LwcConfigError(
                 `Unable to apply mapping: The specifier "${specifier}" is not exposed by the npm module`,

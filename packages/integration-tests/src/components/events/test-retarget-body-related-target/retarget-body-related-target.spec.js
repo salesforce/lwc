@@ -14,13 +14,13 @@ describe('Retarget relatedTarget', () => {
     });
 
     it('should have correct relatedTarget when body was focused', () => {
-        browser.execute(function() {
+        browser.execute(function () {
             document.body.focus();
         });
         browser.keys(['Tab']);
         browser.keys(['Tab']);
         browser.keys(['Tab']);
-        const indicator = browser.$(function() {
+        const indicator = browser.$(function () {
             return document
                 .querySelector('integration-retarget-body-related-target')
                 .shadowRoot.querySelector('.related-target-tagname');

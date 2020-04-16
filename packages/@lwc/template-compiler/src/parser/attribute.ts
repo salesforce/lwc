@@ -182,7 +182,7 @@ export function getAttribute(
     el: IRElement,
     pattern: string | RegExp
 ): parse5.AST.Default.Attribute | undefined {
-    return el.attrsList.find(attr =>
+    return el.attrsList.find((attr) =>
         typeof pattern === 'string'
             ? attributeName(attr) === pattern
             : !!attributeName(attr).match(pattern)
@@ -190,7 +190,7 @@ export function getAttribute(
 }
 
 export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
-    el.attrsList = el.attrsList.filter(attr =>
+    el.attrsList = el.attrsList.filter((attr) =>
         typeof pattern === 'string'
             ? attributeName(attr) !== pattern
             : !attributeName(attr).match(pattern)

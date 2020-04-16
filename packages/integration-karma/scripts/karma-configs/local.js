@@ -9,7 +9,7 @@
 
 const loadBaseConfig = require('./base');
 
-module.exports = config => {
+module.exports = (config) => {
     loadBaseConfig(config);
 
     config.set({

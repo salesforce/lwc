@@ -263,7 +263,7 @@ describe('patch', () => {
             });
         });
 
-        it('should rehydrate when state is updated in renderedCallback', function() {
+        it('should rehydrate when state is updated in renderedCallback', function () {
             const html = compileTemplate(`
                 <template>
                     <span>{state.foo}</span>

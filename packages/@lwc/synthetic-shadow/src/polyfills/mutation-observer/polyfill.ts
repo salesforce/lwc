@@ -219,7 +219,7 @@ function patchedDisconnect(this: MutationObserver): void {
     // Clear the node to observer reference which is a strong references
     const observedNodes = observerToNodesMap.get(this);
     if (!isUndefined(observedNodes)) {
-        forEach.call(observedNodes, observedNode => {
+        forEach.call(observedNodes, (observedNode) => {
             const observers = observedNode[observerLookupField];
             if (!isUndefined(observers)) {
                 const index = ArrayIndexOf.call(observers, this);

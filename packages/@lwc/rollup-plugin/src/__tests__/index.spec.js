@@ -95,7 +95,7 @@ describe('typescript relative import', () => {
     it(`should throw when .ts imports .js file`, () => {
         const entry = path.join(tsImportsJsDir, 'main.ts');
         expect.assertions(1);
-        return doRollup(entry, { compat: false }).catch(error => {
+        return doRollup(entry, { compat: false }).catch((error) => {
             expect(error).toEqual(new Error('Importing a .js file into a .ts is not supported'));
         });
     });
@@ -105,7 +105,7 @@ describe('javascript relative import', () => {
     it(`should throw when .js imports .ts file`, () => {
         const entry = path.join(jsImportsTsDir, 'main.js');
         expect.assertions(1);
-        return doRollup(entry, { compat: false }).catch(error => {
+        return doRollup(entry, { compat: false }).catch((error) => {
             expect(error).toEqual(new Error('Importing a .ts file into a .js is not supported'));
         });
     });
@@ -127,7 +127,7 @@ const globalModules = { lwc: 'LWC', myCssResolver: 'resolveCss' };
 async function doRollup(input, { compat } = {}, rollupCompileOptions) {
     const bundle = await rollup.rollup({
         input,
-        external: id => id in globalModules,
+        external: (id) => id in globalModules,
         plugins: [
             rollupCompile(rollupCompileOptions),
             compat && rollupCompat({ polyfills: false }),

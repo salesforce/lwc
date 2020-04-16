@@ -26,7 +26,7 @@ function moduleNameToLookup(name: string): t.VariableDeclaration {
 }
 
 export function format(templateFn: t.FunctionDeclaration, state: State): t.Program {
-    const lookups = state.dependencies.map(cmpClassName => moduleNameToLookup(cmpClassName));
+    const lookups = state.dependencies.map((cmpClassName) => moduleNameToLookup(cmpClassName));
     const metadata = generateTemplateMetadata(state);
 
     return t.program([

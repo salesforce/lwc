@@ -13,20 +13,20 @@ describe('Tabbing into custom element with delegates focus', () => {
         browser.url(URL);
     });
 
-    it('should apply focus to input in shadow', function() {
+    it('should apply focus to input in shadow', function () {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
         browser.keys(['Tab']);
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        const activeFromDocument = browser.$(function() {
+        const activeFromDocument = browser.$(function () {
             return document.activeElement;
         });
         assert.equal(
             activeFromDocument.getTagName(),
             'integration-delegates-focus-from-previous-sibling'
         );
-        const activeFromShadow = browser.$(function() {
+        const activeFromShadow = browser.$(function () {
             return document.querySelector(
                 'integration-delegates-focus-from-previous-sibling'
             ).shadowRoot.activeElement;

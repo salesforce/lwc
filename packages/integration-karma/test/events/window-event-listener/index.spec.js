@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Event Target on window event listener', () => {
-    it('should return correct target', function() {
+    it('should return correct target', function () {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 

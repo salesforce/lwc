@@ -13,7 +13,7 @@ const observerConfig = { childList: true, subtree: true };
  **/
 
 function waitForMutationObservedToBeInvoked() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         setTimeout(resolve);
     });
 }
@@ -31,12 +31,12 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             globalObserver.observe(container, observerConfig);
         });
 
-        it('global observer should be called 1 time, when the host element is attached to document', done => {
+        it('global observer should be called 1 time, when the host element is attached to document', (done) => {
             // Prepare body for new lwc element
             const host = createElement('x-parent', { is: XParent });
             const container = document.createElement('div');
             document.body.appendChild(container);
-            const callback = function(actualMutationRecords, actualObserver) {
+            const callback = function (actualMutationRecords, actualObserver) {
                 expect(actualObserver).toBe(containerObserver);
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(container);
@@ -90,14 +90,14 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
 
-        it('should invoke observer on parent when slotted content is altered', done => {
+        it('should invoke observer on parent when slotted content is altered', (done) => {
             const parent = createElement('x-slotted-child', { is: XSlottedChild });
             container.appendChild(parent);
             const slottedDiv = parent.shadowRoot.querySelector('div.manual');
 
             // observer on parent element's shadowRoot will be notified
             // because the slot content being mutated belongs to that shadow tree
-            const callback = function(actualMutationRecords, actualObserver) {
+            const callback = function (actualMutationRecords, actualObserver) {
                 expect(actualObserver).toBe(parentSRObserver);
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(slottedDiv);
@@ -125,14 +125,14 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
 
-        it('should invoke observer on slot content owner', done => {
+        it('should invoke observer on slot content owner', (done) => {
             const parent = createElement('x-nested-slot-container', { is: XNestedSlotContainer });
             container.appendChild(parent);
             const slottedDiv = parent.shadowRoot.querySelector('div.manual');
 
             // observer on parent element's shadowRoot will be notified
             // because the slot content being mutated belongs to that shadow tree
-            const callback = function(actualMutationRecords, actualObserver) {
+            const callback = function (actualMutationRecords, actualObserver) {
                 expect(actualObserver).toBe(parentSRObserver);
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(slottedDiv);
@@ -195,10 +195,10 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
         it('should invoke observer with correct MutationRecords when adding child nodes using appendChild', () => {
             const parent = createElement('x-parent', { is: XParent });
             container.appendChild(parent);
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 let observer;
                 const parentDiv = parent.shadowRoot.querySelector('div');
-                const callback = function(actualMutationRecords, actualObserver) {
+                const callback = function (actualMutationRecords, actualObserver) {
                     expect(actualObserver).toBe(observer);
                     expect(actualMutationRecords.length).toBe(1);
                     expect(actualMutationRecords[0].target).toBe(parentDiv);
@@ -213,8 +213,8 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             }).then(() => {
                 const childElm = parent.shadowRoot.querySelector('x-child');
                 const childDiv = childElm.shadowRoot.querySelector('div');
-                const promise = new Promise(resolve => {
-                    const callback = function(actualMutationRecords) {
+                const promise = new Promise((resolve) => {
+                    const callback = function (actualMutationRecords) {
                         expect(actualMutationRecords.length).toBe(2);
                         expect(actualMutationRecords[0].target).toBe(childDiv);
                         expect(actualMutationRecords[0].addedNodes.length).toBe(1);
@@ -233,12 +233,12 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
 
-        it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', done => {
+        it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', (done) => {
             const parent = createElement('x-parent', { is: XParent });
             container.appendChild(parent);
             let observer;
             const parentDiv = parent.shadowRoot.querySelector('div');
-            const callback = function(actualMutationRecords, actualObserver) {
+            const callback = function (actualMutationRecords, actualObserver) {
                 expect(actualObserver).toBe(observer);
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(parentDiv);
@@ -253,13 +253,13 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             parentDiv.innerHTML = `<h3></h3><p></p>`;
         });
 
-        it('should invoke observer with correct MutationRecords when removing child nodes using innerHTML', done => {
+        it('should invoke observer with correct MutationRecords when removing child nodes using innerHTML', (done) => {
             const parent = createElement('x-parent', { is: XParent });
             container.appendChild(parent);
             const parentDiv = parent.shadowRoot.querySelector('div');
             parentDiv.innerHTML = `<h3></h3><p></p>`;
             let observer;
-            const callback = function(actualMutationRecords, actualObserver) {
+            const callback = function (actualMutationRecords, actualObserver) {
                 expect(actualObserver).toBe(observer);
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(parentDiv);
@@ -330,14 +330,17 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             container.appendChild(parent);
             let firstObserverCallback;
             let secondObserverCallback;
-            const promise1 = new Promise(resolve => {
+            const promise1 = new Promise((resolve) => {
                 firstObserverCallback = resolve;
             });
-            const promise2 = new Promise(resolve => {
+            const promise2 = new Promise((resolve) => {
                 secondObserverCallback = resolve;
             });
             const parentDiv = parent.shadowRoot.querySelector('div');
-            const observer1 = new MutationObserver(function(actualMutationRecords, actualObserver) {
+            const observer1 = new MutationObserver(function (
+                actualMutationRecords,
+                actualObserver
+            ) {
                 expect(actualObserver).toBe(observer1);
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(parentDiv);
@@ -346,7 +349,10 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 firstObserverCallback();
             });
             observer1.observe(parent.shadowRoot, observerConfig);
-            const observer2 = new MutationObserver(function(actualMutationRecords, actualObserver) {
+            const observer2 = new MutationObserver(function (
+                actualMutationRecords,
+                actualObserver
+            ) {
                 expect(actualObserver).toBe(observer2);
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(parentDiv);
@@ -362,11 +368,11 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             return Promise.all([promise1, promise2]);
         });
 
-        it('should retarget MutationRecord for mutations directly under shadowRoot - added nodes', done => {
+        it('should retarget MutationRecord for mutations directly under shadowRoot - added nodes', (done) => {
             const host = createElement('x-template-mutations', { is: XTemplateMutations });
             container.appendChild(host);
 
-            const callback = function(actualMutationRecords, actualObserver) {
+            const callback = function (actualMutationRecords, actualObserver) {
                 expect(actualObserver).toBe(shadowRootObserver);
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(host.shadowRoot);
@@ -393,11 +399,11 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
 
-        it('should retarget MutationRecord for mutations directly under shadowRoot - removed nodes', done => {
+        it('should retarget MutationRecord for mutations directly under shadowRoot - removed nodes', (done) => {
             const host = createElement('x-template-mutations', { is: XTemplateMutations });
             container.appendChild(host);
 
-            const callback = function(actualMutationRecords, actualObserver) {
+            const callback = function (actualMutationRecords, actualObserver) {
                 expect(actualObserver).toBe(shadowRootObserver);
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(host.shadowRoot);

@@ -80,13 +80,13 @@ if ('onunhandledrejection' in window) {
             // Cleanup listener after test
             window.removeEventListener('unhandledrejection', listener);
         });
-        it('should throw when render() switches a valid template with an undefined value', done => {
+        it('should throw when render() switches a valid template with an undefined value', (done) => {
             const elm = createElement('x-dynamic-template', { is: DynamicTemplate });
             elm.template = template1;
             document.body.appendChild(elm);
 
             elm.template = undefined;
-            listener = event => {
+            listener = (event) => {
                 expect(event.reason).toMatch(
                     /Assert Violation: evaluateTemplate\(\) second argument must be an imported template instead of undefined/
                 );

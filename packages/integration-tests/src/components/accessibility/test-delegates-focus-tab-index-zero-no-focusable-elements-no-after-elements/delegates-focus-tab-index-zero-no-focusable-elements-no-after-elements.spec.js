@@ -13,11 +13,11 @@ describe('Delegate focus with tabindex 0, no tabbable elements, and no tabbable 
         browser.url(URL);
     });
 
-    it('should correctly have no activeelement', function() {
+    it('should correctly have no activeelement', function () {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
 
-        const tagName = browser.execute(function() {
+        const tagName = browser.execute(function () {
             return document.activeElement.tagName;
         });
 

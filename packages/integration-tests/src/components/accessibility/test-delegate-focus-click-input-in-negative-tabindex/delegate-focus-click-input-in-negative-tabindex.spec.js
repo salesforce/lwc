@@ -12,16 +12,16 @@ describe('Delegates focus', () => {
         browser.url(URL);
     });
 
-    it('should focus the input when clicked', function() {
+    it('should focus the input when clicked', function () {
         browser.keys(['Tab']); // focus first anchor
-        const input = browser.$(function() {
+        const input = browser.$(function () {
             return document
                 .querySelector('integration-delegate-focus-click-input-in-negative-tabindex')
                 .shadowRoot.querySelector('integration-child')
                 .shadowRoot.querySelector('input');
         });
         input.click(); // click into input
-        const active = browser.$(function() {
+        const active = browser.$(function () {
             return document
                 .querySelector('integration-delegate-focus-click-input-in-negative-tabindex')
                 .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;

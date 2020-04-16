@@ -30,7 +30,7 @@ describe('rollup plugin lwc-compat', () => {
 
         expect(result.map).not.toBeNull();
 
-        await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
+        await SourceMapConsumer.with(result!.map, null, (sourceMapConsumer) => {
             const varMappedToConstPosition = sourceMapConsumer.originalPositionFor({
                 line: 2,
                 column: 0,

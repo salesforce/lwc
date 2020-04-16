@@ -203,7 +203,7 @@ export function registerDecorators(
         }
     }
     if (!isUndefined(publicMethods)) {
-        forEach.call(publicMethods, methodName => {
+        forEach.call(publicMethods, (methodName) => {
             descriptor = getOwnPropertyDescriptor(proto, methodName);
             if (process.env.NODE_ENV !== 'production') {
                 validateMethodDecoratedWithApi(Ctor, methodName, descriptor);

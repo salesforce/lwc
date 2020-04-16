@@ -10,7 +10,7 @@ import valueParser from 'postcss-value-parser';
 import { importMessage } from '../utils/message';
 
 export default function process(root: Root, result: Result) {
-    root.walkAtRules('import', node => {
+    root.walkAtRules('import', (node) => {
         // Ensure @import are at the top of the file
         let prev = node.prev();
         while (prev) {

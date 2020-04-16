@@ -7,7 +7,7 @@ it('adds supports standard events', () => {
     let event;
 
     const elm = createElement('x-click', { is: Click });
-    elm.eventCallback = e => (event = e);
+    elm.eventCallback = (e) => (event = e);
     document.body.appendChild(elm);
 
     const target = elm.shadowRoot.querySelector('div');
@@ -21,7 +21,7 @@ it('adds supports custom events', () => {
     let event;
 
     const elm = createElement('x-test', { is: Test });
-    elm.eventCallback = e => (event = e);
+    elm.eventCallback = (e) => (event = e);
     document.body.appendChild(elm);
 
     const target = elm.shadowRoot.querySelector('div');

@@ -7,7 +7,7 @@ it('should be able to attach an event listener on the host element', () => {
     let thisValue;
     let args;
 
-    const clickHandler = function(...handlerArgs) {
+    const clickHandler = function (...handlerArgs) {
         thisValue = this;
         args = handlerArgs;
     };

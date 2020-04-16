@@ -21,7 +21,7 @@ export function replaceNodeWith(oldNode: Node, ...newNodes: Node[]): void {
             throw new Error(`Impossible to replace root node.`);
         }
 
-        newNodes.forEach(node => {
+        newNodes.forEach((node) => {
             parent.insertBefore(oldNode, node);
         });
 

@@ -11,13 +11,13 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
         browser.url(URL);
     });
 
-    it('should correctly skip the custom element', function() {
+    it('should correctly skip the custom element', function () {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
 
         browser.waitUntil(
             () => {
-                const active = browser.$(function() {
+                const active = browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement;
                 });
 
@@ -31,7 +31,7 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
 
         browser.waitUntil(
             () => {
-                const active = browser.$(function() {
+                const active = browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement;
                 });
 

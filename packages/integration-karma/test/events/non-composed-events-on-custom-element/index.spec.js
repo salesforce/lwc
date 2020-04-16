@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Non-composed events', () => {
-    it('should dispatch Event on the custom element', function() {
+    it('should dispatch Event on the custom element', function () {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
@@ -16,7 +16,7 @@ describe('Non-composed events', () => {
         });
     });
 
-    it('should dispatch CustomEvent on the custom element', function() {
+    it('should dispatch CustomEvent on the custom element', function () {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 

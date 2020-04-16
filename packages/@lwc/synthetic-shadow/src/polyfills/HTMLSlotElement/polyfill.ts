@@ -26,7 +26,7 @@ export default function apply() {
     // need to patch Document.prototype.createElement to remap `slot`
     // elements to the right prototype
     defineProperty(Document.prototype, 'createElement', {
-        value: function<K extends keyof HTMLElementTagNameMap>(
+        value: function <K extends keyof HTMLElementTagNameMap>(
             this: Document,
             tagName: K,
             _options?: ElementCreationOptions

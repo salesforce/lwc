@@ -36,7 +36,7 @@ describe('legacy wire adapters (register call)', () => {
     });
 
     describe('with dynamic config', () => {
-        it('should not call config when all initially all props of config are undefined', done => {
+        it('should not call config when all initially all props of config are undefined', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
 
             setTimeout(() => {
@@ -46,7 +46,7 @@ describe('legacy wire adapters (register call)', () => {
             }, 0);
         });
 
-        it('should call config when at least one prop in config is defined', done => {
+        it('should call config when at least one prop in config is defined', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
 
             setTimeout(() => {
@@ -58,7 +58,7 @@ describe('legacy wire adapters (register call)', () => {
             }, 0);
         });
 
-        it('should call config when all props become undefined after initialization', done => {
+        it('should call config when all props become undefined after initialization', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
 
             setTimeout(() => {
@@ -77,7 +77,7 @@ describe('legacy wire adapters (register call)', () => {
             }, 0);
         });
 
-        it('should call config when initially all props of config are undefined and some change', done => {
+        it('should call config when initially all props of config are undefined and some change', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
 
             setTimeout(() => {

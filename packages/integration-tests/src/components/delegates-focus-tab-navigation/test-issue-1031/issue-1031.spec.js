@@ -12,14 +12,14 @@ describe('issue #1031', () => {
         browser.url(URL);
     });
 
-    it('should skip child shadow when tabbing after dynamically updating parent tabindex from 0 to -1', function() {
-        const initialize = browser.$(function() {
+    it('should skip child shadow when tabbing after dynamically updating parent tabindex from 0 to -1', function () {
+        const initialize = browser.$(function () {
             return document
                 .querySelector('integration-issue-1031')
                 .shadowRoot.querySelector('.initialize');
         });
         initialize.click(); // init tabindex to 0
-        const firstOutside = browser.$(function() {
+        const firstOutside = browser.$(function () {
             return document
                 .querySelector('integration-issue-1031')
                 .shadowRoot.querySelector('.first-outside');
@@ -28,7 +28,7 @@ describe('issue #1031', () => {
         browser.keys(['Tab']); // host element
         browser.keys(['Tab']); // second outside input
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
@@ -37,14 +37,14 @@ describe('issue #1031', () => {
         assert.equal(className, 'second-outside');
     });
 
-    it('should skip child shadow when shift-tabbing after dynamically updating parent tabindex from 0 to -1', function() {
-        const initialize = browser.$(function() {
+    it('should skip child shadow when shift-tabbing after dynamically updating parent tabindex from 0 to -1', function () {
+        const initialize = browser.$(function () {
             return document
                 .querySelector('integration-issue-1031')
                 .shadowRoot.querySelector('.initialize');
         });
         initialize.click(); // init tabindex to 0
-        const secondOutside = browser.$(function() {
+        const secondOutside = browser.$(function () {
             return document
                 .querySelector('integration-issue-1031')
                 .shadowRoot.querySelector('.second-outside');
@@ -53,7 +53,7 @@ describe('issue #1031', () => {
         browser.keys(['Shift', 'Tab', 'Shift']); // <integration-parent>
         browser.keys(['Shift', 'Tab', 'Shift']); // first outside input
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;

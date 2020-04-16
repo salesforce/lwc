@@ -16,13 +16,13 @@ describe('Focus event while sequential focus navigation', () => {
     describe.skip('delegatesFocus: true, tabindex: -1', () => {
         beforeEach(() => {
             // Reset counters
-            browser.execute(function() {
+            browser.execute(function () {
                 document.querySelector('integration-focus-event-while-navigating').reset();
             });
         });
 
         it('should not invoke focus event listeners (forward)', () => {
-            const headInput = browser.$(function() {
+            const headInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-negative .head');
@@ -31,7 +31,7 @@ describe('Focus event while sequential focus navigation', () => {
 
             browser.keys(['Tab']);
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -52,7 +52,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should not invoke focus event listeners (backward)', () => {
-            const tailInput = browser.$(function() {
+            const tailInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-negative .tail');
@@ -61,7 +61,7 @@ describe('Focus event while sequential focus navigation', () => {
 
             browser.keys(['Shift', 'Tab', 'Shift']);
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -86,13 +86,13 @@ describe('Focus event while sequential focus navigation', () => {
     describe.skip('delegatesFocus: true, tabindex: none', () => {
         beforeEach(() => {
             // Reset counters
-            browser.execute(function() {
+            browser.execute(function () {
                 document.querySelector('integration-focus-event-while-navigating').reset();
             });
         });
 
         it('should invoke focus event listeners (forward)', () => {
-            const headInput = browser.$(function() {
+            const headInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-none .head');
@@ -102,7 +102,7 @@ describe('Focus event while sequential focus navigation', () => {
             browser.keys(['Tab']); // internal input
             browser.keys(['Tab']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -123,7 +123,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should invoke focus event listeners (backward)', () => {
-            const tailInput = browser.$(function() {
+            const tailInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-none .tail');
@@ -133,7 +133,7 @@ describe('Focus event while sequential focus navigation', () => {
             browser.keys(['Shift', 'Tab', 'Shift']); // internal input
             browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -157,13 +157,13 @@ describe('Focus event while sequential focus navigation', () => {
     describe('delegatesFocus: true, tabindex: 0', () => {
         beforeEach(() => {
             // Reset counters
-            browser.execute(function() {
+            browser.execute(function () {
                 document.querySelector('integration-focus-event-while-navigating').reset();
             });
         });
 
         it('should not invoke focus event listener on host and should invoke focus event listener in shadow (forward)', () => {
-            const headInput = browser.$(function() {
+            const headInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-zero .head');
@@ -173,7 +173,7 @@ describe('Focus event while sequential focus navigation', () => {
             browser.keys(['Tab']); // internal input
             browser.keys(['Tab']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -194,7 +194,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should not invoke focus event listener on host and should invoke focus event listener in shadow (backward)', () => {
-            const tailInput = browser.$(function() {
+            const tailInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-zero .tail');
@@ -204,7 +204,7 @@ describe('Focus event while sequential focus navigation', () => {
             browser.keys(['Shift', 'Tab', 'Shift']); // internal input
             browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -229,13 +229,13 @@ describe('Focus event while sequential focus navigation', () => {
     describe.skip('delegatesFocus: false, tabindex: -1', () => {
         beforeEach(() => {
             // Reset counters
-            browser.execute(function() {
+            browser.execute(function () {
                 document.querySelector('integration-focus-event-while-navigating').reset();
             });
         });
 
         it('should not invoke focus event listeners (forward)', () => {
-            const headInput = browser.$(function() {
+            const headInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-false-tabindex-negative .head');
@@ -244,7 +244,7 @@ describe('Focus event while sequential focus navigation', () => {
 
             browser.keys(['Tab']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -265,7 +265,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should not invoke focus event listeners (backward)', () => {
-            const tailInput = browser.$(function() {
+            const tailInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-false-tabindex-negative .tail');
@@ -274,7 +274,7 @@ describe('Focus event while sequential focus navigation', () => {
 
             browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -298,13 +298,13 @@ describe('Focus event while sequential focus navigation', () => {
     describe('delegatesFocus: false, tabindex: 0', () => {
         beforeEach(() => {
             // Reset counters
-            browser.execute(function() {
+            browser.execute(function () {
                 document.querySelector('integration-focus-event-while-navigating').reset();
             });
         });
 
         it('should invoke focus event listener on both host and in shadow (forward)', () => {
-            const headInput = browser.$(function() {
+            const headInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-false-tabindex-zero .head');
@@ -315,7 +315,7 @@ describe('Focus event while sequential focus navigation', () => {
             browser.keys(['Tab']); // internal input
             browser.keys(['Tab']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -336,7 +336,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should invoke focus event listener on both host and in shadow (backward)', () => {
-            const tailInput = browser.$(function() {
+            const tailInput = browser.$(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-false-tabindex-zero .tail');
@@ -347,7 +347,7 @@ describe('Focus event while sequential focus navigation', () => {
             browser.keys(['Shift', 'Tab', 'Shift']); // host
             browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -372,13 +372,13 @@ describe('Focus event while sequential focus navigation', () => {
     describe.skip('delegatesFocus: false, tabindex: none', () => {
         beforeEach(() => {
             // Reset counters
-            browser.execute(function() {
+            browser.execute(function () {
                 document.querySelector('integration-focus-event-while-navigating').reset();
             });
         });
 
         it('should invoke focus event listeners (forward)', () => {
-            const headInput = browser.execute(function() {
+            const headInput = browser.execute(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-none .head');
@@ -388,7 +388,7 @@ describe('Focus event while sequential focus navigation', () => {
             browser.keys(['Tab']); // internal input
             browser.keys(['Tab']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),
@@ -409,7 +409,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should invoke focus event listeners (backward)', () => {
-            const tailInput = browser.execute(function() {
+            const tailInput = browser.execute(function () {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-none .tail');
@@ -419,7 +419,7 @@ describe('Focus event while sequential focus navigation', () => {
             browser.keys(['Shift', 'Tab', 'Shift']); // internal input
             browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = browser.execute(function() {
+            var count = browser.execute(function () {
                 var container = document.querySelector('integration-focus-event-while-navigating');
                 return {
                     host: container.hostFocusCount(),

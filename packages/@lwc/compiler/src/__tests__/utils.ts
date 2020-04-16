@@ -22,7 +22,7 @@ export function pretify(str: string): string {
         .toString()
         .replace(/^\s+|\s+$/, '')
         .split('\n')
-        .map(line => line.trim())
-        .filter(line => line.length)
+        .map((line) => line.trim())
+        .filter((line) => line.length)
         .join('\n');
 }

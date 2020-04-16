@@ -8,7 +8,7 @@ export class BroadcastAdapter {
     }
 
     static broadcastData(data) {
-        instances.forEach(instance => {
+        instances.forEach((instance) => {
             instance.callback(data);
         });
     }

@@ -10,7 +10,7 @@ import * as babel from '@babel/core';
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
 import { NormalizedOutputConfig } from '../options';
 
-export default function({ sourcemap }: NormalizedOutputConfig): Plugin {
+export default function ({ sourcemap }: NormalizedOutputConfig): Plugin {
     // Inlining the `babel-preset-compat` module require to only pay the parsing and evaluation cost for needed modules
     const presetCompat = require('babel-preset-compat');
 

@@ -12,8 +12,8 @@ describe('Tab navigation when tabindex 0', () => {
         browser.url(URL);
     });
 
-    it('should focus on custom element when tabbing forward from a sibling element', function() {
-        const secondOutside = browser.$(function() {
+    it('should focus on custom element when tabbing forward from a sibling element', function () {
+        const secondOutside = browser.$(function () {
             return document
                 .querySelector('integration-tab-navigation-tabindex-zero')
                 .shadowRoot.querySelector('.second-outside');
@@ -21,14 +21,14 @@ describe('Tab navigation when tabindex 0', () => {
         secondOutside.click();
         browser.keys(['Tab']);
 
-        var tagName = browser.execute(function() {
+        var tagName = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             return child.tagName.toLowerCase();
         });
         assert.equal(tagName, 'integration-child');
 
-        var internal = browser.execute(function() {
+        var internal = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
@@ -37,8 +37,8 @@ describe('Tab navigation when tabindex 0', () => {
         assert.equal(internal, null);
     });
 
-    it('should focus on internal element when tabbing forward twice from a sibling element', function() {
-        const secondOutside = browser.$(function() {
+    it('should focus on internal element when tabbing forward twice from a sibling element', function () {
+        const secondOutside = browser.$(function () {
             return document
                 .querySelector('integration-tab-navigation-tabindex-zero')
                 .shadowRoot.querySelector('.second-outside');
@@ -47,7 +47,7 @@ describe('Tab navigation when tabindex 0', () => {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
@@ -56,8 +56,8 @@ describe('Tab navigation when tabindex 0', () => {
         assert.equal(className, 'first-inside');
     });
 
-    it('should focus on internal element when tabbing backwards from a sibling element', function() {
-        const thirdOutside = browser.$(function() {
+    it('should focus on internal element when tabbing backwards from a sibling element', function () {
+        const thirdOutside = browser.$(function () {
             return document
                 .querySelector('integration-tab-navigation-tabindex-zero')
                 .shadowRoot.querySelector('.third-outside');
@@ -65,7 +65,7 @@ describe('Tab navigation when tabindex 0', () => {
         thirdOutside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
@@ -74,8 +74,8 @@ describe('Tab navigation when tabindex 0', () => {
         assert.equal(className, 'third-inside');
     });
 
-    it('should focus on custom element when tabbing backwards out of the shadow', function() {
-        const firstInside = browser.$(function() {
+    it('should focus on custom element when tabbing backwards out of the shadow', function () {
+        const firstInside = browser.$(function () {
             return document
                 .querySelector('integration-tab-navigation-tabindex-zero')
                 .shadowRoot.querySelector('integration-child')
@@ -84,7 +84,7 @@ describe('Tab navigation when tabindex 0', () => {
         firstInside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function() {
+        var className = browser.execute(function () {
             var activeElement = document.activeElement;
             while (activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {
                 activeElement = activeElement.shadowRoot.activeElement;

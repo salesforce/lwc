@@ -5,6 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export default function() {
+export default function () {
     return typeof HTMLSlotElement === 'undefined';
 }

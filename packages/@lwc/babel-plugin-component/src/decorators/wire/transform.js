@@ -21,15 +21,15 @@ function isObservedProperty(configProperty) {
 function getWiredStatic(wireConfig) {
     return wireConfig
         .get('properties')
-        .filter(property => !isObservedProperty(property))
-        .map(path => path.node);
+        .filter((property) => !isObservedProperty(property))
+        .map((path) => path.node);
 }
 
 function getWiredParams(t, wireConfig) {
     return wireConfig
         .get('properties')
-        .filter(property => isObservedProperty(property))
-        .map(path => {
+        .filter((property) => isObservedProperty(property))
+        .map((path) => {
             // Need to clone deep the observed property to remove the param prefix
             const clonedProperty = t.cloneDeep(path.node);
             clonedProperty.value.value = clonedProperty.value.value.slice(1);
@@ -42,7 +42,7 @@ function getGeneratedConfig(t, wiredValue) {
     let counter = 0;
     const configBlockBody = [];
     const configProps = [];
-    const generateParameterConfigValue = memberExprPaths => {
+    const generateParameterConfigValue = (memberExprPaths) => {
         // Note: When memberExprPaths ($foo.bar) has an invalid identifier (eg: foo..bar, foo.bar[3])
         //       it should (ideally) resolve in a compilation error during validation phase.
         //       This is not possible due that platform components may have a param definition which is invalid
@@ -50,7 +50,7 @@ function getGeneratedConfig(t, wiredValue) {
         //       In such cases where the param does not have proper notation, the config generated will use the bracket
         //       notation to match the current behavior (that most likely end up resolving that param as undefined).
         const isInvalidMemberExpr = memberExprPaths.some(
-            maybeIdentifier =>
+            (maybeIdentifier) =>
                 !(t.isValidES3Identifier(maybeIdentifier) && maybeIdentifier.length > 0)
         );
         const memberExprPropertyGen = !isInvalidMemberExpr ? t.identifier : t.StringLiteral;
@@ -119,7 +119,7 @@ function getGeneratedConfig(t, wiredValue) {
     }
 
     if (wiredValue.params) {
-        wiredValue.params.forEach(param => {
+        wiredValue.params.forEach((param) => {
             const memberExprPaths = param.value.value.split('.');
             const paramConfigValue = generateParameterConfigValue(memberExprPaths);
 
@@ -144,7 +144,7 @@ function getGeneratedConfig(t, wiredValue) {
 
 function buildWireConfigValue(t, wiredValues) {
     return t.objectExpression(
-        wiredValues.map(wiredValue => {
+        wiredValues.map((wiredValue) => {
             const wireConfig = [];
             if (wiredValue.adapter) {
                 wireConfig.push(
@@ -190,7 +190,7 @@ const SUPPORTED_VALUE_TO_TYPE_MAP = {
     BooleanLiteral: 'boolean',
 };
 
-const scopedReferenceLookup = scope => name => {
+const scopedReferenceLookup = (scope) => (name) => {
     const binding = scope.getBinding(name);
 
     let type;

@@ -21,8 +21,8 @@ module.exports = function generateTargets(targets, opts = {}) {
     let jobsCompleted = 0;
 
     return new Promise((resolve, reject) => {
-        targets.forEach(config => {
-            workers(config, err => {
+        targets.forEach((config) => {
+            workers(config, (err) => {
                 if (err) {
                     return reject(err);
                 }

@@ -25,7 +25,7 @@ function getConfig(env = {}) {
     };
 }
 
-describe('environment replacement', function() {
+describe('environment replacement', function () {
     it('should not replace environment variable if unset', async () => {
         const {
             result: { code },

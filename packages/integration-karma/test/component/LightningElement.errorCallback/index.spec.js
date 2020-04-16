@@ -98,7 +98,7 @@ describe('error boundary', () => {
         });
     });
 
-    it('should render alternative view if child throws during self rehydration cycle', done => {
+    it('should render alternative view if child throws during self rehydration cycle', (done) => {
         const elm = createElement('x-boundary-child-self-rehydrate-throw', {
             is: XBoundaryChildSelfRehydrateThrow,
         });

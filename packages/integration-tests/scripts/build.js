@@ -51,7 +51,7 @@ const testOutput = path.join(__dirname, '../', 'public');
 const testSharedOutput = path.join(testOutput, 'shared');
 const testEntries = functionalTests.reduce((seed, functionalFolder) => {
     const testsFolder = path.join(functionalTestDir, functionalFolder);
-    const tests = fs.readdirSync(testsFolder).map(test => {
+    const tests = fs.readdirSync(testsFolder).map((test) => {
         const testPath = path.join(testsFolder, test, `${test}${testSufix}`);
         return { path: testPath, namespace: functionalFolder, name: getTestName(testPath) };
     });
@@ -115,7 +115,7 @@ const globalModules = {
 
 function createRollupInputConfig() {
     return {
-        external: function(id) {
+        external: function (id) {
             return id in globalModules;
         },
         plugins: [
@@ -171,6 +171,6 @@ testEntries
             'utf8'
         );
     }, Promise.resolve())
-    .catch(err => {
+    .catch((err) => {
         console.log(err);
     });

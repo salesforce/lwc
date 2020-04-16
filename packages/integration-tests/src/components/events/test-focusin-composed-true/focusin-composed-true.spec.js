@@ -13,15 +13,15 @@ describe('Composed focusin event', () => {
         browser.url(URL);
     });
 
-    it('standard event should be composed', function() {
-        const input = browser.$(function() {
+    it('standard event should be composed', function () {
+        const input = browser.$(function () {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('input');
         });
         input.click();
         $('body').click();
-        const focusInComposed = browser.$(function() {
+        const focusInComposed = browser.$(function () {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('.focus-in-composed');
@@ -30,13 +30,13 @@ describe('Composed focusin event', () => {
     });
 
     it('custom event should not be composed', () => {
-        const button = browser.$(function() {
+        const button = browser.$(function () {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('button');
         });
         button.click();
-        const customFocusInNotComposed = browser.$(function() {
+        const customFocusInNotComposed = browser.$(function () {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('.custom-focus-in-not-composed');

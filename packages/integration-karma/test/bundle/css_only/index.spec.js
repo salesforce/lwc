@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/cssContainer';
 
 describe('CSS only modules', () => {
-    it('CSS should be applied', function() {
+    it('CSS should be applied', function () {
         const elm = createElement('x-css-container', { is: Container });
         document.body.appendChild(elm);
 

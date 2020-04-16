@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Nested state', () => {
-    it('Object keys should have the right value', function() {
+    it('Object keys should have the right value', function () {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 

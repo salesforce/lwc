@@ -1,4 +1,4 @@
-export default function() {
+export default function () {
     const xSlotted = document.createElement('x-slotted');
     xSlotted.innerHTML =
         "<div slot='slot1' data-slot-id='slot1'>Named slot content</div><div data-slot-id='default'><p>Default slot content</p></div>Text Node";

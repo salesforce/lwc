@@ -90,7 +90,7 @@ const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
 const TextHook: Hooks<VText> = {
-    create: vnode => {
+    create: (vnode) => {
         vnode.elm = document.createTextNode(vnode.text!);
         linkNodeToShadow(vnode);
     },
@@ -106,7 +106,7 @@ const TextHook: Hooks<VText> = {
 // which breaks some invariants. For that reason, we have the following for any
 // Custom Element that is inserted via a template.
 const ElementHook: Hooks<VElement> = {
-    create: vnode => {
+    create: (vnode) => {
         const { data, sel, clonedElement } = vnode;
         const { ns } = data;
         // TODO [#1364]: supporting the ability to inject a cloned StyleElement via a vnode this is
@@ -140,7 +140,7 @@ const ElementHook: Hooks<VElement> = {
 };
 
 const CustomElementHook: Hooks<VCustomElement> = {
-    create: vnode => {
+    create: (vnode) => {
         const { sel } = vnode;
         vnode.elm = document.createElement(sel);
         linkNodeToShadow(vnode);
@@ -523,7 +523,7 @@ export function b(fn: EventListener): EventListener {
         throw new Error();
     }
     const vm: VM = vmBeingRendered;
-    return function(event: Event) {
+    return function (event: Event) {
         invokeEventListener(vm, fn, vm.component, event);
     };
 }

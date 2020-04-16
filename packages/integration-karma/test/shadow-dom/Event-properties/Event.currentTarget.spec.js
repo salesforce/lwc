@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import XAsyncEventCurrentTarget from 'x/asyncEventCurrentTarget';
 
-it('Async event currentTarget should be null', function() {
+it('Async event currentTarget should be null', function () {
     const elm = createElement('x-async-event-current-target', { is: XAsyncEventCurrentTarget });
     document.body.appendChild(elm);
     const triggerElm = elm.shadowRoot.querySelector('div.triggerEventHandler');

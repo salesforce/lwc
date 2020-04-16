@@ -24,7 +24,7 @@ describe('clipboard-event-composed polyfill', () => {
     // This test suite relies on the Selection API which is not supported in ie11
     if (browser.config.capabilities.commonName !== 'ie11') {
         it('copy event should be composed', () => {
-            browser.$(function() {
+            browser.$(function () {
                 window.getSelection().selectAllChildren(document.body);
             });
 
@@ -39,7 +39,7 @@ describe('clipboard-event-composed polyfill', () => {
         });
 
         it('paste event should be composed', () => {
-            browser.$(function() {
+            browser.$(function () {
                 window.getSelection().selectAllChildren(document.body);
             });
 

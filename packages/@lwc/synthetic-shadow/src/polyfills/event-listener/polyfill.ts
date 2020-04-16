@@ -41,7 +41,7 @@ function getEventListenerWrapper(
     }
 
     const isHandlerFunction = isFunction(listener);
-    const wrapperFn = ((listener as EventListenerWrapper).$$lwcEventWrapper$$ = function(
+    const wrapperFn = ((listener as EventListenerWrapper).$$lwcEventWrapper$$ = function (
         this: EventTarget,
         e: Event
     ) {

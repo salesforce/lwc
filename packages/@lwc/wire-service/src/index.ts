@@ -96,7 +96,7 @@ function isEmptyConfig(config: Record<string, any>): boolean {
 }
 
 function isValidConfig(config: Record<string, any>): boolean {
-    return Object.keys(config).some(key => !isUndefined(config[key]));
+    return Object.keys(config).some((key) => !isUndefined(config[key]));
 }
 
 export class WireAdapter {
@@ -203,17 +203,17 @@ export class WireAdapter {
         }
 
         this.currentConfig = config;
-        forEach.call(this.configuring, listener => {
+        forEach.call(this.configuring, (listener) => {
             listener.call(undefined, config);
         });
     }
 
     connect() {
-        forEach.call(this.connecting, listener => listener.call(undefined));
+        forEach.call(this.connecting, (listener) => listener.call(undefined));
     }
 
     disconnect() {
-        forEach.call(this.disconnecting, listener => listener.call(undefined));
+        forEach.call(this.disconnecting, (listener) => listener.call(undefined));
     }
 }
 

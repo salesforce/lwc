@@ -20,7 +20,7 @@ function transform(plugin, pluginOpts = {}, opts = {}) {
         opts
     );
 
-    return function(source) {
+    return function (source) {
         return babel.transform(prettify(source), testConfig);
     };
 }
@@ -30,15 +30,15 @@ function prettify(str) {
         .toString()
         .replace(/^\s+|\s+$/, '')
         .split('\n')
-        .map(line => line.trim())
-        .filter(line => line.length)
+        .map((line) => line.trim())
+        .filter((line) => line.length)
         .join('\n');
 }
 
 function pluginTest(plugin, pluginOpts, opts = {}) {
     const testTransform = transform(plugin, pluginOpts, opts);
 
-    const transformTest = function(actual, expected) {
+    const transformTest = function (actual, expected) {
         if (expected.error) {
             let transformError;
 
@@ -72,7 +72,7 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
 
     const pluginTester = (name, actual, expected) =>
         test(name, () => transformTest(actual, expected));
-    pluginTester.skip = name => test.skip(name);
+    pluginTester.skip = (name) => test.skip(name);
     pluginTester.only = (name, actual, expected) => {
         // eslint-disable-next-line jest/no-focused-tests
         test.only(name, () => transformTest(actual, expected));

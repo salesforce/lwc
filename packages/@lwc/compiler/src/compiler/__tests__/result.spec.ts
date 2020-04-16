@@ -236,7 +236,7 @@ export default class Test extends LightningElement {
             },
         });
 
-        await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
+        await SourceMapConsumer.with(result!.map, null, (sourceMapConsumer) => {
             const mainDefMappedToOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'utils/util.js',
                 line: 1,

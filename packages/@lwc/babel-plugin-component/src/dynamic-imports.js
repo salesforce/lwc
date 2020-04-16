@@ -24,7 +24,7 @@ function validateImport(sourcePath) {
  * Expected API for this plugin:
  * { dynamicImports: { loader: string, strictSpecifier: boolean } }
  */
-module.exports = function() {
+module.exports = function () {
     function getLoaderRef(path, loaderName, state) {
         if (!state.loaderRef) {
             state.loaderRef = moduleImports.addNamed(path, 'load', loaderName);

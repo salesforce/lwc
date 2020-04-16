@@ -12,10 +12,10 @@ function isValidDirValue(value: string): boolean {
     return value === 'ltr' || value === 'rtl';
 }
 
-export default function(root: Root) {
-    root.nodes.forEach(node => {
+export default function (root: Root) {
+    root.nodes.forEach((node) => {
         const selector = node as Selector;
-        selector.nodes.forEach(node => {
+        selector.nodes.forEach((node) => {
             if (!isDirPseudoClass(node)) {
                 return;
             }

@@ -1,12 +1,12 @@
 describe('Set Prototype Of', () => {
-    it('should have set prototype correctly', function() {
+    it('should have set prototype correctly', function () {
         const obj = {};
         Object.setPrototypeOf(obj, []);
         const actual = obj instanceof Array;
         expect(actual).toBe(true);
     });
 
-    it('should have set proxy prototype correctly', function() {
+    it('should have set proxy prototype correctly', function () {
         const proxy = new Proxy(
             {},
             {
@@ -20,7 +20,7 @@ describe('Set Prototype Of', () => {
         expect(actual).toBe(true);
     });
 
-    it('should have ignored proto argument in favor of trap', function() {
+    it('should have ignored proto argument in favor of trap', function () {
         const proxy = new Proxy(
             {},
             {
@@ -34,7 +34,7 @@ describe('Set Prototype Of', () => {
         expect(actual).toBe(false);
     });
 
-    it('should have ignored proto argument in favor of trap', function() {
+    it('should have ignored proto argument in favor of trap', function () {
         const obj = {};
         const proto = [];
         Object.setPrototypeOf(obj, proto);
