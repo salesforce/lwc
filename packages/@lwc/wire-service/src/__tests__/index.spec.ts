@@ -217,7 +217,7 @@ describe('WireEventTarget from register', () => {
 
                 const listener = jest.fn();
                 wireEventTarget.addEventListener(eventType, listener);
-                adapter[eventToAdapterMethod[eventType]]();
+                adapter[eventToAdapterMethod[eventType]]({});
 
                 expect(listener).toHaveBeenCalledTimes(1);
 
