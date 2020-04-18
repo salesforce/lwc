@@ -23,18 +23,21 @@ import {
     isObject,
 } from '@lwc/shared';
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { patchLightningElementPrototypeWithRestrictions } from './restrictions';
 import {
     ComponentInterface,
     getWrappedComponentsListener,
     getTemplateReactiveObserver,
 } from './component';
-import { EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
 import { associateVM, getAssociatedVM, VM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import { dispatchEvent } from '../env/dom';
-import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
+import {
+    patchComponentWithRestrictions,
+    patchShadowRootWithRestrictions,
+    patchLightningElementPrototypeWithRestrictions,
+    patchCustomElementWithRestrictions,
+} from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { logError } from '../shared/logger';
@@ -250,7 +253,7 @@ function BaseLightningElementConstructor(this: LightningElement) {
             `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`
         );
     }
-    const vm = vmBeingConstructed;
+    const vm = vmBeingConstructed as VM;
     const {
         elm,
         mode,
@@ -258,7 +261,7 @@ function BaseLightningElementConstructor(this: LightningElement) {
     } = vm;
     const component = this;
     vm.component = component;
-    vm.tro = getTemplateReactiveObserver(vm as VM);
+    vm.tro = getTemplateReactiveObserver(vm);
     vm.oar = create(null);
     // interaction hooks
     // We are intentionally hiding this argument from the formal API of LWCElement because
@@ -277,14 +280,15 @@ function BaseLightningElementConstructor(this: LightningElement) {
     };
     const cmpRoot = elm.attachShadow(shadowRootOptions);
     // linking elm, shadow root and component with the VM
-    associateVM(component, vm as VM);
-    associateVM(cmpRoot, vm as VM);
-    associateVM(elm, vm as VM);
+    associateVM(component, vm);
+    associateVM(cmpRoot, vm);
+    associateVM(elm, vm);
     // VM is now initialized
-    (vm as VM).cmpRoot = cmpRoot;
+    vm.cmpRoot = cmpRoot;
     if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
-        patchShadowRootWithRestrictions(cmpRoot, EmptyObject);
+        patchShadowRootWithRestrictions(cmpRoot);
     }
     return this as LightningElement;
 }

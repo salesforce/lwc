@@ -27,7 +27,7 @@ import {
     keys,
 } from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
-import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from './utils';
+import { EmptyObject } from './utils';
 import {
     ComponentConstructor,
     ErrorCallback,
@@ -45,6 +45,10 @@ import {
     HTMLElementConstructor,
 } from './base-bridge-element';
 import { getAssociatedVMIfPresent } from './vm';
+import {
+    isCircularModuleDependency,
+    resolveCircularModuleDependency,
+} from '../shared/circular-module-dependencies';
 
 export interface ComponentDef {
     name: string;
@@ -175,10 +179,10 @@ function createComponentDef(
 }
 
 /**
- * EXPERIMENTAL: This function allows for the identification of LWC
- * constructors. This API is subject to change or being removed.
+ * EXPERIMENTAL: This function allows for the identification of LWC constructors. This API is
+ * subject to change or being removed.
  */
-export function isComponentConstructor(ctor: any): ctor is ComponentConstructor {
+export function isComponentConstructor(ctor: unknown): ctor is ComponentConstructor {
     if (!isFunction(ctor)) {
         return false;
     }
@@ -196,8 +200,8 @@ export function isComponentConstructor(ctor: any): ctor is ComponentConstructor 
         if (isCircularModuleDependency(current)) {
             const circularResolved = resolveCircularModuleDependency(current);
 
-            // If the circular function returns itself, that's the signal that we have hit the end of the proto chain,
-            // which must always be a valid base constructor.
+            // If the circular function returns itself, that's the signal that we have hit the end
+            // of the proto chain, which must always be a valid base constructor.
             if (circularResolved === current) {
                 return true;
             }
@@ -215,13 +219,17 @@ export function isComponentConstructor(ctor: any): ctor is ComponentConstructor 
 }
 
 /**
- * EXPERIMENTAL: This function allows for the collection of internal
- * component metadata. This API is subject to change or being removed.
+ * EXPERIMENTAL: This function allows for the collection of internal component metadata. This API is
+ * subject to change or being removed.
  */
-export function getComponentInternalDef(Ctor: any, subclassComponentName?: string): ComponentDef {
+export function getComponentInternalDef(Ctor: any, name?: string): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
 
     if (isUndefined(def)) {
+        if (isCircularModuleDependency(Ctor)) {
+            Ctor = resolveCircularModuleDependency(Ctor);
+        }
+
         if (!isComponentConstructor(Ctor)) {
             throw new TypeError(
                 `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`
@@ -237,7 +245,7 @@ export function getComponentInternalDef(Ctor: any, subclassComponentName?: strin
             };
         }
 
-        def = createComponentDef(Ctor, meta, subclassComponentName || Ctor.name);
+        def = createComponentDef(Ctor, meta, name || Ctor.name);
         CtorToDefMap.set(Ctor, def);
     }
 

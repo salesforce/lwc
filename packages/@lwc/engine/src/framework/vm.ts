@@ -116,7 +116,7 @@ export interface VM extends UninitializedVM {
     oar: Record<PropertyKey, ReactiveObserver>;
 }
 
-type VMAssociable = ShadowRoot | LightningElement | ComponentInterface;
+type VMAssociable = Node | LightningElement | ComponentInterface;
 
 let idx: number = 0;
 
@@ -143,9 +143,26 @@ export function rerenderVM(vm: VM) {
     rehydrate(vm);
 }
 
-export function appendRootVM(vm: VM) {
+export function connectRootElement(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+
+    startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+
+    // Usually means moving the element from one place to another, which is observable via
+    // life-cycle hooks.
+    if (vm.state === VMState.connected) {
+        disconnectedRootElement(elm);
+    }
+
     runConnectedCallback(vm);
     rehydrate(vm);
+
+    endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+}
+
+export function disconnectedRootElement(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    resetComponentStateWhenRemoved(vm);
 }
 
 export function appendVM(vm: VM) {
@@ -183,19 +200,15 @@ export function removeVM(vm: VM) {
     resetComponentStateWhenRemoved(vm);
 }
 
-// this method is triggered by the removal of a root element from the DOM.
-export function removeRootVM(vm: VM) {
-    resetComponentStateWhenRemoved(vm);
-}
-
-export interface CreateVMInit {
-    mode: 'open' | 'closed';
-    // custom settings for now
-    isRoot?: boolean;
-    owner: VM | null;
-}
-
-export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: CreateVMInit) {
+export function createVM(
+    elm: HTMLElement,
+    Ctor: ComponentConstructor,
+    options: {
+        mode: 'open' | 'closed';
+        isRoot?: boolean;
+        owner: VM | null;
+    }
+): VM {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             elm instanceof HTMLElement,
@@ -247,7 +260,6 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
 
     // link component to the wire service
     const initializedVm = uninitializedVm as VM;
-
     // initializing the wire decorator per instance only when really needed
     if (hasWireAdapters(initializedVm)) {
         installWireAdapters(initializedVm);
