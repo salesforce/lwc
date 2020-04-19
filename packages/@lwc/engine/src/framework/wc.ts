@@ -24,21 +24,30 @@ import { HTMLElementConstructor } from './base-bridge-element';
  * const elm = document.createElement('x-foo');
  * ```
  */
-export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
+export function buildCustomElementConstructor(
+    Ctor: ComponentConstructor,
+    options?: {
+        mode?: 'open' | 'closed';
+    }
+): HTMLElementConstructor {
     const { props, bridge: BaseElement } = getComponentInternalDef(Ctor);
-
     // generating the hash table for attributes to avoid duplicate fields
     // and facilitate validation and false positives in case of inheritance.
     const attributeToPropMap: Record<string, string> = {};
     for (const propName in props) {
         attributeToPropMap[getAttrNameFromPropName(propName)] = propName;
     }
+    const mode =
+        isUndefined(options) || isUndefined(options.mode) || options.mode !== 'closed'
+            ? 'open'
+            : 'closed';
+
     return class extends BaseElement {
         constructor() {
             super();
             createVM(this, Ctor, {
-                mode: 'open',
                 isRoot: true,
+                mode,
                 owner: null,
             });
         }
