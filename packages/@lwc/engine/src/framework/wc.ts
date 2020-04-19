@@ -4,30 +4,31 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, keys, isNull, isObject } from '@lwc/shared';
+import { isUndefined, keys } from '@lwc/shared';
 import { ComponentConstructor } from './component';
 import { getAttrNameFromPropName, isAttributeLocked } from './attributes';
 import { getComponentInternalDef } from './def';
-import { createVM, appendRootVM, removeRootVM, getAssociatedVM, CreateVMInit } from './vm';
-import { EmptyObject } from './utils';
+import { createVM, connectRootElement, disconnectedRootElement } from './vm';
 import { HTMLElementConstructor } from './base-bridge-element';
-import { patchCustomElementWithRestrictions } from './restrictions';
 
 /**
- * This function builds a Web Component class from a LWC constructor
- * so it can be registered as a new element via customElements.define()
- * at any given time. E.g.:
+ * EXPERIMENTAL: This function builds a Web Component class from a LWC constructor so it can be
+ * registered as a new element via customElements.define() at any given time.
  *
- *      import { buildCustomElementConstructor } from 'lwc';
- *      import Foo from 'ns/foo';
- *      const WC = buildCustomElementConstructor(Foo);
- *      customElements.define('x-foo', WC);
- *      const elm = document.createElement('x-foo');
- *
+ * @example
+ * ```
+ * import { buildCustomElementConstructor } from 'lwc';
+ * import Foo from 'ns/foo';
+ * const WC = buildCustomElementConstructor(Foo);
+ * customElements.define('x-foo', WC);
+ * const elm = document.createElement('x-foo');
+ * ```
  */
 export function buildCustomElementConstructor(
     Ctor: ComponentConstructor,
-    options?: ShadowRootInit
+    options?: {
+        mode?: 'open' | 'closed';
+    }
 ): HTMLElementConstructor {
     const { props, bridge: BaseElement } = getComponentInternalDef(Ctor);
     // generating the hash table for attributes to avoid duplicate fields
@@ -36,32 +37,25 @@ export function buildCustomElementConstructor(
     for (const propName in props) {
         attributeToPropMap[getAttrNameFromPropName(propName)] = propName;
     }
-    const normalizedOptions: CreateVMInit = {
-        mode: 'open',
-        isRoot: true,
-        owner: null,
-    };
-    if (isObject(options) && !isNull(options)) {
-        const { mode } = options;
-        if (mode === 'closed') {
-            normalizedOptions.mode = mode;
-        }
-    }
+    const mode =
+        isUndefined(options) || isUndefined(options.mode) || options.mode !== 'closed'
+            ? 'open'
+            : 'closed';
+
     return class extends BaseElement {
         constructor() {
             super();
-            createVM(this, Ctor, normalizedOptions);
-            if (process.env.NODE_ENV !== 'production') {
-                patchCustomElementWithRestrictions(this, EmptyObject);
-            }
+            createVM(this, Ctor, {
+                isRoot: true,
+                mode,
+                owner: null,
+            });
         }
         connectedCallback() {
-            const vm = getAssociatedVM(this);
-            appendRootVM(vm);
+            connectRootElement(this);
         }
         disconnectedCallback() {
-            const vm = getAssociatedVM(this);
-            removeRootVM(vm);
+            disconnectedRootElement(this);
         }
         attributeChangedCallback(attrName: string, oldValue: string, newValue: string) {
             if (oldValue === newValue) {
