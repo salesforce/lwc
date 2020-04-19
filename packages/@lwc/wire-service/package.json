@@ -1,6 +1,6 @@
 {
     "name": "@lwc/wire-service",
-    "version": "0.228.5",
+    "version": "0.228.6",
     "description": "@wire service",
     "license": "MIT",
     "main": "dist/wire-service.cjs.js",
@@ -19,10 +19,10 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/compiler": "0.228.5",
-        "@lwc/engine": "0.228.5",
-        "@lwc/rollup-plugin": "0.228.5",
-        "@lwc/shared": "0.228.5"
+        "@lwc/compiler": "0.228.6",
+        "@lwc/engine": "0.228.6",
+        "@lwc/rollup-plugin": "0.228.6",
+        "@lwc/shared": "0.228.6"
     },
     "lwc": {
         "modules": [

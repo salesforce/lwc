@@ -1,6 +1,6 @@
 {
     "name": "perf-benchmarks",
-    "version": "0.228.5",
+    "version": "0.228.6",
     "private": true,
     "scripts": {
         "start": "best",
@@ -11,10 +11,10 @@
         "@best/runner-headless": "4.0.0-beta5",
         "@best/runner-remote": "4.0.0-beta5",
         "@best/store-aws": "4.0.0-beta5",
-        "@lwc/rollup-plugin": "0.228.5"
+        "@lwc/rollup-plugin": "0.228.6"
     },
     "dependencies": {
-        "@lwc/engine": "0.228.5",
-        "@lwc/synthetic-shadow": "0.228.5"
+        "@lwc/engine": "0.228.6",
+        "@lwc/synthetic-shadow": "0.228.6"
     }
 }
