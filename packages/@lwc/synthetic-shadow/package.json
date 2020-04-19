@@ -1,6 +1,6 @@
 {
     "name": "@lwc/synthetic-shadow",
-    "version": "0.228.6",
+    "version": "0.228.7",
     "description": "Synthetic Shadow Root for LWC",
     "license": "MIT",
     "main": "index.js",
@@ -24,7 +24,7 @@
         "access": "public"
     },
     "devDependencies": {
-        "@lwc/features": "0.228.6",
-        "@lwc/shared": "0.228.6"
+        "@lwc/features": "0.228.7",
+        "@lwc/shared": "0.228.7"
     }
 }
