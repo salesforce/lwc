@@ -234,6 +234,25 @@ describe('wired fields', () => {
                 expect(staticValue.textContent).toBe('modified value');
             });
     });
+
+    it('should rerender component when wired field is mutated from within the component', () => {
+        BroadcastAdapter.clearInstances();
+        const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
+        document.body.appendChild(elm);
+        BroadcastAdapter.broadcastData('expected value');
+
+        return Promise.resolve()
+            .then(() => {
+                const staticValue = elm.shadowRoot.querySelector('span');
+                expect(staticValue.textContent).toBe('expected value');
+
+                elm.setWiredPropToValue('modified value');
+            })
+            .then(() => {
+                const staticValue = elm.shadowRoot.querySelector('span');
+                expect(staticValue.textContent).toBe('modified value');
+            });
+    });
 });
 
 describe('wired methods', () => {
