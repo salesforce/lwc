@@ -41,18 +41,18 @@ export function deprecatedBuildCustomElementConstructor(
 }
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
-    const { props, bridge: BaseElement } = getComponentInternalDef(Ctor);
+    const def = getComponentInternalDef(Ctor);
 
     // generating the hash table for attributes to avoid duplicate fields
     // and facilitate validation and false positives in case of inheritance.
     const attributeToPropMap: Record<string, string> = {};
-    for (const propName in props) {
+    for (const propName in def.props) {
         attributeToPropMap[getAttrNameFromPropName(propName)] = propName;
     }
-    return class extends BaseElement {
+    return class extends def.bridge {
         constructor() {
             super();
-            createVM(this, Ctor, {
+            createVM(this, def, {
                 mode: 'open',
                 isRoot: true,
                 owner: null,

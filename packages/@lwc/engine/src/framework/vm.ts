@@ -22,13 +22,7 @@ import {
     setHiddenField,
     getOwnPropertyNames,
 } from '@lwc/shared';
-import { getComponentInternalDef } from './def';
-import {
-    createComponent,
-    renderComponent,
-    ComponentConstructor,
-    markComponentAsDirty,
-} from './component';
+import { createComponent, renderComponent, markComponentAsDirty } from './component';
 import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
@@ -202,11 +196,11 @@ export function removeVM(vm: VM) {
 
 export function createVM(
     elm: HTMLElement,
-    Ctor: ComponentConstructor,
+    def: ComponentDef,
     options: {
         mode: 'open' | 'closed';
-        isRoot?: boolean;
         owner: VM | null;
+        isRoot: boolean;
     }
 ): VM {
     if (process.env.NODE_ENV !== 'production') {
@@ -215,7 +209,6 @@ export function createVM(
             `VM creation requires a DOM element instead of ${elm}.`
         );
     }
-    const def = getComponentInternalDef(Ctor);
     const { isRoot, mode, owner } = options;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
@@ -256,7 +249,7 @@ export function createVM(
     }
 
     // create component instance associated to the vm and the element
-    createComponent(uninitializedVm, Ctor);
+    createComponent(uninitializedVm, def.ctor);
 
     // link component to the wire service
     const initializedVm = uninitializedVm as VM;
