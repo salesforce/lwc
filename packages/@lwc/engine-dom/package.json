@@ -1,0 +1,35 @@
+{
+    "name": "@lwc/engine-dom",
+    "version": "1.5.1",
+    "description": "@lwc/engine-dom",
+    "main": "dist/engine-dom.cjs.js",
+    "module": "dist/engine-dom.js",
+    "typings": "types/index.d.ts",
+    "license": "MIT",
+    "scripts": {
+        "clean": "rm -rf dist/ types/",
+        "test": "jest",
+        "build": "tsc --emitDeclarationOnly && rollup --config scripts/rollup.config.js"
+    },
+    "files": [
+        "dist/",
+        "types/"
+    ],
+    "dependencies": {
+        "@lwc/engine-core": "1.5.1"
+    },
+    "lwc": {
+        "modules": [
+            {
+                "name": "@lwc/engine-dom",
+                "path": "dist/engine.js"
+            }
+        ],
+        "expose": [
+            "@lwc/engine-dom"
+        ]
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

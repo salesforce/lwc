@@ -4,18 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { setAttribute, removeAttribute, getAttribute, hasAttribute } from '../../env/element';
+
+type NormalizedAttributeValue = string | null;
+type AriaPropMap = Record<string, NormalizedAttributeValue>;
+
+const { hasOwnProperty } = Object.prototype;
+const { replace: StringReplace, toLowerCase: StringToLowerCase } = String.prototype;
+
+const { hasAttribute, getAttribute, setAttribute, removeAttribute } = Element.prototype;
 
 // this regular expression is used to transform aria props into aria attributes because
 // that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
 const ARIA_REGEX = /^aria/;
 
-type NormalizedAttributeValue = string | null;
-type AriaPropMap = Record<string, NormalizedAttributeValue>;
-
 const nodeToAriaPropertyValuesMap: WeakMap<HTMLElement, AriaPropMap> = new WeakMap();
-const { hasOwnProperty } = Object.prototype;
-const { replace: StringReplace, toLowerCase: StringToLowerCase } = String.prototype;
 
 function getAriaPropertyMap(elm: HTMLElement): AriaPropMap {
     let map = nodeToAriaPropertyValuesMap.get(elm);
