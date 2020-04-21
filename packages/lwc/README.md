@@ -1,4 +1,4 @@
-Lightning Web Components (LWC) is a blazing fast, enterprise-grade web components foundation for building user interfaces. LWC is a thin layer around the low-level Web Components APIs. The `lwc` package is the main entry point for dependencies.
+Lightning Web Components (LWC) is a blazing fast, enterprise-grade web components foundation for building user interfaces. LWC provides a simple authoring format for UI Components. LWC compiles this authoring format into low-level Web Component APIs. The `lwc` package is the main entry point for dependencies.
 
 -   Develop components quickly and declaratively using HTML, JavaScript, and CSS.
 -   Develop accessible components so that everyone can understand and navigate your app.
