@@ -115,10 +115,10 @@ export function createElement(
     const def = getComponentInternalDef(Ctor);
     setElementProto(element, def);
 
-    createVM(element, def.ctor, {
+    createVM(element, def, {
         mode: options.mode !== 'closed' ? 'open' : 'closed',
-        isRoot: true,
         owner: null,
+        isRoot: true,
     });
 
     setHiddenField(element, ConnectingSlot, connectRootElement);
