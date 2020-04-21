@@ -45,6 +45,11 @@ export default class BroadcastConsumer extends LightningElement {
         this.wiredProp.data = newValue;
     }
 
+    @api
+    setWiredPropToValue(value) {
+        this.wiredProp = value;
+    }
+
     get WiredPropValue() {
         const propValue = this.wiredProp || '';
 

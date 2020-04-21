@@ -6,7 +6,7 @@
  */
 import { assert } from '@lwc/shared';
 import { ComponentInterface } from '../component';
-import { componentValueObserved } from '../mutation-tracker';
+import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
 import { WireAdapterConstructor } from '../wiring';
 
@@ -35,11 +35,16 @@ export function internalWireFieldDecorator(key: string): PropertyDescriptor {
         set(this: ComponentInterface, value: any) {
             const vm = getAssociatedVM(this);
             /**
-             * intentionally ignoring the reactivity here since this is just
+             * Reactivity for wired fields is provided in wiring.
+             * We intentionally add reactivity here since this is just
              * letting the author to do the wrong thing, but it will keep our
              * system to be backward compatible.
              */
-            vm.cmpFields[key] = value;
+            if (value !== vm.cmpFields[key]) {
+                vm.cmpFields[key] = value;
+
+                componentValueMutated(vm, key);
+            }
         },
         enumerable: true,
         configurable: true,
