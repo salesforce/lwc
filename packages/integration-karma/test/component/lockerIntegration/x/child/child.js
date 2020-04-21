@@ -1,4 +1,4 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import Template from './child.html';
 function SecureBase() {
     if (this instanceof SecureBase) {
@@ -9,6 +9,14 @@ function SecureBase() {
 }
 SecureBase.__circular__ = true;
 class Child extends SecureBase {
+    normalProperty;
+
+    @track
+    aTrackedProperty = 'Hello, welcome to the child component';
+
+    @api
+    aPublicProperty;
+
     render() {
         return Template;
     }
