@@ -223,7 +223,12 @@ export function getComponentInternalDef(Ctor: unknown, name?: string): Component
 
     if (isUndefined(def)) {
         if (isCircularModuleDependency(Ctor)) {
-            Ctor = resolveCircularModuleDependency(Ctor);
+            const resolvedCtor = resolveCircularModuleDependency(Ctor);
+            def = getComponentInternalDef(resolvedCtor);
+            // Cache the unresolved component ctor too. The next time if the same unresolved ctor is used,
+            // look up the definition in cache instead of re-resolving and recreating the def.
+            CtorToDefMap.set(Ctor, def);
+            return def;
         }
 
         if (!isComponentConstructor(Ctor)) {
