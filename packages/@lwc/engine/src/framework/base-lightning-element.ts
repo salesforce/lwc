@@ -357,23 +357,17 @@ BaseLightningElementConstructor.prototype = {
         elm.removeAttributeNS.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
-    getAttribute(attrName: string): string | null {
+    getAttribute(): string | null {
         const elm = getLinkedElement(this);
-        unlockAttribute(elm, attrName);
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        const value = elm.getAttribute.apply(elm, arguments);
-        lockAttribute(elm, attrName);
-        return value;
+        return elm.getAttribute.apply(elm, arguments);
     },
-    getAttributeNS(ns: string, attrName: string): string | null {
+    getAttributeNS(): string | null {
         const elm = getLinkedElement(this);
-        unlockAttribute(elm, attrName);
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        const value = elm.getAttributeNS.apply(elm, arguments);
-        lockAttribute(elm, attrName);
-        return value;
+        return elm.getAttributeNS.apply(elm, arguments);
     },
     setAttribute(attrName: string, _value: string) {
         const elm = getLinkedElement(this);
