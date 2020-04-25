@@ -341,6 +341,18 @@ BaseLightningElementConstructor.prototype = {
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.removeEventListener(type, wrappedListener, options);
     },
+    hasAttribute(): string | null {
+        const elm = getLinkedElement(this);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
+        return elm.hasAttribute.apply(elm, arguments);
+    },
+    hasAttributeNS(): string | null {
+        const elm = getLinkedElement(this);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
+        return elm.hasAttributeNS.apply(elm, arguments);
+    },
     removeAttribute(attrName: string) {
         const elm = getLinkedElement(this);
         unlockAttribute(elm, attrName);
