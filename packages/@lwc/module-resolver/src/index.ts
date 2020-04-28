@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import resolve from 'resolve';
 
 import {
     createRegistryEntry,
@@ -105,7 +106,10 @@ function resolveModuleFromNpm(
 
     let pkgJsonPath;
     try {
-        pkgJsonPath = require.resolve(`${npm}/package.json`, { paths: [opts.rootDir] });
+        pkgJsonPath = resolve.sync(`${npm}/package.json`, {
+            basedir: opts.rootDir,
+            preserveSymlinks: true,
+        });
     } catch (error) {
         // If the module "package.json" can't be found, throw an an invalid config error. Otherwise
         // rethrow the original error.

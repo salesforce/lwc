@@ -1,0 +1,8 @@
+{
+    "lwc": {
+        "modules": [
+            { "npm": "shared" },
+            { "npm": "linked" }
+        ]
+    }
+}
