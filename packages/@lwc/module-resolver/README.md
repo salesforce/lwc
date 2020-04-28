@@ -17,7 +17,7 @@ Synchronously resolve an LWC module from its specifier.
 ```js
 import { resolveModule } from '@lwc/module-resolver';
 
-const result = resolveModule('x-foo', './index.js');
+const result = resolveModule('x/foo', './index.js');
 console.log(result);
 ```
 
