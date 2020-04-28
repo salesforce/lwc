@@ -1,6 +1,11 @@
 {
     "name": "@lwc/babel-plugin-component",
     "description": "Babel plugin to transform a LWC module",
+    "author": "LWC Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/salesforce/lwc.git"
+    },
     "version": "1.5.2",
     "main": "src/index.js",
     "typings": "types/index.d.ts",

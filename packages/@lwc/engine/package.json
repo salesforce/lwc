@@ -1,5 +1,10 @@
 {
     "name": "@lwc/engine",
+    "author": "LWC Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/salesforce/lwc.git"
+    },
     "version": "1.5.2",
     "description": "LWC Engine",
     "main": "dist/engine.cjs.js",

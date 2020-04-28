@@ -1,6 +1,11 @@
 {
     "name": "integration-tests",
     "private": true,
+    "author": "LWC Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/salesforce/lwc.git"
+    },
     "version": "1.5.2",
     "scripts": {
         "build": "node scripts/build.js",

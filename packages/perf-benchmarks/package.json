@@ -1,6 +1,11 @@
 {
     "name": "perf-benchmarks",
     "version": "1.5.2",
+    "author": "LWC Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/salesforce/lwc.git"
+    },
     "private": true,
     "scripts": {
         "start": "best",

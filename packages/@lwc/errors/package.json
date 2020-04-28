@@ -2,6 +2,11 @@
     "name": "@lwc/errors",
     "version": "1.5.2",
     "description": "LWC Error Utilities",
+    "author": "LWC Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/salesforce/lwc.git"
+    },
     "main": "dist/commonjs/index.js",
     "license": "MIT",
     "typings": "dist/types/index.d.ts",

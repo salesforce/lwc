@@ -1,5 +1,6 @@
 {
   "name": "lwc",
+  "author": "LWC Team",
   "private": true,
   "description": "Lightning Web Components",
   "repository": {

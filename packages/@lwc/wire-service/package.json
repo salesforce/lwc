@@ -2,6 +2,11 @@
     "name": "@lwc/wire-service",
     "version": "1.5.2",
     "description": "@wire service",
+    "author": "LWC Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/salesforce/lwc.git"
+    },
     "license": "MIT",
     "main": "dist/wire-service.cjs.js",
     "module": "dist/wire-service.js",

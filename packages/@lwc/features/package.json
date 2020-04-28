@@ -2,6 +2,11 @@
     "name": "@lwc/features",
     "version": "1.5.2",
     "description": "LWC Features Flags",
+    "author": "LWC Team",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/salesforce/lwc.git"
+    },
     "main": "dist/flags.cjs.js",
     "module": "dist/flags.js",
     "typings": "types/flags.d.ts",
