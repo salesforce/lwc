@@ -7,6 +7,8 @@
 import path from 'path';
 import fs from 'fs';
 
+import { isObject } from '@lwc/shared';
+
 import { LwcConfigError } from './errors';
 
 import {
@@ -66,12 +68,23 @@ export function getModuleEntry(
     );
 }
 
-export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleResolverConfig {
+export function normalizeConfig(
+    config: Partial<ModuleResolverConfig>,
+    scope: string
+): ModuleResolverConfig {
     const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
     const modules = config.modules || [];
-    const normalizedModules = modules.map((m) =>
-        isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m
-    );
+    const normalizedModules = modules.map((m) => {
+        if (!isObject(m)) {
+            throw new LwcConfigError(
+                `Invalid module record. Module record has to be an object, instead got ${JSON.stringify(
+                    m
+                )}.`,
+                { scope }
+            );
+        }
+        return isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m;
+    });
 
     return {
         modules: normalizedModules,
