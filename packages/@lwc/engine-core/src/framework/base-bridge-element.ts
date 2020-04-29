@@ -21,7 +21,7 @@ import {
     setPrototypeOf,
 } from '@lwc/shared';
 import { getAssociatedVM } from './vm';
-import { HTMLElementOriginalDescriptors } from './html-properties';
+import { HTMLElementOriginalDescriptors, HTMLElementCtor } from './html-element';
 import { reactiveMembrane } from './membrane';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
@@ -93,6 +93,7 @@ export function HTMLBridgeElementFactory(
             // browsers that do not support web components.
             throw new TypeError('Illegal constructor');
         };
+
         // prototype inheritance dance
         setPrototypeOf(HTMLBridgeElement, SuperClass);
         setPrototypeOf(HTMLBridgeElement.prototype, SuperClass!.prototype);
@@ -126,8 +127,9 @@ export function HTMLBridgeElementFactory(
     return HTMLBridgeElement as HTMLElementConstructor;
 }
 
+// TODO [#0]: Fix me!
 export const BaseBridgeElement = HTMLBridgeElementFactory(
-    HTMLElement,
+    HTMLElementCtor as any,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
     []
 );

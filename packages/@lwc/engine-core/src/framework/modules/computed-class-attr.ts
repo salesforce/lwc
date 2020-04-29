@@ -50,6 +50,7 @@ function updateClassAttribute(oldVnode: VElement, vnode: VElement) {
     const {
         elm,
         data: { className: newClass },
+        owner: { renderer },
     } = vnode;
     const {
         data: { className: oldClass },
@@ -58,7 +59,7 @@ function updateClassAttribute(oldVnode: VElement, vnode: VElement) {
         return;
     }
 
-    const { classList } = elm!;
+    const classList = renderer.getClassList(elm!);
     const newClassMap = getMapFromClassName(newClass);
     const oldClassMap = getMapFromClassName(oldClass);
 

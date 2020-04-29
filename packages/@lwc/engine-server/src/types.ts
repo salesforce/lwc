@@ -19,7 +19,7 @@ export interface HostText {
 
 export interface HostAttribute {
     name: string;
-    namespace?: string;
+    namespace: string | null;
     value: string;
 }
 
@@ -39,5 +39,5 @@ export interface HostElement {
     eventListeners: Record<string, Function[]>;
 }
 
-export type HostNode = HostText | HostElement ;
+export type HostNode = HostText | HostElement;
 export type HostChildNode = HostElement | HostText;

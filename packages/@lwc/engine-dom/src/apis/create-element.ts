@@ -17,6 +17,7 @@ import {
     getHiddenField,
     setHiddenField,
 } from '@lwc/shared';
+
 import {
     getAssociatedVMIfPresent,
     createVM,
@@ -24,13 +25,12 @@ import {
     disconnectedRootElement,
     getComponentInternalDef,
     setElementProto,
+    LightningElement,
 } from '@lwc/engine-core';
 
-import type { LightningElement } from '@lwc/engine-core';
+import { renderer, appendChild, insertBefore, replaceChild, removeChild } from '../renderer';
 
-import { appendChild, insertBefore, replaceChild, removeChild, renderer } from '../renderer';
-
-type NodeSlotCallback = (element: Node) => {};
+type NodeSlotCallback = (element: Node) => void;
 
 const ConnectingSlot = createHiddenField<NodeSlotCallback>('connecting', 'engine');
 const DisconnectingSlot = createHiddenField<NodeSlotCallback>('disconnecting', 'engine');
@@ -118,8 +118,8 @@ export function createElement(
 
     createVM(element, def, {
         mode: options.mode !== 'closed' ? 'open' : 'closed',
-        isRoot: true,
         owner: null,
+        isRoot: true,
         renderer,
     });
 

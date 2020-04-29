@@ -3,7 +3,8 @@
 
     "compilerOptions": {
         "outDir": "types",
-        "lib": ["esnext"]
+        // TODO [#0]: Remove 'dom' from the list of lib.
+        "lib": ["dom", "esnext"]
     },
 
     "include": ["src/"]

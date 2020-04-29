@@ -19,9 +19,6 @@
         "@lwc/engine-core": "1.5.2",
         "@lwc/shared": "1.5.2"
     },
-    "devDependencies": {
-        "@lwc/compiler": "1.5.2"
-    },
     "lwc": {
         "modules": [
             {

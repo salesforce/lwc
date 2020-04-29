@@ -24,7 +24,7 @@ import {
     isUndefined,
     isObject,
 } from '@lwc/shared';
-import { HTMLElementOriginalDescriptors } from './html-properties';
+import { HTMLElementOriginalDescriptors } from './html-element';
 import {
     ComponentInterface,
     getWrappedComponentsListener,
@@ -34,7 +34,6 @@ import {
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
 import { associateVM, getAssociatedVM, VM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
-import { dispatchEvent } from '../env/dom';
 import {
     patchComponentWithRestrictions,
     patchShadowRootWithRestrictions,
@@ -125,10 +124,6 @@ function createBridgeToElementDescriptor(
             return set.call(vm.elm, newValue);
         },
     };
-}
-
-function getLinkedElement(cmp: ComponentInterface): HTMLElement {
-    return getAssociatedVM(cmp).elm;
 }
 
 interface ComponentHooks {
@@ -253,17 +248,13 @@ function BaseLightningElementConstructor(this: LightningElement) {
     if (isNull(vmBeingConstructed)) {
         throw new ReferenceError('Illegal constructor');
     }
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            vmBeingConstructed.elm instanceof HTMLElement,
-            `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`
-        );
-    }
+
     const vm = vmBeingConstructed as VM;
     const {
         elm,
         mode,
         def: { ctor },
+        renderer,
     } = vm;
     const component = this;
     vm.component = component;
@@ -279,12 +270,11 @@ function BaseLightningElementConstructor(this: LightningElement) {
         vm.getHook = getHook;
     }
     // attaching the shadowRoot
-    const shadowRootOptions = {
+    const cmpRoot = renderer.attachShadow(elm, {
         mode,
         delegatesFocus: !!ctor.delegatesFocus,
         '$$lwc-synthetic-mode$$': true,
-    };
-    const cmpRoot = elm.attachShadow(shadowRootOptions);
+    });
     // linking elm, shadow root and component with the VM
     associateVM(component, vm);
     associateVM(cmpRoot, vm);
@@ -302,18 +292,20 @@ function BaseLightningElementConstructor(this: LightningElement) {
 // HTML Element - The Good Parts
 BaseLightningElementConstructor.prototype = {
     constructor: BaseLightningElementConstructor,
-    dispatchEvent(_event: Event): boolean {
-        const elm = getLinkedElement(this);
-        // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch;
-        return dispatchEvent.apply(elm, arguments);
+
+    dispatchEvent(event: Event): boolean {
+        const { elm, renderer } = getAssociatedVM(this);
+        return renderer.dispatchEvent(elm, event);
     },
+
     addEventListener(
         type: string,
         listener: EventListener,
         options?: boolean | AddEventListenerOptions
     ) {
         const vm = getAssociatedVM(this);
+        const { elm, renderer } = vm;
+
         if (process.env.NODE_ENV !== 'production') {
             const vmBeingRendered = getVMBeingRendered();
             assert.invariant(
@@ -329,20 +321,46 @@ BaseLightningElementConstructor.prototype = {
                 `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`
             );
         }
+
         const wrappedListener = getWrappedComponentsListener(vm, listener);
-        vm.elm.addEventListener(type, wrappedListener, options);
+        renderer.addEventListener(elm, type, wrappedListener, options);
     },
+
     removeEventListener(
         type: string,
         listener: EventListener,
         options?: boolean | AddEventListenerOptions
     ) {
         const vm = getAssociatedVM(this);
+        const { elm, renderer } = vm;
+
         const wrappedListener = getWrappedComponentsListener(vm, listener);
-        vm.elm.removeEventListener(type, wrappedListener, options);
+        renderer.removeEventListener(elm, type, wrappedListener, options);
     },
-    setAttributeNS(ns: string | null, attrName: string, _value: string) {
-        const elm = getLinkedElement(this);
+
+    getAttribute(name: string): string | null {
+        const { elm, renderer } = getAssociatedVM(this);
+
+        unlockAttribute(elm, name);
+        const value = renderer.getAttribute(elm, name);
+        lockAttribute(elm, name);
+
+        return value;
+    },
+
+    getAttributeNS(namespace: string, name: string): string | null {
+        const { elm, renderer } = getAssociatedVM(this);
+
+        unlockAttribute(elm, name);
+        const value = renderer.getAttribute(elm, name, namespace);
+        lockAttribute(elm, name);
+
+        return value;
+    },
+
+    setAttribute(name: string, value: string) {
+        const { elm, renderer } = getAssociatedVM(this);
+
         if (process.env.NODE_ENV !== 'production') {
             const vm = getAssociatedVM(this);
             assert.isFalse(
@@ -350,63 +368,47 @@ BaseLightningElementConstructor.prototype = {
                 `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
             );
         }
-        unlockAttribute(elm, attrName);
-        // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
-        elm.setAttributeNS.apply(elm, arguments);
-        lockAttribute(elm, attrName);
+
+        unlockAttribute(elm, name);
+        renderer.setAttribute(elm, name, value);
+        lockAttribute(elm, name);
     },
-    removeAttributeNS(ns: string | null, attrName: string) {
-        const elm = getLinkedElement(this);
-        unlockAttribute(elm, attrName);
-        // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
-        elm.removeAttributeNS.apply(elm, arguments);
-        lockAttribute(elm, attrName);
-    },
-    removeAttribute(attrName: string) {
-        const elm = getLinkedElement(this);
-        unlockAttribute(elm, attrName);
-        // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
-        elm.removeAttribute.apply(elm, arguments);
-        lockAttribute(elm, attrName);
-    },
-    setAttribute(attrName: string, _value: string) {
-        const elm = getLinkedElement(this);
+
+    setAttributeNS(namespace: string | null, name: string, value: string) {
+        const vm = getAssociatedVM(this);
+        const { elm, renderer } = vm;
+
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getAssociatedVM(this);
             assert.isFalse(
                 isBeingConstructed(vm),
                 `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
             );
         }
-        unlockAttribute(elm, attrName);
-        // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
-        elm.setAttribute.apply(elm, arguments);
-        lockAttribute(elm, attrName);
+
+        unlockAttribute(elm, name);
+        renderer.setAttribute(elm, name, value, namespace);
+        lockAttribute(elm, name);
     },
-    getAttribute(attrName: string): string | null {
-        const elm = getLinkedElement(this);
-        unlockAttribute(elm, attrName);
-        // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
-        const value = elm.getAttribute.apply(elm, arguments);
-        lockAttribute(elm, attrName);
-        return value;
+
+    removeAttribute(name: string) {
+        const { elm, renderer } = getAssociatedVM(this);
+
+        unlockAttribute(elm, name);
+        renderer.removeAttribute(elm, name);
+        lockAttribute(elm, name);
     },
-    getAttributeNS(ns: string, attrName: string): string | null {
-        const elm = getLinkedElement(this);
-        unlockAttribute(elm, attrName);
-        // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
-        const value = elm.getAttributeNS.apply(elm, arguments);
-        lockAttribute(elm, attrName);
-        return value;
+
+    removeAttributeNS(namespace: string | null, name: string) {
+        const { elm, renderer } = getAssociatedVM(this);
+
+        unlockAttribute(elm, name);
+        renderer.removeAttribute(elm, name, namespace);
+        lockAttribute(elm, name);
     },
+
     getBoundingClientRect(): ClientRect {
-        const elm = getLinkedElement(this);
+        const { elm, renderer } = getAssociatedVM(this);
+
         if (process.env.NODE_ENV !== 'production') {
             const vm = getAssociatedVM(this);
             assert.isFalse(
@@ -416,16 +418,14 @@ BaseLightningElementConstructor.prototype = {
                 )} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`
             );
         }
-        return elm.getBoundingClientRect();
+
+        return renderer.getBoundingClientRect(elm);
     },
-    /**
-     * Returns the first element that is a descendant of node that
-     * matches selectors.
-     */
-    // querySelector<K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null;
-    // querySelector<K extends keyof SVGElementTagNameMap>(selectors: K): SVGElementTagNameMap[K] | null;
+
     querySelector<E extends Element = Element>(selectors: string): E | null {
         const vm = getAssociatedVM(this);
+        const { elm, renderer } = vm;
+
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
@@ -434,18 +434,14 @@ BaseLightningElementConstructor.prototype = {
                 )} because no children has been added to this element yet.`
             );
         }
-        const { elm } = vm;
-        return elm.querySelector(selectors);
+
+        return renderer.querySelector(elm, selectors);
     },
 
-    /**
-     * Returns all element descendants of node that
-     * match selectors.
-     */
-    // querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>,
-    // querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>,
     querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E> {
         const vm = getAssociatedVM(this);
+        const { elm, renderer } = vm;
+
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
@@ -454,16 +450,15 @@ BaseLightningElementConstructor.prototype = {
                 )} because no children has been added to this element yet.`
             );
         }
-        const { elm } = vm;
-        return elm.querySelectorAll(selectors);
+
+        // TODO [#0]: Fix this typing issue.
+        return renderer.querySelectorAll(elm, selectors) as any;
     },
 
-    /**
-     * Returns all element descendants of node that
-     * match the provided tagName.
-     */
     getElementsByTagName(tagNameOrWildCard: string): HTMLCollectionOf<Element> {
         const vm = getAssociatedVM(this);
+        const { elm, renderer } = vm;
+
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
@@ -472,16 +467,14 @@ BaseLightningElementConstructor.prototype = {
                 )} because no children has been added to this element yet.`
             );
         }
-        const { elm } = vm;
-        return elm.getElementsByTagName(tagNameOrWildCard);
+
+        return renderer.getElementsByTagName(elm, tagNameOrWildCard);
     },
 
-    /**
-     * Returns all element descendants of node that
-     * match the provide classnames.
-     */
     getElementsByClassName(names: string): HTMLCollectionOf<Element> {
         const vm = getAssociatedVM(this);
+        const { elm, renderer } = vm;
+
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(vm),
@@ -490,40 +483,46 @@ BaseLightningElementConstructor.prototype = {
                 )} because no children has been added to this element yet.`
             );
         }
-        const { elm } = vm;
-        return elm.getElementsByClassName(names);
+
+        return renderer.getElementsByClassName(elm, names);
     },
 
     get isConnected(): boolean {
-        const vm = getAssociatedVM(this);
-        const { elm } = vm;
-        return elm.isConnected;
+        const { elm, renderer } = getAssociatedVM(this);
+        return renderer.isConnected(elm);
     },
 
     get classList(): DOMTokenList {
+        const vm = getAssociatedVM(this);
+        const { elm, renderer } = vm;
+
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getAssociatedVM(this);
             // TODO [#1290]: this still fails in dev but works in production, eventually, we should just throw in all modes
             assert.isFalse(
                 isBeingConstructed(vm),
                 `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`
             );
         }
-        return getLinkedElement(this).classList;
+
+        return renderer.getClassList(elm);
     },
+
     get template(): ShadowRoot {
         const vm = getAssociatedVM(this);
         return vm.cmpRoot;
     },
+
     get shadowRoot(): ShadowRoot | null {
         // From within the component instance, the shadowRoot is always
         // reported as "closed". Authors should rely on this.template instead.
         return null;
     },
+
     render(): Template {
         const vm = getAssociatedVM(this);
         return vm.def.template;
     },
+
     toString(): string {
         const vm = getAssociatedVM(this);
         return `[object ${vm.def.name}]`;

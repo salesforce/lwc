@@ -39,5 +39,5 @@ export function serializeElement(element: HostElement): string {
     const shadowRoot = element.shadowRoot ? serializeShadowRoot(element.shadowRoot) : '';
     const children = serializeChildNodes(element.children);
 
-    return `<${name}${attrs}>${shadowRoot}${children}<${name}>`;
+    return `<${name}${attrs}>${shadowRoot}${children}</${name}>`;
 }

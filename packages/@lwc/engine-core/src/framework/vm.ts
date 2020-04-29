@@ -23,10 +23,9 @@ import {
     getOwnPropertyNames,
 } from '@lwc/shared';
 import { createComponent, renderComponent, markComponentAsDirty } from './component';
-import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
+import { addCallbackToNextTick, EmptyObject, EmptyArray } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
-import { ShadowRootInnerHTMLSetter } from '../env/dom';
 
 import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
@@ -51,6 +50,8 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
+// TODO [#0]: How to get rid of the any as default generic value without passing them around through
+// the engine.
 export interface Renderer<HostNode = any, HostElement = any> {
     useSyntheticShadow: boolean;
     insert(node: HostNode, parent: HostElement, anchor: HostNode | null): void;
@@ -62,11 +63,26 @@ export interface Renderer<HostNode = any, HostElement = any> {
         options: { mode: 'open' | 'closed'; delegatesFocus?: boolean; [key: string]: any }
     ): HostNode;
     setText(node: HostNode, content: string): void;
-    getAttribute(element: HostElement, name: string, namespace?: string): string | null;
-    setAttribute(element: HostElement, name: string, value: string, namespace?: string): void;
-    removeAttribute(element: HostElement, name: string, namespace?: string): void;
-    addEventListener(target: HostElement, type: string, callback: (event: Event) => any): void;
-    removeEventListener(target: HostElement, type: string, callback: (event: Event) => any): void;
+    getAttribute(element: HostElement, name: string, namespace?: string | null): string | null;
+    setAttribute(
+        element: HostElement,
+        name: string,
+        value: string,
+        namespace?: string | null
+    ): void;
+    removeAttribute(element: HostElement, name: string, namespace?: string | null): void;
+    addEventListener(
+        target: HostElement,
+        type: string,
+        callback: (event: Event) => any,
+        options?: AddEventListenerOptions | boolean
+    ): void;
+    removeEventListener(
+        target: HostElement,
+        type: string,
+        callback: (event: Event) => any,
+        options?: AddEventListenerOptions | boolean
+    ): void;
     dispatchEvent(target: HostNode, event: Event): boolean;
     getClassList(element: HostElement): DOMTokenList;
     getBoundingClientRect(element: HostElement): ClientRect;
@@ -83,17 +99,19 @@ export enum VMState {
     disconnected,
 }
 
-export interface UninitializedVM {
+// TODO [#0]: How to get rid of the any as default generic value without passing them around through
+// the engine.
+export interface UninitializedVM<HostNode = any, HostElement = any> {
     /** Component Element Back-pointer */
-    readonly elm: HTMLElement;
+    readonly elm: HostElement;
     /** Component Definition */
     readonly def: ComponentDef;
     /** Component Context Object */
     readonly context: Context;
     /** Back-pointer to the owner VM or null for root elements */
-    readonly owner: VM | null;
+    readonly owner: VM<HostNode, HostElement> | null;
     /** Rendering operations associated with the VM */
-    readonly renderer: Renderer;
+    readonly renderer: Renderer<HostNode, HostElement>;
     /** Component Creation Index */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -128,7 +146,10 @@ export interface UninitializedVM {
     oar?: Record<PropertyKey, ReactiveObserver>;
 }
 
-export interface VM extends UninitializedVM {
+// TODO [#0]: How to get rid of the any as default generic value without passing them around through
+// the engine.
+export interface VM<HostNode = any, HostElement = any>
+    extends UninitializedVM<HostNode, HostElement> {
     cmpTemplate: Template;
     component: ComponentInterface;
     cmpRoot: ShadowRoot;
@@ -165,7 +186,8 @@ export function rerenderVM(vm: VM) {
     rehydrate(vm);
 }
 
-export function connectRootElement(elm: HTMLElement) {
+// TODO [#0]: Fix typings here.
+export function connectRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
 
     startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
@@ -182,7 +204,8 @@ export function connectRootElement(elm: HTMLElement) {
     endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
 }
 
-export function disconnectedRootElement(elm: HTMLElement) {
+// TODO [#0]: Fix typings here.
+export function disconnectedRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
     resetComponentStateWhenRemoved(vm);
 }
@@ -222,22 +245,16 @@ export function removeVM(vm: VM) {
     resetComponentStateWhenRemoved(vm);
 }
 
-export function createVM(
-    elm: HTMLElement,
+export function createVM<HostNode, HostElement>(
+    elm: HostElement,
     def: ComponentDef,
     options: {
         mode: 'open' | 'closed';
-        owner: VM | null;
+        owner: VM<HostNode, HostElement> | null;
         isRoot: boolean;
         renderer: Renderer;
     }
-): VM {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            elm instanceof HTMLElement,
-            `VM creation requires a DOM element instead of ${elm}.`
-        );
-    }
+): VM<HostNode, HostElement> {
     const { isRoot, mode, owner, renderer } = options;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
@@ -257,7 +274,7 @@ export function createVM(
         context: create(null),
         cmpProps: create(null),
         cmpFields: create(null),
-        cmpSlots: useSyntheticShadow ? create(null) : undefined,
+        cmpSlots: renderer.useSyntheticShadow ? create(null) : undefined,
         callHook,
         setHook,
         getHook,
@@ -282,7 +299,7 @@ export function createVM(
     createComponent(uninitializedVm, def.ctor);
 
     // link component to the wire service
-    const initializedVm = uninitializedVm as VM;
+    const initializedVm = uninitializedVm as VM<HostNode, HostElement>;
     // initializing the wire decorator per instance only when really needed
     if (hasWireAdapters(initializedVm)) {
         installWireAdapters(initializedVm);
@@ -324,12 +341,6 @@ export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
 }
 
 function rehydrate(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            vm.elm instanceof HTMLElement,
-            `rehydration can only happen after ${vm} was patched the first time.`
-        );
-    }
     if (isTrue(vm.isDirty)) {
         const children = renderComponent(vm);
         patchShadowRoot(vm, children);
@@ -538,7 +549,10 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // state of the DOM
 export function resetShadowRoot(vm: VM) {
     vm.children = EmptyArray;
-    ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
+
+    // TODO [#0]: Fix me, we shouldn't need to expose innerHTML, and rather use remove from renderer
+    // ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
+
     // disconnecting any known custom element inside the shadow of the this vm
     runShadowChildNodesDisconnectedCallback(vm);
 }

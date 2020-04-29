@@ -10,9 +10,9 @@ import { Renderer } from '@lwc/engine-core';
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 
 function unsupportedMethod(name: string): () => never {
-    return function() {
+    return function () {
         throw new TypeError(`"${name}" is not supported in this environment`);
-    }
+    };
 }
 
 export const renderer: Renderer<HostNode, HostElement> = {
@@ -62,28 +62,30 @@ export const renderer: Renderer<HostNode, HostElement> = {
         };
 
         // TODO [#0]: Fix typings here.
-        return element.shadowRoot as any as HostNode;
+        return (element.shadowRoot as any) as HostNode;
     },
     setText(node, content) {
         if (node.type === HostNodeType.Text) {
             node.value = content;
         } else if (node.type === HostNodeType.Element) {
-            node.children = [{
-                type: HostNodeType.Text,
-                parent: node,
-                value: content
-            }];
+            node.children = [
+                {
+                    type: HostNodeType.Text,
+                    parent: node,
+                    value: content,
+                },
+            ];
         }
     },
     getAttribute(element, name, namespace) {
         const attribute = element.attributes.find(
-            attr => attr.name === name && attr.namespace === namespace
+            (attr) => attr.name === name && attr.namespace === namespace
         );
         return attribute ? attribute.name : null;
     },
-    setAttribute(element, name, value, namespace) {
+    setAttribute(element, name, value, namespace = null) {
         const attribute = element.attributes.find(
-            attr => attr.name === name && attr.namespace === namespace
+            (attr) => attr.name === name && attr.namespace === namespace
         );
 
         if (isUndefined(attribute)) {
@@ -98,7 +100,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
     },
     removeAttribute(element, name, namespace) {
         element.attributes = element.attributes.filter(
-            attr => attr.name !== name && attr.namespace !== namespace
+            (attr) => attr.name !== name && attr.namespace !== namespace
         );
     },
     addEventListener(target, type, callback) {
@@ -119,7 +121,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
     getClassList(element) {
         function getClassAttribute(): HostAttribute | undefined {
             return element.attributes.find(
-                attr => attr.name === 'class' && isUndefined(attr.namespace)
+                (attr) => attr.name === 'class' && isUndefined(attr.namespace)
             );
         }
 
@@ -139,7 +141,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
                 }
 
                 const classes = tokenizeClasses(classAttribute.value);
-                names.forEach(name => classes.add(name));
+                names.forEach((name) => classes.add(name));
                 classAttribute.value = serializeClasses(classes);
             },
             remove(...names: string[]): void {
@@ -149,7 +151,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
                 }
 
                 const classes = tokenizeClasses(classAttribute.value);
-                names.forEach(name => classes.delete(name));
+                names.forEach((name) => classes.delete(name));
                 classAttribute.value = serializeClasses(classes);
             },
         } as DOMTokenList;

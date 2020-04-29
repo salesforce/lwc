@@ -13,4 +13,9 @@ module.exports = {
     displayName: 'lwc-server',
 
     roots: ['<rootDir>/src'],
+
+    // TODO [#0]: Another module resolution issue. Is there something we can simplify here?
+    moduleNameMapper: {
+        '^lwc$': '@lwc/engine-core',
+    },
 };

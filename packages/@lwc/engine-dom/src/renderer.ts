@@ -11,6 +11,8 @@ import { hasOwnProperty, isUndefined } from '@lwc/shared';
 const { appendChild, insertBefore, replaceChild, removeChild } = Element.prototype;
 export { appendChild, insertBefore, replaceChild, removeChild };
 
+// TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
+// to avoid having to synchronize it between the different modules.
 export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');
 
 export const renderer: Renderer<Node, Element> = {

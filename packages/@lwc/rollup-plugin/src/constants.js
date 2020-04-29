@@ -10,8 +10,9 @@ const DEFAULT_OPTIONS = {
     sourcemap: false,
 };
 
+// TODO [#0]: The module resolution is a complete mess how can we avoid changing this here?
 const DEFAULT_MODULES = [
-    { npm: '@lwc/engine' },
+    { npm: '@lwc/engine-core' },
     { npm: '@lwc/synthetic-shadow' },
     { npm: '@lwc/wire-service' },
 ];

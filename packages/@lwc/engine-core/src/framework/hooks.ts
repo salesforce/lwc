@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
-import { EmptyArray, useSyntheticShadow } from './utils';
+import { EmptyArray } from './utils';
 import {
     rerenderVM,
     createVM,
@@ -39,15 +39,20 @@ function setElementShadowToken(elm: Element, token: string | undefined) {
 }
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
-    const { text } = vnode;
+    const {
+        elm,
+        text,
+        owner: { renderer },
+    } = vnode;
+
     if (oldVnode.text !== text) {
         if (process.env.NODE_ENV !== 'production') {
             unlockDomMutation();
         }
-        /**
-         * Compiler will never produce a text property that is not string
-         */
-        vnode.elm!.nodeValue = text!;
+
+        // Compiler will never produce a text property that is not string
+        renderer.setText(elm, text!);
+
         if (process.env.NODE_ENV !== 'production') {
             lockDomMutation();
         }
@@ -55,20 +60,30 @@ export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
 }
 
 export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: Node | null) {
+    const {
+        elm,
+        owner: { renderer },
+    } = vnode;
+
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    parentNode.insertBefore(vnode.elm!, referenceNode);
+    renderer.insert(elm, parentNode, referenceNode);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
 }
 
 export function removeNodeHook(vnode: VNode, parentNode: Node) {
+    const {
+        elm,
+        owner: { renderer },
+    } = vnode;
+
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    parentNode.removeChild(vnode.elm!);
+    renderer.remove(elm, parentNode);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
@@ -94,7 +109,7 @@ enum LWCDOMMode {
 export function fallbackElmHook(vnode: VElement) {
     const { owner } = vnode;
     const elm = vnode.elm!;
-    if (isTrue(useSyntheticShadow)) {
+    if (isTrue(owner.renderer.useSyntheticShadow)) {
         const {
             data: { context },
         } = vnode;
@@ -167,7 +182,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     const children = vnode.aChildren || vnode.children;
 
     vm.aChildren = children;
-    if (isTrue(useSyntheticShadow)) {
+    if (isTrue(vm.renderer.useSyntheticShadow)) {
         // slow path
         allocateInSlot(vm, children);
         // save the allocated children in case this vnode is reused.
@@ -188,7 +203,7 @@ export function createViewModelHook(vnode: VCustomElement) {
     const { mode, ctor, owner } = vnode;
     const def = getComponentInternalDef(ctor);
     setElementProto(elm, def);
-    if (isTrue(useSyntheticShadow)) {
+    if (isTrue(owner.renderer.useSyntheticShadow)) {
         const { shadowAttribute } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.
