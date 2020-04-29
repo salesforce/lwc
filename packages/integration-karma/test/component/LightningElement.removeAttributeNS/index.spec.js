@@ -13,7 +13,7 @@ it('should not throw if the attribute is not present', () => {
 
 it('should return undefined', () => {
     const elm = createElement('x-test', { is: Test });
-    expect(elm.removeComponentAttributeNS(TEST_NS, 'foo')).toBe(undefined);
+    expect(elm.removeComponentAttributeNS(TEST_NS, 'foo')).toBeUndefined();
 });
 
 it('should remove the attribute if present on the host element', () => {
@@ -21,5 +21,5 @@ it('should remove the attribute if present on the host element', () => {
     elm.setAttributeNS(TEST_NS, 'foo', 'bar');
     elm.removeComponentAttributeNS(TEST_NS, 'foo');
 
-    expect(elm.hasAttributeNS(TEST_NS, 'foo')).toBe(false);
+    expect(elm.hasAttributeNS(TEST_NS, 'foo')).toBeFalse();
 });
