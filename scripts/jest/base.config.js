@@ -7,6 +7,7 @@
 
 module.exports = {
     testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
+    testEnvironment: 'node',
 
     // Global mono-repo code coverage threshold.
     coverageThreshold: {

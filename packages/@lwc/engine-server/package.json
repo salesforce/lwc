@@ -1,0 +1,39 @@
+{
+    "name": "@lwc/engine-server",
+    "version": "1.5.2",
+    "description": "@lwc/engine-server",
+    "main": "dist/engine-server.cjs.js",
+    "module": "dist/engine-server.js",
+    "typings": "types/index.d.ts",
+    "license": "MIT",
+    "scripts": {
+        "clean": "rm -rf dist/ types/",
+        "test": "jest",
+        "build": "tsc --emitDeclarationOnly && rollup --config scripts/rollup.config.js"
+    },
+    "files": [
+        "dist/",
+        "types/"
+    ],
+    "dependencies": {
+        "@lwc/engine-core": "1.5.2",
+        "@lwc/shared": "1.5.2"
+    },
+    "devDependencies": {
+        "@lwc/compiler": "1.5.2"
+    },
+    "lwc": {
+        "modules": [
+            {
+                "name": "@lwc/engine-server",
+                "path": "dist/engine.js"
+            }
+        ],
+        "expose": [
+            "@lwc/engine-server"
+        ]
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

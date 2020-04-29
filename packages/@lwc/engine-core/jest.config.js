@@ -7,21 +7,19 @@
  */
 const path = require('path');
 const BASE_CONFIG = require('../../../scripts/jest/base.config');
-const LWC_ROOT = path.dirname(require.resolve('@lwc/engine'));
-const LWC_PATH = path.join(LWC_ROOT, 'dist/engine.js');
 
 module.exports = {
     ...BASE_CONFIG,
 
-    displayName: 'lwc-engine',
+    displayName: 'lwc-engine-core',
 
     roots: ['<rootDir>/src'],
 
     // Customize setup for the engine tests.
+    testEnvironment: 'jsdom',
     setupFilesAfterEnv: [path.resolve(__dirname, 'scripts/jest/setup-test.js')],
     moduleNameMapper: {
         'test-utils': path.resolve(__dirname, 'scripts/jest/test-utils.js'),
-        '@lwc/engine': LWC_PATH,
     },
 
     // Ignore jest custom setup scripts from the code coverage.

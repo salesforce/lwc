@@ -24,8 +24,9 @@ import {
     disconnectedRootElement,
     getComponentInternalDef,
     setElementProto,
-    LightningElement,
 } from '@lwc/engine-core';
+
+import type { LightningElement } from '@lwc/engine-core';
 
 import { appendChild, insertBefore, replaceChild, removeChild, renderer } from '../renderer';
 
