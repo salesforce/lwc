@@ -263,7 +263,7 @@ describe('resolution override', () => {
 
         expect(() => resolveModule('test', dirname, opts)).toThrowErrorWithCode(
             LWC_CONFIG_ERROR_CODE,
-            `Invalid LWC configuration in "${dirname}". Invalid module record. Module record has to be an object, instead got "foo/test".`
+            `Invalid LWC configuration in "${dirname}". Invalid module record. Module record must be an object, instead got "foo/test".`
         );
     });
 });

@@ -75,7 +75,7 @@ export function normalizeConfig(
     const normalizedModules = modules.map((m) => {
         if (!isObject(m)) {
             throw new LwcConfigError(
-                `Invalid module record. Module record has to be an object, instead got ${JSON.stringify(
+                `Invalid module record. Module record must be an object, instead got ${JSON.stringify(
                     m
                 )}.`,
                 { scope }
