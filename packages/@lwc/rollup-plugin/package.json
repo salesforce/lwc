@@ -11,8 +11,7 @@
         "src/*.js"
     ],
     "devDependencies": {
-        "@lwc/compiler": "1.5.2",
-        "@lwc/engine": "1.5.2"
+        "@lwc/compiler": "1.5.2"
     },
     "dependencies": {
         "@lwc/module-resolver": "1.5.2",

@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine-dom",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "description": "@lwc/engine-dom",
     "main": "dist/engine-dom.cjs.js",
     "module": "dist/engine-dom.js",
@@ -16,7 +16,8 @@
         "types/"
     ],
     "dependencies": {
-        "@lwc/engine-core": "1.5.1"
+        "@lwc/engine-core": "1.5.2",
+        "@lwc/shared": "1.5.2"
     },
     "lwc": {
         "modules": [

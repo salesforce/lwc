@@ -12,7 +12,8 @@
     },
     "devDependencies": {
         "@lwc/compiler": "1.5.2",
-        "@lwc/engine": "1.5.2",
+        "@lwc/engine-core": "1.5.2",
+        "@lwc/engine-dom": "1.5.2",
         "@lwc/rollup-plugin": "1.5.2",
         "@lwc/synthetic-shadow": "1.5.2",
         "chokidar": "^3.3.1",

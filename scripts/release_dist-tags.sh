@@ -14,7 +14,7 @@ LWC_VERSION="$1"
 TAG_NAME="$2"
 
 # Get the current tag
-CURRENT_TAG=$(npm dist-tags ls @lwc/engine | sed -n "s/.*${TAG_NAME}: \(.*\)/\1/p")
+CURRENT_TAG=$(npm dist-tags ls @lwc/engine-core | sed -n "s/.*${TAG_NAME}: \(.*\)/\1/p")
 
 if [[ ${CURRENT_TAG} = ${LWC_VERSION} ]]; then
   echo "LWC version ${LWC_VERSION} already tagged to ${TAG_NAME}"

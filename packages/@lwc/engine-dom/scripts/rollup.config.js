@@ -6,9 +6,8 @@
  */
 const path = require('path');
 const typescript = require('typescript');
+const nodeResolve = require('rollup-plugin-node-resolve');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
-const babel = require('@babel/core');
-const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 
 const { version } = require('../package.json');
 
@@ -16,22 +15,11 @@ const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
 const formats = ['es', 'cjs'];
 
-function rollupFeaturesPlugin() {
-    return {
-        name: 'rollup-plugin-lwc-features',
-        transform(source) {
-            return babel.transform(source, {
-                plugins: [babelFeaturesPlugin],
-            }).code;
-        },
-    };
-}
-
 module.exports = {
     input: path.resolve(__dirname, '../src/main.ts'),
     output: formats.map((format) => {
         return {
-            name: 'LWC',
+            name: 'LwcDom',
             file: path.resolve(__dirname, `../dist/engine-dom${format === 'cjs' ? '.cjs' : ''}.js`),
             format,
             banner: banner,
@@ -44,7 +32,7 @@ module.exports = {
             target: 'es2017',
             typescript,
         }),
-        rollupFeaturesPlugin(),
+        nodeResolve(),
     ],
 
     onwarn({ code, message }) {

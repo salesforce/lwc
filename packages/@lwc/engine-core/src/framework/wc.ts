@@ -56,6 +56,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 mode: 'open',
                 isRoot: true,
                 owner: null,
+                renderer: {} as any, // FIXME: How can the renderer be retrieved from here?
             });
         }
         connectedCallback() {

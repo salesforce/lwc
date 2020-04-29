@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
 import {
     assign,
     create,
@@ -44,6 +43,58 @@ const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'isMap',
     'maxLength',
     'useMap',
+];
+
+// Global Aria and Role Properties derived from ARIA and Role Attributes.
+// https://wicg.github.io/aom/spec/aria-reflection.html
+export const ElementPrototypeAriaPropertyNames = [
+    'ariaAutoComplete',
+    'ariaChecked',
+    'ariaCurrent',
+    'ariaDisabled',
+    'ariaExpanded',
+    'ariaHasPopup',
+    'ariaHidden',
+    'ariaInvalid',
+    'ariaLabel',
+    'ariaLevel',
+    'ariaMultiLine',
+    'ariaMultiSelectable',
+    'ariaOrientation',
+    'ariaPressed',
+    'ariaReadOnly',
+    'ariaRequired',
+    'ariaSelected',
+    'ariaSort',
+    'ariaValueMax',
+    'ariaValueMin',
+    'ariaValueNow',
+    'ariaValueText',
+    'ariaLive',
+    'ariaRelevant',
+    'ariaAtomic',
+    'ariaBusy',
+    'ariaActiveDescendant',
+    'ariaControls',
+    'ariaDescribedBy',
+    'ariaFlowTo',
+    'ariaLabelledBy',
+    'ariaOwns',
+    'ariaPosInSet',
+    'ariaSetSize',
+    'ariaColCount',
+    'ariaColIndex',
+    'ariaDetails',
+    'ariaErrorMessage',
+    'ariaKeyShortcuts',
+    'ariaModal',
+    'ariaPlaceholder',
+    'ariaRoleDescription',
+    'ariaRowCount',
+    'ariaRowIndex',
+    'ariaRowSpan',
+    'ariaColSpan',
+    'role',
 ];
 
 function offsetPropertyErrorMessage(name: string): string {

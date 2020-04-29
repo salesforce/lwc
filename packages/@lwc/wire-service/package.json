@@ -19,9 +19,6 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/compiler": "1.5.2",
-        "@lwc/engine": "1.5.2",
-        "@lwc/rollup-plugin": "1.5.2",
         "@lwc/shared": "1.5.2"
     },
     "lwc": {

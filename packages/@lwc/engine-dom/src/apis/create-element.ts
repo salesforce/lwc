@@ -27,7 +27,7 @@ import {
     LightningElement,
 } from '@lwc/engine-core';
 
-import { appendChild, insertBefore, replaceChild, removeChild } from '../renderer';
+import { appendChild, insertBefore, replaceChild, removeChild, renderer } from '../renderer';
 
 type NodeSlotCallback = (element: Node) => {};
 
@@ -115,10 +115,11 @@ export function createElement(
     const def = getComponentInternalDef(Ctor);
     setElementProto(element, def);
 
-    createVM(element, def.ctor, {
+    createVM(element, def, {
         mode: options.mode !== 'closed' ? 'open' : 'closed',
         isRoot: true,
         owner: null,
+        renderer,
     });
 
     setHiddenField(element, ConnectingSlot, connectRootElement);

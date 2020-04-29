@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { create, forEach, getPropertyDescriptor, isUndefined } from '@lwc/shared';
-import { defaultDefHTMLPropertyNames } from './attributes';
-import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
+import { defaultDefHTMLPropertyNames, ElementPrototypeAriaPropertyNames } from './attributes';
 
 /**
  * This is a descriptor map that contains

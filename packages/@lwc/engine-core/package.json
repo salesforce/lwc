@@ -1,7 +1,7 @@
 {
-    "name": "@lwc/engine",
+    "name": "@lwc/engine-core",
     "version": "1.5.2",
-    "description": "LWC Engine",
+    "description": "@lwc/engine-core",
     "main": "dist/engine.cjs.js",
     "module": "dist/engine.js",
     "typings": "types/index.d.ts",
@@ -28,10 +28,15 @@
             {
                 "name": "lwc",
                 "path": "dist/engine.js"
+            },
+            {
+                "name": "@lwc/engine-core",
+                "path": "dist/engine.js"
             }
         ],
         "expose": [
-            "lwc"
+            "lwc",
+            "@lwc/engine-core"
         ]
     },
     "publishConfig": {

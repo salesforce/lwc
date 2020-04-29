@@ -24,7 +24,7 @@ fi
 TAG="--dist-tag $TAG_NAME"
 
 # Get the current version
-version=`lerna ls --json --scope @lwc/engine`
+version=`lerna ls --json --scope @lwc/engine-core`
 
 if [[ $version = *"${PACKAGE_VERSION}"* ]]; then
   echo "Version already available, skipping release."

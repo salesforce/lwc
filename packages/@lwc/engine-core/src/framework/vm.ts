@@ -51,6 +51,32 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
+export interface Renderer<HostNode = any, HostElement = any> {
+    useSyntheticShadow: boolean;
+    insert(node: HostNode, parent: HostElement, anchor: HostNode | null): void;
+    remove(node: HostNode, parent: HostElement): void;
+    createElement(tagName: string, namespace?: string): HostElement;
+    createText(content: string): HostNode;
+    attachShadow(
+        element: HostElement,
+        options: { mode: 'open' | 'closed'; delegatesFocus?: boolean; [key: string]: any }
+    ): HostNode;
+    setText(node: HostNode, content: string): void;
+    getAttribute(element: HostElement, name: string, namespace?: string): string | null;
+    setAttribute(element: HostElement, name: string, value: string, namespace?: string): void;
+    removeAttribute(element: HostElement, name: string, namespace?: string): void;
+    addEventListener(target: HostElement, type: string, callback: (event: Event) => any): void;
+    removeEventListener(target: HostElement, type: string, callback: (event: Event) => any): void;
+    dispatchEvent(target: HostNode, event: Event): boolean;
+    getClassList(element: HostElement): DOMTokenList;
+    getBoundingClientRect(element: HostElement): ClientRect;
+    querySelector(element: HostElement, selectors: string): HostElement | null;
+    querySelectorAll(element: HostElement, selectors: string): NodeList;
+    getElementsByTagName(element: HostElement, tagNameOrWildCard: string): HTMLCollection;
+    getElementsByClassName(element: HostElement, names: string): HTMLCollection;
+    isConnected(node: HostNode): boolean;
+}
+
 export enum VMState {
     created,
     connected,
@@ -66,6 +92,8 @@ export interface UninitializedVM {
     readonly context: Context;
     /** Back-pointer to the owner VM or null for root elements */
     readonly owner: VM | null;
+    /** Rendering operations associated with the VM */
+    readonly renderer: Renderer;
     /** Component Creation Index */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -201,6 +229,7 @@ export function createVM(
         mode: 'open' | 'closed';
         owner: VM | null;
         isRoot: boolean;
+        renderer: Renderer;
     }
 ): VM {
     if (process.env.NODE_ENV !== 'production') {
@@ -209,7 +238,7 @@ export function createVM(
             `VM creation requires a DOM element instead of ${elm}.`
         );
     }
-    const { isRoot, mode, owner } = options;
+    const { isRoot, mode, owner, renderer } = options;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
         // component creation index is defined once, and never reset, it can
@@ -223,6 +252,7 @@ export function createVM(
         def,
         owner,
         elm,
+        renderer,
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
@@ -533,30 +563,6 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
 
         currentVm = currentVm.owner;
     }
-}
-
-/**
- * EXPERIMENTAL: This function detects whether or not a Node is
- * controlled by a LWC template. This API is subject to
- * change or being removed.
- */
-export function isNodeFromTemplate(node: Node): boolean {
-    if (isFalse(node instanceof Node)) {
-        return false;
-    }
-    // TODO [#1250]: skipping the shadowRoot instances itself makes no sense, we need to revisit this with locker
-    if (node instanceof ShadowRoot) {
-        return false;
-    }
-    if (useSyntheticShadow) {
-        // TODO [#1252]: old behavior that is still used by some pieces of the platform, specifically, nodes inserted
-        // manually on places where `lwc:dom="manual"` directive is not used, will be considered global elements.
-        if (isUndefined((node as any).$shadowResolver$)) {
-            return false;
-        }
-    }
-    const root = node.getRootNode();
-    return root instanceof ShadowRoot;
 }
 
 // slow path routine
