@@ -273,7 +273,8 @@ export function getComponentConstructor(elm: HTMLElement): ComponentConstructor 
 
 // Only set prototype for public methods and properties
 // No DOM Patching occurs here
-export function setElementProto(elm: Element, def: ComponentDef) {
+// TODO [#0]: Fix typings.
+export function setElementProto(elm: any, def: ComponentDef) {
     setPrototypeOf(elm, def.bridge.prototype);
 }
 

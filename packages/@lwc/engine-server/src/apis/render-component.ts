@@ -8,6 +8,7 @@ import {
     createVM,
     connectRootElement,
     getComponentInternalDef,
+    setElementProto,
     LightningElement,
 } from '@lwc/engine-core';
 
@@ -22,10 +23,12 @@ export function renderComponent(
     Ctor: typeof LightningElement,
     props: Record<string, any>
 ): string {
-    const elm = renderer.createElement(name);
+    const element = renderer.createElement(name);
 
     const def = getComponentInternalDef(Ctor);
-    createVM(elm, def, {
+    setElementProto(element, def);
+
+    createVM(element, def, {
         mode: 'open',
         isRoot: true,
         owner: null,
@@ -33,10 +36,10 @@ export function renderComponent(
     });
 
     for (const [key, value] of Object.entries(props)) {
-        (elm as any)[key] = value;
+        (element as any)[key] = value;
     }
 
-    connectRootElement(elm);
+    connectRootElement(element);
 
-    return serializeElement(elm);
+    return serializeElement(element);
 }

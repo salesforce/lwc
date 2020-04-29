@@ -17,11 +17,14 @@ const EXPECTED_HTML_FILENAME = 'expected.html';
 const ONLY_FILENAME = '.only';
 const SKIP_FILENAME = '.skip';
 
-describe('fixtures', () => {
-    // Force jest to reset the cached modules. This way if Jest is running in watch mode the new
-    // compiled artifacts will be picked up.
-    jest.resetModules();
+function formatHTML(code: string): string {
+    return prettier.format(code, {
+        parser: 'html',
+        htmlWhitespaceSensitivity: 'ignore',
+    });
+}
 
+describe('fixtures', () => {
     const { renderComponent } = require('../main');
 
     const fixtures = fs.readdirSync(FIXTURE_DIR);
@@ -94,7 +97,7 @@ describe('fixtures', () => {
             await compileFixture();
 
             let expected = readFixtureFile(EXPECTED_HTML_FILENAME);
-            const config = readFixtureFile(CONFIG_FILENAME) || ({} as any);
+            const config = JSON.parse(readFixtureFile(CONFIG_FILENAME) || '{}');
 
             const module = require(fixtureFilePath(`${DIST_DIRNAME}/${COMPILER_ENTRY_FILENAME}`));
 
@@ -103,18 +106,11 @@ describe('fixtures', () => {
             if (!expected) {
                 // write rendered HTML file if doesn't exist (ie new fixture)
                 expected = actual;
-                writeFixtureFile(
-                    EXPECTED_HTML_FILENAME,
-                    prettier.format(expected, {
-                        parser: 'html',
-                    })
-                );
+                writeFixtureFile(EXPECTED_HTML_FILENAME, formatHTML(expected));
             }
 
             // check rendered HTML
-            expect(prettier.format(actual, { parser: 'html' })).toEqual(
-                prettier.format(expected, { parser: 'html' })
-            );
+            expect(formatHTML(actual)).toEqual(formatHTML(expected));
         });
     }
 });
