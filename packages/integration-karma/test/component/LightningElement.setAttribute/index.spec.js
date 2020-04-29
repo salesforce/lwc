@@ -23,7 +23,7 @@ it('should throw when invoking setAttribute in constructor', () => {
 
 it('should return undefined', () => {
     const elm = createElement('x-test', { is: Test });
-    expect(elm.setComponentAttribute('foo', 'bar')).toBe(undefined);
+    expect(elm.setComponentAttribute('foo', 'bar')).toBeUndefined();
 });
 
 testConvertValueToString('undefined', undefined);

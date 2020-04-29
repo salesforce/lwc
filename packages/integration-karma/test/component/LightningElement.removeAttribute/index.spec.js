@@ -11,7 +11,7 @@ it('should not throw if the attribute is not present', () => {
 
 it('should return undefined', () => {
     const elm = createElement('x-test', { is: Test });
-    expect(elm.removeComponentAttribute('foo')).toBe(undefined);
+    expect(elm.removeComponentAttribute('foo')).toBeUndefined();
 });
 
 it('should remove the attribute if present on the host element', () => {
@@ -19,7 +19,7 @@ it('should remove the attribute if present on the host element', () => {
     elm.setAttribute('foo', 'bar');
     elm.removeComponentAttribute('foo');
 
-    expect(elm.hasAttribute('foo')).toBe(false);
+    expect(elm.hasAttribute('foo')).toBeFalse();
 });
 
 it('should lowercase the attribute name', () => {
@@ -27,5 +27,5 @@ it('should lowercase the attribute name', () => {
     elm.setAttribute('foo', 'bar');
     elm.removeComponentAttribute('FOO');
 
-    expect(elm.hasAttribute('foo')).toBe(false);
+    expect(elm.hasAttribute('foo')).toBeFalse();
 });

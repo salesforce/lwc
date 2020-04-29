@@ -341,19 +341,24 @@ BaseLightningElementConstructor.prototype = {
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.removeEventListener(type, wrappedListener, options);
     },
-    setAttributeNS(ns: string | null, attrName: string, _value: string) {
+    hasAttribute(): string | null {
         const elm = getLinkedElement(this);
-        if (process.env.NODE_ENV !== 'production') {
-            const vm = getAssociatedVM(this);
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
-            );
-        }
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
+        return elm.hasAttribute.apply(elm, arguments);
+    },
+    hasAttributeNS(): string | null {
+        const elm = getLinkedElement(this);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
+        return elm.hasAttributeNS.apply(elm, arguments);
+    },
+    removeAttribute(attrName: string) {
+        const elm = getLinkedElement(this);
         unlockAttribute(elm, attrName);
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        elm.setAttributeNS.apply(elm, arguments);
+        elm.removeAttribute.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
     removeAttributeNS(ns: string | null, attrName: string) {
@@ -364,13 +369,17 @@ BaseLightningElementConstructor.prototype = {
         elm.removeAttributeNS.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
-    removeAttribute(attrName: string) {
+    getAttribute(): string | null {
         const elm = getLinkedElement(this);
-        unlockAttribute(elm, attrName);
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        elm.removeAttribute.apply(elm, arguments);
-        lockAttribute(elm, attrName);
+        return elm.getAttribute.apply(elm, arguments);
+    },
+    getAttributeNS(): string | null {
+        const elm = getLinkedElement(this);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
+        return elm.getAttributeNS.apply(elm, arguments);
     },
     setAttribute(attrName: string, _value: string) {
         const elm = getLinkedElement(this);
@@ -387,23 +396,20 @@ BaseLightningElementConstructor.prototype = {
         elm.setAttribute.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
-    getAttribute(attrName: string): string | null {
+    setAttributeNS(ns: string | null, attrName: string, _value: string) {
         const elm = getLinkedElement(this);
+        if (process.env.NODE_ENV !== 'production') {
+            const vm = getAssociatedVM(this);
+            assert.isFalse(
+                isBeingConstructed(vm),
+                `Failed to construct '${getComponentTag(vm)}': The result must not have attributes.`
+            );
+        }
         unlockAttribute(elm, attrName);
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        const value = elm.getAttribute.apply(elm, arguments);
+        elm.setAttributeNS.apply(elm, arguments);
         lockAttribute(elm, attrName);
-        return value;
-    },
-    getAttributeNS(ns: string, attrName: string): string | null {
-        const elm = getLinkedElement(this);
-        unlockAttribute(elm, attrName);
-        // Typescript does not like it when you treat the `arguments` object as an array
-        // @ts-ignore type-mismatch
-        const value = elm.getAttributeNS.apply(elm, arguments);
-        lockAttribute(elm, attrName);
-        return value;
     },
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);

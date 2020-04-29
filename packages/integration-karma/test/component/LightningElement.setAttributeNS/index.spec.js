@@ -16,7 +16,7 @@ it('should throw when invoking setAttributeNS in constructor', () => {
 
 it('should return undefined', () => {
     const elm = createElement('x-test', { is: Test });
-    expect(elm.setComponentAttributeNS(TEST_NS, 'foo', 'bar')).toBe(undefined);
+    expect(elm.setComponentAttributeNS(TEST_NS, 'foo', 'bar')).toBeUndefined();
 });
 
 function testConvertValueToString(type, value) {
