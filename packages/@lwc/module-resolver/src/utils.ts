@@ -8,7 +8,6 @@ import path from 'path';
 import fs from 'fs';
 
 import { LwcConfigError } from './errors';
-
 import {
     LwcConfig,
     ModuleRecord,
@@ -19,6 +18,7 @@ import {
     RegistryEntry,
     InnerResolverOptions,
 } from './types';
+import { isObject } from './shared';
 
 const PACKAGE_JSON = 'package.json';
 const LWC_CONFIG_FILE = 'lwc.config.json';
@@ -66,12 +66,23 @@ export function getModuleEntry(
     );
 }
 
-export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleResolverConfig {
+export function normalizeConfig(
+    config: Partial<ModuleResolverConfig>,
+    scope: string
+): ModuleResolverConfig {
     const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
     const modules = config.modules || [];
-    const normalizedModules = modules.map((m) =>
-        isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m
-    );
+    const normalizedModules = modules.map((m) => {
+        if (!isObject(m)) {
+            throw new LwcConfigError(
+                `Invalid module record. Module record must be an object, instead got ${JSON.stringify(
+                    m
+                )}.`,
+                { scope }
+            );
+        }
+        return isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m;
+    });
 
     return {
         modules: normalizedModules,

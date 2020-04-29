@@ -256,4 +256,14 @@ describe('resolution override', () => {
             `Invalid LWC configuration in "${dirname}". Unknown module record "{}"`
         );
     });
+
+    test('throw when the module record is non-object', () => {
+        const dirname = fixture('no-config');
+        const opts: any = { modules: ['foo/test'] };
+
+        expect(() => resolveModule('test', dirname, opts)).toThrowErrorWithCode(
+            LWC_CONFIG_ERROR_CODE,
+            `Invalid LWC configuration in "${dirname}". Invalid module record. Module record must be an object, instead got "foo/test".`
+        );
+    });
 });
