@@ -7,10 +7,7 @@
 import path from 'path';
 import fs from 'fs';
 
-import { isObject } from '@lwc/shared';
-
 import { LwcConfigError } from './errors';
-
 import {
     LwcConfig,
     ModuleRecord,
@@ -21,6 +18,7 @@ import {
     RegistryEntry,
     InnerResolverOptions,
 } from './types';
+import { isObject } from './shared';
 
 const PACKAGE_JSON = 'package.json';
 const LWC_CONFIG_FILE = 'lwc.config.json';

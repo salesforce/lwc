@@ -12,7 +12,6 @@
         "dist/"
     ],
     "dependencies": {
-        "@lwc/shared": "1.5.2",
         "resolve": "~1.15.1"
     },
     "publishConfig": {
