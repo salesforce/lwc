@@ -18,7 +18,7 @@ it('should set the composed property to true when invoking click() on an element
     expect(clickEvent.composed).toBe(true);
 });
 
-it('should let the event bubble through the shadow root when invoking click() on an element in the shadow', () => {
+it('should let the event bubble throws the shadow root when invoking click() on an element in the shadow', () => {
     let clickEvent;
 
     const elm = createElement('x-test', { is: Test });
