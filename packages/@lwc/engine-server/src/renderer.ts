@@ -90,7 +90,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         const attribute = element.attributes.find(
             (attr) => attr.name === name && attr.namespace === namespace
         );
-        return attribute ? attribute.name : null;
+        return attribute ? attribute.value : null;
     },
 
     setAttribute(element, name, value, namespace = null) {
@@ -102,7 +102,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
             element.attributes.push({
                 name,
                 namespace,
-                value,
+                value: String(value),
             });
         } else {
             attribute.value = value;
@@ -113,24 +113,6 @@ export const renderer: Renderer<HostNode, HostElement> = {
         element.attributes = element.attributes.filter(
             (attr) => attr.name !== name && attr.namespace !== namespace
         );
-    },
-
-    addEventListener(target, type, callback) {
-        const listeners = target.eventListeners[type] || [];
-        listeners.push(callback);
-    },
-
-    removeEventListener(target, type, callback) {
-        const listeners = target.eventListeners[type] || [];
-
-        const listenerIndex = listeners.indexOf(callback);
-        if (listenerIndex !== -1) {
-            listeners.splice(listenerIndex, 1);
-        }
-    },
-
-    dispatchEvent(_target, _event) {
-        throw new Error('"dispatchEvent" is not yet available.');
     },
 
     getClassList(element) {
@@ -214,6 +196,14 @@ export const renderer: Renderer<HostNode, HostElement> = {
         return true;
     },
 
+    addEventListener() {
+        /* Noop on SSR */
+    },
+    removeEventListener() {
+        /* Noop on SSR */
+    },
+
+    dispatchEvent: unsupportedMethod('dispatchEvent'),
     getBoundingClientRect: unsupportedMethod('getBoundingClientRect'),
     querySelector: unsupportedMethod('querySelector'),
     querySelectorAll: unsupportedMethod('querySelectorAll'),
