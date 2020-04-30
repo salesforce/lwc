@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { isVoidElement } from './utils/elements';
+
 import { HostElement, HostShadowRoot, HostAttribute, HostChildNode, HostNodeType } from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
@@ -33,11 +35,23 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
 }
 
 export function serializeElement(element: HostElement): string {
+    let output = '';
     const { name } = element;
 
     const attrs = element.attributes.length ? ` ${serializeAttributes(element.attributes)}` : '';
-    const shadowRoot = element.shadowRoot ? serializeShadowRoot(element.shadowRoot) : '';
     const children = serializeChildNodes(element.children);
 
-    return `<${name}${attrs}>${shadowRoot}${children}</${name}>`;
+    output += `<${name}${attrs}>`;
+
+    if (element.shadowRoot) {
+        output += serializeShadowRoot(element.shadowRoot);
+    }
+
+    output += children;
+
+    if (!isVoidElement(name)) {
+        output += `</${name}>`;
+    }
+
+    return output;
 }

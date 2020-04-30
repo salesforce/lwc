@@ -6,7 +6,7 @@
  */
 import { assert, isUndefined, keys } from '@lwc/shared';
 import { VNode } from '../../3rdparty/snabbdom/types';
-import { getAttrNameFromPropName } from '../attributes';
+// import { getAttrNameFromPropName } from '../attributes';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For properties with live bindings, we read values from the DOM element
@@ -38,16 +38,19 @@ function update(oldVnode: VNode, vnode: VNode) {
     for (const key in props) {
         const cur: any = props[key];
 
-        if (process.env.NODE_ENV !== 'production') {
-            if (!(key in elm)) {
-                // TODO [#1297]: Move this validation to the compiler
-                assert.fail(
-                    `Unknown public property "${key}" of element <${sel}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(
-                        key
-                    )}".`
-                );
-            }
-        }
+        // TODO [#0]: How to replicate such behavior for SSR? It's not possible to keep a mapping of
+        // all the properties on known elements since they keep evolving over time. We might just
+        // need to disable this check when running on SSR.
+        // if (process.env.NODE_ENV !== 'production') {
+        //     if (!(key in elm)) {
+        //         // TODO [#1297]: Move this validation to the compiler
+        //         assert.fail(
+        //             `Unknown public property "${key}" of element <${sel}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(
+        //                 key
+        //             )}".`
+        //         );
+        //     }
+        // }
 
         // if it is the first time this element is patched, or the current value is different to the previous value...
         if (

@@ -100,7 +100,6 @@ describe('fixtures', () => {
             const config = JSON.parse(readFixtureFile(CONFIG_FILENAME) || '{}');
 
             const module = require(fixtureFilePath(`${DIST_DIRNAME}/${COMPILER_ENTRY_FILENAME}`));
-
             const actual = renderComponent(caseTagName, module.ctor, config.props || {});
 
             if (!expected) {

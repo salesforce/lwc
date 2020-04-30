@@ -8,6 +8,8 @@ import { isUndefined, isNull } from '@lwc/shared';
 import { Renderer } from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
+import { classNameToTokenList, tokenListToClassName } from './utils/classes';
+import { styleTextToCssDeclaration, cssDeclarationToStyleText } from './utils/style';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -17,6 +19,7 @@ function unsupportedMethod(name: string): () => never {
 
 export const renderer: Renderer<HostNode, HostElement> = {
     useSyntheticShadow: false,
+
     insert(node, parent, anchor) {
         if (node.parent !== null && node.parent !== parent) {
             const nodeIndex = node.parent.children.indexOf(node);
@@ -32,10 +35,12 @@ export const renderer: Renderer<HostNode, HostElement> = {
             parent.children.splice(anchorIndex, 0, node);
         }
     },
+
     remove(node, parent) {
         const nodeIndex = parent.children.indexOf(node);
         parent.children.splice(nodeIndex, 1);
     },
+
     createElement(name, namespace) {
         return {
             type: HostNodeType.Element,
@@ -48,6 +53,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
             eventListeners: {},
         };
     },
+
     createText(content) {
         return {
             type: HostNodeType.Text,
@@ -55,6 +61,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
             parent: null,
         };
     },
+
     attachShadow(element) {
         element.shadowRoot = {
             type: HostNodeType.ShadowRoot,
@@ -64,6 +71,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         // TODO [#0]: Fix typings here.
         return (element.shadowRoot as any) as HostNode;
     },
+
     setText(node, content) {
         if (node.type === HostNodeType.Text) {
             node.value = content;
@@ -77,12 +85,14 @@ export const renderer: Renderer<HostNode, HostElement> = {
             ];
         }
     },
-    getAttribute(element, name, namespace) {
+
+    getAttribute(element, name, namespace = null) {
         const attribute = element.attributes.find(
             (attr) => attr.name === name && attr.namespace === namespace
         );
         return attribute ? attribute.name : null;
     },
+
     setAttribute(element, name, value, namespace = null) {
         const attribute = element.attributes.find(
             (attr) => attr.name === name && attr.namespace === namespace
@@ -98,15 +108,18 @@ export const renderer: Renderer<HostNode, HostElement> = {
             attribute.value = value;
         }
     },
+
     removeAttribute(element, name, namespace) {
         element.attributes = element.attributes.filter(
             (attr) => attr.name !== name && attr.namespace !== namespace
         );
     },
+
     addEventListener(target, type, callback) {
         const listeners = target.eventListeners[type] || [];
         listeners.push(callback);
     },
+
     removeEventListener(target, type, callback) {
         const listeners = target.eventListeners[type] || [];
 
@@ -115,47 +128,88 @@ export const renderer: Renderer<HostNode, HostElement> = {
             listeners.splice(listenerIndex, 1);
         }
     },
+
     dispatchEvent(_target, _event) {
         throw new Error('"dispatchEvent" is not yet available.');
     },
+
     getClassList(element) {
-        function getClassAttribute(): HostAttribute | undefined {
-            return element.attributes.find(
-                (attr) => attr.name === 'class' && isUndefined(attr.namespace)
+        function getClassAttribute(): HostAttribute {
+            let classAttribute = element.attributes.find(
+                (attr) => attr.name === 'class' && isNull(attr.namespace)
             );
-        }
 
-        function tokenizeClasses(value: string): Set<string> {
-            return new Set(value.trim().split(/\W+/g));
-        }
+            if (isUndefined(classAttribute)) {
+                classAttribute = {
+                    name: 'class',
+                    namespace: null,
+                    value: '',
+                };
+                element.attributes.push(classAttribute);
+            }
 
-        function serializeClasses(values: Set<string>): string {
-            return Array.from(values).join(' ');
+            return classAttribute;
         }
 
         return {
             add(...names: string[]): void {
                 const classAttribute = getClassAttribute();
-                if (isUndefined(classAttribute)) {
-                    return;
-                }
 
-                const classes = tokenizeClasses(classAttribute.value);
-                names.forEach((name) => classes.add(name));
-                classAttribute.value = serializeClasses(classes);
+                const tokenList = classNameToTokenList(classAttribute.value);
+                names.forEach((name) => tokenList.add(name));
+                classAttribute.value = tokenListToClassName(tokenList);
             },
             remove(...names: string[]): void {
                 const classAttribute = getClassAttribute();
-                if (isUndefined(classAttribute)) {
-                    return;
-                }
 
-                const classes = tokenizeClasses(classAttribute.value);
-                names.forEach((name) => classes.delete(name));
-                classAttribute.value = serializeClasses(classes);
+                const tokenList = classNameToTokenList(classAttribute.value);
+                names.forEach((name) => tokenList.delete(name));
+                classAttribute.value = tokenListToClassName(tokenList);
             },
         } as DOMTokenList;
     },
+
+    getStyleDeclaration(element) {
+        function getStyleAttribute(): HostAttribute | undefined {
+            return element.attributes.find(
+                (attr) => attr.name === 'style' && isNull(attr.namespace)
+            );
+        }
+
+        return new Proxy(
+            {},
+            {
+                get(target, property) {
+                    const styleAttribute = getStyleAttribute();
+                    if (isUndefined(styleAttribute)) {
+                        return '';
+                    }
+
+                    const cssDeclaration = styleTextToCssDeclaration(styleAttribute.value);
+                    return cssDeclaration[property as string] || '';
+                },
+                set(target, property, value) {
+                    let styleAttribute = getStyleAttribute();
+
+                    if (isUndefined(styleAttribute)) {
+                        styleAttribute = {
+                            name: 'style',
+                            namespace: null,
+                            value: '',
+                        };
+                        element.attributes.push(styleAttribute);
+                    }
+
+                    const cssDeclaration = styleTextToCssDeclaration(styleAttribute.value);
+                    cssDeclaration[property as string] = value;
+                    styleAttribute.value = cssDeclarationToStyleText(cssDeclaration);
+
+                    return value;
+                },
+            }
+        ) as CSSStyleDeclaration;
+    },
+
     isConnected() {
         return true;
     },
