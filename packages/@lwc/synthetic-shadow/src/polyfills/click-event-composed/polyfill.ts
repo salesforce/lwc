@@ -19,7 +19,7 @@ function handleClick(event: Event) {
 }
 
 export default function apply() {
-    HTMLElement.prototype.click = function() {
+    HTMLElement.prototype.click = function () {
         addEventListener.call(this, 'click', handleClick);
         try {
             originalClickDescriptor!.value!.call(this);

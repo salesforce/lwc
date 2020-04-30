@@ -19,7 +19,7 @@ export default function detect(): boolean {
     let clickEvent: Event = new Event('click');
 
     const button = document.createElement('button');
-    button.addEventListener('click', event => (clickEvent = event));
+    button.addEventListener('click', (event) => (clickEvent = event));
     button.click();
 
     return !composedDescriptor.get!.call(clickEvent);
