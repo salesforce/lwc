@@ -1,0 +1,23 @@
+<x-slots>
+  <template shadow-root>
+    <x-receiver>
+      <template shadow-root>
+        <div>
+          Default slot:
+          <slot></slot>
+        </div>
+        <div>
+          Named slot:
+          <slot name="my-slot"></slot>
+        </div>
+      </template>
+      A
+      <div slot="my-slot">B</div>
+      C
+      <div>D</div>
+      E
+      <div slot="my-slot">F</div>
+      G
+    </x-receiver>
+  </template>
+</x-slots>
