@@ -573,7 +573,7 @@ export function resetShadowRoot(vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
-    if (!vm.isScheduled) {
+    if (!vm.isScheduled && !vm.renderer.ssr) {
         vm.isScheduled = true;
         if (rehydrateQueue.length === 0) {
             addCallbackToNextTick(flushRehydrationQueue);
