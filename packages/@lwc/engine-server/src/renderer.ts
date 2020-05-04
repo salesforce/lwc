@@ -17,8 +17,33 @@ function unsupportedMethod(name: string): () => never {
     };
 }
 
+function createElement(name: string, namespace?: string): HostElement {
+    return {
+        type: HostNodeType.Element,
+        name,
+        namespace,
+        parent: null,
+        shadowRoot: null,
+        children: [],
+        attributes: [],
+        eventListeners: {},
+    };
+}
+
+function createText(content: string): HostNode {
+    return {
+        type: HostNodeType.Text,
+        value: content,
+        parent: null,
+    };
+}
+
 export const renderer: Renderer<HostNode, HostElement> = {
     useSyntheticShadow: false,
+
+    createText,
+
+    createElement,
 
     insert(node, parent, anchor) {
         if (node.parent !== null && node.parent !== parent) {
@@ -39,27 +64,6 @@ export const renderer: Renderer<HostNode, HostElement> = {
     remove(node, parent) {
         const nodeIndex = parent.children.indexOf(node);
         parent.children.splice(nodeIndex, 1);
-    },
-
-    createElement(name, namespace) {
-        return {
-            type: HostNodeType.Element,
-            name,
-            namespace,
-            parent: null,
-            shadowRoot: null,
-            children: [],
-            attributes: [],
-            eventListeners: {},
-        };
-    },
-
-    createText(content) {
-        return {
-            type: HostNodeType.Text,
-            value: content,
-            parent: null,
-        };
     },
 
     attachShadow(element) {
@@ -209,4 +213,17 @@ export const renderer: Renderer<HostNode, HostElement> = {
     querySelectorAll: unsupportedMethod('querySelectorAll'),
     getElementsByTagName: unsupportedMethod('getElementsByTagName'),
     getElementsByClassName: unsupportedMethod('getElementsByClassName'),
+
+    injectStylesheet(text) {
+        const style = createElement('style');
+
+        style.attributes.push({
+            name: 'type',
+            namespace: null,
+            value: 'text/css',
+        });
+        style.children.push(createText(text));
+
+        return style;
+    },
 };

@@ -31,7 +31,6 @@ import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/t
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { ComponentInterface } from './component';
-import { Context } from './context';
 import {
     startMeasure,
     endMeasure,
@@ -48,6 +47,13 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 
 export interface SlotSet {
     [key: string]: VNodes;
+}
+
+export interface Context {
+    hostAttribute?: string;
+    shadowAttribute?: string;
+    tplCache?: Template;
+    [key: string]: any;
 }
 
 // TODO [#0]: How to get rid of the any as default generic value without passing them around through
@@ -92,6 +98,7 @@ export interface Renderer<HostNode = any, HostElement = any> {
     getElementsByTagName(element: HostElement, tagNameOrWildCard: string): HTMLCollection;
     getElementsByClassName(element: HostElement, names: string): HTMLCollection;
     isConnected(node: HostNode): boolean;
+    injectStylesheet(text: string): HostElement | undefined;
 }
 
 export enum VMState {
@@ -151,7 +158,6 @@ export interface UninitializedVM<HostNode = any, HostElement = any> {
 // the engine.
 export interface VM<HostNode = any, HostElement = any>
     extends UninitializedVM<HostNode, HostElement> {
-    cmpTemplate: Template;
     component: ComponentInterface;
     cmpRoot: ShadowRoot;
     /** Template Reactive Observer to observe values used by the selected template */

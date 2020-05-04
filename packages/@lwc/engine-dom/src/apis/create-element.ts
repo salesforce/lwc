@@ -28,7 +28,7 @@ import {
     LightningElement,
 } from '@lwc/engine-core';
 
-import { renderer, appendChild, insertBefore, replaceChild, removeChild } from '../renderer';
+import { renderer } from '../renderer';
 
 type NodeSlotCallback = (element: Node) => void;
 
@@ -51,6 +51,7 @@ function callNodeSlot(node: Node, slot: HiddenField<NodeSlotCallback>): Node {
 
 // Monkey patching Node methods to be able to detect the insertions and removal of root elements
 // created via createElement.
+const { appendChild, insertBefore, replaceChild, removeChild } = Node.prototype;
 assign(Node.prototype, {
     appendChild(newChild: Node): Node {
         const appendedNode = appendChild.call(this, newChild);
