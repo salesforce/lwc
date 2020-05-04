@@ -74,7 +74,7 @@ function evaluateStylesheet(vm: VM, template: Template): string {
     const stylesheets: string[] = [];
 
     const { stylesheets: factories, stylesheetTokens: tokens } = template;
-    const { useSyntheticShadow } = vm.renderer;
+    const { syntheticShadow: useSyntheticShadow } = vm.renderer;
 
     if (!isUndefined(factories) && !isUndefined(tokens)) {
         const hostSelector = useSyntheticShadow ? `[${tokens.hostAttribute}]` : '';
@@ -157,7 +157,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         cmpSlots,
         cmpTemplate,
         tro,
-        renderer: { injectStylesheet, useSyntheticShadow },
+        renderer: { injectStylesheet, syntheticShadow: useSyntheticShadow },
     } = vm;
 
     const isUpdatingTemplateInception = isUpdatingTemplate;

@@ -6,7 +6,7 @@
  */
 import { isFalse, isUndefined } from '@lwc/shared';
 
-import { useSyntheticShadow } from '../renderer';
+import { syntheticShadow } from '../renderer';
 
 /**
  * EXPERIMENTAL: This function detects whether or not a Node is controlled by a LWC template. This
@@ -23,7 +23,7 @@ export function isNodeFromTemplate(node: Node): boolean {
         return false;
     }
 
-    if (useSyntheticShadow) {
+    if (syntheticShadow) {
         // TODO [#1252]: old behavior that is still used by some pieces of the platform,
         // specifically, nodes inserted manually on places where `lwc:dom="manual"` directive is not
         // used, will be considered global elements.

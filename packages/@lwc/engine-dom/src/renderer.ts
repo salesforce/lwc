@@ -10,7 +10,7 @@ import { hasOwnProperty, isUndefined } from '@lwc/shared';
 
 // TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
 // to avoid having to synchronize it between the different modules.
-export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');
+export const syntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');
 
 function createStyleElement(text: string): HTMLStyleElement {
     const style = document.createElement('style');
@@ -47,7 +47,8 @@ function nativeShadowInjectStyleSheet(text: string): HTMLStyleElement {
 }
 
 export const renderer: Renderer<Node, Element> = {
-    useSyntheticShadow,
+    ssr: false,
+    syntheticShadow,
 
     createElement(tagName, namespace) {
         return isUndefined(namespace)
@@ -142,7 +143,7 @@ export const renderer: Renderer<Node, Element> = {
         return node.isConnected;
     },
 
-    injectStylesheet: useSyntheticShadow
+    injectStylesheet: syntheticShadow
         ? syntheticShadowInjectStylesheet
         : nativeShadowInjectStyleSheet,
 };

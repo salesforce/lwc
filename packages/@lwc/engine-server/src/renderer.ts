@@ -39,7 +39,8 @@ function createText(content: string): HostNode {
 }
 
 export const renderer: Renderer<HostNode, HostElement> = {
-    useSyntheticShadow: false,
+    ssr: true,
+    syntheticShadow: false,
 
     createText,
 

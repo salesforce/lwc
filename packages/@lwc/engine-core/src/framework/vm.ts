@@ -59,7 +59,8 @@ export interface Context {
 // TODO [#0]: How to get rid of the any as default generic value without passing them around through
 // the engine.
 export interface Renderer<HostNode = any, HostElement = any> {
-    useSyntheticShadow: boolean;
+    ssr: boolean;
+    syntheticShadow: boolean;
     insert(node: HostNode, parent: HostElement, anchor: HostNode | null): void;
     remove(node: HostNode, parent: HostElement): void;
     createElement(tagName: string, namespace?: string): HostElement;
@@ -281,7 +282,7 @@ export function createVM<HostNode, HostElement>(
         context: create(null),
         cmpProps: create(null),
         cmpFields: create(null),
-        cmpSlots: renderer.useSyntheticShadow ? create(null) : undefined,
+        cmpSlots: renderer.syntheticShadow ? create(null) : undefined,
         callHook,
         setHook,
         getHook,
@@ -355,8 +356,15 @@ function rehydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { cmpRoot, children: oldCh } = vm;
-    vm.children = newCh; // caching the new children collection
+    const {
+        cmpRoot,
+        children: oldCh,
+        renderer: { ssr },
+    } = vm;
+
+    // caching the new children collection
+    vm.children = newCh;
+
     if (newCh.length > 0 || oldCh.length > 0) {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
@@ -384,11 +392,11 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
             );
         }
     }
-    if (vm.state === VMState.connected) {
-        // If the element is connected, that means connectedCallback was already issued, and
-        // any successive rendering should finish with the call to renderedCallback, otherwise
-        // the connectedCallback will take care of calling it in the right order at the end of
-        // the current rehydration process.
+
+    // If the element is connected, that means connectedCallback was already issued, and any successive rendering should
+    // finish with the call to renderedCallback, otherwise the connectedCallback will take care of calling it in the
+    // right order at the end of the current rehydration process.
+    if (vm.state === VMState.connected && ssr === false) {
         runRenderedCallback(vm);
     }
 }

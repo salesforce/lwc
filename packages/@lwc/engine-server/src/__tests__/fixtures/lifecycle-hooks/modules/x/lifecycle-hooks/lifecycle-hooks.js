@@ -19,6 +19,6 @@ export default class LifecycleHooks extends LightningElement {
     }
 
     renderedCallback() {
-        this.hooks.push('renderedCallback');
+        throw new Error('renderedCallback should be reachable in SSR');
     }
 }
