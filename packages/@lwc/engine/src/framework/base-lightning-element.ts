@@ -301,7 +301,9 @@ BaseLightningElementConstructor.prototype = {
         return elm.dispatchEvent.apply(elm, arguments);
     },
     addEventListener(
-        ...[type, listener, options]: Parameters<typeof EventTarget.prototype.addEventListener>
+        type: string,
+        listener: EventListener,
+        options?: boolean | AddEventListenerOptions
     ) {
         const vm = getAssociatedVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -323,7 +325,9 @@ BaseLightningElementConstructor.prototype = {
         vm.elm.addEventListener(type, wrappedListener, options);
     },
     removeEventListener(
-        ...[type, listener, options]: Parameters<typeof EventTarget.prototype.addEventListener>
+        type: string,
+        listener: EventListener,
+        options?: boolean | AddEventListenerOptions
     ) {
         const vm = getAssociatedVM(this);
         const wrappedListener = getWrappedComponentsListener(vm, listener as EventListener);
@@ -341,7 +345,7 @@ BaseLightningElementConstructor.prototype = {
         // @ts-ignore type-mismatch
         return elm.hasAttributeNS.apply(elm, arguments);
     },
-    removeAttribute(...[attrName]: Parameters<typeof Element.prototype.removeAttribute>) {
+    removeAttribute(attrName: string) {
         const elm = getLinkedElement(this);
         unlockAttribute(elm, attrName);
         // Typescript does not like it when you treat the `arguments` object as an array
@@ -349,7 +353,7 @@ BaseLightningElementConstructor.prototype = {
         elm.removeAttribute.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
-    removeAttributeNS(...[_ns, attrName]: Parameters<typeof Element.prototype.removeAttributeNS>) {
+    removeAttributeNS(_namespace: string | null, attrName: string) {
         const elm = getLinkedElement(this);
         unlockAttribute(elm, attrName);
         // Typescript does not like it when you treat the `arguments` object as an array
@@ -369,7 +373,7 @@ BaseLightningElementConstructor.prototype = {
         // @ts-ignore type-mismatch
         return elm.getAttributeNS.apply(elm, arguments);
     },
-    setAttribute(...[attrName]: Parameters<typeof Element.prototype.setAttribute>) {
+    setAttribute(attrName: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             const vm = getAssociatedVM(this);
@@ -384,7 +388,7 @@ BaseLightningElementConstructor.prototype = {
         elm.setAttribute.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
-    setAttributeNS(...[_ns, attrName]: Parameters<typeof Element.prototype.setAttributeNS>) {
+    setAttributeNS(_namespace: string | null, attrName: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             const vm = getAssociatedVM(this);
