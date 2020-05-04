@@ -8,6 +8,7 @@ import { create, forEach, getPropertyDescriptor, isUndefined } from '@lwc/shared
 import { defaultDefHTMLPropertyNames, ElementPrototypeAriaPropertyNames } from './attributes';
 
 // TODO [#0]: Is there a better way to do this? Could we do this lazily after the engine evaluates
+// eslint-disable-next-line no-undef
 export const HTMLElementCtor = typeof HTMLElement !== 'undefined' ? HTMLElement : function () {};
 export const HTMLElementProto = HTMLElementCtor.prototype;
 

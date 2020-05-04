@@ -88,6 +88,10 @@ function createContextWatcher(
         // must be listening for a special dom event with the name corresponding to the value of
         // `adapterContextToken`, which will remain secret and internal to this file only to
         // guarantee that the linkage can be forged.
+
+        // TODO [#0]: We need to get rid of the custom event out of the engine, and use DOM or VM traversal for this
+        // matter.
+        // eslint-disable-next-line no-undef
         const internalDomEvent = new CustomEvent(adapterContextToken, {
             bubbles: true,
             composed: true,

@@ -36,7 +36,7 @@ export { registerDecorators } from './decorators/register';
 
 // Mics. internal APIs -----------------------------------------------------------------------------
 export { sanitizeAttribute } from './secure-template';
-export { getComponentDef, isComponentConstructor, getComponentConstructor } from './def';
+export { getComponentDef, isComponentConstructor } from './def';
 
 // Types -------------------------------------------------------------------------------------------
 export type { Renderer } from './vm';

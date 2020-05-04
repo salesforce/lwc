@@ -1,14 +1,16 @@
 {
-    "env": {
-        "browser": true
-    },
-
     "globals": {
-        "process": true
+        "process": true,
+        "console": true,
+        "performance": true,
     },
 
     "rules": {
-        "lwc-internal/no-production-assert": "error"
+        "lwc-internal/no-production-assert": "error",
+
+        // TODO [#0]: This rule is disabled by the @typescript-eslint/eslint-recommended plugin because it should be
+        // caught by typescript. Remove this rule once tsc doesn't use the dom lib for engine-core.
+        "no-undef": "error"
     },
 
     "overrides": [
@@ -17,14 +19,12 @@
                 "**/__tests__/**"
             ],
 
+            "env": {
+                "browser": true
+            },
+
             "rules": {
                 "lwc-internal/no-production-assert": "off"
-            }
-        },
-        {
-            "files": [ "src/polyfills/**"],
-            "rules": {
-                "no-extend-native": "off"
             }
         }
     ]
