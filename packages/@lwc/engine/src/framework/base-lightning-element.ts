@@ -176,6 +176,8 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'title'
     >;
 
+// Defined separately from HTMLElementTheGoodParts because, as of May 2020, the typescript interface
+// for Element does not include these
 interface AccessibleElementTheGoodParts {
     ariaActiveDescendant: string | null;
     ariaAtomic: string | null;
