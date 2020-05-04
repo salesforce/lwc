@@ -145,12 +145,14 @@ export interface LightningElementConstructor {
 export declare var LightningElement: LightningElementConstructor;
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
-    Pick<EventTarget, 'dispatchEvent' | 'addEventListener' | 'removeEventListener'> &
-    Pick<Node, 'isConnected'> &
     Pick<
-        Element,
+        HTMLElement,
+        | 'accessKey'
+        | 'addEventListener'
         | 'classList'
-        | 'id'
+        | 'dir'
+        | 'dispatchEvent'
+        | 'draggable'
         | 'getAttribute'
         | 'getAttributeNS'
         | 'getBoundingClientRect'
@@ -158,16 +160,20 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'getElementsByTagName'
         | 'hasAttribute'
         | 'hasAttributeNS'
+        | 'hidden'
+        | 'id'
+        | 'isConnected'
+        | 'lang'
         | 'querySelector'
         | 'querySelectorAll'
         | 'removeAttribute'
         | 'removeAttributeNS'
+        | 'removeEventListener'
         | 'setAttribute'
         | 'setAttributeNS'
-    > &
-    Pick<
-        HTMLElement,
-        'accessKey' | 'dir' | 'draggable' | 'hidden' | 'lang' | 'spellcheck' | 'tabIndex' | 'title'
+        | 'spellcheck'
+        | 'tabIndex'
+        | 'title'
     >;
 
 interface AccessibleElementTheGoodParts {
