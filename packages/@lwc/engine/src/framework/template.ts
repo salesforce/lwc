@@ -32,6 +32,7 @@ import {
     resetStyleAttributes,
 } from './stylesheet';
 import { startMeasure, endMeasure } from './performance-timing';
+import { getTemplateOrSwappedTemplate, addHotVM } from './hot-swaps';
 
 export let isUpdatingTemplate: boolean = false;
 
@@ -132,6 +133,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                 html
             )}`
         );
+        // in dev-mode, we support hot swapping of templates, which means that
+        // the component instance might be attempting to use an old version of
+        // the template, while internally, we have a replacement for it.
+        html = getTemplateOrSwappedTemplate(html);
     }
     const isUpdatingTemplateInception = isUpdatingTemplate;
     const vmOfTemplateBeingUpdatedInception = vmBeingRendered;
@@ -195,6 +200,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                         // so we can warn if the template is attempting to use a binding
                         // that is not provided by the component instance.
                         validateFields(vm, html);
+                        // add the VM to the list of host VMs that can be re-rendered if html is swapped
+                        addHotVM(vm);
                     }
                 }
 

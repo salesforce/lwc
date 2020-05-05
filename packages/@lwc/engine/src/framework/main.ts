@@ -28,3 +28,5 @@ export { readonly } from './readonly';
 export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './wc';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
+
+export { registerTemplateSwap } from './hot-swaps';
