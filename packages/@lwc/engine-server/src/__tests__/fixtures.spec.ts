@@ -17,6 +17,8 @@ const EXPECTED_HTML_FILENAME = 'expected.html';
 const ONLY_FILENAME = '.only';
 const SKIP_FILENAME = '.skip';
 
+jest.setTimeout(10_000 /* 10 seconds */);
+
 function formatHTML(code: string): string {
     return prettier.format(code, {
         parser: 'html',
