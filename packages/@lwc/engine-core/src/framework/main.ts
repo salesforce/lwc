@@ -39,4 +39,4 @@ export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';
 
 // Types -------------------------------------------------------------------------------------------
-export { Renderer } from './vm';
+export type { Renderer } from './vm';
