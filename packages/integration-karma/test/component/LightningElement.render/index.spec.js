@@ -87,9 +87,7 @@ if ('onunhandledrejection' in window) {
 
             elm.template = undefined;
             listener = (event) => {
-                expect(event.reason).toMatch(
-                    /Assert Violation: evaluateTemplate\(\) second argument must be an imported template instead of undefined/
-                );
+                expect(event.reason).toMatch(/Invalid template returned by the render\(\) method/);
                 done();
             };
             window.addEventListener('unhandledrejection', listener);

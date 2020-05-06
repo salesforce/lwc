@@ -103,12 +103,12 @@ export const renderer: Renderer<Node, Element> = {
         }
     },
 
-    addEventListener(target, type, callback) {
-        target.addEventListener(type, callback);
+    addEventListener(target, type, callback, options) {
+        target.addEventListener(type, callback, options);
     },
 
-    removeEventListener(target, type, callback) {
-        target.removeEventListener(type, callback);
+    removeEventListener(target, type, callback, options) {
+        target.removeEventListener(type, callback, options);
     },
 
     dispatchEvent(target, event) {

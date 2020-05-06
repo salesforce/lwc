@@ -38,10 +38,14 @@ export interface Template {
     slots?: string[];
 
     /**
-     * The stylesheet associated with the template.
+     * The stylesheet associated with the template. The stylesheets entry is an array in the case
+     * of CSS only modules.
      */
-    stylesheets?: StylesheetFactory[];
+    stylesheets?: Array<StylesheetFactory | StylesheetFactory[]>;
 
+    /**
+     * The stylesheet attributes configuration used for synthetic shadow.
+     */
     stylesheetTokens?: {
         /**
          * HTML attribute that need to be applied to the host element. This attribute is used for the
@@ -80,9 +84,16 @@ function evaluateStylesheet(vm: VM, template: Template): string {
         const hostSelector = useSyntheticShadow ? `[${tokens.hostAttribute}]` : '';
         const shadowSelector = useSyntheticShadow ? `[${tokens.shadowAttribute}]` : '';
 
-        for (let i = 0, len = factories.length; i < len; i++) {
+        for (let i = 0; i < factories.length; i++) {
             const factory = factories[i];
-            stylesheets.push(factory(hostSelector, shadowSelector, !useSyntheticShadow));
+
+            if (isArray(factory)) {
+                for (let j = 0; j < factory.length; j++) {
+                    stylesheets.push(factory[j](hostSelector, shadowSelector, !useSyntheticShadow));
+                }
+            } else {
+                stylesheets.push(factory(hostSelector, shadowSelector, !useSyntheticShadow));
+            }
         }
     }
 
