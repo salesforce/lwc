@@ -11,6 +11,7 @@ import * as api from './api';
 import { EmptyArray, useSyntheticShadow } from './utils';
 import { VM } from './vm';
 import { removeAttribute, setAttribute } from '../env/element';
+import { getStyleOrSwappedStyle } from './hot-swaps';
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
@@ -108,6 +109,12 @@ function collectStylesheets(
         if (isArray(sheet)) {
             collectStylesheets(sheet, hostSelector, shadowSelector, isNative, aggregatorFn);
         } else {
+            if (process.env.NODE_ENV !== 'production') {
+                // in dev-mode, we support hot swapping of stylesheet, which means that
+                // the component instance might be attempting to use an old version of
+                // the stylesheet, while internally, we have a replacement for it.
+                sheet = getStyleOrSwappedStyle(sheet);
+            }
             aggregatorFn(sheet(hostSelector, shadowSelector, isNative));
         }
     });
