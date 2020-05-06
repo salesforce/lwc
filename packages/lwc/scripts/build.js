@@ -34,10 +34,11 @@ const COMMON_TARGETS = [
 
 // -- Helpers -----------------------------------------------------------------
 
+// TODO [#0]: Decide what is the actual packaging strategy for @lwc/engine-* packages.
 function buildEngineTargets(targets) {
     const name = 'LWC';
     const targetName = 'engine';
-    const input = getEs6ModuleEntry('@lwc/engine');
+    const input = getEs6ModuleEntry('@lwc/engine-dom');
     const dir = path.join(distDirectory, 'engine');
     const engineConfig = { input, name, targetName, dir };
 
@@ -67,12 +68,17 @@ function buildWireService(targets) {
 // -- Build -------------------------------------------------------------------
 
 (async () => {
-    createDir(distDirectory);
-    const allTargets = [
-        ...buildEngineTargets(COMMON_TARGETS),
-        ...buildSyntheticShadow(COMMON_TARGETS),
-        ...buildWireService(COMMON_TARGETS),
-    ];
-    process.stdout.write('\n# Generating LWC artifacts...\n');
-    await generateTargets(allTargets);
+    try {
+        createDir(distDirectory);
+        const allTargets = [
+            ...buildEngineTargets(COMMON_TARGETS),
+            ...buildSyntheticShadow(COMMON_TARGETS),
+            ...buildWireService(COMMON_TARGETS),
+        ];
+        process.stdout.write('\n# Generating LWC artifacts...\n');
+        await generateTargets(allTargets);
+    } catch (e) {
+        console.error(e);
+        process.exit(1);
+    }
 })();

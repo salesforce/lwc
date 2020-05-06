@@ -12,6 +12,7 @@ const rollupReplace = require('@rollup/plugin-replace');
 const { terser: rollupTerser } = require('rollup-plugin-terser');
 const babel = require('@babel/core');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
+
 const { generateTargetName } = require('./helpers');
 
 function rollupFeaturesPlugin(prod) {
