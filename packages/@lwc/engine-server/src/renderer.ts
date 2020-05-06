@@ -43,7 +43,6 @@ export const renderer: Renderer<HostNode, HostElement> = {
     syntheticShadow: false,
 
     createText,
-
     createElement,
 
     insert(node, parent, anchor) {
@@ -65,6 +64,16 @@ export const renderer: Renderer<HostNode, HostElement> = {
     remove(node, parent) {
         const nodeIndex = parent.children.indexOf(node);
         parent.children.splice(nodeIndex, 1);
+    },
+
+    innerHTML(element, text) {
+        if (text !== '') {
+            throw new Error('Unsupported innerHTML operation');
+        }
+
+        for (const child of element.children) {
+            this.remove(child, element);
+        }
     },
 
     attachShadow(element) {

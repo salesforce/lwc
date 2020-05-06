@@ -65,6 +65,7 @@ export interface Renderer<HostNode = any, HostElement = any> {
     remove(node: HostNode, parent: HostElement): void;
     createElement(tagName: string, namespace?: string): HostElement;
     createText(content: string): HostNode;
+    innerHTML(element: HostElement, text: string): void;
     attachShadow(
         element: HostElement,
         options: { mode: 'open' | 'closed'; delegatesFocus?: boolean; [key: string]: any }
@@ -563,10 +564,10 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // of an error, in which case the children VNodes might not be representing the current
 // state of the DOM
 export function resetShadowRoot(vm: VM) {
-    vm.children = EmptyArray;
+    const { renderer } = vm;
 
-    // TODO [#0]: Fix me, we shouldn't need to expose innerHTML, and rather use remove from renderer
-    // ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
+    vm.children = EmptyArray;
+    renderer.innerHTML(vm.cmpRoot, '');
 
     // disconnecting any known custom element inside the shadow of the this vm
     runShadowChildNodesDisconnectedCallback(vm);
