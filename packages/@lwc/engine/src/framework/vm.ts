@@ -46,7 +46,7 @@ import { ReactiveObserver } from './mutation-tracker';
 import { LightningElement } from './base-lightning-element';
 import { getErrorComponentStack } from '../shared/format';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import { removeHotVM } from './hot-swaps';
+import { removeActiveVM } from './hot-swaps';
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -187,7 +187,7 @@ function resetComponentStateWhenRemoved(vm: VM) {
 // old vnode.children is removed from the DOM.
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        removeHotVM(vm);
+        removeActiveVM(vm);
         assert.isTrue(
             vm.state === VMState.connected || vm.state === VMState.disconnected,
             `${vm} must have been connected.`

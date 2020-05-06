@@ -32,7 +32,7 @@ import {
     resetStyleAttributes,
 } from './stylesheet';
 import { startMeasure, endMeasure } from './performance-timing';
-import { getTemplateOrSwappedTemplate, addHotVM } from './hot-swaps';
+import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 
 export let isUpdatingTemplate: boolean = false;
 
@@ -201,7 +201,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                         // that is not provided by the component instance.
                         validateFields(vm, html);
                         // add the VM to the list of host VMs that can be re-rendered if html is swapped
-                        addHotVM(vm);
+                        setActiveVM(vm);
                     }
                 }
 
