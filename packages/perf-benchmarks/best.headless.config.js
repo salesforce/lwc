@@ -15,6 +15,7 @@ module.exports = {
                 exclude: ['/engine.js$/', '/@best/runtime/'],
             },
         ],
+        'rollup-plugin-node-resolve',
         ['@rollup/plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }],
     ],
     benchmarkOnClient: false,

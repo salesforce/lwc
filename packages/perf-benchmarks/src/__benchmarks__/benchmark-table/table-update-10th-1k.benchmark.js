@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { createElement } from 'lwc';
+import { createElement } from '@lwc/engine-dom';
 import Table from 'benchmark/table';
 
 import Store from '../../tableStore';

@@ -13,6 +13,8 @@ const DEFAULT_OPTIONS = {
 // TODO [#0]: The module resolution is a complete mess how can we avoid changing this here?
 const DEFAULT_MODULES = [
     { npm: '@lwc/engine-core' },
+    { npm: '@lwc/engine-dom' },
+    { npm: '@lwc/engine-server' },
     { npm: '@lwc/synthetic-shadow' },
     { npm: '@lwc/wire-service' },
 ];

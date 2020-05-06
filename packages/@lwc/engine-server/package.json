@@ -23,7 +23,7 @@
         "modules": [
             {
                 "name": "@lwc/engine-server",
-                "path": "dist/engine.js"
+                "path": "dist/engine-server.js"
             }
         ],
         "expose": [

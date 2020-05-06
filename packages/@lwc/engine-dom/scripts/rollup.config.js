@@ -6,7 +6,6 @@
  */
 const path = require('path');
 const typescript = require('typescript');
-const nodeResolve = require('rollup-plugin-node-resolve');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 
 const { version } = require('../package.json');
@@ -17,6 +16,8 @@ const formats = ['es', 'cjs'];
 
 module.exports = {
     input: path.resolve(__dirname, '../src/main.ts'),
+    external: ['@lwc/engine-core', '@lwc/shared'],
+
     output: formats.map((format) => {
         return {
             name: 'LwcDom',
@@ -32,7 +33,6 @@ module.exports = {
             target: 'es2017',
             typescript,
         }),
-        nodeResolve(),
     ],
 
     onwarn({ code, message }) {
