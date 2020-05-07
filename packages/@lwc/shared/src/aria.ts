@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+
 // Global Aria and Role Properties derived from ARIA and Role Attributes.
 // https://wicg.github.io/aom/spec/aria-reflection.html
 export const AriaPropertyNames = [
