@@ -75,15 +75,6 @@ function rehydrateHotComponent(Ctor: ComponentConstructor) {
     });
 }
 
-export function registerTemplateSwap(oldTpl: Template, newTpl: Template) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    swappedTemplateMap.set(oldTpl, newTpl);
-    rehydrateHotTemplate(oldTpl);
-}
-
 export function getTemplateOrSwappedTemplate(tpl: Template): Template {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -97,18 +88,6 @@ export function getTemplateOrSwappedTemplate(tpl: Template): Template {
     return tpl;
 }
 
-export function registerComponentSwap(
-    oldComponent: ComponentConstructor,
-    newComponent: ComponentConstructor
-) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    swappedComponentMap.set(oldComponent, newComponent);
-    rehydrateHotComponent(oldComponent);
-}
-
 export function getComponentOrSwappedComponent(Ctor: ComponentConstructor): ComponentConstructor {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -120,15 +99,6 @@ export function getComponentOrSwappedComponent(Ctor: ComponentConstructor): Comp
         Ctor = swappedComponentMap.get(Ctor)!;
     }
     return Ctor;
-}
-
-export function registerStyleSwap(oldStyle: StylesheetFactory, newStyle: StylesheetFactory) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    swappedStyleMap.set(oldStyle, newStyle);
-    rehydrateHotStyle(oldStyle);
 }
 
 export function getStyleOrSwappedStyle(style: StylesheetFactory): StylesheetFactory {
@@ -174,7 +144,8 @@ export function setActiveVM(vm: VM) {
             }
         });
     }
-    // this will allow us to keep track of the templates that are being used by a hot component
+    // this will allow us to keep track of the templates that are
+    // being used by a hot component
     list.add(vm);
 }
 
@@ -207,5 +178,29 @@ export function removeActiveVM(vm: VM) {
                 activeStyles.delete(style);
             }
         });
+    }
+}
+
+export function registerTemplateSwap(oldTpl: Template, newTpl: Template) {
+    if (process.env.NODE_ENV !== 'production') {
+        swappedTemplateMap.set(oldTpl, newTpl);
+        rehydrateHotTemplate(oldTpl);
+    }
+}
+
+export function registerComponentSwap(
+    oldComponent: ComponentConstructor,
+    newComponent: ComponentConstructor
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        swappedComponentMap.set(oldComponent, newComponent);
+        rehydrateHotComponent(oldComponent);
+    }
+}
+
+export function registerStyleSwap(oldStyle: StylesheetFactory, newStyle: StylesheetFactory) {
+    if (process.env.NODE_ENV !== 'production') {
+        swappedStyleMap.set(oldStyle, newStyle);
+        rehydrateHotStyle(oldStyle);
     }
 }
