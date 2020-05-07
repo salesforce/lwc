@@ -7,7 +7,7 @@
 
 /* eslint-disable no-unsafe-finally */
 
-const logger = require('../../../src/shared/logger');
+const logger = require('../../../core/src/shared/logger');
 
 function createMatcher(methodName) {
     return function matcher(fn, expectedMessage) {

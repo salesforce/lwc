@@ -13,9 +13,9 @@ const LWC_PATH = path.join(LWC_ROOT, 'dist/engine.js');
 module.exports = {
     ...BASE_CONFIG,
 
-    displayName: 'lwc-engine',
+    displayName: 'lwc-engine-core',
 
-    roots: ['<rootDir>/src'],
+    roots: ['<rootDir>/core/src'],
 
     // Customize setup for the engine tests.
     setupFilesAfterEnv: [path.resolve(__dirname, 'scripts/jest/setup-test.js')],
