@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
 import {
     assign,
     create,
     forEach,
     isUndefined,
+    AriaPropertyNames,
     StringReplace,
     StringToLowerCase,
 } from '@lwc/shared';
@@ -153,7 +153,7 @@ const AttrNameToPropNameMap: Record<string, string> = create(null);
 const PropNameToAttrNameMap: Record<string, string> = create(null);
 
 // Synthetic creation of all AOM property descriptors for Custom Elements
-forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
+forEach.call(AriaPropertyNames, (propName: string) => {
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch

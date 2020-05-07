@@ -20,12 +20,6 @@
             "rules": {
                 "lwc-internal/no-production-assert": "off"
             }
-        },
-        {
-            "files": [ "src/polyfills/**"],
-            "rules": {
-                "no-extend-native": "off"
-            }
         }
     ]
 }
