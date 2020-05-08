@@ -18,7 +18,7 @@ import {
     setHiddenField,
 } from '@lwc/shared';
 
-import { appendChild, insertBefore, replaceChild, removeChild } from '../../../dom/src/env/node';
+import { appendChild, insertBefore, replaceChild, removeChild } from '../../dom/src/env/node';
 
 import {
     getAssociatedVMIfPresent,

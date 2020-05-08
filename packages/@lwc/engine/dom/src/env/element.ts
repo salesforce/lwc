@@ -5,19 +5,19 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const {
-    hasAttribute,
     getAttribute,
-    setAttribute,
-    setAttributeNS,
+    hasAttribute,
     removeAttribute,
     removeAttributeNS,
+    setAttribute,
+    setAttributeNS,
 } = Element.prototype;
 
 export {
-    hasAttribute,
     getAttribute,
-    setAttribute,
-    setAttributeNS,
+    hasAttribute,
     removeAttribute,
     removeAttributeNS,
+    setAttribute,
+    setAttributeNS,
 };

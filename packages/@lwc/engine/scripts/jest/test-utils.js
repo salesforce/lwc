@@ -7,7 +7,7 @@
 const { compileToFunction } = require('@lwc/template-compiler');
 
 const TEMPLATE_CACHE = Object.create(null);
-const { registerTemplate } = require('../../core/src/framework/template');
+const { registerTemplate } = require('../../src/framework/template');
 
 /**
  * Compiles a template string and returns the instantiated function.

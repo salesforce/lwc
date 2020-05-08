@@ -15,7 +15,7 @@ module.exports = {
 
     displayName: 'lwc-engine-core',
 
-    roots: ['<rootDir>/core/src'],
+    roots: ['<rootDir>/src'],
 
     // Customize setup for the engine tests.
     setupFilesAfterEnv: [path.resolve(__dirname, 'scripts/jest/setup-test.js')],
@@ -27,7 +27,7 @@ module.exports = {
     // Ignore jest custom setup scripts from the code coverage.
     coveragePathIgnorePatterns: [
         '<rootDir>/scripts/',
-        '<rootDir>/src/polyfills',
+        '<rootDir>/dom/src/polyfills',
         '<rootDir>/src/framework/wc.ts',
     ],
 

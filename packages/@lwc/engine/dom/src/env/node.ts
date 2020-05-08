@@ -7,10 +7,4 @@
 
 const { appendChild, insertBefore, removeChild, replaceChild } = Node.prototype;
 
-export {
-    // Node.prototype
-    appendChild,
-    insertBefore,
-    removeChild,
-    replaceChild,
-};
+export { appendChild, insertBefore, removeChild, replaceChild };

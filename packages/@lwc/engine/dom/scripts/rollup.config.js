@@ -9,17 +9,12 @@
 
 const path = require('path');
 const typescript = require('typescript');
-const rollupTypescriptPlugin = require('rollup-plugin-typescript');
-const nodeResolve = require('rollup-plugin-node-resolve');
+
+const nodeResolvePlugin = require('rollup-plugin-node-resolve');
+const typescriptPlugin = require('rollup-plugin-typescript');
 
 const babel = require('@babel/core');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
-
-const { version } = require('./package.json');
-
-const banner = `/* proxy-compat-disable */`;
-const footer = `/** version: ${version} */`;
-const formats = ['es', 'cjs'];
 
 function rollupFeaturesPlugin() {
     return {
@@ -32,13 +27,23 @@ function rollupFeaturesPlugin() {
     };
 }
 
+const { version } = require('../../package.json');
+
+const banner = `/* proxy-compat-disable */`;
+const footer = `/* version: ${version} */`;
+const formats = ['es', 'cjs'];
+
 module.exports = {
-    input: path.resolve(__dirname, 'dom/src/index.ts'),
+    input: path.resolve(__dirname, '../src/index.ts'),
 
     output: formats.map((format) => {
         return {
             name: 'LwcDom',
-            file: path.resolve(__dirname, `dist/engine${format === 'cjs' ? '.cjs' : ''}.js`),
+            file: path.resolve(
+                __dirname,
+                '../../dist',
+                `engine${format === 'cjs' ? '.cjs' : ''}.js`
+            ),
             format,
             banner: banner,
             footer: footer,
@@ -46,8 +51,8 @@ module.exports = {
     }),
 
     plugins: [
-        nodeResolve({ only: [/^@lwc\//, 'observable-membrane'] }),
-        rollupTypescriptPlugin({
+        nodeResolvePlugin({ only: [/^@lwc\//, 'observable-membrane'] }),
+        typescriptPlugin({
             target: 'es2017',
             typescript,
         }),
