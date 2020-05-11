@@ -13,7 +13,7 @@ const LWC_PATH = path.join(LWC_ROOT, 'dist/engine.js');
 module.exports = {
     ...BASE_CONFIG,
 
-    displayName: 'lwc-engine',
+    displayName: 'lwc-engine-core',
 
     roots: ['<rootDir>/src'],
 
@@ -27,7 +27,7 @@ module.exports = {
     // Ignore jest custom setup scripts from the code coverage.
     coveragePathIgnorePatterns: [
         '<rootDir>/scripts/',
-        '<rootDir>/src/polyfills',
+        '<rootDir>/dom/src/polyfills',
         '<rootDir>/src/framework/wc.ts',
     ],
 

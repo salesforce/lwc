@@ -9,7 +9,7 @@
     "scripts": {
         "clean": "rm -rf dist/ types/",
         "test": "jest",
-        "build": "tsc --emitDeclarationOnly && rollup --config scripts/rollup/rollup.config.js"
+        "build": "tsc --emitDeclarationOnly && rollup --config dom/scripts/rollup.config.js"
     },
     "files": [
         "dist/",

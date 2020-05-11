@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as assert from './assert';
 
-export * from './aria';
-export * from './language';
-export * from './fields';
-export { assert };
+const { appendChild, insertBefore, removeChild, replaceChild } = Node.prototype;
+
+export { appendChild, insertBefore, removeChild, replaceChild };

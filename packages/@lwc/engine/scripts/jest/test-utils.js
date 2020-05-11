@@ -5,8 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const { compileToFunction } = require('@lwc/template-compiler');
+
 const TEMPLATE_CACHE = Object.create(null);
 const { registerTemplate } = require('../../src/framework/template');
+
 /**
  * Compiles a template string and returns the instantiated function.
  *

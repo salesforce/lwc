@@ -12,20 +12,7 @@
  *
  * BY ADDING A NEW ENTRY IN THIS LIST, YOU WILL BRING SHAME ON YOURSELF OVER MULTIPLE GENERATIONS!!
  */
-const LEGACY_TEST_EXCEPTIONS = [
-    '#shadowRootQuerySelector should not throw error if querySelector does not match any elements',
-    '#shadowRootQuerySelector should not throw error if querySelectorAll does not match any elements',
-    '#shadowRootQuerySelector should return null if querySelector does not match any elements',
-    'api #i() should support various types',
-    'component public computed props should call setter function when used directly from DOM',
-    'component public methods should allow calling getAttribute on child when referenced with querySelector',
-    'component public methods should allow calling removeAttribute on child when referenced with querySelector',
-    'component public methods should allow calling setAttribute on child when referenced with querySelector',
-    'html-element #removeAttribute() should remove attribute on host element when element is nested in template',
-    'html-element global HTML Properties should log console error when user land code changes attribute via querySelector',
-    'html-element global HTML Properties should log console error when user land code removes attribute via querySelector',
-    'html-element global HTML Properties should log error message when attribute is set via elm.setAttribute if reflective property is defined',
-];
+const LEGACY_TEST_EXCEPTIONS = ['api #i() should support various types'];
 
 for (let i = 0; i < LEGACY_TEST_EXCEPTIONS.length; i++) {
     for (let j = i + 1; j < LEGACY_TEST_EXCEPTIONS.length; j++) {

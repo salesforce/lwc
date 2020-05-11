@@ -9,7 +9,7 @@ import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { VM, runWithBoundaryProtection } from './vm';
 import { invokeComponentCallback } from './invoker';
-import { dispatchEvent } from '../env/dom';
+import { dispatchEvent } from '../../dom/src/env/dom';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 

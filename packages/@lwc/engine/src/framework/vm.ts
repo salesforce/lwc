@@ -26,7 +26,7 @@ import { createComponent, renderComponent, markComponentAsDirty } from './compon
 import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
-import { ShadowRootInnerHTMLSetter } from '../env/dom';
+import { ShadowRootInnerHTMLSetter } from '../../dom/src/env/dom';
 
 import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
