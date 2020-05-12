@@ -15,9 +15,9 @@
     ],
     "dependencies": {
         "cssnano-preset-default": "~4.0.7",
-        "postcss": "~7.0.27",
+        "postcss": "~7.0.30",
         "postcss-selector-parser": "~6.0.2",
-        "postcss-value-parser": "~4.0.3"
+        "postcss-value-parser": "~4.1.0"
     },
     "publishConfig": {
         "access": "public"
