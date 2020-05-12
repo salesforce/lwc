@@ -6,7 +6,6 @@
  */
 
 // TODO [#1296]: Revisit these exports and figure out a better separation
-export { createElement } from './upgrade';
 export { createContextProvider } from './context-provider';
 export { getComponentDef, isComponentConstructor, getComponentConstructor } from './def';
 export { BaseLightningElement as LightningElement } from './base-lightning-element';
