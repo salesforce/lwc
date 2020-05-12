@@ -43,7 +43,7 @@
     "husky": "^4.2.5",
     "is-ci": "^2.0.0",
     "isbinaryfile": "^4.0.6",
-    "jest": "^25.4.0",
+    "jest": "^26.0.1",
     "lerna": "^3.20.2",
     "lint-staged": "^10.2.2",
     "mime-types": "^2.1.26",
