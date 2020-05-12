@@ -7,7 +7,7 @@
 
 // TODO [#1296]: Revisit these exports and figure out a better separation
 export { createContextProvider } from './context-provider';
-export { getComponentDef, isComponentConstructor, getComponentConstructor } from './def';
+export { getComponentDef, isComponentConstructor } from './def';
 export { BaseLightningElement as LightningElement } from './base-lightning-element';
 export { register } from './services';
 export { unwrap } from './membrane';

@@ -8,3 +8,6 @@
 // Polyfills
 import '../polyfills/proxy-concat/main';
 import '../polyfills/aria-properties/main';
+
+export { createElement } from '../apis/create-element';
+export { getComponentConstructor } from '../apis/get-component-constructor';
