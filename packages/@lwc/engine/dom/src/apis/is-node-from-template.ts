@@ -17,13 +17,15 @@ export function isNodeFromTemplate(node: Node): boolean {
     if (isFalse(node instanceof Node)) {
         return false;
     }
-    // TODO [#1250]: skipping the shadowRoot instances itself makes no sense, we need to revisit this with locker
+    // TODO [#1250]: skipping the shadowRoot instances itself makes no sense, we need to revisit
+    // this with locker
     if (node instanceof ShadowRoot) {
         return false;
     }
     if (useSyntheticShadow) {
-        // TODO [#1252]: old behavior that is still used by some pieces of the platform, specifically, nodes inserted
-        // manually on places where `lwc:dom="manual"` directive is not used, will be considered global elements.
+        // TODO [#1252]: old behavior that is still used by some pieces of the platform,
+        // specifically, nodes inserted manually on places where `lwc:dom="manual"` directive is not
+        // used, will be considered global elements.
         if (isUndefined((node as any).$shadowResolver$)) {
             return false;
         }
