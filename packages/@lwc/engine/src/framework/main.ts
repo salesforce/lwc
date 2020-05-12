@@ -5,15 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// TODO [#1296]: Revisit these exports and figure out a better separation
+// Public APIs -------------------------------------------------------------------------------------
 export { createContextProvider } from './context-provider';
-export { getComponentDef, isComponentConstructor } from './def';
 export { BaseLightningElement as LightningElement } from './base-lightning-element';
 export { register } from './services';
-export { unwrap } from './membrane';
-export { registerTemplate, sanitizeAttribute } from './secure-template';
-export { registerComponent } from './component';
-export { registerDecorators } from './decorators/register';
 
 export { default as api } from './decorators/api';
 export { default as track } from './decorators/track';
@@ -22,12 +17,25 @@ export { readonly } from './readonly';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 
-// Internal APIs -----------------------------------------------------------------------------------
-export { getAttrNameFromPropName, isAttributeLocked } from './attributes';
+// Internal APIs used by renderers -----------------------------------------------------------------
 export { getComponentInternalDef, setElementProto } from './def';
+export { getAttrNameFromPropName, isAttributeLocked } from './attributes';
 export {
     createVM,
     connectRootElement,
     disconnectRootElement,
     getAssociatedVMIfPresent,
 } from './vm';
+
+// Internal APIs used by compiled code -------------------------------------------------------------
+export { registerComponent } from './component';
+export { registerTemplate } from './secure-template';
+export { registerDecorators } from './decorators/register';
+
+// Mics. internal APIs -----------------------------------------------------------------------------
+export { unwrap } from './membrane';
+export { sanitizeAttribute } from './secure-template';
+export { getComponentDef, isComponentConstructor } from './def';
+
+// Types -------------------------------------------------------------------------------------------
+export type { Renderer } from './renderer';

@@ -37,11 +37,10 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
             const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
-                    const name = vm.elm.constructor.name;
                     logError(
-                        `\`${name}\` constructor can’t read the value of property \`${toString(
+                        `Can’t read the value of property \`${toString(
                             key
-                        )}\` because the owner component hasn’t set the value yet. Instead, use the \`${name}\` constructor to set a default value for the property.`,
+                        )}\` from the constructor because the owner component hasn’t set the value yet. Instead, use the constructor to set a default value for the property.`,
                         vm
                     );
                 }

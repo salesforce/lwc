@@ -75,12 +75,12 @@ function createStyleVNode(elm: HTMLStyleElement) {
  * Reset the styling token applied to the host element.
  */
 export function resetStyleAttributes(vm: VM): void {
-    const { context, elm } = vm;
+    const { context, elm, renderer } = vm;
 
     // Remove the style attribute currently applied to the host element.
     const oldHostAttribute = context.hostAttribute;
     if (!isUndefined(oldHostAttribute)) {
-        removeAttribute.call(elm, oldHostAttribute);
+        renderer.removeAttribute(elm, oldHostAttribute);
     }
 
     // Reset the scoping attributes associated to the context.
@@ -91,9 +91,10 @@ export function resetStyleAttributes(vm: VM): void {
  * Apply/Update the styling token applied to the host element.
  */
 export function applyStyleAttributes(vm: VM, hostAttribute: string, shadowAttribute: string): void {
-    const { context, elm } = vm;
+    const { context, elm, renderer } = vm;
+
     // Remove the style attribute currently applied to the host element.
-    setAttribute.call(elm, hostAttribute, '');
+    renderer.setAttribute(elm, hostAttribute, '');
 
     context.hostAttribute = hostAttribute;
     context.shadowAttribute = shadowAttribute;
@@ -116,6 +117,7 @@ function collectStylesheets(
 }
 
 export function evaluateCSS(
+    vm: VM,
     stylesheets: StylesheetFactory[],
     hostAttribute: string,
     shadowAttribute: string
@@ -124,7 +126,7 @@ export function evaluateCSS(
         assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
     }
 
-    if (useSyntheticShadow) {
+    if (vm.renderer.syntheticShadow) {
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
 

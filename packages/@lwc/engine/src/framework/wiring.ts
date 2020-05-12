@@ -9,7 +9,6 @@ import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { VM, runWithBoundaryProtection } from './vm';
 import { invokeComponentCallback } from './invoker';
-import { dispatchEvent } from '../../dom/src/env/dom';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
@@ -81,6 +80,7 @@ function createContextWatcher(
     }
     const {
         elm,
+        renderer,
         context: { wiredConnecting, wiredDisconnecting },
     } = vm;
     // waiting for the component to be connected to formally request the context via the token
@@ -102,7 +102,7 @@ function createContextWatcher(
                 callbackWhenContextIsReady(newContext);
             },
         });
-        dispatchEvent.call(elm, internalDomEvent);
+        renderer.dispatchEvent(elm, internalDomEvent);
     });
 }
 

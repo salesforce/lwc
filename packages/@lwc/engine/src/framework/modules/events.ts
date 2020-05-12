@@ -44,18 +44,21 @@ function updateAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveV
 
 function createAllEventListeners(vnode: VNode) {
     const {
+        elm,
         data: { on },
+        owner: { renderer },
     } = vnode;
+
     if (isUndefined(on)) {
         return;
     }
-    const elm = vnode.elm as Element;
+
     const listener: VNodeEventListener = ((vnode as InteractiveVNode).listener = createListener());
     listener.vnode = vnode;
 
     let name;
     for (name in on) {
-        elm.addEventListener(name, listener);
+        renderer.addEventListener(elm, name, listener);
     }
 }
 
