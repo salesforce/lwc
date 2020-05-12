@@ -14,7 +14,6 @@ export { unwrap } from './membrane';
 export { registerTemplate, sanitizeAttribute } from './secure-template';
 export { registerComponent } from './component';
 export { registerDecorators } from './decorators/register';
-export { isNodeFromTemplate } from './vm';
 
 export { default as api } from './decorators/api';
 export { default as track } from './decorators/track';
