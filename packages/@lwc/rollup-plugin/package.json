@@ -16,7 +16,10 @@
     },
     "dependencies": {
         "@lwc/module-resolver": "1.6.1",
-        "@rollup/pluginutils": "~3.0.9"
+        "@rollup/pluginutils": "~3.0.10"
+    },
+    "peerDependencies": {
+        "rollup": "^1.2.0||^2.0.0"
     },
     "publishConfig": {
         "access": "public"
