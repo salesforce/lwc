@@ -18,18 +18,17 @@ import {
     setHiddenField,
 } from '@lwc/shared';
 
-import { appendChild, insertBefore, replaceChild, removeChild } from '../../dom/src/env/node';
-
 import {
     getAssociatedVMIfPresent,
     createVM,
     connectRootElement,
     disconnectedRootElement,
-} from './vm';
-import { ComponentConstructor } from './component';
-import { getComponentInternalDef, setElementProto } from './def';
+} from '../../../src/framework/vm';
 
-type NodeSlotCallback = (element: Node) => {};
+import { LightningElement } from '../../src';
+import { getComponentInternalDef, setElementProto } from '../../../src/framework/def';
+
+type NodeSlotCallback = (element: Node) => void;
 
 const ConnectingSlot = createHiddenField<NodeSlotCallback>('connecting', 'engine');
 const DisconnectingSlot = createHiddenField<NodeSlotCallback>('disconnecting', 'engine');
@@ -50,26 +49,27 @@ function callNodeSlot(node: Node, slot: HiddenField<NodeSlotCallback>): Node {
 
 // Monkey patching Node methods to be able to detect the insertions and removal of root elements
 // created via createElement.
+const { appendChild, insertBefore, removeChild, replaceChild } = Node.prototype;
 assign(Node.prototype, {
-    appendChild(newChild: Node): Node {
+    appendChild(newChild) {
         const appendedNode = appendChild.call(this, newChild);
         return callNodeSlot(appendedNode, ConnectingSlot);
     },
-    insertBefore(newChild: Node, referenceNode: Node): Node {
+    insertBefore(newChild, referenceNode) {
         const insertedNode = insertBefore.call(this, newChild, referenceNode);
         return callNodeSlot(insertedNode, ConnectingSlot);
     },
-    removeChild(oldChild: Node): Node {
+    removeChild(oldChild) {
         const removedNode = removeChild.call(this, oldChild);
         return callNodeSlot(removedNode, DisconnectingSlot);
     },
-    replaceChild(newChild: Node, oldChild: Node): Node {
+    replaceChild(newChild, oldChild) {
         const replacedNode = replaceChild.call(this, newChild, oldChild);
         callNodeSlot(replacedNode, DisconnectingSlot);
         callNodeSlot(newChild, ConnectingSlot);
         return replacedNode;
     },
-});
+} as Pick<Node, 'appendChild' | 'insertBefore' | 'removeChild' | 'replaceChild'>);
 
 /**
  * EXPERIMENTAL: This function is almost identical to document.createElement with the slightly
@@ -85,7 +85,7 @@ assign(Node.prototype, {
 export function createElement(
     sel: string,
     options: {
-        is: ComponentConstructor;
+        is: typeof LightningElement;
         mode?: 'open' | 'closed';
     }
 ): HTMLElement {
@@ -100,7 +100,7 @@ export function createElement(
     const Ctor = options.is;
     if (!isFunction(Ctor)) {
         throw new TypeError(
-            `"createElement" function expects a "is" option with a valid component constructor.`
+            `"createElement" function expects an "is" option with a valid component constructor.`
         );
     }
 

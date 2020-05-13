@@ -20,8 +20,9 @@ module.exports = {
     // Customize setup for the engine tests.
     setupFilesAfterEnv: [path.resolve(__dirname, 'scripts/jest/setup-test.js')],
     moduleNameMapper: {
-        'test-utils': path.resolve(__dirname, 'scripts/jest/test-utils.js'),
-        '@lwc/engine': LWC_PATH,
+        '^test-utils$': path.resolve(__dirname, 'scripts/jest/test-utils.js'),
+        '^@lwc/engine$': LWC_PATH,
+        '^@lwc/engine-dom$': '<rootDir>/dom/src',
     },
 
     // Ignore jest custom setup scripts from the code coverage.

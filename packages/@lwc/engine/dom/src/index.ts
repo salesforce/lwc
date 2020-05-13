@@ -7,4 +7,4 @@
 
 export * from './framework/main';
 
-export * from '../../src/framework/main';
+export * from '../../src';

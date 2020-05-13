@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as api from '../api';
-import { createElement, LightningElement, registerDecorators } from '../main';
-import { registerTemplate } from '../template';
+import { createElement } from '@lwc/engine-dom';
 import { compileTemplate } from 'test-utils';
+import * as api from '../api';
+import { LightningElement, registerDecorators } from '../main';
+import { registerTemplate } from '../template';
 
 describe('api', () => {
     afterAll(() => jest.clearAllMocks());
