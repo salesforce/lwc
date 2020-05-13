@@ -66,7 +66,7 @@ function rehydrateHotComponent(Ctor: ComponentConstructor) {
                 // the styles will be reset, along with the content of the
                 // shadow, this way we can guarantee that all children elements will be
                 // throw away, and new instances will be created.
-                vm.cmpTemplate = () => [];
+                owner.cmpTemplate = () => [];
                 // forcing the vm to rehydrate in the next tick
                 markComponentAsDirty(owner);
                 scheduleRehydration(owner);
