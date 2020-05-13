@@ -121,32 +121,39 @@ export function setActiveVM(vm: VM) {
     }
     // tracking active component
     const Ctor = vm.def.ctor;
-    let list = activeComponents.get(Ctor);
-    if (isUndefined(list)) {
-        list = new Set();
-        activeComponents.set(Ctor, list);
+    let componentVMs = activeComponents.get(Ctor);
+    if (isUndefined(componentVMs)) {
+        componentVMs = new Set();
+        activeComponents.set(Ctor, componentVMs);
     }
+    // this will allow us to keep track of the hot components
+    componentVMs.add(vm);
+
     // tracking active template
     const tpl = vm.cmpTemplate;
-    list = activeTemplates.get(tpl);
-    if (isUndefined(list)) {
-        list = new Set();
-        activeTemplates.set(tpl, list);
-    }
-    // tracking active styles associated to template
-    const styles = tpl.stylesheets;
-    if (!isUndefined(styles)) {
-        styles.forEach((style) => {
-            list = activeStyles.get(style);
-            if (isUndefined(list)) {
-                list = new Set();
-                activeStyles.set(style, list);
-            }
-        });
+    let templateVMs = activeTemplates.get(tpl);
+    if (isUndefined(templateVMs)) {
+        templateVMs = new Set();
+        activeTemplates.set(tpl, templateVMs);
     }
     // this will allow us to keep track of the templates that are
     // being used by a hot component
-    list.add(vm);
+    templateVMs.add(vm);
+
+    // tracking active styles associated to template
+    const stylesheets = tpl.stylesheets;
+    if (!isUndefined(stylesheets)) {
+        stylesheets.forEach((stylesheet) => {
+            let stylesheetVMs = activeStyles.get(stylesheet);
+            if (isUndefined(stylesheetVMs)) {
+                stylesheetVMs = new Set();
+                activeStyles.set(stylesheet, stylesheetVMs);
+            }
+            // this will allow us to keep track of the stylesheet that are
+            // being used by a hot component
+            stylesheetVMs.add(vm);
+        });
+    }
 }
 
 export function removeActiveVM(vm: VM) {
