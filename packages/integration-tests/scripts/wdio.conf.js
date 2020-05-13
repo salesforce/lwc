@@ -50,20 +50,24 @@ exports.config = {
 
     baseUrl: `http://localhost:${port}`,
 
-    maxInstances: 3,
     capabilities: [],
 
     waitforTimeout: 10000,
     connectionRetryTimeout: 90000,
 
-    services: ['static-server'],
-
-    staticServerPort: port,
-    staticServerFolders: [
-        { mount: '/', path: './public' },
-        ...suites.flatMap((suite) => suite.specs),
-    ],
-
     framework: 'mocha',
     reporters: ['spec'],
+
+    services: [
+        [
+            'static-server',
+            {
+                port,
+                folders: [
+                    { mount: '/', path: './public' },
+                    ...suites.flatMap((suite) => suite.specs),
+                ],
+            },
+        ],
+    ],
 };
