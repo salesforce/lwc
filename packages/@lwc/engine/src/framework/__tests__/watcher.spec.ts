@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { createElement } from '@lwc/engine-dom';
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement, registerDecorators } from '../main';
+import { LightningElement, registerDecorators } from '../main';
 
 describe('watcher', () => {
     describe('integration', () => {

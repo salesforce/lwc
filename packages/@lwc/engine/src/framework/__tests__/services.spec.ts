@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as target from '../services';
-import { createElement, LightningElement } from '../main';
+import { createElement } from '@lwc/engine-dom';
 import { compileTemplate } from 'test-utils';
+import * as target from '../services';
+import { LightningElement } from '../main';
 
 function resetServices() {
     Object.keys(target.Services).forEach((name) => {
