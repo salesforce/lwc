@@ -11,6 +11,7 @@ const { freeze, defineProperty, isExtensible } = Object;
 
 // This value needs to be in sync with wiring.ts from @lwc/engine
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
+const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
 
 /**
  * Registers a wire adapter factory for Lightning Platform.
@@ -86,6 +87,7 @@ function removeListener(listeners: WireEventTargetListener[], toRemove: WireEven
 interface dataCallback {
     (value: any): void;
     [DeprecatedWiredElementHost]: any;
+    [DeprecatedWiredParamsMeta]: string[];
 }
 export interface WireAdapterConstructor {
     new (callback: dataCallback): WireAdapter;
@@ -95,13 +97,14 @@ function isEmptyConfig(config: Record<string, any>): boolean {
     return Object.keys(config).length === 0;
 }
 
-function isValidConfig(config: Record<string, any>): boolean {
-    return Object.keys(config).some((key) => !isUndefined(config[key]));
+function isValidConfig(config: Record<string, any>, params: string[]): boolean {
+    return params.length === 0 || params.some(key => !isUndefined(config[key]));
 }
 
 export class WireAdapter {
     private callback: dataCallback;
     private readonly wiredElementHost: EventTarget;
+    private readonly wireParamsMeta: string[];
 
     private connecting: NoArgumentListener[] = [];
     private disconnecting: NoArgumentListener[] = [];
@@ -130,6 +133,7 @@ export class WireAdapter {
     constructor(callback: dataCallback) {
         this.callback = callback;
         this.wiredElementHost = callback[DeprecatedWiredElementHost];
+        this.wireParamsMeta = callback[DeprecatedWiredParamsMeta];
         this.eventTarget = {
             addEventListener: (type: string, listener: WireEventTargetListener): void => {
                 switch (type) {
@@ -194,10 +198,7 @@ export class WireAdapter {
             // the config on the wire adapter should not be called until one of them changes.
             this.isFirstUpdate = false;
 
-            // Note: In the legacy adapters with static config, this check is not enforced, they always get called.
-            // Ex: @wire(foo, { bar: undefined })
-            // With this functionality, adapters with static and dynamic($) parameters will be treated the same.
-            if (!isEmptyConfig(config) && !isValidConfig(config)) {
+            if (!isEmptyConfig(config) && !isValidConfig(config, this.wireParamsMeta)) {
                 return;
             }
         }
