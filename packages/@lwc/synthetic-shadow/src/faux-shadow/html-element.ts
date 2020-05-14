@@ -18,7 +18,7 @@ import {
     ignoreFocusIn,
 } from './focus';
 
-const { blur, focus } = HTMLElement.prototype;
+const { blur: HTMLElementBlur, focus: HTMLElementFocus } = HTMLElement.prototype;
 
 /**
  * This method only applies to elements with a shadow attached to them
@@ -99,34 +99,33 @@ function tabIndexSetterPatched(this: HTMLElement, value: any) {
     }
 }
 
-/**
- * This method only applies to elements with a shadow attached to them
- */
-function blurPatched(this: HTMLElement) {
-    if (isDelegatingFocus(this)) {
-        const currentActiveElement = getActiveElement(this);
-        if (!isNull(currentActiveElement)) {
-            // if there is an active element, blur it (intentionally using the dot notation in case the user defines the blur routine)
-            (currentActiveElement as HTMLElement).blur();
-            return;
+function blur(this: HTMLElement): void {
+    if (isHostElement(this)) {
+        if (isDelegatingFocus(this)) {
+            const activeElement = getActiveElement(this);
+            if (!isNull(activeElement)) {
+                // @ts-ignore type-mismatch
+                return blur.apply(activeElement, arguments); // recursive
+            }
         }
+        // @ts-ignore type-mismatch
+        return this.blur.apply(this, arguments); // direct invocation in case defined by component
     }
-    return blur.call(this);
+    // @ts-ignore type-mismatch
+    return HTMLElementBlur.apply(this, arguments);
 }
 
-function focusPatched(this: HTMLElement) {
-    disableKeyboardFocusNavigationRoutines();
-
-    if (isHostElement(this) && isDelegatingFocus(this)) {
-        hostElementFocus.call(this);
-        return;
+function focus(this: HTMLElement): void {
+    if (isHostElement(this)) {
+        if (isDelegatingFocus(this)) {
+            // @ts-ignore type-mismatch
+            return hostElementFocus.apply(this, arguments);
+        }
+        // @ts-ignore type-mismatch
+        return this.focus.apply(this, arguments); // direct invocation in case defined by component
     }
-
-    // Typescript does not like it when you treat the `arguments` object as an array
     // @ts-ignore type-mismatch
-    focus.apply(this, arguments);
-
-    enableKeyboardFocusNavigationRoutines();
+    return HTMLElementFocus.apply(this, arguments);
 }
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that
@@ -150,10 +149,8 @@ defineProperties(HTMLElement.prototype, {
     },
     blur: {
         value(this: HTMLElement) {
-            if (isHostElement(this)) {
-                return blurPatched.call(this);
-            }
-            blur.call(this);
+            // @ts-ignore type-mismatch
+            blur.apply(this, arguments);
         },
         enumerable: true,
         writable: true,
@@ -161,9 +158,10 @@ defineProperties(HTMLElement.prototype, {
     },
     focus: {
         value(this: HTMLElement) {
-            // Typescript does not like it when you treat the `arguments` object as an array
+            disableKeyboardFocusNavigationRoutines();
             // @ts-ignore type-mismatch
-            focusPatched.apply(this, arguments);
+            focus.apply(this, arguments);
+            enableKeyboardFocusNavigationRoutines();
         },
         enumerable: true,
         writable: true,
