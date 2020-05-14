@@ -94,9 +94,8 @@ describe('legacy wire adapters (register call)', () => {
         });
     });
 
-
     describe('with dynamic and static config', () => {
-        it('should not call config when initially all props from params in config are undefined', done => {
+        it('should not call config when initially all props from params in config are undefined', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
 
             setTimeout(() => {

@@ -98,7 +98,7 @@ function isEmptyConfig(config: Record<string, any>): boolean {
 }
 
 function isValidConfig(config: Record<string, any>, params: string[]): boolean {
-    return params.length === 0 || params.some(key => !isUndefined(config[key]));
+    return params.length === 0 || params.some((key) => !isUndefined(config[key]));
 }
 
 export class WireAdapter {

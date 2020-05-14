@@ -217,7 +217,9 @@ export function registerDecorators(
     }
     if (!isUndefined(wire)) {
         for (const fieldOrMethodName in wire) {
-            const { adapter, method, config: configCallback, params = {} } = wire[fieldOrMethodName];
+            const { adapter, method, config: configCallback, params = {} } = wire[
+                fieldOrMethodName
+            ];
             descriptor = getOwnPropertyDescriptor(proto, fieldOrMethodName);
             if (method === 1) {
                 if (process.env.NODE_ENV !== 'production') {
