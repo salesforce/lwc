@@ -23,7 +23,7 @@ function exit(api) {
                 ]);
 
                 path.traverse(visitors, state);
-                dedupeImports(path);
+                dedupeImports(api, path);
             },
         },
     };
