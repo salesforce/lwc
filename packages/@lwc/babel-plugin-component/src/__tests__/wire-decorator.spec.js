@@ -20,9 +20,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -74,9 +73,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import importedValue from "ns/module";
                 import { getFoo } from "data-service";
                 
@@ -125,9 +123,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -182,9 +179,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -241,9 +237,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -339,9 +334,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -384,9 +378,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-              import { registerDecorators as _registerDecorators } from "lwc";
+              import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
               import _tmpl from "./test.html";
-              import { registerComponent as _registerComponent } from "lwc";
               import { Foo } from "data-service";
 
               class Test {
@@ -429,9 +422,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-            import { registerDecorators as _registerDecorators } from "lwc";
+            import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
             import _tmpl from "./test.html";
-            import { registerComponent as _registerComponent } from "lwc";
             import { Foo } from "data-service";
 
             class Test {
@@ -496,9 +488,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                     import _tmpl from "./test.html";
-                    import { registerComponent as _registerComponent } from "lwc";
                     import { getFoo } from "data-service";
 
                     class Test {
@@ -608,9 +599,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                     import _tmpl from "./test.html";
-                    import { registerComponent as _registerComponent } from "lwc";
                     import { getFoo } from "data-service";
 
                     class Test {
@@ -662,9 +652,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                     import _tmpl from "./test.html";
-                    import { registerComponent as _registerComponent } from "lwc";
                     import { getFoo } from "data-service";
 
                     class Test {
@@ -766,9 +755,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -838,9 +826,8 @@ describe('Transform method', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
