@@ -18,9 +18,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
 
                 class Test {
                   constructor() {
@@ -55,9 +54,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
 
                 class Test {
                   constructor() {

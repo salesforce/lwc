@@ -23,8 +23,7 @@ it('should apply transformation for valid javascript file', async () => {
 
     const expected = `
         import _tmpl from "./foo.html";
-        import { registerComponent as _registerComponent } from "lwc";
-        import { LightningElement } from 'lwc';
+        import { registerComponent as _registerComponent, LightningElement } from "lwc";
         class Foo extends LightningElement {}
         export default _registerComponent(Foo, {
             tmpl: _tmpl

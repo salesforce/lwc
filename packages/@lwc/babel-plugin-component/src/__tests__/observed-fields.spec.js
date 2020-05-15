@@ -31,10 +31,8 @@ describe('observed fields', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import {  registerDecorators as _registerDecorators, registerComponent as _registerComponent, createElement } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { createElement } from "lwc";
 
                 class Test {
                   constructor() {
@@ -96,10 +94,8 @@ describe('observed fields', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, createElement } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { createElement } from "lwc";
                 
                 class Test {
                   constructor() {
@@ -153,10 +149,8 @@ describe('observed fields', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, createElement } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { createElement } from "lwc";
                 const PREFIX = "prefix";
                 
                 class Test {
@@ -192,10 +186,8 @@ describe('observed fields', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, createElement } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { createElement } from "lwc";
                 
                 class Test {
                   constructor() {
@@ -283,9 +275,7 @@ describe('observed fields', () => {
             output: {
                 code: `
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { registerDecorators as _registerDecorators } from "lwc";
-                import { createElement } from "lwc";
+                import { registerComponent as _registerComponent, registerDecorators as _registerDecorators, createElement } from "lwc";
                 
                 const Test = _registerDecorators(
                   class {

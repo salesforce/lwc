@@ -6,7 +6,7 @@
  */
 const classProperty = require('@babel/plugin-proposal-class-properties')['default'];
 const { invalidDecorators } = require('./decorators');
-const { transform: postProcess } = require('./post-process');
+const { transform: postProcess, dedupeImports } = require('./post-process');
 
 function exit(api) {
     return {
@@ -23,6 +23,7 @@ function exit(api) {
                 ]);
 
                 path.traverse(visitors, state);
+                dedupeImports(path);
             },
         },
     };
