@@ -15,6 +15,22 @@
         "index.js",
         "types.d.ts"
     ],
+    "lwc": {
+        "modules": [
+            {
+                "name": "lwc",
+                "path": "dist/engine/esm/es2017/engine.js"
+            },
+            {
+                "name": "@lwc/synthetic-shadow",
+                "path": "dist/synthetic-shadow/esm/es2017/synthetic-shadow.js"
+            },
+            {
+                "name": "@lwc/wire-service",
+                "path": "dist/synthetic-shadow/esm/es2017/wire-service.js"
+            }
+        ]
+    },
     "dependencies": {
         "@lwc/compiler": "1.6.2",
         "@lwc/engine": "1.6.2",
