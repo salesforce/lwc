@@ -458,18 +458,28 @@ function runDisconnectedCallback(vm: VM) {
 
 function runShadowChildNodesDisconnectedCallback(vm: VM) {
     const { velements: vCustomElementCollection } = vm;
-    // reporting disconnection for every child in inverse order since they are inserted in reserved order
+
+    // Reporting disconnection for every child in inverse order since they are
+    // inserted in reserved order.
     for (let i = vCustomElementCollection.length - 1; i >= 0; i -= 1) {
-        const elm = vCustomElementCollection[i].elm;
+        const { elm } = vCustomElementCollection[i];
+
         // There are two cases where the element could be undefined:
-        // * when there is an error during the construction phase, and an
-        //   error boundary picks it, there is a possibility that the VCustomElement
+        // * when there is an error during the construction phase, and an error
+        //   boundary picks it, there is a possibility that the VCustomElement
         //   is not properly initialized, and therefore is should be ignored.
-        // * when slotted custom element is not used by the element where it is slotted
-        //   into it, as a result, the custom element was never initialized.
+        // * when slotted custom element is not used by the element where it is
+        //   slotted into it, as  a result, the custom element was never
+        //   initialized.
         if (!isUndefined(elm)) {
-            const childVM = getAssociatedVM(elm);
-            resetComponentStateWhenRemoved(childVM);
+            const childVM = getAssociatedVMIfPresent(elm);
+
+            // The VM associated with the element might be associated undefined
+            // in the case where the VM failed in the middle of its creation,
+            // eg: constructor throwing before invoking super().
+            if (!isUndefined(childVM)) {
+                resetComponentStateWhenRemoved(childVM);
+            }
         }
     }
 }
