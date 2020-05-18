@@ -1,3 +1,10 @@
+# Shared config
+ignore_forks: &ignore_forks
+  branches:
+    # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+    ignore: /pull\/[0-9]+/
+
+
 # Jobs definition
 version: 2.1
 
@@ -15,52 +22,59 @@ commands:
     description: Restore Yarn cache from previous build
     steps:
       - restore_cache:
-        keys:
-          - yarn-v5-{{ checksum "yarn.lock" }}
+          keys:
+            - yarn-v5-{{ checksum "yarn.lock" }}
 
   save_yarn_cache:
     description: Save Yarn cache for future builds
     steps:
       - save_cache:
-        key: yarn-v5-{{ checksum "yarn.lock" }}
-        paths:
-          - ~/.cache/yarn
+          key: yarn-v5-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
 
   save_workspace:
     description: Save current workspace
     steps:
       - persist_to_workspace:
-        root: .
-        paths: .
+          root: .
+          paths: .
 
   load_workspace:
     description: Load workspace
     steps:
       - attach_workspace:
-        at: ~/lwc
+          at: ~/lwc
 
   # Sauce connect
   start_sauce_connect:
     description: Start sauce connect
+    parameters:
+      username:
+        type: env_var_name
+        default: SAUCE_USERNAME
+      key:
+        type: env_var_name
+        default: SAUCE_KEY
     steps:
       - run:
-        name: Install and start sauce connect
-        background: true
-        command: |
-            curl https://saucelabs.com/downloads/sc-4.5.4-linux.tar.gz -o saucelabs.tar.gz
-            tar -xzf saucelabs.tar.gz
-            cd sc-*
-            bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY}
+          name: Install and start sauce connect
+          background: true
+          command: |
+              curl https://saucelabs.com/downloads/sc-4.5.4-linux.tar.gz -o saucelabs.tar.gz
+              tar -xzf saucelabs.tar.gz
+              cd sc-*
+              bin/sc -u ${<< parameters.username >>} -k ${<< parameters.key >>}
       - run:
-        name: Wait for sauce connect to be up
-        command: wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
+          name: Wait for sauce connect to be up
+          command: wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
   
   stop_sauce_connect:
     description: Stop all sauce connect tunnels
     steps:
       -  run:
-        name: Stop sauce connect
-        command: kill -9 `cat /tmp/sc_client-${SAUCE_TUNNEL_ID}.pid`
+          name: Stop sauce connect
+          command: killall sc
 
   # Test
   run_karma:
@@ -75,12 +89,12 @@ commands:
         default: true
     steps:
       - run:
-        name: Run karma integration tests
-        command: | 
-            yarn sauce \
-              <<# parameters.native-shadow >> --native-shadow<</ parameters.native-shadow >> \
-              <<# parameters.compat >> --compat <</ parameters.compat >> \
-              <<# parameters.coverage >> --coverage <</ parameters.coverage >>
+          name: Run karma integration tests
+          command: | 
+              yarn sauce \
+                <<# parameters.native-shadow >> --native-shadow<</ parameters.native-shadow >> \
+                <<# parameters.compat >> --compat <</ parameters.compat >> \
+                <<# parameters.coverage >> --coverage <</ parameters.coverage >>
 
 jobs:
   build:
@@ -125,13 +139,13 @@ jobs:
       - load_workspace
       - start_sauce_connect
 
-      - run_karma
+      - run_karma:
           native-shadow: false
           compat: false
-      - run_karma
+      - run_karma:
           native-shadow: true
           compat: false
-      - run_karma
+      - run_karma:
           native-shadow: false
           compat: true
       - run:
@@ -215,34 +229,26 @@ workflows:
 
       - test_karma:
           filters:
-              branches:
-                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
-                ignore: /pull\/[0-9]+/
+              <<: *ignore_forks
           requires:
             - build
 
       - perf_and_compare:
           filters:
-              branches:
-                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
-                ignore: /pull\/[0-9]+/
+              <<: *ignore_forks
           requires:
             - build
 
       - test_integration:
           filters:
-              branches:
-                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
-                ignore: /pull\/[0-9]+/
+              <<: *ignore_forks
           requires:
             - test_unit
             - test_karma
 
       - test_integration_compat:
           filters:
-              branches:
-                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
-                ignore: /pull\/[0-9]+/
+              <<: *ignore_forks
           requires:
             - test_unit
             - test_karma
