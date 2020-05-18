@@ -8,6 +8,8 @@ ignore_forks: &ignore_forks
 # Jobs definition
 version: 2.1
 
+
+# Custom executors definition
 executors:
   node:
     working_directory: ~/lwc
@@ -16,6 +18,8 @@ executors:
     environment:
       - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
 
+
+# Custom commands definition
 commands:
   # Setup
   restore_yarn_cache:
@@ -46,6 +50,7 @@ commands:
       - attach_workspace:
           at: ~/lwc
 
+
   # Sauce connect
   start_sauce_connect:
     description: Start sauce connect
@@ -68,13 +73,14 @@ commands:
       - run:
           name: Wait for sauce connect to be up
           command: wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
-  
+
   stop_sauce_connect:
     description: Stop all sauce connect tunnels
     steps:
       -  run:
           name: Stop sauce connect
           command: killall sc
+
 
   # Test
   run_karma:
@@ -90,12 +96,15 @@ commands:
     steps:
       - run:
           name: Run karma integration tests
+          working_directory: packages/integration-karma
           command: | 
               yarn sauce \
                 <<# parameters.native-shadow >> --native-shadow<</ parameters.native-shadow >> \
                 <<# parameters.compat >> --compat <</ parameters.compat >> \
                 <<# parameters.coverage >> --coverage <</ parameters.coverage >>
 
+
+# Jobs definition
 jobs:
   build:
     executor: node
@@ -154,6 +163,7 @@ jobs:
           working_directory: packages/integration-karma
 
       - stop_sauce_connect
+
 
   test_integration:
     executor: node
