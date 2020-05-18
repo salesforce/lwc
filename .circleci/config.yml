@@ -1,17 +1,3 @@
-# Environment configuration
-env_default: &env_default
-  working_directory: ~/lwc
-  docker:
-    - image: circleci/node:12-browsers
-
-env_perf: &env_perf
-  <<: *env_default
-  environment:
-    - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
-
-env_test: &env_test
-  <<: *env_default
-
 # Yarn cache
 restore_yarn_cache: &restore_yarn_cache
   restore_cache:
@@ -160,10 +146,19 @@ store_best_artifacts: &store_best_artifacts
 
 
 # Jobs definition
-version: 2
+version: 2.1
+
+executors:
+  node:
+    working_directory: ~/lwc
+    docker:
+      - image: circleci/node:12-browsers
+    environment:
+      - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
+
 jobs:
   build:
-    <<: *env_default
+    executor: node
     steps:
       - checkout
       - *restore_yarn_cache
@@ -178,14 +173,14 @@ jobs:
 
 
   test_unit:
-    <<: *env_default
+    executor: node
     steps:
       - *load_workspace
       - *run_unit_tests
 
 
   test_karma:
-    <<: *env_test
+    executor: node
     steps:
       - *load_workspace
 
@@ -202,7 +197,7 @@ jobs:
       - *stop_sauce_connect
 
   test_integration:
-    <<: *env_test
+    executor: node
     steps:
       - *load_workspace
 
@@ -214,7 +209,7 @@ jobs:
 
 
   test_integration_compat:
-    <<: *env_test
+    executor: node
     steps:
       - *load_workspace
 
