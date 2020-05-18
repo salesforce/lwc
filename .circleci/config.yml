@@ -223,7 +223,7 @@ jobs:
 
 
   perf_and_compare:
-    <<: *env_perf
+    executor: node
     steps:
       - *load_workspace
 
