@@ -300,3 +300,69 @@ describe('event propagation in nested shadow tree', () => {
         ]);
     });
 });
+
+describe('Event.stopPropagation', () => {
+    it('should not invoke component handler is the propagation is stopped by a template handler', () => {
+        const nodes = createShadowTree(document.body);
+        nodes.div.addEventListener('test', (evt) => {
+            evt.stopPropagation();
+        });
+
+        const logs = dispatchEventWithLog(
+            nodes.span,
+            new CustomEvent('test', {
+                composed: true,
+                bubbles: true,
+            })
+        );
+
+        const composedPath = [
+            nodes.span,
+            nodes.div,
+            nodes['x-shadow-tree'].shadowRoot,
+            nodes['x-shadow-tree'],
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ];
+        expect(logs).toEqual([
+            [nodes.span, nodes.span, composedPath],
+            [nodes.div, nodes.span, composedPath],
+        ]);
+    });
+});
+
+describe('Event.stopImmediatePropagation', () => {
+    it('should not invoke component handler is the propagation is stopped by a template handler', () => {
+        const nodes = createShadowTree(document.body);
+
+        nodes.div.addEventListener('test', (evt) => {
+            evt.stopImmediatePropagation();
+        });
+
+        const logs = dispatchEventWithLog(
+            nodes.span,
+            new CustomEvent('test', {
+                composed: true,
+                bubbles: true,
+            })
+        );
+        expect(logs).toEqual([
+            [
+                nodes.span,
+                nodes.span,
+                [
+                    nodes.span,
+                    nodes.div,
+                    nodes['x-shadow-tree'].shadowRoot,
+                    nodes['x-shadow-tree'],
+                    document.body,
+                    document.documentElement,
+                    document,
+                    window,
+                ],
+            ],
+        ]);
+    });
+});
