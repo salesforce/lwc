@@ -108,6 +108,7 @@ function createContextWatcher(
 
 function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
     const { method, adapter, configCallback, params } = wireDef;
+    const hasDynamicParams = params.length > 0;
     const { component } = vm;
     const dataCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
@@ -155,7 +156,7 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
         updateConnectorConfig(configCallback(component));
     };
 
-    if (params.length > 0) {
+    if (hasDynamicParams) {
         // This wire has dynamic parameters: we wait for the component instance is created and its values set
         // in order to call the update(config) method.
         Promise.resolve().then(() => {

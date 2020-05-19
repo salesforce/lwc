@@ -98,13 +98,14 @@ function isEmptyConfig(config: Record<string, any>): boolean {
 }
 
 function isValidConfig(config: Record<string, any>, params: string[]): boolean {
-    return params.length === 0 || params.some((key) => !isUndefined(config[key]));
+    // The config is valid if there is no params, or if exist a param for which config[param] !== undefined.
+    return params.length === 0 || params.some((param) => !isUndefined(config[param]));
 }
 
 export class WireAdapter {
     private callback: dataCallback;
     private readonly wiredElementHost: EventTarget;
-    private readonly wireParamsMeta: string[];
+    private readonly dynamicParamsNames: string[];
 
     private connecting: NoArgumentListener[] = [];
     private disconnecting: NoArgumentListener[] = [];
@@ -133,7 +134,7 @@ export class WireAdapter {
     constructor(callback: dataCallback) {
         this.callback = callback;
         this.wiredElementHost = callback[DeprecatedWiredElementHost];
-        this.wireParamsMeta = callback[DeprecatedWiredParamsMeta];
+        this.dynamicParamsNames = callback[DeprecatedWiredParamsMeta];
         this.eventTarget = {
             addEventListener: (type: string, listener: WireEventTargetListener): void => {
                 switch (type) {
@@ -198,7 +199,7 @@ export class WireAdapter {
             // the config on the wire adapter should not be called until one of them changes.
             this.isFirstUpdate = false;
 
-            if (!isEmptyConfig(config) && !isValidConfig(config, this.wireParamsMeta)) {
+            if (!isEmptyConfig(config) && !isValidConfig(config, this.dynamicParamsNames)) {
                 return;
             }
         }
