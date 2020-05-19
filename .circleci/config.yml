@@ -61,6 +61,9 @@ commands:
       key:
         type: env_var_name
         default: SAUCE_KEY
+      tunnel_id:
+        type: env_var_name
+        default: SAUCE_TUNNEL_ID
     steps:
       - run:
           name: Install and start sauce connect
@@ -69,7 +72,7 @@ commands:
               curl https://saucelabs.com/downloads/sc-4.5.4-linux.tar.gz -o saucelabs.tar.gz
               tar -xzf saucelabs.tar.gz
               cd sc-*
-              bin/sc -u ${<< parameters.username >>} -k ${<< parameters.key >>}
+              bin/sc -u ${<< parameters.username >>} -k ${<< parameters.key >>} -i ${<< parameters.tunnel_id >>}
       - run:
           name: Wait for sauce connect to be up
           command: wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
@@ -86,7 +89,7 @@ commands:
   run_karma:
     description: Run Karma integration tests
     parameters:
-      native-shadow:
+      native_shadow:
         type: boolean
       compat:
         type: boolean
@@ -99,7 +102,7 @@ commands:
           working_directory: packages/integration-karma
           command: | 
               yarn sauce \
-                <<# parameters.native-shadow >> --native-shadow<</ parameters.native-shadow >> \
+                <<# parameters.native_shadow >> --native_shadow<</ parameters.native_shadow >> \
                 <<# parameters.compat >> --compat <</ parameters.compat >> \
                 <<# parameters.coverage >> --coverage <</ parameters.coverage >>
 
@@ -111,7 +114,6 @@ jobs:
     steps:
       - checkout
       - restore_yarn_cache
-
       - run:
           name: Install dependencies and build
           command: yarn install --frozen-lockfile
@@ -127,7 +129,6 @@ jobs:
       - run:
           name: Run linter
           command: yarn lint
-
       - save_yarn_cache
       - save_workspace
 
@@ -136,7 +137,6 @@ jobs:
     executor: node
     steps:
       - load_workspace
-      
       - run:
           name: Run unit tests
           command: yarn test:ci
@@ -144,52 +144,48 @@ jobs:
 
   test_karma:
     executor: node
+    environment:
+      SAUCE_TUNNEL_ID: << pipeline.id	>>/test_karma
     steps:
       - load_workspace
       - start_sauce_connect
-
       - run_karma:
-          native-shadow: false
+          native_shadow: false
           compat: false
       - run_karma:
-          native-shadow: true
+          native_shadow: true
           compat: false
       - run_karma:
-          native-shadow: false
+          native_shadow: false
           compat: true
       - run:
           name: Compute karma coverage
           command: yarn coverage
           working_directory: packages/integration-karma
-
       - stop_sauce_connect
 
 
-  test_integration:
+  test_integration_chrome:
     executor: node
     steps:
       - load_workspace
-      - start_sauce_connect
-
       - run:
           name: Run integration test - Headless Chrome
           command: yarn sauce:prod --browsers chrome
           working_directory: packages/integration-tests
 
-      - stop_sauce_connect
 
-
-  test_integration_compat:
+  test_integration_ie11:
     executor: node
+    environment:
+      SAUCE_TUNNEL_ID: << pipeline.id	>>/test_integration_ie11
     steps:
       - load_workspace
       - start_sauce_connect
-
       - run:
           name: Run integration test - IE11 SauceLabs
           command: yarn sauce:prod_compat --browsers ie11
           working_directory: packages/integration-tests
-
       - stop_sauce_connect
 
 
@@ -197,7 +193,6 @@ jobs:
     executor: node
     steps:
       - load_workspace
-
       - run:
           name: Setup BEST environment
           command: |
@@ -249,14 +244,14 @@ workflows:
           requires:
             - build
 
-      - test_integration:
+      - test_integration_chrome:
           filters:
               <<: *ignore_forks
           requires:
             - test_unit
             - test_karma
 
-      - test_integration_compat:
+      - test_integration_ie11:
           filters:
               <<: *ignore_forks
           requires:
