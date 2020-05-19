@@ -145,7 +145,7 @@ jobs:
   test_karma:
     executor: node
     environment:
-      SAUCE_TUNNEL_ID: << pipeline.id	>>/test_karma
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma
     steps:
       - load_workspace
       - start_sauce_connect
@@ -178,7 +178,7 @@ jobs:
   test_integration_ie11:
     executor: node
     environment:
-      SAUCE_TUNNEL_ID: << pipeline.id	>>/test_integration_ie11
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_ie11
     steps:
       - load_workspace
       - start_sauce_connect
