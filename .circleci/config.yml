@@ -102,7 +102,7 @@ commands:
           working_directory: packages/integration-karma
           command: | 
               yarn sauce \
-                <<# parameters.native_shadow >> --native_shadow<</ parameters.native_shadow >> \
+                <<# parameters.native_shadow >> --native-shadow<</ parameters.native_shadow >> \
                 <<# parameters.compat >> --compat <</ parameters.compat >> \
                 <<# parameters.coverage >> --coverage <</ parameters.coverage >>
 
