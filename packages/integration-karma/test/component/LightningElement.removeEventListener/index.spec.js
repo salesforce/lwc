@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 
 import Test from 'x/test';
 import LifecycleHooks from 'x/lifecycleHooks';
+import RemovalWhileDispatch from 'x/removalWhileDispatch';
 
 it('should remove existing event listeners', () => {
     let isInvoked = false;
@@ -29,4 +30,18 @@ it('should not throw when invoking in the different lifecycle hooks', () => {
         document.body.appendChild(elm);
         document.body.removeChild(elm);
     }).not.toThrow();
+});
+
+it('should not invoke listener that is removed while being dispatched', () => {
+    const elm = createElement('x-removal-while-dispatch', { is: RemovalWhileDispatch });
+
+    let evt;
+    elm.addEventListener('test', (e) => (evt = e));
+
+    document.body.appendChild(elm);
+
+    expect(evt).not.toBeUndefined();
+    expect(evt.detail).toEqual({
+        handlers: ['a'],
+    });
 });
