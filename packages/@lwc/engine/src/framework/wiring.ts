@@ -12,6 +12,7 @@ import { invokeComponentCallback } from './invoker';
 import { dispatchEvent } from '../../dom/src/env/dom';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
+const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
 
 const WireMetaMap: Map<PropertyDescriptor, WireDef> = new Map();
 function noop(): void {}
@@ -106,7 +107,8 @@ function createContextWatcher(
 }
 
 function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
-    const { method, adapter, configCallback, hasParams } = wireDef;
+    const { method, adapter, configCallback, params } = wireDef;
+    const hasDynamicParams = params.length > 0;
     const { component } = vm;
     const dataCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
@@ -117,6 +119,9 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
     // Workaround to pass the component element associated to this wire adapter instance.
     defineProperty(dataCallback, DeprecatedWiredElementHost, {
         value: vm.elm,
+    });
+    defineProperty(dataCallback, DeprecatedWiredParamsMeta, {
+        value: params,
     });
 
     runWithBoundaryProtection(
@@ -151,7 +156,7 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
         updateConnectorConfig(configCallback(component));
     };
 
-    if (hasParams) {
+    if (hasDynamicParams) {
         // This wire has dynamic parameters: we wait for the component instance is created and its values set
         // in order to call the update(config) method.
         Promise.resolve().then(() => {
@@ -195,7 +200,7 @@ type WireAdapterSchemaValue = 'optional' | 'required';
 interface WireDef {
     method?: (data: any) => void;
     adapter: WireAdapterConstructor;
-    hasParams: boolean;
+    params: string[];
     configCallback: ConfigCallback;
 }
 
@@ -229,7 +234,7 @@ export function storeWiredMethodMeta(
     descriptor: PropertyDescriptor,
     adapter: WireAdapterConstructor,
     configCallback: ConfigCallback,
-    hasParams: boolean
+    params: string[]
 ) {
     // support for callable adapters
     if ((adapter as any).adapter) {
@@ -240,7 +245,7 @@ export function storeWiredMethodMeta(
         adapter,
         method,
         configCallback,
-        hasParams,
+        params,
     };
     WireMetaMap.set(descriptor, def);
 }
@@ -249,7 +254,7 @@ export function storeWiredFieldMeta(
     descriptor: PropertyDescriptor,
     adapter: WireAdapterConstructor,
     configCallback: ConfigCallback,
-    hasParams: boolean
+    params: string[]
 ) {
     // support for callable adapters
     if ((adapter as any).adapter) {
@@ -258,7 +263,7 @@ export function storeWiredFieldMeta(
     const def: WireFieldDef = {
         adapter,
         configCallback,
-        hasParams,
+        params,
     };
     WireMetaMap.set(descriptor, def);
 }
