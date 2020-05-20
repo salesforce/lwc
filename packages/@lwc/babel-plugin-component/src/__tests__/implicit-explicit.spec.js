@@ -18,8 +18,7 @@ describe('Transforms', () => {
             output: {
                 code: `
             import _tmpl from "./test.html";
-            import { registerComponent as _registerComponent } from "lwc";
-            import { LightningElement } from "lwc";
+            import { registerComponent as _registerComponent, LightningElement } from "lwc";
             export default _registerComponent(class extends LightningElement {}, {
               tmpl: _tmpl
             });
@@ -37,10 +36,8 @@ describe('Transforms', () => {
         {
             output: {
                 code: `
-            import { registerDecorators as _registerDecorators } from "lwc";
+            import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
             import _tmpl from "./test.html";
-            import { registerComponent as _registerComponent } from "lwc";
-            import { LightningElement } from "lwc";
 
             class Test extends LightningElement {
               constructor(...args) {
@@ -109,10 +106,8 @@ describe('Implicit mode', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { LightningElement } from "lwc";
                 import { getRecord } from "recordDataService";
 
                 class Test extends LightningElement {
@@ -130,7 +125,6 @@ describe('Implicit mode', () => {
                       static: {
                         id: 1
                       },
-                      hasParams: false,
                       config: function($cmp) {
                         return {
                           id: 1
@@ -159,10 +153,8 @@ describe('Implicit mode', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { LightningElement } from "lwc";
 
                 class Test extends LightningElement {
                   constructor(...args) {
@@ -198,10 +190,8 @@ describe('Implicit mode', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { LightningElement } from "lwc";
 
                 class Test extends mixin(LightningElement) {
                   constructor(...args) {

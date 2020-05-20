@@ -55,8 +55,7 @@ describe('Element import', () => {
             output: {
                 code: `
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { LightningElement as Component } from "lwc";
+                import { registerComponent as _registerComponent, LightningElement as Component } from "lwc";
 
                 class Test extends Component {}
 
@@ -112,9 +111,7 @@ describe('Element import', () => {
             },
         }
     );
-});
 
-describe('render method', () => {
     pluginTest(
         'inject render method',
         `
@@ -125,8 +122,7 @@ describe('render method', () => {
             output: {
                 code: `
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { LightningElement } from "lwc";
+                import { registerComponent as _registerComponent, LightningElement } from "lwc";
 
                 class Test extends LightningElement {}
 
@@ -173,8 +169,7 @@ describe('render method', () => {
             output: {
                 code: `
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { LightningElement } from "lwc";
+                import { registerComponent as _registerComponent, LightningElement } from "lwc";
 
                 class Test extends LightningElement {
                   render() {}
@@ -192,17 +187,14 @@ describe('render method', () => {
         'only inject render in the exported class',
         `
         import { LightningElement } from 'lwc';
-
         class Test1 extends LightningElement {}
-
         export default class Test2 extends LightningElement {}
     `,
         {
             output: {
                 code: `
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import { LightningElement } from "lwc";
+                import { registerComponent as _registerComponent, LightningElement } from "lwc";
 
                 class Test1 extends LightningElement {}
 

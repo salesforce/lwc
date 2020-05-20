@@ -4,9 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, forEach, getPropertyDescriptor, isUndefined } from '@lwc/shared';
+import {
+    create,
+    forEach,
+    getPropertyDescriptor,
+    isUndefined,
+    AriaPropertyNames,
+} from '@lwc/shared';
 import { defaultDefHTMLPropertyNames } from './attributes';
-import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
 
 /**
  * This is a descriptor map that contains
@@ -16,7 +21,7 @@ import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/
  */
 export const HTMLElementOriginalDescriptors: PropertyDescriptorMap = create(null);
 
-forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
+forEach.call(AriaPropertyNames, (propName: string) => {
     // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
     // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
     const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);

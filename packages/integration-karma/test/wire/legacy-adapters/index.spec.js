@@ -19,12 +19,10 @@ describe('legacy wire adapters (register call)', () => {
             expect(calls[0]).toEqual({});
         });
 
-        // Note: In the legacy adapters with static config, this check was not enforced, they always get called.
-        // With the wire reform, this case will be treated the same as when it has dynamic($) parameters.
-        it('should not call config when all props of config config are undefined', () => {
+        it('should call config when all props of config are undefined', () => {
             const elm = createElement('x-simple-wire', { is: StaticWiredProps });
             const calls = elm.allUndefinedPropsInConfigCalls;
-            expect(calls.length).toBe(0);
+            expect(calls.length).toBe(1);
         });
 
         it('should call config when at least one prop in config is defined', () => {
@@ -92,6 +90,18 @@ describe('legacy wire adapters (register call)', () => {
                     expect(calls[0]).toEqual({ p1: undefined, p2: 'test' });
                     done();
                 }, 0);
+            }, 0);
+        });
+    });
+
+    describe('with dynamic and static config', () => {
+        it('should not call config when initially all props from params in config are undefined', (done) => {
+            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+
+            setTimeout(() => {
+                const calls = elm.mixedAllParamsUndefinedCalls;
+                expect(calls.length).toBe(0);
+                done();
             }, 0);
         });
     });

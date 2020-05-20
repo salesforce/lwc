@@ -20,9 +20,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -41,7 +40,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed", "array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key2: ["fixed", "array"],
@@ -74,9 +72,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import importedValue from "ns/module";
                 import { getFoo } from "data-service";
                 
@@ -94,7 +91,6 @@ describe('Transform property', () => {
                       static: {
                         key1: importedValue
                       },
-                      hasParams: false,
                       config: function($cmp) {
                         return {
                           key1: importedValue
@@ -125,9 +121,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -147,7 +142,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed", "array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         let v1 = $cmp.prop1;
                         let v2 = $cmp.p1;
@@ -182,9 +176,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -203,7 +196,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed", "array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         let v1 = $cmp.prop1;
                         return {
@@ -241,9 +233,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -264,7 +255,6 @@ describe('Transform property', () => {
                         key3: "fixed",
                         key4: ["fixed", "array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key3: "fixed",
@@ -339,9 +329,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -356,7 +345,6 @@ describe('Transform property', () => {
                       adapter: getFoo,
                       params: {},
                       static: {},
-                      hasParams: false,
                       config: function($cmp) {
                         return {};
                       }
@@ -384,9 +372,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-              import { registerDecorators as _registerDecorators } from "lwc";
+              import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
               import _tmpl from "./test.html";
-              import { registerComponent as _registerComponent } from "lwc";
               import { Foo } from "data-service";
 
               class Test {
@@ -401,7 +388,6 @@ describe('Transform property', () => {
                     adapter: Foo.Bar,
                     params: {},
                     static: {},
-                    hasParams: false,
                     config: function($cmp) {
                       return {};
                     }
@@ -429,9 +415,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-            import { registerDecorators as _registerDecorators } from "lwc";
+            import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
             import _tmpl from "./test.html";
-            import { registerComponent as _registerComponent } from "lwc";
             import { Foo } from "data-service";
 
             class Test {
@@ -446,7 +431,6 @@ describe('Transform property', () => {
                   adapter: Foo.Bar,
                   params: {},
                   static: {},
-                  hasParams: false,
                   config: function($cmp) {
                     return {};
                   }
@@ -496,9 +480,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                     import _tmpl from "./test.html";
-                    import { registerComponent as _registerComponent } from "lwc";
                     import { getFoo } from "data-service";
 
                     class Test {
@@ -511,7 +494,6 @@ describe('Transform property', () => {
                       wire: {
                         wiredProp: {
                           adapter: getFoo,
-                          hasParams: false,
                           config: function($cmp) {
                             return {};
                           }
@@ -608,9 +590,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                     import _tmpl from "./test.html";
-                    import { registerComponent as _registerComponent } from "lwc";
                     import { getFoo } from "data-service";
 
                     class Test {
@@ -628,7 +609,6 @@ describe('Transform property', () => {
                             key2: "p1.p2"
                           },
                           static: {},
-                          hasParams: true,
                           config: function($cmp) {
                             let v1 = $cmp["prop1"];
                             let v2 = $cmp.p1;
@@ -662,9 +642,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                     import _tmpl from "./test.html";
-                    import { registerComponent as _registerComponent } from "lwc";
                     import { getFoo } from "data-service";
 
                     class Test {
@@ -683,7 +662,6 @@ describe('Transform property', () => {
                           static: {
                             key2: ["fixed", "array"]
                           },
-                          hasParams: true,
                           config: function($cmp) {
                             let v1 = $cmp["prop1"];
                             return {
@@ -766,9 +744,8 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -788,7 +765,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key2: ["fixed"],
@@ -804,7 +780,6 @@ describe('Transform property', () => {
                       static: {
                         key2: ["array"]
                       },
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key2: ["array"],
@@ -838,9 +813,8 @@ describe('Transform method', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
                 import { getFoo } from "data-service";
 
                 class Test {
@@ -858,7 +832,6 @@ describe('Transform method', () => {
                         key2: ["fixed"]
                       },
                       method: 1,
-                      hasParams: true,
                       config: function($cmp) {
                         return {
                           key2: ["fixed"],

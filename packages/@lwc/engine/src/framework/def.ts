@@ -44,7 +44,6 @@ import {
     HTMLBridgeElementFactory,
     HTMLElementConstructor,
 } from './base-bridge-element';
-import { getAssociatedVMIfPresent } from './vm';
 import {
     isCircularModuleDependency,
     resolveCircularModuleDependency,
@@ -255,24 +254,6 @@ export function getComponentInternalDef(Ctor: unknown, name?: string): Component
     }
 
     return def;
-}
-
-/**
- * EXPERIMENTAL: This function provides access to the component constructor,
- * given an HTMLElement. This API is subject to change or being removed.
- */
-export function getComponentConstructor(elm: HTMLElement): ComponentConstructor | null {
-    let ctor: ComponentConstructor | null = null;
-
-    if (elm instanceof HTMLElement) {
-        const vm = getAssociatedVMIfPresent(elm);
-
-        if (!isUndefined(vm)) {
-            ctor = vm.def.ctor;
-        }
-    }
-
-    return ctor;
 }
 
 // Only set prototype for public methods and properties

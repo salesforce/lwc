@@ -1,0 +1,10 @@
+<template>
+    <x-fallback-content-reuse-child>
+        <template if:true={renderSlotted}>
+            <div>Default slotted</div>
+        </template>
+        <template if:true={renderSlotted}>
+            <div slot="foo">Named slotted</div>
+        </template>
+    </x-fallback-content-reuse-child>
+</template>
