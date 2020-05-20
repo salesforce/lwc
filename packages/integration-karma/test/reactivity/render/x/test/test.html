@@ -1,0 +1,10 @@
+<template>
+    <div>
+        <template if:true={renderDynamic}>
+            Dynamic: {dynamicValue}
+        </template>
+        <template if:false={renderDynamic}>
+            Static: 1
+        </template>
+    </div>
+</template>

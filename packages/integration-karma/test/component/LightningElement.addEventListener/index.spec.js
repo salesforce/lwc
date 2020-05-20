@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 
 import EventHandler from 'x/eventHandler';
 import EventHandlerOptions from 'x/eventHandlerOptions';
+import AdditionWhileDispatch from 'x/additionWhileDispatch';
 
 it('should be able to attach an event listener on the host element', () => {
     let thisValue;
@@ -43,4 +44,18 @@ it('should throw an error if event handler is not a function', () => {
         Error,
         /Invariant Violation: Invalid second argument for this\.addEventListener\(\) in \[.*\] for event "click"\. Expected an EventListener but received undefined\./
     );
+});
+
+it('should not invoke newly added event listeners in the middle of the dispatch', () => {
+    const elm = createElement('x-addition-while-dispatch', { is: AdditionWhileDispatch });
+
+    let evt;
+    elm.addEventListener('test', (e) => (evt = e));
+
+    document.body.appendChild(elm);
+
+    expect(evt).not.toBeUndefined();
+    expect(evt.detail).toEqual({
+        handlers: ['a'],
+    });
 });

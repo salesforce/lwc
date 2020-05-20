@@ -5,58 +5,29 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-/* global jasmine */
-
 const chalk = require('chalk');
 
-const { LEGACY_TEST_EXCEPTIONS } = require('./legacy-test-exceptions');
 const { toLogError } = require('./matchers/log-error');
 
 // Extract original methods from console
 const { error: originalError } = console;
-
-let currentSpec;
-jasmine.getEnv().addReporter({
-    specStarted(spec) {
-        currentSpec = spec;
-    },
-    specDone() {
-        currentSpec = null;
-    },
-});
 
 beforeEach(() => {
     console.error = jest.spyOn(console, 'error');
 });
 
 afterEach(() => {
-    const { fullName } = currentSpec;
-
-    const isLegacyTest = LEGACY_TEST_EXCEPTIONS.includes(fullName);
     const didTestLogged = console.error.mock.calls.length > 0;
 
     try {
-        if (isLegacyTest) {
-            if (!didTestLogged) {
-                const boldedName = chalk.green.bold(fullName);
-                const boldedFile = chalk.green.bold('legacy-test-exceptions.js');
-                const message = [
-                    `This test used to log an error but no longer does.`,
-                    `Please remove "${boldedName}" from "${boldedFile}"`,
-                ].join('\n');
+        if (didTestLogged) {
+            const message = [
+                `Expected the test to not result in an error being logged.`,
+                `If this is expected, make sure to add an assertion for it:`,
+                `${chalk.green.bold(`expect(<function>).toLogError(<message>)`)}`,
+            ].join('\n');
 
-                throw new Error(message);
-            }
-        } else {
-            if (didTestLogged) {
-                const message = [
-                    `Expected the test to not result in an error being logged.`,
-                    `If this is expected, make sure to add an assertion for it:`,
-                    `${chalk.green.bold(`expect(<function>).toLogError(<message>)`)}`,
-                ].join('\n');
-
-                throw new Error(message);
-            }
+            throw new Error(message);
         }
     } finally {
         console.error = originalError;
