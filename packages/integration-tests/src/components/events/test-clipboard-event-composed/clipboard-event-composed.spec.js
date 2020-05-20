@@ -17,40 +17,44 @@ function paste() {
 }
 
 describe('clipboard-event-composed polyfill', () => {
+    before(function () {
+        // This test suite relies on the Selection API which is not supported in ie11
+        if (browser.capabilities.browserName === 'internet explorer') {
+            this.skip();
+        }
+    });
+
     beforeEach(() => {
         browser.url(URL);
     });
 
-    // This test suite relies on the Selection API which is not supported in ie11
-    if (browser.config.capabilities.commonName !== 'ie11') {
-        it('copy event should be composed', () => {
-            browser.$(function () {
-                window.getSelection().selectAllChildren(document.body);
-            });
-
-            copy();
-
-            const didHandleCopy = browser.execute(() => {
-                var container = document.querySelector('integration-clipboard-event-composed');
-                return container.didHandleCopy();
-            });
-
-            assert.strictEqual(didHandleCopy, true);
+    it('copy event should be composed', () => {
+        browser.$(function () {
+            window.getSelection().selectAllChildren(document.body);
         });
 
-        it('paste event should be composed', () => {
-            browser.$(function () {
-                window.getSelection().selectAllChildren(document.body);
-            });
+        copy();
 
-            copy();
-            paste();
-
-            const didHandlePaste = browser.execute(() => {
-                var container = document.querySelector('integration-clipboard-event-composed');
-                return container.didHandlePaste();
-            });
-            assert.strictEqual(didHandlePaste, true);
+        const didHandleCopy = browser.execute(() => {
+            var container = document.querySelector('integration-clipboard-event-composed');
+            return container.didHandleCopy();
         });
-    }
+
+        assert.strictEqual(didHandleCopy, true);
+    });
+
+    it('paste event should be composed', () => {
+        browser.$(function () {
+            window.getSelection().selectAllChildren(document.body);
+        });
+
+        copy();
+        paste();
+
+        const didHandlePaste = browser.execute(() => {
+            var container = document.querySelector('integration-clipboard-event-composed');
+            return container.didHandlePaste();
+        });
+        assert.strictEqual(didHandlePaste, true);
+    });
 });
