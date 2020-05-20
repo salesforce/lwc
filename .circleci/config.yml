@@ -120,7 +120,7 @@ jobs:
     parameters:
       executor:
         type: executor
-    executor: << parameter.executor >>
+    executor: << parameters.executor >>
     steps:
       - checkout
       - restore_yarn_cache
