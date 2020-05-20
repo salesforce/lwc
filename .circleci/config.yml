@@ -14,9 +14,7 @@ executors:
   node:
     working_directory: ~/lwc
     docker:
-      - image: circleci/node:12-browsers
-    environment:
-      - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
+      - image: circleci/node:12
 
 
 # Custom commands definition
@@ -195,6 +193,8 @@ jobs:
 
   perf_and_compare:
     executor: node
+    environment:
+      GIT_APP_CERT_PATH: ~/lwc/git_app.pem
     steps:
       - load_workspace
       - run:
