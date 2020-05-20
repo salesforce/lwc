@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
 // TODO [#1869]: getting the global API from global LWC in tests until it is allowed in compiler
-const { registerTemplateSwap } = LWC;
+const { swapTemplate } = LWC;
 
 import Simple from 'base/simple';
 import Advanced from 'base/advanced';
@@ -15,20 +15,22 @@ describe('template swapping', () => {
         const elm = createElement('x-simple', { is: Simple });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="simple">simple</p>');
-        registerTemplateSwap(simpleBaseTemplate, first);
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="first">first</p>');
-            registerTemplateSwap(first, second);
-         }).then(() => {
-              expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="second">second</p>');
-        });
+        swapTemplate(simpleBaseTemplate, first);
+        return Promise.resolve()
+            .then(() => {
+                expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="first">first</p>');
+                swapTemplate(first, second);
+            })
+            .then(() => {
+                expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="second">second</p>');
+            });
     });
-    
+
     it('should work with components with explict template definition', () => {
         const elm = createElement('x-advanced', { is: Advanced });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="advanced">advanced</p>');
-        registerTemplateSwap(advancedBaseTemplate, second);
+        swapTemplate(advancedBaseTemplate, second);
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="second">second</p>');
         });

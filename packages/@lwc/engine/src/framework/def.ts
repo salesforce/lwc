@@ -49,6 +49,7 @@ import {
     isCircularModuleDependency,
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
+import { getComponentOrSwappedComponent } from './hot-swaps';
 
 export interface ComponentDef {
     name: string;
@@ -219,6 +220,9 @@ export function isComponentConstructor(ctor: unknown): ctor is ComponentConstruc
 }
 
 export function getComponentInternalDef(Ctor: unknown, name?: string): ComponentDef {
+    if (process.env.NODE_ENV !== 'production') {
+        Ctor = getComponentOrSwappedComponent(Ctor as ComponentConstructor);
+    }
     let def = CtorToDefMap.get(Ctor);
 
     if (isUndefined(def)) {

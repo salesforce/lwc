@@ -29,4 +29,4 @@ export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructo
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 
-export { registerTemplateSwap, registerComponentSwap, registerStyleSwap } from './hot-swaps';
+export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';

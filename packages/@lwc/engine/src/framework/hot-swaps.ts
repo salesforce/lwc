@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 import { VM, scheduleRehydration } from './vm';
 import { isFalse, isUndefined, isNull } from '@lwc/shared';
 import { markComponentAsDirty, ComponentConstructor } from './component';
@@ -12,50 +18,45 @@ const activeTemplates = new WeakMap<Template, Set<VM>>();
 const activeComponents = new WeakMap<ComponentConstructor, Set<VM>>();
 const activeStyles = new WeakMap<StylesheetFactory, Set<VM>>();
 
-function rehydrateHotTemplate(tpl: Template) {
+function rehydrateHotTemplate(tpl: Template): boolean {
     const list = activeTemplates.get(tpl);
     list?.forEach((vm) => {
-        if (!isUndefined(vm)) {
-            if (isFalse(vm.isDirty)) {
-                // forcing the vm to rehydrate in the next tick
-                markComponentAsDirty(vm);
-                scheduleRehydration(vm);
-            }
+        if (isFalse(vm.isDirty)) {
+            // forcing the vm to rehydrate in the next tick
+            markComponentAsDirty(vm);
+            scheduleRehydration(vm);
         }
     });
+    return true;
 }
 
-function rehydrateHotStyle(style: StylesheetFactory) {
+function rehydrateHotStyle(style: StylesheetFactory): boolean {
     const list = activeStyles.get(style);
     list?.forEach((vm) => {
-        if (!isUndefined(vm)) {
-            if (isFalse(vm.isDirty)) {
-                // hacky way to force the styles to get recomputed
-                // by replacing the value of old template, which is used
-                // during the rendering process. If the template returned
-                // by render() is different from the previous stored template
-                // the styles will be reset, along with the content of the
-                // shadow, this way we can guarantee that the styles will be
-                // recalculated, and applied.
-                vm.cmpTemplate = () => [];
-                // forcing the vm to rehydrate in the next tick
-                markComponentAsDirty(vm);
-                scheduleRehydration(vm);
-            }
+        if (isFalse(vm.isDirty)) {
+            // hacky way to force the styles to get recomputed
+            // by replacing the value of old template, which is used
+            // during the rendering process. If the template returned
+            // by render() is different from the previous stored template
+            // the styles will be reset, along with the content of the
+            // shadow, this way we can guarantee that the styles will be
+            // recalculated, and applied.
+            vm.cmpTemplate = () => [];
+            // forcing the vm to rehydrate in the next tick
+            markComponentAsDirty(vm);
+            scheduleRehydration(vm);
         }
     });
+    return true;
 }
 
-function rehydrateHotComponent(Ctor: ComponentConstructor) {
+function rehydrateHotComponent(Ctor: ComponentConstructor): boolean {
     const list = activeComponents.get(Ctor);
+    let canRefreshAllInstances = true;
     list?.forEach((vm) => {
-        if (!isUndefined(vm)) {
-            const { owner } = vm;
-            // the hot swapping for components only work for instances of components
-            // created from a template, root elements can't be swapped because we
-            // don't have a way to force the creation of the element with the same state
-            // of the current element.
-            if (!isNull(owner) && isFalse(owner.isDirty)) {
+        const { owner } = vm;
+        if (!isNull(owner)) {
+            if (isFalse(owner.isDirty)) {
                 // if a component class definition is swapped, we must reset
                 // the shadowRoot instance that hosts an instance of the old
                 // constructor in order to get a new element to be created based
@@ -71,8 +72,17 @@ function rehydrateHotComponent(Ctor: ComponentConstructor) {
                 markComponentAsDirty(owner);
                 scheduleRehydration(owner);
             }
+        } else {
+            // the hot swapping for components only work for instances of components
+            // created from a template, root elements can't be swapped because we
+            // don't have a way to force the creation of the element with the same state
+            // of the current element.
+            // Instead, we can report the problem to the caller so it can take action,
+            // for example: reload the entire page.
+            canRefreshAllInstances = false;
         }
     });
+    return canRefreshAllInstances;
 }
 
 export function getTemplateOrSwappedTemplate(tpl: Template): Template {
@@ -188,26 +198,29 @@ export function removeActiveVM(vm: VM) {
     }
 }
 
-export function registerTemplateSwap(oldTpl: Template, newTpl: Template) {
+export function swapTemplate(oldTpl: Template, newTpl: Template): boolean {
     if (process.env.NODE_ENV !== 'production') {
         swappedTemplateMap.set(oldTpl, newTpl);
-        rehydrateHotTemplate(oldTpl);
+        return rehydrateHotTemplate(oldTpl);
     }
+    return false;
 }
 
-export function registerComponentSwap(
+export function swapComponent(
     oldComponent: ComponentConstructor,
     newComponent: ComponentConstructor
-) {
+): boolean {
     if (process.env.NODE_ENV !== 'production') {
         swappedComponentMap.set(oldComponent, newComponent);
-        rehydrateHotComponent(oldComponent);
+        return rehydrateHotComponent(oldComponent);
     }
+    return false;
 }
 
-export function registerStyleSwap(oldStyle: StylesheetFactory, newStyle: StylesheetFactory) {
+export function swapStyle(oldStyle: StylesheetFactory, newStyle: StylesheetFactory): boolean {
     if (process.env.NODE_ENV !== 'production') {
         swappedStyleMap.set(oldStyle, newStyle);
-        rehydrateHotStyle(oldStyle);
+        return rehydrateHotStyle(oldStyle);
     }
+    return false;
 }
