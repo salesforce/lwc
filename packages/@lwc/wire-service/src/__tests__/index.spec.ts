@@ -140,6 +140,7 @@ describe('WireEventTarget from register', () => {
                 dispatchEvent: jest.fn(),
             };
             dataCallback.$$DeprecatedWiredElementHostKey$$ = wiredElementMock;
+            dataCallback.$$DeprecatedWiredParamsMetaKey$$ = [];
             const adapterFactory = (wireEvtTarget: WireEventTarget) =>
                 (wireEventTarget = wireEvtTarget);
 
@@ -213,7 +214,10 @@ describe('WireEventTarget from register', () => {
                     (wireEventTarget = wireEvtTarget);
 
                 register(adapterId, adapterFactory);
-                const adapter = new adapterId.adapter(() => {});
+
+                const dataCallback = jest.fn();
+                dataCallback.$$DeprecatedWiredParamsMetaKey$$ = [];
+                const adapter = new adapterId.adapter(dataCallback);
 
                 const listener = jest.fn();
                 wireEventTarget.addEventListener(eventType, listener);
