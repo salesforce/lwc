@@ -118,9 +118,9 @@ commands:
 jobs:
   build_and_unit_test:
     parameters:
-      executor:
+      container:
         type: executor
-    executor: << parameters.executor >>
+    executor: << parameters.container >>
     steps:
       - checkout
       - restore_yarn_cache
@@ -232,11 +232,11 @@ workflows:
     jobs:
       - build_and_unit_test:
           name: build-and-test-active-lts
-          executor: node_active_lts
+          container: node_active_lts
       
       - build_and_unit_test:
           name: build-and-test-maintenance-lts
-          executor: node_maintenance_lts
+          container: node_maintenance_lts
 
       - test_karma:
           filters:
