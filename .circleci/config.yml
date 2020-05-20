@@ -11,10 +11,19 @@ version: 2.1
 
 # Custom executors definition
 executors:
-  node:
+  node_active_lts:
     working_directory: ~/lwc
     docker:
       - image: circleci/node:12
+    environment:
+      NODE_VERSION: 12
+
+  node_maintenance_lts:
+    working_directory: ~/lwc
+    docker:
+      - image: circleci/node:10
+    environment:
+      NODE_VERSION: 10
 
 
 # Custom commands definition
@@ -25,13 +34,13 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - yarn-v5-{{ checksum "yarn.lock" }}
+            - yarn-v5-{{ checksum "yarn.lock" }}-{{ .Environment.NODE_VERSION }}
 
   save_yarn_cache:
     description: Save Yarn cache for future builds
     steps:
       - save_cache:
-          key: yarn-v5-{{ checksum "yarn.lock" }}
+          key: yarn-v5-{{ checksum "yarn.lock" }}-{{ .Environment.NODE_VERSION }}
           paths:
             - ~/.cache/yarn
 
@@ -107,8 +116,11 @@ commands:
 
 # Jobs definition
 jobs:
-  build:
-    executor: node
+  build_and_unit_test:
+    parameters:
+      executor:
+        type: executor
+    executor: << parameter.executor >>
     steps:
       - checkout
       - restore_yarn_cache
@@ -127,17 +139,11 @@ jobs:
       - run:
           name: Run linter
           command: yarn lint
-      - save_yarn_cache
-      - save_workspace
-
-
-  test_unit:
-    executor: node
-    steps:
-      - load_workspace
       - run:
           name: Run unit tests
           command: yarn test:ci
+      - save_yarn_cache
+      - save_workspace
 
 
   test_karma:
@@ -224,23 +230,25 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
-
-      - test_unit:
-          requires:
-            - build
+      - build_and_unit_test:
+          name: build-and-test-active-lts
+          executor: node_active_lts
+      
+      - build_and_unit_test:
+          name: build-and-test-maintenance-lts
+          executor: node_maintenance_lts
 
       - test_karma:
           filters:
               <<: *ignore_forks
           requires:
-            - build
+            - build-and-test-active-lts
 
       - perf_and_compare:
           filters:
               <<: *ignore_forks
           requires:
-            - build
+            - build-and-test-active-lts
 
       - test_integration:
           filters:
