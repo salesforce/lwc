@@ -302,7 +302,7 @@ describe('event propagation in nested shadow tree', () => {
 });
 
 describe('Event.stopPropagation', () => {
-    it('should not invoke component handler is the propagation is stopped by a template handler', () => {
+    it('should not invoke component handler if the propagation is stopped by a template handler', () => {
         const nodes = createShadowTree(document.body);
         nodes.div.addEventListener('test', (evt) => {
             evt.stopPropagation();
@@ -334,7 +334,7 @@ describe('Event.stopPropagation', () => {
 });
 
 describe('Event.stopImmediatePropagation', () => {
-    it('should not invoke component handler is the propagation is stopped by a template handler', () => {
+    it('should not invoke component handler if the propagation is stopped by a template handler', () => {
         const nodes = createShadowTree(document.body);
 
         nodes.div.addEventListener('test', (evt) => {

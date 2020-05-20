@@ -1,5 +1,5 @@
 it('should accept a listener config as second parameter', () => {
-    const handleEvent = jasmine.createSpy('handleEvent', () => {});
+    const handleEvent = jasmine.createSpy();
 
     const elm = document.createElement('div');
     elm.addEventListener('test', {
