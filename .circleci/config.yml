@@ -171,7 +171,7 @@ jobs:
       - load_workspace
       - start_sauce_connect
       - run:
-          name: Run integration test - Headless Chrome
+          name: Run integration test - Chrome SauceLabs
           command: yarn sauce:prod --browsers chrome
           working_directory: packages/integration-tests
       - stop_sauce_connect
@@ -209,17 +209,11 @@ jobs:
           name: Run BEST
           working_directory: packages/perf-benchmarks
           no_output_timeout: 40m
-          command: |
-              yarn start --projects best.headless.config.js --externalStorage=@best/store-aws \
-              --runner remote --dbAdapter=sql/postgres --dbURI=${BEST_HUB_DATABASE_URL} \
-              --runInBatch
+          command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote --runInBatch --dbAdapter=sql/postgres --dbURI=${BEST_HUB_DATABASE_URL}
       - run:
           name: Comparing Benchmarks
           working_directory: packages/perf-benchmarks
-          command: | 
-              yarn start --projects best.headless.config.js \ 
-              --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws \ 
-              --gitIntegration
+          command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
       - store_artifacts:
           path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
           destination: benchmarks
