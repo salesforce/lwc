@@ -98,11 +98,11 @@ commands:
       - run:
           name: Run karma integration tests
           working_directory: packages/integration-karma
-          command: | 
-              yarn sauce \
-                <<# parameters.native_shadow >> --native-shadow <</ parameters.native_shadow >> \
-                <<# parameters.compat >> --compat <</ parameters.compat >> \
-                <<# parameters.coverage >> --coverage <</ parameters.coverage >>
+          command: >
+              yarn sauce
+              <<# parameters.native_shadow >> --native-shadow <</ parameters.native_shadow >>
+              <<# parameters.compat >> --compat <</ parameters.compat >>
+              <<# parameters.coverage >> --coverage <</ parameters.coverage >>
 
 
 # Jobs definition
@@ -163,10 +163,10 @@ jobs:
       - stop_sauce_connect
 
 
-  test_integration_chrome:
+  test_integration:
     executor: node
     environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_chrome
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
     steps:
       - load_workspace
       - start_sauce_connect
@@ -177,10 +177,10 @@ jobs:
       - stop_sauce_connect
 
 
-  test_integration_ie11:
+  test_integration_compat:
     executor: node
     environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_ie11
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_compat
     steps:
       - load_workspace
       - start_sauce_connect
@@ -209,11 +209,23 @@ jobs:
           name: Run BEST
           working_directory: packages/perf-benchmarks
           no_output_timeout: 40m
-          command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote --runInBatch --dbAdapter=sql/postgres --dbURI=${BEST_HUB_DATABASE_URL}
+          command: > 
+            yarn start 
+              --projects best.headless.config.js 
+              --externalStorage=@best/store-aws 
+              --runner remote 
+              --dbAdapter=sql/postgres 
+              --dbURI=${BEST_HUB_DATABASE_URL}
+              --runInBatch
       - run:
           name: Comparing Benchmarks
           working_directory: packages/perf-benchmarks
-          command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+          command: > 
+            yarn start 
+            --projects best.headless.config.js 
+            --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} 
+            --externalStorage=@best/store-aws 
+            --gitIntegration
       - store_artifacts:
           path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
           destination: benchmarks
@@ -242,14 +254,14 @@ workflows:
           requires:
             - build
 
-      - test_integration_chrome:
+      - test_integration:
           filters:
               <<: *ignore_forks
           requires:
             - test_unit
             - test_karma
 
-      - test_integration_ie11:
+      - test_integration_compat:
           filters:
               <<: *ignore_forks
           requires:
