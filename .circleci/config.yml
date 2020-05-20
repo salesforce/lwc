@@ -102,7 +102,7 @@ commands:
           working_directory: packages/integration-karma
           command: | 
               yarn sauce \
-                <<# parameters.native_shadow >> --native-shadow<</ parameters.native_shadow >> \
+                <<# parameters.native_shadow >> --native-shadow <</ parameters.native_shadow >> \
                 <<# parameters.compat >> --compat <</ parameters.compat >> \
                 <<# parameters.coverage >> --coverage <</ parameters.coverage >>
 
@@ -169,10 +169,12 @@ jobs:
     executor: node
     steps:
       - load_workspace
+      - start_sauce_connect
       - run:
           name: Run integration test - Headless Chrome
           command: yarn sauce:prod --browsers chrome
           working_directory: packages/integration-tests
+      - stop_sauce_connect
 
 
   test_integration_ie11:
