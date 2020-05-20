@@ -4,13 +4,13 @@ import { markComponentAsDirty, ComponentConstructor } from './component';
 import { Template } from './template';
 import { StylesheetFactory } from './stylesheet';
 
-const swappedTemplateMap: WeakMap<Template, Template> = new WeakMap();
-const swappedComponentMap: WeakMap<ComponentConstructor, ComponentConstructor> = new WeakMap();
-const swappedStyleMap: WeakMap<StylesheetFactory, StylesheetFactory> = new WeakMap();
+const swappedTemplateMap = new WeakMap<Template, Template>();
+const swappedComponentMap = new WeakMap<ComponentConstructor, ComponentConstructor>();
+const swappedStyleMap = new WeakMap<StylesheetFactory, StylesheetFactory>();
 
-const activeTemplates: WeakMap<Template, Set<VM>> = new WeakMap();
-const activeComponents: WeakMap<ComponentConstructor, Set<VM>> = new WeakMap();
-const activeStyles: WeakMap<StylesheetFactory, Set<VM>> = new WeakMap();
+const activeTemplates = new WeakMap<Template, Set<VM>>();
+const activeComponents = new WeakMap<ComponentConstructor, Set<VM>>();
+const activeStyles = new WeakMap<StylesheetFactory, Set<VM>>();
 
 function rehydrateHotTemplate(tpl: Template) {
     const list = activeTemplates.get(tpl);

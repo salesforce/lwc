@@ -19,11 +19,11 @@ describe('template swapping', () => {
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="first">first</p>');
             registerTemplateSwap(first, second);
-            return Promise.resolve().then(() => {
-                expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="second">second</p>');
-            });
+         }).then(() => {
+              expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="second">second</p>');
         });
     });
+    
     it('should work with components with explict template definition', () => {
         const elm = createElement('x-advanced', { is: Advanced });
         document.body.appendChild(elm);
