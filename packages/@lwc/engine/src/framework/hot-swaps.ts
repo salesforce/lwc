@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { VM, scheduleRehydration } from './vm';
 import { isFalse, isUndefined, isNull } from '@lwc/shared';
+import { VM, scheduleRehydration } from './vm';
 import { markComponentAsDirty, ComponentConstructor } from './component';
 import { Template } from './template';
 import { StylesheetFactory } from './stylesheet';
@@ -33,15 +33,15 @@ function rehydrateHotTemplate(tpl: Template): boolean {
 function rehydrateHotStyle(style: StylesheetFactory): boolean {
     const list = activeStyles.get(style);
     list?.forEach((vm) => {
+        // hacky way to force the styles to get recomputed
+        // by replacing the value of old template, which is used
+        // during the rendering process. If the template returned
+        // by render() is different from the previous stored template
+        // the styles will be reset, along with the content of the
+        // shadow, this way we can guarantee that the styles will be
+        // recalculated, and applied.
+        vm.cmpTemplate = () => [];
         if (isFalse(vm.isDirty)) {
-            // hacky way to force the styles to get recomputed
-            // by replacing the value of old template, which is used
-            // during the rendering process. If the template returned
-            // by render() is different from the previous stored template
-            // the styles will be reset, along with the content of the
-            // shadow, this way we can guarantee that the styles will be
-            // recalculated, and applied.
-            vm.cmpTemplate = () => [];
             // forcing the vm to rehydrate in the next tick
             markComponentAsDirty(vm);
             scheduleRehydration(vm);
@@ -56,18 +56,18 @@ function rehydrateHotComponent(Ctor: ComponentConstructor): boolean {
     list?.forEach((vm) => {
         const { owner } = vm;
         if (!isNull(owner)) {
+            // if a component class definition is swapped, we must reset
+            // the shadowRoot instance that hosts an instance of the old
+            // constructor in order to get a new element to be created based
+            // on the new constructor. this is a hacky way to force the owner's
+            // shadowRoot instance to be reset by replacing the value of old template,
+            // which is used during the rendering process. If the template returned
+            // by render() is different from the previous stored template
+            // the styles will be reset, along with the content of the
+            // shadow, this way we can guarantee that all children elements will be
+            // throw away, and new instances will be created.
+            owner.cmpTemplate = () => [];
             if (isFalse(owner.isDirty)) {
-                // if a component class definition is swapped, we must reset
-                // the shadowRoot instance that hosts an instance of the old
-                // constructor in order to get a new element to be created based
-                // on the new constructor. this is a hacky way to force the owner's
-                // shadowRoot instance to be reset by replacing the value of old template,
-                // which is used during the rendering process. If the template returned
-                // by render() is different from the previous stored template
-                // the styles will be reset, along with the content of the
-                // shadow, this way we can guarantee that all children elements will be
-                // throw away, and new instances will be created.
-                owner.cmpTemplate = () => [];
                 // forcing the vm to rehydrate in the next tick
                 markComponentAsDirty(owner);
                 scheduleRehydration(owner);
@@ -190,9 +190,9 @@ export function removeActiveVM(vm: VM) {
     if (!isUndefined(styles)) {
         styles.forEach((style) => {
             list = activeStyles.get(style);
-            if (isUndefined(list)) {
+            if (!isUndefined(list)) {
                 // deleting the vm from the set to avoid leaking memory
-                activeStyles.delete(style);
+                list.delete(vm);
             }
         });
     }
