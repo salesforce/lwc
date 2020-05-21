@@ -102,6 +102,14 @@ function isValidConfig(config: Record<string, any>, params: string[]): boolean {
     return params.length === 0 || params.some((param) => !isUndefined(config[param]));
 }
 
+function isDifferentConfig(
+    newConfig: Record<string, any>,
+    oldConfig: Record<string, any>,
+    params: string[]
+) {
+    return params.some((param) => newConfig[param] !== oldConfig[param]);
+}
+
 export class WireAdapter {
     private callback: dataCallback;
     private readonly wiredElementHost: EventTarget;
@@ -204,10 +212,15 @@ export class WireAdapter {
             }
         }
 
-        this.currentConfig = config;
-        forEach.call(this.configuring, (listener) => {
-            listener.call(undefined, config);
-        });
+        if (
+            isUndefined(this.currentConfig) ||
+            isDifferentConfig(config, this.currentConfig, this.dynamicParamsNames)
+        ) {
+            this.currentConfig = config;
+            forEach.call(this.configuring, (listener) => {
+                listener.call(undefined, config);
+            });
+        }
     }
 
     connect() {
