@@ -101,7 +101,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             if (!filter(id)) {
                 return;
             }
-
             // If we don't find the moduleId, just resolve the module name/namespace
             const moduleEntry = getModuleQualifiedName(id, mergedPluginOptions);
 

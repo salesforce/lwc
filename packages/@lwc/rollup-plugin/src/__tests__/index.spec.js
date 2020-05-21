@@ -143,7 +143,7 @@ async function doRollup(input, { compat } = {}, rollupCompileOptions) {
     const { output } = await bundle.generate({
         format: 'iife',
         name: 'test',
-        output: { globals: globalModules },
+        globals: globalModules,
     });
 
     return output[0];

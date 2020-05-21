@@ -26,7 +26,7 @@ import { createComponent, renderComponent, markComponentAsDirty } from './compon
 import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
-import { ShadowRootInnerHTMLSetter } from '../env/dom';
+import { ShadowRootInnerHTMLSetter } from '../../dom/src/env/dom';
 
 import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
@@ -460,18 +460,28 @@ function runDisconnectedCallback(vm: VM) {
 
 function runShadowChildNodesDisconnectedCallback(vm: VM) {
     const { velements: vCustomElementCollection } = vm;
-    // reporting disconnection for every child in inverse order since they are inserted in reserved order
+
+    // Reporting disconnection for every child in inverse order since they are
+    // inserted in reserved order.
     for (let i = vCustomElementCollection.length - 1; i >= 0; i -= 1) {
-        const elm = vCustomElementCollection[i].elm;
+        const { elm } = vCustomElementCollection[i];
+
         // There are two cases where the element could be undefined:
-        // * when there is an error during the construction phase, and an
-        //   error boundary picks it, there is a possibility that the VCustomElement
+        // * when there is an error during the construction phase, and an error
+        //   boundary picks it, there is a possibility that the VCustomElement
         //   is not properly initialized, and therefore is should be ignored.
-        // * when slotted custom element is not used by the element where it is slotted
-        //   into it, as a result, the custom element was never initialized.
+        // * when slotted custom element is not used by the element where it is
+        //   slotted into it, as  a result, the custom element was never
+        //   initialized.
         if (!isUndefined(elm)) {
-            const childVM = getAssociatedVM(elm);
-            resetComponentStateWhenRemoved(childVM);
+            const childVM = getAssociatedVMIfPresent(elm);
+
+            // The VM associated with the element might be associated undefined
+            // in the case where the VM failed in the middle of its creation,
+            // eg: constructor throwing before invoking super().
+            if (!isUndefined(childVM)) {
+                resetComponentStateWhenRemoved(childVM);
+            }
         }
     }
 }
@@ -535,30 +545,6 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
 
         currentVm = currentVm.owner;
     }
-}
-
-/**
- * EXPERIMENTAL: This function detects whether or not a Node is
- * controlled by a LWC template. This API is subject to
- * change or being removed.
- */
-export function isNodeFromTemplate(node: Node): boolean {
-    if (isFalse(node instanceof Node)) {
-        return false;
-    }
-    // TODO [#1250]: skipping the shadowRoot instances itself makes no sense, we need to revisit this with locker
-    if (node instanceof ShadowRoot) {
-        return false;
-    }
-    if (useSyntheticShadow) {
-        // TODO [#1252]: old behavior that is still used by some pieces of the platform, specifically, nodes inserted
-        // manually on places where `lwc:dom="manual"` directive is not used, will be considered global elements.
-        if (isUndefined((node as any).$shadowResolver$)) {
-            return false;
-        }
-    }
-    const root = node.getRootNode();
-    return root instanceof ShadowRoot;
 }
 
 // slow path routine

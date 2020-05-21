@@ -1,6 +1,6 @@
 {
     "name": "lwc",
-    "version": "1.6.0",
+    "version": "1.6.3",
     "description": "Lightning Web Components (LWC)",
     "main": "index.js",
     "module": "dist/engine/esm/es2017/engine.js",
@@ -15,11 +15,27 @@
         "index.js",
         "types.d.ts"
     ],
+    "lwc": {
+        "modules": [
+            {
+                "name": "lwc",
+                "path": "dist/engine/esm/es2017/engine.js"
+            },
+            {
+                "name": "@lwc/synthetic-shadow",
+                "path": "dist/synthetic-shadow/esm/es2017/synthetic-shadow.js"
+            },
+            {
+                "name": "@lwc/wire-service",
+                "path": "dist/synthetic-shadow/esm/es2017/wire-service.js"
+            }
+        ]
+    },
     "dependencies": {
-        "@lwc/compiler": "1.6.0",
-        "@lwc/engine": "1.6.0",
-        "@lwc/features": "1.6.0",
-        "@lwc/synthetic-shadow": "1.6.0",
-        "@lwc/wire-service": "1.6.0"
+        "@lwc/compiler": "1.6.3",
+        "@lwc/engine": "1.6.3",
+        "@lwc/features": "1.6.3",
+        "@lwc/synthetic-shadow": "1.6.3",
+        "@lwc/wire-service": "1.6.3"
     }
 }
