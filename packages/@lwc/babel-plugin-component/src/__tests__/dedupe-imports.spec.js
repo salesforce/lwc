@@ -89,4 +89,36 @@ describe('deduping imports', () => {
             },
         }
     );
+
+    pluginTest(
+        'should handle an alias of an export',
+        `
+            import { foo, bar as baz } from 'foo';
+            import defaultExport, * as name from 'foo';
+            import { bif } from 'foo';
+        `,
+        {
+            output: {
+                code: `
+                import { foo, bar as baz, bif } from 'foo';
+                import defaultExport, * as name from 'foo';
+                `,
+            },
+        }
+    );
+
+    pluginTest(
+        'should handle multiple aliases of the same export',
+        `
+            import { foo, bar as bar1 } from 'foo';
+            import { bar as bar2 } from 'foo';
+        `,
+        {
+            output: {
+                code: `
+                import { foo, bar as bar1, bar as bar2 } from 'foo';
+                `,
+            },
+        }
+    );
 });
