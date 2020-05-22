@@ -38,4 +38,21 @@ describe('deduping imports', () => {
             },
         }
     );
+
+    pluginTest(
+        'should support importing names and default',
+        `
+            import buzz, { foo, bar } from 'foo';
+            import * as Foo from 'foo';
+            import { baz } from 'foo';
+        `,
+        {
+            output: {
+                code: `
+                import buzz, { foo, bar, baz } from 'foo';
+                import * as Foo from 'foo';
+                `,
+            },
+        }
+    );
 });
