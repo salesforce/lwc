@@ -91,6 +91,23 @@ describe('deduping imports', () => {
     );
 
     pluginTest(
+        'should handle multiple defaults of the same export',
+        `
+            import defaultExport1, * as name from 'foo';
+            import defaultExport2, { foo } from 'foo';
+            import { bar as bar2 } from 'foo';
+        `,
+        {
+            output: {
+                code: `
+                import defaultExport1, * as name from 'foo';
+                import defaultExport2, { foo, bar as bar2 } from 'foo';
+                `,
+            },
+        }
+    );
+
+    pluginTest(
         'should handle an alias of an export',
         `
             import { foo, bar as baz } from 'foo';
