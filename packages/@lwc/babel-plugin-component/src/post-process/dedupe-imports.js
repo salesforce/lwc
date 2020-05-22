@@ -19,7 +19,7 @@ module.exports = function dedupeImports({ types: t }, path) {
         const sourceLiteral = importPath.node.source;
 
         // If the import is of the type import * as X, just ignore it since we can't dedupe
-        if (t.isImportNamespaceSpecifier(importPath.node.specifiers[0])) {
+        if (importPath.node.specifiers.some(t.isImportNamespaceSpecifier)) {
             return;
         }
 
