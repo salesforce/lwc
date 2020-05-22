@@ -1,6 +1,6 @@
 {
     "name": "@lwc/shared",
-    "version": "1.6.4",
+    "version": "1.6.5",
     "description": "Utilities and methods that are shared across packages",
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
