@@ -69,7 +69,7 @@ function createPreprocessor(config, emitter, logger) {
                 external: ['lwc', 'wire-service', 'test-utils', '@test/loader'],
             });
 
-            watcher.watchSuite(suiteDir, input);
+            watcher.watchSuite(input, bundle.watchFiles);
 
             // eslint-disable-next-line require-atomic-updates
             cache = bundle.cache;
@@ -112,19 +112,28 @@ class Watcher {
     constructor(config, emitter, logger) {
         const { basePath } = config;
 
-        this._suites = [];
+        this._suiteDependencyLookup = {};
+
         this._watcher = chokidar.watch(basePath, {
             ignoreInitial: true,
         });
 
         this._watcher.on('all', (_type, filename) => {
             logger.info(`Change detected ${path.relative(basePath, filename)}`);
-            emitter.refreshFiles();
+
+            for (const [input, dependencies] of Object.entries(this._suiteDependencyLookup)) {
+                if (dependencies.includes(filename)) {
+                    // This is not a Karma public API, but it does the trick. This internal API has
+                    // been pretty stable for a while now, so the probability it break is fairly
+                    // low.
+                    emitter._fileList.changeFile(input, true);
+                }
+            }
         });
     }
 
-    watchSuite(suiteDir) {
-        this._suites.push(suiteDir);
+    watchSuite(input, dependencies) {
+        this._suiteDependencyLookup[input] = dependencies;
     }
 }
 
