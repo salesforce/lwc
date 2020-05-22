@@ -17,6 +17,12 @@ module.exports = function dedupeImports({ types: t }, path) {
 
     importStatements.forEach((importPath) => {
         const sourceLiteral = importPath.node.source;
+
+        // If the import is of the type import * as X, just ignore it since we can't dedupe
+        if (t.isImportNamespaceSpecifier(importPath.node.specifiers[0])) {
+            return;
+        }
+
         // If we have seen the same source, we will try to dedupe it
         if (visited.has(sourceLiteral.value)) {
             const visitedImport = visited.get(sourceLiteral.value);
