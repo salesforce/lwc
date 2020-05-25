@@ -9,6 +9,7 @@ import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { VM, runWithBoundaryProtection } from './vm';
 import { invokeComponentCallback } from './invoker';
+import { dispatchEvent } from '../../dom/src/env/dom';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
@@ -101,7 +102,7 @@ function createContextWatcher(
                 callbackWhenContextIsReady(newContext);
             },
         });
-        elm.dispatchEvent(internalDomEvent);
+        dispatchEvent.call(elm, internalDomEvent);
     });
 }
 
