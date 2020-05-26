@@ -5,14 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, create, emptyString, forEach, isArray, isUndefined } from '@lwc/shared';
-import { VNode } from '../3rdparty/snabbdom/types';
-
-import * as api from './api';
-import { EmptyArray } from './utils';
-import { VM } from './vm';
 
 import { useSyntheticShadow } from '../../dom/src/env/dom';
 import { removeAttribute, setAttribute } from '../../dom/src/env/element';
+import { VNode } from '../3rdparty/snabbdom/types';
+import * as api from './api';
+import { VM } from './vm';
+import { EmptyArray } from './utils';
+
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.

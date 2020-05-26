@@ -119,7 +119,6 @@ export function createElement(
         tagName: sel,
         mode: options.mode !== 'closed' ? 'open' : 'closed',
         owner: null,
-        isRoot: true,
     });
 
     setHiddenField(element, ConnectingSlot, connectRootElement);

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isUndefined, ArrayPush, getOwnPropertyNames, defineProperty } from '@lwc/shared';
+import { assert, isUndefined, ArrayPush, defineProperty } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { VM, runWithBoundaryProtection } from './vm';
@@ -270,59 +270,38 @@ export function storeWiredFieldMeta(
 
 export function installWireAdapters(vm: VM) {
     const {
+        context,
         def: { wire },
     } = vm;
-    if (getOwnPropertyNames(wire).length === 0) {
+
+    const wiredConnecting = (context.wiredConnecting = []);
+    const wiredDisconnecting = (context.wiredDisconnecting = []);
+
+    for (const fieldNameOrMethod in wire) {
+        const descriptor = wire[fieldNameOrMethod];
+        const wireDef = WireMetaMap.get(descriptor);
         if (process.env.NODE_ENV !== 'production') {
-            assert.fail(
-                `Internal Error: wire adapters should only be installed in instances with at least one wire declaration.`
-            );
+            assert.invariant(wireDef, `Internal Error: invalid wire definition found.`);
         }
-    } else {
-        const connect = (vm.context.wiredConnecting = []);
-        const disconnect = (vm.context.wiredDisconnecting = []);
-        for (const fieldNameOrMethod in wire) {
-            const descriptor = wire[fieldNameOrMethod];
-            const wireDef = WireMetaMap.get(descriptor);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.invariant(wireDef, `Internal Error: invalid wire definition found.`);
-            }
-            if (!isUndefined(wireDef)) {
-                const adapterInstance = createConnector(vm, fieldNameOrMethod, wireDef);
-                ArrayPush.call(connect, () => adapterInstance.connect());
-                ArrayPush.call(disconnect, () => adapterInstance.disconnect());
-            }
+        if (!isUndefined(wireDef)) {
+            const adapterInstance = createConnector(vm, fieldNameOrMethod, wireDef);
+            ArrayPush.call(wiredConnecting, () => adapterInstance.connect());
+            ArrayPush.call(wiredDisconnecting, () => adapterInstance.disconnect());
         }
     }
 }
 
 export function connectWireAdapters(vm: VM) {
-    const {
-        context: { wiredConnecting },
-    } = vm;
-    if (isUndefined(wiredConnecting)) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.fail(
-                `Internal Error: wire adapters must be installed in instances with at least one wire declaration.`
-            );
-        }
-    }
+    const { wiredConnecting } = vm.context;
+
     for (let i = 0, len = wiredConnecting.length; i < len; i += 1) {
         wiredConnecting[i]();
     }
 }
 
 export function disconnectWireAdapters(vm: VM) {
-    const {
-        context: { wiredDisconnecting },
-    } = vm;
-    if (isUndefined(wiredDisconnecting)) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.fail(
-                `Internal Error: wire adapters must be installed in instances with at least one wire declaration.`
-            );
-        }
-    }
+    const { wiredDisconnecting } = vm.context;
+
     runWithBoundaryProtection(
         vm,
         vm,

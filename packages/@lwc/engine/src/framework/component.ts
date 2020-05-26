@@ -11,7 +11,7 @@ import {
     isInvokingRender,
     invokeEventListener,
 } from './invoker';
-import { VM, UninitializedVM, scheduleRehydration } from './vm';
+import { VM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -54,12 +54,11 @@ export function getComponentRegisteredMeta(Ctor: ComponentConstructor): Componen
     return signedComponentToMetaMap.get(Ctor);
 }
 
-export function createComponent(uninitializedVm: UninitializedVM, Ctor: ComponentConstructor) {
+export function createComponent(vm: VM, Ctor: ComponentConstructor) {
     // create the component instance
-    invokeComponentConstructor(uninitializedVm, Ctor);
+    invokeComponentConstructor(vm, Ctor);
 
-    const initializedVm = uninitializedVm;
-    if (isUndefined(initializedVm.component)) {
+    if (isUndefined(vm.component)) {
         throw new ReferenceError(
             `Invalid construction for ${Ctor}, you must extend LightningElement.`
         );
