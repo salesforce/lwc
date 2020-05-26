@@ -34,7 +34,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: ["key1"],
+                      dynamic: ["key1"],
                       config: function($cmp) {
                         return {
                           key2: ["fixed", "array"],
@@ -82,7 +82,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: [],
+                      dynamic: [],
                       config: function($cmp) {
                         return {
                           key1: importedValue
@@ -127,7 +127,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: ["key1","key3"],
+                      dynamic: ["key1","key3"],
                       config: function($cmp) {
                         let v1 = $cmp.prop1;
                         let v2 = $cmp.p1;
@@ -176,7 +176,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: ["key1"],
+                      dynamic: ["key1"],
                       config: function($cmp) {
                         let v1 = $cmp.prop1;
                         return {
@@ -228,7 +228,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: ["key1","key2"],
+                      dynamic: ["key1","key2"],
                       config: function($cmp) {
                         return {
                           key3: "fixed",
@@ -276,7 +276,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: ["key 1"],
+                      dynamic: ["key 1"],
                       config: function($cmp) {
                         return {
                           "key 2": ["fixed", "array"],
@@ -363,7 +363,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: [],
+                      dynamic: [],
                       config: function($cmp) {
                         return {};
                       }
@@ -405,7 +405,7 @@ describe('Transform property', () => {
                 wire: {
                   wiredProp: {
                     adapter: Foo.Bar,
-                    params: [],
+                    dynamic: [],
                     config: function($cmp) {
                       return {};
                     }
@@ -447,7 +447,7 @@ describe('Transform property', () => {
               wire: {
                 wiredProp: {
                   adapter: Foo.Bar,
-                  params: [],
+                  dynamic: [],
                   config: function($cmp) {
                     return {};
                   }
@@ -621,7 +621,7 @@ describe('Transform property', () => {
                       wire: {
                         wiredProp: {
                           adapter: getFoo,
-                          params: ["key1","key2"],
+                          dynamic: ["key1","key2"],
                           config: function($cmp) {
                             let v1 = $cmp["prop1"];
                             let v2 = $cmp.p1;
@@ -669,7 +669,7 @@ describe('Transform property', () => {
                       wire: {
                         wiredProp: {
                           adapter: getFoo,
-                          params: ["key1"],
+                          dynamic: ["key1"],
                           config: function($cmp) {
                             let v1 = $cmp["prop1"];
                             return {
@@ -767,7 +767,7 @@ describe('Transform property', () => {
                   wire: {
                     wired1: {
                       adapter: getFoo,
-                      params: ["key1"],
+                      dynamic: ["key1"],
                       config: function($cmp) {
                         return {
                           key2: ["fixed"],
@@ -777,7 +777,7 @@ describe('Transform property', () => {
                     },
                     wired2: {
                       adapter: getFoo,
-                      params: ["key1"],
+                      dynamic: ["key1"],
                       config: function($cmp) {
                         return {
                           key2: ["array"],
@@ -823,7 +823,7 @@ describe('Transform method', () => {
                   wire: {
                     wiredMethod: {
                       adapter: getFoo,
-                      params: ["key1"],
+                      dynamic: ["key1"],
                       method: 1,
                       config: function($cmp) {
                         return {

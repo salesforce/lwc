@@ -157,7 +157,7 @@ function buildWireConfigValue(t, wiredValues) {
                     return t.stringLiteral(t.isIdentifier(p.key) ? p.key.name : p.key.value);
                 });
                 wireConfig.push(
-                    t.objectProperty(t.identifier('params'), t.arrayExpression(dynamicParamNames))
+                    t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
                 );
             }
 

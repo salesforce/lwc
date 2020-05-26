@@ -48,7 +48,7 @@ interface WireCompilerDef {
     method?: number;
     adapter: WireAdapterConstructor;
     config: ConfigCallback;
-    params?: string[];
+    dynamic?: string[];
 }
 interface RegisterDecoratorMeta {
     readonly publicMethods?: MethodCompilerMeta;
@@ -216,7 +216,7 @@ export function registerDecorators(
     }
     if (!isUndefined(wire)) {
         for (const fieldOrMethodName in wire) {
-            const { adapter, method, config: configCallback, params = [] } = wire[
+            const { adapter, method, config: configCallback, dynamic = [] } = wire[
                 fieldOrMethodName
             ];
             descriptor = getOwnPropertyDescriptor(proto, fieldOrMethodName);
@@ -232,7 +232,7 @@ export function registerDecorators(
                     throw new Error();
                 }
                 wiredMethods[fieldOrMethodName] = descriptor;
-                storeWiredMethodMeta(descriptor, adapter, configCallback, params);
+                storeWiredMethodMeta(descriptor, adapter, configCallback, dynamic);
             } else {
                 if (process.env.NODE_ENV !== 'production') {
                     assert.isTrue(
@@ -243,7 +243,7 @@ export function registerDecorators(
                 }
                 descriptor = internalWireFieldDecorator(fieldOrMethodName);
                 wiredFields[fieldOrMethodName] = descriptor;
-                storeWiredFieldMeta(descriptor, adapter, configCallback, params);
+                storeWiredFieldMeta(descriptor, adapter, configCallback, dynamic);
                 defineProperty(proto, fieldOrMethodName, descriptor);
             }
         }

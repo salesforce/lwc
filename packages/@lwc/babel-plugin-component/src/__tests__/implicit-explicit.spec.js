@@ -121,7 +121,7 @@ describe('Implicit mode', () => {
                   wire: {
                     recordData: {
                       adapter: getRecord,
-                      params: [],
+                      dynamic: [],
                       config: function($cmp) {
                         return {
                           id: 1
