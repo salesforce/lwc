@@ -20,7 +20,12 @@ import {
     seal,
     setPrototypeOf,
 } from '@lwc/shared';
-import { getAssociatedVM, getHook, setHook, callHook } from './vm';
+import {
+    getAssociatedVM,
+    getComponentProperty,
+    setComponentProperty,
+    callComponentMethod,
+} from './vm';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { reactiveMembrane } from './membrane';
 
@@ -36,7 +41,7 @@ function createGetter(key: string) {
     if (isUndefined(fn)) {
         fn = cachedGetterByKey[key] = function (this: HTMLElement): any {
             const vm = getAssociatedVM(this);
-            return getHook(vm.component, key);
+            return getComponentProperty(vm.component, key);
         };
     }
     return fn;
@@ -48,7 +53,7 @@ function createSetter(key: string) {
         fn = cachedSetterByKey[key] = function (this: HTMLElement, newValue: any): any {
             const vm = getAssociatedVM(this);
             newValue = reactiveMembrane.getReadOnlyProxy(newValue);
-            setHook(vm.component, key, newValue);
+            setComponentProperty(vm.component, key, newValue);
         };
     }
     return fn;
@@ -59,7 +64,7 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
         const vm = getAssociatedVM(this);
         const { component } = vm;
         const fn = (component as any)[methodName];
-        return callHook(vm.component, fn, ArraySlice.call(arguments));
+        return callComponentMethod(vm.component, fn, ArraySlice.call(arguments));
     };
 }
 

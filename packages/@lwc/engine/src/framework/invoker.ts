@@ -7,7 +7,7 @@
 import { assert, isFunction, isUndefined } from '@lwc/shared';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
-import { VM, UninitializedVM, runWithBoundaryProtection, callHook } from './vm';
+import { VM, UninitializedVM, runWithBoundaryProtection, callComponentMethod } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { startMeasure, endMeasure } from './performance-timing';
@@ -36,7 +36,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
         noop,
         () => {
             // job
-            result = callHook(component, fn, args);
+            result = callComponentMethod(component, fn, args);
         },
         noop
     );
@@ -104,7 +104,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         () => {
             // job
             vm.tro.observe(() => {
-                html = callHook(component, render);
+                html = callComponentMethod(component, render);
                 renderInvocationSuccessful = true;
             });
         },
@@ -138,7 +138,7 @@ export function invokeComponentRenderedCallback(vm: VM): void {
             },
             () => {
                 // job
-                callHook(component, renderedCallback!);
+                callComponentMethod(component, renderedCallback!);
             },
             () => {
                 // post
@@ -170,7 +170,7 @@ export function invokeEventListener(
                     `Invalid event handler for event '${event.type}' on ${vm}.`
                 );
             }
-            callHook(thisValue, fn, [event]);
+            callComponentMethod(thisValue, fn, [event]);
         },
         noop
     );

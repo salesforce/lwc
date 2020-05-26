@@ -110,7 +110,7 @@ let idx: number = 0;
 /** The internal slot used to associate different objects the engine manipulates with the VM */
 const ViewModelReflection = createHiddenField<VM>('ViewModel', 'engine');
 
-export function callHook(
+export function callComponentMethod(
     cmp: ComponentInterface | undefined,
     fn: (...args: any[]) => any,
     args: any[] = []
@@ -118,11 +118,11 @@ export function callHook(
     return fn.apply(cmp, args);
 }
 
-export function setHook(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
+export function setComponentProperty(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
     (cmp as any)[prop] = newValue;
 }
 
-export function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
+export function getComponentProperty(cmp: ComponentInterface, prop: PropertyKey): any {
     return (cmp as any)[prop];
 }
 
