@@ -130,12 +130,6 @@ function getLinkedElement(cmp: ComponentInterface): HTMLElement {
     return getAssociatedVM(cmp).elm;
 }
 
-interface ComponentHooks {
-    callHook: VM['callHook'];
-    setHook: VM['setHook'];
-    getHook: VM['getHook'];
-}
-
 export interface LightningElementConstructor {
     new (): LightningElement;
     readonly prototype: LightningElement;
@@ -258,19 +252,12 @@ function BaseLightningElementConstructor(this: LightningElement) {
         mode,
         def: { ctor },
     } = vm;
+
     const component = this;
     vm.component = component;
     vm.tro = getTemplateReactiveObserver(vm);
     vm.oar = create(null);
-    // interaction hooks
-    // We are intentionally hiding this argument from the formal API of LWCElement because
-    // we don't want folks to know about it just yet.
-    if (arguments.length === 1) {
-        const { callHook, setHook, getHook } = arguments[0] as ComponentHooks;
-        vm.callHook = callHook;
-        vm.setHook = setHook;
-        vm.getHook = getHook;
-    }
+
     // attaching the shadowRoot
     const shadowRootOptions = {
         mode,

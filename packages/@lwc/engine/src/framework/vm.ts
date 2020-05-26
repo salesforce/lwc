@@ -79,13 +79,6 @@ export interface UninitializedVM {
     cmpProps: Record<string, any>;
     cmpSlots: SlotSet;
     cmpFields: Record<string, any>;
-    callHook: (
-        cmp: ComponentInterface | undefined,
-        fn: (...args: any[]) => any,
-        args?: any[]
-    ) => any;
-    setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
-    getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
@@ -117,7 +110,7 @@ let idx: number = 0;
 /** The internal slot used to associate different objects the engine manipulates with the VM */
 const ViewModelReflection = createHiddenField<VM>('ViewModel', 'engine');
 
-function callHook(
+export function callHook(
     cmp: ComponentInterface | undefined,
     fn: (...args: any[]) => any,
     args: any[] = []
@@ -125,11 +118,11 @@ function callHook(
     return fn.apply(cmp, args);
 }
 
-function setHook(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
+export function setHook(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
     (cmp as any)[prop] = newValue;
 }
 
-function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
+export function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
     return (cmp as any)[prop];
 }
 
@@ -228,9 +221,6 @@ export function createVM(
         cmpProps: create(null),
         cmpFields: create(null),
         cmpSlots: useSyntheticShadow ? create(null) : undefined,
-        callHook,
-        setHook,
-        getHook,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,

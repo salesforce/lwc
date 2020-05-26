@@ -7,7 +7,7 @@
 import { assert, isFunction, isUndefined } from '@lwc/shared';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
-import { VM, UninitializedVM, runWithBoundaryProtection } from './vm';
+import { VM, UninitializedVM, runWithBoundaryProtection, callHook } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { startMeasure, endMeasure } from './performance-timing';
@@ -28,7 +28,7 @@ export function isInvokingRenderedCallback(vm: VM): boolean {
 const noop = () => void 0;
 
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
-    const { component, callHook, owner } = vm;
+    const { component, owner } = vm;
     let result;
     runWithBoundaryProtection(
         vm,
@@ -86,7 +86,6 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
 export function invokeComponentRenderMethod(vm: VM): VNodes {
     const {
         def: { render },
-        callHook,
         component,
         owner,
     } = vm;
@@ -123,7 +122,6 @@ export function invokeComponentRenderedCallback(vm: VM): void {
     const {
         def: { renderedCallback },
         component,
-        callHook,
         owner,
     } = vm;
     if (!isUndefined(renderedCallback)) {
@@ -159,7 +157,7 @@ export function invokeEventListener(
     thisValue: undefined | ComponentInterface,
     event: Event
 ) {
-    const { callHook, owner } = vm;
+    const { owner } = vm;
     runWithBoundaryProtection(
         vm,
         owner,
