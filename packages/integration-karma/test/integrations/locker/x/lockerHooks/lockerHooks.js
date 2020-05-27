@@ -1,4 +1,5 @@
 import { LightningElement, api } from 'lwc';
+import template from './lockerHooks.html';
 
 export const hooks = {
     getHook: (target, property) => target[property],
@@ -31,6 +32,9 @@ export default class LockerHooks extends LightningElement {
     // Test lifecycle hooks
     connectedCallback() {}
     renderedCallback() {}
+    render() {
+        return template;
+    }
     disconnectedCallback() {}
 
     // Test event handler
