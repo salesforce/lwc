@@ -15,8 +15,8 @@
         "@lwc/engine": "1.6.6"
     },
     "dependencies": {
-        "@lwc/module-resolver": "1.6.6",
-        "@rollup/pluginutils": "~3.0.10"
+        "@lwc/module-resolver": "1.6.3",
+        "@rollup/pluginutils": "~3.0.9"
     },
     "peerDependencies": {
         "rollup": "^1.2.0||^2.0.0"
