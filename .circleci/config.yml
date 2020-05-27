@@ -1,222 +1,242 @@
-# Shared config
-ignore_forks: &ignore_forks
-  branches:
-    # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
-    ignore: /pull\/[0-9]+/
+# Environment configuration
+env_default: &env_default
+  working_directory: ~/lwc
+  docker:
+    - image: circleci/node:12-browsers
+
+env_perf: &env_perf
+  <<: *env_default
+  environment:
+    - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
+
+env_test: &env_test
+  <<: *env_default
+
+# Yarn cache
+restore_yarn_cache: &restore_yarn_cache
+  restore_cache:
+    keys:
+      - yarn-v5-{{ checksum "yarn.lock" }}
+
+save_yarn_cache: &save_yarn_cache
+  save_cache:
+    key: yarn-v5-{{ checksum "yarn.lock" }}
+    paths:
+      - ~/.cache/yarn
+
+# Workspace
+save_workspace: &save_workspace
+  persist_to_workspace:
+    root: .
+    paths: .
+
+load_workspace: &load_workspace
+  attach_workspace:
+    at: ~/lwc
+
+# Build
+install_and_build: &install_and_build
+  run:
+    name: Install dependencies and build
+    command: yarn install --frozen-lockfile
+
+run_sanity_checks: &run_sanity_checks
+  run:
+    name: Sanity checks
+    command: |
+      node ./scripts/tasks/version-check.js
+      node ./scripts/tasks/check-license-headers.js
+
+run_format: &run_format
+  run:
+    name: Run format
+    # Can't use the "yarn format" script directly since the "--write" flag fixes the formatting issues while this
+    # command checks if the files are properly formatted.
+    command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
+
+run_linting: &run_linting
+  run:
+    name: Run linting
+    command: yarn lint
+
+# Sauce connect
+setup_sauce_env_variables: &setup_sauce_env_variables
+  run:
+    name: Setup sauce connect environment variables
+    command: |
+        echo 'export SAUCE_TUNNEL_ID="lwc-${CIRCLE_BUILD_NUM}"' >> $BASH_ENV
+
+start_sauce_connect: &start_sauce_connect
+  run:
+    name: Install and start sauce connect
+    background: true
+    command: |
+        curl https://saucelabs.com/downloads/sc-4.5.4-linux.tar.gz -o saucelabs.tar.gz
+        tar -xzf saucelabs.tar.gz
+        cd sc-*
+        bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY} -i ${SAUCE_TUNNEL_ID}
+
+wait_for_sauce_connect: &wait_for_sauce_connect
+  run:
+    name: Wait for sauce connect to be up
+    command: wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
+
+stop_sauce_connect: &stop_sauce_connect
+  run:
+    name: Stop sauce connect
+    command: kill -9 `cat /tmp/sc_client-${SAUCE_TUNNEL_ID}.pid`
+
+# Test
+run_unit_tests: &run_unit_tests
+  run:
+    name: Run unit tests
+    command: yarn test:ci
+
+run_karma_tests: &run_karma_tests
+  run:
+    name: Run karma tests
+    command: yarn sauce --coverage
+    working_directory: packages/integration-karma
+
+run_karma_tests_native: &run_karma_tests_native
+  run:
+    name: Run karma tests - native shadow
+    command: yarn sauce --native-shadow --coverage
+    working_directory: packages/integration-karma
+
+run_karma_tests_compat: &run_karma_tests_compat
+  run:
+    name: Run karma tests - compat
+    command: yarn sauce --compat --coverage
+    working_directory: packages/integration-karma
+
+run_karma_coverage: &run_karma_coverage
+  run:
+    name: Compute karma coverage
+    command: yarn coverage
+    working_directory: packages/integration-karma
+
+run_integration_tests_chrome: &run_integration_tests_chrome
+  run:
+    name: Run integration test - Headless Chrome
+    command: yarn sauce:prod --browsers chrome
+    working_directory: packages/integration-tests
+
+run_integration_tests_ie11: &run_integration_tests_ie11
+  run:
+    name: Run integration test - IE11 SauceLabs
+    command: yarn sauce:prod_compat --browsers ie11
+    working_directory: packages/integration-tests
+
+# BEST
+setup_best_environment: &setup_best_environment
+  run:
+    name: Setup BEST environment
+    command: |
+        echo 'export PULL_REQUEST=${CIRCLE_PULL_REQUEST}' >> $BASH_ENV
+        echo 'export REPO_NAME=${CIRCLE_PROJECT_REPONAME}' >> $BASH_ENV
+        echo 'export TARGET_COMMIT=${CIRCLE_SHA1}' >> $BASH_ENV
+        echo 'export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
+
+        echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
+
+run_best_chrome: &run_best_chrome
+  run:
+    name: Run BEST
+    working_directory: packages/perf-benchmarks
+    command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote --runInBatch --dbAdapter=sql/postgres --dbURI=${BEST_HUB_DATABASE_URL}
+    no_output_timeout: 40m
+
+compare_best_results: &compare_best_results
+  run:
+    name: Comparing Benchmarks
+    working_directory: packages/perf-benchmarks
+    command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+
+store_best_artifacts: &store_best_artifacts
+  store_artifacts:
+    path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
+    destination: benchmarks
 
 
 # Jobs definition
-version: 2.1
-
-
-# Custom executors definition
-executors:
-  node:
-    working_directory: ~/lwc
-    docker:
-      - image: circleci/node:12
-
-
-# Custom commands definition
-commands:
-  # Setup
-  restore_yarn_cache:
-    description: Restore Yarn cache from previous build
-    steps:
-      - restore_cache:
-          keys:
-            - yarn-v5-{{ checksum "yarn.lock" }}
-
-  save_yarn_cache:
-    description: Save Yarn cache for future builds
-    steps:
-      - save_cache:
-          key: yarn-v5-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-
-  save_workspace:
-    description: Save current workspace
-    steps:
-      - persist_to_workspace:
-          root: .
-          paths: .
-
-  load_workspace:
-    description: Load workspace
-    steps:
-      - attach_workspace:
-          at: ~/lwc
-
-
-  # Sauce connect
-  start_sauce_connect:
-    description: Start sauce connect
-    parameters:
-      username:
-        type: env_var_name
-        default: SAUCE_USERNAME
-      key:
-        type: env_var_name
-        default: SAUCE_KEY
-      tunnel_id:
-        type: env_var_name
-        default: SAUCE_TUNNEL_ID
-    steps:
-      - run:
-          name: Install and start sauce connect
-          background: true
-          command: |
-              curl https://saucelabs.com/downloads/sc-4.5.4-linux.tar.gz -o saucelabs.tar.gz
-              tar -xzf saucelabs.tar.gz
-              cd sc-*
-              bin/sc -u ${<< parameters.username >>} -k ${<< parameters.key >>} -i ${<< parameters.tunnel_id >>}
-      - run:
-          name: Wait for sauce connect to be up
-          command: wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
-
-  stop_sauce_connect:
-    description: Stop all sauce connect tunnels
-    steps:
-      -  run:
-          name: Stop sauce connect
-          command: killall sc
-
-
-  # Test
-  run_karma:
-    description: Run Karma integration tests
-    parameters:
-      native_shadow:
-        type: boolean
-      compat:
-        type: boolean
-      coverage:
-        type: boolean
-        default: true
-    steps:
-      - run:
-          name: Run karma integration tests
-          working_directory: packages/integration-karma
-          command: >
-              yarn sauce
-              <<# parameters.native_shadow >> --native-shadow <</ parameters.native_shadow >>
-              <<# parameters.compat >> --compat <</ parameters.compat >>
-              <<# parameters.coverage >> --coverage <</ parameters.coverage >>
-
-
-# Jobs definition
+version: 2
 jobs:
   build:
-    executor: node
+    <<: *env_default
     steps:
       - checkout
-      - restore_yarn_cache
-      - run:
-          name: Install dependencies and build
-          command: yarn install --frozen-lockfile
-      - run:
-          name: Check missing file headers 
-          command: node ./scripts/tasks/check-license-headers.js
-      - run:
-          name: Check for version misalignment
-          command: node ./scripts/tasks/version-check.js
-      - run:
-          name: Check formatting
-          command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
-      - run:
-          name: Run linter
-          command: yarn lint
-      - save_yarn_cache
-      - save_workspace
+      - *restore_yarn_cache
+      - *install_and_build
+      - *save_yarn_cache
+
+      - *run_sanity_checks
+      - *run_linting
+      - *run_format
+
+      - *save_workspace
 
 
   test_unit:
-    executor: node
+    <<: *env_default
     steps:
-      - load_workspace
-      - run:
-          name: Run unit tests
-          command: yarn test:ci
+      - *load_workspace
+      - *run_unit_tests
 
 
   test_karma:
-    executor: node
-    environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma
+    <<: *env_test
     steps:
-      - load_workspace
-      - start_sauce_connect
-      - run_karma:
-          native_shadow: false
-          compat: false
-      - run_karma:
-          native_shadow: true
-          compat: false
-      - run_karma:
-          native_shadow: false
-          compat: true
-      - run:
-          name: Compute karma coverage
-          command: yarn coverage
-          working_directory: packages/integration-karma
-      - stop_sauce_connect
+      - *load_workspace
 
+      - *setup_sauce_env_variables
+      - *start_sauce_connect
+      - *wait_for_sauce_connect
+
+      - *run_karma_tests
+      - *run_karma_tests_native
+      - *run_karma_tests_compat
+
+      - *run_karma_coverage
+
+      - *stop_sauce_connect
 
   test_integration:
-    executor: node
-    environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
+    <<: *env_test
     steps:
-      - load_workspace
-      - start_sauce_connect
-      - run:
-          name: Run integration test - Chrome SauceLabs
-          command: yarn sauce:prod --browsers chrome
-          working_directory: packages/integration-tests
-      - stop_sauce_connect
+      - *load_workspace
+
+      - *setup_sauce_env_variables
+      - *start_sauce_connect
+      - *wait_for_sauce_connect
+
+      - *run_integration_tests_chrome
 
 
   test_integration_compat:
-    executor: node
-    environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_compat
+    <<: *env_test
     steps:
-      - load_workspace
-      - start_sauce_connect
-      - run:
-          name: Run integration test - IE11 SauceLabs
-          command: yarn sauce:prod_compat --browsers ie11
-          working_directory: packages/integration-tests
-      - stop_sauce_connect
+      - *load_workspace
+
+      - *setup_sauce_env_variables
+      - *start_sauce_connect
+      - *wait_for_sauce_connect
+
+      - *run_integration_tests_ie11
+
+      - *stop_sauce_connect
 
 
   perf_and_compare:
-    executor: node
-    environment:
-      GIT_APP_CERT_PATH: ~/lwc/git_app.pem
+    <<: *env_perf
     steps:
-      - load_workspace
-      - run:
-          name: Setup BEST environment
-          command: |
-              echo 'export PULL_REQUEST=${CIRCLE_PULL_REQUEST}' >> $BASH_ENV
-              echo 'export REPO_NAME=${CIRCLE_PROJECT_REPONAME}' >> $BASH_ENV
-              echo 'export TARGET_COMMIT=${CIRCLE_SHA1}' >> $BASH_ENV
-              echo 'export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
-              echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
-      - run:
-          name: Run BEST
-          working_directory: packages/perf-benchmarks
-          no_output_timeout: 40m
-          command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote --runInBatch --dbAdapter=sql/postgres --dbURI=${BEST_HUB_DATABASE_URL}
-      - run:
-          name: Comparing Benchmarks
-          working_directory: packages/perf-benchmarks
-          command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
-      - store_artifacts:
-          path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
-          destination: benchmarks
+      - *load_workspace
+
+      - *setup_best_environment
+      - *run_best_chrome
+      - *compare_best_results
+
+      - *store_best_artifacts
 
 
 # Workflows definition
@@ -232,26 +252,34 @@ workflows:
 
       - test_karma:
           filters:
-              <<: *ignore_forks
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - build
 
       - perf_and_compare:
           filters:
-              <<: *ignore_forks
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - build
 
       - test_integration:
           filters:
-              <<: *ignore_forks
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - test_unit
             - test_karma
 
       - test_integration_compat:
           filters:
-              <<: *ignore_forks
+              branches:
+                # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+                ignore: /pull\/[0-9]+/
           requires:
             - test_unit
             - test_karma
