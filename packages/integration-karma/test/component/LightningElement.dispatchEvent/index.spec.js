@@ -1,5 +1,4 @@
-import { LightningElement } from 'lwc';
-import { createElement } from 'lwc';
+import { createElement, LightningElement } from 'lwc';
 
 import Test from 'x/test';
 
@@ -32,7 +31,7 @@ it('should throw an error if the parameter is not an instance of Event', () => {
     }).toThrowError();
 });
 
-it('should throw when event is dispatched during construction', function () {
+it('should not throw when event is dispatched during construction', function () {
     class Test extends LightningElement {
         constructor() {
             super();
@@ -41,10 +40,7 @@ it('should throw when event is dispatched during construction', function () {
     }
     expect(() => {
         createElement('x-test', { is: Test });
-    }).toThrowErrorDev(
-        Error,
-        /this.dispatchEvent\(\) should not be called during the construction of the custom element for <x-test> because no one is listening just yet/
-    );
+    }).not.toThrow();
 });
 
 function testInvalidEvent(reason, name) {

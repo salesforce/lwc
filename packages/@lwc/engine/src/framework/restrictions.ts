@@ -7,7 +7,6 @@
 
 /* eslint lwc-internal/no-production-assert: "off" */
 import {
-    assert,
     assign,
     create,
     defineProperties,
@@ -18,20 +17,20 @@ import {
     isFalse,
     isUndefined,
     setPrototypeOf,
-    toString,
     isObject,
     isNull,
-    getOwnPropertyDescriptor,
 } from '@lwc/shared';
 
 import { LightningElement } from './base-lightning-element';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
-import { isBeingConstructed, isInvokingRender, isInvokingRenderedCallback } from './invoker';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
-import { isUpdatingTemplate, getVMBeingRendered, isVMBeingRendered } from './template';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
+
+interface RestrictionsOptions {
+    isPortal?: boolean;
+}
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
@@ -85,10 +84,9 @@ function getNodeRestrictionsDescriptors(
         throw new ReferenceError();
     }
 
-    // getPropertyDescriptor here recursively looks up the prototype chain
-    // and returns the first descriptor for the property
     const originalTextContentDescriptor = getPropertyDescriptor(node, 'textContent')!;
     const originalNodeValueDescriptor = getPropertyDescriptor(node, 'nodeValue')!;
+
     const { appendChild, insertBefore, removeChild, replaceChild } = node;
     return {
         appendChild: generateDataDescriptor({
@@ -156,7 +154,7 @@ function getElementRestrictionsDescriptors(
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm, options);
+    const descriptors = getNodeRestrictionsDescriptors(elm, options);
     const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
     assign(descriptors, {
@@ -186,6 +184,14 @@ function getElementRestrictionsDescriptors(
     return descriptors;
 }
 
+const BLOCKED_SHADOW_ROOT_METHODS = [
+    'cloneNode',
+    'getElementById',
+    'getSelection',
+    'elementsFromPoint',
+    'dispatchEvent',
+];
+
 function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -194,8 +200,6 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
     // Disallowing properties in dev mode only to avoid people doing the wrong
     // thing when using the real shadow root, because if that's the case,
     // the component will not work when running with synthetic shadow.
-    const originalQuerySelector = sr.querySelector;
-    const originalQuerySelectorAll = sr.querySelectorAll;
     const originalAddEventListener = sr.addEventListener;
     const descriptors = getNodeRestrictionsDescriptors(sr);
     const originalInnerHTMLDescriptor = getPropertyDescriptor(sr, 'innerHTML')!;
@@ -224,19 +228,6 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 listener: EventListener,
                 options?: boolean | AddEventListenerOptions
             ) {
-                const vmBeingRendered = getVMBeingRendered();
-                assert.invariant(
-                    !isInvokingRender,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${toString(
-                        sr
-                    )} by adding an event listener for "${type}".`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${toString(
-                        sr
-                    )} by adding an event listener for "${type}".`
-                );
                 // TODO [#420]: this is triggered when the component author attempts to add a listener
                 // programmatically into its Component's shadow root
                 if (!isUndefined(options)) {
@@ -250,48 +241,16 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 return originalAddEventListener.apply(this, arguments);
             },
         }),
-        querySelector: generateDataDescriptor({
-            value(this: ShadowRoot) {
-                const vm = getAssociatedVM(this);
-                assert.isFalse(
-                    isBeingConstructed(vm),
-                    `this.template.querySelector() cannot be called during the construction of the` +
-                        `custom element for ${vm} because no content has been rendered yet.`
-                );
-                // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-ignore type-mismatch
-                return originalQuerySelector.apply(this, arguments);
-            },
-        }),
-        querySelectorAll: generateDataDescriptor({
-            value(this: ShadowRoot) {
-                const vm = getAssociatedVM(this);
-                assert.isFalse(
-                    isBeingConstructed(vm),
-                    `this.template.querySelectorAll() cannot be called during the construction of the` +
-                        ` custom element for ${vm} because no content has been rendered yet.`
-                );
-                // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-ignore type-mismatch
-                return originalQuerySelectorAll.apply(this, arguments);
-            },
-        }),
     });
-    const BlockedShadowRootMethods = {
-        cloneNode: 0,
-        getElementById: 0,
-        getSelection: 0,
-        elementsFromPoint: 0,
-        dispatchEvent: 0,
-    };
-    forEach.call(getOwnPropertyNames(BlockedShadowRootMethods), (methodName: string) => {
-        const descriptor = generateAccessorDescriptor({
+
+    forEach.call(BLOCKED_SHADOW_ROOT_METHODS, (methodName: string) => {
+        descriptors[methodName] = generateAccessorDescriptor({
             get() {
                 throw new Error(`Disallowed method "${methodName}" in ShadowRoot.`);
             },
         });
-        descriptors[methodName] = descriptor;
     });
+
     return descriptors;
 }
 
@@ -342,19 +301,6 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 listener: EventListener,
                 options?: boolean | AddEventListenerOptions
             ) {
-                const vmBeingRendered = getVMBeingRendered();
-                assert.invariant(
-                    !isInvokingRender,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${toString(
-                        this
-                    )} by adding an event listener for "${type}".`
-                );
-                assert.invariant(
-                    !isUpdatingTemplate,
-                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${toString(
-                        elm
-                    )} by adding an event listener for "${type}".`
-                );
                 // TODO [#420]: this is triggered when the component author attempts to add a listener
                 // programmatically into a lighting element node
                 if (!isUndefined(options)) {
@@ -400,18 +346,11 @@ function getLightningElementPrototypeRestrictionsDescriptors(
     }
 
     const originalDispatchEvent = proto.dispatchEvent;
-    const originalIsConnectedGetter = getOwnPropertyDescriptor(proto, 'isConnected')!.get!;
 
     const descriptors: PropertyDescriptorMap = {
         dispatchEvent: generateDataDescriptor({
             value(this: LightningElement, event: Event): boolean {
                 const vm = getAssociatedVM(this);
-
-                assert.isFalse(
-                    isBeingConstructed(vm),
-                    `this.dispatchEvent() should not be called during the construction of the custom` +
-                        ` element for ${getComponentTag(vm)} because no one is listening just yet.`
-                );
 
                 if (!isNull(event) && isObject(event)) {
                     const { type } = event;
@@ -431,29 +370,6 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
                 return originalDispatchEvent.apply(this, arguments);
-            },
-        }),
-        isConnected: generateAccessorDescriptor({
-            get(this: LightningElement) {
-                const vm = getAssociatedVM(this);
-                const componentTag = getComponentTag(vm);
-                assert.isFalse(
-                    isBeingConstructed(vm),
-                    `this.isConnected should not be accessed during the construction phase of the custom` +
-                        ` element ${componentTag}. The value will always be` +
-                        ` false for Lightning Web Components constructed using lwc.createElement().`
-                );
-                assert.isFalse(
-                    isVMBeingRendered(vm),
-                    `this.isConnected should not be accessed during the rendering phase of the custom` +
-                        ` element ${componentTag}. The value will always be true.`
-                );
-                assert.isFalse(
-                    isInvokingRenderedCallback(vm),
-                    `this.isConnected should not be accessed during the renderedCallback of the custom` +
-                        ` element ${componentTag}. The value will always be true.`
-                );
-                return originalIsConnectedGetter.call(this);
             },
         }),
     };
@@ -487,10 +403,6 @@ function getLightningElementPrototypeRestrictionsDescriptors(
     });
 
     return descriptors;
-}
-
-interface RestrictionsOptions {
-    isPortal?: boolean;
 }
 
 export function patchElementWithRestrictions(elm: Element, options: RestrictionsOptions) {
