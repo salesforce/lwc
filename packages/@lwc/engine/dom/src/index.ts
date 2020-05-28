@@ -9,7 +9,6 @@
 import './polyfills/proxy-concat/main';
 import './polyfills/aria-properties/main';
 
-// TODO [#0]: We need to address the problem where engine-core needs the above polyfills.
 export {
     createContextProvider,
     register,
@@ -33,4 +32,4 @@ export {
 export { createElement } from './apis/create-element';
 export { getComponentConstructor } from './apis/get-component-constructor';
 export { isNodeFromTemplate } from './apis/is-node-from-template';
-export { BaseLightningElement as LightningElement } from './apis/lightning-element';
+export { LightningElement } from './apis/lightning-element';

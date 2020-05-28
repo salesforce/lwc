@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { BaseLightningElement as LightningElement } from '../../../src';
+import { LightningElement } from '../../../src';
 
 describe('CustomElementConstructor getter', () => {
     it('should have the default behavior of throwing an error', () => {
