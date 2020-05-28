@@ -4,8 +4,33 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, freeze, seal } from '@lwc/shared';
-import { getCustomElementConstructor, BaseLightningElement } from '../../../src';
+import { defineProperty, freeze, isUndefined, seal } from '@lwc/shared';
+
+import {
+    BaseLightningElement,
+    buildCustomElementConstructor,
+    ComponentConstructor,
+    HTMLElementConstructor,
+} from '../../../src';
+
+const ComponentConstructorToCustomElementConstructorMap = new Map<
+    ComponentConstructor,
+    HTMLElementConstructor
+>();
+
+function getCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
+    if (Ctor === BaseLightningElement) {
+        throw new TypeError(
+            `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`
+        );
+    }
+    let ce = ComponentConstructorToCustomElementConstructorMap.get(Ctor);
+    if (isUndefined(ce)) {
+        ce = buildCustomElementConstructor(Ctor);
+        ComponentConstructorToCustomElementConstructorMap.set(Ctor, ce);
+    }
+    return ce;
+}
 
 /**
  * This static getter builds a Web Component class from a LWC constructor

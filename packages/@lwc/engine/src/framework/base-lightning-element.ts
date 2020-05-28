@@ -19,7 +19,6 @@ import {
     isFunction,
     isNull,
     defineProperty,
-    isUndefined,
     isObject,
 } from '@lwc/shared';
 import { HTMLElementOriginalDescriptors } from './html-properties';
@@ -27,7 +26,6 @@ import {
     ComponentInterface,
     getWrappedComponentsListener,
     getTemplateReactiveObserver,
-    ComponentConstructor,
 } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
 import { associateVM, getAssociatedVM, VM } from './vm';
@@ -42,7 +40,6 @@ import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { buildCustomElementConstructor } from './wc';
 import { HTMLElementConstructor } from './base-bridge-element';
 
 /**
@@ -543,25 +540,6 @@ for (const propName in HTMLElementOriginalDescriptors) {
 }
 
 defineProperties(BaseLightningElementConstructor.prototype, lightningBasedDescriptors);
-
-const ComponentConstructorAsCustomElementConstructorMap = new Map<
-    ComponentConstructor,
-    HTMLElementConstructor
->();
-
-export function getCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
-    if (Ctor === BaseLightningElement) {
-        throw new TypeError(
-            `Invalid Constructor. LightningElement base class can't be claimed as a custom element.`
-        );
-    }
-    let ce = ComponentConstructorAsCustomElementConstructorMap.get(Ctor);
-    if (isUndefined(ce)) {
-        ce = buildCustomElementConstructor(Ctor);
-        ComponentConstructorAsCustomElementConstructorMap.set(Ctor, ce);
-    }
-    return ce;
-}
 
 defineProperty(BaseLightningElementConstructor, 'CustomElementConstructor', {
     get() {

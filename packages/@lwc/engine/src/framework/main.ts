@@ -8,11 +8,12 @@
 // TODO [#1296]: Revisit these exports and figure out a better separation
 export { createContextProvider } from './context-provider';
 export { getComponentDef, isComponentConstructor } from './def';
-export { BaseLightningElement, getCustomElementConstructor } from './base-lightning-element';
+export { BaseLightningElement } from './base-lightning-element';
+export { HTMLElementConstructor } from './base-bridge-element';
 export { register } from './services';
 export { unwrap } from './membrane';
 export { registerTemplate, sanitizeAttribute } from './secure-template';
-export { registerComponent } from './component';
+export { ComponentConstructor, registerComponent } from './component';
 export { registerDecorators } from './decorators/register';
 
 export { default as api } from './decorators/api';
