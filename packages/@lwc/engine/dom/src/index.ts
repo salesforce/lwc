@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export * from './framework/main';
-
 export {
     createContextProvider,
     LightningElement,
@@ -26,3 +24,12 @@ export {
     getComponentDef,
     isComponentConstructor,
 } from '../../src';
+
+// Polyfills ---------------------------------------------------------------------------------------
+import './polyfills/proxy-concat/main';
+import './polyfills/aria-properties/main';
+
+// Public APIs -------------------------------------------------------------------------------------
+export { createElement } from './apis/create-element';
+export { getComponentConstructor } from './apis/get-component-constructor';
+export { isNodeFromTemplate } from './apis/is-node-from-template';
