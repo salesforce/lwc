@@ -7,4 +7,22 @@
 
 export * from './framework/main';
 
-export * from '../../src';
+export {
+    createContextProvider,
+    LightningElement,
+    register,
+    api,
+    track,
+    wire,
+    readonly,
+    unwrap,
+    buildCustomElementConstructor,
+    setFeatureFlag,
+    setFeatureFlagForTest,
+    registerTemplate,
+    registerComponent,
+    registerDecorators,
+    sanitizeAttribute,
+    getComponentDef,
+    isComponentConstructor,
+} from '../../src';
