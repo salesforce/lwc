@@ -638,3 +638,20 @@ export function runWithBoundaryProtection(
         }
     }
 }
+
+export function forceRehydration(vm: VM) {
+    // if we must reset the shadowRoot content and render the template
+    // from scratch on an active instance, the way to force the reset
+    // is by replacing the value of old template, which is used during
+    // to determine if the template has changed or not during the rendering
+    // process. If the template returned by render() is different from the
+    // previous stored template, the styles will be reset, along with the
+    // content of the shadowRoot, this way we can guarantee that all children
+    // elements will be throw away, and new instances will be created.
+    vm.cmpTemplate = () => [];
+    if (isFalse(vm.isDirty)) {
+        // forcing the vm to rehydrate in the next tick
+        markComponentAsDirty(vm);
+        scheduleRehydration(vm);
+    }
+}

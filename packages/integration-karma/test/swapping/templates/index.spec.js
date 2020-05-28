@@ -35,4 +35,16 @@ describe('template swapping', () => {
             expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="second">second</p>');
         });
     });
+
+    it('should throw for invalid old template', () => {
+        expect(() => {
+            swapTemplate(function () {}, second);
+        }).toThrow();
+    });
+
+    it('should throw for invalid new template', () => {
+        expect(() => {
+            swapTemplate(second, function () {});
+        }).toThrow();
+    });
 });

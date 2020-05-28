@@ -31,4 +31,16 @@ describe('component swapping', () => {
         document.body.appendChild(elm);
         expect(swapComponent(D, E)).toBe(false); // meaning you can reload the page
     });
+
+    it('should throw for invalid old component', () => {
+        expect(() => {
+            swapComponent(function () {}, D);
+        }).toThrow();
+    });
+
+    it('should throw for invalid new componeont', () => {
+        expect(() => {
+            swapComponent(D, function () {});
+        }).toThrow();
+    });
 });
