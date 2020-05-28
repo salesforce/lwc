@@ -5,6 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// Polyfills ---------------------------------------------------------------------------------------
+import './polyfills/proxy-concat/main';
+import './polyfills/aria-properties/main';
+
+// TODO [#0]: We need to address the problem where engine-core needs the above polyfills.
 export {
     createContextProvider,
     register,
@@ -23,10 +28,6 @@ export {
     getComponentDef,
     isComponentConstructor,
 } from '../../src';
-
-// Polyfills ---------------------------------------------------------------------------------------
-import './polyfills/proxy-concat/main';
-import './polyfills/aria-properties/main';
 
 // Public APIs -------------------------------------------------------------------------------------
 export { createElement } from './apis/create-element';
