@@ -44,7 +44,7 @@ describe('Basic DOM manipulation cases', () => {
 });
 
 describe('isConnected in life cycle callbacks', () => {
-    it('accessing isConnected in constructor should return false', () => {
+    it('should return false in the constructor', () => {
         let actual;
         class Test extends LightningElement {
             constructor() {
@@ -55,7 +55,7 @@ describe('isConnected in life cycle callbacks', () => {
         createElement('x-test', { is: Test });
         expect(actual).toBe(false);
     });
-    it('isConnected in connectedCallback should return true', () => {
+    it('should return true in the connectedCallback', () => {
         let actual;
         class Test extends LightningElement {
             connectedCallback() {
@@ -66,7 +66,7 @@ describe('isConnected in life cycle callbacks', () => {
         document.body.appendChild(elm);
         expect(actual).toBe(true);
     });
-    it('accessing isConnected in renderedCallback after initial insertion should return true', () => {
+    it('should return true in renderedCallback after the initial insertion', () => {
         let actual;
 
         class Test extends LightningElement {
