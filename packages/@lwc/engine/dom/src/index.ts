@@ -7,7 +7,6 @@
 
 export {
     createContextProvider,
-    LightningElement,
     register,
     api,
     track,
@@ -33,3 +32,4 @@ import './polyfills/aria-properties/main';
 export { createElement } from './apis/create-element';
 export { getComponentConstructor } from './apis/get-component-constructor';
 export { isNodeFromTemplate } from './apis/is-node-from-template';
+export { BaseLightningElement as LightningElement } from './apis/lightning-element';
