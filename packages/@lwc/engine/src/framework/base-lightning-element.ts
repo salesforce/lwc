@@ -23,6 +23,7 @@ import {
     defineProperty,
     isUndefined,
     isObject,
+    AccessibleElementProperties,
 } from '@lwc/shared';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import {
@@ -176,59 +177,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'title'
     >;
 
-// Defined separately from HTMLElementTheGoodParts because, as of May 2020, the typescript interface
-// for Element does not include these
-interface AccessibleElementTheGoodParts {
-    ariaActiveDescendant: string | null;
-    ariaAtomic: string | null;
-    ariaAutoComplete: string | null;
-    ariaBusy: string | null;
-    ariaChecked: string | null;
-    ariaColCount: string | null;
-    ariaColIndex: string | null;
-    ariaColSpan: string | null;
-    ariaControls: string | null;
-    ariaCurrent: string | null;
-    ariaDescribedBy: string | null;
-    ariaDetails: string | null;
-    ariaDisabled: string | null;
-    ariaErrorMessage: string | null;
-    ariaExpanded: string | null;
-    ariaFlowTo: string | null;
-    ariaHasPopup: string | null;
-    ariaHidden: string | null;
-    ariaInvalid: string | null;
-    ariaKeyShortcuts: string | null;
-    ariaLabel: string | null;
-    ariaLabelledBy: string | null;
-    ariaLevel: string | null;
-    ariaLive: string | null;
-    ariaModal: string | null;
-    ariaMultiLine: string | null;
-    ariaMultiSelectable: string | null;
-    ariaOrientation: string | null;
-    ariaOwns: string | null;
-    ariaPlaceholder: string | null;
-    ariaPosInSet: string | null;
-    ariaPressed: string | null;
-    ariaReadOnly: string | null;
-    ariaRelevant: string | null;
-    ariaRequired: string | null;
-    ariaRoleDescription: string | null;
-    ariaRowCount: string | null;
-    ariaRowIndex: string | null;
-    ariaRowSpan: string | null;
-    ariaSelected: string | null;
-    ariaSetSize: string | null;
-    ariaSort: string | null;
-    ariaValueMax: string | null;
-    ariaValueMin: string | null;
-    ariaValueNow: string | null;
-    ariaValueText: string | null;
-    role: string | null;
-}
-
-export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementTheGoodParts {
+export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     template: ShadowRoot;
     render(): Template;
     connectedCallback?(): void;

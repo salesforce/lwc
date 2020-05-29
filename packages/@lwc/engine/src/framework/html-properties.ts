@@ -9,7 +9,8 @@ import {
     forEach,
     getPropertyDescriptor,
     isUndefined,
-    AriaPropertyNames,
+    keys,
+    AriaPropNameToAttrNameMap,
 } from '@lwc/shared';
 import { defaultDefHTMLPropertyNames } from './attributes';
 
@@ -21,7 +22,7 @@ import { defaultDefHTMLPropertyNames } from './attributes';
  */
 export const HTMLElementOriginalDescriptors: PropertyDescriptorMap = create(null);
 
-forEach.call(AriaPropertyNames, (propName: string) => {
+forEach.call(keys(AriaPropNameToAttrNameMap), (propName: string) => {
     // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
     // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
     const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
