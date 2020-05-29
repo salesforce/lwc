@@ -66,8 +66,6 @@ const AriaPropertyNames = [
     'role',
 ];
 
-// We should eventually use the typescript Pick utility to reuse ambient Aria property types when
-// the typescript interface for Element is updated to include them.
 export interface AccessibleElementProperties {
     ariaActiveDescendant: string | null;
     ariaAtomic: string | null;
@@ -137,5 +135,5 @@ export {
 };
 
 export function isAriaAttribute(attrName: string) {
-    return Boolean(AttrNameToPropNameMap[attrName]);
+    return attrName in AttrNameToPropNameMap;
 }
