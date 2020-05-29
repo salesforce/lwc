@@ -5,6 +5,31 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export * from './framework/main';
+// Polyfills ---------------------------------------------------------------------------------------
+import './polyfills/proxy-concat/main';
+import './polyfills/aria-properties/main';
 
-export * from '../../src';
+export {
+    createContextProvider,
+    register,
+    api,
+    track,
+    wire,
+    readonly,
+    unwrap,
+    setFeatureFlag,
+    setFeatureFlagForTest,
+    registerTemplate,
+    registerComponent,
+    registerDecorators,
+    sanitizeAttribute,
+    getComponentDef,
+    isComponentConstructor,
+} from '../../src';
+
+// Public APIs -------------------------------------------------------------------------------------
+export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './apis/build-custom-element-constructor';
+export { createElement } from './apis/create-element';
+export { getComponentConstructor } from './apis/get-component-constructor';
+export { isNodeFromTemplate } from './apis/is-node-from-template';
+export { LightningElement } from './apis/lightning-element';

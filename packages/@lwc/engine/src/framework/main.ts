@@ -19,6 +19,6 @@ export { default as api } from './decorators/api';
 export { default as track } from './decorators/track';
 export { default as wire } from './decorators/wire';
 export { readonly } from './readonly';
-export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './wc';
+export { buildCustomElementConstructor } from './wc';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
