@@ -9,7 +9,6 @@ import {
     ArrayUnshift,
     assert,
     create,
-    forEach,
     isArray,
     isFunction,
     isNull,
@@ -104,26 +103,6 @@ function validateSlots(vm: VM, html: any) {
     }
 }
 
-function validateFields(vm: VM, html: Template) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const { component } = vm;
-
-    // validating identifiers used by template that should be provided by the component
-    const { ids = [] } = html;
-    forEach.call(ids, (propName: string) => {
-        if (!(propName in component)) {
-            // eslint-disable-next-line lwc-internal/no-production-assert
-            logError(
-                `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. Check for a typo in the template.`,
-                vm
-            );
-        }
-    });
-}
-
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
@@ -188,13 +167,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                             hostAttribute,
                             shadowAttribute
                         );
-                    }
-
-                    if (process.env.NODE_ENV !== 'production') {
-                        // one time operation for any new template returned by render()
-                        // so we can warn if the template is attempting to use a binding
-                        // that is not provided by the component instance.
-                        validateFields(vm, html);
                     }
                 }
 
