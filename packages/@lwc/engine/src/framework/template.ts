@@ -54,12 +54,6 @@ export interface Template {
      */
     stylesheets?: StylesheetFactory[];
 
-    /**
-     * List of property names that are accessed of the component instance
-     * from the template.
-     */
-    ids?: string[];
-
     stylesheetTokens?: {
         /**
          * HTML attribute that need to be applied to the host element. This attribute is used for the
