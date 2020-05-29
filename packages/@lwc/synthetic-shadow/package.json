@@ -2,6 +2,15 @@
     "name": "@lwc/synthetic-shadow",
     "version": "1.6.6",
     "description": "Synthetic Shadow Root for LWC",
+    "homepage": "https://lwc.dev/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salesforce/lwc.git",
+        "directory": "packages/@lwc/synthetic-shadow"
+    },
+    "bugs": {
+        "url": "https://github.com/salesforce/lwc/issues"
+    },
     "license": "MIT",
     "main": "index.js",
     "module": "dist/synthetic-shadow.js",

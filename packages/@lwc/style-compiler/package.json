@@ -2,6 +2,15 @@
     "name": "@lwc/style-compiler",
     "version": "1.6.6",
     "description": "Transform style sheet to be consumed by the LWC engine",
+    "homepage": "https://lwc.dev/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salesforce/lwc.git",
+        "directory": "packages/@lwc/style-compiler"
+    },
+    "bugs": {
+        "url": "https://github.com/salesforce/lwc/issues"
+    },
     "license": "MIT",
     "main": "dist/commonjs/index.js",
     "types": "dist/types/index.d.ts",

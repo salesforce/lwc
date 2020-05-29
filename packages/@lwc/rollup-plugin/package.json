@@ -2,6 +2,15 @@
     "name": "@lwc/rollup-plugin",
     "version": "1.6.6",
     "description": "Rollup plugin to compile LWC",
+    "homepage": "https://lwc.dev/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salesforce/lwc.git",
+        "directory": "packages/@lwc/rollup-plugin"
+    },
+    "bugs": {
+        "url": "https://github.com/salesforce/lwc/issues"
+    },
     "main": "src/index.js",
     "license": "MIT",
     "scripts": {

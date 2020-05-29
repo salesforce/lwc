@@ -2,6 +2,15 @@
     "name": "@lwc/shared",
     "version": "1.6.6",
     "description": "Utilities and methods that are shared across packages",
+    "homepage": "https://lwc.dev/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salesforce/lwc.git",
+        "directory": "packages/@lwc/shared"
+    },
+    "bugs": {
+        "url": "https://github.com/salesforce/lwc/issues"
+    },
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
     "typings": "types/index.d.ts",
