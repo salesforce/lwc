@@ -107,8 +107,8 @@ function createContextWatcher(
 }
 
 function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
-    const { method, adapter, configCallback, params } = wireDef;
-    const hasDynamicParams = params.length > 0;
+    const { method, adapter, configCallback, dynamic } = wireDef;
+    const hasDynamicParams = dynamic.length > 0;
     const { component } = vm;
     const dataCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
@@ -121,7 +121,7 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
         value: vm.elm,
     });
     defineProperty(dataCallback, DeprecatedWiredParamsMeta, {
-        value: params,
+        value: dynamic,
     });
 
     runWithBoundaryProtection(
@@ -200,7 +200,7 @@ type WireAdapterSchemaValue = 'optional' | 'required';
 interface WireDef {
     method?: (data: any) => void;
     adapter: WireAdapterConstructor;
-    params: string[];
+    dynamic: string[];
     configCallback: ConfigCallback;
 }
 
@@ -234,7 +234,7 @@ export function storeWiredMethodMeta(
     descriptor: PropertyDescriptor,
     adapter: WireAdapterConstructor,
     configCallback: ConfigCallback,
-    params: string[]
+    dynamic: string[]
 ) {
     // support for callable adapters
     if ((adapter as any).adapter) {
@@ -245,7 +245,7 @@ export function storeWiredMethodMeta(
         adapter,
         method,
         configCallback,
-        params,
+        dynamic,
     };
     WireMetaMap.set(descriptor, def);
 }
@@ -254,7 +254,7 @@ export function storeWiredFieldMeta(
     descriptor: PropertyDescriptor,
     adapter: WireAdapterConstructor,
     configCallback: ConfigCallback,
-    params: string[]
+    dynamic: string[]
 ) {
     // support for callable adapters
     if ((adapter as any).adapter) {
@@ -263,7 +263,7 @@ export function storeWiredFieldMeta(
     const def: WireFieldDef = {
         adapter,
         configCallback,
-        params,
+        dynamic,
     };
     WireMetaMap.set(descriptor, def);
 }

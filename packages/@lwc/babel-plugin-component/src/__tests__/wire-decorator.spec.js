@@ -34,12 +34,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: {
-                        key1: "prop1"
-                      },
-                      static: {
-                        key2: ["fixed", "array"]
-                      },
+                      dynamic: ["key1"],
                       config: function($cmp) {
                         return {
                           key2: ["fixed", "array"],
@@ -87,10 +82,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: {},
-                      static: {
-                        key1: importedValue
-                      },
+                      dynamic: [],
                       config: function($cmp) {
                         return {
                           key1: importedValue
@@ -135,13 +127,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: {
-                        key1: "prop1.prop2",
-                        key3: "p1.p2"
-                      },
-                      static: {
-                        key2: ["fixed", "array"]
-                      },
+                      dynamic: ["key1","key3"],
                       config: function($cmp) {
                         let v1 = $cmp.prop1;
                         let v2 = $cmp.p1;
@@ -190,12 +176,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: {
-                        key1: "prop1.prop2.prop3.prop4"
-                      },
-                      static: {
-                        key2: ["fixed", "array"]
-                      },
+                      dynamic: ["key1"],
                       config: function($cmp) {
                         let v1 = $cmp.prop1;
                         return {
@@ -247,20 +228,59 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: {
-                        key1: "prop",
-                        key2: "prop"
-                      },
-                      static: {
-                        key3: "fixed",
-                        key4: ["fixed", "array"]
-                      },
+                      dynamic: ["key1","key2"],
                       config: function($cmp) {
                         return {
                           key3: "fixed",
                           key4: ["fixed", "array"],
                           key1: $cmp.prop,
                           key2: $cmp.prop
+                        };
+                      }
+                    }
+                  }
+                });
+
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`,
+            },
+        }
+    );
+
+    pluginTest(
+        'transforms object properties as string literal',
+        `
+        import { wire } from 'lwc';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { "key 1": "$prop", "key 2": ["fixed", 'array']})
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
+                import _tmpl from "./test.html";
+                import { getFoo } from "data-service";
+
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      dynamic: ["key 1"],
+                      config: function($cmp) {
+                        return {
+                          "key 2": ["fixed", "array"],
+                          "key 1": $cmp.prop,
                         };
                       }
                     }
@@ -343,8 +363,7 @@ describe('Transform property', () => {
                   wire: {
                     wiredProp: {
                       adapter: getFoo,
-                      params: {},
-                      static: {},
+                      dynamic: [],
                       config: function($cmp) {
                         return {};
                       }
@@ -386,8 +405,7 @@ describe('Transform property', () => {
                 wire: {
                   wiredProp: {
                     adapter: Foo.Bar,
-                    params: {},
-                    static: {},
+                    dynamic: [],
                     config: function($cmp) {
                       return {};
                     }
@@ -429,8 +447,7 @@ describe('Transform property', () => {
               wire: {
                 wiredProp: {
                   adapter: Foo.Bar,
-                  params: {},
-                  static: {},
+                  dynamic: [],
                   config: function($cmp) {
                     return {};
                   }
@@ -604,11 +621,7 @@ describe('Transform property', () => {
                       wire: {
                         wiredProp: {
                           adapter: getFoo,
-                          params: {
-                            key1: "prop1.a b",
-                            key2: "p1.p2"
-                          },
-                          static: {},
+                          dynamic: ["key1","key2"],
                           config: function($cmp) {
                             let v1 = $cmp["prop1"];
                             let v2 = $cmp.p1;
@@ -656,12 +669,7 @@ describe('Transform property', () => {
                       wire: {
                         wiredProp: {
                           adapter: getFoo,
-                          params: {
-                            key1: "prop1..prop2"
-                          },
-                          static: {
-                            key2: ["fixed", "array"]
-                          },
+                          dynamic: ["key1"],
                           config: function($cmp) {
                             let v1 = $cmp["prop1"];
                             return {
@@ -759,12 +767,7 @@ describe('Transform property', () => {
                   wire: {
                     wired1: {
                       adapter: getFoo,
-                      params: {
-                        key1: "prop1"
-                      },
-                      static: {
-                        key2: ["fixed"]
-                      },
+                      dynamic: ["key1"],
                       config: function($cmp) {
                         return {
                           key2: ["fixed"],
@@ -774,12 +777,7 @@ describe('Transform property', () => {
                     },
                     wired2: {
                       adapter: getFoo,
-                      params: {
-                        key1: "prop1"
-                      },
-                      static: {
-                        key2: ["array"]
-                      },
+                      dynamic: ["key1"],
                       config: function($cmp) {
                         return {
                           key2: ["array"],
@@ -825,12 +823,7 @@ describe('Transform method', () => {
                   wire: {
                     wiredMethod: {
                       adapter: getFoo,
-                      params: {
-                        key1: "prop1"
-                      },
-                      static: {
-                        key2: ["fixed"]
-                      },
+                      dynamic: ["key1"],
                       method: 1,
                       config: function($cmp) {
                         return {

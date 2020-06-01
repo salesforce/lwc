@@ -153,14 +153,11 @@ function buildWireConfigValue(t, wiredValues) {
             }
 
             if (wiredValue.params) {
+                const dynamicParamNames = wiredValue.params.map((p) => {
+                    return t.stringLiteral(t.isIdentifier(p.key) ? p.key.name : p.key.value);
+                });
                 wireConfig.push(
-                    t.objectProperty(t.identifier('params'), t.objectExpression(wiredValue.params))
-                );
-            }
-
-            if (wiredValue.static) {
-                wireConfig.push(
-                    t.objectProperty(t.identifier('static'), t.objectExpression(wiredValue.static))
+                    t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
                 );
             }
 
