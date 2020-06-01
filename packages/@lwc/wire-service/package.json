@@ -1,6 +1,6 @@
 {
     "name": "@lwc/wire-service",
-    "version": "1.6.8",
+    "version": "1.6.9",
     "description": "@wire service",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -28,10 +28,10 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/compiler": "1.6.8",
-        "@lwc/engine": "1.6.8",
-        "@lwc/rollup-plugin": "1.6.8",
-        "@lwc/shared": "1.6.8"
+        "@lwc/compiler": "1.6.9",
+        "@lwc/engine": "1.6.9",
+        "@lwc/rollup-plugin": "1.6.9",
+        "@lwc/shared": "1.6.9"
     },
     "lwc": {
         "modules": [

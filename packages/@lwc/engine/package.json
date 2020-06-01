@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine",
-    "version": "1.6.8",
+    "version": "1.6.9",
     "description": "LWC Engine",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -28,9 +28,9 @@
         "observable-membrane": "0.26.1"
     },
     "devDependencies": {
-        "@lwc/features": "1.6.8",
-        "@lwc/shared": "1.6.8",
-        "@lwc/template-compiler": "1.6.8"
+        "@lwc/features": "1.6.9",
+        "@lwc/shared": "1.6.9",
+        "@lwc/template-compiler": "1.6.9"
     },
     "lwc": {
         "modules": [
