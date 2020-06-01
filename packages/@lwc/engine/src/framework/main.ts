@@ -28,6 +28,6 @@ export { getComponentInternalDef, setElementProto } from './def';
 export {
     createVM,
     connectRootElement,
-    disconnectedRootElement,
+    disconnectRootElement,
     getAssociatedVMIfPresent,
 } from './vm';

@@ -22,7 +22,7 @@ import {
     getAssociatedVMIfPresent,
     createVM,
     connectRootElement,
-    disconnectedRootElement,
+    disconnectRootElement,
 } from '../../../src/framework/vm';
 
 import { LightningElement } from '../../src';
@@ -123,7 +123,7 @@ export function createElement(
     });
 
     setHiddenField(element, ConnectingSlot, connectRootElement);
-    setHiddenField(element, DisconnectingSlot, disconnectedRootElement);
+    setHiddenField(element, DisconnectingSlot, disconnectRootElement);
 
     return element;
 }

@@ -12,7 +12,7 @@ import { LightningElement } from './lightning-element';
 import {
     createVM,
     connectRootElement,
-    disconnectedRootElement,
+    disconnectRootElement,
     getAttrNameFromPropName,
     getComponentInternalDef,
     isAttributeLocked,
@@ -74,7 +74,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
             connectRootElement(this);
         }
         disconnectedCallback() {
-            disconnectedRootElement(this);
+            disconnectRootElement(this);
         }
         attributeChangedCallback(attrName: string, oldValue: string, newValue: string) {
             if (oldValue === newValue) {
