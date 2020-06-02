@@ -89,15 +89,15 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
             if (!isAttributeLocked(this, attrName)) {
                 // Ignore changes triggered by the engine itself during:
                 // * diffing when public props are attempting to reflect to the DOM
-                // * component via `this.setAttribute()`, should never update the prop.
-                // Both cases, the the setAttribute call is always wrap by the unlocking of the
+                // * component via `this.setAttribute()`, should never update the prop
+                // Both cases, the setAttribute call is always wrapped by the unlocking of the
                 // attribute to be changed
                 return;
             }
             // Reflect attribute change to the corresponding property when changed from outside.
             (this as any)[propName] = newValue;
         }
-        // Specify which attributes for which we want to reflect changes back to their corresponding
+        // Specify attributes for which we want to reflect changes back to their corresponding
         // properties via attributeChangedCallback.
         static observedAttributes = keys(attributeToPropMap);
     };
