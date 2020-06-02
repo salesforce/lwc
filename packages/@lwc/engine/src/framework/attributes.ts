@@ -9,7 +9,8 @@ import {
     create,
     forEach,
     isUndefined,
-    AriaPropertyNames,
+    AriaAttrNameToPropNameMap,
+    AriaPropNameToAttrNameMap,
     StringReplace,
     StringToLowerCase,
 } from '@lwc/shared';
@@ -149,18 +150,14 @@ export const globalHTMLProperties: {
     },
 });
 
-const AttrNameToPropNameMap: Record<string, string> = create(null);
-const PropNameToAttrNameMap: Record<string, string> = create(null);
-
-// Synthetic creation of all AOM property descriptors for Custom Elements
-forEach.call(AriaPropertyNames, (propName: string) => {
-    // Typescript is inferring the wrong function type for this particular
-    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-    // @ts-ignore type-mismatch
-    const attrName = StringToLowerCase.call(StringReplace.call(propName, /^aria/, 'aria-'));
-    AttrNameToPropNameMap[attrName] = propName;
-    PropNameToAttrNameMap[propName] = attrName;
-});
+const AttrNameToPropNameMap: Record<string, string> = assign(
+    create(null),
+    AriaAttrNameToPropNameMap
+);
+const PropNameToAttrNameMap: Record<string, string> = assign(
+    create(null),
+    AriaPropNameToAttrNameMap
+);
 
 forEach.call(defaultDefHTMLPropertyNames, (propName) => {
     const attrName = StringToLowerCase.call(propName);

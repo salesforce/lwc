@@ -4,18 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { setAttribute, removeAttribute, getAttribute, hasAttribute } from '../../env/element';
+import { hasOwnProperty, AriaPropNameToAttrNameMap } from '@lwc/shared';
 
-// this regular expression is used to transform aria props into aria attributes because
-// that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
-const ARIA_REGEX = /^aria/;
+import { setAttribute, removeAttribute, getAttribute, hasAttribute } from '../../env/element';
 
 type NormalizedAttributeValue = string | null;
 type AriaPropMap = Record<string, NormalizedAttributeValue>;
 
 const nodeToAriaPropertyValuesMap: WeakMap<HTMLElement, AriaPropMap> = new WeakMap();
-const { hasOwnProperty } = Object.prototype;
-const { replace: StringReplace, toLowerCase: StringToLowerCase } = String.prototype;
 
 function getAriaPropertyMap(elm: HTMLElement): AriaPropMap {
     let map = nodeToAriaPropertyValuesMap.get(elm);
@@ -29,7 +25,7 @@ function getAriaPropertyMap(elm: HTMLElement): AriaPropMap {
 }
 
 function getNormalizedAriaPropertyValue(value: any): NormalizedAttributeValue {
-    return value == null ? null : value + '';
+    return value == null ? null : String(value);
 }
 
 function createAriaPropertyPropertyDescriptor(
@@ -69,8 +65,7 @@ export function patch(propName: string) {
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
-    const replaced = StringReplace.call(propName, ARIA_REGEX, 'aria-');
-    const attrName = StringToLowerCase.call(replaced);
+    const attrName = AriaPropNameToAttrNameMap[propName];
     const descriptor = createAriaPropertyPropertyDescriptor(propName, attrName);
     Object.defineProperty(Element.prototype, propName, descriptor);
 }

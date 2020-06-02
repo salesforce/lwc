@@ -6,6 +6,7 @@
  */
 import * as parse5 from 'parse5-with-errors';
 import { ParserDiagnostics, generateCompilerError } from '@lwc/errors';
+import { isAriaAttribute } from '@lwc/shared';
 
 import { toPropertyName } from '../shared/utils';
 
@@ -23,7 +24,6 @@ import {
     DATA_RE,
     SVG_NAMESPACE_URI,
     SUPPORTED_SVG_TAGS,
-    ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
@@ -195,10 +195,6 @@ export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
             ? attributeName(attr) !== pattern
             : !attributeName(attr).match(pattern)
     );
-}
-
-function isAriaAttribute(attrName: string): boolean {
-    return attrName === 'role' || ARIA_RE.test(attrName);
 }
 
 export function isProhibitedIsAttribute(attrName: string): boolean {
