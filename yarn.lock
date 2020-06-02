@@ -3579,6 +3579,17 @@ babel-compat@0.22.0:
     "@babel/types" "7.0.0"
     regenerator-runtime "^0.12.0"
 
+babel-compat@0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/babel-compat/-/babel-compat-0.22.1.tgz#8d9f8b3b4d852b0b584b7a7a7f2e55f7c8719ee7"
+  integrity sha512-W66si5Iz45hlAHTXUu5uJE0HMBwpUiP65NaQsOTaFnHiuV19hL0bjA/R5+2l+TfBorxxdGabvJ5BIZN8UhKNcg==
+  dependencies:
+    "@babel/core" "7.1.0"
+    "@babel/generator" "7.0.0"
+    "@babel/helpers" "7.1.0"
+    "@babel/types" "7.0.0"
+    regenerator-runtime "^0.12.0"
+
 babel-jest@^26.0.1:
   version "26.0.1"
   resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-26.0.1.tgz#450139ce4b6c17174b136425bda91885c397bc46"
@@ -3640,6 +3651,13 @@ babel-plugin-transform-proxy-compat@0.22.0:
   version "0.22.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.22.0.tgz#d4668186873360f6cb19e46d65d0431e16b3f11e"
   integrity sha512-Fi5T0wDlPuXpNhdn/zMeZeWuNgDCkFfy92CWh06Vj8+BpRj2dvOmjIO1+96MH4nUm1d2sd/TG1cihXLrG8ZSHw==
+  dependencies:
+    "@babel/types" "7.0.0"
+
+babel-plugin-transform-proxy-compat@0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.22.1.tgz#001d395a961d27cd41ef5af588fb773c8169acb9"
+  integrity sha512-ZpjVpaeB4R4DVaPrehp5YDcK18Uzy3glEfhjuZPNLz9uy4mW8+MjwP59uqJMsJbn7kwxW0p+xIme/ENCOlKl1w==
   dependencies:
     "@babel/types" "7.0.0"
 
@@ -3723,6 +3741,42 @@ babel-preset-compat@0.22.0, babel-preset-compat@~0.22.0:
     "@babel/plugin-transform-typeof-symbol" "7.0.0"
     "@babel/plugin-transform-unicode-regex" "7.0.0"
     babel-plugin-transform-proxy-compat "0.22.0"
+
+babel-preset-compat@0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/babel-preset-compat/-/babel-preset-compat-0.22.1.tgz#8b50852120a74494dceae7330038340f2f0eca90"
+  integrity sha512-apbF24xGsb2ebLFUquBCVHfOT5/oJ96qw3cIRgD8v4Z87dDETT4XpkKAUd8wG/mm1Hpp4ZlhbzNMU0UIjxnwlw==
+  dependencies:
+    "@babel/plugin-proposal-class-properties" "7.1.0"
+    "@babel/plugin-proposal-object-rest-spread" "7.0.0"
+    "@babel/plugin-transform-arrow-functions" "7.0.0"
+    "@babel/plugin-transform-async-to-generator" "7.1.0"
+    "@babel/plugin-transform-block-scoped-functions" "7.0.0"
+    "@babel/plugin-transform-block-scoping" "7.0.0"
+    "@babel/plugin-transform-classes" "7.1.0"
+    "@babel/plugin-transform-computed-properties" "7.0.0"
+    "@babel/plugin-transform-destructuring" "7.0.0"
+    "@babel/plugin-transform-duplicate-keys" "7.0.0"
+    "@babel/plugin-transform-exponentiation-operator" "7.1.0"
+    "@babel/plugin-transform-for-of" "7.0.0"
+    "@babel/plugin-transform-function-name" "7.1.0"
+    "@babel/plugin-transform-instanceof" "7.0.0"
+    "@babel/plugin-transform-literals" "7.0.0"
+    "@babel/plugin-transform-modules-amd" "7.1.0"
+    "@babel/plugin-transform-modules-commonjs" "7.1.0"
+    "@babel/plugin-transform-modules-systemjs" "7.0.0"
+    "@babel/plugin-transform-modules-umd" "7.1.0"
+    "@babel/plugin-transform-object-super" "7.1.0"
+    "@babel/plugin-transform-parameters" "7.1.0"
+    "@babel/plugin-transform-regenerator" "7.0.0"
+    "@babel/plugin-transform-runtime" "7.1.0"
+    "@babel/plugin-transform-shorthand-properties" "7.0.0"
+    "@babel/plugin-transform-spread" "7.0.0"
+    "@babel/plugin-transform-sticky-regex" "7.0.0"
+    "@babel/plugin-transform-template-literals" "7.0.0"
+    "@babel/plugin-transform-typeof-symbol" "7.0.0"
+    "@babel/plugin-transform-unicode-regex" "7.0.0"
+    babel-plugin-transform-proxy-compat "0.22.1"
 
 babel-preset-current-node-syntax@^0.1.2:
   version "0.1.2"
@@ -4540,6 +4594,11 @@ compat-polyfills@0.22.0:
   version "0.22.0"
   resolved "https://registry.yarnpkg.com/compat-polyfills/-/compat-polyfills-0.22.0.tgz#f5f3aebbe03c87018221269139004958945e81e9"
   integrity sha512-Dq8tRi7A5pM23SBMWxIxQRbRnv2d02jV0y+nuyAm184B6weAD3qxbZZYIyWi4d561koHycw3JBHC2N0u+PpPww==
+
+compat-polyfills@0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/compat-polyfills/-/compat-polyfills-0.22.1.tgz#b8410278138b09e8d0d9a09d165931882a558096"
+  integrity sha512-vpNBqafS8ce5i4SzrA1TY1NBwTUnbwXHMXuPcLHqSIjqLRQxhjKojsWKYgXXu9a0+wBpk887jZRfO2HHkMIKKA==
 
 component-bind@1.0.0:
   version "1.0.0"
@@ -5594,7 +5653,7 @@ es5-proxy-compat@0.21.7:
     compat-polyfills "0.21.7"
     proxy-compat "0.21.7"
 
-es5-proxy-compat@0.22.0, es5-proxy-compat@^0.22.0:
+es5-proxy-compat@0.22.0:
   version "0.22.0"
   resolved "https://registry.yarnpkg.com/es5-proxy-compat/-/es5-proxy-compat-0.22.0.tgz#8c0bdefa4bb7ebea4eaafc522e70b91718d3b2f4"
   integrity sha512-mb9ylF8ekx7lT2oGgM10brm8+IElPWLa04SzoT5Up56FrMhAPxRS61N/1/YC2DZTUH89J8MZb5sV4e1LTT79Yw==
@@ -5604,6 +5663,17 @@ es5-proxy-compat@0.22.0, es5-proxy-compat@^0.22.0:
     babel-preset-compat "0.22.0"
     compat-polyfills "0.22.0"
     proxy-compat "0.22.0"
+
+es5-proxy-compat@^0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/es5-proxy-compat/-/es5-proxy-compat-0.22.1.tgz#6381b395efd4483a69a452ff557d63ce8a455456"
+  integrity sha512-ZYZenuVsre9G+R3z0Ufp7GNHkuX3cH7gd5VsnLS6UQDJnWThZSMlg58UpD7Ah8G/uHgSlQzgTc5Db/s4l/DazA==
+  dependencies:
+    babel-compat "0.22.1"
+    babel-plugin-transform-proxy-compat "0.22.1"
+    babel-preset-compat "0.22.1"
+    compat-polyfills "0.22.1"
+    proxy-compat "0.22.1"
 
 es6-promise@^4.0.3:
   version "4.2.5"
@@ -10460,6 +10530,11 @@ proxy-compat@0.22.0:
   version "0.22.0"
   resolved "https://registry.yarnpkg.com/proxy-compat/-/proxy-compat-0.22.0.tgz#5cf77ff31bd3ffc382a14cb921e4d3fe12fe99bb"
   integrity sha512-TDv1/+mhBO3tl8YZxb69Rj62IVNgoSqxnL6MGo1ZR11ASzOVJlOp8neUpQaRNKKceAasASMjiVvvJsbuvUHANA==
+
+proxy-compat@0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/proxy-compat/-/proxy-compat-0.22.1.tgz#caacb3c2de5ecb191f2147e0f5f8bed01190012f"
+  integrity sha512-K7E5YtfrymqutmfFDYr3WtV+n/GzWCX36LetnhEUaaZEYq/hCA7x4BhQrLJLsfgPK6SMYjNN1cNIT9uUj7zcYQ==
 
 proxy-from-env@^1.0.0:
   version "1.1.0"
