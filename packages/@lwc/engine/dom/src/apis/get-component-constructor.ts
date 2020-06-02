@@ -6,6 +6,7 @@
  */
 
 import { isUndefined } from '@lwc/shared';
+
 import { getAssociatedVMIfPresent, LightningElement } from '../../../src';
 
 /**
