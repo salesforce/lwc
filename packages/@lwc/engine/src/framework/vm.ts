@@ -147,7 +147,7 @@ export function connectRootElement(elm: HTMLElement) {
     // Usually means moving the element from one place to another, which is observable via
     // life-cycle hooks.
     if (vm.state === VMState.connected) {
-        disconnectedRootElement(elm);
+        disconnectRootElement(elm);
     }
 
     runConnectedCallback(vm);
@@ -156,7 +156,7 @@ export function connectRootElement(elm: HTMLElement) {
     endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
 }
 
-export function disconnectedRootElement(elm: HTMLElement) {
+export function disconnectRootElement(elm: HTMLElement) {
     const vm = getAssociatedVM(elm);
     resetComponentStateWhenRemoved(vm);
 }
