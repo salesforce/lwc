@@ -185,7 +185,7 @@ export function createViewModelHook(vnode: VCustomElement) {
         // to do here since this hook is called right after invoking `document.createElement`.
         return;
     }
-    const { mode, ctor, owner } = vnode;
+    const { sel, mode, ctor, owner } = vnode;
     const def = getComponentInternalDef(ctor);
     setElementProto(elm, def);
     if (isTrue(useSyntheticShadow)) {
@@ -198,6 +198,7 @@ export function createViewModelHook(vnode: VCustomElement) {
         mode,
         owner,
         isRoot: false,
+        tagName: sel,
     });
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(

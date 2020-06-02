@@ -58,6 +58,8 @@ export enum VMState {
 }
 
 export interface UninitializedVM {
+    /** Custom element tag name */
+    readonly tagName: string;
     /** Component Element Back-pointer */
     readonly elm: HTMLElement;
     /** Component Definition */
@@ -201,6 +203,7 @@ export function createVM(
         mode: 'open' | 'closed';
         owner: VM | null;
         isRoot: boolean;
+        tagName: string;
     }
 ): VM {
     if (process.env.NODE_ENV !== 'production') {
@@ -209,7 +212,7 @@ export function createVM(
             `VM creation requires a DOM element instead of ${elm}.`
         );
     }
-    const { isRoot, mode, owner } = options;
+    const { isRoot, mode, owner, tagName } = options;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
         // component creation index is defined once, and never reset, it can
@@ -222,6 +225,7 @@ export function createVM(
         mode,
         def,
         owner,
+        tagName,
         elm,
         data: EmptyObject,
         context: create(null),
