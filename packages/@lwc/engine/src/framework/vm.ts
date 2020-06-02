@@ -26,7 +26,6 @@ import { createComponent, renderComponent, markComponentAsDirty } from './compon
 import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
-import { ShadowRootInnerHTMLSetter } from '../../dom/src/env/dom';
 
 import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
@@ -516,15 +515,23 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
     }
 }
 
-// This is a super optimized mechanism to remove the content of the shadowRoot
-// without having to go into snabbdom. Especially useful when the reset is a consequence
-// of an error, in which case the children VNodes might not be representing the current
-// state of the DOM
+// This is a super optimized mechanism to remove the content of the shadowRoot without having to go
+// into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
+// children VNodes might not be representing the current state of the DOM
 export function resetShadowRoot(vm: VM) {
+    const { children, cmpRoot } = vm;
+
+    for (let i = 0, len = children.length; i < len; i++) {
+        const child = children[i];
+
+        if (!isNull(child) && !isUndefined(child.elm)) {
+            cmpRoot.removeChild(child.elm);
+        }
+    }
     vm.children = EmptyArray;
-    ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
-    // disconnecting any known custom element inside the shadow of the this vm
+
     runShadowChildNodesDisconnectedCallback(vm);
+    vm.velements = EmptyArray;
 }
 
 export function scheduleRehydration(vm: VM) {

@@ -91,9 +91,8 @@ enum LWCDOMMode {
     manual = 'manual',
 }
 
-export function fallbackElmHook(vnode: VElement) {
+export function fallbackElmHook(elm: Element, vnode: VElement) {
     const { owner } = vnode;
-    const elm = vnode.elm!;
     if (isTrue(useSyntheticShadow)) {
         const {
             data: { context },
@@ -177,8 +176,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     }
 }
 
-export function createViewModelHook(vnode: VCustomElement) {
-    const elm = vnode.elm as HTMLElement;
+export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     if (!isUndefined(getAssociatedVMIfPresent(elm))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else

@@ -91,8 +91,9 @@ const SymbolIterator = Symbol.iterator;
 
 const TextHook: Hooks<VText> = {
     create: (vnode) => {
-        vnode.elm = document.createTextNode(vnode.text!);
-        linkNodeToShadow(vnode);
+        const elm = document.createTextNode(vnode.text!);
+        linkNodeToShadow(elm, vnode);
+        vnode.elm = elm;
     },
     update: updateNodeHook,
     insert: insertNodeHook,
@@ -109,17 +110,20 @@ const ElementHook: Hooks<VElement> = {
     create: (vnode) => {
         const { data, sel, clonedElement } = vnode;
         const { ns } = data;
+
         // TODO [#1364]: supporting the ability to inject a cloned StyleElement via a vnode this is
         // used for style tags for native shadow
+        let elm;
         if (isUndefined(clonedElement)) {
-            vnode.elm = isUndefined(ns)
-                ? document.createElement(sel)
-                : document.createElementNS(ns, sel);
+            elm = isUndefined(ns) ? document.createElement(sel) : document.createElementNS(ns, sel);
         } else {
-            vnode.elm = clonedElement;
+            elm = clonedElement;
         }
-        linkNodeToShadow(vnode);
-        fallbackElmHook(vnode);
+
+        linkNodeToShadow(elm, vnode);
+        fallbackElmHook(elm, vnode);
+        vnode.elm = elm;
+
         createElmHook(vnode);
     },
     update: (oldVnode, vnode) => {
@@ -142,9 +146,12 @@ const ElementHook: Hooks<VElement> = {
 const CustomElementHook: Hooks<VCustomElement> = {
     create: (vnode) => {
         const { sel } = vnode;
-        vnode.elm = document.createElement(sel);
-        linkNodeToShadow(vnode);
-        createViewModelHook(vnode);
+        const elm = document.createElement(sel);
+
+        linkNodeToShadow(elm, vnode);
+        createViewModelHook(elm, vnode);
+        vnode.elm = elm;
+
         allocateChildrenHook(vnode);
         createCustomElmHook(vnode);
     },
@@ -178,9 +185,9 @@ const CustomElementHook: Hooks<VCustomElement> = {
     },
 };
 
-function linkNodeToShadow(vnode: VNode) {
+function linkNodeToShadow(elm: Node, vnode: VNode) {
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    (vnode.elm as any).$shadowResolver$ = (vnode.owner.cmpRoot as any).$shadowResolver$;
+    (elm as any).$shadowResolver$ = (vnode.owner.cmpRoot as any).$shadowResolver$;
 }
 
 // TODO [#1136]: this should be done by the compiler, adding ns to every sub-element
