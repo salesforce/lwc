@@ -7,8 +7,6 @@
 
 import { create, isUndefined, keys } from '@lwc/shared';
 
-import { LightningElement } from './lightning-element';
-
 import {
     createVM,
     connectRootElement,
@@ -16,6 +14,7 @@ import {
     getAttrNameFromPropName,
     getComponentInternalDef,
     isAttributeLocked,
+    LightningElement,
 } from '../../../src';
 
 type ComponentConstructor = typeof LightningElement;

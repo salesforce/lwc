@@ -19,14 +19,14 @@ import {
 } from '@lwc/shared';
 
 import {
+    getComponentInternalDef,
+    setElementProto,
     getAssociatedVMIfPresent,
     createVM,
     connectRootElement,
     disconnectRootElement,
-} from '../../../src/framework/vm';
-
-import { LightningElement } from '../../src';
-import { getComponentInternalDef, setElementProto } from '../../../src/framework/def';
+    LightningElement,
+} from '../../../src';
 
 type NodeSlotCallback = (element: Node) => void;
 
