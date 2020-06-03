@@ -204,10 +204,10 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
     vm.component = this;
     vm.cmpRoot = cmpRoot;
 
-    // Locker hooks assignment. When the LWC engine is evaluated along Locker, Locker intercepts all
-    // the new component creation and pass hooks to instrument all the component interactions We are
-    // intentionally hiding this argument from the formal API of LWCElement because we don't want
-    // folks to know about it just yet.
+    // Locker hooks assignment. When the LWC engine run with Locker, Locker intercepts all the new
+    // component creation and passes hooks to instrument all the component interactions with the
+    // engine. We are intentionally hiding this argument from the formal API of LightningElement
+    // because we don't want folks to know about it just yet.
     if (arguments.length === 1) {
         const { callHook, setHook, getHook } = arguments[0];
         vm.callHook = callHook;

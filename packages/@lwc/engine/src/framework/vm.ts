@@ -54,6 +54,10 @@ import { AccessorReactiveObserver } from './decorators/api';
 
 export type ShadowDomMode = 'open' | 'closed';
 
+export interface TemplateCache {
+    [key: string]: any;
+}
+
 export interface SlotSet {
     [key: string]: VNodes;
 }
@@ -73,7 +77,7 @@ export interface Context {
     styleVNode: VNode | null;
     /** Object used by the template function to store information that can be reused between
      *  different render cycle of the same template. */
-    tplCache: Record<string, any>;
+    tplCache: TemplateCache;
     /** List of wire hooks that are invoked when the component gets connected. */
     wiredConnecting: Array<() => void>;
     /** List of wire hooks that are invoked when the component gets disconnected. */
@@ -104,11 +108,11 @@ export interface VM {
      * having to traverse the VNode tree. */
     velements: VCustomElement[];
     /** The component public properties. */
-    cmpProps: Record<string, any>;
+    cmpProps: { [name: string]: any };
     /** The mapping between the slot names and the slotted VNodes. */
     cmpSlots: SlotSet;
     /** The component internal reactive properties. */
-    cmpFields: Record<string, any>;
+    cmpFields: { [name: string]: any };
     /** Flag indicating if the component has been scheduled for rerendering. */
     isScheduled: boolean;
     /** Flag indicating if the component internal should be scheduled for re-rendering. */
@@ -125,7 +129,7 @@ export interface VM {
     tro: ReactiveObserver;
     /** The accessor reactive observers. Is only used when the ENABLE_REACTIVE_SETTER feature flag
      *  is enabled. */
-    oar: Record<PropertyKey, AccessorReactiveObserver>;
+    oar: { [name: string]: AccessorReactiveObserver };
     /** Hook invoked whenever a property is accessed on the host element. This hook is used by
      *  Locker only. */
     setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
