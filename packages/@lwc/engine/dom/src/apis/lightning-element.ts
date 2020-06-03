@@ -6,9 +6,8 @@
  */
 import { defineProperty, freeze, isUndefined, seal } from '@lwc/shared';
 
-import { buildCustomElementConstructor } from './build-custom-element-constructor';
-
 import { LightningElement } from '../../../src';
+import { buildCustomElementConstructor } from './build-custom-element-constructor';
 
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;

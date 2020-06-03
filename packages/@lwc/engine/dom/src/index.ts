@@ -9,6 +9,7 @@
 import './polyfills/proxy-concat/main';
 import './polyfills/aria-properties/main';
 
+// Engine-core public APIs -------------------------------------------------------------------------
 export {
     createContextProvider,
     register,
@@ -27,7 +28,7 @@ export {
     isComponentConstructor,
 } from '../../src';
 
-// Public APIs -------------------------------------------------------------------------------------
+// Engine-dom public APIs --------------------------------------------------------------------------
 export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './apis/build-custom-element-constructor';
 export { createElement } from './apis/create-element';
 export { getComponentConstructor } from './apis/get-component-constructor';

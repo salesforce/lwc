@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
-import { EmptyArray, useSyntheticShadow } from './utils';
+import { EmptyArray } from './utils';
 import {
     rerenderVM,
     createVM,
@@ -27,6 +27,8 @@ import modStaticStyle from './modules/static-style-attr';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef, setElementProto } from './def';
+
+import { useSyntheticShadow } from '../../dom/src/env/dom';
 
 const noop = () => void 0;
 

@@ -24,7 +24,7 @@ import {
 import { logError } from '../shared/logger';
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
-import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
+import { EmptyArray, EmptyObject } from './utils';
 import { getAssociatedVM, runConnectedCallback, SlotSet, VM, VMState } from './vm';
 import { ComponentConstructor } from './component';
 import {
@@ -57,6 +57,8 @@ import {
     markAsDynamicChildren,
 } from './hooks';
 import { isComponentConstructor } from './def';
+
+import { useSyntheticShadow } from '../../dom/src/env/dom';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;

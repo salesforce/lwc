@@ -23,7 +23,7 @@ import {
     getOwnPropertyNames,
 } from '@lwc/shared';
 import { createComponent, renderComponent, markComponentAsDirty } from './component';
-import { addCallbackToNextTick, EmptyObject, EmptyArray, useSyntheticShadow } from './utils';
+import { addCallbackToNextTick, EmptyObject, EmptyArray } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
 
@@ -45,6 +45,8 @@ import { ReactiveObserver } from './mutation-tracker';
 import { LightningElement } from './base-lightning-element';
 import { getErrorComponentStack } from '../shared/format';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
+
+import { useSyntheticShadow } from '../../dom/src/env/dom';
 
 export interface SlotSet {
     [key: string]: VNodes;
