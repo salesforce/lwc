@@ -85,7 +85,7 @@ export interface Context {
     wiredDisconnecting: Array<() => void>;
 }
 
-export interface VM<Node = HostNode, Element = HostElement> {
+export interface VM<N = HostNode, E = HostElement> {
     /** The host element */
     readonly elm: HostElement;
     /** The host element tag name */
@@ -95,9 +95,9 @@ export interface VM<Node = HostNode, Element = HostElement> {
     /** The component context object. */
     readonly context: Context;
     /** The owner VM or null for root elements. */
-    readonly owner: VM<Node, Element> | null;
+    readonly owner: VM<N, E> | null;
     /** Rendering operations associated with the VM */
-    readonly renderer: Renderer<Node, Element>;
+    readonly renderer: Renderer<N, E>;
     /** The component creation index. */
     idx: number;
     /** Component state, analogous to Element.isConnected */
