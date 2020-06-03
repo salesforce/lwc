@@ -46,8 +46,7 @@ import { LightningElement } from './base-lightning-element';
 import { getErrorComponentStack } from '../shared/format';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 
-import { useSyntheticShadow } from '../../dom/src/env/shadow-dom';
-import { ShadowRootInnerHTMLSetter } from '../../dom/src/env/dom';
+import { useSyntheticShadow } from '../../dom/src/env/dom';
 
 export interface SlotSet {
     [key: string]: VNodes;

@@ -58,7 +58,7 @@ import {
 } from './hooks';
 import { isComponentConstructor } from './def';
 
-import { useSyntheticShadow } from '../../dom/src/env/shadow-dom';
+import { useSyntheticShadow } from '../../dom/src/env/dom';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;

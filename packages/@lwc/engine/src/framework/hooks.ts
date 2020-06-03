@@ -28,7 +28,7 @@ import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdo
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef, setElementProto } from './def';
 
-import { useSyntheticShadow } from '../../dom/src/env/shadow-dom';
+import { useSyntheticShadow } from '../../dom/src/env/dom';
 
 const noop = () => void 0;
 

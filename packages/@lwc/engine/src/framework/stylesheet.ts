@@ -11,7 +11,7 @@ import * as api from './api';
 import { EmptyArray } from './utils';
 import { VM } from './vm';
 
-import { useSyntheticShadow } from '../../dom/src/env/shadow-dom';
+import { useSyntheticShadow } from '../../dom/src/env/dom';
 import { removeAttribute, setAttribute } from '../../dom/src/env/element';
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by

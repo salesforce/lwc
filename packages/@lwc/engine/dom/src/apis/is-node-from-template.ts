@@ -7,7 +7,7 @@
 
 import { isFalse, isUndefined } from '@lwc/shared';
 
-import { useSyntheticShadow } from '../env/shadow-dom';
+import { useSyntheticShadow } from '../env/dom';
 
 /**
  * EXPERIMENTAL: This function detects whether or not a Node is controlled by a LWC template. This
