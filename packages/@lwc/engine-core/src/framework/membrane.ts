@@ -7,6 +7,8 @@
 import ObservableMembrane from 'observable-membrane';
 import { valueObserved, valueMutated } from './mutation-tracker';
 
+export const lockerLivePropertyKey = Symbol.for('@@lockerLiveValue');
+
 function valueDistortion(value: any) {
     return value;
 }
@@ -15,6 +17,7 @@ export const reactiveMembrane = new ObservableMembrane({
     valueObserved,
     valueMutated,
     valueDistortion,
+    tagPropertyKey: lockerLivePropertyKey,
 });
 
 /**
