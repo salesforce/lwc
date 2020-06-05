@@ -6,10 +6,9 @@
  */
 import { ArrayPush, assert, create, isArray, isObject, isUndefined } from '@lwc/shared';
 
-import { Context } from './context';
 import { VNodeData } from '../3rdparty/snabbdom/types';
 import { ComponentDef } from './def';
-import { VM } from './vm';
+import { VM, Context } from './vm';
 
 type ServiceCallback = (
     component: object,
@@ -17,6 +16,7 @@ type ServiceCallback = (
     def: ComponentDef,
     context: Context
 ) => void;
+
 interface ServiceDef {
     connected?: ServiceCallback;
     disconnected?: ServiceCallback;
@@ -62,8 +62,8 @@ export function invokeServiceHook(vm: VM, cbs: ServiceCallback[]) {
             `Optimize invokeServiceHook() to be invoked only when needed`
         );
     }
-    const { component, data, def, context } = vm;
+    const { component, def, context } = vm;
     for (let i = 0, len = cbs.length; i < len; ++i) {
-        cbs[i].call(undefined, component, data, def, context);
+        cbs[i].call(undefined, component, {}, def, context);
     }
 }

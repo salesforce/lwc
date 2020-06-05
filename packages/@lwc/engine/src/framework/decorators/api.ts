@@ -76,7 +76,7 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
     };
 }
 
-class AccessorReactiveObserver extends ReactiveObserver {
+export class AccessorReactiveObserver extends ReactiveObserver {
     private value: any;
     private debouncing: boolean = false;
     constructor(vm: VM, set: (v: any) => void) {
@@ -153,7 +153,7 @@ export function createPublicAccessorDescriptor(
             }
             if (set) {
                 if (features.ENABLE_REACTIVE_SETTER) {
-                    let ro = vm.oar[key as any] as AccessorReactiveObserver;
+                    let ro = vm.oar[key as any];
                     if (isUndefined(ro)) {
                         ro = vm.oar[key as any] = new AccessorReactiveObserver(vm, set);
                     }

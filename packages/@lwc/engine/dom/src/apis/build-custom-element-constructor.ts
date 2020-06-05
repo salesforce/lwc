@@ -64,7 +64,6 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
             super();
             createVM(this, def, {
                 mode: 'open',
-                isRoot: true,
                 owner: null,
                 tagName: this.tagName,
             });

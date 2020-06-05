@@ -12,7 +12,6 @@ import {
     isArray,
     isFunction,
     isNull,
-    isObject,
     isUndefined,
     toString,
 } from '@lwc/shared';
@@ -20,8 +19,7 @@ import { logError } from '../shared/logger';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';
-import { Context } from './context';
-import { SlotSet, VM, resetShadowRoot, runWithBoundaryProtection } from './vm';
+import { SlotSet, TemplateCache, VM, resetShadowRoot, runWithBoundaryProtection } from './vm';
 import { EmptyArray } from './utils';
 import { isTemplateRegistered, registerTemplate } from './secure-template';
 import {
@@ -46,8 +44,9 @@ export function isVMBeingRendered(vm: VM) {
 }
 
 export { registerTemplate };
+
 export interface Template {
-    (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): VNodes;
+    (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
 
     /**
      * The stylesheet associated with the template.
@@ -68,14 +67,13 @@ export interface Template {
         shadowAttribute: string;
     };
 }
-const EmptySlots: SlotSet = create(null);
 
 function validateSlots(vm: VM, html: any) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const { cmpSlots = EmptySlots } = vm;
+    const { cmpSlots } = vm;
     const { slots = EmptyArray } = html;
     for (const slotName in cmpSlots) {
         // eslint-disable-next-line lwc-internal/no-production-assert
@@ -124,17 +122,19 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
             // job
             const { component, context, cmpSlots, cmpTemplate, tro } = vm;
             tro.observe(() => {
-                // reset the cache memoizer for template when needed
+                // Reset the cache memoizer for template when needed.
                 if (html !== cmpTemplate) {
-                    // perf opt: do not reset the shadow root during the first rendering (there is nothing to reset)
-                    if (!isUndefined(cmpTemplate)) {
-                        // It is important to reset the content to avoid reusing similar elements generated from a different
-                        // template, because they could have similar IDs, and snabbdom just rely on the IDs.
+                    // Perf opt: do not reset the shadow root during the first rendering (there is
+                    // nothing to reset).
+                    if (!isNull(cmpTemplate)) {
+                        // It is important to reset the content to avoid reusing similar elements
+                        // generated from a different template, because they could have similar IDs,
+                        // and snabbdom just rely on the IDs.
                         resetShadowRoot(vm);
                     }
 
-                    // Check that the template was built by the compiler
-                    if (isUndefined(html) || !isTemplateRegistered(html)) {
+                    // Check that the template was built by the compiler.
+                    if (!isTemplateRegistered(html)) {
                         throw new TypeError(
                             `Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${
                                 vm.def.name
@@ -165,10 +165,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                 }
 
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.isTrue(
-                        isObject(context.tplCache),
-                        `vm.context.tplCache must be an object associated to ${cmpTemplate}.`
-                    );
                     // validating slots in every rendering since the allocated content might change over time
                     validateSlots(vm, html);
                 }
@@ -178,7 +174,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 
-                vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache!);
+                vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
                 const { styleVNode } = context;
                 if (!isNull(styleVNode)) {
                     ArrayUnshift.call(vnodes, styleVNode);

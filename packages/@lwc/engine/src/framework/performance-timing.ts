@@ -6,7 +6,7 @@
  */
 import { isUndefined } from '@lwc/shared';
 
-import { UninitializedVM } from './vm';
+import { VM } from './vm';
 import { getComponentTag } from '../shared/format';
 
 type MeasurementPhase =
@@ -32,13 +32,13 @@ const isUserTimingSupported: boolean =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-function getMarkName(phase: string, vm: UninitializedVM): string {
+function getMarkName(phase: string, vm: VM): string {
     // Adding the VM idx to the mark name creates a unique mark name component instance. This is necessary to produce
     // the right measures for components that are recursive.
     return `${getComponentTag(vm)} - ${phase} - ${vm.idx}`;
 }
 
-function getMeasureName(phase: string, vm: UninitializedVM): string {
+function getMeasureName(phase: string, vm: VM): string {
     return `${getComponentTag(vm)} - ${phase}`;
 }
 
@@ -61,13 +61,13 @@ function noop() {
 
 export const startMeasure = !isUserTimingSupported
     ? noop
-    : function (phase: MeasurementPhase, vm: UninitializedVM) {
+    : function (phase: MeasurementPhase, vm: VM) {
           const markName = getMarkName(phase, vm);
           start(markName);
       };
 export const endMeasure = !isUserTimingSupported
     ? noop
-    : function (phase: MeasurementPhase, vm: UninitializedVM) {
+    : function (phase: MeasurementPhase, vm: VM) {
           const markName = getMarkName(phase, vm);
           const measureName = getMeasureName(phase, vm);
           end(measureName, markName);
@@ -75,13 +75,13 @@ export const endMeasure = !isUserTimingSupported
 
 export const startGlobalMeasure = !isUserTimingSupported
     ? noop
-    : function (phase: GlobalMeasurementPhase, vm?: UninitializedVM) {
+    : function (phase: GlobalMeasurementPhase, vm?: VM) {
           const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
           start(markName);
       };
 export const endGlobalMeasure = !isUserTimingSupported
     ? noop
-    : function (phase: GlobalMeasurementPhase, vm?: UninitializedVM) {
+    : function (phase: GlobalMeasurementPhase, vm?: VM) {
           const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
           end(phase, markName);
       };

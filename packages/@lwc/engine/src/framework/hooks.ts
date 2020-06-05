@@ -197,7 +197,6 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     createVM(elm, def, {
         mode,
         owner,
-        isRoot: false,
         tagName: sel,
     });
     if (process.env.NODE_ENV !== 'production') {

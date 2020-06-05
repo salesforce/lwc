@@ -7,7 +7,7 @@
 import { assert, isFunction, isUndefined } from '@lwc/shared';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
-import { VM, UninitializedVM, runWithBoundaryProtection } from './vm';
+import { VM, runWithBoundaryProtection } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { startMeasure, endMeasure } from './performance-timing';
@@ -15,7 +15,7 @@ import { getErrorComponentStack } from '../shared/format';
 
 export let isInvokingRender: boolean = false;
 
-export let vmBeingConstructed: UninitializedVM | null = null;
+export let vmBeingConstructed: VM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
     return vmBeingConstructed === vm;
 }
@@ -43,7 +43,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     return result;
 }
 
-export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentConstructor) {
+export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
     const vmBeingConstructedInception = vmBeingConstructed;
     let error;
     if (process.env.NODE_ENV !== 'production') {

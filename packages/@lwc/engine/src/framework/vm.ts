@@ -22,16 +22,21 @@ import {
     setHiddenField,
     getOwnPropertyNames,
 } from '@lwc/shared';
-import { createComponent, renderComponent, markComponentAsDirty } from './component';
-import { addCallbackToNextTick, EmptyObject, EmptyArray } from './utils';
+
+import {
+    createComponent,
+    renderComponent,
+    markComponentAsDirty,
+    getTemplateReactiveObserver,
+} from './component';
+import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
 
-import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
+import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { ComponentInterface } from './component';
-import { Context } from './context';
 import {
     startMeasure,
     endMeasure,
@@ -45,8 +50,13 @@ import { ReactiveObserver } from './mutation-tracker';
 import { LightningElement } from './base-lightning-element';
 import { getErrorComponentStack } from '../shared/format';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
+import { AccessorReactiveObserver } from './decorators/api';
 
-import { useSyntheticShadow } from '../../dom/src/env/dom';
+type ShadowRootMode = 'open' | 'closed';
+
+export interface TemplateCache {
+    [key: string]: any;
+}
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -58,59 +68,81 @@ export enum VMState {
     disconnected,
 }
 
-export interface UninitializedVM {
-    /** Custom element tag name */
-    readonly tagName: string;
-    /** Component Element Back-pointer */
+export interface Context {
+    /** The attribute name used on the host element to scope the style. */
+    hostAttribute: string | undefined;
+    /** The attribute name used on all the elements rendered in the shadow tree to scope the style. */
+    shadowAttribute: string | undefined;
+    /** The VNode injected in all the shadow trees to apply the associated component stylesheets. */
+    styleVNode: VNode | null;
+    /** Object used by the template function to store information that can be reused between
+     *  different render cycle of the same template. */
+    tplCache: TemplateCache;
+    /** List of wire hooks that are invoked when the component gets connected. */
+    wiredConnecting: Array<() => void>;
+    /** List of wire hooks that are invoked when the component gets disconnected. */
+    wiredDisconnecting: Array<() => void>;
+}
+
+export interface VM {
+    /** The host element */
     readonly elm: HTMLElement;
-    /** Component Definition */
+    /** The host element tag name */
+    readonly tagName: string;
+    /** The component definition */
     readonly def: ComponentDef;
-    /** Component Context Object */
+    /** The component context object. */
     readonly context: Context;
-    /** Back-pointer to the owner VM or null for root elements */
+    /** The owner VM or null for root elements. */
     readonly owner: VM | null;
-    /** Component Creation Index */
-    idx: number;
-    /** Component state, analogous to Element.isConnected */
+    /** The component creation index. */
+    readonly idx: number;
+    /** The component connection state. */
     state: VMState;
-    data: VNodeData;
-    /** Shadow Children List */
+    /** The list of VNodes associated with the shadow tree. */
     children: VNodes;
-    /** Adopted Children List */
+    /** The list of adopted children VNodes. */
     aChildren: VNodes;
+    /** The list of custom elements VNodes currently rendered in the shadow tree. We keep track of
+     * those elements to efficiently unmount them when the parent component is disconnected without
+     * having to traverse the VNode tree. */
     velements: VCustomElement[];
-    cmpProps: Record<string, any>;
+    /** The component public properties. */
+    cmpProps: { [name: string]: any };
+    /** The mapping between the slot names and the slotted VNodes. */
     cmpSlots: SlotSet;
-    cmpFields: Record<string, any>;
+    /** The component internal reactive properties. */
+    cmpFields: { [name: string]: any };
+    /** Flag indicating if the component has been scheduled for rerendering. */
+    isScheduled: boolean;
+    /** Flag indicating if the component internal should be scheduled for re-rendering. */
+    isDirty: boolean;
+    /** The shadow DOM mode. */
+    mode: ShadowRootMode;
+    /** The template method returning the VDOM tree. */
+    cmpTemplate: Template | null;
+    /** The component instance. */
+    component: ComponentInterface;
+    /** The custom element shadow root. */
+    cmpRoot: ShadowRoot;
+    /** The template reactive observer. */
+    tro: ReactiveObserver;
+    /** The accessor reactive observers. Is only used when the ENABLE_REACTIVE_SETTER feature flag
+     *  is enabled. */
+    oar: { [name: string]: AccessorReactiveObserver };
+    /** Hook invoked whenever a property is accessed on the host element. This hook is used by
+     *  Locker only. */
+    setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
+    /** Hook invoked whenever a property is set on the host element. This hook is used by Locker
+     *  only. */
+    getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
+    /** Hook invoked whenever a method is called on the component (life-cycle hooks, public
+     *  properties and event handlers). This hook is used by Locker. */
     callHook: (
         cmp: ComponentInterface | undefined,
         fn: (...args: any[]) => any,
         args?: any[]
     ) => any;
-    setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
-    getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
-    isScheduled: boolean;
-    isDirty: boolean;
-    isRoot: boolean;
-    mode: 'open' | 'closed';
-    toString(): string;
-
-    // perf optimization to avoid reshaping the uninitialized when initialized
-    cmpTemplate?: Template;
-    component?: ComponentInterface;
-    cmpRoot?: ShadowRoot;
-    tro?: ReactiveObserver;
-    oar?: Record<PropertyKey, ReactiveObserver>;
-}
-
-export interface VM extends UninitializedVM {
-    cmpTemplate: Template;
-    component: ComponentInterface;
-    cmpRoot: ShadowRoot;
-    /** Template Reactive Observer to observe values used by the selected template */
-    tro: ReactiveObserver;
-    /** Reactive Observers for each of the public @api accessors */
-    oar: Record<PropertyKey, ReactiveObserver>;
 }
 
 type VMAssociable = Node | LightningElement | ComponentInterface;
@@ -201,9 +233,8 @@ export function createVM(
     elm: HTMLElement,
     def: ComponentDef,
     options: {
-        mode: 'open' | 'closed';
+        mode: ShadowRootMode;
         owner: VM | null;
-        isRoot: boolean;
         tagName: string;
     }
 ): VM {
@@ -213,57 +244,60 @@ export function createVM(
             `VM creation requires a DOM element instead of ${elm}.`
         );
     }
-    const { isRoot, mode, owner, tagName } = options;
-    idx += 1;
-    const uninitializedVm: UninitializedVM = {
-        // component creation index is defined once, and never reset, it can
-        // be preserved from one insertion to another without any issue
-        idx,
+    const vm: VM = {
+        elm,
+        def,
+        idx: idx++,
         state: VMState.created,
         isScheduled: false,
         isDirty: true,
-        isRoot: isTrue(isRoot),
-        mode,
-        def,
-        owner,
-        tagName,
-        elm,
-        data: EmptyObject,
-        context: create(null),
-        cmpProps: create(null),
-        cmpFields: create(null),
-        cmpSlots: useSyntheticShadow ? create(null) : undefined,
-        callHook,
-        setHook,
-        getHook,
+        tagName: options.tagName,
+        mode: options.mode,
+        owner: options.owner,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,
-        // Perf optimization to preserve the shape of this obj
-        cmpTemplate: undefined,
-        component: undefined,
-        cmpRoot: undefined,
-        tro: undefined,
-        oar: undefined,
+        cmpProps: create(null),
+        cmpFields: create(null),
+        cmpSlots: create(null),
+        oar: create(null),
+        cmpTemplate: null,
+
+        context: {
+            hostAttribute: undefined,
+            shadowAttribute: undefined,
+            styleVNode: null,
+            tplCache: EmptyObject,
+            wiredConnecting: EmptyArray,
+            wiredDisconnecting: EmptyArray,
+        },
+
+        tro: null!, // Set synchronously after the VM creation.
+        component: null!, // Set synchronously by the LightningElement constructor.
+        cmpRoot: null!, // Set synchronously by the LightningElement constructor.
+
+        callHook,
+        setHook,
+        getHook,
     };
 
+    vm.tro = getTemplateReactiveObserver(vm);
+
     if (process.env.NODE_ENV !== 'production') {
-        uninitializedVm.toString = (): string => {
-            return `[object:vm ${def.name} (${uninitializedVm.idx})]`;
+        vm.toString = (): string => {
+            return `[object:vm ${def.name} (${vm.idx})]`;
         };
     }
 
-    // create component instance associated to the vm and the element
-    createComponent(uninitializedVm, def.ctor);
+    // Create component instance associated to the vm and the element.
+    createComponent(vm, def.ctor);
 
-    // link component to the wire service
-    const initializedVm = uninitializedVm as VM;
-    // initializing the wire decorator per instance only when really needed
-    if (hasWireAdapters(initializedVm)) {
-        installWireAdapters(initializedVm);
+    // Initializing the wire decorator per instance only when really needed
+    if (hasWireAdapters(vm)) {
+        installWireAdapters(vm);
     }
 
-    return initializedVm;
+    return vm;
 }
 
 function assertIsVM(obj: any): asserts obj is VM {
@@ -369,7 +403,7 @@ function flushRehydrationQueue() {
             `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`
         );
     }
-    const vms: VM[] = rehydrateQueue.sort((a: VM, b: VM): number => a.idx - b.idx);
+    const vms = rehydrateQueue.sort((a: VM, b: VM): number => a.idx - b.idx);
     rehydrateQueue = []; // reset to a new queue
     for (let i = 0, len = vms.length; i < len; i += 1) {
         const vm = vms[i];
