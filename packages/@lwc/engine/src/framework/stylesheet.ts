@@ -6,8 +6,6 @@
  */
 import { assert, create, emptyString, forEach, isArray, isUndefined } from '@lwc/shared';
 
-import { useSyntheticShadow } from '../../dom/src/env/dom';
-import { removeAttribute, setAttribute } from '../../dom/src/env/element';
 import { VNode } from '../3rdparty/snabbdom/types';
 import { VM } from './vm';
 import * as api from './api';
