@@ -233,7 +233,7 @@ export function removeVM(vm: VM) {
     resetComponentStateWhenRemoved(vm);
 }
 
-export function createVM<HostNode, HostElement> (
+export function createVM<HostNode, HostElement>(
     elm: HostElement,
     def: ComponentDef,
     options: {
