@@ -52,7 +52,7 @@ import { getErrorComponentStack } from '../shared/format';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 
-export type ShadowDomMode = 'open' | 'closed';
+type ShadowRootMode = 'open' | 'closed';
 
 export interface TemplateCache {
     [key: string]: any;
@@ -118,7 +118,7 @@ export interface VM {
     /** Flag indicating if the component internal should be scheduled for re-rendering. */
     isDirty: boolean;
     /** The shadow DOM mode. */
-    mode: ShadowDomMode;
+    mode: ShadowRootMode;
     /** The template method returning the VDOM tree. */
     cmpTemplate: Template | null;
     /** The component instance. */
@@ -233,7 +233,7 @@ export function createVM(
     elm: HTMLElement,
     def: ComponentDef,
     options: {
-        mode: ShadowDomMode;
+        mode: ShadowRootMode;
         owner: VM | null;
         tagName: string;
     }
