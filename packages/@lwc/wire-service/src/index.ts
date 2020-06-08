@@ -13,6 +13,32 @@ const { freeze, defineProperty, isExtensible } = Object;
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
 
+// Types
+type WireAdapterSchemaValue = 'optional' | 'required';
+
+export interface DataCallback {
+    (value: any): void;
+}
+
+export interface WireAdapterConstructor {
+    new (callback: DataCallback): WireAdapter;
+
+    configSchema?: Record<string, WireAdapterSchemaValue>;
+    contextSchema?: Record<string, WireAdapterSchemaValue>;
+}
+
+export interface WireAdapter {
+    update(config: Record<string, any>, context?: Record<PropertyKey, any>): void;
+    connect(): void;
+    disconnect(): void;
+}
+
+// Private types.
+interface LegacyAdapterDataCallback extends DataCallback {
+    [DeprecatedWiredElementHost]: any;
+    [DeprecatedWiredParamsMeta]: string[];
+}
+
 /**
  * Registers a wire adapter factory for Lightning Platform.
  * @deprecated
@@ -31,8 +57,8 @@ export function register(
         throw new TypeError('adapter id is already associated to an adapter factory');
     }
 
-    const AdapterClass = class extends WireAdapter {
-        constructor(dataCallback: dataCallback) {
+    const AdapterClass = class extends LegacyWireAdapterBridge {
+        constructor(dataCallback: LegacyAdapterDataCallback) {
             super(dataCallback);
             adapterEventTargetCallback(this.eventTarget);
         }
@@ -84,15 +110,6 @@ function removeListener(listeners: WireEventTargetListener[], toRemove: WireEven
     }
 }
 
-interface dataCallback {
-    (value: any): void;
-    [DeprecatedWiredElementHost]: any;
-    [DeprecatedWiredParamsMeta]: string[];
-}
-export interface WireAdapterConstructor {
-    new (callback: dataCallback): WireAdapter;
-}
-
 function isEmptyConfig(config: Record<string, any>): boolean {
     return Object.keys(config).length === 0;
 }
@@ -110,8 +127,8 @@ function isDifferentConfig(
     return params.some((param) => newConfig[param] !== oldConfig[param]);
 }
 
-export class WireAdapter {
-    private callback: dataCallback;
+class LegacyWireAdapterBridge implements WireAdapter {
+    private readonly callback: LegacyAdapterDataCallback;
     private readonly wiredElementHost: EventTarget;
     private readonly dynamicParamsNames: string[];
 
@@ -139,7 +156,7 @@ export class WireAdapter {
     private currentConfig?: ConfigListenerArgument;
     private isFirstUpdate: boolean = true;
 
-    constructor(callback: dataCallback) {
+    constructor(callback: LegacyAdapterDataCallback) {
         this.callback = callback;
         this.wiredElementHost = callback[DeprecatedWiredElementHost];
         this.dynamicParamsNames = callback[DeprecatedWiredParamsMeta];
