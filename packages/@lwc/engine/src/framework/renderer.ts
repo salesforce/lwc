@@ -15,10 +15,7 @@ export interface Renderer<N = HostNode, E = HostElement> {
     createElement(tagName: string, namespace?: string): E;
     createText(content: string): N;
     nextSibling(node: N): N | null;
-    attachShadow(
-        element: E,
-        options: { mode: 'open' | 'closed'; delegatesFocus?: boolean; [key: string]: any }
-    ): N;
+    attachShadow(element: E, options: ShadowRootInit): N;
     setText(node: N, content: string): void;
     getAttribute(element: E, name: string, namespace?: string | null): string | null;
     setAttribute(element: E, name: string, value: string, namespace?: string | null): void;
@@ -33,7 +30,7 @@ export interface Renderer<N = HostNode, E = HostElement> {
         target: E,
         type: string,
         callback: (event: Event) => any,
-        options?: AddEventListenerOptions | boolean
+        options?: EventListenerOptions | boolean
     ): void;
     dispatchEvent(target: N, event: Event): boolean;
     getClassList(element: E): DOMTokenList;

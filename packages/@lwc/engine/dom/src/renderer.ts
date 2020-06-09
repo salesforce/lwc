@@ -53,11 +53,9 @@ export const renderer: Renderer<Node, Element> = {
     },
 
     setAttribute(element: Element, name: string, value: string, namespace?: string): void {
-        if (isUndefined(namespace)) {
-            element.setAttribute(name, value);
-        } else {
-            element.setAttributeNS(namespace, name, value);
-        }
+        return isUndefined(namespace)
+            ? element.setAttribute(name, value)
+            : element.setAttributeNS(namespace, name, value);
     },
 
     removeAttribute(element: Element, name: string, namespace?: string): void {
@@ -68,11 +66,21 @@ export const renderer: Renderer<Node, Element> = {
         }
     },
 
-    addEventListener(target: Node, type: string, callback: EventListener, options: any): void {
+    addEventListener(
+        target: Node,
+        type: string,
+        callback: EventListener,
+        options: AddEventListenerOptions | boolean
+    ): void {
         target.addEventListener(type, callback, options);
     },
 
-    removeEventListener(target: Node, type: string, callback: EventListener, options: any): void {
+    removeEventListener(
+        target: Node,
+        type: string,
+        callback: EventListener,
+        options: EventListenerOptions | boolean
+    ): void {
         target.removeEventListener(type, callback, options);
     },
 
@@ -90,7 +98,7 @@ export const renderer: Renderer<Node, Element> = {
         return (element as HTMLElement | SVGElement).style;
     },
 
-    getBoundingClientRect(element: Element): ClientRect {
+    getBoundingClientRect(element: Element): DOMRect {
         return element.getBoundingClientRect();
     },
 

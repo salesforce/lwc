@@ -310,7 +310,7 @@ BaseLightningElementConstructor.prototype = {
         lockAttribute(elm, name);
     },
 
-    removeAttributeNS(namespace: string | null, name: string) {
+    removeAttributeNS(namespace: string | null, name: string): void {
         const {
             elm,
             renderer: { removeAttribute },
@@ -394,7 +394,7 @@ BaseLightningElementConstructor.prototype = {
         return getBoundingClientRect(elm);
     },
 
-    querySelector(selectors: string): Element | undefined {
+    querySelector(selectors: string): Element | null {
         const vm = getAssociatedVM(this);
         const {
             elm,
@@ -410,7 +410,7 @@ BaseLightningElementConstructor.prototype = {
             );
         }
 
-        return querySelector(elm, selectors) as Element | undefined;
+        return querySelector(elm, selectors);
     },
 
     querySelectorAll(selectors: string): NodeList {
