@@ -17,7 +17,6 @@ import {
     getHiddenField,
     setHiddenField,
 } from '@lwc/shared';
-
 import {
     getComponentInternalDef,
     setElementProto,
@@ -26,7 +25,7 @@ import {
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-} from '../../../src';
+} from '@lwc/engine-core';
 
 import { renderer } from '../renderer';
 

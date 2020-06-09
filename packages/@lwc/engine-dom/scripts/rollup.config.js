@@ -27,7 +27,7 @@ function rollupFeaturesPlugin() {
     };
 }
 
-const { version } = require('../../package.json');
+const { version } = require('../package.json');
 
 const banner = `/* proxy-compat-disable */`;
 const footer = `/* version: ${version} */`;
@@ -38,11 +38,10 @@ module.exports = {
 
     output: formats.map((format) => {
         return {
-            name: 'LwcDom',
             file: path.resolve(
                 __dirname,
-                '../../dist',
-                `engine${format === 'cjs' ? '.cjs' : ''}.js`
+                '../dist',
+                `engine-dom${format === 'cjs' ? '.cjs' : ''}.js`
             ),
             format,
             banner: banner,

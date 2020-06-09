@@ -26,7 +26,7 @@ export {
     sanitizeAttribute,
     getComponentDef,
     isComponentConstructor,
-} from '../../src';
+} from '@lwc/engine-core';
 
 // Engine-dom public APIs --------------------------------------------------------------------------
 export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './apis/build-custom-element-constructor';

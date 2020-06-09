@@ -1,41 +1,33 @@
 {
-    "name": "@lwc/engine",
+    "name": "@lwc/engine-dom",
     "version": "1.7.1",
-    "description": "LWC Engine",
+    "description": "LWC engine version for working with the DOM.",
     "homepage": "https://lwc.dev/",
     "repository": {
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git",
-        "directory": "packages/@lwc/engine"
+        "directory": "packages/@lwc/engine-dom"
     },
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "main": "dist/engine.cjs.js",
-    "module": "dist/engine.js",
+    "main": "dist/engine-dom.cjs.js",
+    "module": "dist/engine-dom.js",
     "typings": "types/index.d.ts",
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf dist/ types/",
-        "build": "node scripts/build.js"
+        "test": "jest",
+        "build": "tsc --emitDeclarationOnly && rollup --config scripts/rollup.config.js"
     },
     "files": [
         "dist/",
         "types/"
     ],
     "devDependencies": {
-        "@lwc/engine-dom": "1.7.1"
-    },
-    "lwc": {
-        "modules": [
-            {
-                "name": "lwc",
-                "path": "dist/engine.js"
-            }
-        ],
-        "expose": [
-            "lwc"
-        ]
+        "@lwc/engine-core": "1.7.1",
+        "@lwc/features": "1.7.1",
+        "@lwc/shared": "1.7.1"
     },
     "publishConfig": {
         "access": "public"

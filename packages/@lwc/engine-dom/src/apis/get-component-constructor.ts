@@ -6,8 +6,7 @@
  */
 
 import { isUndefined } from '@lwc/shared';
-
-import { getAssociatedVMIfPresent, LightningElement } from '../../../src';
+import { getAssociatedVMIfPresent, LightningElement } from '@lwc/engine-core';
 
 /**
  * EXPERIMENTAL: This function provides access to the component constructor, given an HTMLElement.

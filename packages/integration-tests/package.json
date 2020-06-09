@@ -31,7 +31,6 @@
         "@wdio/sync": "^6.1.8",
         "deepmerge": "^4.2.2",
         "dotenv": "^8.2.0",
-        "fs-extra": "^9.0.0",
         "lwc": "1.7.1",
         "minimist": "^1.2.5",
         "webdriverio": "^6.1.11"
