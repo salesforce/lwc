@@ -16,7 +16,9 @@ const ColonCharCode = 58;
 function updateAttrs(oldVnode: VElement, vnode: VElement) {
     const {
         data: { attrs },
+        owner: { renderer },
     } = vnode;
+
     if (isUndefined(attrs)) {
         return;
     }
@@ -35,6 +37,7 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
     }
 
     const elm = vnode.elm!;
+    const { setAttribute, removeAttribute } = renderer;
 
     let key: string;
     oldAttrs = isUndefined(oldAttrs) ? EmptyObject : oldAttrs;
@@ -49,14 +52,14 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
             unlockAttribute(elm, key);
             if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
                 // Assume xml namespace
-                elm.setAttributeNS(xmlNS, key, cur as string);
+                setAttribute(elm, key, cur as string, xmlNS);
             } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
                 // Assume xlink namespace
-                elm.setAttributeNS(xlinkNS, key, cur as string);
+                setAttribute(elm, key, cur as string, xlinkNS);
             } else if (isNull(cur)) {
-                elm.removeAttribute(key);
+                removeAttribute(elm, key);
             } else {
-                elm.setAttribute(key, cur as string);
+                setAttribute(elm, key, cur as string);
             }
             lockAttribute(elm, key);
         }

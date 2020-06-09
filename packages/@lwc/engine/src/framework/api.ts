@@ -58,8 +58,6 @@ import {
 } from './hooks';
 import { isComponentConstructor } from './def';
 
-import { useSyntheticShadow } from '../../dom/src/env/dom';
-
 export interface ElementCompilerData extends VNodeData {
     key: Key;
 }
@@ -93,7 +91,8 @@ const SymbolIterator = Symbol.iterator;
 
 const TextHook: Hooks<VText> = {
     create: (vnode) => {
-        const elm = document.createTextNode(vnode.text!);
+        const { renderer } = vnode.owner;
+        const elm = renderer.createText(vnode.text!);
         linkNodeToShadow(elm, vnode);
         vnode.elm = elm;
     },
@@ -110,17 +109,16 @@ const TextHook: Hooks<VText> = {
 // Custom Element that is inserted via a template.
 const ElementHook: Hooks<VElement> = {
     create: (vnode) => {
-        const { data, sel, clonedElement } = vnode;
-        const { ns } = data;
+        const {
+            sel,
+            clonedElement,
+            data: { ns },
+            owner: { renderer },
+        } = vnode;
 
         // TODO [#1364]: supporting the ability to inject a cloned StyleElement via a vnode this is
         // used for style tags for native shadow
-        let elm;
-        if (isUndefined(clonedElement)) {
-            elm = isUndefined(ns) ? document.createElement(sel) : document.createElementNS(ns, sel);
-        } else {
-            elm = clonedElement;
-        }
+        const elm = isUndefined(clonedElement) ? renderer.createElement(sel, ns) : clonedElement;
 
         linkNodeToShadow(elm, vnode);
         fallbackElmHook(elm, vnode);
@@ -147,8 +145,11 @@ const ElementHook: Hooks<VElement> = {
 
 const CustomElementHook: Hooks<VCustomElement> = {
     create: (vnode) => {
-        const { sel } = vnode;
-        const elm = document.createElement(sel);
+        const {
+            sel,
+            owner: { renderer },
+        } = vnode;
+        const elm = renderer.createElement(sel);
 
         linkNodeToShadow(elm, vnode);
         createViewModelHook(elm, vnode);
@@ -315,7 +316,7 @@ export function s(
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    if (useSyntheticShadow) {
+    if (vnode.owner.renderer.syntheticShadow) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }

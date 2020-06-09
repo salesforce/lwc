@@ -14,13 +14,14 @@ function createStyleAttribute(vnode: VNode) {
     const {
         elm,
         data: { styleMap },
+        owner: { renderer },
     } = vnode;
+
     if (isUndefined(styleMap)) {
         return;
     }
 
-    const { style } = elm as HTMLElement;
-
+    const style = renderer.getStyleDeclaration(elm);
     for (const name in styleMap) {
         (style as any)[name] = styleMap[name];
     }

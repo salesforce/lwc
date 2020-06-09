@@ -14,13 +14,14 @@ function createClassAttribute(vnode: VNode) {
     const {
         elm,
         data: { classMap },
+        owner: { renderer },
     } = vnode;
+
     if (isUndefined(classMap)) {
         return;
     }
 
-    const { classList } = elm as Element;
-
+    const classList = renderer.getClassList(elm);
     for (const name in classMap) {
         classList.add(name);
     }

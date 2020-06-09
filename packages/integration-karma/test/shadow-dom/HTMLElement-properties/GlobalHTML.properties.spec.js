@@ -227,8 +227,7 @@ it('should log console error accessing props in constructor', () => {
     expect(() => {
         createElement('prop-getter-title', { is: AccessAttributeInConstructor });
     }).toLogErrorDev(
-        // #1767: Error message in IE11 will show the constructor name as 'undefined'
-        /\[LWC error\]: `[a-zA-Z_]*` constructor can't read the value of property `title` because the owner component hasn't set the value yet. Instead, use the `[a-zA-Z_]*` constructor to set a default value for the property./
+        /\[LWC error\]: The value of property `title` can't be read from the constructor because the owner component hasn't set the value yet. Instead, use the constructor to set a default value for the property./
     );
 });
 

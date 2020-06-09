@@ -106,7 +106,11 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
         } else if (sameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patchVnode(oldStartVnode, newEndVnode);
-            newEndVnode.hook.move(oldStartVnode, parentElm, oldEndVnode.elm!.nextSibling);
+            newEndVnode.hook.move(
+                oldStartVnode,
+                parentElm,
+                oldEndVnode.owner.renderer.nextSibling(oldEndVnode.elm!)
+            );
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (sameVnode(oldEndVnode, newStartVnode)) {

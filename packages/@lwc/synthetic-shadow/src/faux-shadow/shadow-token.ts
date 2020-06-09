@@ -26,7 +26,7 @@ export function setShadowToken(node: Node, shadowToken: string | undefined) {
  *  - this custom attribute must be unique.
  *
  **/
-defineProperty(Element.prototype, '$shadowToken$', {
+defineProperty(Element.prototype, ShadowTokenKey, {
     set(this: Element, shadowToken: string | undefined) {
         const oldShadowToken = (this as any)[ShadowTokenPrivateKey];
         if (!isUndefined(oldShadowToken) && oldShadowToken !== shadowToken) {

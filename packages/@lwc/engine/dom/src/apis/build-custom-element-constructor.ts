@@ -17,6 +17,8 @@ import {
     LightningElement,
 } from '../../../src';
 
+import { renderer } from '../renderer';
+
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;
 
@@ -66,6 +68,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 mode: 'open',
                 owner: null,
                 tagName: this.tagName,
+                renderer,
             });
         }
         connectedCallback() {
