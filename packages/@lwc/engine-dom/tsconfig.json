@@ -3,7 +3,7 @@
 
     "compilerOptions": {
         "outDir": "types",
-        "lib": ["dom", "esnext"]
+        "lib": ["dom", "es2018"]
     },
 
     "include": ["src/"]

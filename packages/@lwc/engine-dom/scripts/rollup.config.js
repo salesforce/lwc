@@ -13,20 +13,6 @@ const typescript = require('typescript');
 const nodeResolvePlugin = require('rollup-plugin-node-resolve');
 const typescriptPlugin = require('rollup-plugin-typescript');
 
-const babel = require('@babel/core');
-const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
-
-function rollupFeaturesPlugin() {
-    return {
-        name: 'rollup-plugin-lwc-features',
-        transform(source) {
-            return babel.transform(source, {
-                plugins: [babelFeaturesPlugin],
-            }).code;
-        },
-    };
-}
-
 const { version } = require('../package.json');
 
 const banner = `/* proxy-compat-disable */`;
@@ -50,12 +36,11 @@ module.exports = {
     }),
 
     plugins: [
-        nodeResolvePlugin({ only: [/^@lwc\//, 'observable-membrane'] }),
+        nodeResolvePlugin({ only: [/^@lwc\//] }),
         typescriptPlugin({
             target: 'es2017',
             typescript,
         }),
-        rollupFeaturesPlugin(),
     ],
 
     onwarn({ code, message }) {

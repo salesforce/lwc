@@ -24,7 +24,6 @@
         "dist/",
         "types/"
     ],
-    "dependencies": {},
     "devDependencies": {
         "@lwc/features": "1.7.1",
         "@lwc/shared": "1.7.1",

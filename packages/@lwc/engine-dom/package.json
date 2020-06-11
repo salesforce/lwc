@@ -1,7 +1,7 @@
 {
     "name": "@lwc/engine-dom",
     "version": "1.7.1",
-    "description": "LWC engine version for working with the DOM.",
+    "description": "Renders LWC components in a DOM environment.",
     "homepage": "https://lwc.dev/",
     "repository": {
         "type": "git",
