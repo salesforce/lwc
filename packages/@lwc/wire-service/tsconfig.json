@@ -3,11 +3,11 @@
 
     "compilerOptions": {
         "outDir": "types",
-
         "baseUrl": ".",
         "paths": {
             "lwc": ["../engine"]
-        }
+        },
+        "lib": ["dom", "es2018"]
     },
 
     "include": ["src/"]
