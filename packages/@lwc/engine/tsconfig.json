@@ -3,7 +3,7 @@
 
     "compilerOptions": {
         "outDir": "types",
-        "lib": ["dom", "es2015", "es2016", "es2017", "es2018"]
+        "lib": ["dom", "es2018"]
     },
 
     "include": ["dom/src/", "src/"]
