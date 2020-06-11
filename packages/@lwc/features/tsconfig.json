@@ -1,8 +1,10 @@
 {
     "extends": "../../../tsconfig.json",
+
     "compilerOptions": {
         "baseUrl": ".",
-        "outDir": "types"
+        "outDir": "types",
+        "lib": ["dom", "es2018"]
     },
 
     "include": ["src/"]
