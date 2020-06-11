@@ -254,7 +254,7 @@ export function getComponentInternalDef(Ctor: unknown, name?: string): Component
 
 // Only set prototype for public methods and properties
 // No DOM Patching occurs here
-export function setElementProto(elm: Element, def: ComponentDef) {
+export function setElementProto<HostElement>(elm: HostElement, def: ComponentDef) {
     setPrototypeOf(elm, def.bridge.prototype);
 }
 
