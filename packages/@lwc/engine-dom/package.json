@@ -26,7 +26,6 @@
     ],
     "devDependencies": {
         "@lwc/engine-core": "1.7.1",
-        "@lwc/features": "1.7.1",
         "@lwc/shared": "1.7.1"
     },
     "publishConfig": {
