@@ -18,19 +18,13 @@
     "scripts": {
         "clean": "rm -rf dist/ types/",
         "test": "jest",
-        "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js",
-        "start": "concurrently 'yarn build:playground --watch' 'yarn serve:playground'",
-        "build:playground": "rollup -c playground/rollup.config.js",
-        "serve:playground": "node playground/server.js"
+        "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js"
     },
     "files": [
         "dist/",
         "types/"
     ],
     "devDependencies": {
-        "@lwc/compiler": "1.7.1",
-        "@lwc/engine": "1.7.1",
-        "@lwc/rollup-plugin": "1.7.1",
         "@lwc/shared": "1.7.1"
     },
     "lwc": {

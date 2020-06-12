@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ValueChangedEvent } from './value-changed-event';
 import { isUndefined } from '@lwc/shared';
+import { ValueChangedEvent } from './value-changed-event';
 
 const { freeze, defineProperty, isExtensible } = Object;
 
