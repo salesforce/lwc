@@ -12,6 +12,45 @@ describe('Simple Custom Context Provider', () => {
         div.appendChild(elm);
         expect(elm.shadowRoot.textContent).toBe('ready');
     });
+
+    it('should call disconnect when no context value is provided', function () {
+        const div = document.createElement('div');
+        const elm = createElement('x-consumer', { is: Consumer });
+        document.body.appendChild(div);
+
+        const spy = {
+            connected: jasmine.createSpy('connected'),
+            disconnected: jasmine.createSpy('disconnected'),
+        };
+
+        installCustomContext(div, spy, true);
+        // not providing context intentionally
+        div.appendChild(elm);
+
+        expect(spy.connected.calls.count()).toBe(1);
+        div.removeChild(elm);
+        expect(spy.disconnected.calls.count()).toBe(1);
+    });
+
+    it('should not call disconnect with same consumer when multiple contexts are set', function () {
+        const div = document.createElement('div');
+        const elm = createElement('x-consumer', { is: Consumer });
+        document.body.appendChild(div);
+
+        const spy = {
+            disconnected: jasmine.createSpy('disconnected'),
+        };
+        installCustomContext(div, spy);
+        setCustomContext(div, 'almost ready');
+        div.appendChild(elm);
+        setCustomContext(div, 'ready');
+
+        expect(() => {
+            div.removeChild(elm);
+        }).not.toThrowError();
+        expect(spy.disconnected.calls.count()).toBe(1);
+    });
+
     it('should provide "missing" as the default value when no provider is installed', function () {
         const div = document.createElement('div');
         const elm = createElement('x-consumer', { is: Consumer });

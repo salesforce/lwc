@@ -90,17 +90,22 @@ function createContextWatcher(
         // must be listening for a special dom event with the name corresponding to the value of
         // `adapterContextToken`, which will remain secret and internal to this file only to
         // guarantee that the linkage can be forged.
-        const internalDomEvent = new CustomEvent(adapterContextToken, {
-            bubbles: true,
-            composed: true,
-            detail(newContext: ContextValue, disconnectCallback: () => void) {
-                // adds this callback into the disconnect bucket so it gets disconnected from parent
-                // the the element hosting the wire is disconnected
-                ArrayPush.call(wiredDisconnecting, disconnectCallback);
+        const detail = {
+            setNewContext(newContext: ContextValue) {
                 // eslint-disable-next-line lwc-internal/no-invalid-todo
                 // TODO: dev-mode validation of config based on the adapter.contextSchema
                 callbackWhenContextIsReady(newContext);
             },
+            provideDisconnectedCallback(disconnectCallback: () => void) {
+                // adds this callback into the disconnect bucket so it gets disconnected from parent
+                // the the element hosting the wire is disconnected
+                ArrayPush.call(wiredDisconnecting, disconnectCallback);
+            },
+        };
+        const internalDomEvent = new CustomEvent(adapterContextToken, {
+            bubbles: true,
+            composed: true,
+            detail,
         });
         renderer.dispatchEvent(elm, internalDomEvent);
     });
