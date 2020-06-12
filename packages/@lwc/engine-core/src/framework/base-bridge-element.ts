@@ -20,9 +20,11 @@ import {
     seal,
     setPrototypeOf,
 } from '@lwc/shared';
+
 import { getAssociatedVM } from './vm';
-import { HTMLElementOriginalDescriptors } from './html-properties';
 import { reactiveMembrane } from './membrane';
+import { HTMLElementConstructor } from './renderer';
+import { HTMLElementOriginalDescriptors } from './html-properties';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
 // from the element instance, and get the value or set a new value on the component.
@@ -127,7 +129,7 @@ export function HTMLBridgeElementFactory(
 }
 
 export const BaseBridgeElement = HTMLBridgeElementFactory(
-    HTMLElement,
+    HTMLElementConstructor,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
     []
 );

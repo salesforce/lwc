@@ -10,6 +10,7 @@ import { VNode } from '../3rdparty/snabbdom/types';
 import { VM } from './vm';
 import * as api from './api';
 import { EmptyArray } from './utils';
+import { documentObject } from './renderer';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -43,7 +44,7 @@ function getCachedStyleElement(styleContent: string): HTMLStyleElement {
     return fragment.cloneNode(true).firstChild as HTMLStyleElement;
 }
 
-const globalStyleParent = document.head || document.body || document;
+const globalStyleParent = documentObject.head || documentObject.body || documentObject;
 const InsertedGlobalStyleContent: Record<string, true> = create(null);
 
 function insertGlobalStyle(styleContent: string) {
