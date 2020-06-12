@@ -6,8 +6,7 @@
  */
 
 import { hasOwnProperty, isUndefined } from '@lwc/shared';
-
-import { Renderer } from '../../src';
+import { Renderer } from '@lwc/engine-core';
 
 // TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
 // to avoid having to synchronize it between the different modules.

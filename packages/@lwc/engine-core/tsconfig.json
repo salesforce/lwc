@@ -6,5 +6,5 @@
         "lib": ["dom", "es2018"]
     },
 
-    "include": ["dom/src/", "src/"]
+    "include": ["src/"]
 }

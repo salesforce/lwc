@@ -53,5 +53,6 @@ function ArrayConcatPolyfill(this: any, ..._args: any[][]): any[] {
 }
 
 export default function apply() {
+    // eslint-disable-next-line no-extend-native
     Array.prototype.concat = ArrayConcatPolyfill;
 }

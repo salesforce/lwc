@@ -6,7 +6,6 @@
  */
 
 import { create, isUndefined, keys } from '@lwc/shared';
-
 import {
     createVM,
     connectRootElement,
@@ -15,7 +14,7 @@ import {
     getComponentInternalDef,
     isAttributeLocked,
     LightningElement,
-} from '../../../src';
+} from '@lwc/engine-core';
 
 import { renderer } from '../renderer';
 
