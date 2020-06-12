@@ -186,10 +186,10 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
     return connector;
 }
 
-type DataCallback = (value: any) => void;
+export type DataCallback = (value: any) => void;
 type ConfigValue = Record<string, any>;
 
-interface WireAdapter {
+export interface WireAdapter {
     update(config: ConfigValue, context?: ContextValue): void;
     connect(): void;
     disconnect(): void;
@@ -224,6 +224,7 @@ export function setAdapterToken(adapter: WireAdapterConstructor, token: string) 
 
 export type ContextValue = Record<string, any>;
 export type ConfigCallback = (component: ComponentInterface) => ConfigValue;
+
 export interface WireAdapterConstructor {
     new (callback: DataCallback): WireAdapter;
     configSchema?: Record<string, WireAdapterSchemaValue>;

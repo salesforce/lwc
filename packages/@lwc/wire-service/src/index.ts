@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
+import { WireAdapter, DataCallback } from '@lwc/engine-core';
 import { ValueChangedEvent } from './value-changed-event';
 
 const { freeze, defineProperty, isExtensible } = Object;
@@ -13,27 +14,6 @@ const { freeze, defineProperty, isExtensible } = Object;
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
 
-// Types
-type WireAdapterSchemaValue = 'optional' | 'required';
-
-export interface DataCallback {
-    (value: any): void;
-}
-
-export interface WireAdapterConstructor {
-    new (callback: DataCallback): WireAdapter;
-
-    configSchema?: Record<string, WireAdapterSchemaValue>;
-    contextSchema?: Record<string, WireAdapterSchemaValue>;
-}
-
-export interface WireAdapter {
-    update(config: Record<string, any>, context?: Record<PropertyKey, any>): void;
-    connect(): void;
-    disconnect(): void;
-}
-
-// Private types.
 interface LegacyAdapterDataCallback extends DataCallback {
     [DeprecatedWiredElementHost]: any;
     [DeprecatedWiredParamsMeta]: string[];
@@ -90,9 +70,7 @@ const DISCONNECT = 'disconnect';
 const CONFIG = 'config';
 
 type NoArgumentListener = () => void;
-interface ConfigListenerArgument {
-    [key: string]: any;
-}
+type ConfigListenerArgument = Record<string, any>;
 type ConfigListener = (config: ConfigListenerArgument) => void;
 
 type WireEventTargetListener = NoArgumentListener | ConfigListener;
@@ -231,7 +209,7 @@ class LegacyWireAdapterBridge implements WireAdapter {
 
         if (
             isUndefined(this.currentConfig) ||
-            isDifferentConfig(config, this.currentConfig, this.dynamicParamsNames)
+            isDifferentConfig(config, this.currentConfig!, this.dynamicParamsNames)
         ) {
             this.currentConfig = config;
             forEach.call(this.configuring, (listener) => {

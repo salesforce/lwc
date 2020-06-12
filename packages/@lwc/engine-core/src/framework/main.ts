@@ -39,3 +39,4 @@ export { getComponentDef, isComponentConstructor } from './def';
 
 // Types -------------------------------------------------------------------------------------------
 export type { Renderer } from './renderer';
+export type { DataCallback, WireAdapter, WireAdapterConstructor } from './wiring';
