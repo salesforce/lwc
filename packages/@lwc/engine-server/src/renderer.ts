@@ -80,7 +80,6 @@ export const renderer: Renderer<HostNode, HostElement> = {
             children: [],
         };
 
-        // TODO [#0]: Fix typings here.
         return (element.shadowRoot as any) as HostNode;
     },
 

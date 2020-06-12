@@ -1,0 +1,13 @@
+<x-method-get-attribute>
+  <template shadow-root>
+    <x-child>
+      <template shadow-root><p>Value:</p></template>
+    </x-child>
+    <x-child data-attr>
+      <template shadow-root><p>Value: true</p></template>
+    </x-child>
+    <x-child data-attr="foo">
+      <template shadow-root><p>Value: foo</p></template>
+    </x-child>
+  </template>
+</x-method-get-attribute>

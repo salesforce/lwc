@@ -7,9 +7,11 @@
 
 import fs from 'fs';
 import path from 'path';
-import prettier from 'prettier';
 import { rollup } from 'rollup';
+import prettier from 'prettier';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
+
+import { renderComponent } from '../index';
 
 const FIXTURE_DIR = path.join(__dirname, 'fixtures');
 
@@ -34,8 +36,6 @@ function formatHTML(code: string): string {
 }
 
 describe('fixtures', () => {
-    const { renderComponent } = require('../');
-
     const fixtures = fs.readdirSync(FIXTURE_DIR);
 
     for (const caseName of fixtures) {
@@ -65,7 +65,6 @@ describe('fixtures', () => {
         const compileFixture = async () => {
             const bundle = await rollup({
                 input: COMPILER_ENTRY_FILENAME,
-                external: ['lwc'],
                 plugins: [
                     {
                         name: 'fixture-resolver',
@@ -77,6 +76,22 @@ describe('fixtures', () => {
                         load(specifier) {
                             if (specifier === COMPILER_ENTRY_FILENAME) {
                                 return `export { default as ctor } from '${caseModuleName}';`;
+                            }
+                        },
+                    },
+                    {
+                        name: 'lwc-server-resolver',
+                        resolveId(specifier) {
+                            if (specifier === 'lwc') {
+                                const lwcServerRelativePath = path.relative(
+                                    fixtureFilePath(MODULE_DIRNAME),
+                                    path.resolve(__dirname, '../index')
+                                );
+
+                                return {
+                                    id: lwcServerRelativePath,
+                                    external: true,
+                                };
                             }
                         },
                     },

@@ -10,21 +10,20 @@
  * order to ensure that the component evaluates, we attach those mock constructors to the global
  * object.
  */
+(function () {
+    class Event {}
+    class CustomEvent extends Event {}
 
-// TODO [#0]: Rename those constructors to Event and CustomEvent once we remove the "dom" library
-// from the tsconfig.json
-class EventGlobal {}
-class CustomEventGlobal extends EventGlobal {}
-
-Object.defineProperties(global, {
-    Event: {
-        value: EventGlobal,
-        configurable: true,
-        writable: true,
-    },
-    CustomEvent: {
-        value: CustomEventGlobal,
-        configurable: true,
-        writable: true,
-    },
-});
+    Object.defineProperties(global, {
+        Event: {
+            value: Event,
+            configurable: true,
+            writable: true,
+        },
+        CustomEvent: {
+            value: CustomEvent,
+            configurable: true,
+            writable: true,
+        },
+    });
+})();
