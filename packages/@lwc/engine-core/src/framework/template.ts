@@ -23,7 +23,7 @@ import { SlotSet, TemplateCache, VM, resetShadowRoot, runWithBoundaryProtection 
 import { EmptyArray } from './utils';
 import { isTemplateRegistered, registerTemplate } from './secure-template';
 import {
-    evaluateCSS,
+    createStylesheet,
     StylesheetFactory,
     applyStyleAttributes,
     resetStyleAttributes,
@@ -156,7 +156,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                         applyStyleAttributes(vm, hostAttribute, shadowAttribute);
                         // Caching style vnode so it can be reused on every render
                         const stylesheetsContent = getStylesheetsContent(vm, html);
-                        context.styleVNode = evaluateCSS(vm, stylesheetsContent);
+                        context.styleVNode = createStylesheet(vm, stylesheetsContent);
                     }
                 }
 

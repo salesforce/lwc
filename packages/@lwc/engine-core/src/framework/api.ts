@@ -111,14 +111,10 @@ const ElementHook: Hooks<VElement> = {
     create: (vnode) => {
         const {
             sel,
-            clonedElement,
             data: { ns },
             owner: { renderer },
         } = vnode;
-
-        // TODO [#1364]: supporting the ability to inject a cloned StyleElement via a vnode this is
-        // used for style tags for native shadow
-        const elm = isUndefined(clonedElement) ? renderer.createElement(sel, ns) : clonedElement;
+        const elm = renderer.createElement(sel, ns);
 
         linkNodeToShadow(elm, vnode);
         fallbackElmHook(elm, vnode);

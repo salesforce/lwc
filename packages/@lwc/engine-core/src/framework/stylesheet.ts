@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isArray, isUndefined, ArrayJoin } from '@lwc/shared';
+import { isArray, isUndefined, ArrayJoin } from '@lwc/shared';
 
+import * as api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
 import { VM } from './vm';
-import * as api from './api';
 import { Template } from './template';
-import { EmptyArray } from './utils';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -22,40 +21,17 @@ export type StylesheetFactory = (
     nativeShadow: boolean
 ) => string;
 
-const CachedStyleFragments: Record<string, DocumentFragment> = create(null);
-
-function createStyleElement(styleContent: string): HTMLStyleElement {
-    const elm = document.createElement('style');
-    elm.type = 'text/css';
-    elm.textContent = styleContent;
-    return elm;
-}
-
-function getCachedStyleElement(styleContent: string): HTMLStyleElement {
-    let fragment = CachedStyleFragments[styleContent];
-
-    if (isUndefined(fragment)) {
-        fragment = document.createDocumentFragment();
-        const styleElm = createStyleElement(styleContent);
-        fragment.appendChild(styleElm);
-        CachedStyleFragments[styleContent] = fragment;
-    }
-
-    return fragment.cloneNode(true).firstChild as HTMLStyleElement;
-}
-
-function createStyleVNode(elm: HTMLStyleElement) {
-    const vnode = api.h(
+function createShadowStyleVNode(content: string): VNode {
+    return api.h(
         'style',
         {
             key: 'style', // special key
+            attrs: {
+                type: 'text/css',
+            },
         },
-        EmptyArray
+        [api.t(content)]
     );
-    // TODO [#1364]: supporting the ability to inject a cloned StyleElement
-    // forcing the diffing algo to use the cloned style for native shadow
-    vnode.clonedElement = elm;
-    return vnode;
 }
 
 /**
@@ -113,7 +89,7 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
     return stylesheets;
 }
 
-export function evaluateCSS(vm: VM, stylesheets: string[]): VNode | null {
+export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
     const { renderer } = vm;
 
     if (renderer.syntheticShadow) {
@@ -123,8 +99,7 @@ export function evaluateCSS(vm: VM, stylesheets: string[]): VNode | null {
 
         return null;
     } else {
-        // For performance reasons, a single stylesheet is created per shadow tree.
         const shadowStyleSheetContent = ArrayJoin.call(stylesheets, '\n');
-        return createStyleVNode(getCachedStyleElement(shadowStyleSheetContent));
+        return createShadowStyleVNode(shadowStyleSheetContent);
     }
 }
