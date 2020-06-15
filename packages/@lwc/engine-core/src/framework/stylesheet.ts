@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, create, emptyString, forEach, isArray, isUndefined } from '@lwc/shared';
+import { create, isArray, isUndefined, ArrayJoin } from '@lwc/shared';
 
 import { VNode } from '../3rdparty/snabbdom/types';
 import { VM } from './vm';
 import * as api from './api';
+import { Template } from './template';
 import { EmptyArray } from './utils';
 import { documentObject } from './renderer';
 
@@ -99,50 +100,42 @@ export function applyStyleAttributes(vm: VM, hostAttribute: string, shadowAttrib
     context.shadowAttribute = shadowAttribute;
 }
 
-function collectStylesheets(
-    stylesheets: StylesheetFactory[],
-    hostSelector: string,
-    shadowSelector: string,
-    isNative: boolean,
-    aggregatorFn: (content: string) => void
-): void {
-    forEach.call(stylesheets, (sheet) => {
-        if (isArray(sheet)) {
-            collectStylesheets(sheet, hostSelector, shadowSelector, isNative, aggregatorFn);
-        } else {
-            aggregatorFn(sheet(hostSelector, shadowSelector, isNative));
-        }
-    });
-}
+export function getStylesheetsContent(vm: VM, template: Template): string[] {
+    const { stylesheets: factories, stylesheetTokens: tokens } = template;
+    const { syntheticShadow: useSyntheticShadow } = vm.renderer;
 
-export function evaluateCSS(
-    vm: VM,
-    stylesheets: StylesheetFactory[],
-    hostAttribute: string,
-    shadowAttribute: string
-): VNode | null {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
+    const stylesheets: string[] = [];
+
+    if (!isUndefined(factories) && !isUndefined(tokens)) {
+        const hostSelector = useSyntheticShadow ? `[${tokens.hostAttribute}]` : '';
+        const shadowSelector = useSyntheticShadow ? `[${tokens.shadowAttribute}]` : '';
+
+        for (let i = 0; i < factories.length; i++) {
+            const factory = factories[i];
+
+            if (isArray(factory)) {
+                for (let j = 0; j < factory.length; j++) {
+                    stylesheets.push(factory[j](hostSelector, shadowSelector, !useSyntheticShadow));
+                }
+            } else {
+                stylesheets.push(factory(hostSelector, shadowSelector, !useSyntheticShadow));
+            }
+        }
     }
 
-    if (vm.renderer.syntheticShadow) {
-        const hostSelector = `[${hostAttribute}]`;
-        const shadowSelector = `[${shadowAttribute}]`;
+    return stylesheets;
+}
 
-        collectStylesheets(stylesheets, hostSelector, shadowSelector, false, (textContent) => {
-            insertGlobalStyle(textContent);
-        });
+export function evaluateCSS(vm: VM, stylesheets: string[]): VNode | null {
+    if (vm.renderer.syntheticShadow) {
+        for (let i = 0; i < stylesheets.length; i++) {
+            insertGlobalStyle(stylesheets[i]);
+        }
 
         return null;
     } else {
-        // Native shadow in place, we need to act accordingly by using the `:host` selector, and an
-        // empty shadow selector since it is not really needed.
-
-        let buffer = '';
-        collectStylesheets(stylesheets, emptyString, emptyString, true, (textContent) => {
-            buffer += textContent;
-        });
-
-        return createStyleVNode(getCachedStyleElement(buffer));
+        // For performance reasons, a single stylesheet is created per shadow tree.
+        const shadowStyleSheetContent = ArrayJoin.call(stylesheets, '\n');
+        return createStyleVNode(getCachedStyleElement(shadowStyleSheetContent));
     }
 }

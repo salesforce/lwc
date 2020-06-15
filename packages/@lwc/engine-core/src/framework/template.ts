@@ -27,6 +27,7 @@ import {
     StylesheetFactory,
     applyStyleAttributes,
     resetStyleAttributes,
+    getStylesheetsContent,
 } from './stylesheet';
 import { startMeasure, endMeasure } from './performance-timing';
 
@@ -154,12 +155,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                         const { hostAttribute, shadowAttribute } = stylesheetTokens;
                         applyStyleAttributes(vm, hostAttribute, shadowAttribute);
                         // Caching style vnode so it can be reused on every render
-                        context.styleVNode = evaluateCSS(
-                            vm,
-                            stylesheets,
-                            hostAttribute,
-                            shadowAttribute
-                        );
+                        const stylesheetsContent = getStylesheetsContent(vm, html);
+                        context.styleVNode = evaluateCSS(vm, stylesheetsContent);
                     }
                 }
 
