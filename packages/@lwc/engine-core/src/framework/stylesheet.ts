@@ -11,7 +11,6 @@ import { VM } from './vm';
 import * as api from './api';
 import { Template } from './template';
 import { EmptyArray } from './utils';
-import { documentObject } from './renderer';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -43,18 +42,6 @@ function getCachedStyleElement(styleContent: string): HTMLStyleElement {
     }
 
     return fragment.cloneNode(true).firstChild as HTMLStyleElement;
-}
-
-const globalStyleParent = documentObject.head || documentObject.body || documentObject;
-const InsertedGlobalStyleContent: Record<string, true> = create(null);
-
-function insertGlobalStyle(styleContent: string) {
-    // inserts the global style when needed, otherwise does nothing
-    if (isUndefined(InsertedGlobalStyleContent[styleContent])) {
-        InsertedGlobalStyleContent[styleContent] = true;
-        const elm = createStyleElement(styleContent);
-        globalStyleParent.appendChild(elm);
-    }
 }
 
 function createStyleVNode(elm: HTMLStyleElement) {
@@ -127,9 +114,11 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
 }
 
 export function evaluateCSS(vm: VM, stylesheets: string[]): VNode | null {
-    if (vm.renderer.syntheticShadow) {
+    const { renderer } = vm;
+
+    if (renderer.syntheticShadow) {
         for (let i = 0; i < stylesheets.length; i++) {
-            insertGlobalStyle(stylesheets[i]);
+            renderer.insertGlobalStylesheet(stylesheets[i]);
         }
 
         return null;

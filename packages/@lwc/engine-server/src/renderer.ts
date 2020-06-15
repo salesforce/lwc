@@ -212,11 +212,16 @@ export const renderer: Renderer<HostNode, HostElement> = {
         return element.name;
     },
 
+    insertGlobalStylesheet() {
+        // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for 
+        // synthetic shadow.
+    },
+
     addEventListener() {
-        /* Noop on SSR */
+        // Noop on SSR.
     },
     removeEventListener() {
-        /* Noop on SSR */
+        // Noop on SSR.
     },
 
     dispatchEvent: unsupportedMethod('dispatchEvent'),
