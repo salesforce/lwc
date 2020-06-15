@@ -27,9 +27,9 @@ describe('Simple Custom Context Provider', () => {
         // not providing context intentionally
         div.appendChild(elm);
 
-        expect(spy.connected.calls.count()).toBe(1);
+        expect(spy.connected).toHaveBeenCalledTimes(1);
         div.removeChild(elm);
-        expect(spy.disconnected.calls.count()).toBe(1);
+        expect(spy.disconnected).toHaveBeenCalledTimes(1);
     });
 
     it('should not call disconnect with same consumer when multiple contexts are set', function () {
@@ -48,7 +48,7 @@ describe('Simple Custom Context Provider', () => {
         expect(() => {
             div.removeChild(elm);
         }).not.toThrowError();
-        expect(spy.disconnected.calls.count()).toBe(1);
+        expect(spy.disconnected).toHaveBeenCalledTimes(1);
     });
 
     it('should provide "missing" as the default value when no provider is installed', function () {

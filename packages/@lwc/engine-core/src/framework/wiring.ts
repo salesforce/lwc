@@ -102,12 +102,12 @@ function createContextWatcher(
                 ArrayPush.call(wiredDisconnecting, disconnectCallback);
             },
         };
-        const internalDomEvent = new CustomEvent(adapterContextToken, {
+        const contextRegistrationEvent = new CustomEvent(adapterContextToken, {
             bubbles: true,
             composed: true,
             detail,
         });
-        renderer.dispatchEvent(elm, internalDomEvent);
+        renderer.dispatchEvent(elm, contextRegistrationEvent);
     });
 }
 
