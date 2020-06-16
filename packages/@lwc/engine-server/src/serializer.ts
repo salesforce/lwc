@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isVoidElement } from './utils/elements';
-
+import { isVoidElement } from '@lwc/shared';
 import { HostElement, HostShadowRoot, HostAttribute, HostChildNode, HostNodeType } from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {

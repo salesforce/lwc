@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+export { VOID_ELEMENTS as HTML_VOID_ELEMENTS } from '@lwc/shared';
+
 /*
  * MIT License
  *
@@ -16,6 +18,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 export const HTML_ELEMENTS = [
     'a',
     'abbr',
@@ -134,50 +137,5 @@ export const HTML_ELEMENTS = [
     'ul',
     'var',
     'video',
-    'wbr',
-];
-
-export const HTML_VOID_ELEMENTS = [
-    'area',
-    'base',
-    'br',
-    'circle',
-    'col',
-    'ellipse',
-    'feBlend',
-    'feColorMatrix',
-    'feFuncR',
-    'feFuncG',
-    'feFuncB',
-    'feFuncA',
-    'feImage',
-    'feComposite',
-    'feConvolveMatrix',
-    'feDiffuseLighting',
-    'feDisplacementMap',
-    'feDropShadow',
-    'feFlood',
-    'feGaussianBlur',
-    'feMerge',
-    'feMergeNode',
-    'feMorphology',
-    'feOffset',
-    'feSpecularLighting',
-    'feTile',
-    'feTurbulence',
-    'fePointLight',
-    'embed',
-    'hr',
-    'img',
-    'input',
-    'keygen',
-    'line',
-    'link',
-    'menuitem',
-    'meta',
-    'param',
-    'rect',
-    'source',
-    'track',
     'wbr',
 ];
