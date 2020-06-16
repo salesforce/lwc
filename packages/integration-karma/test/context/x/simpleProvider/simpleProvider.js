@@ -68,17 +68,27 @@ function getContextData(eventTarget) {
 
 const contextualizer = createContextProvider(WireAdapter);
 
-export function installCustomContext(target) {
+/**
+ * Note: spy and skipInitialProvision parameters (and all code related to them) are meant for test purposes only,
+ *       and should not be part of other implementations based on this reference implementation.
+ */
+export function installCustomContext(target, spy, skipInitialProvision) {
+    const { connected = () => {}, disconnected = () => {} } = spy || {};
+
     contextualizer(target, {
         consumerConnectedCallback(consumer) {
+            connected();
             // once the first consumer gets connected, then we create the contextData object
             const contextData = getContextData(target);
             // registering the new consumer
             contextData.consumers.push(consumer);
             // push the current value
-            consumer.provide({ value: contextData.value });
+            if (!skipInitialProvision) {
+                consumer.provide({ value: contextData.value });
+            }
         },
         consumerDisconnectedCallback(consumer) {
+            disconnected();
             const contextData = getContextData(target);
             const i = contextData.consumers.indexOf(consumer);
             if (i >= 0) {

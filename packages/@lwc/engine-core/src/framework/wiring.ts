@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isUndefined, ArrayPush, defineProperty } from '@lwc/shared';
+import { assert, isUndefined, ArrayPush, defineProperty, defineProperties } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { VM, runWithBoundaryProtection } from './vm';
@@ -15,6 +15,36 @@ const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
 
 const WireMetaMap: Map<PropertyDescriptor, WireDef> = new Map();
 function noop(): void {}
+
+interface WireContextInternalEventPayload {
+    setNewContext(newContext: ContextValue): void;
+    setDisconnectedCallback(disconnectCallback: () => void): void;
+}
+
+export class WireContextRegistrationEvent extends CustomEvent<undefined> {
+    // These are initialized on the constructor via defineProperties.
+    public readonly setNewContext!: (newContext: ContextValue) => void;
+    public readonly setDisconnectedCallback!: (disconnectCallback: () => void) => void;
+
+    constructor(
+        adapterToken: string,
+        { setNewContext, setDisconnectedCallback }: WireContextInternalEventPayload
+    ) {
+        super(adapterToken, {
+            bubbles: true,
+            composed: true,
+        });
+
+        defineProperties(this, {
+            setNewContext: {
+                value: setNewContext,
+            },
+            setDisconnectedCallback: {
+                value: setDisconnectedCallback,
+            },
+        });
+    }
+}
 
 function createFieldDataCallback(vm: VM, name: string) {
     const { cmpFields } = vm;
@@ -90,19 +120,19 @@ function createContextWatcher(
         // must be listening for a special dom event with the name corresponding to the value of
         // `adapterContextToken`, which will remain secret and internal to this file only to
         // guarantee that the linkage can be forged.
-        const internalDomEvent = new CustomEvent(adapterContextToken, {
-            bubbles: true,
-            composed: true,
-            detail(newContext: ContextValue, disconnectCallback: () => void) {
-                // adds this callback into the disconnect bucket so it gets disconnected from parent
-                // the the element hosting the wire is disconnected
-                ArrayPush.call(wiredDisconnecting, disconnectCallback);
+        const contextRegistrationEvent = new WireContextRegistrationEvent(adapterContextToken, {
+            setNewContext(newContext: ContextValue) {
                 // eslint-disable-next-line lwc-internal/no-invalid-todo
                 // TODO: dev-mode validation of config based on the adapter.contextSchema
                 callbackWhenContextIsReady(newContext);
             },
+            setDisconnectedCallback(disconnectCallback: () => void) {
+                // adds this callback into the disconnect bucket so it gets disconnected from parent
+                // the the element hosting the wire is disconnected
+                ArrayPush.call(wiredDisconnecting, disconnectCallback);
+            },
         });
-        renderer.dispatchEvent(elm, internalDomEvent);
+        renderer.dispatchEvent(elm, contextRegistrationEvent);
     });
 }
 
