@@ -6,17 +6,17 @@
  */
 import { isUndefined, ArrayIndexOf } from '@lwc/shared';
 import { guid } from './utils';
-import { WireAdapterConstructor, ContextValue, getAdapterToken, setAdapterToken } from './wiring';
+import {
+    WireAdapterConstructor,
+    ContextValue,
+    getAdapterToken,
+    setAdapterToken,
+    WireContextRegistrationEvent,
+} from './wiring';
 
-interface WireContextInternalProtocolEventDetails {
-    setNewContext(newContext: ContextValue): void;
-    provideDisconnectedCallback(disconnectCallback: () => void): void;
-}
 interface ContextConsumer {
     provide(newContext: ContextValue): void;
 }
-
-interface WireContextEvent extends CustomEvent<WireContextInternalProtocolEventDetails> {}
 
 interface ContextProviderOptions {
     consumerConnectedCallback: (consumer: ContextConsumer) => void;
@@ -42,8 +42,8 @@ export function createContextProvider(adapter: WireAdapterConstructor) {
         const { consumerConnectedCallback, consumerDisconnectedCallback } = options;
         elm.addEventListener(
             adapterContextToken as string,
-            ((evt: WireContextEvent) => {
-                const { setNewContext, provideDisconnectedCallback } = evt.detail;
+            ((evt: WireContextRegistrationEvent) => {
+                const { setNewContext, setDisconnectedCallback } = evt;
 
                 const consumer: ContextConsumer = {
                     provide(newContext) {
@@ -55,7 +55,7 @@ export function createContextProvider(adapter: WireAdapterConstructor) {
                         consumerDisconnectedCallback(consumer);
                     }
                 };
-                provideDisconnectedCallback(disconnectCallback);
+                setDisconnectedCallback(disconnectCallback);
 
                 consumerConnectedCallback(consumer);
                 evt.stopImmediatePropagation();
