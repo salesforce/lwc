@@ -16,34 +16,34 @@ const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
 const WireMetaMap: Map<PropertyDescriptor, WireDef> = new Map();
 function noop(): void {}
 
-interface WireContextInternalProtocolPayload {
+interface WireContextInternalEventPayload {
     setNewContext(newContext: ContextValue): void;
     setDisconnectedCallback(disconnectCallback: () => void): void;
 }
 
-export interface WireContextRegistrationEvent
-    extends CustomEvent<undefined>,
-        WireContextInternalProtocolPayload {}
+export class WireContextRegistrationEvent extends CustomEvent<undefined> {
+    // These are initialized on the constructor via defineProperties.
+    public readonly setNewContext!: (newContext: ContextValue) => void;
+    public readonly setDisconnectedCallback!: (disconnectCallback: () => void) => void;
 
-function createWireContextRegistrationEvent(
-    adapterContextToken: string,
-    { setNewContext, setDisconnectedCallback }: WireContextInternalProtocolPayload
-): WireContextRegistrationEvent {
-    const event = new CustomEvent<undefined>(adapterContextToken, {
-        bubbles: true,
-        composed: true,
-    });
+    constructor(
+        adapterToken: string,
+        { setNewContext, setDisconnectedCallback }: WireContextInternalEventPayload
+    ) {
+        super(adapterToken, {
+            bubbles: true,
+            composed: true,
+        });
 
-    defineProperties(event, {
-        setNewContext: {
-            value: setNewContext,
-        },
-        setDisconnectedCallback: {
-            value: setDisconnectedCallback,
-        },
-    });
-
-    return event as WireContextRegistrationEvent;
+        defineProperties(this, {
+            setNewContext: {
+                value: setNewContext,
+            },
+            setDisconnectedCallback: {
+                value: setDisconnectedCallback,
+            },
+        });
+    }
 }
 
 function createFieldDataCallback(vm: VM, name: string) {
@@ -120,7 +120,7 @@ function createContextWatcher(
         // must be listening for a special dom event with the name corresponding to the value of
         // `adapterContextToken`, which will remain secret and internal to this file only to
         // guarantee that the linkage can be forged.
-        const contextRegistrationEvent = createWireContextRegistrationEvent(adapterContextToken, {
+        const contextRegistrationEvent = new WireContextRegistrationEvent(adapterContextToken, {
             setNewContext(newContext: ContextValue) {
                 // eslint-disable-next-line lwc-internal/no-invalid-todo
                 // TODO: dev-mode validation of config based on the adapter.contextSchema
