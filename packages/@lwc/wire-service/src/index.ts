@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
+import { WireAdapter, DataCallback } from '@lwc/engine-core';
 import { ValueChangedEvent } from './value-changed-event';
 
 const { freeze, defineProperty, isExtensible } = Object;
@@ -12,6 +13,11 @@ const { freeze, defineProperty, isExtensible } = Object;
 // This value needs to be in sync with wiring.ts from @lwc/engine
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
+
+interface LegacyAdapterDataCallback extends DataCallback {
+    [DeprecatedWiredElementHost]: any;
+    [DeprecatedWiredParamsMeta]: string[];
+}
 
 /**
  * Registers a wire adapter factory for Lightning Platform.
@@ -31,8 +37,8 @@ export function register(
         throw new TypeError('adapter id is already associated to an adapter factory');
     }
 
-    const AdapterClass = class extends WireAdapter {
-        constructor(dataCallback: dataCallback) {
+    const AdapterClass = class extends LegacyWireAdapterBridge {
+        constructor(dataCallback: LegacyAdapterDataCallback) {
             super(dataCallback);
             adapterEventTargetCallback(this.eventTarget);
         }
@@ -64,9 +70,7 @@ const DISCONNECT = 'disconnect';
 const CONFIG = 'config';
 
 type NoArgumentListener = () => void;
-interface ConfigListenerArgument {
-    [key: string]: any;
-}
+type ConfigListenerArgument = Record<string, any>;
 type ConfigListener = (config: ConfigListenerArgument) => void;
 
 type WireEventTargetListener = NoArgumentListener | ConfigListener;
@@ -82,15 +86,6 @@ function removeListener(listeners: WireEventTargetListener[], toRemove: WireEven
     if (idx > -1) {
         ArraySplice.call(listeners, idx, 1);
     }
-}
-
-interface dataCallback {
-    (value: any): void;
-    [DeprecatedWiredElementHost]: any;
-    [DeprecatedWiredParamsMeta]: string[];
-}
-export interface WireAdapterConstructor {
-    new (callback: dataCallback): WireAdapter;
 }
 
 function isEmptyConfig(config: Record<string, any>): boolean {
@@ -110,8 +105,8 @@ function isDifferentConfig(
     return params.some((param) => newConfig[param] !== oldConfig[param]);
 }
 
-export class WireAdapter {
-    private callback: dataCallback;
+class LegacyWireAdapterBridge implements WireAdapter {
+    private readonly callback: LegacyAdapterDataCallback;
     private readonly wiredElementHost: EventTarget;
     private readonly dynamicParamsNames: string[];
 
@@ -139,7 +134,7 @@ export class WireAdapter {
     private currentConfig?: ConfigListenerArgument;
     private isFirstUpdate: boolean = true;
 
-    constructor(callback: dataCallback) {
+    constructor(callback: LegacyAdapterDataCallback) {
         this.callback = callback;
         this.wiredElementHost = callback[DeprecatedWiredElementHost];
         this.dynamicParamsNames = callback[DeprecatedWiredParamsMeta];
@@ -214,7 +209,7 @@ export class WireAdapter {
 
         if (
             isUndefined(this.currentConfig) ||
-            isDifferentConfig(config, this.currentConfig, this.dynamicParamsNames)
+            isDifferentConfig(config, this.currentConfig!, this.dynamicParamsNames)
         ) {
             this.currentConfig = config;
             forEach.call(this.configuring, (listener) => {
