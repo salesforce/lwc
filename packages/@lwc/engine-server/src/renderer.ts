@@ -30,28 +30,8 @@ function createElement(name: string, namespace?: string): HostElement {
     };
 }
 
-function createText(content: string): HostNode {
-    return {
-        type: HostNodeType.Text,
-        value: content,
-        parent: null,
-    };
-}
-
 export const renderer: Renderer<HostNode, HostElement> = {
     syntheticShadow: false,
-
-    tagName(element) {
-        return element.name;
-    },
-
-    nextSibling() {
-        // Implement this...
-        return null;
-    },
-
-    createText,
-    createElement,
 
     insert(node, parent, anchor) {
         if (node.parent !== null && node.parent !== parent) {
@@ -72,6 +52,27 @@ export const renderer: Renderer<HostNode, HostElement> = {
     remove(node, parent) {
         const nodeIndex = parent.children.indexOf(node);
         parent.children.splice(nodeIndex, 1);
+    },
+
+    createElement,
+
+    createText(content: string): HostNode {
+        return {
+            type: HostNodeType.Text,
+            value: content,
+            parent: null,
+        };
+    },
+
+    nextSibling(node) {
+        const { parent } = node;
+
+        if (isNull(parent)) {
+            return null;
+        }
+
+        const nodeIndex = parent.children.indexOf(node);
+        return parent.children[nodeIndex + 1] || null;
     },
 
     attachShadow(element) {
@@ -205,6 +206,10 @@ export const renderer: Renderer<HostNode, HostElement> = {
 
     isConnected() {
         return true;
+    },
+
+    tagName(element) {
+        return element.name;
     },
 
     addEventListener() {

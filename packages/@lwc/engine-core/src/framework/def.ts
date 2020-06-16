@@ -48,6 +48,7 @@ import {
     isCircularModuleDependency,
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
+import { HostElement } from './renderer';
 
 export interface ComponentDef {
     name: string;
@@ -252,9 +253,8 @@ export function getComponentInternalDef(Ctor: unknown, name?: string): Component
     return def;
 }
 
-// Only set prototype for public methods and properties
-// No DOM Patching occurs here
-export function setElementProto<HostElement>(elm: HostElement, def: ComponentDef) {
+/** Set prototype for public methods and properties on the element. No DOM Patching occurs here. */
+export function setElementProto(elm: HostElement, def: ComponentDef): void {
     setPrototypeOf(elm, def.bridge.prototype);
 }
 
