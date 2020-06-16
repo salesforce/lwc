@@ -28,10 +28,6 @@ import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
-interface RestrictionsOptions {
-    isPortal?: boolean;
-}
-
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
         {
@@ -71,107 +67,20 @@ export function lockDomMutation() {
     isDomMutationAllowed = false;
 }
 
-function portalRestrictionErrorMessage(name: string, type: string) {
-    return `The \`${name}\` ${type} is available only on elements that use the \`lwc:dom="manual"\` directive.`;
+function logMissingPortalError(name: string, type: string) {
+    return logError(
+        `The \`${name}\` ${type} is available only on elements that use the \`lwc:dom="manual"\` directive.`
+    );
 }
 
-function getNodeRestrictionsDescriptors(
-    node: Node,
-    options: RestrictionsOptions = {}
-): PropertyDescriptorMap {
+export function patchElementWithRestrictions(elm: Element, options: { isPortal: boolean }): void {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
 
-    const originalTextContentDescriptor = getPropertyDescriptor(node, 'textContent')!;
-    const originalNodeValueDescriptor = getPropertyDescriptor(node, 'nodeValue')!;
-
-    const { appendChild, insertBefore, removeChild, replaceChild } = node;
-    return {
-        appendChild: generateDataDescriptor({
-            value(this: Node, aChild: Node) {
-                if (isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('appendChild', 'method'));
-                }
-                return appendChild.call(this, aChild);
-            },
-        }),
-        insertBefore: generateDataDescriptor({
-            value(this: Node, newNode: Node, referenceNode: Node) {
-                if (!isDomMutationAllowed && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('insertBefore', 'method'));
-                }
-                return insertBefore.call(this, newNode, referenceNode);
-            },
-        }),
-        removeChild: generateDataDescriptor({
-            value(this: Node, aChild: Node) {
-                if (!isDomMutationAllowed && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('removeChild', 'method'));
-                }
-                return removeChild.call(this, aChild);
-            },
-        }),
-        replaceChild: generateDataDescriptor({
-            value(this: Node, newChild: Node, oldChild: Node) {
-                if (isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('replaceChild', 'method'));
-                }
-                return replaceChild.call(this, newChild, oldChild);
-            },
-        }),
-        nodeValue: generateAccessorDescriptor({
-            get(this: Node) {
-                return originalNodeValueDescriptor.get!.call(this);
-            },
-            set(this: Node, value: string) {
-                if (!isDomMutationAllowed && isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('nodeValue', 'property'));
-                }
-                originalNodeValueDescriptor.set!.call(this, value);
-            },
-        }),
-        textContent: generateAccessorDescriptor({
-            get(this: Node): string {
-                return originalTextContentDescriptor.get!.call(this);
-            },
-            set(this: Node, value: string) {
-                if (isFalse(options.isPortal)) {
-                    logError(portalRestrictionErrorMessage('textContent', 'property'));
-                }
-                originalTextContentDescriptor.set!.call(this, value);
-            },
-        }),
-    };
-}
-
-function getElementRestrictionsDescriptors(
-    elm: Element,
-    options: RestrictionsOptions
-): PropertyDescriptorMap {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const descriptors = getNodeRestrictionsDescriptors(elm, options);
-    const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
-    assign(descriptors, {
-        innerHTML: generateAccessorDescriptor({
-            get(): string {
-                return originalInnerHTMLDescriptor.get!.call(this);
-            },
-            set(this: Element, value: string) {
-                if (isFalse(options.isPortal)) {
-                    logError(
-                        portalRestrictionErrorMessage('innerHTML', 'property'),
-                        getAssociatedVMIfPresent(this)
-                    );
-                }
-                return originalInnerHTMLDescriptor.set!.call(this, value);
-            },
-        }),
+    const descriptors: PropertyDescriptorMap = {
         outerHTML: generateAccessorDescriptor({
             get(this: Element): string {
                 return originalOuterHTMLDescriptor.get!.call(this);
@@ -180,8 +89,78 @@ function getElementRestrictionsDescriptors(
                 throw new TypeError(`Invalid attempt to set outerHTML on Element.`);
             },
         }),
-    });
-    return descriptors;
+    };
+
+    // Apply extra restriction related to DOM manipulation if the element is not a portal.
+    if (isFalse(options.isPortal)) {
+        const { appendChild, insertBefore, removeChild, replaceChild } = elm;
+
+        const originalNodeValueDescriptor = getPropertyDescriptor(elm, 'nodeValue')!;
+        const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
+        const originalTextContentDescriptor = getPropertyDescriptor(elm, 'textContent')!;
+
+        assign(descriptors, {
+            appendChild: generateDataDescriptor({
+                value(this: Node, aChild: Node) {
+                    logMissingPortalError('appendChild', 'method');
+                    return appendChild.call(this, aChild);
+                },
+            }),
+            insertBefore: generateDataDescriptor({
+                value(this: Node, newNode: Node, referenceNode: Node) {
+                    if (!isDomMutationAllowed) {
+                        logMissingPortalError('insertBefore', 'method');
+                    }
+                    return insertBefore.call(this, newNode, referenceNode);
+                },
+            }),
+            removeChild: generateDataDescriptor({
+                value(this: Node, aChild: Node) {
+                    if (!isDomMutationAllowed) {
+                        logMissingPortalError('removeChild', 'method');
+                    }
+                    return removeChild.call(this, aChild);
+                },
+            }),
+            replaceChild: generateDataDescriptor({
+                value(this: Node, newChild: Node, oldChild: Node) {
+                    logMissingPortalError('replaceChild', 'method');
+                    return replaceChild.call(this, newChild, oldChild);
+                },
+            }),
+            nodeValue: generateAccessorDescriptor({
+                get(this: Node) {
+                    return originalNodeValueDescriptor.get!.call(this);
+                },
+                set(this: Node, value: string) {
+                    if (!isDomMutationAllowed) {
+                        logMissingPortalError('nodeValue', 'property');
+                    }
+                    originalNodeValueDescriptor.set!.call(this, value);
+                },
+            }),
+            textContent: generateAccessorDescriptor({
+                get(this: Node): string {
+                    return originalTextContentDescriptor.get!.call(this);
+                },
+                set(this: Node, value: string) {
+                    logMissingPortalError('textContent', 'property');
+                    originalTextContentDescriptor.set!.call(this, value);
+                },
+            }),
+            innerHTML: generateAccessorDescriptor({
+                get(): string {
+                    return originalInnerHTMLDescriptor.get!.call(this);
+                },
+                set(this: Element, value: string) {
+                    logMissingPortalError('innerHTML', 'property');
+                    return originalInnerHTMLDescriptor.set!.call(this, value);
+                },
+            }),
+        });
+    }
+
+    defineProperties(elm, descriptors);
 }
 
 const BLOCKED_SHADOW_ROOT_METHODS = [
@@ -202,10 +181,10 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
     // thing when using the real shadow root, because if that's the case,
     // the component will not work when running with synthetic shadow.
     const originalAddEventListener = sr.addEventListener;
-    const descriptors = getNodeRestrictionsDescriptors(sr);
     const originalInnerHTMLDescriptor = getPropertyDescriptor(sr, 'innerHTML')!;
     const originalTextContentDescriptor = getPropertyDescriptor(sr, 'textContent')!;
-    assign(descriptors, {
+
+    const descriptors: PropertyDescriptorMap = {
         innerHTML: generateAccessorDescriptor({
             get(this: ShadowRoot): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
@@ -242,7 +221,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 return originalAddEventListener.apply(this, arguments);
             },
         }),
-    });
+    };
 
     forEach.call(BLOCKED_SHADOW_ROOT_METHODS, (methodName: string) => {
         descriptors[methodName] = generateAccessorDescriptor({
@@ -263,14 +242,13 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const descriptors = getNodeRestrictionsDescriptors(elm);
 
     const originalAddEventListener = elm.addEventListener;
     const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
     const originalTextContentDescriptor = getPropertyDescriptor(elm, 'textContent')!;
 
-    return assign(descriptors, {
+    return {
         innerHTML: generateAccessorDescriptor({
             get(this: HTMLElement): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
@@ -315,7 +293,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 return originalAddEventListener.apply(this, arguments);
             },
         }),
-    });
+    };
 }
 
 function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
@@ -404,10 +382,6 @@ function getLightningElementPrototypeRestrictionsDescriptors(
     });
 
     return descriptors;
-}
-
-export function patchElementWithRestrictions(elm: Element, options: RestrictionsOptions) {
-    defineProperties(elm, getElementRestrictionsDescriptors(elm, options));
 }
 
 // This routine will prevent access to certain properties on a shadow root instance to guarantee
