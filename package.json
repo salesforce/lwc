@@ -1,7 +1,7 @@
 {
   "name": "lwc-monorepo",
   "private": true,
-  "description": "Lightning Web Components",
+  "description": "Lightning Web Componentos!",
   "repository": {
     "type": "git",
     "url": "https://github.com/salesforce/lwc.git"
