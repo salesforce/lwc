@@ -34,33 +34,35 @@ function createShadowStyleVNode(content: string): VNode {
     );
 }
 
-/**
- * Reset the styling token applied to the host element.
- */
-export function resetStyleAttributes(vm: VM): void {
-    const { context, elm, renderer } = vm;
+export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
+    const { elm, context, renderer } = vm;
+    const { stylesheets: newStylesheets, stylesheetTokens: newStylesheetTokens } = template;
 
-    // Remove the style attribute currently applied to the host element.
+    let newHostAttribute: string | undefined;
+    let newShadowAttribute: string | undefined;
+
+    // Reset the styling token applied to the host element.
     const oldHostAttribute = context.hostAttribute;
     if (!isUndefined(oldHostAttribute)) {
         renderer.removeAttribute(elm, oldHostAttribute);
     }
 
-    // Reset the scoping attributes associated to the context.
-    context.hostAttribute = context.shadowAttribute = undefined;
-}
+    // Apply the new template styling token to the host element, if the new template has any
+    // associated stylesheets.
+    if (
+        !isUndefined(newStylesheetTokens) &&
+        !isUndefined(newStylesheets) &&
+        newStylesheets.length !== 0
+    ) {
+        newHostAttribute = newStylesheetTokens.hostAttribute;
+        newShadowAttribute = newStylesheetTokens.shadowAttribute;
 
-/**
- * Apply/Update the styling token applied to the host element.
- */
-export function applyStyleAttributes(vm: VM, hostAttribute: string, shadowAttribute: string): void {
-    const { context, elm, renderer } = vm;
+        renderer.setAttribute(elm, newHostAttribute, '');
+    }
 
-    // Remove the style attribute currently applied to the host element.
-    renderer.setAttribute(elm, hostAttribute, '');
-
-    context.hostAttribute = hostAttribute;
-    context.shadowAttribute = shadowAttribute;
+    // Update the styling tokens present on the context object.
+    context.hostAttribute = newHostAttribute;
+    context.shadowAttribute = newShadowAttribute;
 }
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
