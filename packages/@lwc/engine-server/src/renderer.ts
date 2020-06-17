@@ -213,7 +213,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
     },
 
     insertGlobalStylesheet() {
-        // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for 
+        // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
         // synthetic shadow.
     },
 
