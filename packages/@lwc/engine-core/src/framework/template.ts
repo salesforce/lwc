@@ -48,33 +48,31 @@ export { registerTemplate };
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
 
-    /**
-     * The stylesheet associated with the template.
-     */
+    /** The list of slot names used in the template. */
+    slots?: string[];
+    /** The stylesheet associated with the template. */
     stylesheets?: StylesheetFactory[];
-
+    /** The stylesheet tokens used for synthetic shadow style scoping. */
     stylesheetTokens?: {
-        /**
-         * HTML attribute that need to be applied to the host element. This attribute is used for the
-         * `:host` pseudo class CSS selector.
-         */
+        /** HTML attribute that need to be applied to the host element. This attribute is used for
+         * the `:host` pseudo class CSS selector. */
         hostAttribute: string;
-
-        /**
-         * HTML attribute that need to the applied to all the element that the template produces.
-         * This attribute is used for style encapsulation when the engine runs with synthetic shadow.
-         */
+        /** HTML attribute that need to the applied to all the element that the template produces.
+         * This attribute is used for style encapsulation when the engine runs with synthetic
+         * shadow. */
         shadowAttribute: string;
     };
 }
 
-function validateSlots(vm: VM, html: any) {
+function validateSlots(vm: VM, html: Template) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
+
     const { cmpSlots } = vm;
     const { slots = EmptyArray } = html;
+
     for (const slotName in cmpSlots) {
         // eslint-disable-next-line lwc-internal/no-production-assert
         assert.isTrue(
