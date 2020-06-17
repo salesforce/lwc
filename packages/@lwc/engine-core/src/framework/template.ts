@@ -52,7 +52,7 @@ export interface Template {
     /** The list of slot names used in the template. */
     slots?: string[];
     /** The stylesheet associated with the template. */
-    stylesheets?: StylesheetFactory[];
+    stylesheets?: (StylesheetFactory | StylesheetFactory[])[];
     /** The stylesheet tokens used for synthetic shadow style scoping. */
     stylesheetTokens?: {
         /** HTML attribute that need to be applied to the host element. This attribute is used for
