@@ -42,6 +42,8 @@ export interface Renderer<N = HostNode, E = HostElement> {
     getElementsByClassName(element: E, names: string): HTMLCollection;
     isConnected(node: N): boolean;
     tagName(element: E): string;
+
+    assertInstanceOfHTMLElement?(elm: any, msg: string): void;
 }
 
 // This is a temporary workaround to get the @lwc/engine-server to evaluate in node without having

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { hasOwnProperty, isUndefined } from '@lwc/shared';
+import { assert, hasOwnProperty, isUndefined } from '@lwc/shared';
 import { Renderer } from '@lwc/engine-core';
 
 // TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
@@ -123,5 +123,9 @@ export const renderer: Renderer<Node, Element> = {
 
     tagName(element: Element): string {
         return element.tagName;
+    },
+
+    assertInstanceOfHTMLElement(elm: any, msg: string) {
+        assert.invariant(elm instanceof HTMLElement, msg);
     },
 };

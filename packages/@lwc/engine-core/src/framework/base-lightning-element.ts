@@ -184,6 +184,13 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
         def: { ctor },
     } = vm;
 
+    if (process.env.NODE_ENV !== 'production') {
+        renderer.assertInstanceOfHTMLElement?.(
+            vm.elm,
+            `Component creation requires a DOM element to be associated to ${vm}.`
+        );
+    }
+
     const component = this;
     const cmpRoot = renderer.attachShadow(elm, {
         mode,
