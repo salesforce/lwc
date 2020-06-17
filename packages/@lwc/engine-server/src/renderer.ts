@@ -31,6 +31,7 @@ function createElement(name: string, namespace?: string): HostElement {
 }
 
 export const renderer: Renderer<HostNode, HostElement> = {
+    ssr: true,
     syntheticShadow: false,
 
     insert(node, parent, anchor) {

@@ -16,6 +16,7 @@ const globalStylesheetsParentElement: Element = document.head || document.body |
 export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');
 
 export const renderer: Renderer<Node, Element> = {
+    ssr: false,
     syntheticShadow: useSyntheticShadow,
 
     createElement(tagName: string, namespace: string): Element {
