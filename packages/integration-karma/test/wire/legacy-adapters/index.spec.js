@@ -167,18 +167,15 @@ describe('legacy wire adapters (register call)', () => {
     });
 
     describe('with multiple same adapters and different configs', () => {
-        it('should invoke multiple wires when component is created', (done) => {
+        it('should invoke multiple wires when component is created', () => {
             const elm = createElement('x-same-adapter-different-config', {
                 is: SameAdapterDifferentConfig,
             });
 
-            setTimeout(() => {
-                const resultFoo = elm.wireFooData;
-                expect(resultFoo.prop).toBe('foo');
-                const resultBar = elm.wireBarData;
-                expect(resultBar.prop).toBe('bar');
-                done();
-            }, 0);
+            const resultFoo = elm.wireFooData;
+            expect(resultFoo.prop).toBe('foo');
+            const resultBar = elm.wireBarData;
+            expect(resultBar.prop).toBe('bar');
         });
     });
 });
