@@ -1,0 +1,11 @@
+:host {
+    color: red;
+}
+
+.foo {
+    color: blue;
+}
+
+.foo .bar {
+    color: green;
+}

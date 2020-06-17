@@ -243,12 +243,6 @@ export function createVM<HostNode, HostElement>(
         renderer: Renderer;
     }
 ): VM {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            elm instanceof HTMLElement,
-            `VM creation requires a DOM element instead of ${elm}.`
-        );
-    }
     const { mode, owner, renderer, tagName } = options;
 
     const vm: VM = {

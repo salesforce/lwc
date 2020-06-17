@@ -1,0 +1,7 @@
+<template>
+    <ul>
+        <template for:each={list} for:item="item" for:index="index">
+            <li key={item}>{index} - {item}</li>
+        </template>
+    </ul>
+</template>

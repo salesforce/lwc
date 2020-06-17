@@ -91,7 +91,7 @@ function getNodeRestrictionsDescriptors(
     return {
         appendChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
-                if (this instanceof Element && isFalse(options.isPortal)) {
+                if (isFalse(options.isPortal)) {
                     logError(portalRestrictionErrorMessage('appendChild', 'method'));
                 }
                 return appendChild.call(this, aChild);
@@ -99,7 +99,7 @@ function getNodeRestrictionsDescriptors(
         }),
         insertBefore: generateDataDescriptor({
             value(this: Node, newNode: Node, referenceNode: Node) {
-                if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
+                if (!isDomMutationAllowed && isFalse(options.isPortal)) {
                     logError(portalRestrictionErrorMessage('insertBefore', 'method'));
                 }
                 return insertBefore.call(this, newNode, referenceNode);
@@ -107,7 +107,7 @@ function getNodeRestrictionsDescriptors(
         }),
         removeChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
-                if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
+                if (!isDomMutationAllowed && isFalse(options.isPortal)) {
                     logError(portalRestrictionErrorMessage('removeChild', 'method'));
                 }
                 return removeChild.call(this, aChild);
@@ -115,7 +115,7 @@ function getNodeRestrictionsDescriptors(
         }),
         replaceChild: generateDataDescriptor({
             value(this: Node, newChild: Node, oldChild: Node) {
-                if (this instanceof Element && isFalse(options.isPortal)) {
+                if (isFalse(options.isPortal)) {
                     logError(portalRestrictionErrorMessage('replaceChild', 'method'));
                 }
                 return replaceChild.call(this, newChild, oldChild);
@@ -126,7 +126,7 @@ function getNodeRestrictionsDescriptors(
                 return originalNodeValueDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
+                if (!isDomMutationAllowed && isFalse(options.isPortal)) {
                     logError(portalRestrictionErrorMessage('nodeValue', 'property'));
                 }
                 originalNodeValueDescriptor.set!.call(this, value);
@@ -137,7 +137,7 @@ function getNodeRestrictionsDescriptors(
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (this instanceof Element && isFalse(options.isPortal)) {
+                if (isFalse(options.isPortal)) {
                     logError(portalRestrictionErrorMessage('textContent', 'property'));
                 }
                 originalTextContentDescriptor.set!.call(this, value);
@@ -197,6 +197,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
         // this method should never leak to prod
         throw new ReferenceError();
     }
+
     // Disallowing properties in dev mode only to avoid people doing the wrong
     // thing when using the real shadow root, because if that's the case,
     // the component will not work when running with synthetic shadow.

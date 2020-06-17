@@ -175,12 +175,6 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
     if (isNull(vmBeingConstructed)) {
         throw new ReferenceError('Illegal constructor');
     }
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            vmBeingConstructed.elm instanceof HTMLElement,
-            `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`
-        );
-    }
 
     const vm = vmBeingConstructed;
     const {
@@ -189,6 +183,13 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
         renderer,
         def: { ctor },
     } = vm;
+
+    if (process.env.NODE_ENV !== 'production') {
+        renderer.assertInstanceOfHTMLElement?.(
+            vm.elm,
+            `Component creation requires a DOM element to be associated to ${vm}.`
+        );
+    }
 
     const component = this;
     const cmpRoot = renderer.attachShadow(elm, {
