@@ -5,9 +5,8 @@ ignore_forks: &ignore_forks
     ignore: /pull\/[0-9]+/
 
 env_integration_test: &env_integration_test
-  environment:
-    - SAUCE_USERNAME: lwc_ci
-    - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
+  - SAUCE_USERNAME: lwc_ci
+  - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
 
 # Jobs definition
 version: 2.1
@@ -145,10 +144,10 @@ jobs:
 
 
   test_karma:
-    <<: *env_integration_test
     executor: node
     environment:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma
+      <<: *env_integration_test
     steps:
       - load_workspace
       - start_sauce_connect
@@ -169,10 +168,10 @@ jobs:
 
 
   test_integration:
-    <<: *env_integration_test
     executor: node
     environment:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
+      <<: *env_integration_test
     steps:
       - load_workspace
       - start_sauce_connect
@@ -184,10 +183,10 @@ jobs:
 
 
   test_integration_compat:
-    <<: *env_integration_test
     executor: node
     environment:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_compat
+      <<: *env_integration_test
     steps:
       - load_workspace
       - start_sauce_connect
