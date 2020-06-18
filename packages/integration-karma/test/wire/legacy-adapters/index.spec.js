@@ -3,6 +3,7 @@ import { createElement } from 'lwc';
 import StaticWiredProps from 'x/staticWiredProps';
 import DynamicWiredProps from 'x/dynamicWiredProps';
 import SameConfigCase from 'x/sameConfigCase';
+import SameAdapterDifferentConfig from 'x/sameAdapterDifferentConfig';
 
 describe('legacy wire adapters (register call)', () => {
     describe('with static config', () => {
@@ -162,6 +163,19 @@ describe('legacy wire adapters (register call)', () => {
                     done();
                 }, 0);
             }, 0);
+        });
+    });
+
+    describe('with multiple same adapters and different configs', () => {
+        it('should invoke multiple wires when component is created', () => {
+            const elm = createElement('x-same-adapter-different-config', {
+                is: SameAdapterDifferentConfig,
+            });
+
+            const resultFoo = elm.wireFooData;
+            expect(resultFoo.prop).toBe('foo');
+            const resultBar = elm.wireBarData;
+            expect(resultBar.prop).toBe('bar');
         });
     });
 });
