@@ -4,6 +4,10 @@ ignore_forks: &ignore_forks
     # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
     ignore: /pull\/[0-9]+/
 
+env_integration_test: &env_integration_test
+  environment:
+    - SAUCE_USERNAME: lwc_ci
+    - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
 
 # Jobs definition
 version: 2.1
@@ -141,6 +145,7 @@ jobs:
 
 
   test_karma:
+    <<: *env_integration_test
     executor: node
     environment:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma
@@ -164,6 +169,7 @@ jobs:
 
 
   test_integration:
+    <<: *env_integration_test
     executor: node
     environment:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration
@@ -178,6 +184,7 @@ jobs:
 
 
   test_integration_compat:
+    <<: *env_integration_test
     executor: node
     environment:
       SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_compat
@@ -231,8 +238,6 @@ workflows:
             - build
 
       - test_karma:
-          filters:
-              <<: *ignore_forks
           requires:
             - build
 
@@ -243,15 +248,11 @@ workflows:
             - build
 
       - test_integration:
-          filters:
-              <<: *ignore_forks
           requires:
             - test_unit
             - test_karma
 
       - test_integration_compat:
-          filters:
-              <<: *ignore_forks
           requires:
             - test_unit
             - test_karma
