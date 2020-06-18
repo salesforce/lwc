@@ -9510,10 +9510,10 @@ object.values@^1.1.0:
     function-bind "^1.1.1"
     has "^1.0.3"
 
-observable-membrane@0.26.1:
-  version "0.26.1"
-  resolved "http://npm.lwcjs.org/observable-membrane/-/observable-membrane-0.26.1/5619a7b2f4b0414d62b3e6cc2ea65734a08cce7a.tgz#5619a7b2f4b0414d62b3e6cc2ea65734a08cce7a"
-  integrity sha512-fBxLHtd0pUFI/rKh6Dfn9fxjEgY4NkRIqlPEKa9fR28rC9CQDfQ5P+t292CtAArtXOQ1mF8Nq9m1cF52IdN8DA==
+observable-membrane@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/observable-membrane/-/observable-membrane-1.0.0.tgz#f468308bb733b58e87ff4d3958c642e045b123c2"
+  integrity sha512-+oGaWNOGLR0xoOkYDB3B0AbXgFkyzaNCMgnxhA6EUu3G3gSpmhqDo18VMF2hehaLKlJmur1Iup/U0+OKKer6wg==
 
 octokit-pagination-methods@^1.1.0:
   version "1.1.0"
