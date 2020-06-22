@@ -1,0 +1,8 @@
+<template>
+    <template if:true={didError}>
+        <div class='rendered-frozen-alternative'>rendered frozen alternative view</div>
+    </template>
+    <template if:false={didError}>
+        <x-child-rendered-throw-frozen></x-child-rendered-throw-frozen>
+    </template>
+</template>

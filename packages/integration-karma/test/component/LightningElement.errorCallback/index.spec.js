@@ -8,6 +8,7 @@ import XBoundaryChildSlotThrow from 'x/boundaryChildSlotThrow';
 import XNestedBoundaryChildThrow from 'x/nestedBoundaryChildThrow';
 import XBoundaryChildSelfRehydrateThrow from 'x/boundaryChildSelfRehydrateThrow';
 import XBoundaryAlternativeViewThrow from 'x/boundaryAlternativeViewThrow';
+import XBoundaryRenderedThrowFrozen from 'x/boundaryChildRenderedThrowFrozen';
 
 import XChildConstructorThrowDuringInit from 'x/childConstructorThrowDuringInit';
 import XChildRenderThrowDuringInit from 'x/childRenderThrowDuringInit';
@@ -15,6 +16,18 @@ import XChildRenderedThrowDuringInit from 'x/childRenderedThrowDuringInit';
 import XChildConnectedThrowDuringInit from 'x/childConnectedThrowDuringInit';
 
 describe('error boundary', () => {
+    it('should not throw when the error object is frozen', () => {
+        const elm = createElement('x-boundary-rendered-throw-frozen', {
+            is: XBoundaryRenderedThrowFrozen,
+        });
+        document.body.appendChild(elm);
+
+        return Promise.resolve().then(() => {
+            const alternativeView = elm.shadowRoot.querySelector('.rendered-frozen-alternative');
+            expect(alternativeView.textContent).toEqual('rendered frozen alternative view');
+        });
+    });
+
     it('should render alternative view if child throws in renderedCallback()', () => {
         const elm = createElement('x-boundary-child-rendered-throw', {
             is: XBoundaryChildRenderedThrow,
