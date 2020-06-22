@@ -48,7 +48,7 @@ import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdo
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { LightningElement } from './base-lightning-element';
-import { getErrorComponentStack } from '../shared/format';
+import { addErrorComponentStack } from '../shared/format';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { Renderer, HostNode, HostElement } from './renderer';
@@ -661,7 +661,8 @@ export function runWithBoundaryProtection(
     } finally {
         post();
         if (!isUndefined(error)) {
-            error.wcStack = error.wcStack || getErrorComponentStack(vm);
+            addErrorComponentStack(vm, error);
+
             const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner);
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
