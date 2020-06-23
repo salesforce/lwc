@@ -31,7 +31,7 @@ export function createContextProvider(adapter: WireAdapterConstructor) {
     }
     adapterContextToken = guid();
     setAdapterToken(adapter, adapterContextToken);
-    const providers: WeakSet<EventTarget> = new WeakSet<EventTarget>();
+    const providers = new WeakSet<EventTarget>();
 
     return (elm: EventTarget, options: ContextProviderOptions) => {
         if (providers.has(elm)) {
