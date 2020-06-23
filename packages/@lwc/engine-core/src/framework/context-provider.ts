@@ -27,7 +27,7 @@ interface ContextProviderOptions {
 export function createContextProvider(adapter: WireAdapterConstructor) {
     let adapterContextToken = getAdapterToken(adapter);
     if (!isUndefined(adapterContextToken)) {
-        throw new Error(`Adapter already have a context provider.`);
+        throw new Error(`Adapter already has a context provider.`);
     }
     adapterContextToken = guid();
     setAdapterToken(adapter, adapterContextToken);
