@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isArray, isUndefined, ArrayJoin } from '@lwc/shared';
+import { isArray, isUndefined, ArrayJoin, ArrayPush } from '@lwc/shared';
 
 import * as api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
@@ -15,11 +15,18 @@ import { Template } from './template';
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
  */
-export type StylesheetFactory = (
+type StylesheetFactory = (
     hostSelector: string,
     shadowSelector: string,
     nativeShadow: boolean
 ) => string;
+
+/**
+ * The list of stylesheets associated with a template. Each entry either a StylesheetFactory or a
+ * TemplateStylesheetFactory a given stylesheet depends on other external stylesheets (via the
+ * @import CSS declaration).
+ */
+export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
 
 function createShadowStyleVNode(content: string): VNode {
     return api.h(
@@ -65,30 +72,49 @@ export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
     context.shadowAttribute = newShadowAttribute;
 }
 
-export function getStylesheetsContent(vm: VM, template: Template): string[] {
-    const { stylesheets: factories, stylesheetTokens: tokens } = template;
-    const { syntheticShadow: useSyntheticShadow } = vm.renderer;
+function evaluateStylesheetsContent(
+    stylesheets: TemplateStylesheetFactories,
+    hostSelector: string,
+    shadowSelector: string,
+    nativeShadow: boolean
+): string[] {
+    const content: string[] = [];
 
-    const stylesheets: string[] = [];
+    for (let i = 0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
 
-    if (!isUndefined(factories) && !isUndefined(tokens)) {
-        const hostSelector = useSyntheticShadow ? `[${tokens.hostAttribute}]` : '';
-        const shadowSelector = useSyntheticShadow ? `[${tokens.shadowAttribute}]` : '';
-
-        for (let i = 0; i < factories.length; i++) {
-            const factory = factories[i];
-
-            if (isArray(factory)) {
-                for (let j = 0; j < factory.length; j++) {
-                    stylesheets.push(factory[j](hostSelector, shadowSelector, !useSyntheticShadow));
-                }
-            } else {
-                stylesheets.push(factory(hostSelector, shadowSelector, !useSyntheticShadow));
-            }
+        if (isArray(stylesheet)) {
+            ArrayPush.apply(
+                content,
+                evaluateStylesheetsContent(stylesheet, hostSelector, shadowSelector, nativeShadow)
+            );
+        } else {
+            ArrayPush.call(content, stylesheet(hostSelector, shadowSelector, nativeShadow));
         }
     }
 
-    return stylesheets;
+    return content;
+}
+
+export function getStylesheetsContent(vm: VM, template: Template): string[] {
+    const { stylesheets, stylesheetTokens: tokens } = template;
+    const { syntheticShadow } = vm.renderer;
+
+    let content: string[] = [];
+
+    if (!isUndefined(stylesheets) && !isUndefined(tokens)) {
+        const hostSelector = syntheticShadow ? `[${tokens.hostAttribute}]` : '';
+        const shadowSelector = syntheticShadow ? `[${tokens.shadowAttribute}]` : '';
+
+        content = evaluateStylesheetsContent(
+            stylesheets,
+            hostSelector,
+            shadowSelector,
+            !syntheticShadow
+        );
+    }
+
+    return content;
 }
 
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {

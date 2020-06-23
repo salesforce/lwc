@@ -22,27 +22,12 @@ import { SlotSet, TemplateCache, VM, resetShadowRoot, runWithBoundaryProtection 
 import { EmptyArray } from './utils';
 import { isTemplateRegistered, registerTemplate } from './secure-template';
 import {
+    TemplateStylesheetFactories,
     createStylesheet,
-    StylesheetFactory,
     getStylesheetsContent,
     updateSyntheticShadowAttributes,
 } from './stylesheet';
 import { startMeasure, endMeasure } from './performance-timing';
-
-export let isUpdatingTemplate: boolean = false;
-
-let vmBeingRendered: VM | null = null;
-export function getVMBeingRendered(): VM | null {
-    return vmBeingRendered;
-}
-export function setVMBeingRendered(vm: VM | null) {
-    vmBeingRendered = vm;
-}
-export function isVMBeingRendered(vm: VM) {
-    return vm === vmBeingRendered;
-}
-
-export { registerTemplate };
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -50,7 +35,7 @@ export interface Template {
     /** The list of slot names used in the template. */
     slots?: string[];
     /** The stylesheet associated with the template. */
-    stylesheets?: Array<StylesheetFactory | StylesheetFactory[]>;
+    stylesheets?: TemplateStylesheetFactories;
     /** The stylesheet tokens used for synthetic shadow style scoping. */
     stylesheetTokens?: {
         /** HTML attribute that need to be applied to the host element. This attribute is used for
@@ -62,6 +47,18 @@ export interface Template {
         shadowAttribute: string;
     };
 }
+
+export let isUpdatingTemplate: boolean = false;
+
+let vmBeingRendered: VM | null = null;
+export function getVMBeingRendered(): VM | null {
+    return vmBeingRendered;
+}
+export function setVMBeingRendered(vm: VM | null) {
+    vmBeingRendered = vm;
+}
+
+export { registerTemplate };
 
 function validateSlots(vm: VM, html: Template) {
     if (process.env.NODE_ENV === 'production') {
