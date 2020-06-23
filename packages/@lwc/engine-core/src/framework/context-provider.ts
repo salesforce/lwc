@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayIndexOf } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared';
 import { guid } from './utils';
 import {
     WireAdapterConstructor,
@@ -27,17 +27,17 @@ interface ContextProviderOptions {
 export function createContextProvider(adapter: WireAdapterConstructor) {
     let adapterContextToken = getAdapterToken(adapter);
     if (!isUndefined(adapterContextToken)) {
-        throw new Error(`Adapter already have a context provider.`);
+        throw new Error(`Adapter already has a context provider.`);
     }
     adapterContextToken = guid();
     setAdapterToken(adapter, adapterContextToken);
-    const providers: EventTarget[] = [];
+    const providers = new WeakSet<EventTarget>();
 
     return (elm: EventTarget, options: ContextProviderOptions) => {
-        if (ArrayIndexOf.call(providers, elm) !== -1) {
+        if (providers.has(elm)) {
             throw new Error(`Adapter was already installed on ${elm}.`);
         }
-        providers.push(elm);
+        providers.add(elm);
 
         const { consumerConnectedCallback, consumerDisconnectedCallback } = options;
         elm.addEventListener(
