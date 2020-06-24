@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    isNull,
-    isUndefined,
-    isFrozen,
-    ArrayJoin,
-    ArrayPush,
-    StringToLowerCase,
-} from '@lwc/shared';
+import { isNull, ArrayJoin, ArrayPush, StringToLowerCase } from '@lwc/shared';
 
 import { VM } from '../framework/vm';
 
@@ -34,7 +27,7 @@ export function getComponentStack(vm: VM): string {
     return ArrayJoin.call(stack, '\n');
 }
 
-function getErrorComponentStack(vm: VM): string {
+export function getErrorComponentStack(vm: VM): string {
     const wcStack: string[] = [];
 
     let currentVm: VM | null = vm;
@@ -44,10 +37,4 @@ function getErrorComponentStack(vm: VM): string {
     }
 
     return wcStack.reverse().join('\n\t');
-}
-
-export function addErrorComponentStack(vm: VM, error: any): void {
-    if (!isFrozen(error) && isUndefined(error.wcStack)) {
-        error.wcStack = getErrorComponentStack(vm);
-    }
 }

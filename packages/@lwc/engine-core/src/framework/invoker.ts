@@ -9,9 +9,10 @@ import { assert, isFunction, isUndefined } from '@lwc/shared';
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
-import { VNodes } from '../3rdparty/snabbdom/types';
 import { startMeasure, endMeasure } from './performance-timing';
-import { addErrorComponentStack } from '../shared/format';
+
+import { VNodes } from '../3rdparty/snabbdom/types';
+import { addErrorComponentStack } from '../shared/error';
 
 export let isInvokingRender: boolean = false;
 
