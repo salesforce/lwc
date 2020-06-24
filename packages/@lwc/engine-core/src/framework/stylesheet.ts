@@ -22,7 +22,7 @@ type StylesheetFactory = (
 ) => string;
 
 /**
- * The list of stylesheets associated with a template. Each entry either a StylesheetFactory or a
+ * The list of stylesheets associated with a template. Each entry is either a StylesheetFactory or a
  * TemplateStylesheetFactory a given stylesheet depends on other external stylesheets (via the
  * @import CSS declaration).
  */

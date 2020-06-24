@@ -20,7 +20,7 @@ import * as api from './api';
 import { RenderAPI } from './api';
 import { SlotSet, TemplateCache, VM, resetShadowRoot, runWithBoundaryProtection } from './vm';
 import { EmptyArray } from './utils';
-import { isTemplateRegistered, registerTemplate } from './secure-template';
+import { isTemplateRegistered } from './secure-template';
 import {
     TemplateStylesheetFactories,
     createStylesheet,
@@ -57,8 +57,6 @@ export function getVMBeingRendered(): VM | null {
 export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
-
-export { registerTemplate };
 
 function validateSlots(vm: VM, html: Template) {
     if (process.env.NODE_ENV === 'production') {
