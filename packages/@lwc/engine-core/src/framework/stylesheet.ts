@@ -37,7 +37,7 @@ function createShadowStyleVNode(content: string): VNode {
                 type: 'text/css',
             },
         },
-        [api.t(content)]
+        [api.t(content, 'style-content')]
     );
 }
 
