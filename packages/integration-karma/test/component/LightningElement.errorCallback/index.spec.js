@@ -16,15 +16,25 @@ import XChildRenderedThrowDuringInit from 'x/childRenderedThrowDuringInit';
 import XChildConnectedThrowDuringInit from 'x/childConnectedThrowDuringInit';
 
 describe('error boundary', () => {
-    it('should not throw when the error object is frozen', () => {
+    it('should propagate frozen error to errorCallback()', () => {
         const elm = createElement('x-boundary-rendered-throw-frozen', {
             is: XBoundaryRenderedThrowFrozen,
         });
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.rendered-frozen-alternative');
-            expect(alternativeView.textContent).toEqual('rendered frozen alternative view');
+            expect(elm.getErrorMessage()).toEqual('Child threw frozen error in renderedCallback()');
+        });
+    });
+
+    it('should not add web component stack trace to frozen error', () => {
+        const elm = createElement('x-boundary-rendered-throw-frozen', {
+            is: XBoundaryRenderedThrowFrozen,
+        });
+        document.body.appendChild(elm);
+
+        return Promise.resolve().then(() => {
+            expect(elm.getErrorWCStack()).toBeUndefined();
         });
     });
 

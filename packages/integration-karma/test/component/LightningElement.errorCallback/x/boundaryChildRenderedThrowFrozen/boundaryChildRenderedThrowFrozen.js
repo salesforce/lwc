@@ -1,8 +1,22 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
 
 export default class ChildRenderedThrow extends LightningElement {
-    didError = false;
-    errorCallback() {
-        this.didError = true;
+    error = {
+        message: '',
+        wcStack: '',
+    };
+
+    @api
+    getErrorMessage() {
+        return this.error.message;
+    }
+
+    @api
+    getErrorWCStack() {
+        return this.error.wcStack;
+    }
+
+    errorCallback(error) {
+        this.error = error;
     }
 }
