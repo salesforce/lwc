@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isNull } from '@lwc/shared';
+import { isUndefined, isNull, isBooleanAttribute } from '@lwc/shared';
 import { Renderer } from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
@@ -85,12 +85,16 @@ export const renderer: Renderer<HostNode, HostElement> = {
     },
 
     getProp(node, key) {
-        // Handle special elements live bindings.
-        if (node.type === HostNodeType.Element && node.name === 'input') {
-            if (key === 'value') {
+        if (node.type === HostNodeType.Element) {
+            // Handle all the boolean properties.
+            if (isBooleanAttribute(key)) {
+                return this.getAttribute(node, key) ?? false;
+            }
+
+            // Handle special elements live bindings. The checked property is already handled above
+            // in the boolean case.
+            if (node.name === 'input' && key === 'value') {
                 return this.getAttribute(node, 'value') ?? '';
-            } else if (key === 'checked') {
-                return this.getAttribute(node, 'checked') ?? false;
             }
         }
 
@@ -99,25 +103,29 @@ export const renderer: Renderer<HostNode, HostElement> = {
     },
 
     setProp(node, key, value) {
-        // Handle special elements live bindings.
-        if (node.type === HostNodeType.Element && node.name === 'input') {
-            if (key === 'value') {
-                if (isNull(value) || isUndefined(value)) {
-                    this.removeAttribute(node, 'value');
-                } else {
-                    this.setAttribute(node, 'value', value);
-                }
-            } else if (key === 'checked') {
-                if (value === true) {
-                    this.setAttribute(node, 'checked', '');
-                } else {
-                    this.removeAttribute(node, 'checked');
-                }
+        if (node.type === HostNodeType.Element) {
+            // Handle the special case, where the readOnly boolean property maps to the the
+            // readonly attribute name.
+            const attrName = key === 'readOnly' ? 'readonly' : key;
+
+            // Handle all the boolean properties.
+            if (isBooleanAttribute(attrName)) {
+                return value === true
+                    ? this.setAttribute(node, attrName, '')
+                    : this.removeAttribute(node, attrName);
             }
-        } else {
-            // eslint-disable-next-line no-console
-            console.warn(`Unexpected "${key}" property set from the renderer`);
+
+            // Handle special elements live bindings. The checked property is already handled above
+            // in the boolean case.
+            if (node.name === 'input' && attrName === 'value') {
+                return isNull(value) || isUndefined(value)
+                    ? this.removeAttribute(node, 'value')
+                    : this.setAttribute(node, 'value', value);
+            }
         }
+
+        // eslint-disable-next-line no-console
+        console.warn(`Unexpected "${key}" property set from the renderer`);
     },
 
     setText(node, content) {

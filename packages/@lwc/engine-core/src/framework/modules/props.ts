@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isUndefined, keys } from '@lwc/shared';
-import { VNode } from '../../3rdparty/snabbdom/types';
+import { VElement } from '../../3rdparty/snabbdom/types';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For properties with live bindings, we read values from the DOM element
@@ -13,7 +13,7 @@ function isLiveBindingProp(sel: string, key: string): boolean {
     return sel === 'input' && (key === 'value' || key === 'checked');
 }
 
-function update(oldVnode: VNode, vnode: VNode) {
+function update(oldVnode: VElement, vnode: VElement) {
     const props = vnode.data.props;
 
     if (isUndefined(props)) {
@@ -31,9 +31,9 @@ function update(oldVnode: VNode, vnode: VNode) {
         );
     }
 
-    const elm = vnode.elm as Element;
     const isFirstPatch = isUndefined(oldProps);
     const {
+        elm,
         sel,
         owner: { renderer },
     } = vnode;
@@ -45,18 +45,16 @@ function update(oldVnode: VNode, vnode: VNode) {
         if (
             isFirstPatch ||
             cur !==
-                (isLiveBindingProp(sel as string, key)
-                    ? renderer.getProp(elm, key)
-                    : (oldProps as any)[key])
+                (isLiveBindingProp(sel, key) ? renderer.getProp(elm!, key) : (oldProps as any)[key])
         ) {
-            renderer.setProp(elm, key, cur);
+            renderer.setProp(elm!, key, cur);
         }
     }
 }
 
-const emptyVNode = { data: {} } as VNode;
+const emptyVNode = { data: {} } as VElement;
 
 export default {
-    create: (vnode: VNode) => update(emptyVNode, vnode),
+    create: (vnode: VElement) => update(emptyVNode, vnode),
     update,
 };
