@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isNull, isBooleanAttribute } from '@lwc/shared';
-import { Renderer } from '@lwc/engine-core';
+import { isUndefined, isNull, isBooleanAttribute, isGlobalHtmlAttribute } from '@lwc/shared';
+import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
@@ -85,10 +85,21 @@ export const renderer: Renderer<HostNode, HostElement> = {
     },
 
     getProp(node, key) {
+        if (key in node) {
+            return (node as any)[key];
+        }
+
         if (node.type === HostNodeType.Element) {
+            const attrName = getAttrNameFromPropName(key);
+
             // Handle all the boolean properties.
-            if (isBooleanAttribute(key)) {
-                return this.getAttribute(node, key) ?? false;
+            if (isBooleanAttribute(attrName)) {
+                return this.getAttribute(node, attrName) ?? false;
+            }
+
+            // Handle global html attributes.
+            if (isGlobalHtmlAttribute(attrName)) {
+                return this.getAttribute(node, attrName);
             }
 
             // Handle special elements live bindings. The checked property is already handled above
@@ -103,16 +114,23 @@ export const renderer: Renderer<HostNode, HostElement> = {
     },
 
     setProp(node, key, value) {
+        if (key in node) {
+            return ((node as any)[key] = value);
+        }
+
         if (node.type === HostNodeType.Element) {
-            // Handle the special case, where the readOnly boolean property maps to the the
-            // readonly attribute name.
-            const attrName = key === 'readOnly' ? 'readonly' : key;
+            const attrName = getAttrNameFromPropName(key);
 
             // Handle all the boolean properties.
             if (isBooleanAttribute(attrName)) {
                 return value === true
                     ? this.setAttribute(node, attrName, '')
                     : this.removeAttribute(node, attrName);
+            }
+
+            // Handle global html attributes.
+            if (isGlobalHtmlAttribute(attrName)) {
+                return this.setAttribute(node, attrName, value);
             }
 
             // Handle special elements live bindings. The checked property is already handled above
@@ -125,7 +143,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         }
 
         // eslint-disable-next-line no-console
-        console.warn(`Unexpected "${key}" property set from the renderer`);
+        console.warn(`Unexpected attempt to set "${key}=${value}" property from the renderer`);
     },
 
     setText(node, content) {

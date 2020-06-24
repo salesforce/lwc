@@ -1,6 +1,6 @@
 import { LightningElement } from 'lwc';
 
-export default class AriaAttributes extends LightningElement {
+export default class AttributesAria extends LightningElement {
     computed = {
         id: 'computed-label-id',
         role: 'progressbar',

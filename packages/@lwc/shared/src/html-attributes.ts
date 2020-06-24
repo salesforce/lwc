@@ -51,3 +51,32 @@ const GLOBAL_ATTRIBUTE = new Set([
 export function isGlobalHtmlAttribute(attrName: string): boolean {
     return GLOBAL_ATTRIBUTE.has(attrName);
 }
+
+const HTML_ATTRIBUTES_TO_PROPERTY = new Map([
+    ['accesskey', 'accessKey'],
+    ['readonly', 'readOnly'],
+    ['tabindex', 'tabIndex'],
+    ['bgcolor', 'bgColor'],
+    ['colspan', 'colSpan'],
+    ['rowspan', 'rowSpan'],
+    ['contenteditable', 'contentEditable'],
+    ['crossorigin', 'crossOrigin'],
+    ['datetime', 'dateTime'],
+    ['formaction', 'formAction'],
+    ['ismap', 'isMap'],
+    ['maxlength', 'maxLength'],
+    ['minlength', 'minLength'],
+    ['novalidate', 'noValidate'],
+    ['usemap', 'useMap'],
+    ['for', 'htmlFor'],
+]);
+const HTML_PROPERTIES_TO_ATTRIBUTE = new Map(
+    [...HTML_ATTRIBUTES_TO_PROPERTY.entries()].map(([k, v]) => [v, k])
+);
+
+export function htmlAttributeToProperty(attrName: string): string {
+    return HTML_ATTRIBUTES_TO_PROPERTY.get(attrName) ?? attrName;
+}
+export function htmlPropertyToAttribute(propName: string): string {
+    return HTML_PROPERTIES_TO_ATTRIBUTE.get(propName) ?? propName;
+}
