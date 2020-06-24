@@ -7,40 +7,40 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     i: api_iterator,
     f: api_flatten,
-    c: api_custom_element
+    c: api_custom_element,
   } = $api;
   return [
     api_element(
       "div",
       {
-        key: 2
+        key: 3,
       },
       [
         api_custom_element(
           "x-b",
           _xB,
           {
-            key: 1
+            key: 2,
           },
           api_flatten([
             $cmp.isLoading
               ? api_element(
                   "div",
                   {
-                    key: 0
+                    key: 0,
                   },
                   []
                 )
               : null,
             $cmp.haveLoadedItems
-              ? api_iterator($cmp.menuItems, function(item) {
-                  return api_text("x");
+              ? api_iterator($cmp.menuItems, function (item) {
+                  return api_text("x", 1);
                 })
-              : []
+              : [],
           ])
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
 

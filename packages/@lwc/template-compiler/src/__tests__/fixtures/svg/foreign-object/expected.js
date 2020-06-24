@@ -6,7 +6,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        key: 5
+        key: 6,
       },
       [
         api_element(
@@ -14,27 +14,27 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           {
             attrs: {
               width: "706",
-              height: "180"
+              height: "180",
             },
-            key: 4
+            key: 5,
           },
           [
             api_element(
               "g",
               {
                 attrs: {
-                  transform: "translate(3,3)"
+                  transform: "translate(3,3)",
                 },
-                key: 3
+                key: 4,
               },
               [
                 api_element(
                   "g",
                   {
                     attrs: {
-                      transform: "translate(250,0)"
+                      transform: "translate(250,0)",
                     },
-                    key: 2
+                    key: 3,
                   },
                   [
                     api_element(
@@ -43,28 +43,28 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                         attrs: {
                           width: "200",
                           height: "36",
-                          "xlink:href": "javascript:alert(1)"
+                          "xlink:href": "javascript:alert(1)",
                         },
-                        key: 1
+                        key: 2,
                       },
                       [
                         api_element(
                           "a",
                           {
-                            key: 0
+                            key: 1,
                           },
-                          [api_text("x")]
-                        )
+                          [api_text("x", 0)]
+                        ),
                       ]
-                    )
+                    ),
                   ]
-                )
+                ),
               ]
-            )
+            ),
           ]
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
 

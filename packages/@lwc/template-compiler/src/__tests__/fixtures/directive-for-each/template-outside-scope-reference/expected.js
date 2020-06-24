@@ -6,47 +6,47 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     d: api_dynamic,
     k: api_key,
     h: api_element,
-    i: api_iterator
+    i: api_iterator,
   } = $api;
   return [
     api_element(
       "section",
       {
-        key: 4
+        key: 12,
       },
-      api_iterator($cmp.items, function(item) {
+      api_iterator($cmp.items, function (item) {
         return [
           api_element(
             "p",
             {
-              key: api_key(0, item.keyOne)
+              key: api_key(2, item.keyOne),
             },
-            [api_text("1"), api_dynamic(item)]
+            [api_text("1", 0), api_dynamic(item, 1)]
           ),
           api_element(
             "p",
             {
-              key: api_key(1, item.keyTwo)
+              key: api_key(5, item.keyTwo),
             },
-            [api_text("2"), api_dynamic(item.foo)]
+            [api_text("2", 3), api_dynamic(item.foo, 4)]
           ),
           api_element(
             "p",
             {
-              key: api_key(2, item.keyThree)
+              key: api_key(8, item.keyThree),
             },
-            [api_text("3"), api_dynamic($cmp.other)]
+            [api_text("3", 6), api_dynamic($cmp.other, 7)]
           ),
           api_element(
             "p",
             {
-              key: api_key(3, item.keyFour)
+              key: api_key(11, item.keyFour),
             },
-            [api_text("4"), api_dynamic($cmp.other.foo)]
-          )
+            [api_text("4", 9), api_dynamic($cmp.other.foo, 10)]
+          ),
         ];
       })
-    )
+    ),
   ];
 }
 

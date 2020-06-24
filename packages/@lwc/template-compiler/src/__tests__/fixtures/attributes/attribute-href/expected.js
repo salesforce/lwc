@@ -7,25 +7,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "a",
       {
         attrs: {
-          href: "#yasaka-taxi"
+          href: "#yasaka-taxi",
         },
-        key: 0
+        key: 1,
       },
-      [api_text("Yasaka Taxi")]
+      [api_text("Yasaka Taxi", 0)]
     ),
     api_element(
       "map",
       {
-        key: 3
+        key: 4,
       },
       [
         api_element(
           "area",
           {
             attrs: {
-              href: "#eneos-gas"
+              href: "#eneos-gas",
             },
-            key: 1
+            key: 2,
           },
           []
         ),
@@ -33,14 +33,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "area",
           {
             attrs: {
-              href: "#kawaramachi"
+              href: "#kawaramachi",
             },
-            key: 2
+            key: 3,
           },
           []
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
 

@@ -6,19 +6,19 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "ul",
       {
-        key: 1
+        key: 2,
       },
-      api_iterator($cmp.items, function(item) {
+      api_iterator($cmp.items, function (item) {
         return api_element(
           "li",
           {
             className: item.x,
-            key: api_key(0, item.id)
+            key: api_key(1, item.id),
           },
-          [api_dynamic(item)]
+          [api_dynamic(item, 0)]
         );
       })
-    )
+    ),
   ];
 }
 

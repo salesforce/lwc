@@ -7,40 +7,40 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 3
+        key: 5,
       },
       [
         api_custom_element(
           "ns-cmp",
           _nsCmp,
           {
-            key: 2
+            key: 4,
           },
           [
             api_element(
               "p",
               {
                 attrs: {
-                  slot: "header"
+                  slot: "header",
                 },
-                key: 0
+                key: 1,
               },
-              [api_text("Header Slot Content")]
+              [api_text("Header Slot Content", 0)]
             ),
             api_element(
               "p",
               {
                 attrs: {
-                  slot: true
+                  slot: true,
                 },
-                key: 1
+                key: 3,
               },
-              [api_text("Default Content")]
-            )
+              [api_text("Default Content", 2)]
+            ),
           ]
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
 

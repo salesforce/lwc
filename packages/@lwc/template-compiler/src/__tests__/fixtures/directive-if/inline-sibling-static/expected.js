@@ -6,30 +6,30 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 5,
       },
       [
         $cmp.isTrue
           ? api_element(
               "p",
               {
-                key: 0
+                key: 1,
               },
-              [api_text("1")]
+              [api_text("1", 0)]
             )
           : null,
-        api_dynamic($cmp.foo),
+        api_dynamic($cmp.foo, 2),
         $cmp.isTrue
           ? api_element(
               "p",
               {
-                key: 1
+                key: 4,
               },
-              [api_text("3")]
+              [api_text("3", 3)]
             )
-          : null
+          : null,
       ]
-    )
+    ),
   ];
 }
 

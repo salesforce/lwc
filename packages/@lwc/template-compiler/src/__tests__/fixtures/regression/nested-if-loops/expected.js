@@ -6,20 +6,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     k: api_key,
     h: api_element,
     i: api_iterator,
-    f: api_flatten
+    f: api_flatten,
   } = $api;
   return $cmp.isTrue
     ? api_flatten([
-        api_text("Outer"),
-        api_iterator($cmp.items, function(item) {
+        api_text("Outer", 0),
+        api_iterator($cmp.items, function (item) {
           return api_element(
             "p",
             {
-              key: api_key(0, item.id)
+              key: api_key(2, item.id),
             },
-            [api_text("Inner")]
+            [api_text("Inner", 1)]
           );
-        })
+        }),
       ])
     : [];
 }

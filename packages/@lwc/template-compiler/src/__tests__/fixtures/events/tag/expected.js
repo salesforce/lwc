@@ -7,31 +7,31 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 4,
       },
       [
         api_element(
           "div",
           {
-            key: 0,
+            key: 1,
             on: {
-              click: _m0 || ($ctx._m0 = api_bind($cmp.handleClick))
-            }
+              click: _m0 || ($ctx._m0 = api_bind($cmp.handleClick)),
+            },
           },
-          [api_text("x")]
+          [api_text("x", 0)]
         ),
         api_element(
           "div",
           {
-            key: 1,
+            key: 3,
             on: {
-              press: _m1 || ($ctx._m1 = api_bind($cmp.handlePress))
-            }
+              press: _m1 || ($ctx._m1 = api_bind($cmp.handlePress)),
+            },
           },
-          [api_text("x")]
-        )
+          [api_text("x", 2)]
+        ),
       ]
-    )
+    ),
   ];
 }
 

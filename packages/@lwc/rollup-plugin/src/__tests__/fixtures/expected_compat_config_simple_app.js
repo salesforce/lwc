@@ -110,9 +110,9 @@
         api_element(
           "div",
           {
-            key: 0
+            key: 1
           },
-          [api_dynamic($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x)]
+          [api_dynamic($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x, 0)]
         )
       ];
     }

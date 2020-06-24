@@ -7,26 +7,26 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "p",
       {
         props: {
-          hidden: true
+          hidden: true,
         },
-        key: 0
+        key: 1,
       },
-      [api_text("x")]
+      [api_text("x", 0)]
     ),
     api_element(
       "input",
       {
         attrs: {
-          title: "foo"
+          title: "foo",
         },
         props: {
           readOnly: $cmp.getReadOnly,
-          disabled: true
+          disabled: true,
         },
-        key: 1
+        key: 2,
       },
       []
-    )
+    ),
   ];
 }
 

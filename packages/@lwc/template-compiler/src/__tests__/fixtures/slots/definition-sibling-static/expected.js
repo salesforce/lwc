@@ -6,34 +6,34 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 3
+        key: 5,
       },
       [
         api_element(
           "p",
           {
-            key: 0
+            key: 1,
           },
-          [api_text("Sibling")]
+          [api_text("Sibling", 0)]
         ),
         api_slot(
           "",
           {
-            key: 2
+            key: 4,
           },
           [
             api_element(
               "p",
               {
-                key: 1
+                key: 3,
               },
-              [api_text("Default slot content")]
-            )
+              [api_text("Default slot content", 2)]
+            ),
           ],
           $slotset
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
 

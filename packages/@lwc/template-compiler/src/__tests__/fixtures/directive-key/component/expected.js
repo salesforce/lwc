@@ -7,25 +7,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     k: api_key,
     c: api_custom_element,
     i: api_iterator,
-    h: api_element
+    h: api_element,
   } = $api;
   return [
     api_element(
       "ul",
       {
-        key: 1
+        key: 2,
       },
-      api_iterator($cmp.items, function(item) {
+      api_iterator($cmp.items, function (item) {
         return api_custom_element(
           "ns-item",
           _nsItem,
           {
-            key: api_key(0, item.key)
+            key: api_key(1, item.key),
           },
-          [api_dynamic(item.value)]
+          [api_dynamic(item.value, 0)]
         );
       })
-    )
+    ),
   ];
 }
 

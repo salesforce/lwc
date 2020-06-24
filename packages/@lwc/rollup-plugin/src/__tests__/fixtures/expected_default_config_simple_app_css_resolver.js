@@ -23,8 +23,8 @@
         h: api_element
       } = $api;
       return [api_element("div", {
-        key: 0
-      }, [api_dynamic($cmp.x)])];
+        key: 1
+      }, [api_dynamic($cmp.x, 0)])];
     }
 
     var _tmpl = lwc.registerTemplate(tmpl);

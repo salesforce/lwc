@@ -7,7 +7,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "unknonwtag",
       {
-        key: 0
+        key: 0,
       },
       []
     ),
@@ -16,26 +16,26 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _xCustomComponent,
       {
         props: {
-          someTruthyValue: true
+          someTruthyValue: true,
         },
-        key: 1
+        key: 1,
       },
       []
     ),
     api_element(
       "span",
       {
-        key: 2
+        key: 3,
       },
-      [api_text("valid tags should not warn")]
+      [api_text("valid tags should not warn", 2)]
     ),
     api_element(
       "spam",
       {
-        key: 3
+        key: 5,
       },
-      [api_text("this tag has a typo")]
-    )
+      [api_text("this tag has a typo", 4)]
+    ),
   ];
 }
 

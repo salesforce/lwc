@@ -49,8 +49,8 @@ describe('module resolver', () => {
                     } = $api;
 
                     return [api_element("p", {
-                        key: 0
-                    }, [api_text("Manually Imported Template")])];
+                        key: 1
+                    }, [api_text("Manually Imported Template", 0)])];
                 }
 
                 var mytemplate = lwc.registerTemplate(tmpl);
@@ -98,8 +98,8 @@ describe('module resolver', () => {
                     } = $api;
 
                     return [api_element("p", {
-                        key: 0
-                    }, [api_text("Another Template")])];
+                        key: 1
+                    }, [api_text("Another Template", 0)])];
                 }
 
                 var mytemplate = lwc.registerTemplate(tmpl);

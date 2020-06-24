@@ -5,32 +5,32 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     fid: api_scoped_frag_id,
     h: api_element,
-    gid: api_scoped_id
+    gid: api_scoped_id,
   } = $api;
   return [
     api_element(
       "a",
       {
         attrs: {
-          href: api_scoped_frag_id("#kansai-airport")
+          href: api_scoped_frag_id("#kansai-airport"),
         },
-        key: 0
+        key: 1,
       },
-      [api_text("KIX")]
+      [api_text("KIX", 0)]
     ),
     api_element(
       "map",
       {
-        key: 3
+        key: 4,
       },
       [
         api_element(
           "area",
           {
             attrs: {
-              href: api_scoped_frag_id("#eneos-gas")
+              href: api_scoped_frag_id("#eneos-gas"),
             },
-            key: 1
+            key: 2,
           },
           []
         ),
@@ -38,24 +38,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "area",
           {
             attrs: {
-              href: api_scoped_frag_id("#kawaramachi")
+              href: api_scoped_frag_id("#kawaramachi"),
             },
-            key: 2
+            key: 3,
           },
           []
-        )
+        ),
       ]
     ),
     api_element(
       "h1",
       {
         attrs: {
-          id: api_scoped_id("kansai-airport")
+          id: api_scoped_id("kansai-airport"),
         },
-        key: 4
+        key: 6,
       },
-      [api_text("Don't forget your passport!")]
-    )
+      [api_text("Don't forget your passport!", 5)]
+    ),
   ];
 }
 

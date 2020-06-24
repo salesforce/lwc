@@ -7,47 +7,47 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
     d: api_dynamic,
     k: api_key,
-    i: api_iterator
+    i: api_iterator,
   } = $api;
   const { _m0 } = $ctx;
   return [
     api_element(
       "button",
       {
-        key: 0,
+        key: 1,
         on: {
-          click: _m0 || ($ctx._m0 = api_bind($cmp.create))
-        }
+          click: _m0 || ($ctx._m0 = api_bind($cmp.create)),
+        },
       },
-      [api_text("New")]
+      [api_text("New", 0)]
     ),
     api_element(
       "ul",
       {
-        key: 3
+        key: 6,
       },
-      api_iterator($cmp.list, function(task) {
+      api_iterator($cmp.list, function (task) {
         return api_element(
           "li",
           {
-            key: api_key(2, task.id)
+            key: api_key(5, task.id),
           },
           [
-            api_dynamic(task.title),
+            api_dynamic(task.title, 2),
             api_element(
               "button",
               {
-                key: 1,
+                key: 4,
                 on: {
-                  click: api_bind(task.delete)
-                }
+                  click: api_bind(task.delete),
+                },
               },
-              [api_text("[X]")]
-            )
+              [api_text("[X]", 3)]
+            ),
           ]
         );
       })
-    )
+    ),
   ];
 }
 

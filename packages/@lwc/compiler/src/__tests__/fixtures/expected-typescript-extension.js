@@ -4,7 +4,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     const {
         t: api_text
     } = $api;
-    return [api_text("ts test")];
+    return [api_text("ts test", 0)];
 }
 
 var _tmpl = registerTemplate(tmpl);

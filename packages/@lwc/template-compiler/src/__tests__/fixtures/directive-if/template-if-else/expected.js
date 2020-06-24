@@ -7,20 +7,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_element(
           "p",
           {
-            key: 0
+            key: 1,
           },
-          [api_text("1")]
+          [api_text("1", 0)]
         )
       : null,
     !$cmp.isTrue2
       ? api_element(
           "p",
           {
-            key: 1
+            key: 3,
           },
-          [api_text("2")]
+          [api_text("2", 2)]
         )
-      : null
+      : null,
   ];
 }
 

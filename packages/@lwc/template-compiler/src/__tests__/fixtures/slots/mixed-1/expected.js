@@ -6,54 +6,54 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 8
+        key: 14,
       },
       [
         api_element(
           "p",
           {
-            key: 0
+            key: 1,
           },
-          [api_text("Before header")]
+          [api_text("Before header", 0)]
         ),
         api_slot(
           "header",
           {
             attrs: {
-              name: "header"
+              name: "header",
             },
-            key: 1
+            key: 3,
           },
-          [api_text("Default header")],
+          [api_text("Default header", 2)],
           $slotset
         ),
         api_element(
           "p",
           {
-            key: 2
+            key: 5,
           },
-          [api_text("In")]
+          [api_text("In", 4)]
         ),
         api_element(
           "p",
           {
-            key: 3
+            key: 7,
           },
-          [api_text("between")]
+          [api_text("between", 6)]
         ),
         api_slot(
           "",
           {
-            key: 5
+            key: 10,
           },
           [
             api_element(
               "p",
               {
-                key: 4
+                key: 9,
               },
-              [api_text("Default body")]
-            )
+              [api_text("Default body", 8)]
+            ),
           ],
           $slotset
         ),
@@ -61,23 +61,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "footer",
           {
             attrs: {
-              name: "footer"
+              name: "footer",
             },
-            key: 7
+            key: 13,
           },
           [
             api_element(
               "p",
               {
-                key: 6
+                key: 12,
               },
-              [api_text("Default footer")]
-            )
+              [api_text("Default footer", 11)]
+            ),
           ],
           $slotset
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
 

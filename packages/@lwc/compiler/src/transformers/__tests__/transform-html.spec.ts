@@ -39,8 +39,8 @@ it('should apply transformation for template file', async () => {
             } = $api;
 
             return [api_element("div", {
-                key: 0
-            }, [api_text("Hello")])];
+                key: 1
+            }, [api_text("Hello", 0)])];
         }
 
         export default registerTemplate(tmpl);

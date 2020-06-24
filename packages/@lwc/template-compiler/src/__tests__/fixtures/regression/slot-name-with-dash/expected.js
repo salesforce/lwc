@@ -7,21 +7,21 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "secret-slot",
       {
         attrs: {
-          name: "secret-slot"
+          name: "secret-slot",
         },
-        key: 1
+        key: 2,
       },
       [
         api_element(
           "p",
           {
-            key: 0
+            key: 1,
           },
-          [api_text("Test slot content")]
-        )
+          [api_text("Test slot content", 0)]
+        ),
       ],
       $slotset
-    )
+    ),
   ];
 }
 

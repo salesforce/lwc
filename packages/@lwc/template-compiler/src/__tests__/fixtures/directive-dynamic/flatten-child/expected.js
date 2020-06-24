@@ -5,27 +5,27 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     t: api_text,
     h: api_element,
     dc: api_dynamic_component,
-    f: api_flatten
+    f: api_flatten,
   } = $api;
   return api_flatten([
     api_element(
       "div",
       {
-        key: 0
+        key: 1,
       },
-      [api_text("sibling")]
+      [api_text("sibling", 0)]
     ),
     api_dynamic_component(
       "x-foo",
       $cmp.trackedProp.foo,
       {
         context: {
-          lwc: {}
+          lwc: {},
         },
-        key: 1
+        key: 2,
       },
       []
-    )
+    ),
   ]);
 }
 

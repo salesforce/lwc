@@ -6,7 +6,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 1
+        key: 2,
       },
       [
         api_element(
@@ -15,14 +15,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               minlength: "1",
               maxlength: "5",
-              "unknown-attr": "should-error"
+              "unknown-attr": "should-error",
             },
-            key: 0
+            key: 1,
           },
-          [api_text("x")]
-        )
+          [api_text("x", 0)]
+        ),
       ]
-    )
+    ),
   ];
 }
 

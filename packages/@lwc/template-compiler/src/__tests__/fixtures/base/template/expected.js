@@ -6,10 +6,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "p",
       {
-        key: 0
+        key: 1,
       },
-      [api_text("Root")]
-    )
+      [api_text("Root", 0)]
+    ),
   ];
 }
 
