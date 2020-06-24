@@ -4,7 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isNull, isBooleanAttribute, isGlobalHtmlAttribute } from '@lwc/shared';
+import {
+    isUndefined,
+    isNull,
+    isBooleanAttribute,
+    isGlobalHtmlAttribute,
+    isAriaAttribute,
+} from '@lwc/shared';
 import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
@@ -97,8 +103,8 @@ export const renderer: Renderer<HostNode, HostElement> = {
                 return this.getAttribute(node, attrName) ?? false;
             }
 
-            // Handle global html attributes.
-            if (isGlobalHtmlAttribute(attrName)) {
+            // Handle global html attributes and AOM.
+            if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
                 return this.getAttribute(node, attrName);
             }
 
@@ -128,8 +134,8 @@ export const renderer: Renderer<HostNode, HostElement> = {
                     : this.removeAttribute(node, attrName);
             }
 
-            // Handle global html attributes.
-            if (isGlobalHtmlAttribute(attrName)) {
+            // Handle global html attributes and AOM.
+            if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
                 return this.setAttribute(node, attrName, value);
             }
 

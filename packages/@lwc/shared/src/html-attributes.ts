@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
 
 const BOOLEAN_ATTRIBUTES = new Set([
     'autofocus', // <button>, <input>, <keygen>, <select>, <textarea>
@@ -75,8 +76,24 @@ const HTML_PROPERTIES_TO_ATTRIBUTE = new Map(
 );
 
 export function htmlAttributeToProperty(attrName: string): string {
-    return HTML_ATTRIBUTES_TO_PROPERTY.get(attrName) ?? attrName;
+    if (attrName in AriaAttrNameToPropNameMap) {
+        return AriaAttrNameToPropNameMap[attrName];
+    }
+
+    if (HTML_ATTRIBUTES_TO_PROPERTY.has(attrName)) {
+        return HTML_ATTRIBUTES_TO_PROPERTY.get(attrName)!;
+    }
+
+    return attrName;
 }
 export function htmlPropertyToAttribute(propName: string): string {
-    return HTML_PROPERTIES_TO_ATTRIBUTE.get(propName) ?? propName;
+    if (propName in AriaPropNameToAttrNameMap) {
+        return AriaPropNameToAttrNameMap[propName];
+    }
+
+    if (HTML_PROPERTIES_TO_ATTRIBUTE.has(propName)) {
+        return HTML_PROPERTIES_TO_ATTRIBUTE.get(propName)!;
+    }
+
+    return propName;
 }
