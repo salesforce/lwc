@@ -1,0 +1,22 @@
+<template>
+    <span id="label-id">This is a section</span>
+    <div aria-describedby="label-id">I am section</div>
+
+    <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20">
+        I am a progress bar
+    </div>
+
+    <hr>
+
+    <span id={computed.id}>This is a section</span>
+    <div aria-describedby={computed.id}>I am section</div>
+
+    <div 
+        role={computed.role} 
+        aria-valuemin={computed.valueMin} 
+        aria-valuemax={computed.valueMax} 
+        aria-valuenow={computed.valueNow}
+    >
+        I am a progress bar
+    </div>
+</template>

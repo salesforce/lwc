@@ -6,7 +6,7 @@
  */
 
 import { assert, hasOwnProperty, isUndefined, create } from '@lwc/shared';
-import { Renderer } from '@lwc/engine-core';
+import { getAttrNameFromPropName, Renderer } from '@lwc/engine-core';
 
 const globalStylesheets: { [content: string]: true } = create(null);
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
@@ -46,6 +46,27 @@ export const renderer: Renderer<Node, Element> = {
 
     setText(node: Node, content: string): void {
         node.nodeValue = content;
+    },
+
+    getProp(node: Node, key: string): any {
+        return (node as any)[key];
+    },
+
+    setProp(node: Node, key: string, value: any): any {
+        if (process.env.NODE_ENV !== 'production') {
+            if (node instanceof Element && !(key in node)) {
+                // TODO [#1297]: Move this validation to the compiler
+                assert.fail(
+                    `Unknown public property "${key}" of element <${
+                        node.tagName
+                    }>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(
+                        key
+                    )}".`
+                );
+            }
+        }
+
+        return ((node as any)[key] = value);
     },
 
     getAttribute(element: Element, name: string, namespace?: string): string | null {

@@ -84,6 +84,42 @@ export const renderer: Renderer<HostNode, HostElement> = {
         return (element.shadowRoot as any) as HostNode;
     },
 
+    getProp(node, key) {
+        // Handle special elements live bindings.
+        if (node.type === HostNodeType.Element && node.name === 'input') {
+            if (key === 'value') {
+                return this.getAttribute(node, 'value') ?? '';
+            } else if (key === 'checked') {
+                return this.getAttribute(node, 'checked') ?? false;
+            }
+        }
+
+        // eslint-disable-next-line no-console
+        console.warn(`Unexpected "${key}" property access from the renderer`);
+    },
+
+    setProp(node, key, value) {
+        // Handle special elements live bindings.
+        if (node.type === HostNodeType.Element && node.name === 'input') {
+            if (key === 'value') {
+                if (isNull(value) || isUndefined(value)) {
+                    this.removeAttribute(node, 'value');
+                } else {
+                    this.setAttribute(node, 'value', value);
+                }
+            } else if (key === 'checked') {
+                if (value === true) {
+                    this.setAttribute(node, 'checked', '');
+                } else {
+                    this.removeAttribute(node, 'checked');
+                }
+            }
+        } else {
+            // eslint-disable-next-line no-console
+            console.warn(`Unexpected "${key}" property set from the renderer`);
+        }
+    },
+
     setText(node, content) {
         if (node.type === HostNodeType.Text) {
             node.value = content;
