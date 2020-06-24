@@ -45,9 +45,11 @@ function update(oldVnode: VElement, vnode: VElement) {
         if (
             isFirstPatch ||
             cur !==
-                (isLiveBindingProp(sel, key) ? renderer.getProp(elm!, key) : (oldProps as any)[key])
+                (isLiveBindingProp(sel, key)
+                    ? renderer.getProperty(elm!, key)
+                    : (oldProps as any)[key])
         ) {
-            renderer.setProp(elm!, key, cur);
+            renderer.setProperty(elm!, key, cur);
         }
     }
 }

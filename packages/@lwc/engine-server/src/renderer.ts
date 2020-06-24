@@ -90,7 +90,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         return (element.shadowRoot as any) as HostNode;
     },
 
-    getProp(node, key) {
+    getProperty(node, key) {
         if (key in node) {
             return (node as any)[key];
         }
@@ -119,7 +119,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         console.warn(`Unexpected "${key}" property access from the renderer`);
     },
 
-    setProp(node, key, value) {
+    setProperty(node, key, value) {
         if (key in node) {
             return ((node as any)[key] = value);
         }

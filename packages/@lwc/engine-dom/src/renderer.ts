@@ -48,11 +48,11 @@ export const renderer: Renderer<Node, Element> = {
         node.nodeValue = content;
     },
 
-    getProp(node: Node, key: string): any {
+    getProperty(node: Node, key: string): any {
         return (node as any)[key];
     },
 
-    setProp(node: Node, key: string, value: any): any {
+    setProperty(node: Node, key: string, value: any): any {
         if (process.env.NODE_ENV !== 'production') {
             if (node instanceof Element && !(key in node)) {
                 // TODO [#1297]: Move this validation to the compiler
