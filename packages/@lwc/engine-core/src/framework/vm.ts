@@ -33,7 +33,6 @@ import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
 
-import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { ComponentInterface } from './component';
@@ -44,14 +43,16 @@ import {
     endGlobalMeasure,
     GlobalMeasurementPhase,
 } from './performance-timing';
-import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { LightningElement } from './base-lightning-element';
-import { getErrorComponentStack } from '../shared/format';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { Renderer, HostNode, HostElement } from './renderer';
+
+import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
+import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
+import { addErrorComponentStack } from '../shared/error';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -661,7 +662,8 @@ export function runWithBoundaryProtection(
     } finally {
         post();
         if (!isUndefined(error)) {
-            error.wcStack = error.wcStack || getErrorComponentStack(vm);
+            addErrorComponentStack(vm, error);
+
             const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner);
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally

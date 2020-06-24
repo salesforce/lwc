@@ -8,6 +8,7 @@ import XBoundaryChildSlotThrow from 'x/boundaryChildSlotThrow';
 import XNestedBoundaryChildThrow from 'x/nestedBoundaryChildThrow';
 import XBoundaryChildSelfRehydrateThrow from 'x/boundaryChildSelfRehydrateThrow';
 import XBoundaryAlternativeViewThrow from 'x/boundaryAlternativeViewThrow';
+import XBoundaryRenderedThrowFrozen from 'x/boundaryChildRenderedThrowFrozen';
 
 import XChildConstructorThrowDuringInit from 'x/childConstructorThrowDuringInit';
 import XChildRenderThrowDuringInit from 'x/childRenderThrowDuringInit';
@@ -15,6 +16,28 @@ import XChildRenderedThrowDuringInit from 'x/childRenderedThrowDuringInit';
 import XChildConnectedThrowDuringInit from 'x/childConnectedThrowDuringInit';
 
 describe('error boundary', () => {
+    it('should propagate frozen error to errorCallback()', () => {
+        const elm = createElement('x-boundary-rendered-throw-frozen', {
+            is: XBoundaryRenderedThrowFrozen,
+        });
+        document.body.appendChild(elm);
+
+        return Promise.resolve().then(() => {
+            expect(elm.getErrorMessage()).toEqual('Child threw frozen error in renderedCallback()');
+        });
+    });
+
+    it('should not add web component stack trace to frozen error', () => {
+        const elm = createElement('x-boundary-rendered-throw-frozen', {
+            is: XBoundaryRenderedThrowFrozen,
+        });
+        document.body.appendChild(elm);
+
+        return Promise.resolve().then(() => {
+            expect(elm.getErrorWCStack()).toBeUndefined();
+        });
+    });
+
     it('should render alternative view if child throws in renderedCallback()', () => {
         const elm = createElement('x-boundary-child-rendered-throw', {
             is: XBoundaryChildRenderedThrow,
