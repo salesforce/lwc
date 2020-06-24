@@ -128,10 +128,12 @@ export default class CodeGen {
     }
 
     genText(value: string | t.Expression): t.Expression {
+        const key = t.numericLiteral(this.generateKey());
+
         if (typeof value === 'string') {
-            return this._renderApiCall(RENDER_APIS.text, [t.stringLiteral(value)]);
+            return this._renderApiCall(RENDER_APIS.text, [t.stringLiteral(value), key]);
         } else {
-            return this._renderApiCall(RENDER_APIS.dynamic, [value]);
+            return this._renderApiCall(RENDER_APIS.dynamic, [value, key]);
         }
     }
 

@@ -77,8 +77,8 @@ export interface RenderAPI {
     ): VNode;
     i(items: any[], factory: () => VNode | VNode): VNodes;
     f(items: any[]): any[];
-    t(text: string): VText;
-    d(value: any): VNode | null;
+    t(text: string, key: Key): VText;
+    d(value: any, key: Key): VNode | null;
     b(fn: EventListener): EventListener;
     k(compilerKey: number, iteratorValue: any): string | void;
 }
@@ -498,12 +498,11 @@ export function f(items: any[]): any[] {
 }
 
 // [t]ext node
-export function t(text: string): VText {
-    const data = EmptyObject;
-    let sel, children, key, elm;
+export function t(text: string, key: Key): VText {
+    let sel, children, elm;
     return {
         sel,
-        data,
+        data: EmptyObject,
         children,
         text,
         elm,
@@ -515,11 +514,11 @@ export function t(text: string): VText {
 }
 
 // [d]ynamic value to produce a text vnode
-export function d(value: any): VNode | null {
+export function d(value: any, key: Key): VNode | null {
     if (value == null) {
         return null;
     }
-    return t(value);
+    return t(value, key);
 }
 
 // [b]ind function

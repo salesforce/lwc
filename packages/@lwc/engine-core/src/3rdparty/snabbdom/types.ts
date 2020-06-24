@@ -34,7 +34,7 @@ export interface VNode {
     elm: Node | undefined;
     parentElm?: Element;
     text: string | undefined;
-    key: Key | undefined;
+    key: Key;
     hook: Hooks<any>;
     owner: VM;
 }
@@ -44,7 +44,6 @@ export interface VElement extends VNode {
     children: VNodes;
     elm: Element | undefined;
     text: undefined;
-    key: Key;
 }
 
 export interface VCustomElement extends VElement {
@@ -59,7 +58,6 @@ export interface VText extends VNode {
     children: undefined;
     elm: Node | undefined;
     text: string;
-    key: undefined;
 }
 
 export type CustomElementContext = Record<string, Record<string, any>>;

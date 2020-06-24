@@ -13,7 +13,7 @@ Code distributed by Snabbdom as part of the Snabbdom project at
 https://github.com/snabbdom/snabbdom/
 */
 
-import { VNode, VNodes, Key } from './types';
+import { VNode, VNodes } from './types';
 
 function isUndef(s: any): s is undefined {
     return s === undefined;
@@ -33,15 +33,12 @@ function isVNode(vnode: any): vnode is VNode {
 
 function createKeyToOldIdx(children: VNodes, beginIdx: number, endIdx: number): KeyToIndexMap {
     const map: KeyToIndexMap = {};
-    let j: number, key: Key | undefined, ch;
-    // TODO [#1637]: simplify this by assuming that all vnodes has keys
+    let j: number, ch;
+
     for (j = beginIdx; j <= endIdx; ++j) {
         ch = children[j];
         if (isVNode(ch)) {
-            key = ch.key;
-            if (key !== undefined) {
-                map[key] = j;
-            }
+            map[ch.key] = j;
         }
     }
     return map;
