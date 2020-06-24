@@ -7,9 +7,9 @@
 import * as path from 'path';
 import {
     CompilerError,
-    normalizeToCompilerError,
+    normlizeToLWCDiagnostic,
     DiagnosticLevel,
-    TransformerErrors,
+    TransformerErrors
 } from '@lwc/errors';
 import compile from '@lwc/template-compiler';
 import { NormalizedTransformOptions } from '../options';
@@ -36,13 +36,13 @@ export default function templateTransform(
 
     try {
         result = compile(src, {
-            experimentalDynamicDirective: !!options.experimentalDynamicComponent,
+            experimentalDynamicDirective: !!options.experimentalDynamicComponent
         });
     } catch (e) {
-        throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
+        throw normlizeToLWCDiagnostic(TransformerErrors.HTML_TRANSFORMER_ERROR(), e, { filename });
     }
 
-    const fatalError = result.warnings.find((warning) => warning.level === DiagnosticLevel.Error);
+    const fatalError = result.warnings.find(warning => warning.level === DiagnosticLevel.Error);
     if (fatalError) {
         throw CompilerError.from(fatalError, { filename });
     }
@@ -51,7 +51,7 @@ export default function templateTransform(
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
         code: serialize(result.code, filename, options),
-        map: { mappings: '' },
+        map: { mappings: '' }
     };
 }
 

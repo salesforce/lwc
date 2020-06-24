@@ -6,7 +6,7 @@
  */
 import path from 'path';
 import { Plugin } from 'rollup';
-import { ModuleResolutionErrors, generateCompilerError } from '@lwc/errors';
+import { ModuleResolutionErrors, captureDiagnostic } from '@lwc/errors';
 import { hasOwnProperty } from '@lwc/shared';
 
 import { NormalizedCompileOptions, BundleFiles } from '../options';
@@ -47,8 +47,7 @@ function isFirstCharacterUppercased(importee: string) {
 
 function inferExtension(fileName: string, files: BundleFiles) {
     if (!path.extname(fileName)) {
-        const ext =
-            VALID_EXTENSIONS.find((ext) => hasOwnProperty.call(files, fileName + ext)) || '';
+        const ext = VALID_EXTENSIONS.find(ext => hasOwnProperty.call(files, fileName + ext)) || '';
         return fileName + ext;
     }
     return fileName;
@@ -64,10 +63,7 @@ function readFile(filename: string, options: NormalizedCompileOptions): string {
     if (fileExists(filename, options)) {
         return files[filename];
     } else {
-        throw generateCompilerError(ModuleResolutionErrors.NONEXISTENT_FILE, {
-            messageArgs: [filename],
-            origin: { filename },
-        });
+        throw captureDiagnostic(ModuleResolutionErrors.NONEXISTENT_FILE(filename), { filename });
     }
 }
 
@@ -80,21 +76,25 @@ function generateModuleResolutionError(
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
 
     return caseIgnoredFilename
-        ? generateCompilerError(ModuleResolutionErrors.IMPORT_AND_FILE_NAME_CASE_MISMATCH, {
-              messageArgs: [
+        ? captureDiagnostic(
+              ModuleResolutionErrors.IMPORT_AND_FILE_NAME_CASE_MISMATCH(
                   importee,
                   importer,
                   caseIgnoredFilename.substr(
                       0,
                       caseIgnoredFilename.length - path.extname(caseIgnoredFilename).length
-                  ),
-              ],
-              origin: { filename: importer },
-          })
-        : generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
-              messageArgs: [importee, importer, absPath],
-              origin: { filename: importer },
-          });
+                  )
+              ),
+              { filename: importer }
+          )
+        : captureDiagnostic(
+              ModuleResolutionErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED(
+                  importee,
+                  importer,
+                  absPath
+              ),
+              { filename: importer }
+          );
 }
 
 function generateEntryResolutionError(
@@ -106,13 +106,15 @@ function generateEntryResolutionError(
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
 
     return caseIgnoredFilename
-        ? generateCompilerError(ModuleResolutionErrors.FOLDER_AND_FILE_NAME_CASE_MISMATCH, {
-              messageArgs: [caseIgnoredFilename, importee],
-              origin: { filename: importer },
-          })
-        : generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FAILED, {
-              messageArgs: [importee],
-              origin: { filename: importer },
+        ? captureDiagnostic(
+              ModuleResolutionErrors.FOLDER_AND_FILE_NAME_CASE_MISMATCH(
+                  caseIgnoredFilename,
+                  importee
+              ),
+              { filename: importer }
+          )
+        : captureDiagnostic(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FAILED(importee), {
+              filename: importer
           });
 }
 
@@ -132,7 +134,7 @@ function getCaseIgnoredFilenameMatch(files: { [key: string]: string }, nameToMat
     );
 }
 
-export default function ({ options }: { options: NormalizedCompileOptions }): Plugin {
+export default function({ options }: { options: NormalizedCompileOptions }): Plugin {
     return {
         name: 'lwc-module-resolver',
 
@@ -143,11 +145,11 @@ export default function ({ options }: { options: NormalizedCompileOptions }): Pl
             }
 
             if (isFirstCharacterUppercased(source)) {
-                throw generateCompilerError(
-                    ModuleResolutionErrors.FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER,
-                    {
-                        messageArgs: [source, source.charAt(0).toLowerCase() + source.slice(1)],
-                    }
+                throw captureDiagnostic(
+                    ModuleResolutionErrors.FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER(
+                        source,
+                        source.charAt(0).toLowerCase() + source.slice(1)
+                    )
                 );
             }
 
@@ -181,6 +183,6 @@ export default function ({ options }: { options: NormalizedCompileOptions }): Pl
             return path.extname(id) === '.css' && !fileExists(id, options)
                 ? EMPTY_IMPLICIT_CSS_CONTENT
                 : readFile(id, options);
-        },
+        }
     };
 }

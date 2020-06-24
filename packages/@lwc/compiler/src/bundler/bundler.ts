@@ -8,10 +8,11 @@ import { rollup, Plugin, RollupWarning } from 'rollup';
 import {
     CompilerError,
     CompilerDiagnostic,
-    generateCompilerDiagnostic,
-    DiagnosticLevel,
-    ModuleResolutionErrors,
-    normalizeToDiagnostic,
+    LWCDiagnostic,
+    captureDiagnostic,
+    // DiagnosticLevel,
+    ModuleResolutionErrors
+    // normalizeToDiagnostic
 } from '@lwc/errors';
 
 import rollupModuleResolver from '../rollup-plugins/module-resolver';
@@ -33,7 +34,7 @@ export interface BundleReport {
 
 const DEFAULT_FORMAT = 'amd';
 
-function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
+function handleRollupWarning(diagnostics: LWCDiagnostic[]) {
     return function onwarn(warning: string | RollupWarning) {
         let message;
         let origin = {};
@@ -51,17 +52,14 @@ function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
                         line: loc.line,
                         column: loc.column,
                         start: pos,
-                        length: 0,
-                    },
+                        length: 0
+                    }
                 };
             }
         }
 
         diagnostics.push(
-            generateCompilerDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, {
-                messageArgs: [message],
-                origin,
-            })
+            captureDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR(message), origin)
         );
     };
 }
@@ -75,11 +73,12 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
     const diagnostics: CompilerDiagnostic[] = [];
+    const lwcDiagnostics: LWCDiagnostic[] = [];
 
     const plugins: Plugin[] = [
         rollupModuleResolver({
-            options,
-        }),
+            options
+        })
     ];
 
     // Run environment variable replacement first. This ensures that the source code is still untouched
@@ -87,14 +86,14 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
     if (Object.keys(outputConfig.env).length) {
         plugins.push(
             rollupEnvReplacement({
-                options,
+                options
             })
         );
     }
 
     plugins.push(
         rollupTransform({
-            options,
+            options
         })
     );
 
@@ -113,21 +112,24 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
         const rollupBundler = await rollup({
             input: name,
             plugins,
-            onwarn: handleRollupWarning(diagnostics),
+            onwarn: handleRollupWarning(lwcDiagnostics)
         });
 
         const { output } = await rollupBundler.generate({
             amd: { id: namespace + '/' + name },
             strict: false,
             sourcemap: outputConfig.sourcemap,
-            format,
+            format
         });
 
         // Rollup produces multiple chunks when a module uses "import()" with a relative import
         // path. We need to ensure the compiled module only contains the main chunk.
         if (output.length > 1) {
-            diagnostics.push(
-                generateCompilerDiagnostic(ModuleResolutionErrors.RELATIVE_DYNAMIC_IMPORT)
+            // diagnostics.push(
+            //     generateCompilerDiagnostic(ModuleResolutionErrors.RELATIVE_DYNAMIC_IMPORT())
+            // );
+            lwcDiagnostics.push(
+                captureDiagnostic(ModuleResolutionErrors.RELATIVE_DYNAMIC_IMPORT())
             );
         }
 
@@ -140,14 +142,17 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
             e.code = (e as any).pluginCode;
         }
 
-        const diagnostic = normalizeToDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, e);
-        diagnostic.level = DiagnosticLevel.Fatal;
-        diagnostics.push(diagnostic);
+        // const diagnostic = normalizeToDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, e);
+        // diagnostic.level = DiagnosticLevel.Fatal;
+        // diagnostics.push(diagnostic);
+
+        // XTODO: get original error here
+        lwcDiagnostics.push(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR(e.message));
     }
 
     return {
         diagnostics,
         code,
-        map,
+        map
     };
 }

@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { Diagnostic } from '@scary/diagnostics';
+
 import { templateString } from '../shared/utils';
 import { LWCErrorInfo } from '../shared/types';
 import {
@@ -13,9 +15,15 @@ import {
     getCodeFromError,
     getFilename,
     getLocation,
+    LWCDiagnostic
 } from './utils';
 
-export { CompilerDiagnosticOrigin, CompilerDiagnostic, CompilerError } from './utils';
+export {
+    CompilerDiagnosticOrigin,
+    CompilerDiagnostic,
+    LWCDiagnostic,
+    CompilerError
+} from './utils';
 
 export * from './error-info';
 
@@ -54,12 +62,26 @@ export function generateCompilerDiagnostic(
     const diagnostic: CompilerDiagnostic = {
         code: errorInfo.code,
         message,
-        level: errorInfo.level,
+        level: errorInfo.level
     };
 
     if (config && config.origin) {
         diagnostic.filename = getFilename(config.origin);
         diagnostic.location = getLocation(config.origin);
+    }
+
+    return diagnostic;
+}
+
+export function captureDiagnostic(
+    originalDiagnostic: Diagnostic,
+    origin?: CompilerDiagnosticOrigin
+): LWCDiagnostic {
+    const diagnostic: LWCDiagnostic = originalDiagnostic;
+
+    if (origin) {
+        diagnostic.filename = getFilename(origin);
+        diagnostic.location = getLocation(origin);
     }
 
     return diagnostic;
@@ -92,9 +114,30 @@ export function generateCompilerError(
 export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
     if (!condition) {
         throw generateCompilerError(errorInfo, {
-            messageArgs: args,
+            messageArgs: args
         });
     }
+}
+
+export function lwc_invariant(condition: boolean, diagnostic: Diagnostic) {
+    if (!condition) throw diagnostic;
+}
+
+export function normlizeToLWCDiagnostic(
+    diagnostic: LWCDiagnostic,
+    error: any,
+    origin: CompilerDiagnosticOrigin
+): LWCDiagnostic {
+    if (error instanceof LWCDiagnostic) {
+        if (origin) {
+            error.filename = getFilename(origin);
+            error.location = getLocation(origin);
+        }
+        return error;
+    }
+
+    diagnostic.stack = error.stack;
+    return diagnostic;
 }
 
 /**
