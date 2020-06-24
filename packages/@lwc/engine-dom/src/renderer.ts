@@ -5,8 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assert, hasOwnProperty, isUndefined } from '@lwc/shared';
+import { assert, hasOwnProperty, isUndefined, create } from '@lwc/shared';
 import { Renderer } from '@lwc/engine-core';
+
+const globalStylesheets: { [content: string]: true } = create(null);
+const globalStylesheetsParentElement: Element = document.head || document.body || document;
 
 // TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
 // to avoid having to synchronize it between the different modules.
@@ -123,6 +126,20 @@ export const renderer: Renderer<Node, Element> = {
 
     tagName(element: Element): string {
         return element.tagName;
+    },
+
+    insertGlobalStylesheet(content: string): void {
+        if (!isUndefined(globalStylesheets[content])) {
+            return;
+        }
+
+        globalStylesheets[content] = true;
+
+        const elm = document.createElement('style');
+        elm.type = 'text/css';
+        elm.textContent = content;
+
+        globalStylesheetsParentElement.appendChild(elm);
     },
 
     assertInstanceOfHTMLElement(elm: any, msg: string) {
