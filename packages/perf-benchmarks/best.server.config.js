@@ -5,9 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 module.exports = {
-    projectName: 'lwc-engine-benchmark',
+    projectName: '@lwc/engine-server',
+    testMatch: ['**/__benchmarks__/engine-server/**/*.benchmark.js'],
     plugins: [
-        '<rootDir>/best-plugins/synthetic-shadow.js',
+        '<rootDir>/best-plugins/server-resolver.js',
         [
             '@lwc/rollup-plugin',
             {
