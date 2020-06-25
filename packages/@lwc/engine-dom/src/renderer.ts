@@ -52,7 +52,7 @@ export const renderer: Renderer<Node, Element> = {
         return (node as any)[key];
     },
 
-    setProperty(node: Node, key: string, value: any): any {
+    setProperty(node: Node, key: string, value: any): void {
         if (process.env.NODE_ENV !== 'production') {
             if (node instanceof Element && !(key in node)) {
                 // TODO [#1297]: Move this validation to the compiler
@@ -66,7 +66,7 @@ export const renderer: Renderer<Node, Element> = {
             }
         }
 
-        return ((node as any)[key] = value);
+        (node as any)[key] = value;
     },
 
     getAttribute(element: Element, name: string, namespace?: string): string | null {

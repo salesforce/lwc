@@ -115,11 +115,13 @@ export const renderer: Renderer<HostNode, HostElement> = {
             }
         }
 
-        // eslint-disable-next-line no-console
-        console.warn(`Unexpected "${key}" property access from the renderer`);
+        if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.error(`Unexpected "${key}" property access from the renderer`);
+        }
     },
 
-    setProperty(node, key, value) {
+    setProperty(node, key, value): void {
         if (key in node) {
             return ((node as any)[key] = value);
         }
@@ -148,8 +150,10 @@ export const renderer: Renderer<HostNode, HostElement> = {
             }
         }
 
-        // eslint-disable-next-line no-console
-        console.warn(`Unexpected attempt to set "${key}=${value}" property from the renderer`);
+        if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.error(`Unexpected attempt to set "${key}=${value}" property from the renderer`);
+        }
     },
 
     setText(node, content) {

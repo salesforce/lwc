@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
+import { keys, hasOwnProperty } from './language';
 
 const BOOLEAN_ATTRIBUTES = new Set([
     'autofocus', // <button>, <input>, <keygen>, <select>, <textarea>
@@ -53,35 +54,38 @@ export function isGlobalHtmlAttribute(attrName: string): boolean {
     return GLOBAL_ATTRIBUTE.has(attrName);
 }
 
-const HTML_ATTRIBUTES_TO_PROPERTY = new Map([
-    ['accesskey', 'accessKey'],
-    ['readonly', 'readOnly'],
-    ['tabindex', 'tabIndex'],
-    ['bgcolor', 'bgColor'],
-    ['colspan', 'colSpan'],
-    ['rowspan', 'rowSpan'],
-    ['contenteditable', 'contentEditable'],
-    ['crossorigin', 'crossOrigin'],
-    ['datetime', 'dateTime'],
-    ['formaction', 'formAction'],
-    ['ismap', 'isMap'],
-    ['maxlength', 'maxLength'],
-    ['minlength', 'minLength'],
-    ['novalidate', 'noValidate'],
-    ['usemap', 'useMap'],
-    ['for', 'htmlFor'],
-]);
-const HTML_PROPERTIES_TO_ATTRIBUTE = new Map(
-    [...HTML_ATTRIBUTES_TO_PROPERTY.entries()].map(([k, v]) => [v, k])
-);
+const HTML_ATTRIBUTES_TO_PROPERTY: Record<string, string> = {
+    accesskey: 'accessKey',
+    readonly: 'readOnly',
+    tabindex: 'tabIndex',
+    bgcolor: 'bgColor',
+    colspan: 'colSpan',
+    rowspan: 'rowSpan',
+    contenteditable: 'contentEditable',
+    crossorigin: 'crossOrigin',
+    datetime: 'dateTime',
+    formaction: 'formAction',
+    ismap: 'isMap',
+    maxlength: 'maxLength',
+    minlength: 'minLength',
+    novalidate: 'noValidate',
+    usemap: 'useMap',
+    for: 'htmlFor',
+};
+
+const HTML_PROPERTIES_TO_ATTRIBUTE: Record<string, string> = {};
+keys(HTML_ATTRIBUTES_TO_PROPERTY).forEach((attrName) => {
+    const propName = HTML_ATTRIBUTES_TO_PROPERTY[attrName];
+    HTML_PROPERTIES_TO_ATTRIBUTE[propName] = attrName;
+});
 
 export function htmlAttributeToProperty(attrName: string): string {
     if (attrName in AriaAttrNameToPropNameMap) {
         return AriaAttrNameToPropNameMap[attrName];
     }
 
-    if (HTML_ATTRIBUTES_TO_PROPERTY.has(attrName)) {
-        return HTML_ATTRIBUTES_TO_PROPERTY.get(attrName)!;
+    if (hasOwnProperty.call(HTML_ATTRIBUTES_TO_PROPERTY, attrName)) {
+        return HTML_ATTRIBUTES_TO_PROPERTY[attrName]!;
     }
 
     return attrName;
@@ -91,8 +95,8 @@ export function htmlPropertyToAttribute(propName: string): string {
         return AriaPropNameToAttrNameMap[propName];
     }
 
-    if (HTML_PROPERTIES_TO_ATTRIBUTE.has(propName)) {
-        return HTML_PROPERTIES_TO_ATTRIBUTE.get(propName)!;
+    if (hasOwnProperty.call(HTML_PROPERTIES_TO_ATTRIBUTE, propName)) {
+        return HTML_PROPERTIES_TO_ATTRIBUTE[propName]!;
     }
 
     return propName;

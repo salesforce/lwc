@@ -123,11 +123,11 @@ describe('fixtures', () => {
             let expected = readFixtureFile(EXPECTED_HTML_FILENAME);
             const config = JSON.parse(readFixtureFile(CONFIG_FILENAME) || '{}');
 
-            // The LWC engine does hold global state like the current VM index, which has an impact
-            // on the the generated HTML IDs. So the engine has to be re-evaluated between tests.
-            // On top of this, the engine also checks if checks if the component constructor is an
-            // instance of the LightningElement. Therefor the compiled module should also be
-            // evaluated in the same sandbox registry than the engine
+            // The LWC engine holds global state like the current VM index, which has an impact on
+            // the generated HTML IDs. So the engine has to be re-evaluated between tests.
+            // On top of this, the engine also checks if the component constructor is an instance of
+            // the LightningElement. Therefor the compiled module should also be evaluated in the
+            // same sandbox registry as the engine.
             let lwcEngineServer;
             let module;
             jest.isolateModules(() => {
