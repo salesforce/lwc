@@ -88,15 +88,13 @@ describe('Element import', () => {
     );
 
     pluginTest(
-        'allows importing supported apis from "lwc"',
+        'allows importing supported apis from "@lwc/engine-core"',
         `
         import {
             api,
             track,
             wire,
-            createElement,
             LightningElement,
-            buildCustomElementConstructor,
             getComponentDef,
             getComponentConstructor,
             isComponentConstructor,
@@ -107,7 +105,36 @@ describe('Element import', () => {
     `,
         {
             output: {
-                code: `import { api, track, wire, createElement, LightningElement, buildCustomElementConstructor, getComponentDef, getComponentConstructor, isComponentConstructor, readonly, register, unwrap } from "lwc";`,
+                code: `import { api, track, wire, LightningElement, getComponentDef, getComponentConstructor, isComponentConstructor, readonly, register, unwrap } from "lwc";`,
+            },
+        }
+    );
+
+    pluginTest(
+        'allows importing supported apis from "@lwc/engine-dom"',
+        `
+        import {
+            createElement,
+            buildCustomElementConstructor,
+        } from "lwc";
+    `,
+        {
+            output: {
+                code: `import { createElement,buildCustomElementConstructor } from "lwc";`,
+            },
+        }
+    );
+
+    pluginTest(
+        'allows importing supported apis from "@lwc/engine-server"',
+        `
+        import {
+            renderComponent,
+        } from "lwc";
+    `,
+        {
+            output: {
+                code: `import { renderComponent } from "lwc";`,
             },
         }
     );
