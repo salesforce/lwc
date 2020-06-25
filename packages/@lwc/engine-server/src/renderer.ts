@@ -173,14 +173,22 @@ export const renderer: Renderer<HostNode, HostElement> = {
         return new Proxy(
             {},
             {
-                get(target, property) {
+                get(target, property): string {
+                    let value: string;
+
                     const styleAttribute = getStyleAttribute();
                     if (isUndefined(styleAttribute)) {
                         return '';
                     }
 
-                    const cssDeclaration = styleTextToCssDeclaration(styleAttribute.value);
-                    return cssDeclaration[property as string] || '';
+                    if (property === 'cssText') {
+                        value = styleAttribute.value;
+                    } else {
+                        const cssDeclaration = styleTextToCssDeclaration(styleAttribute.value);
+                        value = cssDeclaration[property as string] || '';
+                    }
+
+                    return value;
                 },
                 set(target, property, value) {
                     let styleAttribute = getStyleAttribute();
@@ -194,9 +202,13 @@ export const renderer: Renderer<HostNode, HostElement> = {
                         element.attributes.push(styleAttribute);
                     }
 
-                    const cssDeclaration = styleTextToCssDeclaration(styleAttribute.value);
-                    cssDeclaration[property as string] = value;
-                    styleAttribute.value = cssDeclarationToStyleText(cssDeclaration);
+                    if (property === 'cssText') {
+                        styleAttribute.value = value;
+                    } else {
+                        const cssDeclaration = styleTextToCssDeclaration(styleAttribute.value);
+                        cssDeclaration[property as string] = value;
+                        styleAttribute.value = cssDeclarationToStyleText(cssDeclaration);
+                    }
 
                     return value;
                 },
