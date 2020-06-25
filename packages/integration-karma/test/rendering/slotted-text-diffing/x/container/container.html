@@ -1,0 +1,11 @@
+<template>
+    <x-child>
+        <template if:true={visible}>
+            <span>first text</span>
+        </template>
+        Display Boolean Value: {visible}
+        <template if:true={visible}>
+            <span>second text</span>
+        </template>
+    </x-child>
+</template>
