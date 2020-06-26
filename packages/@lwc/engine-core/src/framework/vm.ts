@@ -375,6 +375,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
             );
         }
     }
+
     if (vm.state === VMState.connected) {
         // If the element is connected, that means connectedCallback was already issued, and
         // any successive rendering should finish with the call to renderedCallback, otherwise
@@ -385,6 +386,10 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
 }
 
 function runRenderedCallback(vm: VM) {
+    if (isTrue(vm.renderer.ssr)) {
+        return;
+    }
+
     const { rendered } = Services;
     if (rendered) {
         invokeServiceHook(vm, rendered);
@@ -571,13 +576,16 @@ export function resetShadowRoot(vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
-    if (!vm.isScheduled) {
-        vm.isScheduled = true;
-        if (rehydrateQueue.length === 0) {
-            addCallbackToNextTick(flushRehydrationQueue);
-        }
-        ArrayPush.call(rehydrateQueue, vm);
+    if (isTrue(vm.renderer.ssr) || isTrue(vm.isScheduled)) {
+        return;
     }
+
+    vm.isScheduled = true;
+    if (rehydrateQueue.length === 0) {
+        addCallbackToNextTick(flushRehydrationQueue);
+    }
+
+    ArrayPush.call(rehydrateQueue, vm);
 }
 
 function getErrorBoundaryVM(vm: VM): VM | undefined {
