@@ -146,10 +146,6 @@ export const renderer: Renderer<Node, Element> = {
         return node.isConnected;
     },
 
-    tagName(element: Element): string {
-        return element.tagName;
-    },
-
     insertGlobalStylesheet(content: string): void {
         if (!isUndefined(globalStylesheets[content])) {
             return;

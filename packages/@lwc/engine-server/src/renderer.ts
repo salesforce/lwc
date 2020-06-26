@@ -293,10 +293,6 @@ export const renderer: Renderer<HostNode, HostElement> = {
         return true;
     },
 
-    tagName(element) {
-        return element.name;
-    },
-
     insertGlobalStylesheet() {
         // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
         // synthetic shadow.
