@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { renderComponent } from 'lwc';
+import { renderComponent } from '@lwc/engine-server';
 import Table from 'benchmark/table';
 
 import Store from '../../tableStore';

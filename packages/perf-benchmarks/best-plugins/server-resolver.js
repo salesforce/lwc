@@ -9,7 +9,7 @@ module.exports = function () {
     return {
         name: 'server-resolver',
         resolveId(src) {
-            if (src === 'lwc') {
+            if (src === 'lwc' || src === '@lwc/engine-server') {
                 return require.resolve('@lwc/engine-server/dist/engine-server.js');
             }
 

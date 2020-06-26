@@ -7,8 +7,8 @@
 import Table from 'benchmark/tableComponent';
 import Row from 'benchmark/tableComponentRow';
 
-import Store from '../../tableStore';
-import { insertTableComponent, destroyTableComponent } from '../../utils';
+import Store from '../../../tableStore';
+import { insertTableComponent, destroyTableComponent } from '../../../utils';
 
 customElements.define('benchmark-table-component', Table.CustomElementConstructor);
 // the row can be optionally defined, but this benchmark always do it so we know how costly it is.
