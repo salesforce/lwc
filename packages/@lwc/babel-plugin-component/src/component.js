@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { generateError, getEngineImportSpecifiers } = require('./utils');
+const { generateCodeFrameError, getEngineImportSpecifiers } = require('./utils');
 const { LWC_PACKAGE_EXPORTS, LWC_SUPPORTED_APIS } = require('./constants');
 const { LWCClassErrors } = require('@lwc/errors');
 
@@ -16,10 +16,10 @@ module.exports = function () {
             // validate internal api imports
             engineImportSpecifiers.forEach(({ name }) => {
                 if (!LWC_SUPPORTED_APIS.has(name)) {
-                    throw generateError(path, {
-                        errorInfo: LWCClassErrors.INVALID_IMPORT_PROHIBITED_API,
-                        messageArgs: [name],
-                    });
+                    throw generateCodeFrameError(
+                        path,
+                        LWCClassErrors.INVALID_IMPORT_PROHIBITED_API(name)
+                    );
                 }
             });
 

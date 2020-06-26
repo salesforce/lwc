@@ -10,7 +10,7 @@ const track = require('./track');
 
 const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES, LWC_DECORATORS } = require('../constants');
 const {
-    generateError,
+    generateCodeFrameError,
     getEngineImportSpecifiers,
     isClassMethod,
     isSetterClassMethod,
@@ -40,9 +40,7 @@ function getDecoratorType(propertyOrMethod) {
     } else if (propertyOrMethod.isClassProperty()) {
         return DECORATOR_TYPES.PROPERTY;
     } else {
-        throw generateError(propertyOrMethod, {
-            errorInfo: DecoratorErrors.INVALID_DECORATOR_TYPE,
-        });
+        throw generateCodeFrameError(propertyOrMethod, DecoratorErrors.INVALID_DECORATOR_TYPE());
     }
 }
 
@@ -69,18 +67,15 @@ function getLwcDecorators(importSpecifiers) {
                 : reference.parentPath.parentPath;
 
             if (!decorator.isDecorator()) {
-                throw generateError(decorator, {
-                    errorInfo: DecoratorErrors.IS_NOT_DECORATOR,
-                    messageArgs: [name],
-                });
+                throw generateCodeFrameError(decorator, DecoratorErrors.IS_NOT_DECORATOR(name));
             }
 
             const propertyOrMethod = decorator.parentPath;
             if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-                throw generateError(propertyOrMethod, {
-                    errorInfo: DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
-                    messageArgs: [name],
-                });
+                throw generateCodeFrameError(
+                    propertyOrMethod,
+                    DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD(name)
+                );
             }
 
             return {
@@ -140,14 +135,14 @@ function removeImportSpecifiers(specifiers) {
 function invalidDecorators() {
     return {
         Decorator(path) {
-            throw generateError(path.parentPath, {
-                errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
-                messageArgs: [
+            throw generateCodeFrameError(
+                path.parentPath,
+                DecoratorErrors.INVALID_DECORATOR_WITH_NAME(
                     path.node.expression.name,
                     LWC_DECORATORS.join(', '),
-                    LWC_PACKAGE_ALIAS,
-                ],
-            });
+                    LWC_PACKAGE_ALIAS
+                )
+            );
         },
     };
 }
@@ -182,10 +177,13 @@ function decorators({ types: t }) {
         Decorator(path) {
             const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name);
 
-            throw generateError(path.parentPath, {
-                errorInfo: DecoratorErrors.INVALID_DECORATOR,
-                messageArgs: [AVAILABLE_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
-            });
+            throw generateCodeFrameError(
+                path.parentPath,
+                DecoratorErrors.INVALID_DECORATOR(
+                    AVAILABLE_DECORATORS.join(', '),
+                    LWC_PACKAGE_ALIAS
+                )
+            );
         },
     };
 }
