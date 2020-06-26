@@ -35,8 +35,8 @@ const LWC_PACKAGE_EXPORTS = {
 };
 
 const LWC_SUPPORTED_APIS = new Set([
-    'buildCustomElementConstructor',
-    'createElement',
+    // From "@lwc/engine-core"
+    ...Object.values(LWC_PACKAGE_EXPORTS),
     'getComponentDef',
     'getComponentConstructor',
     'isComponentConstructor',
@@ -45,7 +45,13 @@ const LWC_SUPPORTED_APIS = new Set([
     'register',
     'setFeatureFlagForTest',
     'unwrap',
-    ...Object.values(LWC_PACKAGE_EXPORTS),
+
+    // From "@lwc/engine-dom"
+    'buildCustomElementConstructor',
+    'createElement',
+
+    // From "@lwc/engine-server"
+    'renderComponent',
 ]);
 
 const LWC_DECORATORS = [
