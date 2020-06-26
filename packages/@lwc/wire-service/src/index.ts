@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-import { WireAdapter, DataCallback } from '@lwc/engine-core';
+import { WireConfigValue, WireAdapter, DataCallback } from '@lwc/engine-core';
 import { ValueChangedEvent } from './value-changed-event';
 
 const { freeze, defineProperty, isExtensible } = Object;
@@ -196,7 +196,7 @@ class LegacyWireAdapterBridge implements WireAdapter {
 
     protected eventTarget: WireEventTarget;
 
-    update(config: Record<string, any>) {
+    update(config: WireConfigValue) {
         if (this.isFirstUpdate) {
             // this is a special case for legacy wire adapters: when all the config params are undefined,
             // the config on the wire adapter should not be called until one of them changes.

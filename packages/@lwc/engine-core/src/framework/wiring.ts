@@ -217,7 +217,7 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
 }
 
 export type DataCallback = (value: any) => void;
-type ConfigValue = Record<string, any>;
+export type ConfigValue = Record<string, any>;
 
 export interface WireAdapter {
     update(config: ConfigValue, context?: ContextValue): void;
@@ -225,7 +225,7 @@ export interface WireAdapter {
     disconnect(): void;
 }
 
-type WireAdapterSchemaValue = 'optional' | 'required';
+export type WireAdapterSchemaValue = 'optional' | 'required';
 
 interface WireDef {
     method?: (data: any) => void;
