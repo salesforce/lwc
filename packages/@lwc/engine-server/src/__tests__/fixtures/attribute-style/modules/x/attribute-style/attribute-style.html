@@ -1,0 +1,25 @@
+<template>
+    <!-- Standard element, simple value -->
+    <div style="color: red;"></div>
+
+    <!-- Standard element, multiple values -->
+    <div style="color: blue; background: black; border: 1px solid red;"></div>
+
+    <!-- Standard element, complex values -->
+    <div style="border-width: 1px; border-style: solid; border-color: red;"></div>
+
+    <!-- Standard element, dynamic value -->
+    <div style={dynamicStyle}></div>
+
+    <!-- Component, simple value -->
+    <x-child style="color: red;"></x-child>
+
+    <!-- Component, multiple values -->
+    <x-child style="color: blue; background: black; border: 1px solid red;"></x-child>
+
+    <!-- Component, complex values -->
+    <x-child style="border-width: 1px; border-style: solid; border-color: red;"></x-child>
+
+    <!-- Component, dynamic value -->
+    <x-child style={dynamicStyle}></x-child>
+</template>
