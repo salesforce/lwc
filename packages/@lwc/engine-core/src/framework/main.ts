@@ -39,4 +39,11 @@ export { getComponentDef, isComponentConstructor } from './def';
 
 // Types -------------------------------------------------------------------------------------------
 export type { Renderer } from './renderer';
-export type { DataCallback, WireAdapter, WireAdapterConstructor } from './wiring';
+export type {
+    ConfigValue as WireConfigValue,
+    ContextValue as WireContextValue,
+    DataCallback,
+    WireAdapter,
+    WireAdapterConstructor,
+    WireAdapterSchemaValue,
+} from './wiring';
