@@ -5,15 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import features, { FeatureFlagLookup, FeatureFlagValue } from './flags';
-import { create, isFalse, isTrue, isUndefined } from '@lwc/shared';
-import { getGlobalThis } from './global-this';
+import { create, isFalse, isTrue, isUndefined, globalThis } from '@lwc/shared';
 
-const _globalThis: any = getGlobalThis();
-if (!_globalThis.lwcRuntimeFlags) {
-    Object.defineProperty(_globalThis, 'lwcRuntimeFlags', { value: create(null) });
+if (!globalThis.lwcRuntimeFlags) {
+    Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
-const runtimeFlags: FeatureFlagLookup = _globalThis.lwcRuntimeFlags;
+const runtimeFlags: FeatureFlagLookup = globalThis.lwcRuntimeFlags;
 
 // This function is not supported for use within components and is meant for
 // configuring runtime feature flags during app initialization.
