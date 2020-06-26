@@ -134,6 +134,6 @@ export {
     PropNameToAttrNameMap as AriaPropNameToAttrNameMap,
 };
 
-export function isAriaAttribute(attrName: string) {
+export function isAriaAttribute(attrName: string): boolean {
     return attrName in AttrNameToPropNameMap;
 }

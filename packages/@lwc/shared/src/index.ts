@@ -10,4 +10,5 @@ export * from './aria';
 export * from './language';
 export * from './fields';
 export * from './void-elements';
+export * from './html-attributes';
 export { assert };

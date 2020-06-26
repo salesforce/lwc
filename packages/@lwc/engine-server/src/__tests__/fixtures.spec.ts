@@ -11,8 +11,6 @@ import { rollup } from 'rollup';
 import prettier from 'prettier';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 
-import { renderComponent } from '../index';
-
 const FIXTURE_DIR = path.join(__dirname, 'fixtures');
 
 const DIST_DIRNAME = 'dist';
@@ -108,6 +106,8 @@ describe('fixtures', () => {
             await bundle.write({
                 dir: fixtureFilePath(DIST_DIRNAME),
             });
+
+            return fixtureFilePath(`${DIST_DIRNAME}/${COMPILER_ENTRY_FILENAME}`);
         };
 
         let testFn = it;
@@ -118,21 +118,36 @@ describe('fixtures', () => {
         }
 
         testFn(`${caseName}`, async () => {
-            await compileFixture();
+            const compiledFixturePath = await compileFixture();
 
             let expected = readFixtureFile(EXPECTED_HTML_FILENAME);
             const config = JSON.parse(readFixtureFile(CONFIG_FILENAME) || '{}');
 
-            const module = require(fixtureFilePath(`${DIST_DIRNAME}/${COMPILER_ENTRY_FILENAME}`));
-            const actual = renderComponent(caseTagName, module.ctor, config.props || {});
+            // The LWC engine holds global state like the current VM index, which has an impact on
+            // the generated HTML IDs. So the engine has to be re-evaluated between tests.
+            // On top of this, the engine also checks if the component constructor is an instance of
+            // the LightningElement. Therefor the compiled module should also be evaluated in the
+            // same sandbox registry as the engine.
+            let lwcEngineServer;
+            let module;
+            jest.isolateModules(() => {
+                lwcEngineServer = require('../index');
+                module = require(compiledFixturePath);
+            });
+
+            const actual = lwcEngineServer.renderComponent(
+                caseTagName,
+                module.ctor,
+                config.props || {}
+            );
 
             if (!expected) {
-                // write rendered HTML file if doesn't exist (ie new fixture)
+                // Write rendered HTML file if doesn't exist (ie new fixture).
                 expected = actual;
                 writeFixtureFile(EXPECTED_HTML_FILENAME, formatHTML(expected));
             }
 
-            // check rendered HTML
+            // Check rendered HTML.
             expect(formatHTML(actual)).toEqual(formatHTML(expected));
         });
     }

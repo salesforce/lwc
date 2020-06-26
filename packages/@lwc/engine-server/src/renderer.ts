@@ -4,8 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isNull } from '@lwc/shared';
-import { Renderer } from '@lwc/engine-core';
+import {
+    isUndefined,
+    isNull,
+    isBooleanAttribute,
+    isGlobalHtmlAttribute,
+    isAriaAttribute,
+} from '@lwc/shared';
+import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
@@ -83,6 +89,72 @@ export const renderer: Renderer<HostNode, HostElement> = {
         };
 
         return (element.shadowRoot as any) as HostNode;
+    },
+
+    getProperty(node, key) {
+        if (key in node) {
+            return (node as any)[key];
+        }
+
+        if (node.type === HostNodeType.Element) {
+            const attrName = getAttrNameFromPropName(key);
+
+            // Handle all the boolean properties.
+            if (isBooleanAttribute(attrName)) {
+                return this.getAttribute(node, attrName) ?? false;
+            }
+
+            // Handle global html attributes and AOM.
+            if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
+                return this.getAttribute(node, attrName);
+            }
+
+            // Handle special elements live bindings. The checked property is already handled above
+            // in the boolean case.
+            if (node.name === 'input' && key === 'value') {
+                return this.getAttribute(node, 'value') ?? '';
+            }
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.error(`Unexpected "${key}" property access from the renderer`);
+        }
+    },
+
+    setProperty(node, key, value): void {
+        if (key in node) {
+            return ((node as any)[key] = value);
+        }
+
+        if (node.type === HostNodeType.Element) {
+            const attrName = getAttrNameFromPropName(key);
+
+            // Handle all the boolean properties.
+            if (isBooleanAttribute(attrName)) {
+                return value === true
+                    ? this.setAttribute(node, attrName, '')
+                    : this.removeAttribute(node, attrName);
+            }
+
+            // Handle global html attributes and AOM.
+            if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
+                return this.setAttribute(node, attrName, value);
+            }
+
+            // Handle special elements live bindings. The checked property is already handled above
+            // in the boolean case.
+            if (node.name === 'input' && attrName === 'value') {
+                return isNull(value) || isUndefined(value)
+                    ? this.removeAttribute(node, 'value')
+                    : this.setAttribute(node, 'value', value);
+            }
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line no-console
+            console.error(`Unexpected attempt to set "${key}=${value}" property from the renderer`);
+        }
     },
 
     setText(node, content) {

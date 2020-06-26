@@ -6,7 +6,7 @@
  */
 import * as parse5 from 'parse5-with-errors';
 import { ParserDiagnostics, generateCompilerError } from '@lwc/errors';
-import { isAriaAttribute } from '@lwc/shared';
+import { isAriaAttribute, isBooleanAttribute, isGlobalHtmlAttribute } from '@lwc/shared';
 
 import { toPropertyName } from '../shared/utils';
 
@@ -24,7 +24,6 @@ import {
     DATA_RE,
     SVG_NAMESPACE_URI,
     SUPPORTED_SVG_TAGS,
-    GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     HTML_NAMESPACE_URI,
@@ -46,25 +45,6 @@ function isEscapedAttribute(rawAttribute: string) {
     const [, value] = rawAttribute.split('=');
     return !value || !(value.includes('{') && value.includes('}'));
 }
-
-const booleanAttributes = new Set<string>([
-    'autofocus', // <button>, <input>, <keygen>, <select>, <textarea>
-    'autoplay', // <audio>, <video>
-    'capture', // <input type='file'>
-    'checked', // <command>, <input>
-    'disabled', // <button>, <command>, <fieldset>, <input>, <keygen>, <optgroup>, <option>, <select>, <textarea>
-    'formnovalidate', // submit button
-    'hidden', // Global attribute
-    'loop', // <audio>, <bgsound>, <marquee>, <video>
-    'multiple', // <input>, <select>
-    'muted', // <audio>, <video>
-    'novalidate', // <form>
-    'open', // <details>
-    'readonly', // <input>, <textarea>
-    'required', // <input>, <select>, <textarea>
-    'reversed', // <ol>
-    'selected', // <option>
-]);
 
 export function isIdReferencingAttribute(attrName: string): boolean {
     return ID_REFERENCING_ATTRIBUTES_SET.has(attrName);
@@ -109,7 +89,7 @@ export function normalizeAttributeValue(
     escapedExpression: boolean;
 } {
     const { name, value } = attr;
-    if (booleanAttributes.has(name)) {
+    if (isBooleanAttribute(name)) {
         if (value === 'true') {
             throw generateCompilerError(ParserDiagnostics.BOOLEAN_ATTRIBUTE_TRUE, {
                 messageArgs: [tag, name, value],
@@ -236,12 +216,12 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
         return isCustomElementAttribute(attrName);
     }
 
-    if (booleanAttributes.has(attrName)) {
+    if (isBooleanAttribute(attrName)) {
         return false;
     }
 
     // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
-    if (GLOBAL_ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
+    if (isGlobalHtmlAttribute(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
         return true;
     }
 
@@ -257,11 +237,11 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
     if (
-        GLOBAL_ATTRIBUTE_SET.has(attrName) ||
+        isGlobalHtmlAttribute(attrName) ||
         isAriaOrDataOrFmkAttribute(attrName) ||
+        isTemplateDirective(attrName) ||
         SUPPORTED_SVG_TAGS.has(tagName) ||
         DASHED_TAGNAME_ELEMENT_SET.has(tagName) ||
-        isTemplateDirective(attrName) ||
         !KNOWN_HTML_ELEMENTS.has(tagName)
     ) {
         return true;

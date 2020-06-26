@@ -129,26 +129,6 @@ export const DISALLOWED_MATHML_TAGS = new Set([
     'meta',
 ]);
 
-export const GLOBAL_ATTRIBUTE_SET = new Set([
-    'role',
-    'accesskey',
-    'class',
-    'contenteditable',
-    'contextmenu',
-    'dir',
-    'draggable',
-    'dropzone',
-    'hidden',
-    'id',
-    'itemprop',
-    'lang',
-    'slot',
-    'spellcheck',
-    'style',
-    'tabindex',
-    'title',
-]);
-
 export const VOID_ELEMENT_SET = new Set(HTML_VOID_ELEMENTS);
 
 export const DASHED_TAGNAME_ELEMENT_SET = new Set([
