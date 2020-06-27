@@ -24,7 +24,7 @@
     "@babel/core": "^7.10.3",
     "@babel/preset-env": "^7.10.3",
     "@babel/preset-typescript": "^7.10.1",
-    "@commitlint/cli": "^8.3.5",
+    "@commitlint/cli": "^9.0.1",
     "@rollup/plugin-replace": "^2.3.2",
     "@types/acorn": "^4.0.5",
     "@types/jest": "^25.2.3",
