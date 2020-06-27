@@ -57,7 +57,7 @@
     "rollup-plugin-typescript": "^1.0.1",
     "semver": "^7.3.2",
     "tslib": "^1.11.2",
-    "typescript": "^3.9.3",
+    "typescript": "^3.9.5",
     "worker-farm": "^1.7.0"
   },
   "husky": {
