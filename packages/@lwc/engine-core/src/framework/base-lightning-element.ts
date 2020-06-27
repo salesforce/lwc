@@ -123,7 +123,7 @@ export interface LightningElementConstructor {
     readonly CustomElementConstructor: HTMLElementConstructor;
 }
 
-export declare var LightningElement: LightningElementConstructor;
+export declare let LightningElement: LightningElementConstructor;
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
     Pick<
