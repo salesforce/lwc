@@ -1,0 +1,15 @@
+<template>
+    <div class="active-if-blocks">
+        <x-custom-element-child testiftrue={trueFlag} testiffalse={falseFlag}>
+        </x-custom-element-child>
+        <x-element-child testiftrue={trueFlag} testiffalse={falseFlag}>
+        </x-element-child>
+    </div>
+
+    <div class="inactive-if-blocks">
+        <x-custom-element-child testiftrue={falseFlag} testiffalse={trueFlag}>
+        </x-custom-element-child>
+        <x-element-child testiftrue={falseFlag} testiffalse={trueFlag}>
+        </x-element-child>
+    </div>
+</template>
