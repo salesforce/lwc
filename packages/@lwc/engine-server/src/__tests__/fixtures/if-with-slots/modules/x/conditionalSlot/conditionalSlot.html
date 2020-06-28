@@ -1,0 +1,7 @@
+<!-- The x-conditionally-slotted component's <slot> element is controlled by a if:* directive-->
+<template>
+    <x-conditionally-slotted activatetruepath={activatetruepath} activatefalsepath={activatefalsepath}>
+        <x-child slot="trueslot">trueslot: Should show when activatetruepath(value: {activatetruepath}) is true</x-child>
+        <x-child slot="falseslot">falseslot: Should show when activatefalsepath(value: {activatefalsepath}) is false</x-child>
+    </x-conditionally-slotted>
+</template>

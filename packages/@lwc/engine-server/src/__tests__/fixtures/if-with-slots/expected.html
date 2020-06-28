@@ -1,0 +1,73 @@
+<x-if-with-slots>
+  <template shadow-root>
+    <div class="active-if-blocks">
+      <x-conditional-slot>
+        <template shadow-root>
+          <x-conditionally-slotted>
+            <template shadow-root>
+              <slot name="trueslot"></slot>
+              <slot name="falseslot"></slot>
+            </template>
+            <x-child slot="trueslot">
+              <template shadow-root></template>
+              trueslot: Should show when activatetruepath(value: true) is true
+            </x-child>
+            <x-child slot="falseslot">
+              <template shadow-root></template>
+              falseslot: Should show when activatefalsepath(value: false) is
+              false
+            </x-child>
+          </x-conditionally-slotted>
+        </template>
+      </x-conditional-slot>
+      <x-conditional-slot-content>
+        <template shadow-root>
+          <x-slotted>
+            <template shadow-root><slot></slot></template>
+            Slot content:
+            <x-child>
+              <template shadow-root></template>
+              Should show when activatetruepath(value: true) is true
+            </x-child>
+          </x-slotted>
+          <x-slotted>
+            <template shadow-root><slot></slot></template>
+            Slot Content:
+            <x-child>
+              <template shadow-root></template>
+              Should show when activatefalsepath(value: false) is false
+            </x-child>
+          </x-slotted>
+        </template>
+      </x-conditional-slot-content>
+    </div>
+    <div class="inactive-if-blocks">
+      <x-conditional-slot>
+        <template shadow-root>
+          <x-conditionally-slotted>
+            <template shadow-root></template>
+            <x-child slot="trueslot">
+              <template shadow-root></template>
+              trueslot: Should show when activatetruepath(value: false) is true
+            </x-child>
+            <x-child slot="falseslot">
+              <template shadow-root></template>
+              falseslot: Should show when activatefalsepath(value: true) is
+              false
+            </x-child>
+          </x-conditionally-slotted>
+        </template>
+      </x-conditional-slot>
+      <x-conditional-slot-content>
+        <template shadow-root>
+          <x-slotted>
+            <template shadow-root><slot></slot></template>
+          </x-slotted>
+          <x-slotted>
+            <template shadow-root><slot></slot></template>
+          </x-slotted>
+        </template>
+      </x-conditional-slot-content>
+    </div>
+  </template>
+</x-if-with-slots>

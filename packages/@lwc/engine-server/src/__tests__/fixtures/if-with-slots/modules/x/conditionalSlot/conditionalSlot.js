@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
 
-export default class CustomElementChild extends LightningElement {
+export default class ConditionalSlot extends LightningElement {
     @api
     activatefalsepath;
 

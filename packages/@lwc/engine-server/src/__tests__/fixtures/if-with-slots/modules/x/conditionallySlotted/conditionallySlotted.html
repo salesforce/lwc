@@ -1,0 +1,8 @@
+<template>
+    <template if:true={activatetruepath}>
+        <slot name="trueslot"></slot>
+    </template>
+    <template if:false={activatefalsepath}>
+        <slot name="falseslot"></slot>
+    </template>
+</template>
