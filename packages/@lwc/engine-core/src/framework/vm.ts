@@ -296,7 +296,7 @@ export function createVM<HostNode, HostElement>(
     createComponent(vm, def.ctor);
 
     // Initializing the wire decorator per instance only when really needed
-    if (hasWireAdapters(vm)) {
+    if (isFalse(renderer.ssr) && hasWireAdapters(vm)) {
         installWireAdapters(vm);
     }
 
