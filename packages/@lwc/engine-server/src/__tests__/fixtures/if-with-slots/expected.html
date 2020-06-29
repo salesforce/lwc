@@ -9,11 +9,11 @@
               <slot name="falseslot"></slot>
             </template>
             <x-child slot="trueslot">
-              <template shadow-root></template>
+              <template shadow-root><slot></slot></template>
               trueslot: Should show when activatetruepath(value: true) is true
             </x-child>
             <x-child slot="falseslot">
-              <template shadow-root></template>
+              <template shadow-root><slot></slot></template>
               falseslot: Should show when activatefalsepath(value: false) is
               false
             </x-child>
@@ -26,7 +26,7 @@
             <template shadow-root><slot></slot></template>
             Slot content:
             <x-child>
-              <template shadow-root></template>
+              <template shadow-root><slot></slot></template>
               Should show when activatetruepath(value: true) is true
             </x-child>
           </x-slotted>
@@ -34,7 +34,7 @@
             <template shadow-root><slot></slot></template>
             Slot Content:
             <x-child>
-              <template shadow-root></template>
+              <template shadow-root><slot></slot></template>
               Should show when activatefalsepath(value: false) is false
             </x-child>
           </x-slotted>
@@ -47,11 +47,11 @@
           <x-conditionally-slotted>
             <template shadow-root></template>
             <x-child slot="trueslot">
-              <template shadow-root></template>
+              <template shadow-root><slot></slot></template>
               trueslot: Should show when activatetruepath(value: false) is true
             </x-child>
             <x-child slot="falseslot">
-              <template shadow-root></template>
+              <template shadow-root><slot></slot></template>
               falseslot: Should show when activatefalsepath(value: true) is
               false
             </x-child>

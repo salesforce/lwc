@@ -1,13 +1,6 @@
 import { LightningElement, track } from 'lwc';
+import Test from 'x/test';
+
 export default class DynamicCtor extends LightningElement {
-/*     @track customCtor;
-
-    connectedCallback() {
-        this.loadCtor();
-    }
-
-    async loadCtor() {
-        const ctor = await import("x/test");
-        this.customCtor = ctor.default;
-    } */
+    @track customCtor = Test;
 }
