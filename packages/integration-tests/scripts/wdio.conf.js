@@ -65,7 +65,7 @@ exports.config = {
                 port,
                 folders: [
                     { mount: '/', path: './public' },
-                    ...suites.flatMap((suite) => suite.specs),
+                    ...suites.map((suite) => suite.specs).reduce((acc, arr) => acc.concat(arr)),
                 ],
             },
         ],

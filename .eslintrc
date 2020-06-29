@@ -9,11 +9,11 @@
     "plugins": [
         "jest",
         "lwc-internal",
-        "@typescript-eslint",
+        "@typescript-eslint"
     ],
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/eslint-recommended"
     ],
 
     "env": {
@@ -96,19 +96,30 @@
     "overrides": [
         {
             "files": [
+                "**/engine-core/**",
+                "**/engine-dom/**",
+                "**/synthetic-shadow/**"
+            ],
+            "rules": {
+                "prefer-rest-params": "off",
+                "prefer-spread": "off"
+            }
+        },
+        {
+            "files": [
                 "**/__tests__/**",
                 "**/__mocks__/**",
                 "**/integration-karma/**"
             ],
 
             "env": {
-                "jest": true,
+                "jest": true
             },
 
             "rules": {
                 "jest/no-focused-tests": "error",
                 "jest/valid-expect": "error",
-                "jest/valid-expect-in-promise": "error",
+                "jest/valid-expect-in-promise": "error"
             }
         },
         {
