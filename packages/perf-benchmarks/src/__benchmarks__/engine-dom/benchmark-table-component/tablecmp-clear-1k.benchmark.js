@@ -6,10 +6,10 @@
  */
 
 import { createElement } from 'lwc';
-import Table from 'benchmark/tableComponent';
 
-import Store from '../../../tableStore';
-import { insertTableComponent, destroyTableComponent } from '../../../utils';
+import Table from 'benchmark/tableComponent';
+import Store from 'benchmark/store';
+import { insertTableComponent, destroyTableComponent } from 'benchmark/utils';
 
 benchmark(`benchmark-table-component/clear/1k`, () => {
     let tableElement;

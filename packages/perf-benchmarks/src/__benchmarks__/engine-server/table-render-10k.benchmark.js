@@ -6,24 +6,11 @@
  */
 
 import { renderComponent } from '@lwc/engine-server';
-import Table from 'benchmark/table';
 
-import Store from '../../tableStore';
+import Table from 'benchmark/table';
+import Store from 'benchmark/store';
 
 benchmark(`benchmark-table/render/10k`, () => {
-    // let tableElement;
-    // let store;
-
-    // before(async () => {
-    //     tableElement = createElement('benchmark-table', { is: Table });
-    //     await insertTableComponent(tableElement);
-
-    //     store = new Store();
-    //     store.run();
-    //     // eslint-disable-next-line require-atomic-updates
-    //     tableElement.rows = store.data;
-    // });
-
     run(() => {
         const store = new Store();
         store.runLots();
@@ -32,8 +19,4 @@ benchmark(`benchmark-table/render/10k`, () => {
             rows: store.data,
         });
     });
-
-    // after(() => {
-    //     destroyTableComponent(tableElement);
-    // });
 });
