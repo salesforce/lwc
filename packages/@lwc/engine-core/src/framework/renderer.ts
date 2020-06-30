@@ -44,7 +44,6 @@ export interface Renderer<N = HostNode, E = HostElement> {
     getElementsByTagName(element: E, tagNameOrWildCard: string): HTMLCollection;
     getElementsByClassName(element: E, names: string): HTMLCollection;
     isConnected(node: N): boolean;
-    tagName(element: E): string;
     insertGlobalStylesheet(content: string): void;
     assertInstanceOfHTMLElement?(elm: any, msg: string): void;
 }
