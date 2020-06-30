@@ -215,11 +215,11 @@ jobs:
           name: Run BEST
           working_directory: packages/perf-benchmarks
           no_output_timeout: 40m
-          command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote --runInBatch --dbAdapter=sql/postgres --dbURI=${BEST_HUB_DATABASE_URL}
+          command: yarn start --externalStorage=@best/store-aws --runner remote --runInBatch --dbAdapter=sql/postgres --dbURI=${BEST_HUB_DATABASE_URL}
       - run:
           name: Comparing Benchmarks
           working_directory: packages/perf-benchmarks
-          command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+          command: yarn start --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
       - store_artifacts:
           path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
           destination: benchmarks
