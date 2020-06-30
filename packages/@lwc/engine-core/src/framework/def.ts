@@ -270,9 +270,13 @@ const lightingElementDef: ComponentDef = {
     render: BaseLightningElement.prototype.render,
 };
 
+enum PropDefType {
+    any = 'any',
+}
+
 interface PropDef {
     config: number;
-    type: string;
+    type: PropDefType;
     attr: string;
 }
 type PublicMethod = (...args: any[]) => any;
@@ -299,7 +303,7 @@ export function getComponentDef(Ctor: any, subclassComponentName?: string): Publ
         // avoid leaking the reference to the public props descriptors
         publicProps[key] = {
             config: propsConfig[key] || 0, // a property by default
-            type: 'any', // no type inference for public services
+            type: PropDefType.any, // no type inference for public services
             attr: getAttrNameFromPropName(key),
         };
     }
