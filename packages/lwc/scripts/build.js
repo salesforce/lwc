@@ -44,6 +44,15 @@ function buildEngineTargets(targets) {
     return targets.map((bundleConfig) => buildBundleConfig(engineConfig, bundleConfig));
 }
 
+function buildEngineServerTargets(targets) {
+    const targetName = 'engine-server';
+    const input = getEs6ModuleEntry('@lwc/engine-server');
+    const dir = path.join(distDirectory, 'engine-server');
+    const engineConfig = { input, targetName, dir };
+
+    return targets.map((bundleConfig) => buildBundleConfig(engineConfig, bundleConfig));
+}
+
 function buildSyntheticShadow(targets) {
     const name = 'SyntheticShadow';
     const targetName = 'synthetic-shadow';
@@ -72,6 +81,10 @@ function buildWireService(targets) {
         ...buildEngineTargets(COMMON_TARGETS),
         ...buildSyntheticShadow(COMMON_TARGETS),
         ...buildWireService(COMMON_TARGETS),
+        ...buildEngineServerTargets([
+            { target: 'es2017', format: 'commonjs', prod: false },
+            { target: 'es2017', format: 'commonjs', prod: true },
+        ]),
     ];
     process.stdout.write('\n# Generating LWC artifacts...\n');
     await generateTargets(allTargets);
