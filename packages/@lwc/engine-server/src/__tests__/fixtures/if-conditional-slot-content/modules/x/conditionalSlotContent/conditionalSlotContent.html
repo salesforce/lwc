@@ -1,0 +1,15 @@
+<!-- The slot content passed to x-slotted component is controlled by a if:* directive-->
+<template>
+    <x-slotted>
+        <template if:true={activatetruepath}>
+            Testing if:true
+            <x-child>Should be slotted when {activatetruepath} === true</x-child>
+        </template>
+    </x-slotted>
+    <x-slotted>
+        <template if:false={activatefalsepath}>
+            Testing if:false
+            <x-child>Should be slotted when {activatefalsepath} === false</x-child>
+        </template>
+    </x-slotted>
+</template>

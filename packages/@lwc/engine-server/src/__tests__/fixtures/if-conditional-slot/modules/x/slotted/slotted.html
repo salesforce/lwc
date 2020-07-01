@@ -1,0 +1,10 @@
+<template>
+    <template if:true={activatetruepath}>
+        Should be active when {activatetruepath} === true
+        <slot name="trueslot"></slot>
+    </template>
+    <template if:false={activatefalsepath}>
+        Should be active when {activatefalsepath} === false
+        <slot name="falseslot"></slot>
+    </template>
+</template>

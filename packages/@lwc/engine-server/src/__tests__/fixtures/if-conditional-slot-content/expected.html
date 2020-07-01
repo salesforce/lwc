@@ -1,0 +1,38 @@
+<x-if-conditional-slot-content>
+  <template shadow-root>
+    <div class="active-if-blocks">
+      <x-conditional-slot-content>
+        <template shadow-root>
+          <x-slotted>
+            <template shadow-root><slot></slot></template>
+            Testing if:true
+            <x-child>
+              <template shadow-root><slot></slot></template>
+              Should be slotted when true === true
+            </x-child>
+          </x-slotted>
+          <x-slotted>
+            <template shadow-root><slot></slot></template>
+            Testing if:false
+            <x-child>
+              <template shadow-root><slot></slot></template>
+              Should be slotted when false === false
+            </x-child>
+          </x-slotted>
+        </template>
+      </x-conditional-slot-content>
+    </div>
+    <div class="inactive-if-blocks">
+      <x-conditional-slot-content>
+        <template shadow-root>
+          <x-slotted>
+            <template shadow-root><slot></slot></template>
+          </x-slotted>
+          <x-slotted>
+            <template shadow-root><slot></slot></template>
+          </x-slotted>
+        </template>
+      </x-conditional-slot-content>
+    </div>
+  </template>
+</x-if-conditional-slot-content>

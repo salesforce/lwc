@@ -1,0 +1,7 @@
+<!-- The x-conditionally-slotted component's <slot> element is controlled by a if:* directive-->
+<template>
+    <x-slotted activatetruepath={activatetruepath} activatefalsepath={activatefalsepath}>
+        <x-child slot="trueslot" class="slotted-child">Testing if:true</x-child>
+        <x-child slot="falseslot" class="slotted-child">Testing if:false</x-child>
+    </x-slotted>
+</template>

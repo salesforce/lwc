@@ -1,0 +1,11 @@
+<template>
+    <div class="active-if-blocks">
+       <x-conditional-slot-content activatetruepath={trueFlag} activatefalsepath={falseFlag}>
+       </x-conditional-slot-content>
+    </div>
+
+    <div class="inactive-if-blocks">
+        <x-conditional-slot-content activatetruepath={falseFlag} activatefalsepath={trueFlag}>
+        </x-conditional-slot-content>
+    </div>
+</template>
