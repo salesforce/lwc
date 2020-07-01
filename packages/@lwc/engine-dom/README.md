@@ -2,8 +2,6 @@
 
 This package can be used to render LWC components as DOM elements in a DOM environment.
 
-Usage of internal APIs are prevented by the compiler and are therefore not documented here.
-
 ## Supported APIs
 
 This package supports the following APIs.
@@ -13,7 +11,7 @@ This package supports the following APIs.
 This function creates an LWC component, given a tag name and an LWC constructor.
 
 ```js
-import { createElement } from '@lwc/engine-dom';
+import { createElement } from 'lwc';
 import LightningHello from 'lightning/hello';
 
 const element = createElement('lightning-hello', { is: LightningHello });
@@ -23,8 +21,8 @@ document.body.appendChild(element);
 
 ## Experimental APIs
 
-Experimental APIs are subject to change or removal, are not stable, and should be used at your
-own risk.
+Experimental APIs are subject to change, may be removed at any time, and should be used at your
+own risk!
 
 ### getComponentConstructor()
 
@@ -44,7 +42,7 @@ This function can build a Web Component class that can be registered as a new el
 Deprecated in favor of using the `CustomElementConstructor` property of an LWC constructor.
 
 ```js
-import { LightningElement } from '@lwc/engine-dom';
+import { LightningElement } from 'lwc';
 
 class LightningHello extends LightningElement {}
 

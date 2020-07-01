@@ -5,6 +5,8 @@ include the rendering engine and the reactivity mechanism. Since this package on
 internal APIs for building custom runtimes, it should never be consumed directly in an
 application.
 
+Usage of internal APIs are prevented by the compiler and are therefore not documented here.
+
 ## Supported APIs
 
 This package supports the following APIs.
@@ -78,8 +80,8 @@ class LightningHello extends LightningElement {
 
 ## Experimental APIs
 
-Experimental APIs are subject to change or removal, are not stable, and should be used at your
-own risk.
+Experimental APIs are subject to change, may be removed at any time, and should be used at your
+own risk!
 
 ### getComponentDef()
 
