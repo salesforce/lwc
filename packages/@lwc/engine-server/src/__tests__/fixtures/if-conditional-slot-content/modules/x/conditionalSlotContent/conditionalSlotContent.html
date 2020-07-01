@@ -2,14 +2,14 @@
 <template>
     <x-slotted>
         <template if:true={activatetruepath}>
-            Slot content:
-            <x-child>Should show when activatetruepath(value: {activatetruepath}) is true</x-child>
+            Testing if:true
+            <x-child>Should be slotted when {activatetruepath} === true</x-child>
         </template>
     </x-slotted>
     <x-slotted>
         <template if:false={activatefalsepath}>
-            Slot Content:
-            <x-child>Should show when activatefalsepath(value: {activatefalsepath}) is false</x-child>
+            Testing if:false
+            <x-child>Should be slotted when {activatefalsepath} === false</x-child>
         </template>
     </x-slotted>
 </template>

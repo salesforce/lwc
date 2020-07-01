@@ -1,0 +1,11 @@
+<template>
+    <div class="active-if-blocks">
+        <x-parent activatetruepath={trueFlag} activatefalsepath={falseFlag}>
+        </x-parent>
+    </div>
+
+    <div class="inactive-if-blocks">
+        <x-parent activatetruepath={falseFlag} activatefalsepath={trueFlag}>
+        </x-parent>
+    </div>
+</template>
