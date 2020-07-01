@@ -15,4 +15,12 @@ This function renders a string-representation of a serialized component tree, gi
 and an LWC constructor. The output format itself is aligned with the [current leading
 proposal][explainer], but is subject to change.
 
+```js
+import { renderComponent } from 'lwc';
+import LightningHello from 'lightning/hello';
+
+const componentProps = {};
+const serialized = renderComponent('lightning-hello', LightningHello, componentProps);
+```
+
 [explainer]: https://github.com/mfreed7/declarative-shadow-dom/blob/master/README.md
