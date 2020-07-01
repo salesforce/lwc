@@ -6,22 +6,27 @@
  */
 
 import { createElement } from 'lwc';
+
 import Table from 'benchmark/table';
+import Store from 'benchmark/store';
+import { insertTableComponent, destroyTableComponent } from 'benchmark/utils';
 
-import Store from '../../tableStore';
-import { insertTableComponent, destroyTableComponent } from '../../utils';
-
-benchmark(`benchmark-table/create/10k`, () => {
+benchmark(`benchmark-table/update-10th/1k`, () => {
     let tableElement;
+    let store;
 
-    before(() => {
+    before(async () => {
         tableElement = createElement('benchmark-table', { is: Table });
-        return insertTableComponent(tableElement);
+        await insertTableComponent(tableElement);
+
+        store = new Store();
+        store.run();
+        // eslint-disable-next-line require-atomic-updates
+        tableElement.rows = store.data;
     });
 
     run(() => {
-        const store = new Store();
-        store.runLots();
+        store.update();
         tableElement.rows = store.data;
     });
 

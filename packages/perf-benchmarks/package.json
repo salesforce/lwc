@@ -3,8 +3,7 @@
     "version": "1.7.5",
     "private": true,
     "scripts": {
-        "start": "best",
-        "remote": "best --projects best.headless.config.js --runner remote"
+        "start": "best"
     },
     "devDependencies": {
         "@best/cli": "4.0.0-beta5",

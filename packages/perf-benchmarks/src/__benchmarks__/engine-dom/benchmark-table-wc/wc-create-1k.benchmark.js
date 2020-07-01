@@ -7,29 +7,25 @@
 import Table from 'benchmark/tableComponent';
 import Row from 'benchmark/tableComponentRow';
 
-import Store from '../../tableStore';
-import { insertTableComponent, destroyTableComponent } from '../../utils';
+import Store from 'benchmark/store';
+import { insertTableComponent, destroyTableComponent } from 'benchmark/utils';
 
 customElements.define('benchmark-table-component', Table.CustomElementConstructor);
 // the row can be optionally defined, but this benchmark always do it so we know how costly it is.
 customElements.define('benchmark-table-component-row', Row.CustomElementConstructor);
 
-benchmark(`benchmark-table-wc/clear/1k`, () => {
+benchmark(`benchmark-table-wc/create/1k`, () => {
     let tableElement;
-    let store;
 
-    before(async () => {
+    before(() => {
         tableElement = document.createElement('benchmark-table-component');
-        await insertTableComponent(tableElement);
-
-        store = new Store();
-        store.run();
-        // eslint-disable-next-line require-atomic-updates
-        tableElement.rows = store.data;
+        return insertTableComponent(tableElement);
     });
 
     run(() => {
-        tableElement.rows = [];
+        const store = new Store();
+        store.run();
+        tableElement.rows = store.data;
     });
 
     after(() => {

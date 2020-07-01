@@ -6,12 +6,12 @@
  */
 
 import { createElement } from 'lwc';
+
 import Table from 'benchmark/table';
+import Store from 'benchmark/store';
+import { insertTableComponent, destroyTableComponent } from 'benchmark/utils';
 
-import Store from '../../tableStore';
-import { insertTableComponent, destroyTableComponent } from '../../utils';
-
-benchmark(`benchmark-table/clear/1k`, () => {
+benchmark(`benchmark-table/append/1k`, () => {
     let tableElement;
     let store;
 
@@ -26,7 +26,8 @@ benchmark(`benchmark-table/clear/1k`, () => {
     });
 
     run(() => {
-        tableElement.rows = [];
+        store.add();
+        tableElement.rows = store.data;
     });
 
     after(() => {

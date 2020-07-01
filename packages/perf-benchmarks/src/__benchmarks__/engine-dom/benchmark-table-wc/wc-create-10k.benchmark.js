@@ -7,14 +7,14 @@
 import Table from 'benchmark/tableComponent';
 import Row from 'benchmark/tableComponentRow';
 
-import Store from '../../tableStore';
-import { insertTableComponent, destroyTableComponent } from '../../utils';
+import Store from 'benchmark/store';
+import { insertTableComponent, destroyTableComponent } from 'benchmark/utils';
 
 customElements.define('benchmark-table-component', Table.CustomElementConstructor);
 // the row can be optionally defined, but this benchmark always do it so we know how costly it is.
 customElements.define('benchmark-table-component-row', Row.CustomElementConstructor);
 
-benchmark(`benchmark-table-wc/create/1k`, () => {
+benchmark(`benchmark-table-wc/create/10k`, () => {
     let tableElement;
 
     before(() => {
@@ -24,7 +24,7 @@ benchmark(`benchmark-table-wc/create/1k`, () => {
 
     run(() => {
         const store = new Store();
-        store.run();
+        store.runLots();
         tableElement.rows = store.data;
     });
 

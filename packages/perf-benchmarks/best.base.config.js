@@ -5,9 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 module.exports = {
-    projectName: 'lwc-engine-benchmark',
     plugins: [
-        '<rootDir>/best-plugins/synthetic-shadow.js',
         [
             '@lwc/rollup-plugin',
             {
@@ -17,8 +15,10 @@ module.exports = {
         ],
         ['@rollup/plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }],
     ],
+
     benchmarkOnClient: false,
     benchmarkIterations: 60,
+
     specs: { name: 'chrome.headless', version: '80' },
     runners: [
         {
