@@ -1,0 +1,27 @@
+<x-for-each-child-nested>
+    <template shadow-root>
+      <ol>
+        <li>
+          europe
+          <x-child>
+            <template shadow-root>
+              <li>0 - paris</li>
+              <li>1 - london</li>
+              <li>2 - rome</li>
+            </template>
+          </x-child>
+        </li>
+        <li>
+          asia
+          <x-child>
+            <template shadow-root>
+              <li>0 - tokyo</li>
+              <li>1 - kuala lumpur</li>
+              <li>2 - singapore</li>
+            </template>
+          </x-child>
+        </li>
+      </ol>
+    </template>
+  </x-for-each-child-nested>
+  
