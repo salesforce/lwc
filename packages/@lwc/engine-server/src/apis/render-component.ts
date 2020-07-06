@@ -11,6 +11,7 @@ import {
     setElementProto,
     LightningElement,
 } from '@lwc/engine-core';
+import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
 import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
@@ -18,8 +19,26 @@ import { serializeElement } from '../serializer';
 export function renderComponent(
     tagName: string,
     Ctor: typeof LightningElement,
-    props: { [name: string]: any }
+    props: { [name: string]: any } = {}
 ): string {
+    if (!isString(tagName)) {
+        throw new TypeError(
+            `"renderComponent" expects a string as first parameter but received ${tagName}.`
+        );
+    }
+
+    if (!isFunction(Ctor)) {
+        throw new TypeError(
+            `"renderComponent" expects a valid component constructor as second parameter but received ${Ctor}.`
+        );
+    }
+
+    if (!isObject(props) || isNull(props)) {
+        throw new TypeError(
+            `"renderComponent" expected an object as third parameter but received ${props}.`
+        );
+    }
+
     const element = renderer.createElement(tagName);
 
     const def = getComponentInternalDef(Ctor);
