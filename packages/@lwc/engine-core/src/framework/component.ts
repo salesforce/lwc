@@ -44,6 +44,9 @@ export function registerComponent(
     Ctor: ComponentConstructor,
     { name, tmpl: template }: { name: string; tmpl: Template }
 ): ComponentConstructor {
+    if (isUndefined(name)) {
+        name = Ctor.name;
+    }
     signedComponentToMetaMap.set(Ctor, { name, template });
     // chaining this method as a way to wrap existing
     // assignment of component constructor easily, without too much transformation
