@@ -42,7 +42,7 @@ const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new M
  */
 export function registerComponent(
     Ctor: ComponentConstructor,
-    { name, tmpl: template }: { name: string; tmpl: Template }
+    { name, tmpl: template }: { name: string | undefined; tmpl: Template }
 ): ComponentConstructor {
     if (isUndefined(name)) {
         name = Ctor.name;
