@@ -144,13 +144,14 @@ function createComponentDef(
     render = render || superDef.render;
 
     const template = getComponentRegisteredTemplate(Ctor) || superDef.template;
+    const name = Ctor.name || superDef.name;
 
     // installing observed fields into the prototype.
     defineProperties(proto, observedFields);
 
     const def: ComponentDef = {
         ctor: Ctor,
-        name: Ctor.name,
+        name,
         wire,
         props,
         propsConfig,

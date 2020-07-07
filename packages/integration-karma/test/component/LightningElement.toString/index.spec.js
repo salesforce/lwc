@@ -8,7 +8,7 @@ it('should rely on the constructor name', () => {
     expect(elm.getToString()).toBe('[object MyFancyComponent]');
 });
 
-it('should fallback to BaseLightningElement if constructor has no name', () => {
+it('should fallback to BaseLightningElementConstructor if constructor has no name', () => {
     const elm = createElement('x-anonymous', { is: Anonymous });
     expect(elm.getToString()).toBe('[object BaseLightningElementConstructor]');
 });
