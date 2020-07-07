@@ -23,19 +23,19 @@ export function renderComponent(
 ): string {
     if (!isString(tagName)) {
         throw new TypeError(
-            `"renderComponent" expects a string as first parameter but received ${tagName}.`
+            `"renderComponent" expects a string as the first parameter but instead received ${tagName}.`
         );
     }
 
     if (!isFunction(Ctor)) {
         throw new TypeError(
-            `"renderComponent" expects a valid component constructor as second parameter but received ${Ctor}.`
+            `"renderComponent" expects a valid component constructor as the second parameter but instead received ${Ctor}.`
         );
     }
 
     if (!isObject(props) || isNull(props)) {
         throw new TypeError(
-            `"renderComponent" expected an object as third parameter but received ${props}.`
+            `"renderComponent" expects an object as the third parameter but instead received ${props}.`
         );
     }
 
