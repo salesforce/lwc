@@ -28,12 +28,7 @@ import {
 } from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
 import { EmptyObject } from './utils';
-import {
-    ComponentConstructor,
-    ErrorCallback,
-    ComponentMeta,
-    getComponentRegisteredMeta,
-} from './component';
+import { ComponentConstructor, ErrorCallback, getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
 import { BaseLightningElement, lightningBasedDescriptors } from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
@@ -96,11 +91,9 @@ function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstr
 
 function createComponentDef(
     Ctor: ComponentConstructor,
-    meta: ComponentMeta,
     subclassComponentName: string
 ): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
-        // local to dev block
         const ctorName = Ctor.name;
         // Removing the following assert until https://bugs.webkit.org/show_bug.cgi?id=190140 is fixed.
         // assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
@@ -110,8 +103,6 @@ function createComponentDef(
         );
     }
 
-    const { name } = meta;
-    let { template } = meta;
     const decoratorsMeta = getDecoratorsMeta(Ctor);
     const {
         apiFields,
@@ -151,14 +142,15 @@ function createComponentDef(
     renderedCallback = renderedCallback || superDef.renderedCallback;
     errorCallback = errorCallback || superDef.errorCallback;
     render = render || superDef.render;
-    template = template || superDef.template;
+
+    const template = getComponentRegisteredTemplate(Ctor) || superDef.template;
 
     // installing observed fields into the prototype.
     defineProperties(proto, observedFields);
 
     const def: ComponentDef = {
         ctor: Ctor,
-        name,
+        name: Ctor.name,
         wire,
         props,
         propsConfig,
@@ -237,16 +229,7 @@ export function getComponentInternalDef(Ctor: unknown, name?: string): Component
             );
         }
 
-        let meta = getComponentRegisteredMeta(Ctor);
-        if (isUndefined(meta)) {
-            // TODO [#1295]: remove this workaround after refactoring tests
-            meta = {
-                template: undefined,
-                name: Ctor.name,
-            };
-        }
-
-        def = createComponentDef(Ctor, meta, name || Ctor.name);
+        def = createComponentDef(Ctor, name || Ctor.name);
         CtorToDefMap.set(Ctor, def);
     }
 

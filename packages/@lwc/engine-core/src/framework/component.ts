@@ -34,7 +34,7 @@ export interface ComponentMeta {
     readonly template?: Template;
 }
 
-const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new Map();
+const signedTemplateMap: Map<ComponentConstructor, Template> = new Map();
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
@@ -42,19 +42,16 @@ const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new M
  */
 export function registerComponent(
     Ctor: ComponentConstructor,
-    { name, tmpl: template }: { name: string | undefined; tmpl: Template }
+    { tmpl }: { tmpl: Template }
 ): ComponentConstructor {
-    if (isUndefined(name)) {
-        name = Ctor.name;
-    }
-    signedComponentToMetaMap.set(Ctor, { name, template });
-    // chaining this method as a way to wrap existing
-    // assignment of component constructor easily, without too much transformation
+    signedTemplateMap.set(Ctor, tmpl);
+    // chaining this method as a way to wrap existing assignment of component constructor easily,
+    // without too much transformation
     return Ctor;
 }
 
-export function getComponentRegisteredMeta(Ctor: ComponentConstructor): ComponentMeta | undefined {
-    return signedComponentToMetaMap.get(Ctor);
+export function getComponentRegisteredTemplate(Ctor: ComponentConstructor): Template | undefined {
+    return signedTemplateMap.get(Ctor);
 }
 
 export function createComponent(vm: VM, Ctor: ComponentConstructor) {
