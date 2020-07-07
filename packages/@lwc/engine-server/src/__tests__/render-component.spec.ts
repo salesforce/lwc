@@ -20,7 +20,7 @@ describe('renderComponent', () => {
         'asserts the first parameter is a string (type: %p)',
         (value) => {
             expect(() => renderComponent(value as any, Test, {})).toThrow(
-                `"renderComponent" expects a string as first parameter but received ${value}.`
+                `"renderComponent" expects a string as the first parameter but instead received ${value}.`
             );
         }
     );
@@ -29,7 +29,7 @@ describe('renderComponent', () => {
         'asserts the seconds parameter is a function (type: %p)',
         (value) => {
             expect(() => renderComponent('x-test', value as any, {})).toThrow(
-                `"renderComponent" expects a valid component constructor as second parameter but received ${value}.`
+                `"renderComponent" expects a valid component constructor as the second parameter but instead received ${value}.`
             );
         }
     );
@@ -38,7 +38,7 @@ describe('renderComponent', () => {
         'asserts the third parameter is an object (type: %p)',
         (value) => {
             expect(() => renderComponent('x-test', Test, value as any)).toThrow(
-                `"renderComponent" expected an object as third parameter but received ${value}.`
+                `"renderComponent" expects an object as the third parameter but instead received ${value}.`
             );
         }
     );
