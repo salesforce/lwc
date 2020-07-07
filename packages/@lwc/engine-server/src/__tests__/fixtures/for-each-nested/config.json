@@ -1,0 +1,8 @@
+{
+    "props": {
+        "list": [
+            { "continent": "europe", "cities": ["paris", "london", "rome"] },
+            { "continent": "asia", "cities": ["tokyo", "kuala lumpur", "singapore"] }
+        ]
+    }
+}
