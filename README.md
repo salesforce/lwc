@@ -45,4 +45,3 @@ The [MIT license][license] governs your use of Lightning Web Components.
 [contributing]: https://github.com/salesforce/lwc/blob/master/CONTRIBUTING.md
 [license]: https://github.com/salesforce/lwc/blob/master/LICENSE
 
-
