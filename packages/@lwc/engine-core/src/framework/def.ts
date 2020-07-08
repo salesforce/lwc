@@ -63,7 +63,7 @@ export interface ComponentDef {
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
-function getCtorProto(Ctor: any): ComponentConstructor {
+function getCtorProto(Ctor: ComponentConstructor): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
     if (isNull(proto)) {
         throw new ReferenceError(
@@ -119,12 +119,11 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         render,
     } = proto;
     const superProto = getCtorProto(Ctor);
-    const superDef: ComponentDef =
-        (superProto as any) !== BaseLightningElement
+    const superDef =
+        superProto !== BaseLightningElement
             ? getComponentInternalDef(superProto)
             : lightingElementDef;
-    const SuperBridge = isNull(superDef) ? BaseBridgeElement : superDef.bridge;
-    const bridge = HTMLBridgeElementFactory(SuperBridge, keys(apiFields), keys(apiMethods));
+    const bridge = HTMLBridgeElementFactory(superDef.bridge, keys(apiFields), keys(apiMethods));
     const props: PropertyDescriptorMap = assign(create(null), superDef.props, apiFields);
     const propsConfig = assign(create(null), superDef.propsConfig, apiFieldsConfig);
     const methods: PropertyDescriptorMap = assign(create(null), superDef.methods, apiMethods);
