@@ -63,11 +63,11 @@ export interface ComponentDef {
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
-function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstructor {
+function getCtorProto(Ctor: any): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
     if (isNull(proto)) {
         throw new ReferenceError(
-            `Invalid prototype chain for ${subclassComponentName}, you must extend LightningElement.`
+            `Invalid prototype chain for ${Ctor.name}, you must extend LightningElement.`
         );
     }
     // covering the cases where the ref is circular in AMD
@@ -76,7 +76,7 @@ function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstr
         if (process.env.NODE_ENV !== 'production') {
             if (isNull(p)) {
                 throw new ReferenceError(
-                    `Circular module dependency for ${subclassComponentName}, must resolve to a constructor that extends LightningElement.`
+                    `Circular module dependency for ${Ctor.name}, must resolve to a constructor that extends LightningElement.`
                 );
             }
         }
@@ -89,10 +89,7 @@ function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstr
     return proto!;
 }
 
-function createComponentDef(
-    Ctor: ComponentConstructor,
-    subclassComponentName: string
-): ComponentDef {
+function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
         const ctorName = Ctor.name;
         // Removing the following assert until https://bugs.webkit.org/show_bug.cgi?id=190140 is fixed.
@@ -121,10 +118,10 @@ function createComponentDef(
         errorCallback,
         render,
     } = proto;
-    const superProto = getCtorProto(Ctor, subclassComponentName);
+    const superProto = getCtorProto(Ctor);
     const superDef: ComponentDef =
         (superProto as any) !== BaseLightningElement
-            ? getComponentInternalDef(superProto, subclassComponentName)
+            ? getComponentInternalDef(superProto)
             : lightingElementDef;
     const SuperBridge = isNull(superDef) ? BaseBridgeElement : superDef.bridge;
     const bridge = HTMLBridgeElementFactory(SuperBridge, keys(apiFields), keys(apiMethods));
@@ -211,7 +208,7 @@ export function isComponentConstructor(ctor: unknown): ctor is ComponentConstruc
     return false;
 }
 
-export function getComponentInternalDef(Ctor: unknown, name?: string): ComponentDef {
+export function getComponentInternalDef(Ctor: unknown): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
 
     if (isUndefined(def)) {
@@ -230,7 +227,7 @@ export function getComponentInternalDef(Ctor: unknown, name?: string): Component
             );
         }
 
-        def = createComponentDef(Ctor, name || Ctor.name);
+        def = createComponentDef(Ctor);
         CtorToDefMap.set(Ctor, def);
     }
 
@@ -275,8 +272,8 @@ interface PublicComponentDef {
  * EXPERIMENTAL: This function allows for the collection of internal component metadata. This API is
  * subject to change or being removed.
  */
-export function getComponentDef(Ctor: any, subclassComponentName?: string): PublicComponentDef {
-    const def = getComponentInternalDef(Ctor, subclassComponentName);
+export function getComponentDef(Ctor: any): PublicComponentDef {
+    const def = getComponentInternalDef(Ctor);
     // From the internal def object, we need to extract the info that is useful
     // for some external services, e.g.: Locker Service, usually, all they care
     // is about the shape of the constructor, the internals of it are not relevant
