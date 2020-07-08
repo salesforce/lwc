@@ -1,15 +1,15 @@
 <x-if-element-child>
-  <template shadow-root>
+  <template shadowroot="open">
     <div class="active-if-blocks">
       <x-element-child>
-        <template shadow-root>
+        <template shadowroot="open">
           <div class="div-false"></div>
           <div class="div-true"></div>
         </template>
       </x-element-child>
     </div>
     <div class="inactive-if-blocks">
-      <x-element-child><template shadow-root></template></x-element-child>
+      <x-element-child><template shadowroot="open"></template></x-element-child>
     </div>
   </template>
 </x-if-element-child>

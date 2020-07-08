@@ -1,5 +1,5 @@
 <x-attribute-component-global-html>
-  <template shadow-root>
+  <template shadowroot="open">
     <x-child
       data-test="test"
       accesskey="A"
@@ -13,7 +13,7 @@
       class="foo bar"
       style="color: red; background: blue;"
     >
-      <template shadow-root>
+      <template shadowroot="open">
         Passthrough properties:
         <ul>
           <li>Title: foo</li>

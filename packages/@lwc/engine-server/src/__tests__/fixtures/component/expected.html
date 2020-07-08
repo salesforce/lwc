@@ -1,5 +1,7 @@
 <x-component>
-  <template shadow-root>
-    <x-child><template shadow-root>I am a child component</template></x-child>
+  <template shadowroot="open">
+    <x-child>
+      <template shadowroot="open">I am a child component</template>
+    </x-child>
   </template>
 </x-component>
