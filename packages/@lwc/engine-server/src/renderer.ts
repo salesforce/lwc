@@ -66,7 +66,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
     createText(content: string): HostNode {
         return {
             type: HostNodeType.Text,
-            value: content,
+            value: String(content),
             parent: null,
         };
     },

@@ -1,0 +1,5 @@
+{
+    "props": {
+        "attr": "\"></div>This 'should' be escaped<div attr=\""
+    }
+}
