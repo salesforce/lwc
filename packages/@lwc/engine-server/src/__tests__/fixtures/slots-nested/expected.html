@@ -1,0 +1,13 @@
+<x-slots-nested>
+  <template shadow-root>
+    <x-parent>
+      <template shadow-root>
+        <x-child>
+          <template shadow-root><slot></slot></template>
+          <slot></slot>
+        </x-child>
+      </template>
+      <div>foo</div>
+    </x-parent>
+  </template>
+</x-slots-nested>
