@@ -30,7 +30,13 @@ function serializeChildNodes(children: HostChildNode[]): string {
 }
 
 function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
-    return `<template shadow-root>${serializeChildNodes(shadowRoot.children)}</template>`;
+    const attrs = [`shadowroot="${shadowRoot.mode}"`];
+
+    if (shadowRoot.delegatesFocus) {
+        attrs.push('shadowrootdelegatesfocus');
+    }
+
+    return `<template ${attrs.join(' ')}>${serializeChildNodes(shadowRoot.children)}</template>`;
 }
 
 export function serializeElement(element: HostElement): string {

@@ -1,15 +1,15 @@
 <x-if-custom-element-child>
-  <template shadow-root>
+  <template shadowroot="open">
     <div class="active-if-blocks">
       <x-custom-element-child>
-        <template shadow-root>
+        <template shadowroot="open">
           <x-child>
-            <template shadow-root>
+            <template shadowroot="open">
               Custom element child x-child-test-false
             </template>
           </x-child>
           <x-child>
-            <template shadow-root>
+            <template shadowroot="open">
               Custom element child x-child-test-true
             </template>
           </x-child>
@@ -18,7 +18,7 @@
     </div>
     <div class="inactive-if-blocks">
       <x-custom-element-child>
-        <template shadow-root></template>
+        <template shadowroot="open"></template>
       </x-custom-element-child>
     </div>
   </template>

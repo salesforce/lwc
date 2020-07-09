@@ -26,6 +26,8 @@ export interface HostAttribute {
 export interface HostShadowRoot {
     type: HostNodeType.ShadowRoot;
     children: HostChildNode[];
+    mode: 'open' | 'closed';
+    delegatesFocus: boolean;
 }
 
 export interface HostElement {

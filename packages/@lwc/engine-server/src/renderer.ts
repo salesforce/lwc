@@ -82,10 +82,12 @@ export const renderer: Renderer<HostNode, HostElement> = {
         return parent.children[nodeIndex + 1] || null;
     },
 
-    attachShadow(element) {
+    attachShadow(element, config) {
         element.shadowRoot = {
             type: HostNodeType.ShadowRoot,
             children: [],
+            mode: config.mode,
+            delegatesFocus: !!config.delegatesFocus,
         };
 
         return (element.shadowRoot as any) as HostNode;
