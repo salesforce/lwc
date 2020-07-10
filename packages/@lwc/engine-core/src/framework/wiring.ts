@@ -8,7 +8,6 @@ import { assert, isUndefined, ArrayPush, defineProperty, defineProperties } from
 import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { VM, runWithBoundaryProtection } from './vm';
-import { invokeComponentCallback } from './invoker';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
@@ -61,7 +60,16 @@ function createFieldDataCallback(vm: VM, name: string) {
 function createMethodDataCallback(vm: VM, method: (data: any) => any) {
     return (value: any) => {
         // dispatching new value into the wired method
-        invokeComponentCallback(vm, method, [value]);
+        runWithBoundaryProtection(
+            vm,
+            vm.owner,
+            noop,
+            () => {
+                // job
+                method.apply(vm.component, [value]);
+            },
+            noop
+        );
     };
 }
 
