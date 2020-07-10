@@ -146,7 +146,7 @@ An NPM package module record tells the resolver that a given NPM package exposes
 
 -   `npm` (string, required): The NPM package name exposing the LWC modules.
 
-In this example, the resolver is told to look into the `@ui/components` npm package to look up LWC modules.
+In this example, the resolver is told to look into the `@ui/components` NPM package to look up LWC modules.
 
 ```json
 {
@@ -162,7 +162,7 @@ In this example, the resolver is told to look into the `@ui/components` npm pack
 
 To distribute an LWC module publicly via an NPM package, the package should follow the same the [LWC module resolution](#module-resolution) rules. The NPM package should either have the `lwc.config.json` file in its root directory or the `lwc` key in its `package.json` describing how LWC modules are resolved relative to this package.
 
-By default, an LWC module is not exposed outside of an NPM package. The LWC configuration must list explicitly the public LWC modules on the `expose` key.
+By default, an LWC module is not exposed outside of an NPM package. The LWC configuration must explicitly list the public LWC modules on the `expose` key.
 
 In this example, the package makes the `ui/button` and `ui/icon` LWC modules public.
 
