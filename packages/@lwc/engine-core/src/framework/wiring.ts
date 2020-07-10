@@ -66,7 +66,7 @@ function createMethodDataCallback(vm: VM, method: (data: any) => any) {
             noop,
             () => {
                 // job
-                method.apply(vm.component, [value]);
+                method.call(vm.component, value);
             },
             noop
         );
