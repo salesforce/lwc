@@ -25,6 +25,7 @@ export {
     connectRootElement,
     disconnectRootElement,
     getAssociatedVMIfPresent,
+    isConnected,
 } from './vm';
 
 // Internal APIs used by compiled code -------------------------------------------------------------

@@ -1,9 +1,20 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, track } from 'lwc';
 
-export default class GetterIsConnected extends LightningElement {
-    isComponentConnected;
+export default class extends LightningElement {
+    @track
+    hooks = [];
+
+    constructor() {
+        super();
+
+        if (this.isConnected) {
+            this.hooks.push('constructor');
+        }
+    }
 
     connectedCallback() {
-        this.isComponentConnected = this.isConnected;
+        if (this.isConnected) {
+            this.hooks.push('connectedCallback');
+        }
     }
 }

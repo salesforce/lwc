@@ -11,7 +11,7 @@ import {
     isGlobalHtmlAttribute,
     isAriaAttribute,
 } from '@lwc/shared';
-import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
+import { Renderer, getAttrNameFromPropName, isConnected } from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
@@ -291,8 +291,8 @@ export const renderer: Renderer<HostNode, HostElement> = {
         ) as CSSStyleDeclaration;
     },
 
-    isConnected() {
-        return true;
+    isConnected(node: HostNode) {
+        return isConnected(node);
     },
 
     insertGlobalStylesheet() {

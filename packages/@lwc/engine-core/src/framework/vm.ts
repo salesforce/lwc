@@ -150,7 +150,7 @@ export interface VM<N = HostNode, E = HostElement> {
     ) => any;
 }
 
-type VMAssociable = Node | LightningElement | ComponentInterface;
+type VMAssociable = HostNode | LightningElement | ComponentInterface;
 
 let idx: number = 0;
 
@@ -321,6 +321,11 @@ export function getAssociatedVM(obj: VMAssociable): VM {
     }
 
     return vm!;
+}
+
+export function isConnected(obj: VMAssociable): boolean {
+    const vm = getAssociatedVM(obj);
+    return vm.state === VMState.connected;
 }
 
 export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
