@@ -7,7 +7,7 @@
 import * as parse5 from 'parse5-with-errors';
 import * as he from 'he';
 
-import { CompilerDiagnostic, generateCompilerDiagnostic, ParserDiagnostics } from '@lwc/errors';
+import { LWCDiagnostic, captureDiagnostic, ParserDiagnostics } from '@lwc/errors';
 
 import { VOID_ELEMENT_SET } from './constants';
 
@@ -25,21 +25,18 @@ interface Visitor {
 export const treeAdapter = parse5.treeAdapters.default;
 
 export function parseHTML(source: string) {
-    const parsingErrors: CompilerDiagnostic[] = [];
+    const parsingErrors: LWCDiagnostic[] = [];
 
     const onParseError = (err: parse5.Errors.ParsingError) => {
         const { code, startLine, startCol, startOffset, endOffset } = err;
 
         parsingErrors.push(
-            generateCompilerDiagnostic(ParserDiagnostics.INVALID_HTML_SYNTAX, {
-                messageArgs: [code],
-                origin: {
-                    location: {
-                        line: startLine,
-                        column: startCol,
-                        start: startOffset,
-                        length: endOffset - startOffset,
-                    },
+            captureDiagnostic(ParserDiagnostics.INVALID_HTML_SYNTAX(code), {
+                location: {
+                    line: startLine,
+                    column: startCol,
+                    start: startOffset,
+                    length: endOffset - startOffset,
                 },
             })
         );
@@ -56,15 +53,12 @@ export function parseHTML(source: string) {
 
         if (!isVoidElement && missingClosingTag) {
             parsingErrors.push(
-                generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
-                    messageArgs: [node.tagName],
-                    origin: {
-                        location: {
-                            line: startTag.startLine || startTag.line,
-                            column: startTag.startCol || startTag.col,
-                            start: startTag.startOffset,
-                            length: startTag.endOffset - startTag.startOffset,
-                        },
+                captureDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS(node.tagName), {
+                    location: {
+                        line: startTag.startLine || startTag.line,
+                        column: startTag.startCol || startTag.col,
+                        start: startTag.startOffset,
+                        length: startTag.endOffset - startTag.startOffset,
                     },
                 })
             );

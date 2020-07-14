@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Diagnostic } from '@scary/diagnostics';
+import { Diagnostic, DiagnosticSeverity } from '@scary/diagnostics';
 
 import { templateString } from '../shared/utils';
 import { LWCErrorInfo } from '../shared/types';
@@ -15,16 +15,17 @@ import {
     getCodeFromError,
     getFilename,
     getLocation,
-    LWCDiagnostic
+    LWCDiagnostic,
 } from './utils';
 
 export {
     CompilerDiagnosticOrigin,
     CompilerDiagnostic,
     LWCDiagnostic,
-    CompilerError
+    CompilerError,
 } from './utils';
 
+export { Diagnostic, DiagnosticSeverity };
 export * from './error-info';
 
 // TODO [#1289]: Can be flattened now that we're down to only 2 properties
@@ -62,7 +63,7 @@ export function generateCompilerDiagnostic(
     const diagnostic: CompilerDiagnostic = {
         code: errorInfo.code,
         message,
-        level: errorInfo.level
+        level: errorInfo.level,
     };
 
     if (config && config.origin) {
@@ -114,7 +115,7 @@ export function generateCompilerError(
 export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
     if (!condition) {
         throw generateCompilerError(errorInfo, {
-            messageArgs: args
+            messageArgs: args,
         });
     }
 }
@@ -126,7 +127,7 @@ export function lwc_invariant(condition: boolean, diagnostic: Diagnostic) {
 export function normlizeToLWCDiagnostic(
     diagnostic: LWCDiagnostic,
     error: any,
-    origin: CompilerDiagnosticOrigin
+    origin?: CompilerDiagnosticOrigin
 ): LWCDiagnostic {
     if (error instanceof LWCDiagnostic) {
         if (origin) {

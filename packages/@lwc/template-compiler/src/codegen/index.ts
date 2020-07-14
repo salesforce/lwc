@@ -51,7 +51,7 @@ import {
     isSvgUseHref,
 } from '../parser/attribute';
 
-import { TemplateErrors, generateCompilerError } from '@lwc/errors';
+import { TemplateErrors, captureDiagnostic } from '@lwc/errors';
 
 const TEMPLATE_FUNCTION = template(
     `function ${TEMPLATE_FUNCTION_NAME}(
@@ -237,9 +237,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         } else if (modifier === 'strict-true') {
             leftExpression = t.binaryExpression('===', testExpression, t.booleanLiteral(true));
         } else {
-            throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, {
-                messageArgs: [modifier],
-            });
+            throw captureDiagnostic(TemplateErrors.UNKNOWN_IF_MODIFIER(modifier));
         }
 
         return t.conditionalExpression(leftExpression, babelNode, falseValue);

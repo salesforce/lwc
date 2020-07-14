@@ -9,7 +9,7 @@ import * as types from '@babel/types';
 import * as babylon from '@babel/parser';
 import * as esutils from 'esutils';
 
-import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors';
+import { ParserDiagnostics, lwc_invariant, captureDiagnostic } from '@lwc/errors';
 
 import State from '../state';
 
@@ -48,12 +48,12 @@ export function parseExpression(source: string, element: IRNode, state: State): 
                     path.isExpressionStatement() ||
                     path.isIdentifier() ||
                     path.isMemberExpression();
-                invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [path.type]);
+                lwc_invariant(isValidNode, ParserDiagnostics.INVALID_NODE(path.type));
 
                 // Ensure expression doesn't contain multiple expressions: {foo;bar}
                 const hasMultipleExpressions =
                     path.isBlock() && (path.get('body') as any).length !== 1;
-                invariant(!hasMultipleExpressions, ParserDiagnostics.MULTIPLE_EXPRESSIONS);
+                lwc_invariant(!hasMultipleExpressions, ParserDiagnostics.MULTIPLE_EXPRESSIONS());
 
                 // Retrieve the first expression and set it as return value
                 if (path.isExpressionStatement() && !expression) {
@@ -66,18 +66,18 @@ export function parseExpression(source: string, element: IRNode, state: State): 
                     const shouldReportComputed =
                         !state.config.experimentalComputedMemberExpression &&
                         (path.node as types.MemberExpression).computed;
-                    invariant(
+                    lwc_invariant(
                         !shouldReportComputed,
-                        ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
+                        ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED()
                     );
 
                     const memberExpression = path.node as types.MemberExpression;
                     const propertyIdentifier = memberExpression.property as TemplateIdentifier;
                     const objectIdentifier = memberExpression.object as TemplateIdentifier;
-                    invariant(
+                    lwc_invariant(
                         !isBoundToIterator(objectIdentifier, element) ||
                             propertyIdentifier.name !== ITERATOR_NEXT_KEY,
-                        ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
+                        ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED()
                     );
                 },
             },
@@ -94,9 +94,7 @@ export function parseIdentifier(source: string): TemplateIdentifier | never {
     if (esutils.keyword.isIdentifierES6(source)) {
         return types.identifier(source);
     } else {
-        throw generateCompilerError(ParserDiagnostics.INVALID_IDENTIFIER, {
-            messageArgs: [source],
-        });
+        throw captureDiagnostic(ParserDiagnostics.INVALID_IDENTIFIER(source));
     }
 }
 

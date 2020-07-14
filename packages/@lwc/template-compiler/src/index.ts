@@ -5,12 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    CompilerDiagnostic,
-    CompilerError,
+    LWCDiagnostic,
     TemplateErrors,
-    DiagnosticLevel,
-    generateCompilerError,
-    normalizeToDiagnostic,
+    DiagnosticSeverity,
+    normlizeToLWCDiagnostic,
     ParserDiagnostics,
 } from '@lwc/errors';
 
@@ -37,13 +35,13 @@ export default function compile(source: string, config: Config): TemplateCompile
     const state = new State(source, options);
 
     let code = '';
-    const warnings: CompilerDiagnostic[] = [];
+    const warnings: LWCDiagnostic[] = [];
     try {
         const parsingResults = parseTemplate(source, state);
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
-            (warning) => warning.level === DiagnosticLevel.Error
+            (warning) => warning.severity === DiagnosticSeverity.Error
         );
 
         if (!hasParsingError && parsingResults.root) {
@@ -51,7 +49,10 @@ export default function compile(source: string, config: Config): TemplateCompile
             code = output.code;
         }
     } catch (error) {
-        const diagnostic = normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error);
+        const diagnostic = normlizeToLWCDiagnostic(
+            ParserDiagnostics.GENERIC_PARSING_ERROR(),
+            error
+        );
         diagnostic.message = `Unexpected compilation error: ${diagnostic.message}`;
         warnings.push(diagnostic);
     }
@@ -70,9 +71,9 @@ export function compileToFunction(source: string): Function {
     const parsingResults = parseTemplate(source, state);
 
     for (const warning of parsingResults.warnings) {
-        if (warning.level === DiagnosticLevel.Error) {
-            throw CompilerError.from(warning);
-        } else if (warning.level === DiagnosticLevel.Warning) {
+        if (warning.severity === DiagnosticSeverity.Error) {
+            throw warning;
+        } else if (warning.severity === DiagnosticSeverity.Warning) {
             /* eslint-disable-next-line no-console */
             console.warn(warning.message);
         } else {
@@ -82,7 +83,7 @@ export function compileToFunction(source: string): Function {
     }
 
     if (!parsingResults.root) {
-        throw generateCompilerError(TemplateErrors.INVALID_TEMPLATE);
+        throw TemplateErrors.INVALID_TEMPLATE();
     }
 
     const { code } = generate(parsingResults.root, state);

@@ -83,10 +83,10 @@ import {
 } from './constants';
 import { isMemberExpression, isIdentifier } from '@babel/types';
 import {
-    CompilerDiagnostic,
-    generateCompilerDiagnostic,
-    LWCErrorInfo,
-    normalizeToDiagnostic,
+    Diagnostic,
+    LWCDiagnostic,
+    captureDiagnostic,
+    normlizeToLWCDiagnostic,
     ParserDiagnostics,
 } from '@lwc/errors';
 
@@ -133,7 +133,7 @@ function attributeExpressionReferencesForEachIndex(
 }
 
 export default function parse(source: string, state: State): TemplateParseResult {
-    const warnings: CompilerDiagnostic[] = [];
+    const warnings: LWCDiagnostic[] = [];
     const { fragment, errors: parsingErrors } = parseHTML(source);
 
     if (parsingErrors.length) {
@@ -219,8 +219,8 @@ export default function parse(source: string, state: State): TemplateParseResult
                             value = parseTemplateExpression(parent, token);
                         } catch (error) {
                             addDiagnostic(
-                                normalizeToDiagnostic(
-                                    ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
+                                normlizeToLWCDiagnostic(
+                                    ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR(),
                                     error,
                                     {
                                         location: normalizeLocation(location),
@@ -255,7 +255,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         );
 
         if (validRoots.length > 1) {
-            warnOnElement(ParserDiagnostics.MULTIPLE_ROOTS_FOUND, documentFragment.childNodes[1]);
+            warnOnElement(ParserDiagnostics.MULTIPLE_ROOTS_FOUND(), documentFragment.childNodes[1]);
         }
 
         const templateTag = documentFragment.childNodes.find((child) =>
@@ -263,7 +263,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         );
 
         if (!templateTag) {
-            warnAt(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
+            warnAt(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG());
         } else {
             return templateTag as parse5.AST.Default.Element;
         }
@@ -300,8 +300,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             if (eventHandlerAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(
-                    ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION,
-                    [],
+                    ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION(),
                     eventHandlerAttribute.location
                 );
             }
@@ -309,8 +308,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             let eventName = eventHandlerAttribute.name;
             if (!eventName.match(EVENT_HANDLER_NAME_RE)) {
                 return warnAt(
-                    ParserDiagnostics.INVALID_EVENT_NAME,
-                    [eventName],
+                    ParserDiagnostics.INVALID_EVENT_NAME(eventName),
                     eventHandlerAttribute.location
                 );
             }
@@ -332,8 +330,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             if (ifAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(
-                    ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION,
-                    [],
+                    ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION(),
                     ifAttribute.location
                 );
             }
@@ -341,8 +338,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             const [, modifier] = ifAttribute.name.split(':');
             if (!VALID_IF_MODIFIER.has(modifier)) {
                 return warnAt(
-                    ParserDiagnostics.UNEXPECTED_IF_MODIFIER,
-                    [modifier],
+                    ParserDiagnostics.UNEXPECTED_IF_MODIFIER(modifier),
                     ifAttribute.location
                 );
             }
@@ -360,10 +356,10 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         if (!LWC_DIRECTIVE_SET.has(lwcAttribute.name)) {
             // unknown lwc directive
-            return warnOnElement(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element.__original, [
-                lwcAttribute.name,
-                `<${element.tag}>`,
-            ]);
+            return warnOnElement(
+                ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE(lwcAttribute.name, element.tag),
+                element.__original
+            );
         }
 
         const lwcOpts = {};
@@ -381,26 +377,25 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
 
         if (!state.config.experimentalDynamicDirective) {
-            return warnOnElement(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element.__original, [
-                `<${element.tag}>`,
-            ]);
+            return warnOnElement(
+                ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC(element.tag),
+                element.__original
+            );
         }
 
         removeAttribute(element, LWC_DIRECTIVES.DYNAMIC);
 
         if (!isCustomElement(element)) {
             return warnOnElement(
-                ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT,
-                element.__original,
-                [`<${element.tag}>`]
+                ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT(element.tag),
+                element.__original
             );
         }
 
         if (lwcDynamicAttribute.type !== IRAttributeType.Expression) {
             return warnOnElement(
-                ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP,
-                element.__original,
-                [`<${element.tag}>`]
+                ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP(element.tag),
+                element.__original
             );
         }
 
@@ -418,15 +413,14 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         if (isCustomElement(element)) {
             return warnOnElement(
-                ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT,
-                element.__original,
-                [`<${element.tag}>`]
+                ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT(element.tag),
+                element.__original
             );
         }
 
         if (element.tag === 'slot') {
             return warnOnElement(
-                ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT,
+                ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT(),
                 element.__original
             );
         }
@@ -438,13 +432,14 @@ export default function parse(source: string, state: State): TemplateParseResult
             const possibleValues = Object.keys(LWCDirectiveDomMode)
                 .map((value) => `"${value}"`)
                 .join(', or ');
-            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [
-                possibleValues,
-            ]);
+            return warnOnElement(
+                ParserDiagnostics.LWC_DOM_INVALID_VALUE(possibleValues),
+                element.__original
+            );
         }
 
         if (element.children.length > 0) {
-            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element.__original);
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS(), element.__original);
         }
 
         lwcOpts.dom = lwcDomAttribute.value as LWCDirectiveDomMode;
@@ -453,7 +448,10 @@ export default function parse(source: string, state: State): TemplateParseResult
     function validateInlineStyleElement(element: IRElement) {
         // disallow <style> element
         if (isStyleElement(element)) {
-            warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element.__original);
+            warnOnElement(
+                ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE(),
+                element.__original
+            );
         }
     }
 
@@ -469,14 +467,12 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             if (forEachAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(
-                    ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION,
-                    [],
+                    ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION(),
                     forEachAttribute.location
                 );
             } else if (forItemAttribute.type !== IRAttributeType.String) {
                 return warnAt(
-                    ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING,
-                    [],
+                    ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING(),
                     forItemAttribute.location
                 );
             }
@@ -486,7 +482,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 item = parseIdentifier(forItemAttribute.value);
             } catch (error) {
                 return addDiagnostic(
-                    normalizeToDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR, error, {
+                    normlizeToLWCDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR(), error, {
                         location: normalizeLocation(forItemAttribute.location),
                     })
                 );
@@ -497,8 +493,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 removeAttribute(element, forIndex.name);
                 if (forIndex.type !== IRAttributeType.String) {
                     return warnAt(
-                        ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING,
-                        [],
+                        ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING(),
                         forIndex.location
                     );
                 }
@@ -507,9 +502,13 @@ export default function parse(source: string, state: State): TemplateParseResult
                     index = parseIdentifier(forIndex.value);
                 } catch (error) {
                     return addDiagnostic(
-                        normalizeToDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR, error, {
-                            location: normalizeLocation(forIndex.location),
-                        })
+                        normlizeToLWCDiagnostic(
+                            ParserDiagnostics.IDENTIFIER_PARSING_ERROR(),
+                            error,
+                            {
+                                location: normalizeLocation(forIndex.location),
+                            }
+                        )
                     );
                 }
             }
@@ -522,7 +521,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         } else if (forEachAttribute || forItemAttribute) {
             // If only one directive is defined
             return warnOnElement(
-                ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
+                ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER(),
                 element.__original
             );
         }
@@ -541,8 +540,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         if (iteratorExpression.type !== IRAttributeType.Expression) {
             return warnAt(
-                ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION,
-                [iteratorExpression.name],
+                ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION(iteratorExpression.name),
                 iteratorExpression.location
             );
         }
@@ -552,7 +550,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             iterator = parseIdentifier(iteratorName);
         } catch (error) {
             return addDiagnostic(
-                normalizeToDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR, error, {
+                normlizeToLWCDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR(), error, {
                     location: normalizeLocation(iteratorExpression.location),
                 })
             );
@@ -569,8 +567,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         if (keyAttribute) {
             if (keyAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(
-                    ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION,
-                    [],
+                    ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION(),
                     keyAttribute.location
                 );
             }
@@ -580,8 +577,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             if (forOfParent) {
                 if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent.forOf!)) {
                     return warnAt(
-                        ParserDiagnostics.KEY_SHOULDNT_REFERENCE_ITERATOR_INDEX,
-                        [element.tag],
+                        ParserDiagnostics.KEY_SHOULDNT_REFERENCE_ITERATOR_INDEX(element.tag),
                         keyAttribute.location
                     );
                 }
@@ -591,8 +587,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 ) {
                     const name = 'name' in keyAttribute.value && keyAttribute.value.name;
                     return warnAt(
-                        ParserDiagnostics.KEY_SHOULDNT_REFERENCE_FOR_EACH_INDEX,
-                        [element.tag, name],
+                        ParserDiagnostics.KEY_SHOULDNT_REFERENCE_FOR_EACH_INDEX(element.tag, name),
                         keyAttribute.location
                     );
                 }
@@ -601,7 +596,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             element.forKey = keyAttribute.value;
         } else if (isIteratorElement(element) && element.tag !== 'template') {
-            return warnAt(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, [element.tag], location);
+            return warnAt(ParserDiagnostics.MISSING_KEY_IN_ITERATOR(element.tag), location);
         }
     }
 
@@ -632,8 +627,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         if (slotAttribute) {
             if (slotAttribute.type === IRAttributeType.Expression) {
                 return warnAt(
-                    ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION,
-                    [],
+                    ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION(),
                     slotAttribute.location
                 );
             }
@@ -646,7 +640,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         if (element.forEach || element.forOf || element.if) {
             return warnOnElement(
-                ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES,
+                ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES(),
                 element.__original
             );
         }
@@ -658,8 +652,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         if (nameAttribute) {
             if (nameAttribute.type === IRAttributeType.Expression) {
                 return warnAt(
-                    ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION,
-                    [],
+                    ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION(),
                     nameAttribute.location
                 );
             } else if (nameAttribute.type === IRAttributeType.String) {
@@ -698,23 +691,27 @@ export default function parse(source: string, state: State): TemplateParseResult
             const { name, location } = attr;
 
             if (!isValidHTMLAttribute(element.tag, name)) {
-                warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
+                warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE(name, tag), location);
             }
 
             if (name.match(/[^a-z0-9]$/)) {
                 const node = element.__original as parse5.AST.Default.Element;
-                warnAt(ParserDiagnostics.ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER, [
-                    name,
-                    treeAdapter.getTagName(node),
-                ]);
+                warnAt(
+                    ParserDiagnostics.ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER(
+                        name,
+                        treeAdapter.getTagName(node)
+                    )
+                );
                 return;
             }
 
             if (!/^-*[a-z]/.test(name)) {
                 const node = element.__original as parse5.AST.Default.Element;
                 warnAt(
-                    ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER,
-                    [name, treeAdapter.getTagName(node)]
+                    ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER(
+                        name,
+                        treeAdapter.getTagName(node)
+                    )
                 );
                 return;
             }
@@ -724,8 +721,10 @@ export default function parse(source: string, state: State): TemplateParseResult
             if (name.match(/_[^a-z0-9]|[^a-z0-9]_/)) {
                 const node = element.__original as parse5.AST.Default.Element;
                 warnAt(
-                    ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS,
-                    [name, treeAdapter.getTagName(node)]
+                    ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS(
+                        name,
+                        treeAdapter.getTagName(node)
+                    )
                 );
                 return;
             }
@@ -733,12 +732,11 @@ export default function parse(source: string, state: State): TemplateParseResult
             if (attr.type === IRAttributeType.String) {
                 if (name === 'id') {
                     if (/\s+/.test(attr.value)) {
-                        warnAt(ParserDiagnostics.INVALID_ID_ATTRIBUTE, [attr.value], location);
+                        warnAt(ParserDiagnostics.INVALID_ID_ATTRIBUTE(attr.value), location);
                     }
                     if (isInIteration(element)) {
                         warnAt(
-                            ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION,
-                            [attr.value],
+                            ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION(attr.value),
                             location
                         );
                     }
@@ -777,12 +775,15 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         if (isRoot) {
             if (tag !== 'template') {
-                return warnOnElement(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, node, [tag]);
+                return warnOnElement(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE(tag), node);
             }
 
             const hasAttributes = node.attrs.length !== 0;
             if (hasAttributes) {
-                return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_CANNOT_HAVE_ATTRIBUTES, node);
+                return warnOnElement(
+                    ParserDiagnostics.ROOT_TEMPLATE_CANNOT_HAVE_ATTRIBUTES(),
+                    node
+                );
             }
         }
 
@@ -796,29 +797,29 @@ export default function parse(source: string, state: State): TemplateParseResult
             // Checking if the original HTMLElement has some attributes applied is a good enough for now.
             const hasAttributes = node.attrs.length !== 0;
             if (!isRoot && !hasAttributes) {
-                warnOnElement(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, node);
+                warnOnElement(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE(), node);
             }
         } else {
             const namespace = node.namespaceURI;
 
             const isNotAllowedHtmlTag = DISALLOWED_HTML_TAGS.has(tag);
             if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
-                return warnOnElement(ParserDiagnostics.FORBIDDEN_TAG_ON_TEMPLATE, node, [tag]);
+                return warnOnElement(ParserDiagnostics.FORBIDDEN_TAG_ON_TEMPLATE(tag), node);
             }
 
             const isNotAllowedSvgTag = !SUPPORTED_SVG_TAGS.has(tag);
             if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
-                return warnOnElement(ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE, node, [
-                    tag,
-                ]);
+                return warnOnElement(
+                    ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE(tag),
+                    node
+                );
             }
 
             const isNotAllowedMathMlTag = DISALLOWED_MATHML_TAGS.has(tag);
             if (namespace === MATHML_NAMESPACE_URI && isNotAllowedMathMlTag) {
                 return warnOnElement(
-                    ParserDiagnostics.FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE,
-                    node,
-                    [tag]
+                    ParserDiagnostics.FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE(tag),
+                    node
                 );
             }
 
@@ -829,7 +830,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 DASHED_TAGNAME_ELEMENT_SET.has(tag);
 
             if (!isKnownTag) {
-                return warnOnElement(ParserDiagnostics.UNKNOWN_HTML_TAG_IN_TEMPLATE, node, [tag]);
+                return warnOnElement(ParserDiagnostics.UNKNOWN_HTML_TAG_IN_TEMPLATE(tag), node);
             }
         }
     }
@@ -842,12 +843,12 @@ export default function parse(source: string, state: State): TemplateParseResult
             const attrName = attr.name;
 
             if (isProhibitedIsAttribute(attrName)) {
-                warnOnElement(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, node, [attrName, tag]);
+                warnOnElement(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED(tag), node);
             }
 
             if (isTabIndexAttribute(attrName)) {
                 if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
-                    warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, node);
+                    warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE(), node);
                 }
             }
 
@@ -855,7 +856,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             // restrict the validation of the "srcdoc" attribute on the "iframe" element only if this element is
             // part of the HTML namespace.
             if (tag === 'iframe' && attrName === 'srcdoc') {
-                warnOnElement(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE, node);
+                warnOnElement(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE(), node);
             }
         });
     }
@@ -869,10 +870,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 const { name: attrName, type, value } = props[propName];
 
                 if (isProhibitedIsAttribute(attrName)) {
-                    warnOnElement(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, node, [
-                        attrName,
-                        tag,
-                    ]);
+                    warnOnElement(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED(tag), node);
                 }
 
                 if (isTabIndexAttribute(attrName)) {
@@ -880,7 +878,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                         type !== IRAttributeType.Expression &&
                         !isValidTabIndexAttributeValue(value)
                     ) {
-                        warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, node);
+                        warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE(), node);
                     }
                 }
             }
@@ -891,7 +889,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         const seenIds = new Set();
         for (const { location, value } of parseState.idAttrData) {
             if (seenIds.has(value)) {
-                warnAt(ParserDiagnostics.DUPLICATE_ID_FOUND, [value], location);
+                warnAt(ParserDiagnostics.DUPLICATE_ID_FOUND(value), location);
             } else {
                 seenIds.add(value);
             }
@@ -934,8 +932,10 @@ export default function parse(source: string, state: State): TemplateParseResult
         // is not the same before and after the parsing, then the attribute name contains capital letters
         if (!rawAttribute.startsWith(name)) {
             warnAt(
-                ParserDiagnostics.INVALID_ATTRIBUTE_CASE,
-                [rawAttribute, treeAdapter.getTagName(node)],
+                ParserDiagnostics.INVALID_ATTRIBUTE_CASE(
+                    rawAttribute,
+                    treeAdapter.getTagName(node)
+                ),
                 location
             );
             return;
@@ -974,14 +974,14 @@ export default function parse(source: string, state: State): TemplateParseResult
             // Removes the attribute, if impossible to parse it value.
             removeAttribute(el, name);
             addDiagnostic(
-                normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error, {
+                normlizeToLWCDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR(), error, {
                     location: normalizeLocation(location),
                 })
             );
         }
     }
 
-    function warnOnElement(errorInfo: LWCErrorInfo, node: parse5.AST.Node, messageArgs?: any[]) {
+    function warnOnElement(diagnostic: Diagnostic, node: parse5.AST.Node) {
         const getLocation = (
             toLocate?: parse5.AST.Node
         ): { line: number; column: number; start: number; length: number } => {
@@ -1004,26 +1004,16 @@ export default function parse(source: string, state: State): TemplateParseResult
         };
 
         addDiagnostic(
-            generateCompilerDiagnostic(errorInfo, {
-                messageArgs,
-                origin: {
-                    location: getLocation(node),
-                },
+            captureDiagnostic(diagnostic, {
+                location: getLocation(node),
             })
         );
     }
 
-    function warnAt(
-        errorInfo: LWCErrorInfo,
-        messageArgs?: any[],
-        location?: parse5.MarkupData.Location
-    ) {
+    function warnAt(diagnostic: Diagnostic, location?: parse5.MarkupData.Location) {
         addDiagnostic(
-            generateCompilerDiagnostic(errorInfo, {
-                messageArgs,
-                origin: {
-                    location: normalizeLocation(location),
-                },
+            captureDiagnostic(diagnostic, {
+                location: normalizeLocation(location),
             })
         );
     }
@@ -1048,7 +1038,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         return { line, column, start, length };
     }
 
-    function addDiagnostic(diagnostic: CompilerDiagnostic) {
+    function addDiagnostic(diagnostic: LWCDiagnostic) {
         warnings.push(diagnostic);
     }
 

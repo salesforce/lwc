@@ -5,12 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
-import {
-    CompilerError,
-    normlizeToLWCDiagnostic,
-    DiagnosticLevel,
-    TransformerErrors
-} from '@lwc/errors';
+import { normlizeToLWCDiagnostic, DiagnosticSeverity, TransformerErrors } from '@lwc/errors';
 import compile from '@lwc/template-compiler';
 import { NormalizedTransformOptions } from '../options';
 import { FileTransformerResult } from './transformer';
@@ -36,22 +31,25 @@ export default function templateTransform(
 
     try {
         result = compile(src, {
-            experimentalDynamicDirective: !!options.experimentalDynamicComponent
+            experimentalDynamicDirective: !!options.experimentalDynamicComponent,
         });
     } catch (e) {
         throw normlizeToLWCDiagnostic(TransformerErrors.HTML_TRANSFORMER_ERROR(), e, { filename });
     }
 
-    const fatalError = result.warnings.find(warning => warning.level === DiagnosticLevel.Error);
+    const fatalError = result.warnings.find(
+        (warning) => warning.severity === DiagnosticSeverity.Error
+    );
     if (fatalError) {
-        throw CompilerError.from(fatalError, { filename });
+        // throw CompilerError.from(fatalError, { filename });
+        throw fatalError;
     }
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
         code: serialize(result.code, filename, options),
-        map: { mappings: '' }
+        map: { mappings: '' },
     };
 }
 
