@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { CompilerDiagnostic, DiagnosticLevel } from '@lwc/errors';
+import { LWCDiagnostic, DiagnosticSeverity } from '@lwc/errors';
 
 import { bundle } from '../bundler/bundler';
 import { CompileOptions, validateCompileOptions, NormalizedOutputConfig } from '../options';
@@ -14,7 +14,7 @@ export { default as templateCompiler } from '@lwc/template-compiler';
 
 export interface CompilerOutput {
     success: boolean;
-    diagnostics: CompilerDiagnostic[];
+    diagnostics: LWCDiagnostic[];
     result?: BundleResult;
     version: string;
 }
@@ -31,7 +31,7 @@ export async function compile(options: CompileOptions): Promise<CompilerOutput> 
     const normalizedOptions = validateCompileOptions(options);
 
     let result: BundleResult | undefined;
-    const diagnostics: CompilerDiagnostic[] = [];
+    const diagnostics: LWCDiagnostic[] = [];
 
     const { diagnostics: bundleDiagnostics, code, map } = await bundle(normalizedOptions);
 
@@ -52,8 +52,8 @@ export async function compile(options: CompileOptions): Promise<CompilerOutput> 
     };
 }
 
-function hasError(diagnostics: CompilerDiagnostic[]) {
+function hasError(diagnostics: LWCDiagnostic[]) {
     return diagnostics.some((d) => {
-        return d.level === DiagnosticLevel.Error || d.level === DiagnosticLevel.Fatal;
+        return d.severity === DiagnosticSeverity.Error || d.severity === DiagnosticSeverity.Fatal;
     });
 }
