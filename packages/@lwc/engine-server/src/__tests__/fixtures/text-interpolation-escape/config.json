@@ -1,0 +1,5 @@
+{
+    "props": {
+        "text": "I <b>should</b> escape 'this' & \"that\""
+    }
+}

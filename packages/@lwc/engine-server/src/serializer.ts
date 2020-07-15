@@ -6,12 +6,14 @@
  */
 
 import { isVoidElement } from '@lwc/shared';
+
+import { htmlEscape } from './utils/html-escape';
 import { HostElement, HostShadowRoot, HostAttribute, HostChildNode, HostNodeType } from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
     return attributes
         .map((attr) =>
-            attr.value.length ? `${attr.name}=${JSON.stringify(attr.value)}` : attr.name
+            attr.value.length ? `${attr.name}=${JSON.stringify(htmlEscape(attr.value))}` : attr.name
         )
         .join(' ');
 }
@@ -21,7 +23,7 @@ function serializeChildNodes(children: HostChildNode[]): string {
         .map((child) => {
             switch (child.type) {
                 case HostNodeType.Text:
-                    return child.value;
+                    return htmlEscape(child.value);
                 case HostNodeType.Element:
                     return serializeElement(child);
             }
