@@ -8,6 +8,7 @@ import generate from '@babel/generator';
 import * as t from '@babel/types';
 import template from '@babel/template';
 import * as parse5 from 'parse5-with-errors';
+import { isBooleanAttribute, isGlobalHtmlAttribute } from '@lwc/shared';
 
 import State from '../state';
 
@@ -46,6 +47,7 @@ import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
 import {
     isAllowedFragOnlyUrlsXHTML,
+    isAttribute,
     isFragmentOnlyUrl,
     isIdReferencingAttribute,
     isSvgUseHref,
@@ -359,10 +361,16 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         templateContainsId: boolean
     ): t.Expression {
         const { namespaceURI, tagName } = element.__original as parse5.AST.Default.Element;
+        const isUsedAsAttribute = isAttribute(element, attr.name);
 
         switch (attr.type) {
             case IRAttributeType.Expression: {
                 const { expression } = bindExpression(attr.value, element);
+                if (isUsedAsAttribute && isBooleanAttribute(attr.name)) {
+                    // We need to do some manipulation to allow the diffing algorithm add/remove the attribute
+                    // without handling special cases at runtime.
+                    return codeGen.genBooleanAttributeExpr(expression);
+                }
                 if (attr.name === 'tabindex') {
                     return codeGen.genTabIndex([expression]);
                 }
@@ -394,6 +402,18 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 if (attr.name === 'spellcheck') {
                     return t.booleanLiteral(attr.value.toLowerCase() !== 'false');
                 }
+
+                // @todo[1957]: improve isBooleanAttribute implementation
+                if (
+                    !isUsedAsAttribute &&
+                    isBooleanAttribute(attr.name) &&
+                    isGlobalHtmlAttribute(attr.name)
+                ) {
+                    // We are in presence of a string value, for a recognized boolean attribute, which is used as
+                    // property. for these cases, always set the property to true.
+                    return t.booleanLiteral(true);
+                }
+
                 if (isIdReferencingAttribute(attr.name)) {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
                 }
@@ -417,8 +437,11 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 return t.stringLiteral(attr.value);
             }
 
-            case IRAttributeType.Boolean:
-                return t.booleanLiteral(attr.value);
+            case IRAttributeType.Boolean: {
+                // A boolean value used in an attribute should always generate .setAttribute(attr.name, ''),
+                // regardless if is a boolean attribute or not.
+                return isUsedAsAttribute ? t.stringLiteral('') : t.booleanLiteral(attr.value);
+            }
         }
     }
 

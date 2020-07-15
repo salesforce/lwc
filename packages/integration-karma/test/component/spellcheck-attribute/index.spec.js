@@ -49,7 +49,7 @@ describe('setting static values on non custom elements', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
-        expect(getSpellcheckValue(elm, 'div.boolean-true-v')).toBe('true');
+        expect(getSpellcheckValue(elm, 'div.boolean-true-v')).toBe('');
         expect(getSpellcheckValue(elm, 'div.empty-v')).toBe('true');
         expect(getSpellcheckValue(elm, 'div.false-v')).toBe('false');
         expect(getSpellcheckValue(elm, 'div.false-case-insensitive-v')).toBe('false');

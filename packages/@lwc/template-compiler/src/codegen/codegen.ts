@@ -185,6 +185,10 @@ export default class CodeGen {
         return id;
     }
 
+    genBooleanAttributeExpr(bindExpr: t.Expression) {
+        return t.conditionalExpression(bindExpr, t.stringLiteral(''), t.identifier('null'));
+    }
+
     private _genUniqueIdentifier(name: string) {
         const id = this.currentId++;
         const prefix = this._toValidIdentifier(name);
