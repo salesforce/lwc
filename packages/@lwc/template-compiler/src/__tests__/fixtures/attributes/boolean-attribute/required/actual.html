@@ -1,0 +1,14 @@
+<template>
+    <input required value="boolean present" />
+    <input required="" value="empty string" />
+    <input required="other than true" value="string value" />
+    <input required={computed} value="computed value" />
+    <input required=3 value="integer value" />
+
+
+    <x-foo required>boolean present</x-foo>
+    <x-foo required="">empty string</x-foo>
+    <x-foo required="other than true">string value</x-foo>
+    <x-foo required={computed}>computed value, should be resolved in component</x-foo>
+    <x-foo required=3>integer value</x-foo>
+</template>

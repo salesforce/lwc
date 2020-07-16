@@ -1,0 +1,14 @@
+<template>
+    <p hidden>boolean present</p>
+    <p hidden="">empty string, should be true</p>
+    <p hidden="other than true">string value, should be true</p>
+    <p hidden={computed}>computed value, should be resolved in component</p>
+    <p hidden=3>integer value, should be true</p>
+
+
+    <x-foo hidden>boolean present</x-foo>
+    <x-foo hidden="">empty string, should be true</x-foo>
+    <x-foo hidden="other than true">string value, should be true</x-foo>
+    <x-foo hidden={computed}>computed value, should be resolved in component</x-foo>
+    <x-foo hidden=3>integer value, should be true</x-foo>
+</template>
