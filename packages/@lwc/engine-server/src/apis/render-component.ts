@@ -15,6 +15,18 @@ import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
 import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
+import { HostElement, HostNodeType } from '../types';
+
+const FakeRootElement: HostElement = {
+    type: HostNodeType.Element,
+    name: 'fake-root-element',
+    namespace: 'ssr',
+    parent: null,
+    shadowRoot: null,
+    children: [],
+    attributes: [],
+    eventListeners: {},
+};
 
 export function renderComponent(
     tagName: string,
@@ -54,6 +66,8 @@ export function renderComponent(
     for (const [key, value] of Object.entries(props)) {
         (element as any)[key] = value;
     }
+
+    element.parent = FakeRootElement;
 
     connectRootElement(element);
 

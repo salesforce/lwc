@@ -323,11 +323,6 @@ export function getAssociatedVM(obj: VMAssociable): VM {
     return vm!;
 }
 
-export function isConnected(obj: VMAssociable): boolean {
-    const vm = getAssociatedVM(obj);
-    return vm.state === VMState.connected;
-}
-
 export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
     const maybeVm = getHiddenField(obj, ViewModelReflection);
 
