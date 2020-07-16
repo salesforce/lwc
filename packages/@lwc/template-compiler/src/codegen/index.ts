@@ -440,7 +440,10 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             case IRAttributeType.Boolean: {
                 // A boolean value used in an attribute should always generate .setAttribute(attr.name, ''),
                 // regardless if is a boolean attribute or not.
-                return isUsedAsAttribute ? t.stringLiteral('') : t.booleanLiteral(attr.value);
+                // Note: in Firefox, elm.setAttribute('spellcheck', ''), sets the attribute, but the property value is false.
+                return isUsedAsAttribute && attr.name !== 'spellcheck'
+                    ? t.stringLiteral('')
+                    : t.booleanLiteral(attr.value);
             }
         }
     }
