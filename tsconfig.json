@@ -12,6 +12,9 @@
 
     "target": "es2018",
     "lib": ["es2018"],
+
+    // Disable automatic inclusion of @types packages
+    "types": [],
   },
 
   "exclude": [
