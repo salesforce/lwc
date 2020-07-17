@@ -17,10 +17,10 @@
         "@lwc/synthetic-shadow": "1.7.8",
         "chokidar": "^3.4.1",
         "istanbul-api": "^3.0.0",
-        "karma": "^5.0.5",
+        "karma": "^5.1.0",
         "karma-chrome-launcher": "^3.1.0",
         "karma-coverage": "^2.0.2",
-        "karma-jasmine": "^3.1.1",
+        "karma-jasmine": "^3.3.1",
         "karma-sauce-launcher": "^4.1.4"
     }
 }
