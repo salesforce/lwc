@@ -1,9 +1,21 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, track } from 'lwc';
+import tmpl from './getter-is-connected.html';
 
-export default class GetterIsConnected extends LightningElement {
-    isComponentConnected;
+export default class extends LightningElement {
+    @track
+    hooks = [];
+
+    constructor() {
+        super();
+        this.hooks.push(`constructor: ${this.isConnected}`);
+    }
 
     connectedCallback() {
-        this.isComponentConnected = this.isConnected;
+        this.hooks.push(`connectedCallback: ${this.isConnected}`);
+    }
+
+    render() {
+        this.hooks.push(`render: ${this.isConnected}`);
+        return tmpl;
     }
 }

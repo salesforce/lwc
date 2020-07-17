@@ -150,7 +150,7 @@ export interface VM<N = HostNode, E = HostElement> {
     ) => any;
 }
 
-type VMAssociable = Node | LightningElement | ComponentInterface;
+type VMAssociable = HostNode | LightningElement | ComponentInterface;
 
 let idx: number = 0;
 

@@ -291,8 +291,8 @@ export const renderer: Renderer<HostNode, HostElement> = {
         ) as CSSStyleDeclaration;
     },
 
-    isConnected() {
-        return true;
+    isConnected(node: HostNode) {
+        return !isNull(node.parent);
     },
 
     insertGlobalStylesheet() {
