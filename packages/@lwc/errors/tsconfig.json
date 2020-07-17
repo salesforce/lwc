@@ -3,8 +3,7 @@
 
     "compilerOptions": {
         "outDir": "dist/commonjs",
-        "declarationDir": "dist/types",
-        "types": ["node"]
+        "declarationDir": "dist/types"
     },
 
     "include": ["src/"]

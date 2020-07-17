@@ -2,8 +2,7 @@
     "extends": "../../../tsconfig.json",
 
     "compilerOptions": {
-        "lib": ["dom", "es2018"],
-        "types": ["node"]
+        "lib": ["dom", "es2018"]
     },
 
     "include": ["src/"]
