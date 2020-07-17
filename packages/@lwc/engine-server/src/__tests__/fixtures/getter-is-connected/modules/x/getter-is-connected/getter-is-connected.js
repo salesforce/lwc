@@ -6,15 +6,10 @@ export default class extends LightningElement {
 
     constructor() {
         super();
-
-        if (this.isConnected) {
-            this.hooks.push('constructor');
-        }
+        this.hooks.push(`constructor: ${this.isConnected}`);
     }
 
     connectedCallback() {
-        if (this.isConnected) {
-            this.hooks.push('connectedCallback');
-        }
+        this.hooks.push(`connectedCallback: ${this.isConnected}`);
     }
 }
