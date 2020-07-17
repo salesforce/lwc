@@ -1,4 +1,5 @@
 import { LightningElement, track } from 'lwc';
+import tmpl from './getter-is-connected.html';
 
 export default class extends LightningElement {
     @track
@@ -11,5 +12,10 @@ export default class extends LightningElement {
 
     connectedCallback() {
         this.hooks.push(`connectedCallback: ${this.isConnected}`);
+    }
+
+    render() {
+        this.hooks.push(`render: ${this.isConnected}`);
+        return tmpl;
     }
 }
