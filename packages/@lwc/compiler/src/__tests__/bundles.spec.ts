@@ -53,7 +53,8 @@ describe('test typescript like bundle', () => {
 
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].message).toContain('SyntaxError: LWC1007');
+        expect(diagnostics[0].code).toEqual(1007);
+        expect(diagnostics[0].message).toContain('SyntaxError');
     });
 });
 

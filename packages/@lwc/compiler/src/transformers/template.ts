@@ -41,8 +41,11 @@ export default function templateTransform(
         (warning) => warning.severity === DiagnosticSeverity.Error
     );
     if (fatalError) {
-        // throw CompilerError.from(fatalError, { filename });
-        throw fatalError;
+        throw normlizeToLWCDiagnostic(
+            TransformerErrors.HTML_TRANSFORMER_ERROR(fatalError),
+            fatalError,
+            { filename }
+        );
     }
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for

@@ -140,6 +140,11 @@ export function normlizeToLWCDiagnostic(
         return error;
     }
 
+    if (origin) {
+        diagnostic.filename = getFilename(origin);
+        diagnostic.location = getLocation(origin);
+    }
+
     diagnostic.stack = error.stack;
     return diagnostic;
 }
