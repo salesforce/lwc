@@ -35,7 +35,7 @@ it('should throw on invalid template', () => {
             <template>1</template>
             <template>2</template>
         `);
-    }).toThrowError('LWC1075: Multiple roots found');
+    }).toThrowError(/Multiple roots found/i);
 });
 
 it('should throw if template contains a style tag', () => {
@@ -48,7 +48,7 @@ it('should throw if template contains a style tag', () => {
             </template>
         `);
     }).toThrowError(
-        "LWC1122: The <style> element is disallowed inside the template. Please add css rules into '.css' file of your component bundle."
+        /The <style> element is disallowed inside the template\. Please add css rules into '\.css' file of your component bundle/i
     );
 });
 

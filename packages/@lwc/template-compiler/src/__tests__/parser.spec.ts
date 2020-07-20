@@ -8,7 +8,7 @@ import { mergeConfig } from '../config';
 import State from '../state';
 import parse from '../parser';
 
-import { DiagnosticLevel } from '@lwc/errors';
+import { DiagnosticSeverity } from '@lwc/errors';
 
 const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
 const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
@@ -123,12 +123,17 @@ describe('event handlers', () => {
 
     it('event handler attribute', () => {
         const { warnings } = parseTemplate(`<template><h1 onclick="handleClick"></h1></template>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining('Event handler should be an expression'),
-            location: EXPECTED_LOCATION,
-        });
+
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining('Event handler should be an expression'),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 });
 
@@ -161,26 +166,37 @@ describe('for:each directives', () => {
         const { warnings } = parseTemplate(
             `<template><section for:each={items}></section></template>`
         );
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining(
-                'for:each and for:item directives should be associated together.'
-            ),
-            location: EXPECTED_LOCATION,
-        });
+
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(
+                        'for:each and for:item directives should be associated together.'
+                    ),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 
     it('error expression value for for:item', () => {
         const { warnings } = parseTemplate(
             `<template><section for:each={items} for:item={item}></section></template>`
         );
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining('for:item directive is expected to be a string.'),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(
+                        'for:item directive is expected to be a string.'
+                    ),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 });
 
@@ -200,14 +216,18 @@ describe('for:of directives', () => {
         const { warnings } = parseTemplate(
             `<template><section iterator:it="items"></section></template>`
         );
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining(
-                `iterator:it directive is expected to be an expression`
-            ),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(
+                        `iterator:it directive is expected to be an expression`
+                    ),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 });
 
@@ -226,22 +246,30 @@ describe('if directive', () => {
 
     it('if directive with unexpecteed modifier', () => {
         const { warnings } = parseTemplate(`<template><h1 if:is-true={visible}></h1></template>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining(`Unexpected if modifier is-true`),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(`Unexpected if modifier is-true`),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 
     it('if directive with with string value', () => {
         const { warnings } = parseTemplate(`<template><h1 if:is-true="visible"></h1></template>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining(`If directive should be an expression`),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(`If directive should be an expression`),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 });
 
@@ -260,56 +288,78 @@ describe('custom component', () => {
 
     it('custom component self closing error', () => {
         const { warnings } = parseTemplate(`<template><x-button/>Some text</template>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining(
-                `Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`
-            ),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(
+                        `Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`
+                    ),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 });
 
 describe('root errors', () => {
     it('empty template error', () => {
         const { warnings } = parseTemplate('');
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining('Missing root template tag'),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining('Missing root template tag'),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 
     it('multi-roots error', () => {
         const { warnings } = parseTemplate(`<template>Root1</template><template>Root2</template>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining('Multiple roots found'),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining('Multiple roots found'),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 
     it('missnamed root error', () => {
         const { warnings } = parseTemplate(`<section>Root1</section>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining('Expected root tag to be template, found section'),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(
+                        'Expected root tag to be template, found section'
+                    ),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 
     it('template root with attributes error', () => {
         const { warnings } = parseTemplate(`<template if:true={show}>visible</template>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining(`Root template doesn't allow attributes`),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(`Root template doesn't allow attributes`),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 
     it('disallows is attribute in non-custom component', () => {
@@ -318,41 +368,49 @@ describe('root errors', () => {
             <button is="x-button"></button>
         </template>`);
 
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            filename: undefined,
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining('"is" attribute is disallowed'),
-            location: EXPECTED_LOCATION,
-        });
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    filename: undefined,
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining('"is" attribute is disallowed'),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 
     it('disallows <style> tag inside the template', () => {
         const { warnings } = parseTemplate(`<template><style></style></template>`);
-        expect(warnings).toEqual([
-            {
-                code: expect.any(Number),
-                level: DiagnosticLevel.Error,
-                message: expect.stringContaining(
-                    `The <style> element is disallowed inside the template.`
-                ),
-                location: EXPECTED_LOCATION,
-            },
-        ]);
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(
+                        `The <style> element is disallowed inside the template.`
+                    ),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 
     it('disallows nested <style> tag inside the template', () => {
         const { warnings } = parseTemplate(`<template><div><style></style></div></template>`);
-        expect(warnings).toEqual([
-            {
-                code: expect.any(Number),
-                level: DiagnosticLevel.Error,
-                message: expect.stringContaining(
-                    `The <style> element is disallowed inside the template.`
-                ),
-                location: EXPECTED_LOCATION,
-            },
-        ]);
+        expect(warnings).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: expect.any(Number),
+                    severity: DiagnosticSeverity.Error,
+                    message: expect.stringContaining(
+                        `The <style> element is disallowed inside the template.`
+                    ),
+                    location: EXPECTED_LOCATION,
+                }),
+            ])
+        );
     });
 });
 
@@ -360,8 +418,9 @@ describe('expression', () => {
     it('forbid reference to this', () => {
         const { warnings } = parseTemplate(`<template><input title={this.title} /></template>`);
         expect(warnings[0]).toMatchObject({
-            level: DiagnosticLevel.Error,
-            message: `Invalid expression {this.title} - LWC1060: Template expression doesn't allow ThisExpression`,
+            severity: DiagnosticSeverity.Error,
+            code: 1060,
+            message: /Invalid expression {this\.title} - Template expression doesn't allow ThisExpression/,
             location: EXPECTED_LOCATION,
         });
     });
@@ -369,8 +428,9 @@ describe('expression', () => {
     it('forbid function calls', () => {
         const { warnings } = parseTemplate(`<template><input title={getTitle()} /></template>`);
         expect(warnings[0]).toMatchObject({
-            level: DiagnosticLevel.Error,
-            message: `Invalid expression {getTitle()} - LWC1060: Template expression doesn't allow CallExpression`,
+            severity: DiagnosticSeverity.Error,
+            code: 1060,
+            message: /Invalid expression {getTitle()} - Template expression doesn't allow CallExpression/,
             location: EXPECTED_LOCATION,
         });
     });
@@ -378,8 +438,9 @@ describe('expression', () => {
     it('forbid multiple expressions', () => {
         const { warnings } = parseTemplate(`<template><input title={foo;title} /></template>`);
         expect(warnings[0]).toMatchObject({
-            level: DiagnosticLevel.Error,
-            message: `Invalid expression {foo;title} - LWC1074: Multiple expressions found`,
+            severity: DiagnosticSeverity.Error,
+            code: 1074,
+            message: /Invalid expression {foo;title} - Multiple expressions found/,
             location: EXPECTED_LOCATION,
         });
     });
@@ -508,9 +569,9 @@ describe('props and attributes', () => {
 
             expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
-                level: DiagnosticLevel.Error,
-                message:
-                    'LWC1126: under_-hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and special characters.',
+                severity: DiagnosticSeverity.Error,
+                code: 1126,
+                message: /under_-hyphen is not valid attribute for x-button\. Attribute name cannot contain combination of underscore and special characters/,
             });
         });
 
@@ -521,9 +582,9 @@ describe('props and attributes', () => {
 
             expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
-                level: DiagnosticLevel.Error,
-                message:
-                    'LWC1126: under-_hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and special characters.',
+                severity: DiagnosticSeverity.Error,
+                code: 1126,
+                message: /under-_hyphen is not valid attribute for x-button\. Attribute name cannot contain combination of underscore and special characters/,
             });
         });
 
@@ -534,9 +595,9 @@ describe('props and attributes', () => {
 
             expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
-                level: DiagnosticLevel.Error,
-                message:
-                    'LWC1124: _leading is not valid attribute for x-button. Attribute name must start with alphabetic character or a hyphen.',
+                severity: DiagnosticSeverity.Error,
+                code: 1124,
+                message: /_leading is not valid attribute for x-button\. Attribute name must start with alphabetic character or a hyphen/,
             });
         });
 
@@ -547,9 +608,9 @@ describe('props and attributes', () => {
 
             expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
-                level: DiagnosticLevel.Error,
-                message:
-                    'LWC1125: trailing_ is not valid attribute for x-button. Attribute name must end with alpha-numeric character.',
+                severity: DiagnosticSeverity.Error,
+                code: 1125,
+                message: /trailing_ is not valid attribute for x-button\. Attribute name must end with alpha-numeric character/,
             });
         });
 
@@ -560,9 +621,9 @@ describe('props and attributes', () => {
 
             expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
-                level: DiagnosticLevel.Error,
-                message:
-                    'LWC1124: 2_under is not valid attribute for x-button. Attribute name must start with alphabetic character or a hyphen.',
+                severity: DiagnosticSeverity.Error,
+                code: 1124,
+                message: /2_under is not valid attribute for x-button. Attribute name must start with alphabetic character or a hyphen/,
             });
         });
 

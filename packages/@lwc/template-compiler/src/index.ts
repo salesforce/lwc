@@ -50,7 +50,7 @@ export default function compile(source: string, config: Config): TemplateCompile
         }
     } catch (error) {
         const diagnostic = normlizeToLWCDiagnostic(
-            ParserDiagnostics.GENERIC_PARSING_ERROR(),
+            ParserDiagnostics.GENERIC_PARSING_ERROR(error),
             error
         );
         diagnostic.message = `Unexpected compilation error: ${diagnostic.message}`;

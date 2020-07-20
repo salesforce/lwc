@@ -974,7 +974,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             // Removes the attribute, if impossible to parse it value.
             removeAttribute(el, name);
             addDiagnostic(
-                normlizeToLWCDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR(), error, {
+                normlizeToLWCDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR(error), error, {
                     location: normalizeLocation(location),
                 })
             );
