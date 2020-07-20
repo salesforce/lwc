@@ -52,11 +52,11 @@ export declare const ModuleResolutionErrors: {
     RELATIVE_DYNAMIC_IMPORT: () => import('@scary/diagnostics').Diagnostic;
 };
 export declare const TransformerErrors: {
-    CSS_TRANSFORMER_ERROR: () => import('@scary/diagnostics').Diagnostic;
-    CSS_IN_HTML_ERROR: () => import('@scary/diagnostics').Diagnostic;
-    HTML_TRANSFORMER_ERROR: () => import('@scary/diagnostics').Diagnostic;
+    CSS_TRANSFORMER_ERROR: (err: any) => import('@scary/diagnostics').Diagnostic;
+    CSS_IN_HTML_ERROR: (err: any) => import('@scary/diagnostics').Diagnostic;
+    HTML_TRANSFORMER_ERROR: (err: any) => import('@scary/diagnostics').Diagnostic;
     INVALID_ID: (received: any) => import('@scary/diagnostics').Diagnostic;
     INVALID_SOURCE: (received: any) => import('@scary/diagnostics').Diagnostic;
-    JS_TRANSFORMER_ERROR: () => import('@scary/diagnostics').Diagnostic;
+    JS_TRANSFORMER_ERROR: (err: any) => import('@scary/diagnostics').Diagnostic;
     NO_AVAILABLE_TRANSFORMER: (filename: string) => import('@scary/diagnostics').Diagnostic;
 };

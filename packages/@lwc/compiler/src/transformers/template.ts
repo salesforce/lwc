@@ -34,7 +34,7 @@ export default function templateTransform(
             experimentalDynamicDirective: !!options.experimentalDynamicComponent,
         });
     } catch (e) {
-        throw normlizeToLWCDiagnostic(TransformerErrors.HTML_TRANSFORMER_ERROR(), e, { filename });
+        throw normlizeToLWCDiagnostic(TransformerErrors.HTML_TRANSFORMER_ERROR(e), e, { filename });
     }
 
     const fatalError = result.warnings.find(

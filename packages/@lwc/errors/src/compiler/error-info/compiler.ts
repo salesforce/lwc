@@ -184,25 +184,25 @@ export const ModuleResolutionErrors = createDiagnosticsCategory('module-resoluti
 });
 
 export const TransformerErrors = createDiagnosticsCategory('transform-errors', {
-    CSS_TRANSFORMER_ERROR: {
+    CSS_TRANSFORMER_ERROR: (err: any) => ({
         code: 1009,
-        message: '{0}',
+        message: `${err}`,
         severity: DiagnosticSeverity.Error,
         url: '',
-    },
-    CSS_IN_HTML_ERROR: {
+    }),
+    CSS_IN_HTML_ERROR: (err: any) => ({
         code: 1026,
-        message: 'An error occurred parsing inline CSS. {0}',
+        message: `An error occurred parsing inline CSS. ${err}`,
         severity: DiagnosticSeverity.Error,
         url: '',
-    },
+    }),
 
-    HTML_TRANSFORMER_ERROR: {
+    HTML_TRANSFORMER_ERROR: (err: any) => ({
         code: 1008,
-        message: '{0}',
+        message: `${err}`,
         severity: DiagnosticSeverity.Error,
         url: '',
-    },
+    }),
 
     INVALID_ID: (received: any) => ({
         code: 1027,
@@ -218,12 +218,12 @@ export const TransformerErrors = createDiagnosticsCategory('transform-errors', {
         url: '',
     }),
 
-    JS_TRANSFORMER_ERROR: {
+    JS_TRANSFORMER_ERROR: (err: any) => ({
         code: 1007,
-        message: '{0}',
+        message: `${err}`,
         severity: DiagnosticSeverity.Error,
         url: '',
-    },
+    }),
 
     NO_AVAILABLE_TRANSFORMER: (filename: string) => ({
         code: 1005,

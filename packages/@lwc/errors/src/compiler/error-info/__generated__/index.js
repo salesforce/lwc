@@ -435,14 +435,14 @@ var ModuleResolutionErrors = {
     },
 };
 var TransformerErrors = {
-    CSS_TRANSFORMER_ERROR: function () {
+    CSS_TRANSFORMER_ERROR: function (err) {
         return new Diagnostic(
             arguments,
             'transform-errors',
             'CSS_TRANSFORMER_ERROR',
             {
                 code: 1009,
-                message: '{0}',
+                message: '' + err,
                 severity: DiagnosticSeverity.Error,
                 url: '',
             },
@@ -452,14 +452,14 @@ var TransformerErrors = {
             }
         );
     },
-    CSS_IN_HTML_ERROR: function () {
+    CSS_IN_HTML_ERROR: function (err) {
         return new Diagnostic(
             arguments,
             'transform-errors',
             'CSS_IN_HTML_ERROR',
             {
                 code: 1026,
-                message: 'An error occurred parsing inline CSS. {0}',
+                message: 'An error occurred parsing inline CSS. ' + err,
                 severity: DiagnosticSeverity.Error,
                 url: '',
             },
@@ -469,14 +469,14 @@ var TransformerErrors = {
             }
         );
     },
-    HTML_TRANSFORMER_ERROR: function () {
+    HTML_TRANSFORMER_ERROR: function (err) {
         return new Diagnostic(
             arguments,
             'transform-errors',
             'HTML_TRANSFORMER_ERROR',
             {
                 code: 1008,
-                message: '{0}',
+                message: '' + err,
                 severity: DiagnosticSeverity.Error,
                 url: '',
             },
@@ -520,14 +520,14 @@ var TransformerErrors = {
             }
         );
     },
-    JS_TRANSFORMER_ERROR: function () {
+    JS_TRANSFORMER_ERROR: function (err) {
         return new Diagnostic(
             arguments,
             'transform-errors',
             'JS_TRANSFORMER_ERROR',
             {
                 code: 1007,
-                message: '{0}',
+                message: '' + err,
                 severity: DiagnosticSeverity.Error,
                 url: '',
             },

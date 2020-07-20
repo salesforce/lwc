@@ -23,24 +23,24 @@ export default function styleTransform(
             resolverModule:
                 customProperties.resolution.type === 'module'
                     ? customProperties.resolution.name
-                    : undefined
+                    : undefined,
         },
         outputConfig: {
-            minify
-        }
+            minify,
+        },
     };
 
     let res;
     try {
         res = styleCompiler.transform(src, filename, styleCompilerConfig);
     } catch (e) {
-        throw normlizeToLWCDiagnostic(TransformerErrors.CSS_TRANSFORMER_ERROR(), e, { filename });
+        throw normlizeToLWCDiagnostic(TransformerErrors.CSS_TRANSFORMER_ERROR(e), e, { filename });
     }
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the styles doesn't make sense, the transform returns an empty mappings.
     return {
         code: res.code,
-        map: { mappings: '' }
+        map: { mappings: '' },
     };
 }

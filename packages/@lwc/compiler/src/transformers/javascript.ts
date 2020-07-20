@@ -21,21 +21,21 @@ export default function scriptTransform(
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
         plugins: [
             [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
-            ...BABEL_PLUGINS_BASE
+            ...BABEL_PLUGINS_BASE,
         ],
         filename,
-        sourceMaps: options.outputConfig.sourcemap
+        sourceMaps: options.outputConfig.sourcemap,
     });
 
     let result;
     try {
         result = babel.transform(code, config);
     } catch (e) {
-        throw normlizeToLWCDiagnostic(TransformerErrors.JS_TRANSFORMER_ERROR(), e, { filename });
+        throw normlizeToLWCDiagnostic(TransformerErrors.JS_TRANSFORMER_ERROR(e), e, { filename });
     }
 
     return {
         code: result.code,
-        map: result.map
+        map: result.map,
     };
 }

@@ -6,12 +6,12 @@
  */
 import { rollup, Plugin, RollupWarning } from 'rollup';
 import {
-    CompilerError,
     LWCDiagnostic,
     captureDiagnostic,
     ModuleResolutionErrors,
     normlizeToLWCDiagnostic,
     DiagnosticSeverity,
+    Diagnostic,
 } from '@lwc/errors';
 
 import rollupModuleResolver from '../rollup-plugins/module-resolver';
@@ -133,7 +133,7 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
         map = result.map;
     } catch (e) {
         // Rollup may have clobbered error.code with its own data
-        if (e instanceof CompilerError && (e as any).pluginCode) {
+        if (e instanceof Diagnostic && (e as any).pluginCode) {
             e.code = (e as any).pluginCode;
         }
 

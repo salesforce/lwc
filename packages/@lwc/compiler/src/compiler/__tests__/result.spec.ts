@@ -7,7 +7,7 @@
 import { SourceMapConsumer } from 'source-map';
 import { compile } from '../compiler';
 import { readFixture } from '../../__tests__/utils';
-import { DiagnosticLevel } from '@lwc/errors';
+import { DiagnosticSeverity } from '@lwc/errors';
 
 const VALID_CONFIG = {
     outputConfig: {
@@ -137,9 +137,9 @@ describe('compiler result', () => {
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
 
-        const { level, message, code } = diagnostics[0];
+        const { severity, message, code } = diagnostics[0];
 
-        expect(level).toBe(DiagnosticLevel.Fatal);
+        expect(severity).toBe(DiagnosticSeverity.Fatal);
         expect(message).toContain(
             'Failed to resolve import "./nothing" from "foo.js". Please add "nothing" file to the component folder.'
         );
@@ -159,9 +159,9 @@ describe('compiler result', () => {
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
 
-        const { level, message } = diagnostics[0];
+        const { severity, message } = diagnostics[0];
 
-        expect(level).toBe(DiagnosticLevel.Fatal);
+        expect(severity).toBe(DiagnosticSeverity.Fatal);
         expect(message).toContain('Unexpected token (1:5)');
     });
 
@@ -182,7 +182,7 @@ describe('compiler result', () => {
         expect(success).toBe(false);
         expect(diagnostics).toMatchObject([
             {
-                level: DiagnosticLevel.Fatal,
+                severity: DiagnosticSeverity.Fatal,
                 message: expect.stringContaining('Unclosed block'),
             },
         ]);
@@ -204,7 +204,7 @@ describe('compiler result', () => {
         expect(success).toBe(false);
         expect(diagnostics).toMatchObject([
             {
-                level: DiagnosticLevel.Fatal,
+                severity: DiagnosticSeverity.Fatal,
                 message: expect.stringContaining('<template> has no matching closing tag.'),
             },
         ]);

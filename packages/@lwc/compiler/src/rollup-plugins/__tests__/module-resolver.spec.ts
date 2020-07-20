@@ -6,7 +6,7 @@
  */
 import { compile } from '../../compiler/compiler';
 import { pretify } from '../../__tests__/utils';
-import { DiagnosticLevel } from '@lwc/errors';
+import { DiagnosticSeverity } from '@lwc/errors';
 
 const VALID_CONFIG = {
     isExplicitImport: true,
@@ -148,9 +148,10 @@ describe('module resolver', () => {
         expect(success).toBe(false);
         expect(diagnostics).toMatchObject([
             {
-                level: 0,
+                severity: DiagnosticSeverity.Fatal,
+                code: 1011,
                 message: expect.stringContaining(
-                    'LWC1011: Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo" file to the component folder.'
+                    'Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo" file to the component folder.'
                 ),
             },
         ]);
@@ -170,9 +171,10 @@ describe('module resolver', () => {
         expect(success).toBe(false);
         expect(diagnostics).toMatchObject([
             {
-                level: 0,
+                severity: DiagnosticSeverity.Fatal,
+                code: 1011,
                 message: expect.stringContaining(
-                    'LWC1011: Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo" file to the component folder.'
+                    'Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo" file to the component folder.'
                 ),
             },
         ]);
@@ -189,7 +191,7 @@ describe('module resolver', () => {
 
         const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
         expect(success).toBe(false);
-        expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics[0].severity).toBe(DiagnosticSeverity.Fatal);
     });
 
     test('#492 - compiler should not report external modules in diagnostics', async () => {
@@ -228,7 +230,7 @@ describe('module entry validation', () => {
         expect(success).toBe(false);
         expect(diagnostics).toMatchObject([
             {
-                level: 0,
+                severity: DiagnosticSeverity.Fatal,
                 message: expect.stringContaining(
                     'Illegal folder name "MycmpCamelcased". The folder name must start with a lowercase character: "mycmpCamelcased".'
                 ),
@@ -266,10 +268,9 @@ describe('module file name validation', () => {
         expect(success).toBe(false);
         expect(diagnostics).toMatchObject([
             {
-                level: 0,
-                message: expect.stringContaining(
-                    'LWC1010: Failed to resolve entry for module "mycmp".'
-                ),
+                severity: DiagnosticSeverity.Fatal,
+                code: 1010,
+                message: expect.stringContaining('Failed to resolve entry for module "mycmp".'),
             },
         ]);
     });
