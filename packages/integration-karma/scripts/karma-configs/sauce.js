@@ -14,21 +14,24 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_chrome_latest',
         browserName: 'chrome',
-        version: 'latest',
+        browserVersion: 'latest',
+        platformName: 'Windows 10',
         compat: false,
         nativeShadowCompatible: true,
     },
     {
         label: 'sl_firefox_latest',
         browserName: 'firefox',
-        version: 'latest',
+        browserVersion: 'latest',
+        platformName: 'Windows 10',
         compat: false,
         nativeShadowCompatible: true,
     },
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
-        version: 'latest',
+        browserVersion: 'latest',
+        platformName: 'macOS 10.15',
         compat: false,
         nativeShadowCompatible: true,
     },
@@ -37,29 +40,32 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_ie11',
         browserName: 'internet explorer',
-        version: '11',
+        browserVersion: '11',
+        platformName: 'Windows 7',
         compat: true,
         nativeShadowCompatible: false,
     },
     {
         label: 'sl_chrome_compat',
         browserName: 'chrome',
-        version: '59',
+        browserVersion: '59',
+        platformName: 'Windows 7',
         compat: true,
         nativeShadowCompatible: false,
     },
     {
         label: 'sl_firefox_compat',
         browserName: 'firefox',
-        version: '54',
+        browserVersion: '54',
+        platformName: 'Windows 7',
         compat: true,
         nativeShadowCompatible: false,
     },
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
-        platform: 'OS X 10.11',
-        version: '10',
+        browserVersion: '10',
+        platformName: 'OS X 10.11',
         compat: true,
         nativeShadowCompatible: false,
     },
@@ -132,14 +138,14 @@ module.exports = (config) => {
 
         browsers: matchingBrowsers.map((browser) => browser.label),
         customLaunchers: matchingBrowsers.reduce((acc, browser) => {
-            const { label, browserName, platform, version } = browser;
+            const { label, browserName, platformName, browserVersion } = browser;
             return {
                 ...acc,
                 [label]: {
                     base: 'SauceLabs',
                     browserName,
-                    platform,
-                    version,
+                    platformName,
+                    browserVersion,
                 },
             };
         }, {}),
