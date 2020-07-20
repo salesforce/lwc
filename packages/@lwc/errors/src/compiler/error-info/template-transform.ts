@@ -179,12 +179,12 @@ export const ParserDiagnostics = createDiagnosticsCategory('parser', {
         url: '',
     }),
 
-    GENERIC_PARSING_ERROR: {
+    GENERIC_PARSING_ERROR: (err: string) => ({
         code: 1052,
-        message: 'Error parsing attribute: {0}',
+        message: `Error parsing attribute: ${err}`,
         severity: DiagnosticSeverity.Error,
         url: '',
-    },
+    }),
 
     IDENTIFIER_PARSING_ERROR: {
         code: 1053,

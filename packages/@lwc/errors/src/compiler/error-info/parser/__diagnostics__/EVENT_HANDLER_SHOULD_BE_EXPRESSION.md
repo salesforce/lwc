@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: EVENT_HANDLER_SHOULD_BE_EXPRESSION
+code: 1043
+---
+
+# 1043: EVENT_HANDLER_SHOULD_BE_EXPRESSION

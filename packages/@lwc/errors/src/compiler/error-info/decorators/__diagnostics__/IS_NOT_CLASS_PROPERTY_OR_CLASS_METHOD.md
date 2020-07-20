@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD
+code: 1103
+---
+
+# 1103: IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD

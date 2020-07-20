@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: UNKNOWN_HTML_TAG_IN_TEMPLATE
+code: 1123
+---
+
+# 1123: UNKNOWN_HTML_TAG_IN_TEMPLATE

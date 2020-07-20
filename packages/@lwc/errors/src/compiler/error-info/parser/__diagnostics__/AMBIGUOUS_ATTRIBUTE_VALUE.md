@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: AMBIGUOUS_ATTRIBUTE_VALUE
+code: 1034
+---
+
+# 1034: AMBIGUOUS_ATTRIBUTE_VALUE

@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: PROPERTY_CANNOT_BE_COMPUTED
+code: 1106
+---
+
+# 1106: PROPERTY_CANNOT_BE_COMPUTED

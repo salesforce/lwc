@@ -1,0 +1,7 @@
+---
+namespace: lwc-class
+key: INVALID_IMPORT_PROHIBITED_API
+code: 1091
+---
+
+# 1091: INVALID_IMPORT_PROHIBITED_API

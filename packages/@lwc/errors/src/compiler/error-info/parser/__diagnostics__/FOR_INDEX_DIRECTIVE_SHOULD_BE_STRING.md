@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING
+code: 1046
+---
+
+# 1046: FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING

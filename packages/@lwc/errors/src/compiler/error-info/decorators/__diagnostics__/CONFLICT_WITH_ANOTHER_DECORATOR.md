@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: CONFLICT_WITH_ANOTHER_DECORATOR
+code: 1095
+---
+
+# 1095: CONFLICT_WITH_ANOTHER_DECORATOR

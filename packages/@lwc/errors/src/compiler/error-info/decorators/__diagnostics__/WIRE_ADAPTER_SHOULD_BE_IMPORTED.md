@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: WIRE_ADAPTER_SHOULD_BE_IMPORTED
+code: 1119
+---
+
+# 1119: WIRE_ADAPTER_SHOULD_BE_IMPORTED

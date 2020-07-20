@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: INVALID_STATIC_ID_IN_ITERATION
+code: 1041
+---
+
+# 1041: INVALID_STATIC_ID_IN_ITERATION

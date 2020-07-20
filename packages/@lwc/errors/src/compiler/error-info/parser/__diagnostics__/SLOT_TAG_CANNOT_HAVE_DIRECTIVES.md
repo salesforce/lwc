@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: SLOT_TAG_CANNOT_HAVE_DIRECTIVES
+code: 1082
+---
+
+# 1082: SLOT_TAG_CANNOT_HAVE_DIRECTIVES

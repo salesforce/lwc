@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING
+code: 1047
+---
+
+# 1047: FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING

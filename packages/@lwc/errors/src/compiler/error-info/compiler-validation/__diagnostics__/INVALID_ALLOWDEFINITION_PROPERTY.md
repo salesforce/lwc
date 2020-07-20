@@ -1,0 +1,7 @@
+---
+namespace: compiler-validation
+key: INVALID_ALLOWDEFINITION_PROPERTY
+code: 1012
+---
+
+# 1012: INVALID_ALLOWDEFINITION_PROPERTY

@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: NAME_ON_SLOT_CANNOT_BE_EXPRESSION
+code: 1076
+---
+
+# 1076: NAME_ON_SLOT_CANNOT_BE_EXPRESSION

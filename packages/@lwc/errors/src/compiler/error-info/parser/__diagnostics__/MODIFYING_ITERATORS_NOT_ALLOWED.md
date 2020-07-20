@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: MODIFYING_ITERATORS_NOT_ALLOWED
+code: 1073
+---
+
+# 1073: MODIFYING_ITERATORS_NOT_ALLOWED

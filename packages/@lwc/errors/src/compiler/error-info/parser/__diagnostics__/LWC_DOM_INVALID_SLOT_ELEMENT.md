@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: LWC_DOM_INVALID_SLOT_ELEMENT
+code: 1088
+---
+
+# 1088: LWC_DOM_INVALID_SLOT_ELEMENT

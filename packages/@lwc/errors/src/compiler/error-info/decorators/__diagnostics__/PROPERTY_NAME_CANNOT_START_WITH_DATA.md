@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: PROPERTY_NAME_CANNOT_START_WITH_DATA
+code: 1107
+---
+
+# 1107: PROPERTY_NAME_CANNOT_START_WITH_DATA

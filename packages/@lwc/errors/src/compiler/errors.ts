@@ -26,7 +26,7 @@ export {
 } from './utils';
 
 export { Diagnostic, DiagnosticSeverity };
-export * from './error-info';
+export * from './error-info/__generated__';
 
 // TODO [#1289]: Can be flattened now that we're down to only 2 properties
 export interface ErrorConfig {
@@ -129,11 +129,14 @@ export function normlizeToLWCDiagnostic(
     error: any,
     origin?: CompilerDiagnosticOrigin
 ): LWCDiagnostic {
-    if (error instanceof LWCDiagnostic) {
+    if (error instanceof LWCDiagnostic || error instanceof Diagnostic) {
+        error = error as LWCDiagnostic;
+
         if (origin) {
             error.filename = getFilename(origin);
             error.location = getLocation(origin);
         }
+
         return error;
     }
 

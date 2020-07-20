@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION
+code: 1064
+---
+
+# 1064: KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION
