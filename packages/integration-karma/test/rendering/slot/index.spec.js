@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('slot diffing algorithm', () => {
-    it('should not re-render child component when parent component is re-rendered and api attributes does not change', function() {
+    it('should not re-render child component when parent component is re-rendered and api attributes does not change', function () {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
@@ -21,7 +21,7 @@ describe('slot diffing algorithm', () => {
             });
     });
 
-    it('should not re-render child component when slot change', function() {
+    it('should not re-render child component when slot change', function () {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
@@ -42,7 +42,7 @@ describe('slot diffing algorithm', () => {
             });
     });
 
-    it('should trigger slot change in child', function(done) {
+    it('should trigger slot change in child', function (done) {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
