@@ -393,14 +393,32 @@ export function ignoreFocus(elm: HTMLElement) {
     removeEventListener.call(elm, 'focusin', skipHostHandler as EventListener, true);
 }
 
-function bindDocumentMousedownMouseupHandlers(elm: Node) {
+function bindDocumentMousedownMouseupHandlers(elm: HTMLElement) {
     const ownerDocument = getOwnerDocument(elm);
+
+    // [W-7824445] If the element is draggable, the mousedown event is dispatched before the element
+    // is starting to be dragged, which disable the keyboard focus navigation routine. But by
+    // specification, the mouseup event is never dispatched once the element is dropped.
+    //
+    // For all draggable element, we need to add an event listener to re-enable the keyboard
+    // navigation routine after dragging starts.
+    if (elm.draggable) {
+        addEventListener.call(elm, 'dragstart', enableKeyboardFocusNavigationRoutines, true);
+    }
+
     if (!getHiddenField(ownerDocument, DidAddMouseDownListener)) {
         setHiddenField(ownerDocument, DidAddMouseDownListener, true);
         addEventListener.call(
             ownerDocument,
             'mousedown',
-            disableKeyboardFocusNavigationRoutines,
+            (evt) => {
+                // Filter out user-land dispatched events from disable keyboard navigation routine.
+                if (!evt.isTrusted) {
+                    return;
+                }
+
+                disableKeyboardFocusNavigationRoutines();
+            },
             true
         );
 
