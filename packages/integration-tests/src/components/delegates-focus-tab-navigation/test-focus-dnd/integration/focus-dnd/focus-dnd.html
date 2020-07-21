@@ -1,0 +1,12 @@
+<template>
+    <button class="focusable">Focus me!</button>
+
+    <div 
+        tabindex="-1"
+        draggable="true" 
+        style="padding: 10px; border: 1px solid blue;"
+    >
+        Draggable
+        <integration-child tabindex="-1"></integration-child>
+    </div>
+</template>
