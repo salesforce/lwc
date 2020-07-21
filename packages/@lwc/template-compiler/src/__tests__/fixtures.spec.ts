@@ -22,12 +22,15 @@ const EXPECTED_META_FILENAME = 'metadata.json';
 const ONLY_FILENAME = '.only';
 const SKIP_FILENAME = '.skip';
 
+// NOTE: this exists to support fixtures that were written based off of CompilerDiagnostc/CompilerError
+// before the new LWCDiagnostic was created
 const transformWarnings = (warnings) => {
     return warnings.map((diagnostic) => {
-        const { level, message, ...rest } = diagnostic;
+        const { level, severity, message, ...rest } = diagnostic;
+
         return expect.objectContaining({
             ...rest,
-            severity: diagnosticLevelToSeverity(level),
+            severity: severity ? severity : diagnosticLevelToSeverity(level),
             message: expect.stringContaining(message.replace(/^LWC[\d]+:\s/, '')),
         });
     });
