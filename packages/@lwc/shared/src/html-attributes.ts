@@ -13,7 +13,6 @@ import { keys, hasOwnProperty } from './language';
 const BOOLEAN_ATTRIBUTES = new Map([
     ['autofocus', new Set(['button', 'input', 'keygen', 'select', 'textarea'])],
     ['autoplay', new Set(['audio', 'video'])],
-    ['capture', new Set(['input'])],
     ['checked', new Set(['command', 'input'])],
     [
         'disabled',
