@@ -102,7 +102,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
             const attrName = getAttrNameFromPropName(key);
 
             // Handle all the boolean properties.
-            if (isBooleanAttribute(attrName)) {
+            if (isBooleanAttribute(attrName, node.name)) {
                 return this.getAttribute(node, attrName) ?? false;
             }
 
@@ -133,7 +133,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
             const attrName = getAttrNameFromPropName(key);
 
             // Handle all the boolean properties.
-            if (isBooleanAttribute(attrName)) {
+            if (isBooleanAttribute(attrName, node.name)) {
                 return value === true
                     ? this.setAttribute(node, attrName, '')
                     : this.removeAttribute(node, attrName);

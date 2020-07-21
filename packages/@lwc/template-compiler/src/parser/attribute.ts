@@ -89,7 +89,7 @@ export function normalizeAttributeValue(
     escapedExpression: boolean;
 } {
     const { name, value } = attr;
-    if (isBooleanAttribute(name)) {
+    if (isBooleanAttribute(name, tag)) {
         if (value === 'true') {
             throw generateCompilerError(ParserDiagnostics.BOOLEAN_ATTRIBUTE_TRUE, {
                 messageArgs: [tag, name, value],
@@ -216,7 +216,7 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
         return isCustomElementAttribute(attrName);
     }
 
-    if (isBooleanAttribute(attrName)) {
+    if (isBooleanAttribute(attrName, element.tag)) {
         return false;
     }
 

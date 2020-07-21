@@ -7,27 +7,46 @@
 import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
 import { keys, hasOwnProperty } from './language';
 
-const BOOLEAN_ATTRIBUTES = new Set([
-    'autofocus', // <button>, <input>, <keygen>, <select>, <textarea>
-    'autoplay', // <audio>, <video>
-    'capture', // <input type='file'>
-    'checked', // <command>, <input>
-    'disabled', // <button>, <command>, <fieldset>, <input>, <keygen>, <optgroup>, <option>, <select>, <textarea>
-    'formnovalidate', // submit button
-    'hidden', // Global attribute
-    'loop', // <audio>, <bgsound>, <marquee>, <video>
-    'multiple', // <input>, <select>
-    'muted', // <audio>, <video>
-    'novalidate', // <form>
-    'open', // <details>
-    'readonly', // <input>, <textarea>
-    'required', // <input>, <select>, <textarea>
-    'reversed', // <ol>
-    'selected', // <option>
+/**
+ * Maps boolean attribute name to supported tags: 'boolean attr name' => Set of allowed tag names that supports them.
+ */
+const BOOLEAN_ATTRIBUTES = new Map([
+    ['autofocus', new Set(['button', 'input', 'keygen', 'select', 'textarea'])],
+    ['autoplay', new Set(['audio', 'video'])],
+    ['capture', new Set(['input'])],
+    ['checked', new Set(['command', 'input'])],
+    [
+        'disabled',
+        new Set([
+            'button',
+            'command',
+            'fieldset',
+            'input',
+            'keygen',
+            'optgroup',
+            'select',
+            'textarea',
+        ]),
+    ],
+    ['formnovalidate', new Set(['button'])], // button[type=submit]
+    ['hidden', new Set()], // Global attribute
+    ['loop', new Set(['audio', 'bgsound', 'marquee', 'video'])],
+    ['multiple', new Set(['input', 'select'])],
+    ['muted', new Set(['audio', 'video'])],
+    ['novalidate', new Set(['form'])],
+    ['open', new Set(['details'])],
+    ['readonly', new Set(['input', 'textarea'])],
+    ['required', new Set(['input', 'select', 'textarea'])],
+    ['reversed', new Set(['ol'])],
+    ['selected', new Set(['option'])],
 ]);
 
-export function isBooleanAttribute(attrName: string): boolean {
-    return BOOLEAN_ATTRIBUTES.has(attrName);
+export function isBooleanAttribute(attrName: string, tagName: string): boolean {
+    const allowedTagNames = BOOLEAN_ATTRIBUTES.get(attrName);
+    return (
+        allowedTagNames !== undefined &&
+        (allowedTagNames.has(tagName) || isGlobalHtmlAttribute(attrName))
+    );
 }
 
 const GLOBAL_ATTRIBUTE = new Set([
