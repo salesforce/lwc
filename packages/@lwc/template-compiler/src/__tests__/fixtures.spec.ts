@@ -9,6 +9,8 @@ import path from 'path';
 import glob from 'glob';
 import prettier from 'prettier';
 
+import { diagnosticLevelToSeverity } from '@lwc/errors';
+
 import compiler from '../index';
 
 const FIXTURE_DIR = path.join(__dirname, 'fixtures');
@@ -19,6 +21,17 @@ const EXPECTED_META_FILENAME = 'metadata.json';
 
 const ONLY_FILENAME = '.only';
 const SKIP_FILENAME = '.skip';
+
+const transformWarnings = (warnings) => {
+    return warnings.map((diagnostic) => {
+        const { level, message, ...rest } = diagnostic;
+        return expect.objectContaining({
+            ...rest,
+            severity: diagnosticLevelToSeverity(level),
+            message: expect.stringContaining(message.replace(/^LWC[\d]+:\s/, '')),
+        });
+    });
+};
 
 describe('fixtures', () => {
     const fixtures = glob.sync(path.resolve(FIXTURE_DIR, '**/*.html'));
@@ -86,7 +99,7 @@ describe('fixtures', () => {
             }
 
             // check warnings
-            expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
+            expect(actual.warnings).toEqual(transformWarnings(expectedMetaData.warnings || []));
             // check compiled code
             expect(prettier.format(actual.code, { parser: 'babel' })).toEqual(
                 prettier.format(expectedCode, { parser: 'babel' })

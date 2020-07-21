@@ -4,8 +4,21 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Diagnostic } from '@scary/diagnostics';
+import { Diagnostic, DiagnosticSeverity } from '@scary/diagnostics';
 import { Location, DiagnosticLevel } from '../shared/types';
+
+export const diagnosticLevelToSeverity = (level: DiagnosticLevel): DiagnosticSeverity => {
+    switch (level) {
+        case DiagnosticLevel.Error:
+            return DiagnosticSeverity.Error;
+        case DiagnosticLevel.Warning:
+            return DiagnosticSeverity.Warning;
+        case DiagnosticLevel.Fatal:
+            return DiagnosticSeverity.Fatal;
+        case DiagnosticLevel.Log:
+            return DiagnosticSeverity.Info;
+    }
+};
 
 export class LWCDiagnostic extends Diagnostic {
     filename?: string;
@@ -59,7 +72,7 @@ export class CompilerError extends Error implements CompilerDiagnostic {
             message: this.message,
             level: this.level,
             filename: this.filename,
-            location: this.location
+            location: this.location,
         };
     }
 }

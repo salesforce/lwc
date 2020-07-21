@@ -23,6 +23,7 @@ export {
     CompilerDiagnostic,
     LWCDiagnostic,
     CompilerError,
+    diagnosticLevelToSeverity,
 } from './utils';
 
 export { Diagnostic, DiagnosticSeverity };

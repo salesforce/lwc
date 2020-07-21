@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1073,
-            "message": "Invalid expression {x.next} - LWC1073: Template expression doesn't allow to modify iterators",
+            "message": "Invalid expression {x.next} - Template expression doesn't allow to modify iterators",
             "level": 1,
             "location": {
                 "line": 4,

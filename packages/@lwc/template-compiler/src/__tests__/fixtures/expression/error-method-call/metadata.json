@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1060,
-            "message": "Invalid expression { Math.random() } - LWC1060: Template expression doesn't allow CallExpression",
+            "message": "Invalid expression { Math.random() } - Template expression doesn't allow CallExpression",
             "level": 1,
             "location": {
                 "line": 2,

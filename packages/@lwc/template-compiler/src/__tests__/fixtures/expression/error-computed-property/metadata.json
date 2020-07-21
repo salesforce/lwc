@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1038,
-            "message": "Invalid expression {val[state.foo]} - LWC1038: Template expression doesn't allow computed property access",
+            "message": "Invalid expression {val[state.foo]} - Template expression doesn't allow computed property access",
             "level": 1,
             "location": {
                 "line": 1,
