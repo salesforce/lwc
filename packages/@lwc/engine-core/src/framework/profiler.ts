@@ -21,7 +21,7 @@ export enum OperationId {
     errorCallback = 6,
 }
 
-const enum Phase {
+enum Phase {
     Start = 0,
     Stop = 1,
 }
