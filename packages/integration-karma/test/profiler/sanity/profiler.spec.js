@@ -71,9 +71,6 @@ describe('Profiler Sanity Test', () => {
         activateListButton.click();
         await Promise.resolve();
 
-        // the parent container will have a patch and render event
-        matchEventsOfTypeFor(OperationId.patch, X_CONTAINER, profilerEvents);
-        matchEventsOfTypeFor(OperationId.render, X_CONTAINER, profilerEvents);
         // the child item will have the usual lifecycle
         matchEventsOfTypeFor(OperationId.constructor, X_ITEM, profilerEvents);
         matchEventsOfTypeFor(OperationId.render, X_ITEM, profilerEvents);

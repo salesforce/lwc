@@ -11,7 +11,7 @@ function noop(_opId: number, _phase: number, _cmpName: string, _vm_idx: number) 
 
 let logOperation = noop;
 
-export const enum OperationId {
+export enum OperationId {
     constructor = 0,
     render = 1,
     patch = 2,
