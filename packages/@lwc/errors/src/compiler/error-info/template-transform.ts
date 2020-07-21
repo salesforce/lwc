@@ -6,11 +6,6 @@
  */
 import { createDiagnosticsCategory, DiagnosticSeverity } from '@scary/diagnostics';
 
-/**
- * TODO [W-5678919]: implement script to determine the next available error code
- * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
- */
-
 export const TemplateErrors = createDiagnosticsCategory('template-errors', {
     INVALID_TEMPLATE: {
         code: 1003,

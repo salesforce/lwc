@@ -1,7 +1,3 @@
-/**
- * TODO [W-5678919]: implement script to determine the next available error code
- * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
- */
 export declare const LWCClassErrors: {
     INVALID_DYNAMIC_IMPORT_SOURCE_STRICT: (path: string) => import('@scary/diagnostics').Diagnostic;
     INVALID_IMPORT_MISSING_DEFAULT_EXPORT: (

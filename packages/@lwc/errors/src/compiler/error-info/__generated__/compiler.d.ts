@@ -1,8 +1,4 @@
 import { DiagnosticSeverity } from '@scary/diagnostics';
-/**
- * TODO [W-5678919]: implement script to determine the next available error code
- * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
- */
 export declare const GENERIC_COMPILER_ERROR: {
     code: number;
     message: string;

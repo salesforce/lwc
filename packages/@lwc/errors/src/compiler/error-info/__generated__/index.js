@@ -1,10 +1,5 @@
 import { DiagnosticSeverity, Diagnostic } from '@scary/diagnostics';
 
-/**
- * TODO [W-5678919]: implement script to determine the next available error code
- * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
- */
-
 var GENERIC_COMPILER_ERROR = {
     code: 1001,
     message: 'Unexpected compilation error: {0}',
@@ -556,11 +551,6 @@ var TransformerErrors = {
     },
 };
 
-/**
- * TODO [W-5678919]: implement script to determine the next available error code
- * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
- */
-
 var LWCClassErrors = {
     INVALID_DYNAMIC_IMPORT_SOURCE_STRICT: function (path) {
         return new Diagnostic(
@@ -1102,11 +1092,6 @@ var DecoratorErrors = {
         );
     },
 };
-
-/**
- * TODO [W-5678919]: implement script to determine the next available error code
- * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
- */
 
 var TemplateErrors = {
     INVALID_TEMPLATE: function () {

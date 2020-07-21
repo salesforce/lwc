@@ -1,7 +1,3 @@
-/**
- * TODO [W-5678919]: implement script to determine the next available error code
- * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
- */
 export declare const TemplateErrors: {
     INVALID_TEMPLATE: () => import('@scary/diagnostics').Diagnostic;
     OPTIONS_MUST_BE_OBJECT: () => import('@scary/diagnostics').Diagnostic;
