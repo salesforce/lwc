@@ -1,0 +1,17 @@
+<template>
+    <button class="focusable-btn">Focus me!</button>
+
+    <div
+        class="dnd-drag"
+        tabindex="-1"
+        draggable="true"
+        style="padding: 10px; border: 1px solid blue;"
+    >
+        Draggable
+        <integration-child tabindex="-1"></integration-child>
+    </div>
+
+    <div class="dnd-drop" style="padding: 10px; border: 1px solid red;">
+        Drop zone!
+    </div>
+</template>
