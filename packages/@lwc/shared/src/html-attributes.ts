@@ -44,7 +44,7 @@ export function isBooleanAttribute(attrName: string, tagName: string): boolean {
     const allowedTagNames = BOOLEAN_ATTRIBUTES.get(attrName);
     return (
         allowedTagNames !== undefined &&
-        (allowedTagNames.has(tagName) || isGlobalHtmlAttribute(attrName))
+        (allowedTagNames.size === 0 || allowedTagNames.has(tagName))
     );
 }
 
