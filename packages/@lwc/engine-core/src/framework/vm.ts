@@ -674,7 +674,7 @@ export function allocateInSlot(vm: VM, children: VNodes) {
         const slottedOldChildren: VNodes = [];
         for (let i = 0, len = children.length; i < len; i += 1) {
             const oldVNode = aChildren[i];
-            if (!isNull(oldVNode) && !isUndefined(oldVNode.elm)) {
+            if (!isNull(oldVNode) && !isUndefined(oldVNode) && !isUndefined(oldVNode.elm)) {
                 const newVNode = children[i];
                 ArrayPush.call(slottedOldChildren, oldVNode);
                 ArrayPush.call(slottedNewChildren, newVNode);
