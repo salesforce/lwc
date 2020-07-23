@@ -1,9 +1,11 @@
 import { LightningElement } from 'lwc';
 
 export default class App extends LightningElement {
-    isTrue = false;
+    isTrue = true;
+    counter = 0;
 
     handleClick() {
+        this.counter++;
         this.isTrue = !this.isTrue;
     }
 }

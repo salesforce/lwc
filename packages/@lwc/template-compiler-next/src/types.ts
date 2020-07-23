@@ -11,12 +11,20 @@ export interface ASTMemberExpression {
 
 export type ASTExpression = ASTIdentifier | ASTMemberExpression;
 
-export interface ASTText {
+export interface ASTBaseParentNode {
+    children: ASTChildNode[];
+}
+
+export interface ASTBaseNode {
+    parent: ASTParentNode;
+}
+
+export interface ASTText extends ASTBaseNode {
     type: 'text';
     value: string | ASTExpression;
 }
 
-export interface ASTComment {
+export interface ASTComment extends ASTBaseNode {
     type: 'comment';
     value: string;
 }
@@ -33,56 +41,55 @@ export interface ASTEventListener {
     handler: ASTExpression;
 }
 
-export interface ASTElement {
+export interface ASTElement extends ASTBaseNode, ASTBaseParentNode {
     type: 'element';
     name: string;
     namespace?: string;
     attributes: ASTAttribute[];
     listeners: ASTEventListener[];
-    children: ASTChildNode[];
 }
 
-export interface ASTComponent {
+export interface ASTComponent extends ASTBaseNode, ASTBaseParentNode {
     type: 'component';
     name: string;
     listeners: ASTEventListener[];
-    slottedContent: Record<string, ASTChildNode[]>;
 }
 
-export interface ASTIfBlock {
+export interface ASTIfBlock extends ASTBaseNode, ASTBaseParentNode {
     type: 'if-block';
     modifier: 'true' | 'false';
     condition: ASTExpression;
-    children: ASTChildNode[];
 }
 
-export interface ASTForBlock {
+export interface ASTForBlock extends ASTBaseNode, ASTBaseParentNode {
     type: 'for-block';
     expression: ASTExpression;
     item?: ASTIdentifier;
     index?: ASTIdentifier;
-    children: ASTChildNode[];
 }
 
+export interface ASTRoot extends ASTBaseParentNode {
+    type: 'root';
+}
+
+export type ASTParentNode = ASTForBlock | ASTIfBlock | ASTElement | ASTComponent | ASTRoot;
+
 export type ASTChildNode =
-    | ASTText
+    | ASTForBlock
+    | ASTIfBlock
     | ASTComment
     | ASTElement
     | ASTComponent
-    | ASTIfBlock
-    | ASTForBlock;
+    | ASTText;
 
-export interface ASTRoot {
-    type: 'root';
-    children: ASTChildNode[];
-}
+export type ASTNode = ASTChildNode | ASTRoot;
 
 export interface CompilerConfig {
     preserveWhitespaces?: boolean;
 }
 
 export interface CompilerOutput {
-    code: string,
-    ast: ASTRoot,
-    warnings: any[]
+    code: string;
+    ast: ASTRoot;
+    warnings: any[];
 }

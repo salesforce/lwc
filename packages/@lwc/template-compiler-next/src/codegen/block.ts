@@ -1,12 +1,15 @@
 import { code } from '../utils/code';
 import { toIdentifier } from '../utils/identifiers';
 
+import { ASTChildNode } from '../types';
+
 export class Block {
     name: string;
     isRoot: boolean;
 
-    identifiers = new Map<string, string | undefined>();
+    nodeIdentifiers = new Map<ASTChildNode | string, string>();
 
+    identifiers = new Map<string, string | undefined>();
     createStatements: string[] = [];
     insertStatements: string[] = [];
     updateStatements: string[] = [];
@@ -31,11 +34,33 @@ export class Block {
         return name;
     }
 
-    addElement(identifier: string, parentIdentifier: string, create: string): string {
-        identifier = this.registerIdentifier(identifier);
+    getNodeIdentifier(node: ASTChildNode, init?: string): string {
+        const existingIdentifier = this.nodeIdentifiers.get(node);
 
-        this.createStatements.push(`${identifier} = ${create};`);
-        this.insertStatements.push(`@insert(${identifier}, ${parentIdentifier});`);
+        if (existingIdentifier !== undefined) {
+            // Hack: Fix this.
+            this.identifiers.set(existingIdentifier, init);
+
+            return existingIdentifier;
+        }
+
+        let name: string;
+        switch (node.type) {
+            case 'text':
+            case 'comment':
+            case 'if-block':
+            case 'for-block':
+                name = node.type;
+                break;
+
+            case 'component':
+            case 'element':
+                name = node.name;
+                break;
+        }
+
+        const identifier = this.registerIdentifier(name, init);
+        this.nodeIdentifiers.set(node, identifier);
 
         return identifier;
     }

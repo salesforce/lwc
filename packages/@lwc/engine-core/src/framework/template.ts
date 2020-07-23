@@ -15,6 +15,7 @@ export interface Template {
     create(): void;
     insert(target: Node, anchor?: Node): void;
     update(): void;
+    detach(): void;
 }
 
 export interface TemplateFactory {
@@ -25,6 +26,7 @@ export const defaultTemplateFactory: TemplateFactory = () => ({
     create() {},
     insert() {},
     update() {},
+    detach() {},
 });
 
 let vmBeingRendered: VM | null = null;
@@ -38,9 +40,10 @@ export function setVMBeingRendered(vm: VM | null) {
 export function evaluateTemplate(vm: VM, factory?: TemplateFactory): void {
     const { component, tro, renderer, cmpRoot } = vm;
 
-    // The returned template from by the component during this render cycle is different than the 
+    // The returned template from by the component during this render cycle is different than the
     // previous rendering cycle. In this case the existing template need to be unmounted.
     if (vm.cmpTemplateFactory !== null && vm.cmpTemplateFactory !== factory) {
+        // eslint-disable-next-line
         console.warn('TODO: template swap');
     }
 
@@ -72,10 +75,9 @@ export function evaluateTemplate(vm: VM, factory?: TemplateFactory): void {
                 const template = vm.cmpTemplate;
 
                 tro.observe(() => {
-                    template.update();
+                    template.update(cmpRoot);
                 });
             }
-            
         },
         () => {
             if (process.env.NODE_ENV !== 'production') {

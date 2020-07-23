@@ -5,11 +5,15 @@ import {
     ASTComment,
     ASTAttribute,
     ASTRoot,
-    ASTChildNode,
     ASTIdentifier,
     CompilerConfig,
     ASTComponent,
     ASTEventListener,
+    ASTParentNode,
+    ASTIfBlock,
+    ASTForBlock,
+    ASTChildNode,
+    ASTElement,
 } from '../types';
 
 import * as parse5Utils from '../utils/parse5';
@@ -17,7 +21,11 @@ import { HTML_NAMESPACE } from '../utils/namespaces';
 
 import { parseExpression, parseExpressionAt, parseIdentifer } from './expression';
 
-function parseTextNode(textNode: parse5.TextNode, config: CompilerConfig): ASTText[] {
+function parseTextNode(
+    textNode: parse5.TextNode,
+    parent: ASTParentNode,
+    config: CompilerConfig
+): ASTText[] {
     const { value: str } = textNode;
     const astNodes: ASTText[] = [];
 
@@ -38,6 +46,7 @@ function parseTextNode(textNode: parse5.TextNode, config: CompilerConfig): ASTTe
             astNodes.push({
                 type: 'text',
                 value: str.slice(textStart, position),
+                parent,
             });
         }
 
@@ -48,6 +57,7 @@ function parseTextNode(textNode: parse5.TextNode, config: CompilerConfig): ASTTe
             astNodes.push({
                 type: 'text',
                 value: expression,
+                parent,
             });
         }
     }
@@ -55,17 +65,18 @@ function parseTextNode(textNode: parse5.TextNode, config: CompilerConfig): ASTTe
     return astNodes;
 }
 
-function parseComment(commentNode: parse5.CommentNode): ASTComment {
+function parseComment(commentNode: parse5.CommentNode, parent: ASTParentNode): ASTComment {
     return {
         type: 'comment',
         value: commentNode.data,
+        parent,
     };
 }
 
 function consumeIfAttribute({
     attrs,
 }: parse5.Element): { modifier: 'true' | 'false'; condition: ASTExpression } | null {
-    const ifAttribute = attrs.find(attr => attr.name.startsWith('if:'));
+    const ifAttribute = attrs.find((attr) => attr.name.startsWith('if:'));
     if (!ifAttribute) {
         return null;
     }
@@ -95,19 +106,19 @@ function consumeForAttribute({
     item?: ASTIdentifier;
     index?: ASTIdentifier;
 } | null {
-    const forEachAttribute = attrs.find(attr => attr.name === 'for:each');
+    const forEachAttribute = attrs.find((attr) => attr.name === 'for:each');
     if (!forEachAttribute) {
         return null;
     }
 
     attrs.splice(attrs.indexOf(forEachAttribute), 1);
 
-    const forItemAttribute = attrs.find(attr => attr.name === 'for:item');
+    const forItemAttribute = attrs.find((attr) => attr.name === 'for:item');
     if (forItemAttribute) {
         attrs.splice(attrs.indexOf(forItemAttribute), 1);
     }
 
-    const forIndexAttribute = attrs.find(attr => attr.name === 'for:index');
+    const forIndexAttribute = attrs.find((attr) => attr.name === 'for:index');
     if (forIndexAttribute) {
         attrs.splice(attrs.indexOf(forIndexAttribute), 1);
     }
@@ -154,94 +165,102 @@ function parseAttributes(attribute: parse5.Attribute): ASTAttribute {
     };
 }
 
-function parseComponent(node: parse5.Element, config: CompilerConfig): ASTComponent {
+function parseComponent(
+    node: parse5.Element,
+    parent: ASTParentNode,
+    config: CompilerConfig
+): ASTComponent {
     const listeners = consumeEventListeners(node);
 
-    const slottedContent: Record<string, ASTChildNode[]> = {};
-    for (const child of node.childNodes) {
-        let slotName = 'default';
-
-        if (parse5Utils.isElement(child)) {
-            slotName = child.attrs.find(attr => attr.name === 'slot')?.value || slotName;
-        }
-
-        let slotChildren = slottedContent[slotName];
-        if (!slotChildren) {
-            slotChildren = [];
-            slottedContent[slotName] = slotChildren;
-        }
-
-        slotChildren.push(...parseChildNode(child, config));
-    }
-
-    return {
+    const component: ASTComponent = {
         type: 'component',
         name: node.tagName,
         listeners,
-        slottedContent,
+        children: [],
+        parent,
     };
+    component.children = node.childNodes.flatMap((child) =>
+        parseChildNode(child, component, config)
+    );
+
+    return component;
 }
 
-function parseElement(node: parse5.Element, config: CompilerConfig): ASTChildNode[] {
+function parseElement(
+    node: parse5.Element,
+    parent: ASTParentNode,
+    config: CompilerConfig
+): ASTChildNode[] {
     const forAttribute = consumeForAttribute(node);
     const ifAttribute = consumeIfAttribute(node);
 
     let elements: ASTChildNode[] = [];
 
     if (node.tagName.includes('-')) {
-        elements = [parseComponent(node, config)];
+        elements = [parseComponent(node, parent, config)];
     } else if (parse5Utils.isTemplate(node)) {
-        elements = node.content.childNodes.flatMap(child => parseChildNode(child, config));
+        elements = node.content.childNodes.flatMap((child) =>
+            parseChildNode(child, parent, config)
+        );
     } else {
         const listeners = consumeEventListeners(node);
         const attributes = node.attrs.map(parseAttributes);
-        const children = node.childNodes.flatMap(child => parseChildNode(child, config));
+        const children = node.childNodes.flatMap((child) => parseChildNode(child, parent, config));
 
-        elements = [
-            {
-                type: 'element',
-                name: node.tagName,
-                namespace: HTML_NAMESPACE !== node.namespaceURI ? node.namespaceURI : undefined,
-                attributes,
-                listeners,
-                children,
-            },
-        ];
+        const element: ASTElement = {
+            type: 'element',
+            name: node.tagName,
+            namespace: HTML_NAMESPACE !== node.namespaceURI ? node.namespaceURI : undefined,
+            attributes,
+            listeners,
+            children,
+            parent,
+        };
+
+        elements = [element];
     }
 
     if (ifAttribute) {
-        elements = [
-            {
-                type: 'if-block',
-                modifier: ifAttribute.modifier,
-                condition: ifAttribute.condition,
-                children: elements,
-            },
-        ];
+        const ifBlock: ASTIfBlock = {
+            type: 'if-block',
+            modifier: ifAttribute.modifier,
+            condition: ifAttribute.condition,
+            children: [],
+            parent,
+        };
+        ifBlock.children = elements.map((child) => ({ ...child, parent: ifBlock }));
+
+        elements = [ifBlock];
     }
 
     if (forAttribute) {
-        elements = [
-            {
-                type: 'for-block',
-                expression: forAttribute.expression,
-                item: forAttribute.item,
-                index: forAttribute.index,
-                children: elements,
-            },
-        ];
+        const forBLock: ASTForBlock = {
+            type: 'for-block',
+            expression: forAttribute.expression,
+            item: forAttribute.item,
+            index: forAttribute.index,
+            children: [],
+            parent,
+        };
+        forBLock.children = elements.map((child) => ({ ...child, parent: forBLock }));
+
+        elements = [forBLock];
     }
 
     return elements;
 }
 
-function parseChildNode(node: parse5.Node, config: CompilerConfig): ASTChildNode[] {
+function parseChildNode(
+    node: parse5.Node,
+    parent: ASTParentNode,
+    config: CompilerConfig
+): ASTChildNode[] {
     if (parse5Utils.isTextNode(node)) {
-        return parseTextNode(node, config);
+        return parseTextNode(node, parent, config);
     } else if (parse5Utils.isCommentNode(node)) {
-        return [parseComment(node)];
+        return [parseComment(node, parent)];
     } else if (parse5Utils.isElement(node)) {
-        return parseElement(node, config);
+        return parseElement(node, parent, config);
     }
 
     throw new Error(`Unexpected node "${node}"`);
@@ -262,12 +281,14 @@ export function parseTemplate(src: string, config: CompilerConfig): ASTRoot {
         throw new Error('Unexpected element at the root');
     }
 
-    const children = rootTemplate.content.childNodes.flatMap(child =>
-        parseChildNode(child, config)
+    const root: ASTRoot = {
+        type: 'root',
+        children: [],
+    };
+
+    root.children = rootTemplate.content.childNodes.flatMap((child) =>
+        parseChildNode(child, root, config)
     );
 
-    return {
-        type: 'root',
-        children,
-    };
+    return root;
 }
