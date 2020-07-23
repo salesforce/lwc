@@ -1,7 +1,10 @@
 <template>
-    <template if:true={isTrue}>
-        Hello {counter}
-    </template>
+    <button onclick={handleDecrement}>-</button>
+    <x-child counter={counter}></x-child>
+    <button onclick={handleIncrement}>+</button>
 
-    <button onclick={handleClick}>Click me</button>
+    <hr>
+
+    <p if:true={isVisible}>I am visible</p>
+    <button onclick={toggleVisibility}>Toggle Visibility</button>
 </template>

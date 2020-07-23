@@ -1,11 +1,16 @@
 import { LightningElement } from 'lwc';
 
 export default class App extends LightningElement {
-    isTrue = true;
     counter = 0;
-
-    handleClick() {
+    handleIncrement() {
         this.counter++;
-        this.isTrue = !this.isTrue;
+    }
+    handleDecrement() {
+        this.counter--;
+    }
+
+    isVisible = true;
+    toggleVisibility() {
+        this.isVisible = !this.isVisible;
     }
 }

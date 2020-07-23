@@ -33,7 +33,7 @@ import {
     ErrorCallback,
     getComponentRegisteredTemplate,
 } from './component';
-import { defaultTemplateFactory, TemplateFactory } from './template';
+import { TemplateFactory } from './template';
 import { BaseLightningElement, lightningBasedDescriptors } from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
 
@@ -63,6 +63,13 @@ export interface ComponentDef {
     errorCallback?: ErrorCallback;
     render: () => TemplateFactory;
 }
+
+const defaultTemplateFactory: TemplateFactory = () => ({
+    create() {},
+    insert() {},
+    update() {},
+    detach() {},
+});
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 

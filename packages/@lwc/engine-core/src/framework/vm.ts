@@ -304,7 +304,7 @@ export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
     return maybeVm;
 }
 
-function rehydrate(vm: VM) {
+export function rehydrate(vm: VM) {
     if (isTrue(vm.isDirty)) {
         renderComponent(vm);
         patchShadowRoot(vm);
@@ -435,7 +435,7 @@ function hasWireAdapters(vm: VM): boolean {
     return getOwnPropertyNames(vm.def.wire).length > 0;
 }
 
-function runDisconnectedCallback(vm: VM) {
+export function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }

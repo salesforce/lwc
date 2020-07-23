@@ -35,6 +35,12 @@ export interface ASTAttribute {
     value: string | ASTExpression;
 }
 
+export interface ASTProperty {
+    type: 'property';
+    name: string;
+    value: string | ASTExpression;
+}
+
 export interface ASTEventListener {
     type: 'listener';
     name: string;
@@ -52,6 +58,8 @@ export interface ASTElement extends ASTBaseNode, ASTBaseParentNode {
 export interface ASTComponent extends ASTBaseNode, ASTBaseParentNode {
     type: 'component';
     name: string;
+    attributes: ASTAttribute[];
+    properties: ASTProperty[];
     listeners: ASTEventListener[];
 }
 

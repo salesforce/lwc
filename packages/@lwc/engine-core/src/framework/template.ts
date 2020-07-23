@@ -8,7 +8,8 @@ import { isUndefined, isNull } from '@lwc/shared';
 
 import { Renderer } from './renderer';
 import { ComponentInterface } from './component';
-import { VM, runWithBoundaryProtection } from './vm';
+import { VM, runWithBoundaryProtection, createVM, getAssociatedVM, runConnectedCallback, rehydrate, runDisconnectedCallback } from './vm';
+import { getComponentInternalDef, setElementProto } from './def';
 import { startMeasure, endMeasure } from './performance-timing';
 
 export interface Template {
@@ -22,13 +23,6 @@ export interface TemplateFactory {
     (context: ComponentInterface, renderer: Renderer): Template;
 }
 
-export const defaultTemplateFactory: TemplateFactory = () => ({
-    create() {},
-    insert() {},
-    update() {},
-    detach() {},
-});
-
 let vmBeingRendered: VM | null = null;
 export function getVMBeingRendered(): VM | null {
     return vmBeingRendered;
@@ -37,8 +31,37 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
+// Hack: This need to be optimized somewhere else.
+const missingRendererApis = {
+    createComponent(tagName: string, Ctor: unknown, context: ComponentInterface) {
+        const element = document.createElement(tagName);
+        const owner = getAssociatedVM(context);
+
+        const def = getComponentInternalDef(Ctor);
+        setElementProto(element, def);
+
+        return createVM(element, def, {
+            tagName,
+            owner: owner,
+            mode: owner.mode,
+            renderer: owner.renderer,
+        });
+    },
+    connectComponent(vm: VM, parent: Element, anchor: Element | null) {
+        parent.insertBefore(vm.elm, anchor);
+
+        runConnectedCallback(vm);
+        rehydrate(vm);
+    },
+    disconnectComponent(vm: VM) {
+        vm.elm.remove();
+
+        runDisconnectedCallback(vm);
+    }
+}
+
 export function evaluateTemplate(vm: VM, factory?: TemplateFactory): void {
-    const { component, tro, renderer, cmpRoot } = vm;
+    const { component, tro, cmpRoot } = vm;
 
     // The returned template from by the component during this render cycle is different than the
     // previous rendering cycle. In this case the existing template need to be unmounted.
@@ -50,6 +73,11 @@ export function evaluateTemplate(vm: VM, factory?: TemplateFactory): void {
     // If the new factory is null, we can just exit at this point.
     if (isUndefined(factory)) {
         return;
+    }
+
+    const apis = {
+        ...vm.renderer,
+        ...missingRendererApis
     }
 
     runWithBoundaryProtection(
@@ -65,7 +93,7 @@ export function evaluateTemplate(vm: VM, factory?: TemplateFactory): void {
         () => {
             if (isNull(vm.cmpTemplate)) {
                 tro.observe(() => {
-                    const template = factory(component, renderer);
+                    const template = factory(component, apis);
                     vm.cmpTemplate = template;
 
                     template.create();
@@ -75,7 +103,7 @@ export function evaluateTemplate(vm: VM, factory?: TemplateFactory): void {
                 const template = vm.cmpTemplate;
 
                 tro.observe(() => {
-                    template.update(cmpRoot);
+                    template.update();
                 });
             }
         },

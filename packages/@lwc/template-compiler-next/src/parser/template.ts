@@ -14,6 +14,7 @@ import {
     ASTForBlock,
     ASTChildNode,
     ASTElement,
+    ASTProperty,
 } from '../types';
 
 import * as parse5Utils from '../utils/parse5';
@@ -153,6 +154,26 @@ function consumeEventListeners({ attrs }: parse5.Element): ASTEventListener[] {
     return listeners;
 }
 
+function consumeComponentProperties({ attrs }: parse5.Element): ASTProperty[] {
+    const properties: ASTProperty[] = [];
+
+    for (const attribute of attrs) {
+        const value = attribute.value.startsWith('{')
+            ? parseExpression(attribute.value)
+            : attribute.value;
+
+        attrs.splice(attrs.indexOf(attribute), 1);
+
+        properties.push({
+            type: 'property',
+            name: attribute.name,
+            value,
+        })
+    }
+
+    return properties;
+}
+
 function parseAttributes(attribute: parse5.Attribute): ASTAttribute {
     const value = attribute.value.startsWith('{')
         ? parseExpression(attribute.value)
@@ -171,14 +192,19 @@ function parseComponent(
     config: CompilerConfig
 ): ASTComponent {
     const listeners = consumeEventListeners(node);
+    const properties = consumeComponentProperties(node);
+    const attributes = node.attrs.map(parseAttributes);
 
     const component: ASTComponent = {
         type: 'component',
         name: node.tagName,
-        listeners,
         children: [],
+        attributes,
+        properties,
+        listeners,
         parent,
     };
+
     component.children = node.childNodes.flatMap((child) =>
         parseChildNode(child, component, config)
     );

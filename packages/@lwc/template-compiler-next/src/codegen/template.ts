@@ -12,6 +12,7 @@ import {
     ASTEventListener,
     ASTForBlock,
     ASTNode,
+    ASTProperty,
 } from '../types';
 
 import { Block } from './block';
@@ -91,6 +92,27 @@ function generateAttribute(block: Block, attribute: ASTAttribute, target: string
     }
 }
 
+function generateProperty(block: Block, property: ASTProperty, target: string): void {
+    if (typeof property.value === 'string') {
+        block.createStatements.push(
+            `@setProperty(${target}, "${property.name}", ${JSON.stringify(property.value)});`
+        );
+    } else {
+        const valueLookup = `context.${generateExpression(property.value)}`;
+
+        const valueIdentifier = block.registerIdentifier(`${property.name}_value`, valueLookup);
+
+        block.createStatements.push(
+            `@setProperty(${target}, "${property.name}", ${valueIdentifier});`
+        );
+        block.updateStatements.push(code`
+            if (${valueIdentifier} !== (${valueIdentifier} = ${valueLookup})) {
+                @setProperty(${target}, "${property.name}", ${valueIdentifier});
+            }
+        `);
+    }
+}
+
 function generateListener(block: Block, listener: ASTEventListener, target: string): void {
     const handlerLookup = `context.${generateExpression(listener.handler)}`;
     block.createStatements.push(
@@ -119,7 +141,7 @@ function generateElement(
         block.insertStatements.push(
             `@insert(${identifier}, ${parent}, ${DEFAULT_ANCHOR_IDENTIFIER});`
         );
-        block.detachStatements.push(`@remove(${identifier}, ${parent});`);
+        block.detachStatements.push(`@remove(${identifier}, ${identifier}.parentNode);`);
     } else {
         block.insertStatements.push(`@insert(${identifier}, ${parent});`);
     }
@@ -151,13 +173,28 @@ function generateComponent(
     const identifier = block.getNodeIdentifier(component);
 
     block.createStatements.push(
-        `${identifier} = @createComponent("${component.name}", ${ctorIdentifier});`
+        `${identifier} = @createComponent("${component.name}", ${ctorIdentifier}, context);`
     );
-    block.insertStatements.push(`@connectComponent(${identifier}, ${parent});`);
-    block.detachStatements.push(`@disconnectComponent(${identifier}, ${parent});`);
+
+    const isTopLevel = parent === DEFAULT_PARENT_IDENTIFIER;
+    if (isTopLevel) {
+        block.insertStatements.push(`@connectComponent(${identifier}, ${parent}, ${DEFAULT_ANCHOR_IDENTIFIER});`);
+    } else {
+        block.insertStatements.push(`@connectComponent(${identifier}, ${parent});`);
+    }
+
+    block.detachStatements.push(`@disconnectComponent(${identifier});`);
+
+    for (const attribute of component.attributes) {
+        generateAttribute(block, attribute, `${identifier}.elm`);
+    }
 
     for (const listener of component.listeners) {
-        generateListener(block, listener, identifier);
+        generateListener(block, listener, `${identifier}.elm`);
+    }
+
+    for (const property of component.properties) {
+        generateProperty(block, property, `${identifier}.elm`);
     }
 }
 
