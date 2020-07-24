@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
+import { HTMLElement } from '@lwc/template-compiler/dist/types/shared/types';
+
 /**
  * Lightning Web Components core module
  */
@@ -167,4 +170,9 @@ declare module 'lwc' {
      * @param config configuration object for the accessor
      */
     export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
+
+    export function createElement(
+        sel: string,
+        options: { is: typeof LightningElement; mode?: 'open' | 'closed' }
+    ): HTMLElement;
 }
