@@ -256,7 +256,7 @@ export function enableKeyboardFocusNavigationRoutines(): void {
 
 function skipHostHandler(event: FocusEvent) {
     if (letBrowserHandleFocus) {
-        enableKeyboardFocusNavigationRoutines();
+        asyncEnableFocusNavigation();
         return;
     }
 
@@ -302,9 +302,22 @@ function skipHostHandler(event: FocusEvent) {
     }
 }
 
+// Async because the current implementation relies on the capture phase of the focusin event and we
+// don't want to enable the focus navigation logic until the capture phase is complete.
+let asyncEnableFocusNavigationTimer: number | undefined;
+function asyncEnableFocusNavigation() {
+    if (!isUndefined(asyncEnableFocusNavigationTimer)) {
+        return;
+    }
+    asyncEnableFocusNavigationTimer = setTimeout(() => {
+        asyncEnableFocusNavigationTimer = undefined;
+        enableKeyboardFocusNavigationRoutines();
+    });
+}
+
 function skipShadowHandler(event: FocusEvent) {
     if (letBrowserHandleFocus) {
-        enableKeyboardFocusNavigationRoutines();
+        asyncEnableFocusNavigation();
         return;
     }
 
