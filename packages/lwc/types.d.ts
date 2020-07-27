@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { HTMLElement } from '@lwc/template-compiler/dist/types/shared/types';
 
 /**
  * Lightning Web Components core module
