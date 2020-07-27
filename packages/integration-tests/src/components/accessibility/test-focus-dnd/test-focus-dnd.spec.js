@@ -14,8 +14,8 @@ const SELECTORS = {
 
 function getShadowActiveElements() {
     return browser.execute(() => {
-        let active = document.activeElement;
-        const res = [];
+        var active = document.activeElement;
+        var res = [];
 
         if (active === null) {
             return res;
