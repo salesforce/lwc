@@ -256,7 +256,6 @@ export function enableKeyboardFocusNavigationRoutines(): void {
 
 function skipHostHandler(event: FocusEvent) {
     if (letBrowserHandleFocus) {
-        asyncEnableFocusNavigation();
         return;
     }
 
@@ -302,22 +301,8 @@ function skipHostHandler(event: FocusEvent) {
     }
 }
 
-// Async because the current implementation relies on the capture phase of the focusin event and we
-// don't want to enable the focus navigation logic until the capture phase is complete.
-let asyncEnableFocusNavigationTimer: number | undefined;
-function asyncEnableFocusNavigation() {
-    if (!isUndefined(asyncEnableFocusNavigationTimer)) {
-        return;
-    }
-    asyncEnableFocusNavigationTimer = setTimeout(() => {
-        asyncEnableFocusNavigationTimer = undefined;
-        enableKeyboardFocusNavigationRoutines();
-    });
-}
-
 function skipShadowHandler(event: FocusEvent) {
     if (letBrowserHandleFocus) {
-        asyncEnableFocusNavigation();
         return;
     }
 
@@ -419,9 +404,6 @@ function bindDocumentMousedownMouseupHandlers(elm: Node) {
             true
         );
 
-        // Although our sequential focus navigation routines also unset this
-        // flag, we need a backup plan in case they don't execute (e.g., the
-        // click doesn't result in focus entering the shadow).
         addEventListener.call(
             ownerDocument,
             'mouseup',
