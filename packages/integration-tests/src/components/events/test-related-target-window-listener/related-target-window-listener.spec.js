@@ -18,6 +18,7 @@ describe('relatedTarget of event in listener attached to window', () => {
             const testStatus = $('integration-related-target-window-listener')
                 .shadow$('.test-status')
                 .getText();
+            // Listener should be invoked and concat string twice
             return testStatus === 'okok';
         });
     });
