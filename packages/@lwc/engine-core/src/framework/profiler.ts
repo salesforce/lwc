@@ -107,14 +107,14 @@ function notifyProfilerStateChange() {
     }
 }
 
-function attachBuffer(
+function attachDispatcher(
     bufferCallback: (_opId: number, _phase: number, _cmpName: string, _vm_idx: number) => void
 ) {
     logOperation = bufferCallback;
     bufferLogging = true;
 }
 
-function detachBuffer() {
+function detachDispatcher() {
     const currentLogOperation = logOperation;
     logOperation = noop;
     bufferLogging = false;
@@ -124,8 +124,8 @@ function detachBuffer() {
 const profilerControl = {
     enableProfiler,
     disableProfiler,
-    attachBuffer,
-    detachBuffer,
+    attachDispatcher,
+    detachDispatcher,
 };
 
 export { logOperationStart, logOperationEnd, trackProfilerState, profilerControl };

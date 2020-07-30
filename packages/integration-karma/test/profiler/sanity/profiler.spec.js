@@ -3,7 +3,7 @@ import Container from 'x/container';
 
 describe('Profiler Sanity Test', () => {
     afterEach(() => {
-        LWC.__unstable__ProfilerControl.detachBuffer();
+        LWC.__unstable__ProfilerControl.detachDispatcher();
         LWC.__unstable__ProfilerControl.disableProfiler();
     });
 
@@ -37,7 +37,7 @@ describe('Profiler Sanity Test', () => {
         const profilerControl = LWC.__unstable__ProfilerControl;
         const events = [];
         profilerControl.enableProfiler();
-        profilerControl.attachBuffer((opId, phase, name) => {
+        profilerControl.attachDispatcher((opId, phase, name) => {
             events.push({ opId, phase, name });
         });
         return events;
