@@ -7,7 +7,7 @@ export default class Test extends LightningElement {
         window.addEventListener('mouseout', (event) => {
             try {
                 void event.relatedTarget;
-                this.testStatus += 'ok';
+                this.testStatus += event.relatedTarget.tagName + ';';
             } catch (e) {
                 this.testStatus += 'error';
             }

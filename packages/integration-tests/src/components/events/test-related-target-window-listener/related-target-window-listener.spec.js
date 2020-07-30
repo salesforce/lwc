@@ -18,8 +18,10 @@ describe('relatedTarget of event in listener attached to window', () => {
             const testStatus = $('integration-related-target-window-listener')
                 .shadow$('.test-status')
                 .getText();
-            // Listener should be invoked and concat string twice
-            return testStatus === 'okok';
+            // Mouseout listener should be invoked twice
+            // Once when moving from Input to host shadow
+            // Next when moving from host shadow to 2nd Input
+            return testStatus === 'INPUT;INTEGRATION-RELATED-TARGET-WINDOW-LISTENER;';
         });
     });
 });
