@@ -35,6 +35,9 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
             current = assignedSlot;
         } else if (current instanceof ShadowRoot && (composed || current !== startRoot)) {
             current = (current as ShadowRoot).host;
+        } else if (current instanceof Window) {
+            // already top-level at Window
+            break;
         } else {
             current = (current as Element).parentNode;
         }
