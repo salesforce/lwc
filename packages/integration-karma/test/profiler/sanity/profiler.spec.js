@@ -38,6 +38,7 @@ describe('Profiler Sanity Test', () => {
         const events = [];
         profilerControl.enableProfiler();
         profilerControl.attachDispatcher((opId, phase, name) => {
+            name = name.toUpperCase();
             events.push({ opId, phase, name });
         });
         return events;

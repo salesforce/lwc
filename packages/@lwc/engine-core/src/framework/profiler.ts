@@ -58,8 +58,7 @@ function logOperationStart(opId: OperationId, vm: VM) {
         startMeasure(opIdToMeasurementPhaseMappingArray[opId], vm);
     }
     if (bufferLogging) {
-        const cmpName = getComponentName(vm);
-        logOperation(opId, Phase.Start, cmpName, vm.idx);
+        logOperation(opId, Phase.Start, vm.tagName, vm.idx);
     }
 }
 
@@ -68,16 +67,7 @@ function logOperationEnd(opId: OperationId, vm: VM) {
         endMeasure(opIdToMeasurementPhaseMappingArray[opId], vm);
     }
     if (bufferLogging) {
-        const cmpName = getComponentName(vm);
-        logOperation(opId, Phase.Stop, cmpName, vm.idx);
-    }
-}
-
-function getComponentName(vm: VM) {
-    try {
-        return vm.elm.tagName;
-    } catch (error) {
-        return 'invalid-tag-name';
+        logOperation(opId, Phase.Stop, vm.tagName, vm.idx);
     }
 }
 
