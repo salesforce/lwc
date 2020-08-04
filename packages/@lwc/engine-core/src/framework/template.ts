@@ -27,7 +27,7 @@ import {
     getStylesheetsContent,
     updateSyntheticShadowAttributes,
 } from './stylesheet';
-import { startMeasure, endMeasure } from './performance-timing';
+import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -57,6 +57,9 @@ export function getVMBeingRendered(): VM | null {
 export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
+
+let profilerEnabled = false;
+trackProfilerState((t) => (profilerEnabled = t));
 
 function validateSlots(vm: VM, html: Template) {
     if (process.env.NODE_ENV === 'production') {
@@ -106,8 +109,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         () => {
             // pre
             vmBeingRendered = vm;
-            if (process.env.NODE_ENV !== 'production') {
-                startMeasure('render', vm);
+            if (profilerEnabled) {
+                logOperationStart(OperationId.render, vm);
             }
         },
         () => {
@@ -175,8 +178,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
             // post
             isUpdatingTemplate = isUpdatingTemplateInception;
             vmBeingRendered = vmOfTemplateBeingUpdatedInception;
-            if (process.env.NODE_ENV !== 'production') {
-                endMeasure('render', vm);
+            if (profilerEnabled) {
+                logOperationEnd(OperationId.render, vm);
             }
         }
     );
