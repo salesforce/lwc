@@ -78,7 +78,7 @@ export function normalizeConfig(
                 `Invalid module record. Module record must be an object, instead got ${JSON.stringify(
                     m
                 )}.`,
-                { scope }
+                { scope: scope || 'inline_config' }
             );
         }
         return isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m;
