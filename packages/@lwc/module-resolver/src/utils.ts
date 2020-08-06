@@ -68,9 +68,9 @@ export function getModuleEntry(
 
 export function normalizeConfig(
     config: Partial<ModuleResolverConfig>,
-    scope: string
+    scope?: string
 ): ModuleResolverConfig {
-    const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
+    const rootDir = config.rootDir ? path.resolve(config.rootDir) : scope || process.cwd();
     const modules = config.modules || [];
     const normalizedModules = modules.map((m) => {
         if (!isObject(m)) {

@@ -17,7 +17,7 @@ export class LwcConfigError extends Error {
     scope: string;
     code = 'LWC_CONFIG_ERROR';
 
-    constructor(message: string, { scope }: { scope: string }) {
+    constructor(message: string, { scope = 'inline_config' }: { scope?: string }) {
         super(`Invalid LWC configuration in "${scope}". ${message}`);
         this.scope = scope;
     }
