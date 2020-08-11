@@ -21,18 +21,18 @@
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "1.7.10",
-        "@wdio/cli": "^6.3.3",
-        "@wdio/local-runner": "^6.3.3",
-        "@wdio/mocha-framework": "^6.3.0",
-        "@wdio/sauce-service": "^6.3.2",
-        "@wdio/selenium-standalone-service": "^6.1.14",
-        "@wdio/spec-reporter": "^6.3.0",
-        "@wdio/static-server-service": "^6.1.14",
-        "@wdio/sync": "^6.3.3",
+        "@wdio/cli": "^6.4.0",
+        "@wdio/local-runner": "^6.4.0",
+        "@wdio/mocha-framework": "^6.4.0",
+        "@wdio/sauce-service": "^6.4.0",
+        "@wdio/selenium-standalone-service": "^6.4.0",
+        "@wdio/spec-reporter": "^6.4.0",
+        "@wdio/static-server-service": "^6.4.0",
+        "@wdio/sync": "^6.4.0",
         "deepmerge": "^4.2.2",
         "dotenv": "^8.2.0",
         "lwc": "1.7.10",
         "minimist": "^1.2.5",
-        "webdriverio": "^6.3.3"
+        "webdriverio": "^6.4.0"
     }
 }
