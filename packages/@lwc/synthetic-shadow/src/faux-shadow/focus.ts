@@ -256,7 +256,6 @@ export function enableKeyboardFocusNavigationRoutines(): void {
 
 function skipHostHandler(event: FocusEvent) {
     if (letBrowserHandleFocus) {
-        enableKeyboardFocusNavigationRoutines();
         return;
     }
 
@@ -304,7 +303,6 @@ function skipHostHandler(event: FocusEvent) {
 
 function skipShadowHandler(event: FocusEvent) {
     if (letBrowserHandleFocus) {
-        enableKeyboardFocusNavigationRoutines();
         return;
     }
 
@@ -406,9 +404,6 @@ function bindDocumentMousedownMouseupHandlers(elm: Node) {
             true
         );
 
-        // Although our sequential focus navigation routines also unset this
-        // flag, we need a backup plan in case they don't execute (e.g., the
-        // click doesn't result in focus entering the shadow).
         addEventListener.call(
             ownerDocument,
             'mouseup',
