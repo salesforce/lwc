@@ -36,13 +36,8 @@ import { invokeComponentCallback, invokeComponentRenderedCallback } from './invo
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { ComponentInterface } from './component';
-import {
-    startMeasure,
-    endMeasure,
-    startGlobalMeasure,
-    endGlobalMeasure,
-    GlobalMeasurementPhase,
-} from './performance-timing';
+import { startGlobalMeasure, endGlobalMeasure, GlobalMeasurementPhase } from './performance-timing';
+import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { LightningElement } from './base-lightning-element';
@@ -149,6 +144,9 @@ export interface VM<N = HostNode, E = HostElement> {
         args?: any[]
     ) => any;
 }
+
+let profilerEnabled = false;
+trackProfilerState((t) => (profilerEnabled = t));
 
 type VMAssociable = HostNode | LightningElement | ComponentInterface;
 
@@ -358,8 +356,8 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 vm,
                 () => {
                     // pre
-                    if (process.env.NODE_ENV !== 'production') {
-                        startMeasure('patch', vm);
+                    if (profilerEnabled) {
+                        logOperationStart(OperationId.patch, vm);
                     }
                 },
                 () => {
@@ -368,8 +366,8 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // post
-                    if (process.env.NODE_ENV !== 'production') {
-                        endMeasure('patch', vm);
+                    if (profilerEnabled) {
+                        logOperationEnd(OperationId.patch, vm);
                     }
                 }
             );
@@ -450,14 +448,14 @@ export function runConnectedCallback(vm: VM) {
     }
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
-        if (process.env.NODE_ENV !== 'production') {
-            startMeasure('connectedCallback', vm);
+        if (profilerEnabled) {
+            logOperationStart(OperationId.connectedCallback, vm);
         }
 
         invokeComponentCallback(vm, connectedCallback);
 
-        if (process.env.NODE_ENV !== 'production') {
-            endMeasure('connectedCallback', vm);
+        if (profilerEnabled) {
+            logOperationEnd(OperationId.connectedCallback, vm);
         }
     }
 }
@@ -488,14 +486,14 @@ function runDisconnectedCallback(vm: VM) {
     }
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
-        if (process.env.NODE_ENV !== 'production') {
-            startMeasure('disconnectedCallback', vm);
+        if (profilerEnabled) {
+            logOperationStart(OperationId.disconnectedCallback, vm);
         }
 
         invokeComponentCallback(vm, disconnectedCallback);
 
-        if (process.env.NODE_ENV !== 'production') {
-            endMeasure('disconnectedCallback', vm);
+        if (profilerEnabled) {
+            logOperationEnd(OperationId.disconnectedCallback, vm);
         }
     }
 }
@@ -680,16 +678,16 @@ export function runWithBoundaryProtection(
             }
             resetShadowRoot(vm); // remove offenders
 
-            if (process.env.NODE_ENV !== 'production') {
-                startMeasure('errorCallback', errorBoundaryVm);
+            if (profilerEnabled) {
+                logOperationStart(OperationId.errorCallback, vm);
             }
 
             // error boundaries must have an ErrorCallback
             const errorCallback = errorBoundaryVm.def.errorCallback!;
             invokeComponentCallback(errorBoundaryVm, errorCallback, [error, error.wcStack]);
 
-            if (process.env.NODE_ENV !== 'production') {
-                endMeasure('errorCallback', errorBoundaryVm);
+            if (profilerEnabled) {
+                logOperationEnd(OperationId.errorCallback, vm);
             }
         }
     }

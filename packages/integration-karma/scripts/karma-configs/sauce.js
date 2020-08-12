@@ -58,8 +58,8 @@ const SAUCE_BROWSERS = [
     {
         label: 'sl_safari_compat',
         browserName: 'safari',
-        platform: 'OS X 10.11',
         version: '10',
+        platform: 'OS X 10.11',
         compat: true,
         nativeShadowCompatible: false,
     },

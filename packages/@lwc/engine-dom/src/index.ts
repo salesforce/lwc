@@ -26,6 +26,7 @@ export {
     sanitizeAttribute,
     getComponentDef,
     isComponentConstructor,
+    __unstable__ProfilerControl,
 } from '@lwc/engine-core';
 
 // Engine-dom public APIs --------------------------------------------------------------------------

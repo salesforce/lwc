@@ -9,7 +9,7 @@ import { isUndefined } from '@lwc/shared';
 import { VM } from './vm';
 import { getComponentTag } from '../shared/format';
 
-type MeasurementPhase =
+export type MeasurementPhase =
     | 'constructor'
     | 'render'
     | 'patch'

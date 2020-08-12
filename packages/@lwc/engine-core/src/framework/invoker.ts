@@ -9,7 +9,7 @@ import { assert, isFunction, isUndefined } from '@lwc/shared';
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
-import { startMeasure, endMeasure } from './performance-timing';
+import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
@@ -25,6 +25,9 @@ let vmInvokingRenderedCallback: VM | null = null;
 export function isInvokingRenderedCallback(vm: VM): boolean {
     return vmInvokingRenderedCallback === vm;
 }
+
+let profilerEnabled = false;
+trackProfilerState((t) => (profilerEnabled = t));
 
 const noop = () => void 0;
 
@@ -47,8 +50,8 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
 export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
     const vmBeingConstructedInception = vmBeingConstructed;
     let error;
-    if (process.env.NODE_ENV !== 'production') {
-        startMeasure('constructor', vm);
+    if (profilerEnabled) {
+        logOperationStart(OperationId.constructor, vm);
     }
     vmBeingConstructed = vm;
     /**
@@ -72,8 +75,8 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
     } catch (e) {
         error = Object(e);
     } finally {
-        if (process.env.NODE_ENV !== 'production') {
-            endMeasure('constructor', vm);
+        if (profilerEnabled) {
+            logOperationEnd(OperationId.constructor, vm);
         }
         vmBeingConstructed = vmBeingConstructedInception;
         if (!isUndefined(error)) {
@@ -135,8 +138,8 @@ export function invokeComponentRenderedCallback(vm: VM): void {
             () => {
                 vmInvokingRenderedCallback = vm;
                 // pre
-                if (process.env.NODE_ENV !== 'production') {
-                    startMeasure('renderedCallback', vm);
+                if (profilerEnabled) {
+                    logOperationStart(OperationId.renderedCallback, vm);
                 }
             },
             () => {
@@ -145,8 +148,8 @@ export function invokeComponentRenderedCallback(vm: VM): void {
             },
             () => {
                 // post
-                if (process.env.NODE_ENV !== 'production') {
-                    endMeasure('renderedCallback', vm);
+                if (profilerEnabled) {
+                    logOperationEnd(OperationId.renderedCallback, vm);
                 }
                 vmInvokingRenderedCallback = vmInvokingRenderedCallbackInception;
             }
