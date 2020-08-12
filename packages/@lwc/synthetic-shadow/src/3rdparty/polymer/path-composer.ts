@@ -19,24 +19,29 @@ import { isNull } from '@lwc/shared';
 import { getOwnerDocument } from '../../shared/utils';
 
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
-    const composedPath: (Element | Document | Window)[] = [];
-    let current: Node | null = startNode as Element;
+    const composedPath: EventTarget[] = [];
+    let current: EventTarget | null = startNode;
     const startRoot: Window | Node =
         startNode instanceof Window ? startNode : (startNode as Node).getRootNode();
     while (!isNull(current)) {
-        composedPath.push(current as Element);
-        let assignedSlot: HTMLSlotElement | null = null;
-        // Text also implements the Slottable mixin but is not an EventTarget, nor a ParentNode,
-        // which means it is safe to only look for Elements here.
+        composedPath.push(current);
+
         if (current instanceof Element) {
-            assignedSlot = current.assignedSlot;
-        }
-        if (!isNull(assignedSlot)) {
-            current = assignedSlot;
+            // Text also implements the Slottable mixin but is not an EventTarget, nor a ParentNode,
+            // which means it is safe to only look for Elements here.
+            const assignedSlot: HTMLSlotElement | null = current.assignedSlot;
+            if (!isNull(assignedSlot)) {
+                current = assignedSlot;
+            } else {
+                current = current.parentNode;
+            }
         } else if (current instanceof ShadowRoot && (composed || current !== startRoot)) {
-            current = (current as ShadowRoot).host;
+            current = current.host;
+        } else if (current instanceof Node) {
+            current = current.parentNode;
         } else {
-            current = (current as Element).parentNode;
+            // could be Window
+            current = null;
         }
     }
     let doc: Document;
