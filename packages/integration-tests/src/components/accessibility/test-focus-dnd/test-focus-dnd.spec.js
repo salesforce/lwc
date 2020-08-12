@@ -13,7 +13,7 @@ const SELECTORS = {
 };
 
 function getShadowActiveElements() {
-    return browser.execute(() => {
+    return browser.execute(function () {
         var active = document.activeElement;
         var res = [];
 
