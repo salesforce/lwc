@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
-const { LWCClassErrors, generateErrorMessage } = require('@lwc/errors');
 const lineColumn = require('line-column');
+const { LWCClassErrors, generateErrorMessage } = require('@lwc/errors');
+
+const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
 
 function isClassMethod(classMethod, properties = {}) {
     const { kind = 'method', name } = properties;

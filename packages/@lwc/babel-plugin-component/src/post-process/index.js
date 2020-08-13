@@ -6,4 +6,5 @@
  */
 const transform = require('./transform');
 const dedupeImports = require('./dedupe-imports');
+
 module.exports = { transform, dedupeImports };

@@ -20,7 +20,6 @@ module.exports = function LwcClassTransform(api) {
         manipulateOptions(opts, parserOpts) {
             parserOpts.plugins.push(['decorators', { decoratorsBeforeExport: true }]);
             parserOpts.plugins.push('classProperties');
-            parserOpts.plugins.push('dynamicImport');
         },
         visitor: mergeVisitors([decorators(api), component(api), dynamicImports(api), exit(api)]),
     };

@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const { LWCClassErrors } = require('@lwc/errors');
+
 const { generateError, getEngineImportSpecifiers } = require('./utils');
 const { LWC_PACKAGE_EXPORTS, LWC_SUPPORTED_APIS } = require('./constants');
-const { LWCClassErrors } = require('@lwc/errors');
 
 module.exports = function () {
     return {

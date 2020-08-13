@@ -35,18 +35,17 @@ describe('observed fields', () => {
                 import _tmpl from "./test.html";
 
                 class Test {
-                  constructor() {
-                    this.state = void 0;
-                    this.foo = void 0;
-                    this.bar = void 0;
-                    this.label = void 0;
-                    this.record = {
-                      value: "test"
-                    };
-                    this.wiredProp = void 0;
-                  }
+                  state;
+                  foo;
+                  bar;
+                  label;
+                  record = {
+                    value: "test"
+                  };
 
                   someMethod() {}
+
+                  wiredProp;
                 }
 
                 _registerDecorators(Test, {
@@ -97,12 +96,10 @@ describe('observed fields', () => {
                 import _tmpl from "./test.html";
                 
                 class Test {
-                  constructor() {
-                    this.interface = void 0;
-                    this.static = void 0;
-                    this.for = void 0;
-                    this.function = void 0;
-                  }
+                  interface;
+                  static;
+                  for;
+                  function;
                 }
                 
                 _registerDecorators(Test, {
@@ -152,11 +149,9 @@ describe('observed fields', () => {
                 const PREFIX = "prefix";
                 
                 class Test {
-                  constructor() {
-                    this.interface = void 0;
-                    this["a"] = 0;
-                    this[\`\${PREFIX}Field\`] = "prefixed field";
-                  }
+                  interface;
+                  ["a"] = 0;
+                  [\`\${PREFIX}Field\`] = "prefixed field";
                 }
                 
                 _registerDecorators(Test, {
@@ -188,13 +183,11 @@ describe('observed fields', () => {
                 import _tmpl from "./test.html";
                 
                 class Test {
-                  constructor() {
-                    this.interface = void 0;
-                  }
+                  interface;
+                  static foo = 3;
+                  static baz = 1;
                 }
                 
-                Test.foo = 3;
-                Test.baz = 1;
                 
                 _registerDecorators(Test, {
                   fields: ["interface"]
@@ -277,18 +270,17 @@ describe('observed fields', () => {
                 
                 const Test = _registerDecorators(
                   class {
-                    constructor() {
-                      this.state = void 0;
-                      this.foo = void 0;
-                      this.bar = void 0;
-                      this.label = void 0;
-                      this.record = {
+                    state;
+                    foo;
+                    bar;
+                    label;
+                    record = {
                         value: "test"
                       };
-                      this.wiredProp = void 0;
-                    }
                 
                     someMethod() {}
+
+                    wiredProp;
                   },
                   {
                     publicProps: {

@@ -23,8 +23,15 @@
         "dist/"
     ],
     "dependencies": {
-        "@babel/core": "7.1.0",
-        "@babel/plugin-proposal-object-rest-spread": "7.0.0",
+        "@babel/core": "~7.11.1",
+        "@babel/plugin-proposal-async-generator-functions": "~7.10.5",
+        "@babel/plugin-proposal-class-properties": "~7.10.4",
+        "@babel/plugin-proposal-json-strings": "~7.10.4",
+        "@babel/plugin-proposal-nullish-coalescing-operator": "~7.10.4",
+        "@babel/plugin-proposal-numeric-separator": "~7.10.4",
+        "@babel/plugin-proposal-object-rest-spread": "~7.11.0",
+        "@babel/plugin-proposal-optional-catch-binding": "~7.10.4",
+        "@babel/plugin-proposal-optional-chaining": "~7.11.0",
         "@lwc/babel-plugin-component": "1.7.14",
         "@lwc/errors": "1.7.14",
         "@lwc/shared": "1.7.14",

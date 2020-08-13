@@ -1,11 +1,9 @@
-import __concat from 'proxy-compat/concat';
-import __callKey1 from 'proxy-compat/callKey1';
-import __inKey from 'proxy-compat/inKey';
-import __setKey from 'proxy-compat/setKey';
 import __iterableKey from 'proxy-compat/iterableKey';
+import __callKey1 from 'proxy-compat/callKey1';
 import __callKey2 from 'proxy-compat/callKey2';
 import __callKey0 from 'proxy-compat/callKey0';
 import __callKey3 from 'proxy-compat/callKey3';
+import __setKey from 'proxy-compat/setKey';
 import _regeneratorRuntime from '@babel/runtime/regenerator';
 import _asyncToGenerator from '@babel/runtime/helpers/asyncToGenerator';
 import _createClass from '@babel/runtime/helpers/createClass';
@@ -13,12 +11,11 @@ import _typeof from '@babel/runtime/helpers/typeof';
 import _taggedTemplateLiteral from '@babel/runtime/helpers/taggedTemplateLiteral';
 import _toConsumableArray from '@babel/runtime/helpers/toConsumableArray';
 import _slicedToArray from '@babel/runtime/helpers/slicedToArray';
-import _defineProperty2 from '@babel/runtime/helpers/defineProperty';
+import _defineProperty from '@babel/runtime/helpers/defineProperty';
 import _classCallCheck from '@babel/runtime/helpers/classCallCheck';
 import _possibleConstructorReturn from '@babel/runtime/helpers/possibleConstructorReturn';
 import _getPrototypeOf from '@babel/runtime/helpers/getPrototypeOf';
 import _inherits from '@babel/runtime/helpers/inherits';
-import { registerDecorators } from 'lwc';
 function _templateObject3() {
 var data = _taggedTemplateLiteral(["wow\naB", " ", ""], ["wow\\naB", " ", ""]);
 _templateObject3 = function _templateObject3() {
@@ -40,35 +37,7 @@ return data;
 };
 return data;
 }
-function _objectSpread(target) {
-for (var i = 1; i < arguments.length; i++) {
-var source = arguments[i] != null ? Object(arguments[i]) : {};
-var ownKeys = Object.compatKeys(source);
-if (typeof Object.getOwnPropertySymbols === 'function') {
-ownKeys = __concat(ownKeys, __callKey1(Object.getOwnPropertySymbols(source), "filter", function (sym) {
-var _Object$compatGetOwnP, _enumerable;
-return _Object$compatGetOwnP = Object.compatGetOwnPropertyDescriptor(source, sym), _enumerable = _Object$compatGetOwnP._ES5ProxyType ? _Object$compatGetOwnP.get("enumerable") : _Object$compatGetOwnP.enumerable;
-}));
-}
-__callKey1(ownKeys, "forEach", function (key) {
-_defineProperty(target, key, source._ES5ProxyType ? source.get(key) : source[key]);
-});
-}
-return target;
-}
-function _defineProperty(obj, key, value) {
-if (__inKey(obj, key)) {
-Object.compatDefineProperty(obj, key, {
-value: value,
-enumerable: true,
-configurable: true,
-writable: true
-});
-} else {
-__setKey(obj, key, value);
-}
-return obj;
-} // babel-plugin-check-es2015-constants
+// babel-plugin-check-es2015-constants
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-check-es2015-constants/test/fixtures/general/program/actual.js
 var MULTIPLIER = 5;
 for (var i in __iterableKey(arr)) {
@@ -93,7 +62,7 @@ return _possibleConstructorReturn(this, __callKey2(_getPrototypeOf(Test), "apply
 return Test;
 }(Foo); //babel-plugin-transform-es2015-computed-properties
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-computed-properties/test/fixtures/loose/single/actual.js
-var obj1 = _defineProperty2({}, "x" + foo, "heh"); // babel-plugin-transform-es2015-destructuring
+var obj1 = _defineProperty({}, "x" + foo, "heh"); // babel-plugin-transform-es2015-destructuring
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-destructuring/test/fixtures/destructuring/object-basic/actual.js
 var coords = [1, 2];
 var x = coords._ES5ProxyType ? coords.get("x") : coords.x,
@@ -194,21 +163,6 @@ return Foo;
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-exponentiation-operator/test/fixtures/exponentian-operator/assignment/actual.js
 var num = 1;
 num = __callKey2(Math, "pow", num, 2);
-__callKey1(console, "log", num); // babel-plugin-transform-object-rest-spread
-// https://github.com/babel/babel/blob/6.x/packages/babel-plugin-transform-object-rest-spread/test/fixtures/object-spread/assignment/actual.js
-z = _objectSpread({
-x: x
-}, y);
-z = {
-x: x,
-w: _objectSpread({}, y)
-}; // babel-plugin-transform-class-properties
-// https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-class-properties/test/fixtures/loose/instance/actual.js
-var Bar = function Bar() {
-_classCallCheck(this, Bar);
-__setKey(this, "bar", "foo");
-};
-registerDecorators(Bar, {
-  fields: ["bar"]
-});
-export { Bar, Test, literal, obj1, obj2, t, test };
+__callKey1(console, "log", num);
+
+export { Test, literal, obj1, obj2, t, test };

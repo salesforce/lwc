@@ -23,13 +23,15 @@
         "src/post-process/"
     ],
     "dependencies": {
-        "@babel/helper-module-imports": "7.0.0",
-        "@babel/plugin-proposal-class-properties": "7.1.0",
+        "@babel/helper-module-imports": "~7.10.4",
         "@lwc/errors": "1.7.14",
         "line-column": "~1.0.2"
     },
     "devDependencies": {
         "common-tags": "^1.8.0"
+    },
+    "peerDependencies": {
+        "@babel/core": "^7"
     },
     "publishConfig": {
         "access": "public"

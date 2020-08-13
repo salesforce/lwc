@@ -12,7 +12,9 @@
 
 const { basename, extname } = require('path');
 const moduleImports = require('@babel/helper-module-imports');
+
 const { isLWCNode } = require('../utils');
+
 const LWC_POST_PROCCESED = Symbol();
 
 const REGISTER_DECORATORS_ID = 'registerDecorators';

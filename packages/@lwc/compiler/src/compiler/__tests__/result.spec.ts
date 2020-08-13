@@ -245,7 +245,7 @@ export default class Test extends LightningElement {
 
             expect(mainDefMappedToOutputPosition).toMatchObject({
                 line: 14,
-                column: 11,
+                column: 15,
             });
 
             const stringConstantInOutputPosition = sourceMapConsumer.generatedPositionFor({
@@ -256,7 +256,7 @@ export default class Test extends LightningElement {
 
             expect(stringConstantInOutputPosition).toMatchObject({
                 line: 15,
-                column: 11,
+                column: 32,
             });
 
             const myimportDefinitionOutputPosition = sourceMapConsumer.generatedPositionFor({
@@ -267,13 +267,13 @@ export default class Test extends LightningElement {
 
             expect(myimportDefinitionOutputPosition).toMatchObject({
                 line: 19,
-                column: 8,
+                column: 16,
             });
 
             const mainInvocationInOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'foo.js',
                 line: 5,
-                column: 11,
+                column: 15,
             });
 
             expect(mainInvocationInOutputPosition).toMatchObject({

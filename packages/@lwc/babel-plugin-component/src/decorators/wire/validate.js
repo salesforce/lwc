@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const { DecoratorErrors } = require('@lwc/errors');
+
 const { isWireDecorator } = require('./shared');
 const {
     LWC_PACKAGE_EXPORTS: { WIRE_DECORATOR, TRACK_DECORATOR, API_DECORATOR },
 } = require('../../constants');
-const { DecoratorErrors } = require('@lwc/errors');
 const { generateError } = require('../../utils');
 
 function validateWireParameters(path) {

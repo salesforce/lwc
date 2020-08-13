@@ -7,53 +7,26 @@
 import { compile } from '../index';
 import { readFixture, pretify } from './utils';
 
-describe('regression test', () => {
-    it('#743 - Object rest spread throwing', async () => {
-        const actual = `const base = { foo: true }; const res = { ...base, bar: false };`;
-        const expected = `define('x/foo', function () {
-            function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? Object(arguments[i]) : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
-        function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-        const base = {
-            foo: true
-        };
-
-        const res = _objectSpread({}, base, {
-            bar: false
-        });
-    });`;
-
-        const { result } = await compile({
-            name: 'foo',
-            namespace: 'x',
-            files: {
-                'foo.js': actual,
-            },
-        });
-        expect(pretify(result.code)).toBe(pretify(expected));
-    });
-});
-
 describe('smoke test for babel transform', () => {
-    it('should transpile none stage-4 syntax features in none-compat', async () => {
+    it('should not transform ES2015 features in non-compat mode', async () => {
         const { result } = await compile({
             name: 'babel',
             namespace: 'x',
             files: {
-                'babel.js': readFixture('namespaced_folder/babel/babel.js'),
+                'babel.js': readFixture('namespaced_folder/babel/babel-es2015.js'),
             },
             outputConfig: { format: 'es' },
         });
 
-        expect(pretify(result.code)).toBe(pretify(readFixture('expected-babel.js')));
+        expect(pretify(result.code)).toBe(pretify(readFixture('expected-babel-es2015.js')));
     });
 
-    it('should transpile back to es5 in compat mode', async () => {
+    it('should transform ES2015 features to ES5 in compat mode', async () => {
         const { result } = await compile({
             name: 'babel',
             namespace: 'x',
             files: {
-                'babel.js': readFixture('namespaced_folder/babel/babel.js'),
+                'babel.js': readFixture('namespaced_folder/babel/babel-es2015.js'),
             },
             outputConfig: {
                 compat: true,
@@ -61,6 +34,35 @@ describe('smoke test for babel transform', () => {
             },
         });
 
-        expect(pretify(result.code)).toBe(pretify(readFixture('expected-babel-compat.js')));
+        expect(pretify(result.code)).toBe(pretify(readFixture('expected-babel-es2015-compat.js')));
+    });
+
+    it('should not transform ESNext features to ES2015 in non-compat mode', async () => {
+        const { result } = await compile({
+            name: 'babel',
+            namespace: 'x',
+            files: {
+                'babel.js': readFixture('namespaced_folder/babel/babel-esnext.js'),
+            },
+            outputConfig: { format: 'es' },
+        });
+
+        expect(pretify(result.code)).toBe(pretify(readFixture('expected-babel-esnext.js')));
+    });
+
+    it('should transform ESNext features to ES5 in compat mode', async () => {
+        const { result } = await compile({
+            name: 'babel',
+            namespace: 'x',
+            files: {
+                'babel.js': readFixture('namespaced_folder/babel/babel-esnext.js'),
+            },
+            outputConfig: {
+                compat: true,
+                format: 'es',
+            },
+        });
+
+        expect(pretify(result.code)).toBe(pretify(readFixture('expected-babel-esnext-compat.js')));
     });
 });

@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const moduleImports = require('@babel/helper-module-imports');
-const { generateError } = require('./utils');
 const { LWCClassErrors } = require('@lwc/errors');
+
+const { generateError } = require('./utils');
 
 function getImportSource(path) {
     return path.parentPath.get('arguments.0');
