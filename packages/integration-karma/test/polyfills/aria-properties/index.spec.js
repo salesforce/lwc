@@ -54,11 +54,7 @@ const ariaPropertiesMapping = {
     ariaPressed: 'aria-pressed',
     ariaReadOnly: 'aria-readonly',
     ariaRequired: 'aria-required',
-
-    // Disabling ariaSelected check because Chrome currently reflect the property to the aria-sort
-    // attribute: https://bugs.chromium.org/p/chromium/issues/detail?id=914469
-    // ariaSelected: 'aria-selected',
-
+    ariaSelected: 'aria-selected',
     ariaSort: 'aria-sort',
     ariaValueMax: 'aria-valuemax',
     ariaValueMin: 'aria-valuemin',
