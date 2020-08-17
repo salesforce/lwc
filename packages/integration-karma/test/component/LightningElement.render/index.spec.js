@@ -70,29 +70,3 @@ it('supports returning different templates', () => {
         expect(elm.shadowRoot.textContent).toBe('Template 2');
     });
 });
-
-// The error in this test case happens in a Promise chain that is not within the control of the test.
-// Hence the error has to be caught at the top level
-if ('onunhandledrejection' in window) {
-    describe('should throw error during async rehydration', () => {
-        let listener;
-        afterEach(() => {
-            // Cleanup listener after test
-            window.removeEventListener('unhandledrejection', listener);
-        });
-        it('should throw when render() switches a valid template with an undefined value', (done) => {
-            const elm = createElement('x-dynamic-template', { is: DynamicTemplate });
-            elm.template = template1;
-            document.body.appendChild(elm);
-
-            elm.template = undefined;
-            listener = (event) => {
-                expect(event.reason).toMatch(
-                    /Assert Violation: evaluateTemplate\(\) second argument must be an imported template instead of undefined/
-                );
-                done();
-            };
-            window.addEventListener('unhandledrejection', listener);
-        });
-    });
-}
