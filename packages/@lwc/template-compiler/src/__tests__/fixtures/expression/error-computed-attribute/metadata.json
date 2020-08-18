@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1060,
-            "message": "Invalid expression {classNames[0]} - LWC1060: Template expression doesn't allow NumericLiteral",
+            "code": 1038,
+            "message": "Invalid expression {classNames[0]} - LWC1038: Template expression doesn't allow computed property access",
             "level": 1,
             "location": {
                 "line": 3,

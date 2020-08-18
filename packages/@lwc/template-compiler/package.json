@@ -20,12 +20,14 @@
         "test": "jest"
     },
     "devDependencies": {
+        "@types/estree": "0.0.45",
         "@types/he": "^1.1.1"
     },
     "files": [
         "dist/"
     ],
     "dependencies": {
+        "acorn": "~8.0.1",
         "@babel/generator": "~7.1.5",
         "@babel/parser": "~7.1.5",
         "@babel/template": "~7.1.2",

@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import traverse from '@babel/traverse';
 import * as types from '@babel/types';
-import * as babylon from '@babel/parser';
 import * as esutils from 'esutils';
+import { parse } from 'acorn';
+import estree from 'estree';
 
 import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors';
 
@@ -33,57 +33,62 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
+function validateExpression(
+    node: estree.BaseNode,
+    element: IRNode,
+    allowComputedMemberExpression: boolean
+): node is estree.MemberExpression | estree.Identifier {
+    const isValidNode = node.type === 'Identifier' || node.type === 'MemberExpression';
+    invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
+
+    if (node.type === 'MemberExpression') {
+        const expression = node as estree.MemberExpression;
+
+        invariant(
+            allowComputedMemberExpression || !expression.computed,
+            ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
+        );
+
+        // Validate if the expression is modifying an iterator (only the leftmost). Ex: it.next in it.next.foo
+        if (expression.object.type === 'Identifier' && expression.property.type === 'Identifier') {
+            // .object and .property are ensured to be Identifiers.
+            const propertyIdentifier = (expression.property as unknown) as TemplateIdentifier;
+            const objectIdentifier = (expression.object as unknown) as TemplateIdentifier;
+            invariant(
+                !isBoundToIterator(objectIdentifier, element) ||
+                    propertyIdentifier.name !== ITERATOR_NEXT_KEY,
+                ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
+            );
+        } else {
+            validateExpression(expression.object, element, allowComputedMemberExpression);
+        }
+    }
+
+    return true;
+}
+
+function getParsedExpression(ast: estree.Node, element: IRNode, state: State): TemplateExpression {
+    const hasMultipleExpressions = ast.type === 'Program' && ast.body.length !== 1;
+    invariant(!hasMultipleExpressions, ParserDiagnostics.MULTIPLE_EXPRESSIONS);
+
+    const expressionStatement = (ast as estree.Program).body[0];
+    invariant(expressionStatement.type === 'ExpressionStatement', ParserDiagnostics.INVALID_NODE, [
+        expressionStatement.type,
+    ]);
+
+    const expression = (expressionStatement as estree.ExpressionStatement).expression;
+
+    validateExpression(expression, element, state.config.experimentalComputedMemberExpression);
+
+    return (expression as unknown) as TemplateExpression;
+}
+
 // FIXME: Avoid throwing errors and return it properly
 export function parseExpression(source: string, element: IRNode, state: State): TemplateExpression {
     try {
-        const parsed = babylon.parse(source);
+        const parsed = parse(source.substr(1, source.length - 2), { ecmaVersion: 2020 });
 
-        let expression: any;
-
-        traverse(parsed, {
-            enter(path) {
-                const isValidNode =
-                    path.isProgram() ||
-                    path.isBlockStatement() ||
-                    path.isExpressionStatement() ||
-                    path.isIdentifier() ||
-                    path.isMemberExpression();
-                invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [path.type]);
-
-                // Ensure expression doesn't contain multiple expressions: {foo;bar}
-                const hasMultipleExpressions =
-                    path.isBlock() && (path.get('body') as any).length !== 1;
-                invariant(!hasMultipleExpressions, ParserDiagnostics.MULTIPLE_EXPRESSIONS);
-
-                // Retrieve the first expression and set it as return value
-                if (path.isExpressionStatement() && !expression) {
-                    expression = (path.node as types.ExpressionStatement).expression;
-                }
-            },
-
-            MemberExpression: {
-                exit(path) {
-                    const shouldReportComputed =
-                        !state.config.experimentalComputedMemberExpression &&
-                        (path.node as types.MemberExpression).computed;
-                    invariant(
-                        !shouldReportComputed,
-                        ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
-                    );
-
-                    const memberExpression = path.node as types.MemberExpression;
-                    const propertyIdentifier = memberExpression.property as TemplateIdentifier;
-                    const objectIdentifier = memberExpression.object as TemplateIdentifier;
-                    invariant(
-                        !isBoundToIterator(objectIdentifier, element) ||
-                            propertyIdentifier.name !== ITERATOR_NEXT_KEY,
-                        ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
-                    );
-                },
-            },
-        });
-
-        return expression;
+        return getParsedExpression(parsed as estree.Node, element, state);
     } catch (err) {
         err.message = `Invalid expression ${source} - ${err.message}`;
         throw err;
