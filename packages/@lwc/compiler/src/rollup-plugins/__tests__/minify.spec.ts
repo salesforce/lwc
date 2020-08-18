@@ -15,19 +15,20 @@ const codeFixture = `
 const minifiedCode = 'var a=1;console.log(a);';
 
 describe('rollup plugin lwc-minify', () => {
-    test('lwc-minify should not output sourcemaps', () => {
+    test('lwc-minify should not output sourcemaps', async () => {
         const lwcMinifier = lwcMinifierFactory({ sourcemap: false });
-        const result = lwcMinifier.renderChunk(codeFixture);
+        const { code, map } = await lwcMinifier.renderChunk(codeFixture);
 
-        expect(result).toBe(minifiedCode);
+        expect(code).toBe(minifiedCode);
+        expect(map).toBeUndefined();
     });
     test('should output a correct sourcemap', async () => {
         const lwcMinifier = lwcMinifierFactory({ sourcemap: true });
-        const result = lwcMinifier.renderChunk(codeFixture);
+        const { map } = await lwcMinifier.renderChunk(codeFixture);
 
-        expect(result.map).not.toBeNull();
+        expect(map).not.toBeUndefined();
 
-        await SourceMapConsumer.with(result!.map, null, (sourceMapConsumer) => {
+        await SourceMapConsumer.with(map, null, (sourceMapConsumer) => {
             const commentInOutputPosition = sourceMapConsumer.generatedPositionFor({
                 line: 2,
                 column: 0,
