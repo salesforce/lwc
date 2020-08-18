@@ -153,9 +153,12 @@ const CustomElementHook: Hooks<VCustomElement> = {
             owner: { renderer },
         } = vnode;
         const CEBridge = registerTagName(sel, renderer);
-        (CEBridge as any).upgrade = (elm: HTMLElement) => {
-            createViewModelHook(elm, vnode);
-        };
+        if ('upgrade' in CEBridge) {
+            // the custom element from the registry is expecting an upgrade callback
+            (CEBridge as any).upgrade = (elm: HTMLElement) => {
+                createViewModelHook(elm, vnode);
+            };
+        }
         const elm = new CEBridge();
         vnode.elm = elm;
         linkNodeToShadow(elm, vnode);
@@ -184,7 +187,8 @@ const CustomElementHook: Hooks<VCustomElement> = {
                     `Invalid vnode for a custom element, it must have children defined.`
                 );
             }
-            // this will update the shadowRoot
+            // this will probably update the shadowRoot, but only if the vm is in a dirty state
+            // this is important to preserve the top to bottom synchronous rendering phase.
             rerenderVM(vm);
         }
     },

@@ -29,10 +29,9 @@ export function registerTagName(tagName: string, renderer: Renderer): CustomElem
                 const constructor = this.constructor as typeof LWCUpgradableElement;
                 const { upgradeCallback } = constructor;
                 constructor.upgradeCallback = undefined; // resetting it
-                if (!isFunction(upgradeCallback)) {
-                    throw new TypeError(`Invalid constructor invocation`);
+                if (isFunction(upgradeCallback)) {
+                    upgradeCallback(this); // nothing to do with the result for now
                 }
-                upgradeCallback(this); // nothing to do with the result for now
             }
         };
         renderer.defineCustomElement(tagName, CE);

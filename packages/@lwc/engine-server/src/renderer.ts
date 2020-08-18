@@ -39,20 +39,20 @@ function createElement(name: string, namespace?: string): HostElement {
 }
 
 const registry: Record<string, CustomElementConstructor> = create(null);
-const reserveRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
+const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
 
 function registerCustomElement(name: string, ctor: CustomElementConstructor) {
     if (name !== StringToLowerCase.call(name) || registry[name]) {
         throw new TypeError(`Invalid Registration`);
     }
     registry[name] = ctor;
-    reserveRegistry.set(ctor, name);
+    reverseRegistry.set(ctor, name);
 }
 
 class HTMLElement {
     constructor() {
         const { constructor } = this;
-        const name = reserveRegistry.get(constructor as CustomElementConstructor);
+        const name = reverseRegistry.get(constructor as CustomElementConstructor);
         if (!name) {
             throw new TypeError(`Invalid Construction`);
         }
