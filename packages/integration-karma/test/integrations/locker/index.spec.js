@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 
 import LockerIntegration from 'x/lockerIntegration';
+import LockerLiveComponent from 'x/lockerLiveComponent';
 import LockerHooks, { hooks } from 'x/lockerHooks';
 
 it('should support Locker integration which uses a wrapped LightningElement base class', () => {
@@ -110,5 +111,13 @@ describe('Locker hooks', () => {
                 [evt]
             );
         });
+    });
+});
+
+describe('Locker live objects', () => {
+    it('should report the component instance as live to support expandos', () => {
+        const elm = createElement('x-live', { is: LockerLiveComponent });
+        document.body.appendChild(elm);
+        expect(elm.hasMarker()).toBe(true);
     });
 });
