@@ -46,6 +46,13 @@ export interface Renderer<N = HostNode, E = HostElement> {
     isConnected(node: N): boolean;
     insertGlobalStylesheet(content: string): void;
     assertInstanceOfHTMLElement?(elm: any, msg: string): void;
+    defineCustomElement(
+        name: string,
+        constructor: CustomElementConstructor,
+        options?: ElementDefinitionOptions
+    ): void;
+    getCustomElement(name: string): CustomElementConstructor | undefined;
+    HTMLElement: typeof HTMLElement;
 }
 
 // This is a temporary workaround to get the @lwc/engine-server to evaluate in node without having

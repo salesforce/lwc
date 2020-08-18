@@ -11,6 +11,9 @@ import { getAttrNameFromPropName, Renderer } from '@lwc/engine-core';
 const globalStylesheets: { [content: string]: true } = create(null);
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
 
+// TO-DO: we need a dummy polyfill here for IE11
+const { get: getCustomElement, define: defineCustomElement } = customElements;
+
 // TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
 // to avoid having to synchronize it between the different modules.
 export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');
@@ -163,4 +166,19 @@ export const renderer: Renderer<Node, Element> = {
     assertInstanceOfHTMLElement(elm: any, msg: string) {
         assert.invariant(elm instanceof HTMLElement, msg);
     },
+
+    defineCustomElement(
+        _name: string,
+        _constructor: CustomElementConstructor,
+        _options?: ElementDefinitionOptions
+    ) {
+        // @ts-ignore arguments is just fine...
+        defineCustomElement.apply(customElements, arguments);
+    },
+
+    getCustomElement(name: string): CustomElementConstructor | undefined {
+        return getCustomElement.call(customElements, name);
+    },
+    // @ts-ignore uff, why?
+    HTMLElement,
 };
