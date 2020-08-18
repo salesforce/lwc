@@ -8,7 +8,7 @@ import generate from '@babel/generator';
 import * as t from '@babel/types';
 import template from '@babel/template';
 import * as parse5 from 'parse5-with-errors';
-import { isBooleanAttribute, isGlobalHtmlAttribute } from '@lwc/shared';
+import { isBooleanAttribute } from '@lwc/shared';
 
 import State from '../state';
 
@@ -366,7 +366,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         switch (attr.type) {
             case IRAttributeType.Expression: {
                 const { expression } = bindExpression(attr.value, element);
-                if (isUsedAsAttribute && isBooleanAttribute(attr.name)) {
+                if (isUsedAsAttribute && isBooleanAttribute(attr.name, tagName)) {
                     // We need to do some manipulation to allow the diffing algorithm add/remove the attribute
                     // without handling special cases at runtime.
                     return codeGen.genBooleanAttributeExpr(expression);
@@ -403,12 +403,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                     return t.booleanLiteral(attr.value.toLowerCase() !== 'false');
                 }
 
-                // @todo[1957]: improve isBooleanAttribute implementation
-                if (
-                    !isUsedAsAttribute &&
-                    isBooleanAttribute(attr.name) &&
-                    isGlobalHtmlAttribute(attr.name)
-                ) {
+                if (!isUsedAsAttribute && isBooleanAttribute(attr.name, tagName)) {
                     // We are in presence of a string value, for a recognized boolean attribute, which is used as
                     // property. for these cases, always set the property to true.
                     return t.booleanLiteral(true);
