@@ -90,33 +90,19 @@ export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): 
     return isComponentProp(identifier, node.parent);
 }
 
-const memoizedIterators = new WeakMap<IRNode, string | null>();
-
-function getIteratorName(node?: IRNode): string | null {
-    if (!node) {
-        return null;
-    } else {
-        let iteratorName = memoizedIterators.get(node);
-        if (iteratorName !== undefined) {
-            return iteratorName;
-        }
-
-        if (isElement(node)) {
-            const { forOf } = node;
-            if (forOf) {
-                memoizedIterators.set(node, forOf.iterator.name);
-
-                return forOf.iterator.name;
-            }
-        }
-
-        iteratorName = getIteratorName(node.parent);
-        memoizedIterators.set(node, iteratorName);
-
-        return iteratorName;
-    }
-}
-
 export function isBoundToIterator(identifier: TemplateIdentifier, node?: IRNode): boolean {
-    return getIteratorName(node) === identifier.name;
+    if (!node) {
+        return false;
+    }
+
+    // Make sure the identifier is not bound to any iteration variable
+    if (isElement(node)) {
+        const { forOf } = node;
+        if (forOf) {
+            return Boolean(forOf.iterator.name === identifier.name);
+        }
+    }
+
+    // Delegate to parent component if no binding is found at this point
+    return isBoundToIterator(identifier, node.parent);
 }
