@@ -30,7 +30,8 @@ function createEnvFile(lwcConfig) {
         `        COMPAT: ${lwcConfig.compat},`,
         `        NATIVE_SHADOW: ${lwcConfig.nativeShadow}`,
         `    }`,
-        `};`,
+        `};
+        if (window.process.env.COMPAT) { delete window.customElements; };`,
     ];
     fs.writeFileSync(ENV_FILENAME, content.join('\n'));
 }
