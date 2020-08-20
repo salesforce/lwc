@@ -18,4 +18,4 @@ packages/integration-tests/results/
 packages/integration-tests/.env
 
 # custom node_modules for testing
-!packages/@lwc/module-resolver/src/__tests__/**/node_modules/
+!packages/@lwc/*/src/__tests__/**/node_modules/

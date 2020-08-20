@@ -11,18 +11,17 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "main": "src/index.js",
+    "main": "dist/commonjs/index.js",
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf dist/",
         "build": "tsc"
     },
     "files": [
-        "src/*.js"
+        "dist/"
     ],
     "devDependencies": {
-        "@lwc/compiler": "1.7.12",
-        "@lwc/engine": "1.7.12"
+        "@lwc/compiler": "1.7.12"
     },
     "dependencies": {
         "@lwc/module-resolver": "1.7.12",

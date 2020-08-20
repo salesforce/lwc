@@ -12,11 +12,11 @@ yarn add --dev @lwc/rollup-plugin
 
 ```js
 // rollup.config.js
-import rollupPlugin from '@lwc/rollup-plugin';
+import lwc from '@lwc/rollup-plugin';
 
 export default {
     input: './src/main.js',
-    plugins: [rollupPlugin()],
+    plugins: [lwc()],
 };
 ```
 
