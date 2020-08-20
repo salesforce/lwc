@@ -6,7 +6,7 @@
  */
 import * as types from '@babel/types';
 import * as esutils from 'esutils';
-import {Node, parseExpressionAt} from 'acorn';
+import { Node, parseExpressionAt } from 'acorn';
 import estree from 'estree';
 
 import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors';
@@ -62,7 +62,7 @@ function validateExpression(
         if (isEsTreeIdentifier(object) && isEsTreeIdentifier(property)) {
             invariant(
                 property.name !== ITERATOR_NEXT_KEY ||
-                !isBoundToIterator((object as unknown) as TemplateIdentifier, element),
+                    !isBoundToIterator((object as unknown) as TemplateIdentifier, element),
                 ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
             );
         } else {
@@ -72,7 +72,7 @@ function validateExpression(
 }
 
 function validateSourceIsParsedExpression(source: string, parsedExpression: Node) {
-    if (parsedExpression.end === (source.length - 1)) {
+    if (parsedExpression.end === source.length - 1) {
         return;
     }
 
@@ -99,16 +99,13 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
             i++;
             while (WHITESPACES_RE.test(source[i])) i++;
 
-            invariant(
-                i === n && leadingParenthesis === 0,
-                ParserDiagnostics.MULTIPLE_EXPRESSIONS
-            );
+            invariant(i === n && leadingParenthesis === 0, ParserDiagnostics.MULTIPLE_EXPRESSIONS);
         } else {
             invariant(
                 WHITESPACES_RE.test(character),
                 ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
                 ['Unexpected end of expression']
-            )
+            );
         }
 
         i++;
@@ -122,7 +119,7 @@ export function parseExpression(source: string, element: IRNode, state: State): 
 
         validateSourceIsParsedExpression(source, parsed);
         validateExpression(parsed, element, state.config.experimentalComputedMemberExpression);
-        
+
         return (parsed as unknown) as TemplateExpression;
     } catch (err) {
         err.message = `Invalid expression ${source} - ${err.message}`;
