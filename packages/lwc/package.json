@@ -31,6 +31,14 @@
                 "path": "dist/engine/esm/es2017/engine.js"
             },
             {
+                "name": "@lwc/engine-dom",
+                "path": "dist/engine/esm/es2017/engine.js"
+            },
+            {
+                "name": "@lwc/engine-server",
+                "path": "dist/engine-server/esm/es2017/engine-server.js"
+            },
+            {
                 "name": "@lwc/synthetic-shadow",
                 "path": "dist/synthetic-shadow/esm/es2017/synthetic-shadow.js"
             },
@@ -38,6 +46,13 @@
                 "name": "@lwc/wire-service",
                 "path": "dist/synthetic-shadow/esm/es2017/wire-service.js"
             }
+        ],
+        "expose": [
+            "lwc",
+            "@lwc/engine-dom",
+            "@lwc/engine-server",
+            "@lwc/synthetic-shadow",
+            "@lwc/wire-service"
         ]
     },
     "dependencies": {
