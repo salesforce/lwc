@@ -6,10 +6,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "p",
       {
-        props: {
-          hidden: true
+        attrs: {
+          hidden: "",
         },
-        key: 0
+        key: 0,
       },
       [api_text("x")]
     ),
@@ -17,16 +17,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "input",
       {
         attrs: {
-          title: "foo"
+          readonly: $cmp.getReadOnly ? "" : null,
+          disabled: "",
+          title: "foo",
         },
-        props: {
-          readOnly: $cmp.getReadOnly,
-          disabled: true
-        },
-        key: 1
+        key: 1,
       },
       []
-    )
+    ),
   ];
 }
 

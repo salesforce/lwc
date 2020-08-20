@@ -8,18 +8,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         attrs: {
           type: "checkbox",
+          required: "",
+          readonly: "",
           minlength: "5",
-          maxlength: "10"
+          maxlength: "10",
         },
         props: {
-          required: true,
-          readOnly: true,
-          checked: true
+          checked: true,
         },
-        key: 0
+        key: 0,
       },
       []
-    )
+    ),
   ];
 }
 
