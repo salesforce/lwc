@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const fs = require('fs');
-const path = require('path');
-const rollup = require('rollup');
-const prettier = require('prettier');
-const rollupCompile = require('../index');
-const rollupCompat = require('rollup-plugin-compat');
+import fs from 'fs';
+import path from 'path';
+import { rollup } from 'rollup';
+import prettier from 'prettier';
+import rollupCompat from 'rollup-plugin-compat';
+
+import rollupCompile from '../index';
 
 function pretty(str) {
     return prettier.format(str, {
@@ -125,7 +126,7 @@ describe('multi-package-version', () => {
 const globalModules = { lwc: 'LWC', myCssResolver: 'resolveCss' };
 
 async function doRollup(input, { compat } = {}, rollupCompileOptions) {
-    const bundle = await rollup.rollup({
+    const bundle = await rollup({
         input,
         external: (id) => id in globalModules,
         plugins: [

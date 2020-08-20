@@ -14,7 +14,8 @@
     "main": "src/index.js",
     "license": "MIT",
     "scripts": {
-        "test": "jest"
+        "clean": "rm -rf dist/",
+        "build": "tsc"
     },
     "files": [
         "src/*.js"
@@ -28,7 +29,8 @@
         "@rollup/pluginutils": "~4.0.0"
     },
     "peerDependencies": {
-        "rollup": "^1.2.0||^2.0.0"
+        "rollup": "^1.2.0||^2.0.0",
+        "lwc": "^1.7.12"
     },
     "publishConfig": {
         "access": "public"
