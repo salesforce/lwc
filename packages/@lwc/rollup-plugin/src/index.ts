@@ -37,13 +37,6 @@ function isImplicitHTMLImport(importee: string, importer: string): boolean {
     );
 }
 
-function isMixingJsAndTs(importerExt: string, importeeExt: string): boolean {
-    return (
-        (importerExt === '.js' && importeeExt === '.ts') ||
-        (importerExt === '.ts' && importeeExt === '.js')
-    );
-}
-
 export default function rollupLwcCompiler(options: RollupLwcOptions = {}): Plugin {
     let { rootDir, modules = [] } = options;
     const { stylesheetConfig, sourcemap = false, environment = 'dom' } = options;
@@ -86,13 +79,6 @@ export default function rollupLwcCompiler(options: RollupLwcOptions = {}): Plugi
             if (isRelativeImport) {
                 const importerExt = path.extname(importer);
                 const ext = path.extname(importee) || importerExt;
-
-                // we don't currently support mixing .js and .ts
-                if (isMixingJsAndTs(importerExt, ext)) {
-                    throw new Error(
-                        `Importing a ${ext} file into a ${importerExt} is not supported`
-                    );
-                }
 
                 const normalizedPath = path.resolve(path.dirname(importer), importee);
                 const absPath = pluginUtils.addExtension(normalizedPath, ext);
