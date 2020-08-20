@@ -12,6 +12,10 @@ import prettier from 'prettier';
 import rollupPluginCompat from 'rollup-plugin-compat';
 import rollupPluginLwc from '../index';
 
+import './environment/environment.spec';
+import './rootDir/rootDir.spec';
+import './stylesheetConfig/stylesheetConfig.spec';
+
 function pretty(str) {
     return prettier.format(str, {
         parser: 'babel',
@@ -32,24 +36,6 @@ describe('default configuration', () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, { compat: false }).then(({ code: actual }) => {
             const expected = fsExpected('expected_default_config_simple_app');
-            expect(pretty(actual)).toBe(pretty(expected));
-        });
-    });
-
-    it(`simple app with CSS resolver`, () => {
-        const entry = path.join(simpleAppDir, 'main.js');
-        const rollupCompileOptions = {
-            stylesheetConfig: {
-                customProperties: {
-                    resolution: {
-                        type: 'module',
-                        name: 'myCssResolver',
-                    },
-                },
-            },
-        };
-        return doRollup(entry, { compat: false }, rollupCompileOptions).then(({ code: actual }) => {
-            const expected = fsExpected('expected_default_config_simple_app_css_resolver');
             expect(pretty(actual)).toBe(pretty(expected));
         });
     });
@@ -98,120 +84,6 @@ describe('multi-package-version', () => {
             expect(code).toContain('"button:v1');
             expect(code).toContain('"button:v2');
         });
-    });
-});
-
-describe('rootDir', () => {
-    it('warns if an "input" array is passed and when "rootDir" is not set', async () => {
-        const warnings = [];
-
-        await rollup({
-            input: [path.join(tsAppDir, 'main.ts'), path.join(jsMultiVersion, 'src/main.js')],
-            plugins: [rollupPluginLwc()],
-            onwarn(warning) {
-                warnings.push(warning);
-            },
-        });
-
-        expect(warnings).toHaveLength(1);
-        expect(warnings[0]).toMatchObject({
-            message: expect.stringMatching(
-                /^The "rootDir" option should be explicitly set when passing an "input" array to rollup\. The "rootDir" option is implicitly resolved to .*\/fixtures\/ts_simple_app\/src.$/
-            ),
-            code: 'PLUGIN_WARNING',
-            plugin: 'lwc',
-        });
-    });
-
-    it('warns if an "input" object is passed and when "rootDir" is not set', async () => {
-        const warnings = [];
-
-        await rollup({
-            input: {
-                entryA: path.join(tsAppDir, 'main.ts'),
-                entryB: path.join(jsMultiVersion, 'src/main.js'),
-            },
-            plugins: [rollupPluginLwc()],
-            onwarn(warning) {
-                warnings.push(warning);
-            },
-        });
-
-        expect(warnings).toHaveLength(1);
-        expect(warnings[0]).toMatchObject({
-            message: expect.stringMatching(
-                /^The "rootDir" option should be explicitly set when passing "input" object to rollup\. The "rootDir" option is implicitly resolved to .*\/fixtures\/ts_simple_app\/src.$/
-            ),
-            code: 'PLUGIN_WARNING',
-            plugin: 'lwc',
-        });
-    });
-});
-
-describe('environment', () => {
-    it('throws when setting an environment that is not "dom" or "server"', () => {
-        expect(() => rollupPluginLwc({ environment: 'native' })).toThrowError(
-            'Invalid "environment" option. Received native but expected "dom", "server" or undefined.'
-        );
-    });
-
-    it('resolves to "@lwc/engine-dom" by default', async () => {
-        const resolvedIds = [];
-
-        await rollup({
-            input: path.resolve(fixturesDir, 'lwc-only/index.js'),
-            plugins: [rollupPluginLwc()],
-            external(id, parentId, isResolved) {
-                if (isResolved) {
-                    resolvedIds.push(id);
-                }
-            },
-        });
-
-        expect(resolvedIds).toHaveLength(1);
-        expect(resolvedIds[0]).toMatch(/lwc\/dist\/engine\/esm\/es\d+\/engine.js$/);
-    });
-
-    it('resolves to "@lwc/engine-dom" when environment is set to "dom"', async () => {
-        const resolvedIds = [];
-
-        await rollup({
-            input: path.resolve(fixturesDir, 'lwc-only/index.js'),
-            plugins: [
-                rollupPluginLwc({
-                    environment: 'dom',
-                }),
-            ],
-            external(id, parentId, isResolved) {
-                if (isResolved) {
-                    resolvedIds.push(id);
-                }
-            },
-        });
-
-        expect(resolvedIds).toHaveLength(1);
-        expect(resolvedIds[0]).toMatch(/lwc\/dist\/engine\/esm\/es\d+\/engine.js$/);
-    });
-
-    it('resolves to "@lwc/engine-server" when environment is set to "server"', async () => {
-        const resolvedIds = [];
-
-        await rollup({
-            input: path.resolve(fixturesDir, 'lwc-only/index.js'),
-            plugins: [
-                rollupPluginLwc({
-                    environment: 'server',
-                }),
-            ],
-            external(id, parentId, isResolved) {
-                if (isResolved) {
-                    resolvedIds.push(id);
-                }
-            },
-        });
-
-        expect(resolvedIds).toHaveLength(1);
-        expect(resolvedIds[0]).toMatch(/lwc\/dist\/engine-server\/esm\/es\d+\/engine-server.js$/);
     });
 });
 
