@@ -131,6 +131,17 @@ declare module 'lwc' {
      */
     export class LightningElement extends HTMLElementTheGoodPart {
         /**
+         * This static getter builds a Web Component class from a LWC constructor so it can be registered
+         * as a new element via customElements.define() at any given time. For example:
+         *
+         * ```
+         * import XComponent from 'namespace/element';
+         * customElements.define('x-component', XComponent.CustomElementConstructor);
+         * const elm = document.createElement('x-component');
+         * ```
+         */
+        static get CustomElementConstructor(): typeof HTMLElement;
+        /**
          * Called when the element is inserted in a document
          */
         connectedCallback(): void;
