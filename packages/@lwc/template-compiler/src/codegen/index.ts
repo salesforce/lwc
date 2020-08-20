@@ -366,6 +366,8 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         switch (attr.type) {
             case IRAttributeType.Expression: {
                 const { expression } = bindExpression(attr.value, element);
+
+                // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
                 if (isUsedAsAttribute && isBooleanAttribute(attr.name, tagName)) {
                     // We need to do some manipulation to allow the diffing algorithm add/remove the attribute
                     // without handling special cases at runtime.
