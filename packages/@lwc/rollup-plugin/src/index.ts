@@ -37,14 +37,20 @@ function isImplicitHTMLImport(importee: string, importer: string): boolean {
     );
 }
 
-export default function rollupLwcCompiler(options: RollupLwcOptions = {}): Plugin {
+export default function rollupPluginLwc(options: RollupLwcOptions = {}): Plugin {
     let { rootDir, modules = [] } = options;
     const { stylesheetConfig, sourcemap = false, environment = 'dom' } = options;
+
+    if (environment !== 'dom' && environment !== 'server') {
+        throw new TypeError(
+            `Invalid "environment" option. Received ${environment} but expected "dom", "server" or undefined.`
+        );
+    }
 
     const filter = pluginUtils.createFilter(options.include, options.exclude);
 
     return {
-        name: 'rollup-plugin-lwc-compiler',
+        name: 'lwc',
 
         buildStart({ input }) {
             if (rootDir === undefined) {
@@ -131,8 +137,8 @@ export default function rollupLwcCompiler(options: RollupLwcOptions = {}): Plugi
             return transformSync(src, id, {
                 name,
                 namespace,
+                stylesheetConfig,
                 outputConfig: { sourcemap },
-                stylesheetConfig: stylesheetConfig,
                 experimentalDynamicComponent: (options as any).experimentalDynamicComponent,
             });
         },
