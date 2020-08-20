@@ -42,7 +42,7 @@ if (typeof customElements !== 'undefined') {
     };
 
     HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
-        if (typeof this === 'undefined' || this instanceof HTMLElement) {
+        if (!(this instanceof HTMLElement)) {
             throw new TypeError(`Invalid Invocation`);
         }
         const { constructor } = this;
@@ -54,7 +54,7 @@ if (typeof customElements !== 'undefined') {
         setPrototypeOf(elm, constructor.prototype);
         return elm;
     };
-    setPrototypeOf(HTMLElementConstructor, HTMLElement.prototype);
+    HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
 // TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
