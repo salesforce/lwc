@@ -37,7 +37,7 @@ function isImplicitHTMLImport(importee: string, importer: string): boolean {
     );
 }
 
-export default function rollupPluginLwc(options: RollupLwcOptions = {}): Plugin {
+function lwc(options: RollupLwcOptions = {}): Plugin {
     let { rootDir, modules = [] } = options;
     const { stylesheetConfig, sourcemap = false, environment = 'dom' } = options;
 
@@ -144,3 +144,9 @@ export default function rollupPluginLwc(options: RollupLwcOptions = {}): Plugin 
         },
     };
 }
+
+// In order to keep backward compatibility with commonjs format, we can't use the export default.
+// Using export default will result in consumer importing the plugin via
+// `require("@lwc/rollup-plugin").default`. We should revisit this for the next major release.
+module.exports = lwc;
+module.exports.default = lwc;
