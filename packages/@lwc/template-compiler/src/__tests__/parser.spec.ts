@@ -384,18 +384,24 @@ describe('expression', () => {
         });
     });
 
-    it('allows trailing semicolon', () => {
-        const { warnings } = parseTemplate(`<template>{foo;}</template>`);
-        expect(warnings).toHaveLength(0);
+    it('forbids trailing semicolon', () => {
+        let result = parseTemplate(`<template>{foo;}</template>`);
+        expect(result.warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression {foo;} - LWC1074: Multiple expressions found`,
+            location: EXPECTED_LOCATION,
+        });
+
+        result = parseTemplate(`<template>{ foo ;   }</template>`);
+        expect(result.warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression { foo ;   } - LWC1074: Multiple expressions found`,
+            location: EXPECTED_LOCATION,
+        });
     });
 
     it('allows trailing spaces', () => {
         const { warnings } = parseTemplate(`<template>{   foo   }</template>`);
-        expect(warnings).toHaveLength(0);
-    });
-
-    it('allows trailing semicolon with spaces', () => {
-        const { warnings } = parseTemplate(`<template>{ foo ;   }</template>`);
         expect(warnings).toHaveLength(0);
     });
 
@@ -408,9 +414,15 @@ describe('expression', () => {
 
         result = parseTemplate(`<template>{ ((foo).bar) }</template>`);
         expect(result.warnings).toHaveLength(0);
+    });
 
-        result = parseTemplate(`<template>{ ((foo).bar); }</template>`);
-        expect(result.warnings).toHaveLength(0);
+    it('forbid incorrect parenthesis', () => {
+        const { warnings } = parseTemplate(`<template>{foo)}</template>`);
+        expect(warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression {foo)} - LWC1083: Error parsing template expression: Unexpected end of expression`,
+            location: EXPECTED_LOCATION,
+        });
     });
 
     it('forbid empty expression', () => {

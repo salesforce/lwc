@@ -42,17 +42,13 @@ function isEsTreeMemberExpression(node: estree.BaseNode): node is estree.MemberE
     return node.type === 'MemberExpression';
 }
 
-function validateExpression(
-    node: estree.BaseNode,
-    element: IRNode,
-    allowComputedMemberExpression: boolean
-) {
+function validateExpression(node: estree.BaseNode, element: IRNode, state: State) {
     const isValidNode = isEsTreeIdentifier(node) || isEsTreeMemberExpression(node);
     invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
 
     if (isEsTreeMemberExpression(node)) {
         invariant(
-            allowComputedMemberExpression || !node.computed,
+            state.config.experimentalComputedMemberExpression || !node.computed,
             ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
         );
 
@@ -61,12 +57,11 @@ function validateExpression(
         // Validate if the expression is modifying an iterator (only the leftmost). Ex: it.next in it.next.foo
         if (isEsTreeIdentifier(object) && isEsTreeIdentifier(property)) {
             invariant(
-                property.name !== ITERATOR_NEXT_KEY ||
-                    !isBoundToIterator((object as unknown) as TemplateIdentifier, element),
+                property.name !== ITERATOR_NEXT_KEY || !isBoundToIterator(object.name, element),
                 ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
             );
         } else {
-            validateExpression(object, element, allowComputedMemberExpression);
+            validateExpression(object, element, state);
         }
     }
 }
@@ -76,30 +71,25 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
         return;
     }
 
-    let leadingParenthesis = 0;
-    let n = parsedExpression.start;
-    let i;
+    let unclosedParenthesisCount = 0;
 
-    for (i = 0; i < n; i++) {
+    for (let i = 0, n = parsedExpression.start; i < n; i++) {
         if (source[i] === '(') {
-            leadingParenthesis++;
+            unclosedParenthesisCount++;
         }
     }
 
-    i = parsedExpression.end;
-    n = source.length - 1;
-    while (i < n) {
+    // source[source.length - 1] === '}', n = source.length - 1 is to avoid processing '}'.
+    for (let i = parsedExpression.end, n = source.length - 1; i < n; i++) {
         const character = source[i];
 
         if (character === ')') {
-            leadingParenthesis--;
+            unclosedParenthesisCount--;
         } else if (character === ';') {
-            // A potential multiple expression: the rest of the string should be whitespaces.
-            // Note: all expressions ends with "}", therefore this loop will stop.
-            i++;
-            while (WHITESPACES_RE.test(source[i])) i++;
-
-            invariant(i === n && leadingParenthesis === 0, ParserDiagnostics.MULTIPLE_EXPRESSIONS);
+            // acorn parseExpressionAt will stop at the first ";", it may be that the expression is not
+            // a multiple expression ({foo;}), but this is a case that we explicitly do not want to support.
+            // in such case, let's fail with the same error as if it were a multiple expression.
+            invariant(false, ParserDiagnostics.MULTIPLE_EXPRESSIONS);
         } else {
             invariant(
                 WHITESPACES_RE.test(character),
@@ -107,9 +97,11 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
                 ['Unexpected end of expression']
             );
         }
-
-        i++;
     }
+
+    invariant(unclosedParenthesisCount === 0, ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR, [
+        'Unexpected end of expression',
+    ]);
 }
 
 // FIXME: Avoid throwing errors and return it properly
@@ -118,7 +110,7 @@ export function parseExpression(source: string, element: IRNode, state: State): 
         const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
 
         validateSourceIsParsedExpression(source, parsed);
-        validateExpression(parsed, element, state.config.experimentalComputedMemberExpression);
+        validateExpression(parsed, element, state);
 
         return (parsed as unknown) as TemplateExpression;
     } catch (err) {

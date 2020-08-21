@@ -90,17 +90,12 @@ export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): 
     return isComponentProp(identifier, node.parent);
 }
 
-export function isBoundToIterator(identifier: TemplateIdentifier, anode: IRNode): boolean {
+export function isBoundToIterator(identifierName: string, anode: IRNode): boolean {
     let node: IRNode | undefined = anode;
-    let isBoundToIteratorResult = false;
 
-    do {
-        if (isElement(node)) {
-            const { forOf } = node;
-            isBoundToIteratorResult = Boolean(forOf && forOf.iterator.name === identifier.name);
-        }
+    while (node && !(isElement(node) && node.forOf?.iterator.name === identifierName)) {
         node = node.parent;
-    } while (node && !isBoundToIteratorResult);
+    }
 
-    return isBoundToIteratorResult;
+    return node !== undefined;
 }
