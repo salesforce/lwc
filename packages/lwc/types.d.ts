@@ -7,6 +7,8 @@
 /**
  * Lightning Web Components core module
  */
+import { WireAdapterConstructor } from '../@lwc/engine-core/src/framework/wiring';
+
 declare module 'lwc' {
     // backwards compatible type used for the old days when TS didn't support `event.composed`
     interface ComposableEvent extends Event {
@@ -178,4 +180,6 @@ declare module 'lwc' {
      * @param config configuration object for the accessor
      */
     export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
+
+    export function createContextProvider(config: WireAdapterConstructor): void;
 }
