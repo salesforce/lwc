@@ -18,7 +18,6 @@ import { getAttrNameFromPropName, Renderer } from '@lwc/engine-core';
 const globalStylesheets: { [content: string]: true } = create(null);
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
 
-// TO-DO: we need a dummy polyfill here for IE11
 let getCustomElement, defineCustomElement, HTMLElementConstructor;
 
 if (typeof customElements !== 'undefined') {
@@ -212,6 +211,5 @@ export const renderer: Renderer<Node, Element> = {
 
     defineCustomElement,
     getCustomElement,
-    // @ts-ignore uff, why?
-    HTMLElement: HTMLElementConstructor,
+    HTMLElement: HTMLElementConstructor as any,
 };

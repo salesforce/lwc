@@ -63,7 +63,7 @@ import {
     markAsDynamicChildren,
 } from './hooks';
 import { isComponentConstructor } from './def';
-import { registerTagName } from './upgradable-element';
+import { getUpgradableConstructor, UpgradableCustomElementConstructor } from './upgradable-element';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -146,26 +146,34 @@ const ElementHook: Hooks<VElement> = {
     },
 };
 
+function isUpgradableComponent(
+    ctor: CustomElementConstructor | UpgradableCustomElementConstructor
+): ctor is UpgradableCustomElementConstructor {
+    return 'upgrade' in ctor;
+}
+
 const CustomElementHook: Hooks<VCustomElement> = {
     create: (vnode) => {
         const {
             sel,
             owner: { renderer },
         } = vnode;
-        const CEBridge = registerTagName(sel, renderer);
-        if ('upgrade' in CEBridge) {
+        const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
+        if (isUpgradableComponent(UpgradableConstructor)) {
             // the custom element from the registry is expecting an upgrade callback
-            (CEBridge as any).upgrade = (elm: HTMLElement) => {
+            UpgradableConstructor.upgrade = (elm: HTMLElement) => {
                 createViewModelHook(elm, vnode);
             };
         }
-        const elm = new CEBridge();
+        const elm = new UpgradableConstructor();
         vnode.elm = elm;
         linkNodeToShadow(elm, vnode);
 
         const vm = getAssociatedVMIfPresent(elm);
         if (vm) {
             allocateChildrenHook(vnode, vm);
+        } else if (vnode.ctor !== UpgradableConstructor) {
+            throw new TypeError(`Incorrect Component Constructor`);
         }
         createCustomElmHook(vnode);
     },

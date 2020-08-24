@@ -5,36 +5,41 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined, isFunction } from '@lwc/shared';
-import { LightningElement } from './base-lightning-element';
 import { Renderer } from './renderer';
 
-export function registerTagName(tagName: string, renderer: Renderer): CustomElementConstructor {
-    // Should never get a tag with upper case letter at this point, the compiler should
-    // produce only tags with lowercase letters
-    // But, for backwards compatibility, we will lower case the tag
-    tagName = tagName.toLowerCase();
+type UpgradeCallback = (elm: HTMLElement) => void;
+
+export interface UpgradableCustomElementConstructor extends CustomElementConstructor {
+    upgrade: UpgradeCallback;
+}
+
+export function getUpgradableConstructor(
+    tagName: string,
+    renderer: Renderer
+): CustomElementConstructor | UpgradableCustomElementConstructor {
     let CE = renderer.getCustomElement(tagName);
-    if (isUndefined(CE)) {
-        /**
-         * LWC Upgradable Element reference to an element that was created
-         * via the scoped registry mechanism, and that is ready to be upgraded.
-         */
-        CE = class LWCUpgradableElement extends renderer.HTMLElement {
-            private static upgradeCallback: ((elm: HTMLElement) => LightningElement) | undefined;
-            static set upgrade(callbackOnce: (elm: HTMLElement) => LightningElement) {
-                this.upgradeCallback = callbackOnce;
-            }
-            constructor() {
-                super();
-                const constructor = this.constructor as typeof LWCUpgradableElement;
-                const { upgradeCallback } = constructor;
-                constructor.upgradeCallback = undefined; // resetting it
-                if (isFunction(upgradeCallback)) {
-                    upgradeCallback(this); // nothing to do with the result for now
-                }
-            }
-        };
-        renderer.defineCustomElement(tagName, CE);
+    if (!isUndefined(CE)) {
+        return CE;
     }
+    /**
+     * LWC Upgradable Element reference to an element that was created
+     * via the scoped registry mechanism, and that is ready to be upgraded.
+     */
+    CE = class LWCUpgradableElement extends renderer.HTMLElement {
+        private static upgradeCallback: UpgradeCallback | undefined;
+        static set upgrade(callbackOnce: UpgradeCallback) {
+            this.upgradeCallback = callbackOnce;
+        }
+        constructor() {
+            super();
+            const constructor = this.constructor as typeof LWCUpgradableElement;
+            const { upgradeCallback } = constructor;
+            constructor.upgradeCallback = undefined; // resetting it
+            if (isFunction(upgradeCallback)) {
+                upgradeCallback(this); // nothing to do with the result for now
+            }
+        }
+    };
+    renderer.defineCustomElement(tagName, CE);
     return CE;
 }
