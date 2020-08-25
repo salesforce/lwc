@@ -164,7 +164,7 @@ function cloneNodePatched(this: Node, deep?: boolean): Node {
 /**
  * This method only applies to elements with a shadow or slots
  */
-function childNodesGetterPatched(this: Node): NodeListOf<Node> {
+export function childNodesGetterPatched(this: Node): NodeListOf<Node> {
     if (isHostElement(this)) {
         const owner = getNodeOwner(this);
         const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));

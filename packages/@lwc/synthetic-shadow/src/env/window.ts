@@ -7,6 +7,13 @@
 const {
     addEventListener: windowAddEventListener,
     removeEventListener: windowRemoveEventListener,
+    getComputedStyle: windowGetComputedStyle,
+    getSelection: windowGetSelection,
 } = window;
 
-export { windowAddEventListener, windowRemoveEventListener };
+export {
+    windowAddEventListener,
+    windowGetComputedStyle,
+    windowGetSelection,
+    windowRemoveEventListener,
+};

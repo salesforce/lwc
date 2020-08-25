@@ -4,9 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import featureFlags from '@lwc/features';
+import { isNull, isFalse, defineProperties, defineProperty } from '@lwc/shared';
 import { isDelegatingFocus, isHostElement } from './shadow-root';
-import { hasAttribute, tabIndexGetter, tabIndexSetter } from '../env/element';
-import { isNull, isFalse, defineProperties } from '@lwc/shared';
+import {
+    hasAttribute,
+    innerTextGetter,
+    innerTextSetter,
+    outerTextGetter,
+    outerTextSetter,
+    tabIndexGetter,
+    tabIndexSetter,
+} from '../env/element';
 import {
     disableKeyboardFocusNavigationRoutines,
     enableKeyboardFocusNavigationRoutines,
@@ -18,6 +27,9 @@ import {
     ignoreFocusIn,
     isKeyboardFocusNavigationRoutineEnabled,
 } from './focus';
+import { isNodeShadowed } from '../shared/node-ownership';
+import { isGlobalPatchingSkipped } from '../shared/utils';
+import { getInnerText } from '../3rdparty/inner-text';
 
 const { blur, focus } = HTMLElement.prototype;
 
@@ -180,3 +192,66 @@ defineProperties(HTMLElement.prototype, {
         configurable: true,
     },
 });
+
+// Note: In JSDOM innerText is not implemented: https://github.com/jsdom/jsdom/issues/1245
+if (innerTextGetter !== null && innerTextSetter !== null) {
+    defineProperty(HTMLElement.prototype, 'innerText', {
+        get(this: HTMLElement): string {
+            if (!featureFlags.ENABLE_INNER_OUTER_TEXT_PATCH) {
+                return innerTextGetter!.call(this);
+            }
+
+            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
+                if (isNodeShadowed(this) || isHostElement(this)) {
+                    return getInnerText(this);
+                }
+
+                return innerTextGetter!.call(this);
+            }
+
+            // TODO [#1222]: remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return innerTextGetter!.call(this);
+            }
+            return getInnerText(this);
+        },
+        set(this: HTMLElement, v: string) {
+            innerTextSetter!.call(this, v);
+        },
+        enumerable: true,
+        configurable: true,
+    });
+}
+
+// Note: Firefox does not have outerText, https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/outerText
+if (outerTextGetter !== null && outerTextSetter !== null) {
+    // From https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/outerText :
+    // HTMLElement.outerText is a non-standard property. As a getter, it returns the same value as Node.innerText.
+    // As a setter, it removes the current node and replaces it with the given text.
+    defineProperty(HTMLElement.prototype, 'outerText', {
+        get(this: HTMLElement): string {
+            if (!featureFlags.ENABLE_INNER_OUTER_TEXT_PATCH) {
+                return outerTextGetter!.call(this);
+            }
+
+            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
+                if (isNodeShadowed(this) || isHostElement(this)) {
+                    return getInnerText(this);
+                }
+
+                return outerTextGetter!.call(this);
+            }
+
+            // TODO [#1222]: remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return outerTextGetter!.call(this);
+            }
+            return getInnerText(this);
+        },
+        set(this: HTMLElement, v: string) {
+            outerTextSetter!.call(this, v);
+        },
+        enumerable: true,
+        configurable: true,
+    });
+}

@@ -31,22 +31,20 @@ import {
     childrenGetter,
     childElementCountGetter,
     firstElementChildGetter,
+    getElementsByClassName as elementGetElementsByClassName,
+    getElementsByTagName as elementGetElementsByTagName,
+    getElementsByTagNameNS as elementGetElementsByTagNameNS,
     innerHTMLGetter,
+    innerHTMLSetter,
     lastElementChildGetter,
     outerHTMLSetter,
     outerHTMLGetter,
+    querySelectorAll as elementQuerySelectorAll,
     shadowRootGetter as originalShadowRootGetter,
 } from '../env/element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { getInternalChildNodes, hasMountedChildren } from './node';
-import {
-    innerHTMLSetter,
-    getElementsByClassName as elementGetElementsByClassName,
-    getElementsByTagName as elementGetElementsByTagName,
-    getElementsByTagNameNS as elementGetElementsByTagNameNS,
-    querySelectorAll as elementQuerySelectorAll,
-} from '../env/element';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import {
     getNodeKey,
