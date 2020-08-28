@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
 /**
  * Lightning Web Components core module
  */
+
 declare module 'lwc' {
     // backwards compatible type used for the old days when TS didn't support `event.composed`
     interface ComposableEvent extends Event {
@@ -178,4 +180,34 @@ declare module 'lwc' {
      * @param config configuration object for the accessor
      */
     export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
+
+    type WireConfigValue = Record<string, any>;
+    type ContextValue = Record<string, any>;
+
+    interface WireAdapter {
+        update(config: WireConfigValue, context?: ContextValue): void;
+        connect(): void;
+        disconnect(): void;
+    }
+
+    type WireDataCallback = (value: any) => void;
+    type WireAdapterSchemaValue = 'optional' | 'required';
+
+    interface ContextConsumer {
+        provide(newContext: ContextValue): void;
+    }
+
+    interface ContextProviderOptions {
+        consumerConnectedCallback: (consumer: ContextConsumer) => void;
+        consumerDisconnectedCallback?: (consumer: ContextConsumer) => void;
+    }
+
+    interface WireAdapterConstructor {
+        new (callback: WireDataCallback): WireAdapter;
+        configSchema?: Record<string, WireAdapterSchemaValue>;
+        contextSchema?: Record<string, WireAdapterSchemaValue>;
+    }
+
+    type Contextualizer = (elm: EventTarget, options: ContextProviderOptions) => void;
+    export function createContextProvider(config: WireAdapterConstructor): Contextualizer;
 }
