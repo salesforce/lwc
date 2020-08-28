@@ -23,7 +23,6 @@ exports.todoApp = function (cmpName) {
 
 const COMPAT = `
     <script src="../../shared/downgrade.js"></script>
-    <script>delete window.customElements;</script>
     <script src="../../shared/polyfills.js"></script>
 `;
 const SHADOW_POLYFILL = `

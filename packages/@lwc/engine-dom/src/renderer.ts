@@ -20,7 +20,26 @@ const globalStylesheetsParentElement: Element = document.head || document.body |
 
 let getCustomElement, defineCustomElement, HTMLElementConstructor;
 
-if (typeof customElements !== 'undefined') {
+function isCustomElementRegistryAvailable() {
+    if (typeof customElements === 'undefined') {
+        return false;
+    }
+    try {
+        // in case we use compat mode with a modern browser, the super call fails due to the
+        // compat mode transformation, who uses .call() to initialization any DOM api sub-classing,
+        // which are not equipped to be initialized that way. The same problem applies to customElements as well.
+        new (class extends DocumentFragment {
+            constructor() {
+                super();
+            }
+        })();
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+if (isCustomElementRegistryAvailable()) {
     getCustomElement = customElements.get.bind(customElements);
     defineCustomElement = customElements.define.bind(customElements);
     HTMLElementConstructor = HTMLElement;

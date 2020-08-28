@@ -17,6 +17,10 @@ export function getUpgradableConstructor(
     tagName: string,
     renderer: Renderer
 ): CustomElementConstructor | UpgradableCustomElementConstructor {
+    // Should never get a tag with upper case letter at this point, the compiler should
+    // produce only tags with lowercase letters
+    // But, for backwards compatibility, we will lower case the tagName
+    tagName = tagName.toLowerCase();
     let CE = renderer.getCustomElement(tagName);
     if (!isUndefined(CE)) {
         return CE;
