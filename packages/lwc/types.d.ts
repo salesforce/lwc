@@ -182,25 +182,19 @@ declare module 'lwc' {
     export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
 
     type WireConfigValue = Record<string, any>;
-    type WireContextValue = Record<string, any>;
+    type ContextValue = Record<string, any>;
 
     interface WireAdapter {
-        update(config: WireConfigValue, context?: WireContextValue): void;
+        update(config: WireConfigValue, context?: ContextValue): void;
         connect(): void;
         disconnect(): void;
     }
 
     type WireDataCallback = (value: any) => void;
     type WireAdapterSchemaValue = 'optional' | 'required';
-    type ContextValue = Record<string, any>;
 
     interface ContextConsumer {
         provide(newContext: ContextValue): void;
-    }
-
-    interface ContextProviderOptions {
-        consumerConnectedCallback: (consumer: ContextConsumer) => void;
-        consumerDisconnectedCallback?: (consumer: ContextConsumer) => void;
     }
 
     interface ContextProviderOptions {
@@ -214,11 +208,7 @@ declare module 'lwc' {
         contextSchema?: Record<string, WireAdapterSchemaValue>;
     }
 
-    type createContextProviderReturnFn = (
-        elm: EventTarget,
-        options: ContextProviderOptions
-    ) => void;
-    export function createContextProvider(
-        config: WireAdapterConstructor
-    ): createContextProviderReturnFn;
+    type Contextualizer = (elm: EventTarget, options: ContextProviderOptions) => void;
+
+    export function createContextProvider(config: WireAdapterConstructor): Contextualizer;
 }
