@@ -209,6 +209,5 @@ declare module 'lwc' {
     }
 
     type Contextualizer = (elm: EventTarget, options: ContextProviderOptions) => void;
-
     export function createContextProvider(config: WireAdapterConstructor): Contextualizer;
 }
