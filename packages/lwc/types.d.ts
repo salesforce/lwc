@@ -192,6 +192,21 @@ declare module 'lwc' {
 
     type WireDataCallback = (value: any) => void;
     type WireAdapterSchemaValue = 'optional' | 'required';
+    type ContextValue = Record<string, any>;
+
+    interface ContextConsumer {
+        provide(newContext: ContextValue): void;
+    }
+
+    interface ContextProviderOptions {
+        consumerConnectedCallback: (consumer: ContextConsumer) => void;
+        consumerDisconnectedCallback?: (consumer: ContextConsumer) => void;
+    }
+
+    interface ContextProviderOptions {
+        consumerConnectedCallback: (consumer: ContextConsumer) => void;
+        consumerDisconnectedCallback?: (consumer: ContextConsumer) => void;
+    }
 
     interface WireAdapterConstructor {
         new (callback: WireDataCallback): WireAdapter;
@@ -199,5 +214,11 @@ declare module 'lwc' {
         contextSchema?: Record<string, WireAdapterSchemaValue>;
     }
 
-    export function createContextProvider(config: WireAdapterConstructor): void;
+    type createContextProviderReturnFn = (
+        elm: EventTarget,
+        options: ContextProviderOptions
+    ) => void;
+    export function createContextProvider(
+        config: WireAdapterConstructor
+    ): createContextProviderReturnFn;
 }
