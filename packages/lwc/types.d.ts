@@ -181,20 +181,20 @@ declare module 'lwc' {
      */
     export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
 
-    type ConfigValue = Record<string, any>;
-    type ContextValue = Record<string, any>;
+    type WireConfigValue = Record<string, any>;
+    type WireContextValue = Record<string, any>;
 
     interface WireAdapter {
-        update(config: ConfigValue, context?: ContextValue): void;
+        update(config: WireConfigValue, context?: WireContextValue): void;
         connect(): void;
         disconnect(): void;
     }
 
-    type DataCallback = (value: any) => void;
+    type WireDataCallback = (value: any) => void;
     type WireAdapterSchemaValue = 'optional' | 'required';
 
     interface WireAdapterConstructor {
-        new (callback: DataCallback): WireAdapter;
+        new (callback: WireDataCallback): WireAdapter;
         configSchema?: Record<string, WireAdapterSchemaValue>;
         contextSchema?: Record<string, WireAdapterSchemaValue>;
     }
