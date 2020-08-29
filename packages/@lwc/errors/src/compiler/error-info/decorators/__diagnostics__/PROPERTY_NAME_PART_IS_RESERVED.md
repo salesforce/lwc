@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: PROPERTY_NAME_PART_IS_RESERVED
+code: 1111
+---
+
+# 1111: PROPERTY_NAME_PART_IS_RESERVED

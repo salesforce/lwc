@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: PROPERTY_NAME_CANNOT_START_WITH_ON
+code: 1108
+---
+
+# 1108: PROPERTY_NAME_CANNOT_START_WITH_ON

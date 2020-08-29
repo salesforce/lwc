@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
-import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
+import { TransformerErrors, captureDiagnostic, lwc_invariant } from '@lwc/errors';
 
 import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
 import styleTransform from './style';
@@ -57,8 +57,8 @@ export function transformSync(
 }
 
 function validateArguments(src: string, filename: string) {
-    invariant(isString(src), TransformerErrors.INVALID_SOURCE, [src]);
-    invariant(isString(filename), TransformerErrors.INVALID_ID, [filename]);
+    lwc_invariant(isString(src), TransformerErrors.INVALID_SOURCE(src));
+    lwc_invariant(isString(filename), TransformerErrors.INVALID_ID(filename));
 }
 
 export function transformFile(
@@ -83,9 +83,8 @@ export function transformFile(
             break;
 
         default:
-            throw generateCompilerError(TransformerErrors.NO_AVAILABLE_TRANSFORMER, {
-                messageArgs: [filename],
-                origin: { filename },
+            throw captureDiagnostic(TransformerErrors.NO_AVAILABLE_TRANSFORMER(filename), {
+                filename
             });
     }
 

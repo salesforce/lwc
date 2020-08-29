@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: AMBIGUOUS_ATTRIBUTE_VALUE_STRING
+code: 1035
+---
+
+# 1035: AMBIGUOUS_ATTRIBUTE_VALUE_STRING

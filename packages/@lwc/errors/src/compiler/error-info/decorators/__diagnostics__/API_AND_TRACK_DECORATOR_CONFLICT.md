@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: API_AND_TRACK_DECORATOR_CONFLICT
+code: 1093
+---
+
+# 1093: API_AND_TRACK_DECORATOR_CONFLICT

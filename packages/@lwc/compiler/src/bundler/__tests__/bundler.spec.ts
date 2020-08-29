@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { DiagnosticSeverity } from '@lwc/errors';
 import { bundle } from '../bundler';
 
 describe('bundler', () => {
@@ -37,12 +38,13 @@ describe('bundler', () => {
         });
 
         expect(result.diagnostics).toEqual([
-            {
+            expect.objectContaining({
                 code: 1120,
-                message:
-                    'LWC1120: Illegal usage of the dynamic import syntax with a relative path.',
-                level: 1,
-            },
+                message: expect.stringContaining(
+                    'Illegal usage of the dynamic import syntax with a relative path'
+                ),
+                severity: DiagnosticSeverity.Error,
+            }),
         ]);
     });
 

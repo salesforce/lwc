@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: DIRECTIVE_SHOULD_BE_EXPRESSION
+code: 1039
+---
+
+# 1039: DIRECTIVE_SHOULD_BE_EXPRESSION

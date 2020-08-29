@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: INVALID_DECORATOR_WITH_NAME
+code: 1102
+---
+
+# 1102: INVALID_DECORATOR_WITH_NAME

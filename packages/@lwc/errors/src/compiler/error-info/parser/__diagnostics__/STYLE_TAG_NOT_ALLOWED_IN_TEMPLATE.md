@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE
+code: 1122
+---
+
+# 1122: STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE

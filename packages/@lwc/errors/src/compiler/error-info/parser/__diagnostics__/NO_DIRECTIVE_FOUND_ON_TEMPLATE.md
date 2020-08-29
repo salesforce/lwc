@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: NO_DIRECTIVE_FOUND_ON_TEMPLATE
+code: 1077
+---
+
+# 1077: NO_DIRECTIVE_FOUND_ON_TEMPLATE

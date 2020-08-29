@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as styleCompiler from '@lwc/style-compiler';
-import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import { normlizeToLWCDiagnostic, TransformerErrors } from '@lwc/errors';
 import { NormalizedTransformOptions } from '../options';
 import { FileTransformerResult } from './transformer';
 
@@ -34,7 +34,7 @@ export default function styleTransform(
     try {
         res = styleCompiler.transform(src, filename, styleCompilerConfig);
     } catch (e) {
-        throw normalizeToCompilerError(TransformerErrors.CSS_TRANSFORMER_ERROR, e, { filename });
+        throw normlizeToLWCDiagnostic(TransformerErrors.CSS_TRANSFORMER_ERROR(e), e, { filename });
     }
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for

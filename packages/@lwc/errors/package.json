@@ -17,7 +17,8 @@
     "scripts": {
         "clean": "rm -rf dist/",
         "build": "tsc",
-        "test": "jest"
+        "test": "jest",
+        "scary": "scary"
     },
     "files": [
         "dist/"

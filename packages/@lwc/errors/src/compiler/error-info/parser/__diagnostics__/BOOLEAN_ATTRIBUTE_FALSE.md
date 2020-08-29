@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: BOOLEAN_ATTRIBUTE_FALSE
+code: 1036
+---
+
+# 1036: BOOLEAN_ATTRIBUTE_FALSE

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { generateError, staticClassProperty, markAsLWCNode } = require('../../utils');
+const { generateCodeFrameError, staticClassProperty, markAsLWCNode } = require('../../utils');
 const {
     LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR },
     LWC_COMPONENT_PROPERTIES,
@@ -20,9 +20,10 @@ function isTrackDecorator(decorator) {
 function validate(klass, decorators) {
     decorators.filter(isTrackDecorator).forEach(({ path }) => {
         if (!path.parentPath.isClassProperty()) {
-            throw generateError(path, {
-                errorInfo: DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES,
-            });
+            throw generateCodeFrameError(
+                path,
+                DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES()
+            );
         }
     });
 }

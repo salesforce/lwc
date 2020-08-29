@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { Diagnostic, DiagnosticSeverity } from '@scary/diagnostics';
+
 import { templateString } from '../shared/utils';
 import { LWCErrorInfo } from '../shared/types';
 import {
@@ -13,11 +15,19 @@ import {
     getCodeFromError,
     getFilename,
     getLocation,
+    LWCDiagnostic,
 } from './utils';
 
-export { CompilerDiagnosticOrigin, CompilerDiagnostic, CompilerError } from './utils';
+export {
+    CompilerDiagnosticOrigin,
+    CompilerDiagnostic,
+    LWCDiagnostic,
+    CompilerError,
+    diagnosticLevelToSeverity,
+} from './utils';
 
-export * from './error-info';
+export { Diagnostic, DiagnosticSeverity };
+export * from './error-info/__generated__';
 
 // TODO [#1289]: Can be flattened now that we're down to only 2 properties
 export interface ErrorConfig {
@@ -65,6 +75,20 @@ export function generateCompilerDiagnostic(
     return diagnostic;
 }
 
+export function captureDiagnostic(
+    originalDiagnostic: Diagnostic,
+    origin?: CompilerDiagnosticOrigin
+): LWCDiagnostic {
+    const diagnostic: LWCDiagnostic = originalDiagnostic;
+
+    if (origin) {
+        diagnostic.filename = getFilename(origin);
+        diagnostic.location = getLocation(origin);
+    }
+
+    return diagnostic;
+}
+
 /**
  * Generates a compiler error. This function is used to look up the specified errorInfo
  * and generate a friendly and consistent error object. Error object contains info about
@@ -95,6 +119,35 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
             messageArgs: args,
         });
     }
+}
+
+export function lwc_invariant(condition: boolean, diagnostic: Diagnostic) {
+    if (!condition) throw diagnostic;
+}
+
+export function normlizeToLWCDiagnostic(
+    diagnostic: LWCDiagnostic,
+    error: any,
+    origin?: CompilerDiagnosticOrigin
+): LWCDiagnostic {
+    if (error instanceof LWCDiagnostic || error instanceof Diagnostic) {
+        error = error as LWCDiagnostic;
+
+        if (origin) {
+            error.filename = getFilename(origin);
+            error.location = getLocation(origin);
+        }
+
+        return error;
+    }
+
+    if (origin) {
+        diagnostic.filename = getFilename(origin);
+        diagnostic.location = getLocation(origin);
+    }
+
+    diagnostic.stack = error.stack;
+    return diagnostic;
 }
 
 /**

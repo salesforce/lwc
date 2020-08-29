@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: INVALID_TABINDEX_ATTRIBUTE
+code: 1061
+---
+
+# 1061: INVALID_TABINDEX_ATTRIBUTE

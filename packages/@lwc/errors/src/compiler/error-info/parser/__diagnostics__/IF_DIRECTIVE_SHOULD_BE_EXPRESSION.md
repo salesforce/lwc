@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: IF_DIRECTIVE_SHOULD_BE_EXPRESSION
+code: 1054
+---
+
+# 1054: IF_DIRECTIVE_SHOULD_BE_EXPRESSION

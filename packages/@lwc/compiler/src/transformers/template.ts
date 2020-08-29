@@ -5,12 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
-import {
-    CompilerError,
-    normalizeToCompilerError,
-    DiagnosticLevel,
-    TransformerErrors,
-} from '@lwc/errors';
+import { normlizeToLWCDiagnostic, DiagnosticSeverity, TransformerErrors } from '@lwc/errors';
 import compile from '@lwc/template-compiler';
 import { NormalizedTransformOptions } from '../options';
 import { FileTransformerResult } from './transformer';
@@ -39,12 +34,18 @@ export default function templateTransform(
             experimentalDynamicDirective: !!options.experimentalDynamicComponent,
         });
     } catch (e) {
-        throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
+        throw normlizeToLWCDiagnostic(TransformerErrors.HTML_TRANSFORMER_ERROR(e), e, { filename });
     }
 
-    const fatalError = result.warnings.find((warning) => warning.level === DiagnosticLevel.Error);
+    const fatalError = result.warnings.find(
+        (warning) => warning.severity === DiagnosticSeverity.Error
+    );
     if (fatalError) {
-        throw CompilerError.from(fatalError, { filename });
+        throw normlizeToLWCDiagnostic(
+            TransformerErrors.HTML_TRANSFORMER_ERROR(fatalError),
+            fatalError,
+            { filename }
+        );
     }
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for

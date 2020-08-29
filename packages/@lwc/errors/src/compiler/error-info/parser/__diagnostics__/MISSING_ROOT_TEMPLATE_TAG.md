@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: MISSING_ROOT_TEMPLATE_TAG
+code: 1072
+---
+
+# 1072: MISSING_ROOT_TEMPLATE_TAG

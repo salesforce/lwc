@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: ADAPTER_SHOULD_BE_FIRST_PARAMETER
+code: 1092
+---
+
+# 1092: ADAPTER_SHOULD_BE_FIRST_PARAMETER

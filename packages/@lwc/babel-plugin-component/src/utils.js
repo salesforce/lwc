@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
-const { LWCClassErrors, generateErrorMessage } = require('@lwc/errors');
+const { LWCClassErrors } = require('@lwc/errors');
 const lineColumn = require('line-column');
 
 function isClassMethod(classMethod, properties = {}) {
@@ -59,19 +59,19 @@ function getEngineImportSpecifiers(path) {
         .reduce((acc, specifier) => {
             // Validate engine import specifier
             if (specifier.isImportNamespaceSpecifier()) {
-                throw generateError(specifier, {
-                    errorInfo: LWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED,
-                    messageArgs: [
+                throw generateCodeFrameError(
+                    specifier,
+                    LWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED(
                         LWC_PACKAGE_ALIAS,
                         LWC_PACKAGE_EXPORTS.BASE_COMPONENT,
-                        LWC_PACKAGE_ALIAS,
-                    ],
-                });
+                        LWC_PACKAGE_ALIAS
+                    )
+                );
             } else if (specifier.isImportDefaultSpecifier()) {
-                throw generateError(specifier, {
-                    errorInfo: LWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT,
-                    messageArgs: [LWC_PACKAGE_ALIAS],
-                });
+                throw generateCodeFrameError(
+                    specifier,
+                    LWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT(LWC_PACKAGE_ALIAS)
+                );
             }
 
             // Get the list of specifiers with their name
@@ -111,13 +111,12 @@ function normalizeLocation(source) {
     };
 }
 
-function generateError(source, { errorInfo, messageArgs } = {}) {
-    const message = generateErrorMessage(errorInfo, messageArgs);
-    const error = source.buildCodeFrameError(message);
+function generateCodeFrameError(source, diagnostic) {
+    const error = source.buildCodeFrameError(diagnostic.message);
 
     error.filename = normalizeFilename(source);
     error.loc = normalizeLocation(source);
-    error.lwcCode = errorInfo && errorInfo.code;
+    error.lwcCode = diagnostic.code;
     return error;
 }
 
@@ -137,5 +136,5 @@ module.exports = {
     isSetterClassMethod,
     staticClassProperty,
     getEngineImportSpecifiers,
-    generateError,
+    generateCodeFrameError,
 };

@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: IS_ATTRIBUTE_NOT_SUPPORTED
+code: 1063
+---
+
+# 1063: IS_ATTRIBUTE_NOT_SUPPORTED

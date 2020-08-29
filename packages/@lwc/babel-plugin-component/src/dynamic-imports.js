@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const moduleImports = require('@babel/helper-module-imports');
-const { generateError } = require('./utils');
+const { generateCodeFrameError } = require('./utils');
 const { LWCClassErrors } = require('@lwc/errors');
 
 function getImportSource(path) {
@@ -14,12 +14,13 @@ function getImportSource(path) {
 
 function validateImport(sourcePath) {
     if (!sourcePath.isStringLiteral()) {
-        throw generateError(sourcePath, {
-            errorInfo: LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT,
-            messageArgs: [String(sourcePath)],
-        });
+        throw generateCodeFrameError(
+            sourcePath,
+            LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT(String(sourcePath))
+        );
     }
 }
+
 /*
  * Expected API for this plugin:
  * { dynamicImports: { loader: string, strictSpecifier: boolean } }

@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: INVALID_BOOLEAN_PUBLIC_PROPERTY
+code: 1099
+---
+
+# 1099: INVALID_BOOLEAN_PUBLIC_PROPERTY

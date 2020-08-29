@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: IDENTIFIER_PARSING_ERROR
+code: 1053
+---
+
+# 1053: IDENTIFIER_PARSING_ERROR

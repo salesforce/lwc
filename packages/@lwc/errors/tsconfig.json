@@ -3,7 +3,8 @@
 
     "compilerOptions": {
         "outDir": "dist/commonjs",
-        "declarationDir": "dist/types"
+        "declarationDir": "dist/types",
+        "allowJs": true
     },
 
     "include": ["src/"]

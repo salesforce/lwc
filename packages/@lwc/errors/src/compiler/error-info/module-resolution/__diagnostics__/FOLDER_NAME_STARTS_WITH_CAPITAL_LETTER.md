@@ -1,0 +1,7 @@
+---
+namespace: module-resolution
+key: FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER
+code: 1116
+---
+
+# 1116: FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER

@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: FORBIDDEN_TAG_ON_TEMPLATE
+code: 1051
+---
+
+# 1051: FORBIDDEN_TAG_ON_TEMPLATE

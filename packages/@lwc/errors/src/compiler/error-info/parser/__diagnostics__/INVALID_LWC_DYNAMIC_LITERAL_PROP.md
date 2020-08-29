@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: INVALID_LWC_DYNAMIC_LITERAL_PROP
+code: 1130
+---
+
+# 1130: INVALID_LWC_DYNAMIC_LITERAL_PROP

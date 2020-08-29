@@ -6,7 +6,7 @@
  */
 import * as babel from '@babel/core';
 import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
-import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import { normlizeToLWCDiagnostic, TransformerErrors } from '@lwc/errors';
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from '../babel-plugins';
 import { NormalizedTransformOptions } from '../options';
@@ -31,7 +31,7 @@ export default function scriptTransform(
     try {
         result = babel.transform(code, config);
     } catch (e) {
-        throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
+        throw normlizeToLWCDiagnostic(TransformerErrors.JS_TRANSFORMER_ERROR(e), e, { filename });
     }
 
     return {

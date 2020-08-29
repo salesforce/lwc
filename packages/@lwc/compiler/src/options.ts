@@ -5,30 +5,30 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isBoolean, isString, isUndefined, isObject } from './utils';
-import { CompilerValidationErrors, invariant } from '@lwc/errors';
+import { CompilerValidationErrors, lwc_invariant } from '@lwc/errors';
 
 const DEFAULT_OPTIONS = {
     baseDir: '',
-    isExplicitImport: false,
+    isExplicitImport: false
 };
 
 const DEFAULT_DYNAMIC_CMP_CONFIG: NormalizedDynamicComponentConfig = {
     loader: '',
-    strictSpecifier: true,
+    strictSpecifier: true
 };
 
 const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
     customProperties: {
         allowDefinition: false,
-        resolution: { type: 'native' },
-    },
+        resolution: { type: 'native' }
+    }
 };
 
 const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
     env: {},
     minify: false,
     compat: false,
-    sourcemap: false,
+    sourcemap: false
 };
 
 const KNOWN_ENV = new Set(['NODE_ENV']);
@@ -121,7 +121,7 @@ export function validateNormalizedCompileOptions(options: NormalizedCompileOptio
 }
 
 export function validateOptions(options: TransformOptions) {
-    invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
+    lwc_invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT(options));
 
     if (!isUndefined(options.stylesheetConfig)) {
         validateStylesheetConfig(options.stylesheetConfig);
@@ -135,25 +135,26 @@ export function validateOptions(options: TransformOptions) {
 export function validateCompileOptions(options: CompileOptions): NormalizedCompileOptions {
     validateOptions(options);
 
-    invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [
-        options.name,
-    ]);
+    lwc_invariant(
+        isString(options.name),
+        CompilerValidationErrors.INVALID_NAME_PROPERTY(options.name)
+    );
 
-    invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [
-        options.namespace,
-    ]);
+    lwc_invariant(
+        isString(options.namespace),
+        CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY(options.namespace)
+    );
 
-    invariant(
+    lwc_invariant(
         !isUndefined(options.files) && !!Object.keys(options.files).length,
-        CompilerValidationErrors.INVALID_FILES_PROPERTY
+        CompilerValidationErrors.INVALID_FILES_PROPERTY()
     );
 
     for (const key of Object.keys(options.files)) {
         const value = options.files[key];
-        invariant(
+        lwc_invariant(
             !isUndefined(value) && isString(value),
-            CompilerValidationErrors.UNEXPECTED_FILE_CONTENT,
-            [key, value]
+            CompilerValidationErrors.UNEXPECTED_FILE_CONTENT(key, value)
         );
     }
 
@@ -171,22 +172,21 @@ function validateStylesheetConfig(config: StylesheetConfig) {
     if (!isUndefined(customProperties)) {
         const { allowDefinition, resolution } = customProperties;
 
-        invariant(
+        lwc_invariant(
             isUndefined(allowDefinition) || isBoolean(allowDefinition),
-            CompilerValidationErrors.INVALID_ALLOWDEFINITION_PROPERTY,
-            [allowDefinition]
+            CompilerValidationErrors.INVALID_ALLOWDEFINITION_PROPERTY(allowDefinition)
         );
 
         if (!isUndefined(resolution)) {
-            invariant(isObject(resolution), CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY, [
-                resolution,
-            ]);
+            lwc_invariant(
+                isObject(resolution),
+                CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY(resolution)
+            );
 
             const { type } = resolution;
-            invariant(
+            lwc_invariant(
                 type === 'native' || type === 'module',
-                CompilerValidationErrors.INVALID_TYPE_PROPERTY,
-                [type]
+                CompilerValidationErrors.INVALID_TYPE_PROPERTY(type)
             );
         }
     }
@@ -197,36 +197,34 @@ function isUndefinedOrBoolean(property: any): boolean {
 }
 
 function validateOutputConfig(config: OutputConfig) {
-    invariant(
+    lwc_invariant(
         isUndefinedOrBoolean(config.minify),
-        CompilerValidationErrors.INVALID_MINIFY_PROPERTY,
-        [config.minify]
+        CompilerValidationErrors.INVALID_MINIFY_PROPERTY(config.minify)
     );
 
-    invariant(
+    lwc_invariant(
         isUndefinedOrBoolean(config.compat),
-        CompilerValidationErrors.INVALID_COMPAT_PROPERTY,
-        [config.compat]
+        CompilerValidationErrors.INVALID_COMPAT_PROPERTY(config.compat)
     );
 
-    invariant(
+    lwc_invariant(
         isUndefinedOrBoolean(config.sourcemap),
-        CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY,
-        [config.sourcemap]
+        CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY(config.sourcemap)
     );
 
     if (!isUndefined(config.env)) {
-        invariant(isObject(config.env), CompilerValidationErrors.INVALID_ENV_PROPERTY, [
-            config.env,
-        ]);
+        lwc_invariant(
+            isObject(config.env),
+            CompilerValidationErrors.INVALID_ENV_PROPERTY(config.env)
+        );
 
         for (const [key, value] of Object.entries(config.env)) {
-            invariant(KNOWN_ENV.has(key), CompilerValidationErrors.UNKNOWN_ENV_ENTRY_KEY, [key]);
+            lwc_invariant(KNOWN_ENV.has(key), CompilerValidationErrors.UNKNOWN_ENV_ENTRY_KEY(key));
 
-            invariant(isString(value), CompilerValidationErrors.INVALID_ENV_ENTRY_VALUE, [
-                key,
-                value,
-            ]);
+            lwc_invariant(
+                isString(value),
+                CompilerValidationErrors.INVALID_ENV_ENTRY_VALUE(key, value)
+            );
         }
     }
 }
@@ -234,19 +232,19 @@ function validateOutputConfig(config: OutputConfig) {
 function normalizeOptions(options: TransformOptions): NormalizedTransformOptions {
     const outputConfig: NormalizedOutputConfig = {
         ...DEFAULT_OUTPUT_CONFIG,
-        ...options.outputConfig,
+        ...options.outputConfig
     };
 
     const stylesheetConfig: NormalizedStylesheetConfig = {
         customProperties: {
             ...DEFAULT_STYLESHEET_CONFIG.customProperties,
-            ...(options.stylesheetConfig && options.stylesheetConfig.customProperties),
-        },
+            ...(options.stylesheetConfig && options.stylesheetConfig.customProperties)
+        }
     };
 
     const experimentalDynamicComponent = {
         ...DEFAULT_DYNAMIC_CMP_CONFIG,
-        ...options.experimentalDynamicComponent,
+        ...options.experimentalDynamicComponent
     };
 
     return {
@@ -254,6 +252,6 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         ...options,
         stylesheetConfig,
         outputConfig,
-        experimentalDynamicComponent,
+        experimentalDynamicComponent
     };
 }

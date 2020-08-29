@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
+import { TemplateErrors, lwc_invariant, captureDiagnostic } from '@lwc/errors';
 import { hasOwnProperty } from '@lwc/shared';
 
 export type Format = 'module' | 'function';
@@ -54,16 +54,14 @@ const AVAILABLE_OPTION_NAMES = new Set([
 ]);
 
 export function mergeConfig(config: Config): ResolvedConfig {
-    invariant(
+    lwc_invariant(
         config !== undefined && typeof config === 'object',
-        TemplateErrors.OPTIONS_MUST_BE_OBJECT
+        TemplateErrors.OPTIONS_MUST_BE_OBJECT()
     );
 
     for (const property in config) {
         if (!AVAILABLE_OPTION_NAMES.has(property) && hasOwnProperty.call(config, property)) {
-            throw generateCompilerError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, {
-                messageArgs: [property],
-            });
+            throw captureDiagnostic(TemplateErrors.UNKNOWN_OPTION_PROPERTY(property));
         }
     }
 

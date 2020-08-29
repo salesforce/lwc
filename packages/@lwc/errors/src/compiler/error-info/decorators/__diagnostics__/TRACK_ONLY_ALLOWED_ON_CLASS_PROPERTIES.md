@@ -1,0 +1,7 @@
+---
+namespace: decorators
+key: TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES
+code: 1113
+---
+
+# 1113: TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES

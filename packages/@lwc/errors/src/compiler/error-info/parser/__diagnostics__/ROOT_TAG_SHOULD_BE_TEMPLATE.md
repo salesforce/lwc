@@ -1,0 +1,7 @@
+---
+namespace: parser
+key: ROOT_TAG_SHOULD_BE_TEMPLATE
+code: 1079
+---
+
+# 1079: ROOT_TAG_SHOULD_BE_TEMPLATE

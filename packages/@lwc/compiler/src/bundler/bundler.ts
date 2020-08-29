@@ -6,12 +6,12 @@
  */
 import { rollup, Plugin, RollupWarning } from 'rollup';
 import {
-    CompilerError,
-    CompilerDiagnostic,
-    generateCompilerDiagnostic,
-    DiagnosticLevel,
+    LWCDiagnostic,
+    captureDiagnostic,
     ModuleResolutionErrors,
-    normalizeToDiagnostic,
+    normlizeToLWCDiagnostic,
+    DiagnosticSeverity,
+    Diagnostic,
 } from '@lwc/errors';
 
 import rollupModuleResolver from '../rollup-plugins/module-resolver';
@@ -27,13 +27,13 @@ import { SourceMap } from '../compiler/compiler';
 
 export interface BundleReport {
     code: string;
-    diagnostics: CompilerDiagnostic[];
+    diagnostics: LWCDiagnostic[];
     map: SourceMap | null;
 }
 
 const DEFAULT_FORMAT = 'amd';
 
-function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
+function handleRollupWarning(diagnostics: LWCDiagnostic[]) {
     return function onwarn(warning: string | RollupWarning) {
         let message;
         let origin = {};
@@ -58,10 +58,7 @@ function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
         }
 
         diagnostics.push(
-            generateCompilerDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, {
-                messageArgs: [message],
-                origin,
-            })
+            captureDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR(message), origin)
         );
     };
 }
@@ -74,7 +71,7 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
     // TODO [#1268]: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
-    const diagnostics: CompilerDiagnostic[] = [];
+    const lwcDiagnostics: LWCDiagnostic[] = [];
 
     const plugins: Plugin[] = [
         rollupModuleResolver({
@@ -113,7 +110,7 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
         const rollupBundler = await rollup({
             input: name,
             plugins,
-            onwarn: handleRollupWarning(diagnostics),
+            onwarn: handleRollupWarning(lwcDiagnostics),
         });
 
         const { output } = await rollupBundler.generate({
@@ -126,8 +123,8 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
         // Rollup produces multiple chunks when a module uses "import()" with a relative import
         // path. We need to ensure the compiled module only contains the main chunk.
         if (output.length > 1) {
-            diagnostics.push(
-                generateCompilerDiagnostic(ModuleResolutionErrors.RELATIVE_DYNAMIC_IMPORT)
+            lwcDiagnostics.push(
+                captureDiagnostic(ModuleResolutionErrors.RELATIVE_DYNAMIC_IMPORT())
             );
         }
 
@@ -136,17 +133,20 @@ export async function bundle(options: NormalizedCompileOptions): Promise<BundleR
         map = result.map;
     } catch (e) {
         // Rollup may have clobbered error.code with its own data
-        if (e instanceof CompilerError && (e as any).pluginCode) {
+        if (e instanceof Diagnostic && (e as any).pluginCode) {
             e.code = (e as any).pluginCode;
         }
 
-        const diagnostic = normalizeToDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, e);
-        diagnostic.level = DiagnosticLevel.Fatal;
-        diagnostics.push(diagnostic);
+        const diagnostic = normlizeToLWCDiagnostic(
+            ModuleResolutionErrors.MODULE_RESOLUTION_ERROR(e.message),
+            e
+        );
+        diagnostic.severity = DiagnosticSeverity.Fatal;
+        lwcDiagnostics.push(diagnostic);
     }
 
     return {
-        diagnostics,
+        diagnostics: lwcDiagnostics,
         code,
         map,
     };

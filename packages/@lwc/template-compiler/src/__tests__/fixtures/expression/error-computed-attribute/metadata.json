@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1060,
-            "message": "Invalid expression {classNames[0]} - LWC1060: Template expression doesn't allow NumericLiteral",
+            "message": "Invalid expression {classNames[0]} - Template expression doesn't allow NumericLiteral",
             "level": 1,
             "location": {
                 "line": 3,
