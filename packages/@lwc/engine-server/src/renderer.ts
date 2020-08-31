@@ -350,6 +350,5 @@ export const renderer: Renderer<HostNode, HostElement> = {
     getCustomElement(name: string): CustomElementConstructor | undefined {
         return registry[name];
     },
-    // @ts-ignore uff, why?
-    HTMLElement,
+    HTMLElement: HTMLElement as any,
 };
