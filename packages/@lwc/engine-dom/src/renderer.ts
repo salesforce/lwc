@@ -5,11 +5,75 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assert, hasOwnProperty, isUndefined, create } from '@lwc/shared';
+import {
+    assert,
+    hasOwnProperty,
+    isUndefined,
+    create,
+    StringToLowerCase,
+    setPrototypeOf,
+} from '@lwc/shared';
 import { getAttrNameFromPropName, Renderer } from '@lwc/engine-core';
 
 const globalStylesheets: { [content: string]: true } = create(null);
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
+
+let getCustomElement, defineCustomElement, HTMLElementConstructor;
+
+function isCustomElementRegistryAvailable() {
+    if (typeof customElements === 'undefined') {
+        return false;
+    }
+    try {
+        // in case we use compat mode with a modern browser, the super call fails due to the
+        // compat mode transformation, who uses .call() to initialization any DOM api sub-classing,
+        // which are not equipped to be initialized that way. The same problem applies to customElements as well.
+        new (class extends DocumentFragment {
+            constructor() {
+                super();
+            }
+        })();
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+if (isCustomElementRegistryAvailable()) {
+    getCustomElement = customElements.get.bind(customElements);
+    defineCustomElement = customElements.define.bind(customElements);
+    HTMLElementConstructor = HTMLElement;
+} else {
+    const registry: Record<string, CustomElementConstructor> = create(null);
+    const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
+
+    defineCustomElement = function define(name: string, ctor: CustomElementConstructor) {
+        if (name !== StringToLowerCase.call(name) || registry[name]) {
+            throw new TypeError(`Invalid Registration`);
+        }
+        registry[name] = ctor;
+        reverseRegistry.set(ctor, name);
+    };
+
+    getCustomElement = function get(name: string): CustomElementConstructor | undefined {
+        return registry[name];
+    };
+
+    HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
+        if (!(this instanceof HTMLElement)) {
+            throw new TypeError(`Invalid Invocation`);
+        }
+        const { constructor } = this;
+        const name = reverseRegistry.get(constructor as CustomElementConstructor);
+        if (!name) {
+            throw new TypeError(`Invalid Construction`);
+        }
+        const elm = document.createElement(name);
+        setPrototypeOf(elm, constructor.prototype);
+        return elm;
+    };
+    HTMLElementConstructor.prototype = HTMLElement.prototype;
+}
 
 // TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
 // to avoid having to synchronize it between the different modules.
@@ -163,4 +227,8 @@ export const renderer: Renderer<Node, Element> = {
     assertInstanceOfHTMLElement(elm: any, msg: string) {
         assert.invariant(elm instanceof HTMLElement, msg);
     },
+
+    defineCustomElement,
+    getCustomElement,
+    HTMLElement: HTMLElementConstructor as any,
 };

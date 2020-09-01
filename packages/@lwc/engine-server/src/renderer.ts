@@ -10,6 +10,8 @@ import {
     isBooleanAttribute,
     isGlobalHtmlAttribute,
     isAriaAttribute,
+    create,
+    StringToLowerCase,
 } from '@lwc/shared';
 import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
 
@@ -34,6 +36,30 @@ function createElement(name: string, namespace?: string): HostElement {
         attributes: [],
         eventListeners: {},
     };
+}
+
+const registry: Record<string, CustomElementConstructor> = create(null);
+const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
+
+function registerCustomElement(name: string, ctor: CustomElementConstructor) {
+    if (name !== StringToLowerCase.call(name) || registry[name]) {
+        throw new TypeError(`Invalid Registration`);
+    }
+    registry[name] = ctor;
+    reverseRegistry.set(ctor, name);
+}
+
+class HTMLElement {
+    constructor() {
+        const { constructor } = this;
+        const name = reverseRegistry.get(constructor as CustomElementConstructor);
+        if (!name) {
+            throw new TypeError(`Invalid Construction`);
+        }
+        const elm = createElement(name);
+        elm.constructor = this.constructor; // restoring constructor into the fake instance
+        return elm;
+    }
 }
 
 export const renderer: Renderer<HostNode, HostElement> = {
@@ -313,4 +339,16 @@ export const renderer: Renderer<HostNode, HostElement> = {
     querySelectorAll: unsupportedMethod('querySelectorAll'),
     getElementsByTagName: unsupportedMethod('getElementsByTagName'),
     getElementsByClassName: unsupportedMethod('getElementsByClassName'),
+
+    defineCustomElement(
+        name: string,
+        constructor: CustomElementConstructor,
+        _options?: ElementDefinitionOptions
+    ) {
+        registerCustomElement(name, constructor);
+    },
+    getCustomElement(name: string): CustomElementConstructor | undefined {
+        return registry[name];
+    },
+    HTMLElement: HTMLElement as any,
 };

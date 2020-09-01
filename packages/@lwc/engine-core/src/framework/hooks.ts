@@ -7,14 +7,11 @@
 import { assert, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
 import { EmptyArray } from './utils';
 import {
-    rerenderVM,
     createVM,
-    removeVM,
-    getAssociatedVM,
     allocateInSlot,
-    appendVM,
     runWithBoundaryProtection,
     getAssociatedVMIfPresent,
+    VM,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -138,11 +135,6 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     modComputedStyle.update(oldVnode, vnode);
 }
 
-export function insertCustomElmHook(vnode: VCustomElement) {
-    const vm = getAssociatedVM(vnode.elm!);
-    appendVM(vm);
-}
-
 export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
     const { children, owner } = vnode;
     const fn = hasDynamicChildren(children) ? updateDynamicChildren : updateStaticChildren;
@@ -157,8 +149,7 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
     );
 }
 
-export function allocateChildrenHook(vnode: VCustomElement) {
-    const vm = getAssociatedVM(vnode.elm!);
+export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.
     // 2- There is a change on the external api (ex: slots)
@@ -236,17 +227,6 @@ export function createChildrenHook(vnode: VElement) {
     }
 }
 
-export function rerenderCustomElmHook(vnode: VCustomElement) {
-    const vm = getAssociatedVM(vnode.elm!);
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isArray(vnode.children),
-            `Invalid vnode for a custom element, it must have children defined.`
-        );
-    }
-    rerenderVM(vm);
-}
-
 export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
@@ -268,12 +248,6 @@ export function removeElmHook(vnode: VElement) {
             ch.hook.remove(ch, elm!);
         }
     }
-}
-
-export function removeCustomElmHook(vnode: VCustomElement) {
-    // for custom elements we don't have to go recursively because the removeVM routine
-    // will take care of disconnecting any child VM attached to its shadow as well.
-    removeVM(getAssociatedVM(vnode.elm!));
 }
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
