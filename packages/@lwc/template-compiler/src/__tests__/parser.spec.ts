@@ -420,13 +420,31 @@ describe('expression', () => {
         // Note: the special case with curly brackets on text nodes is because of Text node traversal does not properly
         // builds the expression: const tokenizedContent = rawText.split(EXPRESSION_RE);
         // converting {{foo}} into {{foo}, and the later is what's passed into the expression parser.
-        const result = parseTemplate(`<template>{{foo}}</template>`);
+        let result = parseTemplate(`<template>{{foo}}</template>`);
 
         expect(result.warnings[0]).toMatchObject({
             level: DiagnosticLevel.Error,
             message: `Invalid expression {{foo} - LWC1060: Template expression doesn't allow ObjectExpression`,
             location: EXPECTED_LOCATION,
         });
+
+        result = parseTemplate(`<template>{{}}</template>`);
+
+        expect(result.warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression {{} - LWC1060: Template expression doesn't allow ObjectExpression`,
+            location: EXPECTED_LOCATION,
+        });
+
+        result = parseTemplate(`<template>{{foo}</template>`);
+
+        expect(result.warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression {{foo} - LWC1060: Template expression doesn't allow ObjectExpression`,
+            location: EXPECTED_LOCATION,
+        });
+
+        // Note: {foo}} is valid in textNode context
     });
 
     it('allows extra curly brackets on element attributes', () => {
@@ -435,6 +453,29 @@ describe('expression', () => {
 
         result = parseTemplate(`<template><button title={{((foo.bar))}}>bar</button></template>`);
         expect(result.warnings).toHaveLength(0);
+    });
+
+    it('forbids incorrect extra curly brackets on element attributes', () => {
+        let result = parseTemplate(`<template><button title={{}}>bar</button></template>`);
+        expect(result.warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `LWC1052: Error parsing attribute: Invalid expression {{}} - Unexpected token (1:2)`,
+            location: EXPECTED_LOCATION,
+        });
+
+        result = parseTemplate(`<template><button title={{foo}>bar</button></template>`);
+        expect(result.warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression {{foo} - LWC1060: Template expression doesn't allow ObjectExpression`,
+            location: EXPECTED_LOCATION,
+        });
+
+        result = parseTemplate(`<template><button title={foo}}>bar</button></template>`);
+        expect(result.warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression {foo}} - LWC1083: Error parsing template expression: Unexpected end of expression`,
+            location: EXPECTED_LOCATION,
+        });
     });
 
     it('forbid incorrect parenthesis', () => {

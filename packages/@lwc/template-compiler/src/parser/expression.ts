@@ -67,7 +67,7 @@ function validateExpression(node: estree.BaseNode, element: IRNode, state: State
 }
 
 function validateSourceIsParsedExpression(source: string, parsedExpression: Node, offset: number) {
-    if (parsedExpression.end === source.length - 1) {
+    if (parsedExpression.end === source.length - offset) {
         return;
     }
 
