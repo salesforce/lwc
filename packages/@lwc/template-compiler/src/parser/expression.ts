@@ -66,7 +66,7 @@ function validateExpression(node: estree.BaseNode, element: IRNode, state: State
     }
 }
 
-function validateSourceIsParsedExpression(source: string, parsedExpression: Node) {
+function validateSourceIsParsedExpression(source: string, parsedExpression: Node, offset: number) {
     if (parsedExpression.end === source.length - 1) {
         return;
     }
@@ -79,8 +79,8 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
         }
     }
 
-    // source[source.length - 1] === '}', n = source.length - 1 is to avoid processing '}'.
-    for (let i = parsedExpression.end, n = source.length - 1; i < n; i++) {
+    // source[source.length - offset ... source.length -1] === '}', n = source.length - offset is to avoid processing '}'.
+    for (let i = parsedExpression.end, n = source.length - offset; i < n; i++) {
         const character = source[i];
 
         if (character === ')') {
@@ -107,9 +107,13 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
 // FIXME: Avoid throwing errors and return it properly
 export function parseExpression(source: string, element: IRNode, state: State): TemplateExpression {
     try {
-        const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
+        const lastPositionInSource = source.length - 1;
+        let offset = 0;
+        while (source[offset] === '{' && source[lastPositionInSource - offset] === '}') offset++;
 
-        validateSourceIsParsedExpression(source, parsed);
+        const parsed = parseExpressionAt(source, offset, { ecmaVersion: 2020 });
+
+        validateSourceIsParsedExpression(source, parsed, offset);
         validateExpression(parsed, element, state);
 
         return (parsed as unknown) as TemplateExpression;
