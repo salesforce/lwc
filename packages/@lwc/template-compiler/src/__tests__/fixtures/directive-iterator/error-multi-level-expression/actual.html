@@ -1,0 +1,7 @@
+<template>
+    <template iterator:x={items}>
+        <template iterator:y={items}>
+            <div key={y.value.id} class={x.next}></div>
+        </template>
+    </template>
+</template>

@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import traverse from '@babel/traverse';
 import * as types from '@babel/types';
-import * as babylon from '@babel/parser';
 import * as esutils from 'esutils';
+import { Node, parseExpressionAt } from 'acorn';
+import estree from 'estree';
 
 import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors';
 
@@ -22,6 +22,7 @@ export const EXPRESSION_SYMBOL_END = '}';
 
 const VALID_EXPRESSION_RE = /^{.+}$/;
 const POTENTIAL_EXPRESSION_RE = /^.?{.+}.*$/;
+const WHITESPACES_RE = /\s/;
 
 const ITERATOR_NEXT_KEY = 'next';
 
@@ -33,57 +34,85 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
+function isEsTreeIdentifier(node: estree.BaseNode): node is estree.Identifier {
+    return node.type === 'Identifier';
+}
+
+function isEsTreeMemberExpression(node: estree.BaseNode): node is estree.MemberExpression {
+    return node.type === 'MemberExpression';
+}
+
+function validateExpression(node: estree.BaseNode, element: IRNode, state: State) {
+    const isValidNode = isEsTreeIdentifier(node) || isEsTreeMemberExpression(node);
+    invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
+
+    if (isEsTreeMemberExpression(node)) {
+        invariant(
+            state.config.experimentalComputedMemberExpression || !node.computed,
+            ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
+        );
+
+        const { object, property } = node;
+
+        // Validate if the expression is modifying an iterator (only the leftmost). Ex: it.next in it.next.foo
+        if (isEsTreeIdentifier(object) && isEsTreeIdentifier(property)) {
+            invariant(
+                property.name !== ITERATOR_NEXT_KEY || !isBoundToIterator(object.name, element),
+                ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
+            );
+        } else {
+            validateExpression(object, element, state);
+        }
+    }
+}
+
+function validateSourceIsParsedExpression(source: string, parsedExpression: Node) {
+    if (parsedExpression.end === source.length - 1) {
+        return;
+    }
+
+    let unclosedParenthesisCount = 0;
+
+    for (let i = 0, n = parsedExpression.start; i < n; i++) {
+        if (source[i] === '(') {
+            unclosedParenthesisCount++;
+        }
+    }
+
+    // source[source.length - 1] === '}', n = source.length - 1 is to avoid processing '}'.
+    for (let i = parsedExpression.end, n = source.length - 1; i < n; i++) {
+        const character = source[i];
+
+        if (character === ')') {
+            unclosedParenthesisCount--;
+        } else if (character === ';') {
+            // acorn parseExpressionAt will stop at the first ";", it may be that the expression is not
+            // a multiple expression ({foo;}), but this is a case that we explicitly do not want to support.
+            // in such case, let's fail with the same error as if it were a multiple expression.
+            invariant(false, ParserDiagnostics.MULTIPLE_EXPRESSIONS);
+        } else {
+            invariant(
+                WHITESPACES_RE.test(character),
+                ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
+                ['Unexpected end of expression']
+            );
+        }
+    }
+
+    invariant(unclosedParenthesisCount === 0, ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR, [
+        'Unexpected end of expression',
+    ]);
+}
+
 // FIXME: Avoid throwing errors and return it properly
 export function parseExpression(source: string, element: IRNode, state: State): TemplateExpression {
     try {
-        const parsed = babylon.parse(source);
+        const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
 
-        let expression: any;
+        validateSourceIsParsedExpression(source, parsed);
+        validateExpression(parsed, element, state);
 
-        traverse(parsed, {
-            enter(path) {
-                const isValidNode =
-                    path.isProgram() ||
-                    path.isBlockStatement() ||
-                    path.isExpressionStatement() ||
-                    path.isIdentifier() ||
-                    path.isMemberExpression();
-                invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [path.type]);
-
-                // Ensure expression doesn't contain multiple expressions: {foo;bar}
-                const hasMultipleExpressions =
-                    path.isBlock() && (path.get('body') as any).length !== 1;
-                invariant(!hasMultipleExpressions, ParserDiagnostics.MULTIPLE_EXPRESSIONS);
-
-                // Retrieve the first expression and set it as return value
-                if (path.isExpressionStatement() && !expression) {
-                    expression = (path.node as types.ExpressionStatement).expression;
-                }
-            },
-
-            MemberExpression: {
-                exit(path) {
-                    const shouldReportComputed =
-                        !state.config.experimentalComputedMemberExpression &&
-                        (path.node as types.MemberExpression).computed;
-                    invariant(
-                        !shouldReportComputed,
-                        ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
-                    );
-
-                    const memberExpression = path.node as types.MemberExpression;
-                    const propertyIdentifier = memberExpression.property as TemplateIdentifier;
-                    const objectIdentifier = memberExpression.object as TemplateIdentifier;
-                    invariant(
-                        !isBoundToIterator(objectIdentifier, element) ||
-                            propertyIdentifier.name !== ITERATOR_NEXT_KEY,
-                        ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
-                    );
-                },
-            },
-        });
-
-        return expression;
+        return (parsed as unknown) as TemplateExpression;
     } catch (err) {
         err.message = `Invalid expression ${source} - ${err.message}`;
         throw err;

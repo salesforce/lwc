@@ -20,6 +20,7 @@
         "test": "jest"
     },
     "devDependencies": {
+        "@types/estree": "0.0.45",
         "@types/he": "^1.1.1"
     },
     "files": [
@@ -33,6 +34,7 @@
         "@babel/types": "~7.1.5",
         "@lwc/errors": "1.7.13",
         "@lwc/shared": "1.7.13",
+        "acorn": "~8.0.1",
         "esutils": "~2.0.3",
         "he": "~1.2.0",
         "parse5-with-errors": "4.0.3-beta1"

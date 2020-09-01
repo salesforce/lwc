@@ -384,6 +384,56 @@ describe('expression', () => {
         });
     });
 
+    it('forbids trailing semicolon', () => {
+        let result = parseTemplate(`<template>{foo;}</template>`);
+        expect(result.warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression {foo;} - LWC1074: Multiple expressions found`,
+            location: EXPECTED_LOCATION,
+        });
+
+        result = parseTemplate(`<template>{ foo ;   }</template>`);
+        expect(result.warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression { foo ;   } - LWC1074: Multiple expressions found`,
+            location: EXPECTED_LOCATION,
+        });
+    });
+
+    it('allows trailing spaces', () => {
+        const { warnings } = parseTemplate(`<template>{   foo   }</template>`);
+        expect(warnings).toHaveLength(0);
+    });
+
+    it('allows parenthesis', () => {
+        let result = parseTemplate(`<template>{ ((foo)) }</template>`);
+        expect(result.warnings).toHaveLength(0);
+
+        result = parseTemplate(`<template>{ ((foo.bar)) }</template>`);
+        expect(result.warnings).toHaveLength(0);
+
+        result = parseTemplate(`<template>{ ((foo).bar) }</template>`);
+        expect(result.warnings).toHaveLength(0);
+    });
+
+    it('forbid incorrect parenthesis', () => {
+        const { warnings } = parseTemplate(`<template>{foo)}</template>`);
+        expect(warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `Invalid expression {foo)} - LWC1083: Error parsing template expression: Unexpected end of expression`,
+            location: EXPECTED_LOCATION,
+        });
+    });
+
+    it('forbid empty expression', () => {
+        const { warnings } = parseTemplate(`<template>{  }</template>`);
+        expect(warnings[0]).toMatchObject({
+            level: DiagnosticLevel.Error,
+            message: `LWC1083: Error parsing template expression: Invalid expression {  } - Unexpected token (1:3)`,
+            location: EXPECTED_LOCATION,
+        });
+    });
+
     it('quoted expression ambiguity error', () => {
         const { warnings } = parseTemplate(`<template><input title="{myValue}" /></template>`);
         expect(warnings[0].message).toMatch(`Ambiguous attribute value title="{myValue}"`);
