@@ -15,7 +15,7 @@ import scriptTransformer from './javascript';
 import { isString } from '../utils';
 import { SourceMap } from '../compiler/compiler';
 
-export interface FileTransformerResult {
+export interface TransformResult {
     code: string;
     map: SourceMap | null;
 }
@@ -30,7 +30,7 @@ export function transform(
     src: string,
     filename: string,
     options: TransformOptions
-): Promise<FileTransformerResult> {
+): Promise<TransformResult> {
     validateArguments(src, filename);
     return new Promise((resolve, reject) => {
         try {
@@ -50,7 +50,7 @@ export function transformSync(
     src: string,
     filename: string,
     options: TransformOptions
-): FileTransformerResult {
+): TransformResult {
     validateArguments(src, filename);
     const normalizedOptions = validateTransformOptions(options);
     return transformFile(src, filename, normalizedOptions);
@@ -65,7 +65,7 @@ export function transformFile(
     src: string,
     filename: string,
     options: NormalizedTransformOptions
-): FileTransformerResult {
+): TransformResult {
     let transformer;
 
     switch (path.extname(filename)) {

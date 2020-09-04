@@ -13,7 +13,7 @@ import {
 } from '@lwc/errors';
 import compile from '@lwc/template-compiler';
 import { NormalizedTransformOptions } from '../options';
-import { FileTransformerResult } from './transformer';
+import { TransformResult } from './transformer';
 
 export interface TemplateTransformResult {
     code: string;
@@ -31,7 +31,7 @@ export default function templateTransform(
     src: string,
     filename: string,
     options: NormalizedTransformOptions
-): FileTransformerResult {
+): TransformResult {
     let result;
 
     try {

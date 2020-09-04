@@ -12,14 +12,14 @@ import { version } from '../index';
 
 export { default as templateCompiler } from '@lwc/template-compiler';
 
-export interface CompilerOutput {
+export interface CompileOutput {
     success: boolean;
     diagnostics: CompilerDiagnostic[];
-    result?: BundleResult;
+    result?: CompileResult;
     version: string;
 }
 
-export interface BundleResult {
+export interface CompileResult {
     code: string;
     map: SourceMap | null;
     outputConfig: NormalizedOutputConfig;
@@ -27,10 +27,10 @@ export interface BundleResult {
 
 export type SourceMap = any;
 
-export async function compile(options: CompileOptions): Promise<CompilerOutput> {
+export async function compile(options: CompileOptions): Promise<CompileOutput> {
     const normalizedOptions = validateCompileOptions(options);
 
-    let result: BundleResult | undefined;
+    let result: CompileResult | undefined;
     const diagnostics: CompilerDiagnostic[] = [];
 
     const { diagnostics: bundleDiagnostics, code, map } = await bundle(normalizedOptions);
