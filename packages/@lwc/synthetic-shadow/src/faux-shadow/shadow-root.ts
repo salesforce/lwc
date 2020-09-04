@@ -117,6 +117,13 @@ export function isHostElement(elm: Element | Node): boolean {
 
 let uid = 0;
 
+type ShadowRootMode = 'closed' | 'open';
+
+interface ShadowRootInit {
+    delegatesFocus?: boolean;
+    mode: ShadowRootMode;
+}
+
 export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
     if (!isUndefined(getHiddenField(elm, InternalSlot))) {
         throw new Error(
