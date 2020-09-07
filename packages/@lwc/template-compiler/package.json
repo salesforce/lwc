@@ -27,11 +27,11 @@
         "dist/"
     ],
     "dependencies": {
-        "@babel/generator": "~7.11.0",
-        "@babel/parser": "~7.11.3",
+        "@babel/generator": "~7.11.6",
+        "@babel/parser": "~7.11.5",
         "@babel/template": "~7.10.4",
-        "@babel/traverse": "~7.11.0",
-        "@babel/types": "~7.11.0",
+        "@babel/traverse": "~7.11.5",
+        "@babel/types": "~7.11.5",
         "@lwc/errors": "1.7.14",
         "@lwc/shared": "1.7.14",
         "acorn": "~8.0.1",
