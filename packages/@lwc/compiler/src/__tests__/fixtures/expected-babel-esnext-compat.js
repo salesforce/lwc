@@ -130,7 +130,7 @@ return __callKey2(this, "_invoke", "return", arg);
 });
 function _AwaitValue(value) {
     __setKey(this, "wrapped", value);
-}
+} // @babel/plugin-proposal-async-generator-functions
 function agf() {
     return __callKey2(_agf, "apply", this, arguments);
 } // @babel/plugin-transform-class-properties

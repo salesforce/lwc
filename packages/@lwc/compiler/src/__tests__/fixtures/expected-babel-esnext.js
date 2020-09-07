@@ -10,6 +10,7 @@ _AsyncGenerator.prototype.next = function (arg) { return this._invoke("next", ar
 _AsyncGenerator.prototype.throw = function (arg) { return this._invoke("throw", arg); };
 _AsyncGenerator.prototype.return = function (arg) { return this._invoke("return", arg); };
 function _AwaitValue(value) { this.wrapped = value; }
+// @babel/plugin-proposal-async-generator-functions
 function agf() {
     return _agf.apply(this, arguments);
 } // @babel/plugin-transform-class-properties

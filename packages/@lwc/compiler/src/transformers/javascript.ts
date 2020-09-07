@@ -35,27 +35,17 @@ export default function scriptTransform(
 
     let result: babel.BabelFileResult;
     try {
-        // The LWC babel plugin doesn't play well when associated along with other plugins. We first
-        // run the LWC babel plugin and then run the rest of the transformation on the intermediary
-        // code.
-        const intermediary = babel.transformSync(code, {
+        result = babel.transformSync(code, {
             ...BABEL_CONFIG_BASE,
             plugins: [
                 [
                     '@lwc/babel-plugin-component',
                     { isExplicitImport, dynamicImports: experimentalDynamicComponent },
                 ],
+                ...BABEL_PLUGINS_STAGE_4,
             ],
             filename,
             sourceMaps: sourcemap,
-        })!;
-
-        result = babel.transformSync(intermediary.code!, {
-            ...BABEL_CONFIG_BASE,
-            plugins: BABEL_PLUGINS_STAGE_4,
-            filename,
-            sourceMaps: sourcemap,
-            inputSourceMap: intermediary.map ?? undefined,
         })!;
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
