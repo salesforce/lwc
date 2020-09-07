@@ -32,8 +32,8 @@
         "@lwc/template-compiler": "1.7.14",
         "@rollup/plugin-replace": "~2.3.3",
         "babel-preset-compat": "~0.22.1",
-        "rollup": "~2.26.3",
-        "terser": "~5.1.0"
+        "rollup": "~2.26.10",
+        "terser": "~5.3.0"
     },
     "devDependencies": {
         "source-map": "^0.7.3"
