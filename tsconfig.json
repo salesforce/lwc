@@ -4,7 +4,6 @@
     "noUnusedLocals": true,
 
     "declaration": true,
-    "sourceMap": true,
 
     "module": "commonjs",
     "moduleResolution": "node",

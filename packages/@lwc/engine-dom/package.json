@@ -24,7 +24,7 @@
         "dist/",
         "types/"
     ],
-    "devDependencies": {
+    "dependencies": {
         "@lwc/engine-core": "2.0.0-rc.0",
         "@lwc/shared": "2.0.0-rc.0"
     },

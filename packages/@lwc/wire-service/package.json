@@ -18,15 +18,17 @@
     "scripts": {
         "clean": "rm -rf dist/ types/",
         "test": "jest",
-        "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js"
+        "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup.config.js"
     },
     "files": [
         "dist/",
         "types/"
     ],
-    "devDependencies": {
-        "@lwc/engine-core": "2.0.0-rc.0",
+    "dependencies": {
         "@lwc/shared": "2.0.0-rc.0"
+    },
+    "devDependencies": {
+        "@lwc/engine-core": "2.0.0-rc.0"
     },
     "lwc": {
         "modules": [

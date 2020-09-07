@@ -7,9 +7,10 @@
 const path = require('path');
 const { rollup } = require('rollup');
 const typescript = require('typescript');
-const rollupTypescriptPlugin = require('rollup-plugin-typescript');
-const rollupReplace = require('@rollup/plugin-replace');
+const rollupTypescriptPlugin = require('@rollup/plugin-typescript');
 const { terser: rollupTerser } = require('rollup-plugin-terser');
+const rollupReplace = require('@rollup/plugin-replace');
+const { default: nodeResolvePlugin } = require('@rollup/plugin-node-resolve');
 const babel = require('@babel/core');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 const { generateTargetName } = require('./helpers');
@@ -32,13 +33,20 @@ function rollupConfig(config) {
         inputOptions: {
             input,
             plugins: [
+                nodeResolvePlugin(),
                 prod &&
                     rollupReplace({
                         'process.env.NODE_ENV': JSON.stringify('production'),
                         preventAssignment: true,
                     }),
                 rollupFeaturesPlugin(prod),
-                compatMode && rollupTypescriptPlugin({ target, typescript, include: ['/**/*.js'] }),
+                compatMode &&
+                    rollupTypescriptPlugin({
+                        tsconfig: false,
+                        target,
+                        typescript,
+                        include: ['/**/*.js'],
+                    }),
                 prod && !debug && rollupTerser(),
             ],
         },

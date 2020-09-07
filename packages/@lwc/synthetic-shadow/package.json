@@ -16,7 +16,7 @@
     "module": "dist/synthetic-shadow.js",
     "scripts": {
         "clean": "rm -rf dist/",
-        "build": "tsc --noEmit && rollup --config ./scripts/rollup/rollup.config.js"
+        "build": "tsc --noEmit && rollup --config ./scripts/rollup.config.js"
     },
     "files": [
         "dist/"

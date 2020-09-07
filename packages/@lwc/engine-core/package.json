@@ -24,10 +24,12 @@
         "dist/",
         "types/"
     ],
-    "devDependencies": {
-        "@lwc/features": "2.0.0-rc.0",
+    "dependencies": {
         "@lwc/shared": "2.0.0-rc.0",
         "observable-membrane": "1.0.1"
+    },
+    "devDependencies": {
+        "@lwc/features": "2.0.0-rc.0"
     },
     "publishConfig": {
         "access": "public"

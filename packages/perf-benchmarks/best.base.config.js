@@ -6,6 +6,7 @@
  */
 module.exports = {
     plugins: [
+        ['@rollup/plugin-node-resolve', {}],
         [
             '@lwc/rollup-plugin',
             {

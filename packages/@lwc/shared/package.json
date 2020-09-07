@@ -11,13 +11,13 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.js",
+    "main": "dist/shared.cjs.js",
+    "module": "dist/shared.js",
     "typings": "types/index.d.ts",
     "license": "MIT",
     "scripts": {
-        "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js",
-        "postbuild": "node ../../../scripts/tasks/verify-treeshakable.js ./dist/index.js",
+        "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup.config.js",
+        "postbuild": "node ../../../scripts/tasks/verify-treeshakable.js ./dist/shared.js",
         "clean": "rm -rf dist/ types/"
     },
     "files": [
