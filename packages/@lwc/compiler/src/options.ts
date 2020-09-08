@@ -35,13 +35,11 @@ const KNOWN_ENV = new Set(['NODE_ENV']);
 
 export type CustomPropertiesResolution = { type: 'native' } | { type: 'module'; name: string };
 
-export interface CustomPropertiesConfig {
-    allowDefinition?: boolean;
-    resolution?: CustomPropertiesResolution;
-}
-
 export interface StylesheetConfig {
-    customProperties?: CustomPropertiesConfig;
+    customProperties?: {
+        allowDefinition?: boolean;
+        resolution?: CustomPropertiesResolution;
+    };
 }
 
 export interface OutputConfig {

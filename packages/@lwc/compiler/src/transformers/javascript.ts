@@ -10,13 +10,13 @@ import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from '../babel-plugins';
 import { NormalizedTransformOptions } from '../options';
-import { FileTransformerResult } from './transformer';
+import { TransformResult } from './transformer';
 
 export default function scriptTransform(
     code: string,
     filename: string,
     options: NormalizedTransformOptions
-): FileTransformerResult {
+): TransformResult {
     const { isExplicitImport, experimentalDynamicComponent: dynamicImports } = options;
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
         plugins: [
