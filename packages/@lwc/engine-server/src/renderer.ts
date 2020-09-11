@@ -56,9 +56,7 @@ class HTMLElement {
         if (!name) {
             throw new TypeError(`Invalid Construction`);
         }
-        const elm = createElement(name);
-        elm.constructor = this.constructor; // restoring constructor into the fake instance
-        return elm;
+        return createElement(name);
     }
 }
 

@@ -20,11 +20,11 @@ import {
 import {
     getComponentInternalDef,
     setElementProto,
-    getAssociatedVMIfPresent,
     createVM,
     connectRootElement,
     disconnectRootElement,
     LightningElement,
+    getUpgradableConstructor,
 } from '@lwc/engine-core';
 
 import { renderer } from '../renderer';
@@ -105,26 +105,20 @@ export function createElement(
         );
     }
 
-    const element = document.createElement(sel);
+    const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
+    // the custom element from the registry is expecting an upgrade callback
+    const element = new UpgradableConstructor((elm: HTMLElement) => {
+        const def = getComponentInternalDef(Ctor);
+        setElementProto(elm, def);
 
-    // There is a possibility that a custom element is registered under tagName, in which case, the
-    // initialization is already carry on, and there is nothing else to do here.
-    if (!isUndefined(getAssociatedVMIfPresent(element))) {
-        return element;
-    }
-
-    const def = getComponentInternalDef(Ctor);
-    setElementProto(element, def);
-
-    createVM(element, def, {
-        tagName: sel,
-        mode: options.mode !== 'closed' ? 'open' : 'closed',
-        owner: null,
-        renderer,
+        createVM(elm, def, {
+            tagName: sel,
+            mode: options.mode !== 'closed' ? 'open' : 'closed',
+            owner: null,
+            renderer,
+        });
+        setHiddenField(elm, ConnectingSlot, connectRootElement);
+        setHiddenField(elm, DisconnectingSlot, disconnectRootElement);
     });
-
-    setHiddenField(element, ConnectingSlot, connectRootElement);
-    setHiddenField(element, DisconnectingSlot, disconnectRootElement);
-
     return element;
 }

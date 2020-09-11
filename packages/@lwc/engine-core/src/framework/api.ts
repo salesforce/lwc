@@ -63,7 +63,7 @@ import {
     markAsDynamicChildren,
 } from './hooks';
 import { isComponentConstructor } from './def';
-import { getUpgradableConstructor, UpgradableCustomElementConstructor } from './upgradable-element';
+import { getUpgradableConstructor } from './upgradable-element';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -146,12 +146,6 @@ const ElementHook: Hooks<VElement> = {
     },
 };
 
-function isUpgradableComponent(
-    ctor: CustomElementConstructor | UpgradableCustomElementConstructor
-): ctor is UpgradableCustomElementConstructor {
-    return 'upgrade' in ctor;
-}
-
 const CustomElementHook: Hooks<VCustomElement> = {
     create: (vnode) => {
         const {
@@ -159,13 +153,10 @@ const CustomElementHook: Hooks<VCustomElement> = {
             owner: { renderer },
         } = vnode;
         const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
-        if (isUpgradableComponent(UpgradableConstructor)) {
+        const elm = new UpgradableConstructor((elm: HTMLElement) => {
             // the custom element from the registry is expecting an upgrade callback
-            UpgradableConstructor.upgrade = (elm: HTMLElement) => {
-                createViewModelHook(elm, vnode);
-            };
-        }
-        const elm = new UpgradableConstructor();
+            createViewModelHook(elm, vnode);
+        });
         vnode.elm = elm;
         linkNodeToShadow(elm, vnode);
 

@@ -9,8 +9,8 @@ import { Renderer } from './renderer';
 
 type UpgradeCallback = (elm: HTMLElement) => void;
 
-export interface UpgradableCustomElementConstructor extends CustomElementConstructor {
-    upgrade: UpgradeCallback;
+interface UpgradableCustomElementConstructor extends CustomElementConstructor {
+    new (upgradeCallback?: UpgradeCallback): HTMLElement;
 }
 
 export function getUpgradableConstructor(
@@ -30,15 +30,8 @@ export function getUpgradableConstructor(
      * via the scoped registry mechanism, and that is ready to be upgraded.
      */
     CE = class LWCUpgradableElement extends renderer.HTMLElement {
-        private static upgradeCallback: UpgradeCallback | undefined;
-        static set upgrade(callbackOnce: UpgradeCallback) {
-            this.upgradeCallback = callbackOnce;
-        }
-        constructor() {
+        constructor(upgradeCallback?: UpgradeCallback) {
             super();
-            const constructor = this.constructor as typeof LWCUpgradableElement;
-            const { upgradeCallback } = constructor;
-            constructor.upgradeCallback = undefined; // resetting it
             if (isFunction(upgradeCallback)) {
                 upgradeCallback(this); // nothing to do with the result for now
             }
