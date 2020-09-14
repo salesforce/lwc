@@ -153,6 +153,12 @@ const CustomElementHook: Hooks<VCustomElement> = {
             owner: { renderer },
         } = vnode;
         const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
+        /**
+         * Note: if the upgradable constructor does not expect, or throw when we new it
+         * with a callback as the first argument, we could implement a more advanced
+         * mechanism that only passes that argument if the constructor is known to be
+         * an upgradable custom element.
+         */
         const elm = new UpgradableConstructor((elm: HTMLElement) => {
             // the custom element from the registry is expecting an upgrade callback
             createViewModelHook(elm, vnode);
