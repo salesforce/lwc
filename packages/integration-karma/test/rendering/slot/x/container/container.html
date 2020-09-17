@@ -1,0 +1,8 @@
+<template>
+    {counter}
+    <button onclick={increaseCounter}>increaseCounter</button>
+    <x-child>
+        <p class="default-slot">{defaultSlotCounter}</p>
+        <p slot="namedSlot" class="named-slot">{namedSlotCounter}</p>
+    </x-child>
+</template>
