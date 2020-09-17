@@ -37,10 +37,10 @@ export function getUpgradableConstructor(
             }
         }
         connectedCallback() {
-            return 1;
+            return 0;
         }
         disconnectedCallback() {
-            return 2;
+            return 1;
         }
     };
     renderer.defineCustomElement(tagName, CE);
