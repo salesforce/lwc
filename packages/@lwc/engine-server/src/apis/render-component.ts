@@ -8,7 +8,6 @@ import {
     createVM,
     connectRootElement,
     getComponentInternalDef,
-    setElementProto,
     LightningElement,
 } from '@lwc/engine-core';
 import { isString, isFunction, isObject, isNull } from '@lwc/shared';
@@ -54,7 +53,6 @@ export function renderComponent(
     const element = renderer.createElement(tagName);
 
     const def = getComponentInternalDef(Ctor);
-    setElementProto(element, def);
 
     createVM(element, def, {
         mode: 'open',

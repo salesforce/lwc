@@ -23,7 +23,7 @@ import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
-import { getComponentInternalDef, setElementProto } from './def';
+import { getComponentInternalDef } from './def';
 
 const noop = () => void 0;
 
@@ -183,7 +183,6 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     }
     const { sel, mode, ctor, owner } = vnode;
     const def = getComponentInternalDef(ctor);
-    setElementProto(elm, def);
     if (isTrue(owner.renderer.syntheticShadow)) {
         const { shadowAttribute } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value

@@ -21,6 +21,7 @@ import {
     defineProperty,
     isObject,
     AccessibleElementProperties,
+    setPrototypeOf,
 } from '@lwc/shared';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { ComponentInterface, getWrappedComponentsListener } from './component';
@@ -183,7 +184,7 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
         elm,
         mode,
         renderer,
-        def: { ctor },
+        def: { ctor, bridge },
     } = vm;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -194,6 +195,7 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
     }
 
     const component = this;
+    setPrototypeOf(elm, bridge.prototype);
     const cmpRoot = renderer.attachShadow(elm, {
         mode,
         delegatesFocus: !!ctor.delegatesFocus,
