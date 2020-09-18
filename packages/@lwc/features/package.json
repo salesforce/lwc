@@ -1,6 +1,6 @@
 {
     "name": "@lwc/features",
-    "version": "1.7.10-228.1",
+    "version": "1.7.10-228.2",
     "description": "LWC Features Flags",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -25,7 +25,7 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/shared": "1.7.10-228.1"
+        "@lwc/shared": "1.7.10-228.2"
     },
     "publishConfig": {
         "access": "public"
