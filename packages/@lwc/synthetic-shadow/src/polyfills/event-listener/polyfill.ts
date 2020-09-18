@@ -39,7 +39,6 @@ function getEventListenerWrapper(
     if ('$$lwcEventWrapper$$' in listener) {
         return listener.$$lwcEventWrapper$$;
     }
-
     const isHandlerFunction = isFunction(listener);
     const wrapperFn = ((listener as EventListenerWrapper).$$lwcEventWrapper$$ = function (
         this: EventTarget,
@@ -84,7 +83,10 @@ function windowRemoveEventListener(
     }
 
     const wrapperFn = getEventListenerWrapper(listener);
-    nativeWindowRemoveEventListener.call(this, type, wrapperFn || listener, optionsOrCapture);
+    // Incase the listener was wrapped by the engine's addEventListener routine
+    nativeWindowRemoveEventListener.call(this, type, wrapperFn, optionsOrCapture);
+    // If the listener was added before synthetic-shadow was loaded, the listener might not be wrapped
+    nativeWindowRemoveEventListener.call(this, type, listener, optionsOrCapture);
 }
 
 function addEventListener(
@@ -112,7 +114,10 @@ function removeEventListener(
     }
 
     const wrapperFn = getEventListenerWrapper(listener);
-    nativeRemoveEventListener.call(this, type, wrapperFn || listener, optionsOrCapture);
+    // Incase the listener was wrapped by the engine's addEventListener routine
+    nativeRemoveEventListener.call(this, type, wrapperFn, optionsOrCapture);
+    // If the listener was added before synthetic-shadow was loaded, the listener might not be wrapped
+    nativeRemoveEventListener.call(this, type, listener, optionsOrCapture);
 }
 
 // TODO [#1305]: these patches should be on EventTarget.prototype instead of win and node prototypes
