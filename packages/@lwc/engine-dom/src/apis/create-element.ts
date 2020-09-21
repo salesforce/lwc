@@ -19,7 +19,6 @@ import {
 } from '@lwc/shared';
 import {
     getComponentInternalDef,
-    setElementProto,
     createVM,
     connectRootElement,
     disconnectRootElement,
@@ -116,8 +115,6 @@ export function createElement(
      */
     const element = new UpgradableConstructor((elm: HTMLElement) => {
         const def = getComponentInternalDef(Ctor);
-        setElementProto(elm, def);
-
         createVM(elm, def, {
             tagName: sel,
             mode: options.mode !== 'closed' ? 'open' : 'closed',

@@ -18,7 +18,7 @@ export { readonly } from './readonly';
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 
 // Internal APIs used by renderers -----------------------------------------------------------------
-export { getComponentInternalDef, setElementProto } from './def';
+export { getComponentInternalDef } from './def';
 export { getAttrNameFromPropName, isAttributeLocked } from './attributes';
 export {
     createVM,
