@@ -17,7 +17,7 @@ function getVersion() {
     return pkg.version;
 }
 
-const MODULES = new Set(['engine', 'synthetic-shadow', 'wire-service']);
+const MODULES = new Set(['engine', 'engine-server', 'synthetic-shadow', 'wire-service']);
 const FORMATS = new Set(['iife', 'umd', 'esm']);
 const TARGETS = new Set(['es5', 'es2017']);
 const MODES = new Set(['dev', 'prod', 'prod_debug']);
@@ -29,25 +29,24 @@ const DEFAULT_MODE = 'dev';
 function validateArgs(name, format, target, mode) {
     if (!MODULES.has(name)) {
         throw new Error(
-            `Invalid module name "${name}"` +
-                `Available module names: ${Array.from(MODULES.keys())}`
+            `Invalid module name "${name}". Available module names: ${Array.from(MODULES.keys())}`
         );
     }
 
     if (!FORMATS.has(format)) {
         throw new Error(
-            `Invalid format "${name}"` + `Available formats: ${Array.from(FORMATS.keys())}`
+            `Invalid format "${name}". Available formats: ${Array.from(FORMATS.keys())}`
         );
     }
 
     if (!TARGETS.has(target)) {
         throw new Error(
-            `Invalid target "${target}"` + `Available targets: ${Array.from(TARGETS.keys())}`
+            `Invalid target "${target}". Available targets: ${Array.from(TARGETS.keys())}`
         );
     }
 
     if (!MODES.has(mode)) {
-        throw new Error(`Invalid mode "${mode}"` + `Available modes: ${Array.from(MODES.keys())}`);
+        throw new Error(`Invalid mode "${mode}". Available modes: ${Array.from(MODES.keys())}`);
     }
 }
 
