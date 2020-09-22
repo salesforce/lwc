@@ -10,7 +10,7 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "version": "1.7.10-228.3",
+    "version": "1.7.10-228.4",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",
     "scripts": {
