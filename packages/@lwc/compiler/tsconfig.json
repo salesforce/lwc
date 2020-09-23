@@ -6,5 +6,5 @@
         "declarationDir": "dist/types"
     },
 
-    "include": ["src/", "typings/"]
+    "include": ["src/"]
 }

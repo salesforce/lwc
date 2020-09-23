@@ -27,6 +27,7 @@
     "@commitlint/cli": "^11.0.0",
     "@rollup/plugin-replace": "^2.3.3",
     "@types/acorn": "^4.0.5",
+    "@types/babel__core": "^7.1.9",
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.2",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
