@@ -34,7 +34,7 @@ export function nextFrame(cb) {
     setTimeout(cb, 0);
 }
 
-export const insertTableComponent = function (el, container = document.body) {
+export const insertComponent = function (el, container = document.body) {
     return new Promise((resolve) => {
         container.appendChild(el);
         nextFrame(() => {
@@ -43,6 +43,6 @@ export const insertTableComponent = function (el, container = document.body) {
     });
 };
 
-export const destroyTableComponent = function (el) {
+export const destroyComponent = function (el) {
     return el && el.parentElement.removeChild(el);
 };
