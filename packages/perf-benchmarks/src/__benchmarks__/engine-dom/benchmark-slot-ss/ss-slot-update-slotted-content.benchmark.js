@@ -11,7 +11,9 @@ import SlotUsage from 'benchmark/slotUsageComponent';
 import Store from 'benchmark/store';
 import { insertComponent, destroyComponent } from 'benchmark/utils';
 
-benchmark(`benchmark-slot-ss/synthetic-shadow-update-slotable-only`, () => {
+const NUMBER_OF_ROWS = 500;
+
+benchmark(`benchmark-slot-ss/synthetic-shadow-slot-update-slotted-content`, () => {
     let slottingComponent;
     let nextData;
 
@@ -20,17 +22,18 @@ benchmark(`benchmark-slot-ss/synthetic-shadow-update-slotable-only`, () => {
 
         const store = new Store();
 
-        slottingComponent.componentContent = "Parent component slotting content to child cmp";
-        slottingComponent.slottedContent = "Content to be slotted";
-        slottingComponent.rowsOfComponentWithSlot = store.buildData();
+        slottingComponent.componentContent = 'Parent component slotting content to child cmp';
+        slottingComponent.titleOfComponentWithSlot = 'Component that receives a slot';
+        slottingComponent.rowsOfSlottedContent = store.buildData(NUMBER_OF_ROWS);
+        slottingComponent.rowsOfComponentWithSlot = store.buildData(NUMBER_OF_ROWS);
 
-        nextData = store.buildData();
+        nextData = store.buildData(NUMBER_OF_ROWS);
 
         await insertComponent(slottingComponent);
     });
 
     run(() => {
-        slottingComponent.rowsOfComponentWithSlot = nextData;
+        slottingComponent.rowsOfSlottedContent = nextData;
     });
 
     after(() => {

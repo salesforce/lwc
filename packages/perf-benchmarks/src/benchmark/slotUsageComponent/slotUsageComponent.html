@@ -1,6 +1,15 @@
 <template>
     <h1>{componentContent}</h1>
-    <benchmark-card-component rows={rowsOfComponentWithSlot}>
-        <button>{slottedContent}</button>
+    <benchmark-card-component title={titleOfComponentWithSlot} rows={rowsOfComponentWithSlot}>
+
+        <template for:each={rowsOfSlottedContent} for:item="row">
+            <benchmark-table-component-row
+                    key={row.id}
+                    class={row.className}
+                    row={row}
+            >
+            </benchmark-table-component-row>
+        </template>
+
     </benchmark-card-component>
 </template>

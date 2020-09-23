@@ -8,6 +8,6 @@ import { LightningElement, api } from 'lwc';
 
 export default class CardComponent extends LightningElement {
     @api title;
+    // Note: This is only to give volume to the rehydration process.
     @api rows;
-
 }

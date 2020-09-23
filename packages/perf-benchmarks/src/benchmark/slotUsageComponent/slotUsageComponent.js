@@ -8,6 +8,7 @@ import { LightningElement, api } from 'lwc';
 
 export default class SlotUsageComponent extends LightningElement {
     @api componentContent;
-    @api slottedContent;
+    @api rowsOfSlottedContent;
+    @api titleOfComponentWithSlot;
     @api rowsOfComponentWithSlot;
 }
