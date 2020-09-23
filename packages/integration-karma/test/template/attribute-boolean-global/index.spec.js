@@ -3,31 +3,28 @@ import { createElement } from 'lwc';
 import Test from 'x/test';
 import Computed from 'x/computed';
 
-function generateTestCases(testElement) {
-    const itTitle = testElement.textContent;
+function assertPropAndAttribute(testElement) {
     const expectedPropertyValue = testElement.hasAttribute('data-expected');
     const expectedAttributeValue = testElement.getAttribute('data-expected');
 
-    it(itTitle, () => {
-        expect(testElement.hidden).toBe(expectedPropertyValue);
-        expect(testElement.getAttribute('hidden')).toBe(expectedAttributeValue);
-    });
+    expect(testElement.hidden).toBe(expectedPropertyValue);
+    expect(testElement.getAttribute('hidden')).toBe(expectedAttributeValue);
 }
 
 describe('boolean attribute', () => {
-    const elm = createElement('x-test', { is: Test });
-    document.body.appendChild(elm);
+    it('should set the right property and attribute value', () => {
+        const host = createElement('x-test', { is: Test });
+        document.body.appendChild(host);
 
-    describe('used in html element', () => {
-        const tests = elm.shadowRoot.querySelectorAll('.test-case');
+        const elms = host.shadowRoot.querySelectorAll('.test-case');
+        for (const elm of elms) {
+            assertPropAndAttribute(elm);
+        }
 
-        tests.forEach(generateTestCases);
-    });
-
-    describe('used in custom element', () => {
-        const tests = elm.shadowRoot.querySelectorAll('.ce-test-case');
-
-        tests.forEach(generateTestCases);
+        const customElms = host.shadowRoot.querySelectorAll('.ce-test-case');
+        for (const customElm of customElms) {
+            assertPropAndAttribute(customElm);
+        }
     });
 
     it('should be added/removed when used with computed value in html element', () => {

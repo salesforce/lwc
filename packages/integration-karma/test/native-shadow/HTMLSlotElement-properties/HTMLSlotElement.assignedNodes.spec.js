@@ -2,7 +2,13 @@ import { createElement } from 'lwc';
 import LWCParent from 'x/lwcParent';
 import NativeSlottedBasic from './x/NativeBasic/NativeBasic';
 
-function testAssignedNodes(testDescription, container) {
+function testAssignedNodes(testDescription, getContainer) {
+    let container;
+
+    beforeAll(() => {
+        container = getContainer();
+    });
+
     describe(testDescription, () => {
         let nativeSlottedBasic;
         beforeEach((done) => {
@@ -33,13 +39,16 @@ function testAssignedNodes(testDescription, container) {
 if (process.env.COMPAT !== true) {
     testAssignedNodes(
         'assignedNodes() retains native behavior in native shadow dom tree',
-        document.body
+        () => document.body
     );
-    const lwcParent = createElement('x-lwc-parent', { is: LWCParent });
-    document.body.appendChild(lwcParent);
-    const domManual = lwcParent.shadowRoot.querySelector('div');
+
     testAssignedNodes(
         'assignedNodes() retains behavior in native shadow tree nested in lwc parent',
-        domManual
+        () => {
+            const lwcParent = createElement('x-lwc-parent', { is: LWCParent });
+            document.body.appendChild(lwcParent);
+
+            return lwcParent.shadowRoot.querySelector('div');
+        }
     );
 }
