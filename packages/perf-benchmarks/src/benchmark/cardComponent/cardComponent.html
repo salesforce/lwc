@@ -1,0 +1,16 @@
+<template>
+    <h1>{title}</h1>
+    <template for:each={rows} for:item="row">
+        <benchmark-table-component-row
+                key={row.id}
+                class={row.className}
+                row={row}
+                onselect={handleSelect}
+                onremove={handleRemove}
+        >
+        </benchmark-table-component-row>
+    </template>
+    <div>
+        <slot></slot>
+    </div>
+</template>
