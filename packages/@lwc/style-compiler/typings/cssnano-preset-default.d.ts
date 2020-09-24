@@ -10,7 +10,7 @@ declare module 'cssnano-preset-default' {
     const preset: (
         config: any
     ) => {
-        plugins: [Plugin<any>, any];
+        plugins: [Plugin, any];
     };
     export default preset;
 }

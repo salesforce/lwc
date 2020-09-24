@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ResultMessage } from 'postcss';
+import { Message } from 'postcss';
 
-interface ImportMessage extends ResultMessage {
+interface ImportMessage extends Message {
     type: 'import';
     id: string;
 }
 
-interface VarFunctionMessage extends ResultMessage {
+interface VarFunctionMessage extends Message {
     type: 'var-function';
     original: string;
 }

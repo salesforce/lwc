@@ -52,7 +52,7 @@ export function transform(src: string, id: string, config: Config = {}): { code:
         plugins = [...postcssMinify(), ...plugins];
     }
 
-    const result = postcss(plugins).process(src, { from: id });
+    const result = postcss(plugins).process(src, { from: id }).sync();
 
     return { code: serialize(result, config) };
 }
