@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Rule, Plugin, AtRule } from 'postcss';
+import { Rule, AtRule, TransformCallback } from 'postcss';
 import postCssSelector from 'postcss-selector-parser';
 
 import validateCustomProperties from './custom-properties/validate';
@@ -37,61 +37,48 @@ function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
     });
 }
 
-export default function postCssLwcPlugin(config: PluginConfig): Plugin {
-    return {
-        postcssPlugin: 'lwc',
-        prepare(result) {
-            const { customProperties } = config;
+export default function postCssLwcPlugin(config: PluginConfig): TransformCallback {
+    // We need 2 types of selectors processors, since transforming the :host selector make the selector
+    // unusable when used in the context of the native shadow and vice-versa.
+    const nativeShadowSelectorProcessor = selectorProcessorFactory({
+        transformHost: false,
+    });
+    const fakeShadowSelectorProcessor = selectorProcessorFactory({
+        transformHost: true,
+    });
 
-            // We need 2 types of selectors processors, since transforming the :host selector make
-            // the selector unusable when used in the context of the native shadow and vice-versa.
-            const nativeShadowSelectorProcessor = selectorProcessorFactory({
-                transformHost: false,
-            });
-            const fakeShadowSelectorProcessor = selectorProcessorFactory({
-                transformHost: true,
-            });
+    return (root, result) => {
+        const { customProperties } = config;
+        transformImport(root, result);
 
-            return {
-                Root(root) {
-                    root.walkRules((rule) => {
-                        if (!shouldTransformSelector(rule)) {
-                            return;
-                        }
+        if (!customProperties || !customProperties.allowDefinition) {
+            validateCustomProperties(root);
+        }
 
-                        // Let transform the selector with the 2 processors.
-                        const fakeShadowSelector = fakeShadowSelectorProcessor.processSync(rule);
-                        const nativeShadowSelector = nativeShadowSelectorProcessor.processSync(
-                            rule
-                        );
-                        rule.selector = fakeShadowSelector;
-                        // If the resulting selector are different it means that the selector use
-                        // the :host selector. In this case we need to duplicate the CSS rule and
-                        // assign the other selector.
-                        if (fakeShadowSelector !== nativeShadowSelector) {
-                            // The cloned selector is inserted before the currently processed
-                            // selector to avoid processing again the cloned selector.
-                            const currentRule: any = rule;
-                            const clonedRule: any = rule.cloneBefore();
-                            clonedRule.selector = nativeShadowSelector;
+        transformCustomProperties(root, result);
 
-                            // Safe information on the AST nodes for serialization purposes.
-                            clonedRule._isHostNative = true;
-                            currentRule._isFakeNative = true;
-                        }
-                    });
-                },
-                AtRule(rule) {
-                    transformImport(rule, result);
-                },
-                Declaration(decl) {
-                    if (!customProperties.allowDefinition) {
-                        validateCustomProperties(decl);
-                    }
+        root.walkRules((rule) => {
+            if (!shouldTransformSelector(rule)) {
+                return;
+            }
 
-                    transformCustomProperties(decl, result);
-                },
-            };
-        },
+            // Let transform the selector with the 2 processors.
+            const fakeShadowSelector = fakeShadowSelectorProcessor.processSync(rule);
+            const nativeShadowSelector = nativeShadowSelectorProcessor.processSync(rule);
+            rule.selector = fakeShadowSelector;
+            // If the resulting selector are different it means that the selector use the :host selector. In
+            // this case we need to duplicate the CSS rule and assign the other selector.
+            if (fakeShadowSelector !== nativeShadowSelector) {
+                // The cloned selector is inserted before the currently processed selector to avoid processing
+                // again the cloned selector.
+                const currentRule: any = rule;
+                const clonedRule: any = rule.cloneBefore();
+                clonedRule.selector = nativeShadowSelector;
+
+                // Safe a reference to each other
+                clonedRule._isHostNative = true;
+                currentRule._isFakeNative = true;
+            }
+        });
     };
 }
