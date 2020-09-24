@@ -4,16 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Root } from 'postcss';
+import { Declaration } from 'postcss';
 
 const CUSTOM_PROPERTY_IDENTIFIER = '--';
 
-export default function validate(root: Root): void {
-    root.walkDecls((decl) => {
-        const { prop } = decl;
+export default function validate(decl: Declaration): void {
+    const { prop } = decl;
 
-        if (prop.startsWith(CUSTOM_PROPERTY_IDENTIFIER)) {
-            throw decl.error(`Invalid definition of custom property "${prop}".`);
-        }
-    });
+    if (prop.startsWith(CUSTOM_PROPERTY_IDENTIFIER)) {
+        throw decl.error(`Invalid definition of custom property "${prop}".`);
+    }
 }

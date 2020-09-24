@@ -6,7 +6,6 @@
  */
 import { Rule, Plugin, AtRule } from 'postcss';
 import postCssSelector from 'postcss-selector-parser';
-import { Processor } from 'postcss-selector-parser';
 
 import validateCustomProperties from './custom-properties/validate';
 import validateIdSelectors from './no-id-selectors/validate';
@@ -16,56 +15,45 @@ import transformSelectorScoping, { SelectorScopingConfig } from './selector-scop
 import transformCustomProperties from './custom-properties/transform';
 import transformDirPseudoClass from './dir-pseudo-class/transform';
 
-export type VarTransformer = (name: string, fallback: string) => string;
-
 export interface PluginConfig {
-    customProperties?: {
-        allowDefinition?: boolean;
-        collectVarFunctions?: boolean;
+    customProperties: {
+        allowDefinition: boolean;
+        collectVarFunctions: boolean;
     };
-    minify?: boolean;
 }
 
 function shouldTransformSelector(rule: Rule) {
-    // @keyframe at-rules are special, rules inside are not standard selectors and should not be scoped like
-    // any other rules.
+    // @keyframe at-rules are special, rules inside are not standard selectors and should not be
+    // scoped like any other rules.
     return rule.parent?.type !== 'atrule' || (rule.parent as AtRule).name !== 'keyframes';
 }
 
-function selectorProcessorFactory(config: PluginConfig, transformConfig: SelectorScopingConfig) {
+function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
     return postCssSelector((root) => {
         validateIdSelectors(root);
 
         transformSelectorScoping(root, transformConfig);
         transformDirPseudoClass(root);
-    }) as Processor;
+    });
 }
 
-export default function postCssLwcPlugin(config: PluginConfig = {}): Plugin {
-    const { customProperties } = config;
-
-    // We need 2 types of selectors processors, since transforming the :host selector make the selector
-    // unusable when used in the context of the native shadow and vice-versa.
-    const nativeShadowSelectorProcessor = selectorProcessorFactory(config, {
-        transformHost: false,
-    });
-    const fakeShadowSelectorProcessor = selectorProcessorFactory(config, {
-        transformHost: true,
-    });
-
+export default function postCssLwcPlugin(config: PluginConfig): Plugin {
     return {
         postcssPlugin: 'lwc',
         prepare(result) {
+            const { customProperties } = config;
+
+            // We need 2 types of selectors processors, since transforming the :host selector make
+            // the selector unusable when used in the context of the native shadow and vice-versa.
+            const nativeShadowSelectorProcessor = selectorProcessorFactory({
+                transformHost: false,
+            });
+            const fakeShadowSelectorProcessor = selectorProcessorFactory({
+                transformHost: true,
+            });
+
             return {
                 Root(root) {
-                    transformImport(root, result);
-
-                    if (!customProperties || !customProperties.allowDefinition) {
-                        validateCustomProperties(root);
-                    }
-
-                    transformCustomProperties(root, result);
-
                     root.walkRules((rule) => {
                         if (!shouldTransformSelector(rule)) {
                             return;
@@ -77,20 +65,31 @@ export default function postCssLwcPlugin(config: PluginConfig = {}): Plugin {
                             rule
                         );
                         rule.selector = fakeShadowSelector;
-                        // If the resulting selector are different it means that the selector use the :host selector. In
-                        // this case we need to duplicate the CSS rule and assign the other selector.
+                        // If the resulting selector are different it means that the selector use
+                        // the :host selector. In this case we need to duplicate the CSS rule and
+                        // assign the other selector.
                         if (fakeShadowSelector !== nativeShadowSelector) {
-                            // The cloned selector is inserted before the currently processed selector to avoid processing
-                            // again the cloned selector.
+                            // The cloned selector is inserted before the currently processed
+                            // selector to avoid processing again the cloned selector.
                             const currentRule: any = rule;
                             const clonedRule: any = rule.cloneBefore();
                             clonedRule.selector = nativeShadowSelector;
 
-                            // Safe a reference to each other
+                            // Safe information on the AST nodes for serialization purposes.
                             clonedRule._isHostNative = true;
                             currentRule._isFakeNative = true;
                         }
                     });
+                },
+                AtRule(rule) {
+                    transformImport(rule, result);
+                },
+                Declaration(decl) {
+                    if (!customProperties.allowDefinition) {
+                        validateCustomProperties(decl);
+                    }
+
+                    transformCustomProperties(decl, result);
                 },
             };
         },
