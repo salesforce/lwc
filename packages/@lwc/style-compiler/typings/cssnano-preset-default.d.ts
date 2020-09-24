@@ -5,12 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 declare module 'cssnano-preset-default' {
-    import { Plugin } from 'postcss';
+    import { OldPlugin } from 'postcss';
 
     const preset: (
         config: any
     ) => {
-        plugins: [Plugin, any];
+        plugins: [[OldPlugin<any>, undefined | { exclude?: boolean }]];
     };
     export default preset;
 }
