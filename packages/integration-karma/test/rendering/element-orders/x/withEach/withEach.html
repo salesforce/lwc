@@ -1,0 +1,11 @@
+<template>
+    <p if:true={show}>1</p>
+    <p>2</p>
+    <p if:true={show}>3</p>
+    <p if:true={showFourth}>4</p>
+    <p>5</p>
+
+    <template for:each={parts} for:item="part">
+        <div key={part.key}></div>
+    </template>
+</template>
