@@ -11,7 +11,7 @@ describe('diffing algo', () => {
         return Promise.resolve().then(() => {
             const content = elm.shadowRoot.textContent;
             // This first check is to verify that there is no extra text an any moment.
-            expect(content).toBe("1235");
+            expect(content).toBe('1235');
         });
     });
 });
