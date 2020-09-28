@@ -1,11 +1,11 @@
 import { LightningElement, api } from 'lwc';
 
-export default class App extends LightningElement {
+export default class SlotFallback extends LightningElement {
     show = false;
     showFourth = false;
 
     @api
-    triggerIssue() {
+    triggerDiffingAlgo() {
         this.show = true;
     }
 }

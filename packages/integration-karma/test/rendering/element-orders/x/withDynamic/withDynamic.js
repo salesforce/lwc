@@ -5,7 +5,7 @@ export default class WithDynamic extends LightningElement {
     showFourth = false;
 
     @api
-    triggerIssue() {
+    triggerDiffingAlgo() {
         this.show = true;
     }
 }
