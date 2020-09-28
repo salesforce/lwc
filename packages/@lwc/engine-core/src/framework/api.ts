@@ -20,7 +20,6 @@ import {
     isUndefined,
     StringCharCodeAt,
     toString,
-    ArrayFilter,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
 import { invokeEventListener } from './invoker';
@@ -356,10 +355,6 @@ export function s(
     const vnode = h('slot', data, children);
     if (vnode.owner.renderer.syntheticShadow) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
-        vnode.children = children = ArrayFilter.call(
-            children,
-            (vnodeOrNull: VNode | null): boolean => !isNull(vnodeOrNull)
-        );
         sc(children);
     }
     return vnode;
