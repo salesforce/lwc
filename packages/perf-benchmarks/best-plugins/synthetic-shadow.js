@@ -17,7 +17,7 @@ module.exports = function () {
         },
         transform(src, id) {
             const isEntry = id === input;
-            const shouldApplySynthetic = id.includes('/wc-');
+            const shouldApplySynthetic = id.includes('/wc-') || id.includes('/ss-');
 
             if (isEntry && shouldApplySynthetic) {
                 src = SYNTHETIC_IMPORT + src;

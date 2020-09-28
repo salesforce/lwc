@@ -9,14 +9,14 @@ import { createElement } from 'lwc';
 
 import Table from 'benchmark/tableComponent';
 import Store from 'benchmark/store';
-import { insertTableComponent, destroyTableComponent } from 'benchmark/utils';
+import { insertComponent, destroyComponent } from 'benchmark/utils';
 
 benchmark(`benchmark-table-component/create/1k`, () => {
     let tableElement;
 
     before(() => {
         tableElement = createElement('benchmark-table-component', { is: Table });
-        return insertTableComponent(tableElement);
+        return insertComponent(tableElement);
     });
 
     run(() => {
@@ -26,6 +26,6 @@ benchmark(`benchmark-table-component/create/1k`, () => {
     });
 
     after(() => {
-        destroyTableComponent(tableElement);
+        destroyComponent(tableElement);
     });
 });

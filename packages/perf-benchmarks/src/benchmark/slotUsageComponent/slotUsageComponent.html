@@ -1,0 +1,21 @@
+<!--
+Copyright (c) 2018, salesforce.com, inc.
+All rights reserved.
+SPDX-License-Identifier: MIT
+For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+-->
+<template>
+    <h1>{componentContent}</h1>
+    <benchmark-card-component title={titleOfComponentWithSlot} rows={rowsOfComponentWithSlot}>
+
+        <template for:each={rowsOfSlottedContent} for:item="row">
+            <benchmark-table-component-row
+                    key={row.id}
+                    class={row.className}
+                    row={row}
+            >
+            </benchmark-table-component-row>
+        </template>
+
+    </benchmark-card-component>
+</template>

@@ -8,7 +8,7 @@ import Table from 'benchmark/tableComponent';
 import Row from 'benchmark/tableComponentRow';
 
 import Store from 'benchmark/store';
-import { insertTableComponent, destroyTableComponent } from 'benchmark/utils';
+import { insertComponent, destroyComponent } from 'benchmark/utils';
 
 customElements.define('benchmark-table-component', Table.CustomElementConstructor);
 // the row can be optionally defined, but this benchmark always do it so we know how costly it is.
@@ -20,7 +20,7 @@ benchmark(`benchmark-table-wc/append/1k`, () => {
 
     before(async () => {
         tableElement = document.createElement('benchmark-table-component');
-        await insertTableComponent(tableElement);
+        await insertComponent(tableElement);
 
         store = new Store();
         store.run();
@@ -34,6 +34,6 @@ benchmark(`benchmark-table-wc/append/1k`, () => {
     });
 
     after(() => {
-        destroyTableComponent(tableElement);
+        destroyComponent(tableElement);
     });
 });

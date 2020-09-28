@@ -9,7 +9,7 @@ import { createElement } from 'lwc';
 
 import Table from 'benchmark/tableComponent';
 import Store from 'benchmark/store';
-import { insertTableComponent, destroyTableComponent } from 'benchmark/utils';
+import { insertComponent, destroyComponent } from 'benchmark/utils';
 
 benchmark(`benchmark-table-component/clear/1k`, () => {
     let tableElement;
@@ -17,7 +17,7 @@ benchmark(`benchmark-table-component/clear/1k`, () => {
 
     before(async () => {
         tableElement = createElement('benchmark-table-component', { is: Table });
-        await insertTableComponent(tableElement);
+        await insertComponent(tableElement);
 
         store = new Store();
         store.run();
@@ -30,6 +30,6 @@ benchmark(`benchmark-table-component/clear/1k`, () => {
     });
 
     after(() => {
-        destroyTableComponent(tableElement);
+        destroyComponent(tableElement);
     });
 });
