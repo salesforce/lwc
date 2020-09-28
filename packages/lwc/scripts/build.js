@@ -82,6 +82,7 @@ function buildWireService(targets) {
         ...buildSyntheticShadow(COMMON_TARGETS),
         ...buildWireService(COMMON_TARGETS),
         ...buildEngineServerTargets([
+            { target: 'es2017', format: 'esm', prod: false },
             { target: 'es2017', format: 'commonjs', prod: false },
             { target: 'es2017', format: 'commonjs', prod: true },
         ]),
