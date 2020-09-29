@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import postcss from 'postcss';
+import postcss, { Result, Declaration } from 'postcss';
 import postcssValueParser from 'postcss-value-parser';
 
 import { Config } from './index';
@@ -29,7 +29,7 @@ const SHADOW_DOM_ENABLED_IDENTIFIER = 'nativeShadow';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
-export default function serialize(result: postcss.LazyResult, config: Config): string {
+export default function serialize(result: Result, config: Config): string {
     const { messages } = result;
     const collectVarFunctions = Boolean(
         config.customProperties && config.customProperties.resolverModule
@@ -107,11 +107,7 @@ function generateExpressionFromTokens(tokens: Token[]): string {
     }
 }
 
-function serializeCss(
-    result: postcss.LazyResult,
-    collectVarFunctions: boolean,
-    minify: boolean
-): string {
+function serializeCss(result: Result, collectVarFunctions: boolean, minify: boolean): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
     let tmpHostExpression: string | null;
@@ -311,7 +307,7 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
     return [{ type: TokenType.text, value }];
 }
 
-function tokenizeCssDeclaration(node: postcss.Declaration): Token[] {
+function tokenizeCssDeclaration(node: Declaration): Token[] {
     const valueRoot = postcssValueParser(node.value);
     const parsed = recursiveValueParse(valueRoot);
     return [{ type: TokenType.text, value: `${node.prop.trim()}: ` }, ...parsed];

@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import postcss, { Root, Result, Rule } from 'postcss';
+import { Rule, AtRule, TransformCallback } from 'postcss';
 import postCssSelector from 'postcss-selector-parser';
-import { Processor } from 'postcss-selector-parser';
 
 import validateCustomProperties from './custom-properties/validate';
 import validateIdSelectors from './no-id-selectors/validate';
@@ -16,42 +15,39 @@ import transformSelectorScoping, { SelectorScopingConfig } from './selector-scop
 import transformCustomProperties from './custom-properties/transform';
 import transformDirPseudoClass from './dir-pseudo-class/transform';
 
-export type VarTransformer = (name: string, fallback: string) => string;
-
 export interface PluginConfig {
-    customProperties?: {
-        allowDefinition?: boolean;
-        collectVarFunctions?: boolean;
+    customProperties: {
+        allowDefinition: boolean;
+        collectVarFunctions: boolean;
     };
-    minify?: boolean;
 }
 
 function shouldTransformSelector(rule: Rule) {
-    // @keyframe at-rules are special, rules inside are not standard selectors and should not be scoped like
-    // any other rules.
-    return rule.parent.type !== 'atrule' || rule.parent.name !== 'keyframes';
+    // @keyframe at-rules are special, rules inside are not standard selectors and should not be
+    // scoped like any other rules.
+    return rule.parent?.type !== 'atrule' || (rule.parent as AtRule).name !== 'keyframes';
 }
 
-function selectorProcessorFactory(config: PluginConfig, transformConfig: SelectorScopingConfig) {
+function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
     return postCssSelector((root) => {
         validateIdSelectors(root);
 
         transformSelectorScoping(root, transformConfig);
         transformDirPseudoClass(root);
-    }) as Processor;
+    });
 }
 
-export default postcss.plugin<PluginConfig>('postcss-plugin-lwc', (config = {}) => {
+export default function postCssLwcPlugin(config: PluginConfig): TransformCallback {
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
-    const nativeShadowSelectorProcessor = selectorProcessorFactory(config, {
+    const nativeShadowSelectorProcessor = selectorProcessorFactory({
         transformHost: false,
     });
-    const fakeShadowSelectorProcessor = selectorProcessorFactory(config, {
+    const fakeShadowSelectorProcessor = selectorProcessorFactory({
         transformHost: true,
     });
 
-    return (root: Root, result: Result) => {
+    return (root, result) => {
         const { customProperties } = config;
         transformImport(root, result);
 
@@ -85,4 +81,4 @@ export default postcss.plugin<PluginConfig>('postcss-plugin-lwc', (config = {}) 
             }
         });
     };
-});
+}
