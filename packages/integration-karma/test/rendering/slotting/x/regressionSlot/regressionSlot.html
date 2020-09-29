@@ -1,0 +1,5 @@
+<template>
+    <div tabindex={_bookendTabIndex} data-start onfocus={_focusLastElement}></div>
+    <slot onfocusin={_handleFocusIn} onfocusout={_handleFocusOut}></slot>
+    <div tabindex={_bookendTabIndex} data-end onfocus={_focusFirstElement}></div>
+</template>

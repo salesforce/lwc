@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 
 import RenderCountParent from 'x/renderCountParent';
 import FallbackContentReuseParent from 'x/fallbackContentReuseParent';
+import RegressionContainer from 'x/regressionContainer';
 
 // TODO [#1617]: Engine currently has trouble with slotting and invocation of the renderedCallback.
 xit('should not render if the slotted content changes', () => {
@@ -36,4 +37,11 @@ it('#663 - should not reuse elements from the fallback slot content', () => {
             '<div>Default slotted</div><div slot="foo">Named slotted</div>'
         );
     });
+});
+
+fit('test', () => {
+    const elm = createElement('x-regression-container', {
+        is: RegressionContainer,
+    });
+    document.body.appendChild(elm);
 });
