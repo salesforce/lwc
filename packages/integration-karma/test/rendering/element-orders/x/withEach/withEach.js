@@ -4,23 +4,23 @@ export default class WithEach extends LightningElement {
     elements = [
         {
             key: 1,
-            show: false
+            show: false,
         },
         {
             key: 2,
-            show: true
+            show: true,
         },
         {
             key: 3,
-            show: false
+            show: false,
         },
         {
             key: 4,
-            show: false
+            show: false,
         },
         {
             key: 5,
-            show: true
+            show: true,
         },
     ];
 
