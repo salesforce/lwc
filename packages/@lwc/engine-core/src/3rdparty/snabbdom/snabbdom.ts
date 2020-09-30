@@ -149,6 +149,8 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
     }
     if (oldStartIdx <= oldEndIdx || newStartIdx <= newEndIdx) {
         if (oldStartIdx > oldEndIdx) {
+            // There's some cases in which the sub array of vnodes to be inserted is followed by null(s) and an
+            // already processed vnode, in such cases the vnodes to be inserted should be before that processed vnode.
             let i = newEndIdx;
             let n;
             do {
