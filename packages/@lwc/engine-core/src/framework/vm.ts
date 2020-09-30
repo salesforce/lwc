@@ -681,6 +681,7 @@ export function allocateInSlot(vm: VM, children: VNodes) {
             }
         }
         updateStaticChildren(vm.elm, slottedOldChildren, slottedNewChildren);
+        vm.cmpSlots = oldSlots;
     }
 }
 
