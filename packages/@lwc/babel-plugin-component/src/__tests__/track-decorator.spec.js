@@ -22,9 +22,7 @@ describe('Transform property', () => {
                 import _tmpl from "./test.html";
 
                 class Test {
-                  constructor() {
-                    this.record = void 0;
-                  }
+                  record;
                 }
 
                 _registerDecorators(Test, {
@@ -58,11 +56,9 @@ describe('Transform property', () => {
                 import _tmpl from "./test.html";
 
                 class Test {
-                  constructor() {
-                    this.record = {
-                      value: "test"
-                    };
-                  }
+                  record = {
+                    value: "test"
+                  };
                 }
 
                 _registerDecorators(Test, {

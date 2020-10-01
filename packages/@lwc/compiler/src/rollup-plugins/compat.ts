@@ -7,26 +7,21 @@
 import { Plugin } from 'rollup';
 import * as babel from '@babel/core';
 
-import { BABEL_CONFIG_BASE } from '../babel-plugins';
 import { NormalizedOutputConfig } from '../options';
 
 export default function ({ sourcemap }: NormalizedOutputConfig): Plugin {
-    // Inlining the `babel-preset-compat` module require to only pay the parsing and evaluation cost for needed modules
-    const presetCompat = require('babel-preset-compat');
-
-    const BABEL_CONFIG_CONFIG = {
-        ...BABEL_CONFIG_BASE,
-        presets: [[presetCompat, { proxy: true }]],
-    };
-
-    const config = Object.assign({}, BABEL_CONFIG_CONFIG, { sourceMaps: sourcemap });
-
     return {
         name: 'lwc-compat',
 
         transform(src: string) {
-            const { code, map } = babel.transform(src, config);
-            return { code, map };
+            const result = babel.transform(src, {
+                babelrc: false,
+                configFile: false,
+                presets: [['babel-preset-compat', { proxy: true }]],
+                sourceMaps: sourcemap,
+            })!;
+
+            return { code: result.code!, map: result.map };
         },
     };
 }

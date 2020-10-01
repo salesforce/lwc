@@ -25,9 +25,7 @@ describe('Transform property', () => {
                 import { getFoo } from "data-service";
 
                 class Test {
-                  constructor() {
-                    this.wiredProp = void 0;
-                  }
+                  wiredProp;
                 }
 
                 _registerDecorators(Test, {
@@ -73,9 +71,7 @@ describe('Transform property', () => {
                 import { getFoo } from "data-service";
                 
                 class Test {
-                  constructor() {
-                    this.wiredProp = void 0;
-                  }
+                  wiredProp;
                 }
                 
                 _registerDecorators(Test, {
@@ -118,9 +114,7 @@ describe('Transform property', () => {
                 import { getFoo } from "data-service";
 
                 class Test {
-                  constructor() {
-                    this.wiredProp = void 0;
-                  }
+                  wiredProp;
                 }
 
                 _registerDecorators(Test, {
@@ -167,9 +161,7 @@ describe('Transform property', () => {
                 import { getFoo } from "data-service";
 
                 class Test {
-                  constructor() {
-                    this.wiredProp = void 0;
-                  }
+                  wiredProp;
                 }
 
                 _registerDecorators(Test, {
@@ -219,9 +211,7 @@ describe('Transform property', () => {
                 import { getFoo } from "data-service";
 
                 class Test {
-                  constructor() {
-                    this.wiredProp = void 0;
-                  }
+                  wiredProp;
                 }
 
                 _registerDecorators(Test, {
@@ -267,9 +257,7 @@ describe('Transform property', () => {
                 import { getFoo } from "data-service";
 
                 class Test {
-                  constructor() {
-                    this.wiredProp = void 0;
-                  }
+                  wiredProp;
                 }
 
                 _registerDecorators(Test, {
@@ -354,9 +342,7 @@ describe('Transform property', () => {
                 import { getFoo } from "data-service";
 
                 class Test {
-                  constructor() {
-                    this.wiredProp = void 0;
-                  }
+                  wiredProp;
                 }
 
                 _registerDecorators(Test, {
@@ -396,9 +382,7 @@ describe('Transform property', () => {
               import { Foo } from "data-service";
 
               class Test {
-                constructor() {
-                  this.wiredProp = void 0;
-                }
+                wiredProp;
               }
 
               _registerDecorators(Test, {
@@ -438,9 +422,7 @@ describe('Transform property', () => {
             import { Foo } from "data-service";
 
             class Test {
-              constructor() {
-                this.wiredProp = void 0;
-              }
+              wiredProp;
             }
 
             _registerDecorators(Test, {
@@ -502,9 +484,7 @@ describe('Transform property', () => {
                     import { getFoo } from "data-service";
 
                     class Test {
-                      constructor() {
-                        this.wiredProp = void 0;
-                      }
+                      wiredProp;
                     }
 
                     _registerDecorators(Test, {
@@ -612,9 +592,7 @@ describe('Transform property', () => {
                     import { getFoo } from "data-service";
 
                     class Test {
-                      constructor() {
-                        this.wiredProp = void 0;
-                      }
+                      wiredProp;
                     }
 
                     _registerDecorators(Test, {
@@ -660,9 +638,7 @@ describe('Transform property', () => {
                     import { getFoo } from "data-service";
 
                     class Test {
-                      constructor() {
-                        this.wiredProp = void 0;
-                      }
+                      wiredProp;
                     }
 
                     _registerDecorators(Test, {
@@ -757,10 +733,8 @@ describe('Transform property', () => {
                 import { getFoo } from "data-service";
 
                 class Test {
-                  constructor() {
-                    this.wired1 = void 0;
-                    this.wired2 = void 0;
-                  }
+                  wired1;
+                  wired2;
                 }
 
                 _registerDecorators(Test, {

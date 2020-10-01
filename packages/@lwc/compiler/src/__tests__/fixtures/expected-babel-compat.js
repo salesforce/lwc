@@ -68,7 +68,7 @@ writable: true
 __setKey(obj, key, value);
 }
 return obj;
-} // babel-plugin-check-es2015-constants
+}
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-check-es2015-constants/test/fixtures/general/program/actual.js
 var MULTIPLIER = 5;
 for (var i in __iterableKey(arr)) {

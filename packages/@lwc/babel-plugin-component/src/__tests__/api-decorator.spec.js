@@ -22,9 +22,7 @@ describe('Transform property', () => {
                 import _tmpl from "./test.html";
 
                 class Test {
-                  constructor() {
-                    this.test = 1;
-                  }
+                  test = 1;
                 }
 
                 _registerDecorators(Test, {
@@ -61,23 +59,19 @@ describe('Transform property', () => {
                 import _tmpl from "./test.html";
 
                 class Outer {
-                  constructor() {
-                    this.outer = void 0;
-                    this.a = _registerDecorators2(
+                    outer;
+                    a = _registerDecorators2(
                       class {
-                        constructor() {
-                          this.innerA = void 0;
-                        }
+                        innerA;
                       },
                       {
                         publicProps: {
                           innerA: {
-                            config: 0
-                          }
-                        }
+                            config: 0,
+                          },
+                        },
                       }
                     );
-                  }
                 }
 
                 _registerDecorators(Outer, {
@@ -297,10 +291,8 @@ describe('Transform property', () => {
                 import _tmpl from "./test.html";
 
                 class Test {
-                  constructor() {
-                    this._a = true;
-                    this._b = false;
-                  }
+                  _a = true;
+                  _b = false;
 
                   get a() {
                     return this._a;
@@ -363,10 +355,8 @@ describe('Transform property', () => {
                 import _tmpl from "./test.html";
 
                 class Text {
-                  constructor() {
-                    this.publicProp = void 0;
-                    this.privateProp = void 0;
-                  }
+                  publicProp;
+                  privateProp;
 
                   get aloneGet() {}
 
@@ -380,12 +370,12 @@ describe('Transform property', () => {
 
                   m2() {}
 
+                  static ctor = "ctor";
+
                   static get ctorGet() {
                     return 1;
                   }
                 }
-
-                Text.ctor = "ctor";
 
                 _registerDecorators(Text, {
                   publicProps: {
@@ -490,9 +480,7 @@ describe('Transform property', () => {
                 import _tmpl from "./test.html";
 
                 class Test {
-                  constructor() {
-                    this.data = void 0;
-                  }
+                  data;
                 }
 
                 _registerDecorators(Test, {
@@ -592,9 +580,7 @@ describe('Transform property', () => {
                 import _tmpl from "./test.html";
 
                 class Test {
-                  constructor() {
-                    this.ariaDescribedBy = void 0;
-                  }
+                  ariaDescribedBy;
                 }
 
                 _registerDecorators(Test, {
