@@ -43,6 +43,7 @@
     "dependencies": {
         "@lwc/compiler": "1.8.4",
         "@lwc/engine": "1.8.4",
+        "@lwc/engine-server": "1.8.4",
         "@lwc/features": "1.8.4",
         "@lwc/synthetic-shadow": "1.8.4",
         "@lwc/wire-service": "1.8.4"
