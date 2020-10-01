@@ -79,7 +79,8 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
     let oldEndIdx = oldCh.length - 1;
     let oldStartVnode = oldCh[0];
     let oldEndVnode = oldCh[oldEndIdx];
-    let newEndIdx = newCh.length - 1;
+    const newChEnd = newCh.length - 1;
+    let newEndIdx = newChEnd;
     let newStartVnode = newCh[0];
     let newEndVnode = newCh[newEndIdx];
     let oldKeyToIdx: any;
@@ -148,7 +149,13 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
     }
     if (oldStartIdx <= oldEndIdx || newStartIdx <= newEndIdx) {
         if (oldStartIdx > oldEndIdx) {
-            const n = newCh[newEndIdx + 1];
+            // There's some cases in which the sub array of vnodes to be inserted is followed by null(s) and an
+            // already processed vnode, in such cases the vnodes to be inserted should be before that processed vnode.
+            let i = newEndIdx;
+            let n;
+            do {
+                n = newCh[++i];
+            } while (!isVNode(n) && i < newChEnd);
             before = isVNode(n) ? n.elm : null;
             addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx);
         } else {
