@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 
 import RenderCountParent from 'x/renderCountParent';
 import FallbackContentReuseParent from 'x/fallbackContentReuseParent';
+import RegressionContainer from 'x/regressionContainer';
 
 // TODO [#1617]: Engine currently has trouble with slotting and invocation of the renderedCallback.
 xit('should not render if the slotted content changes', () => {
@@ -35,5 +36,30 @@ it('#663 - should not reuse elements from the fallback slot content', () => {
         expect(elm.shadowRoot.querySelector('x-fallback-content-reuse-child').innerHTML).toBe(
             '<div>Default slotted</div><div slot="foo">Named slotted</div>'
         );
+    });
+});
+
+it('should not throw error when updating slotted content triggers next tick re-render in component receiving the slotted content', (done) => {
+    // Regression introduced in #1617 refactor(engine): improving the diffing algo for slotted elements
+    const elm = createElement('x-regression-container', {
+        is: RegressionContainer,
+    });
+    document.body.appendChild(elm);
+
+    requestAnimationFrame(() => {
+        const results = elm.shadowRoot.querySelectorAll('.text-result');
+
+        expect(results.length).toBe(1);
+        expect(results[0].textContent).toBe('Inner visible truetoggle');
+        elm.shadowRoot.querySelector('button').click();
+
+        requestAnimationFrame(() => {
+            const results = elm.shadowRoot.querySelectorAll('.text-result');
+
+            expect(results.length).toBe(1);
+            expect(results[0].textContent).toBe('Inner visible falsetoggle');
+
+            done();
+        });
     });
 });
