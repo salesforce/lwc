@@ -1,0 +1,17 @@
+<template>
+    <x-regression-slot>
+        <div>
+            <div if:true={outerVisible}>
+                <div class="text-result" if:true={innerVisible}>
+                    Inner visible false
+                    <button onclick={handleClick}>toggle</button>
+                </div>
+
+                <div class="text-result" if:false={innerVisible}>
+                    Inner visible true
+                    <button onclick={handleClick}>toggle</button>
+                </div>
+            </div>
+        </div>
+    </x-regression-slot>
+</template>
