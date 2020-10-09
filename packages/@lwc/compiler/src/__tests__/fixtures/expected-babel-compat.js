@@ -1,9 +1,8 @@
-import __concat from 'proxy-compat/concat';
 import __callKey1 from 'proxy-compat/callKey1';
+import __callKey2 from 'proxy-compat/callKey2';
 import __inKey from 'proxy-compat/inKey';
 import __setKey from 'proxy-compat/setKey';
 import __iterableKey from 'proxy-compat/iterableKey';
-import __callKey2 from 'proxy-compat/callKey2';
 import __callKey0 from 'proxy-compat/callKey0';
 import __callKey3 from 'proxy-compat/callKey3';
 import _regeneratorRuntime from '@babel/runtime/regenerator';
@@ -40,19 +39,32 @@ return data;
 };
 return data;
 }
+function ownKeys(object, enumerableOnly) {
+var keys = Object.compatKeys(object);
+if (Object.getOwnPropertySymbols) {
+var symbols = Object.getOwnPropertySymbols(object);
+if (enumerableOnly) symbols = __callKey1(symbols, "filter", function (sym) {
+var _Object$compatGetOwnP, _enumerable;
+return _Object$compatGetOwnP = Object.compatGetOwnPropertyDescriptor(object, sym), _enumerable = _Object$compatGetOwnP._ES5ProxyType ? _Object$compatGetOwnP.get("enumerable") : _Object$compatGetOwnP.enumerable;
+});
+__callKey2(keys.push, "apply", keys, symbols);
+}
+return keys;
+}
 function _objectSpread(target) {
 for (var i = 1; i < arguments.length; i++) {
-var source = arguments[i] != null ? Object(arguments[i]) : {};
-var ownKeys = Object.compatKeys(source);
-if (typeof Object.getOwnPropertySymbols === 'function') {
-ownKeys = __concat(ownKeys, __callKey1(Object.getOwnPropertySymbols(source), "filter", function (sym) {
-var _Object$compatGetOwnP, _enumerable;
-return _Object$compatGetOwnP = Object.compatGetOwnPropertyDescriptor(source, sym), _enumerable = _Object$compatGetOwnP._ES5ProxyType ? _Object$compatGetOwnP.get("enumerable") : _Object$compatGetOwnP.enumerable;
-}));
-}
-__callKey1(ownKeys, "forEach", function (key) {
+var source = arguments[i] != null ? arguments[i] : {};
+if (i % 2) {
+__callKey1(ownKeys(Object(source), true), "forEach", function (key) {
 _defineProperty(target, key, source._ES5ProxyType ? source.get(key) : source[key]);
 });
+} else if (Object.getOwnPropertyDescriptors) {
+Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+} else {
+__callKey1(ownKeys(Object(source)), "forEach", function (key) {
+Object.compatDefineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+});
+}
 }
 return target;
 }
@@ -209,6 +221,6 @@ _classCallCheck(this, Bar);
 __setKey(this, "bar", "foo");
 };
 registerDecorators(Bar, {
-  fields: ["bar"]
+fields: ["bar"]
 });
 export { Bar, Test, literal, obj1, obj2, t, test };
