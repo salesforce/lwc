@@ -5,6 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as babel from '@babel/core';
+
+import babelClassPropertiesPlugin from '@babel/plugin-proposal-class-properties';
+import babelObjectRestSpreadPlugin from '@babel/plugin-proposal-object-rest-spread';
+import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
+
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
 import { NormalizedTransformOptions } from '../options';
@@ -29,7 +34,7 @@ export default function scriptTransform(
         const intermediary = babel.transformSync(code, {
             babelrc: false,
             configFile: false,
-            plugins: [['@lwc/babel-plugin-component', { isExplicitImport, dynamicImports }]],
+            plugins: [[lwcClassTransformPlugin, { isExplicitImport, dynamicImports }]],
             filename,
             sourceMaps: sourcemap,
         })!;
@@ -38,11 +43,11 @@ export default function scriptTransform(
             babelrc: false,
             configFile: false,
             plugins: [
-                ['@babel/plugin-proposal-class-properties', { loose: true }],
+                [babelClassPropertiesPlugin, { loose: true }],
 
                 // This plugin should be removed in a future version. The object-rest-spread is
                 // already a stage 4 feature. The LWC compile should leave this syntax untouched.
-                '@babel/plugin-proposal-object-rest-spread',
+                babelObjectRestSpreadPlugin,
             ],
             filename,
             sourceMaps: sourcemap,
