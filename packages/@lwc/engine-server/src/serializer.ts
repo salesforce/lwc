@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isVoidElement } from '@lwc/shared';
+import { HostAttribute, HostChildNode, HostElement, HostNodeType } from './types';
 
 import { htmlEscape } from './utils/html-escape';
-import { HostElement, HostShadowRoot, HostAttribute, HostChildNode, HostNodeType } from './types';
+import { isVoidElement } from '@lwc/shared';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
     return attributes
@@ -31,15 +31,15 @@ function serializeChildNodes(children: HostChildNode[]): string {
         .join('');
 }
 
-function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
-    const attrs = [`shadowroot="${shadowRoot.mode}"`];
+// function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
+//     const attrs = [`shadowroot="${shadowRoot.mode}"`];
 
-    if (shadowRoot.delegatesFocus) {
-        attrs.push('shadowrootdelegatesfocus');
-    }
+//     if (shadowRoot.delegatesFocus) {
+//         attrs.push('shadowrootdelegatesfocus');
+//     }
 
-    return `<template ${attrs.join(' ')}>${serializeChildNodes(shadowRoot.children)}</template>`;
-}
+//     return `<template ${attrs.join(' ')}>${serializeChildNodes(shadowRoot.children)}</template>`;
+// }
 
 export function serializeElement(element: HostElement): string {
     let output = '';
@@ -51,7 +51,7 @@ export function serializeElement(element: HostElement): string {
     output += `<${name}${attrs}>`;
 
     if (element.shadowRoot) {
-        output += serializeShadowRoot(element.shadowRoot);
+        output += serializeChildNodes(element.shadowRoot.children);
     }
 
     output += children;
