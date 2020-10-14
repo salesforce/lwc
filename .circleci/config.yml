@@ -273,41 +273,11 @@ workflows:
             - test_unit
             - test_karma
 
-  build_test_deploy:
-    jobs:
-      - build
-          filters:
-            <<: *only_tagged_commits
-
-      - test_unit:
-          requires:
-            - build
-          filters:
-            <<: *only_tagged_commits
-
-      - test_karma:
-          requires:
-            - build
-          filters:
-            <<: *only_tagged_commits
-
-      - test_integration:
-          requires:
-            - test_unit
-            - test_karma
-          filters:
-            <<: *only_tagged_commits
-
-      - test_integration_compat:
-          requires:
-            - test_unit
-            - test_karma
-          filters:
-            <<: *only_tagged_commits
-
       - deploy
           requires:
             - test_integration
             - test_integration_compat
           filters:
-            <<: *only_tagged_commits
+            tags:
+              # Only tags that begin with `v`
+              only: /^v.*/
