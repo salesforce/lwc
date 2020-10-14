@@ -8,6 +8,11 @@ env_integration_test: &env_integration_test
   - SAUCE_USERNAME: lwc_ci
   - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
 
+only_tagged_commits: &only_tagged_commits
+  tags:
+    # Only tags that begin with `v`
+    only: /^v.*/
+
 # Jobs definition
 version: 2.1
 
@@ -134,6 +139,18 @@ jobs:
       - save_workspace
 
 
+  deploy:
+    executor: node
+    steps:
+      - load_workspace
+      - run:
+          name: Configure NPM authentication
+          command: npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
+      - run:
+          name: Publish package
+          command: lerna publish from-package --yes --force-publish --no-git-tag-version --no-push --no-verify-access --dist-tag next
+
+
   test_unit:
     executor: node
     steps:
@@ -255,3 +272,42 @@ workflows:
           requires:
             - test_unit
             - test_karma
+
+  build_test_deploy:
+    jobs:
+      - build
+          filters:
+            <<: *only_tagged_commits
+
+      - test_unit:
+          requires:
+            - build
+          filters:
+            <<: *only_tagged_commits
+
+      - test_karma:
+          requires:
+            - build
+          filters:
+            <<: *only_tagged_commits
+
+      - test_integration:
+          requires:
+            - test_unit
+            - test_karma
+          filters:
+            <<: *only_tagged_commits
+
+      - test_integration_compat:
+          requires:
+            - test_unit
+            - test_karma
+          filters:
+            <<: *only_tagged_commits
+
+      - deploy
+          requires:
+            - test_integration
+            - test_integration_compat
+          filters:
+            <<: *only_tagged_commits
