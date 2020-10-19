@@ -148,7 +148,7 @@ jobs:
           command: npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
       - run:
           name: Publish package
-          command: lerna publish from-package --yes --force-publish --no-git-tag-version --no-push --no-verify-access --dist-tag next
+          command: lerna publish from-git --dist-tag next
 
 
   test_unit:
