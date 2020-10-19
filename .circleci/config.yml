@@ -140,7 +140,7 @@ jobs:
       - load_workspace
       - run:
           name: Configure NPM authentication
-          command: npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
+          command: npm config set "//registry.npmjs.org/:_authToken" "$NPM_AUTOMATION_TOKEN"
       - run:
           name: Publish package
           command: lerna publish from-git --dist-tag next
