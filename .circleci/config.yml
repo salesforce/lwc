@@ -8,11 +8,6 @@ env_integration_test: &env_integration_test
   - SAUCE_USERNAME: lwc_ci
   - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
 
-only_tagged_commits: &only_tagged_commits
-  tags:
-    # Only tags that begin with `v`
-    only: /^v.*/
-
 # Jobs definition
 version: 2.1
 
@@ -273,7 +268,7 @@ workflows:
             - test_unit
             - test_karma
 
-      - deploy
+      - deploy:
           requires:
             - test_integration
             - test_integration_compat
