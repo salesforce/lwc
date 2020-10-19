@@ -273,6 +273,9 @@ workflows:
             - test_integration
             - test_integration_compat
           filters:
+            branches:
+              # Never trigger on a branch
+              ignore: /.*/
             tags:
-              # Only tags that begin with `v`
+              # Trigger on tags that begin with `v`
               only: /^v.*/
