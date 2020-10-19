@@ -17,8 +17,6 @@
     "test:ci": "yarn test --no-cache --coverage --runInBand",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
     "test:performance": "lerna exec --scope perf-benchmarks -- best --runner default",
-    "release:ci:npm": "./scripts/release_npm.sh",
-    "release:ci:dist-tags": "./scripts/release_dist-tags.sh",
     "release:version": "./scripts/release/version.js"
   },
   "devDependencies": {
