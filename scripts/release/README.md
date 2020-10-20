@@ -12,3 +12,11 @@ local branch on Github:
 ```sh
 yarn release:version --push
 ```
+
+## `yarn release:ci:publish`
+
+This script publishes our packages to NPM using the `next` dist-tag and is limited to use in CI
+to ensure that all tests are run as part of the process.
+
+It is triggered when the most recent commit is a release commit associated with a tag matching
+the regular expression /^v.\*/.
