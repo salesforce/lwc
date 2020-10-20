@@ -14,13 +14,13 @@ const ARGS = [
     'publish',
     // Explicitly publish packages tagged in the current commit
     'from-git',
-    // Skip all confirmation prompts
-    '--yes',
     // Publish to npm using the `next` dist-tag
     '--dist-tag',
     'next',
     // Disable lifecycle scripts, specifically `prepare`
     '--ignore-scripts',
+    '--no-verify-access',
+    '--yes',
 ];
 
 const { stderr, stdin, stdout } = process;
