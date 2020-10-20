@@ -270,9 +270,8 @@ workflows:
 
       - deploy:
           requires:
-            - build
-#            - test_integration
-#            - test_integration_compat
+            - test_integration
+            - test_integration_compat
           filters:
             tags:
               # Trigger on tags that begin with `v`

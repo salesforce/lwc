@@ -19,6 +19,7 @@ const ARGS = [
     'next',
     // Disable lifecycle scripts, specifically `prepare`
     '--ignore-scripts',
+    // Lerna will otherwise attempt to verify npm user access
     '--no-verify-access',
     '--yes',
 ];
