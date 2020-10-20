@@ -9,20 +9,18 @@
 
 const execa = require('execa');
 
-let ARGS = [
+const ARGS = [
     // https://github.com/lerna/lerna/tree/master/commands/version
     'version',
     // Use exact version number without using semver notation (i.e., ~ and ^)
     '--exact',
     // Update version number even if there were no changes in the package
     '--force-publish',
-    // Avoid pushing by default, this flag is removed if `--push` is specified
-    '--no-push',
 ];
 
-// Only push to origin if the `--push` argument is specified
-if (process.argv.includes('--push')) {
-    ARGS = ARGS.filter((value) => value !== '--no-push');
+if (!process.argv.includes('--push')) {
+    // Don't push release commit and tag
+    ARGS.push('--no-push');
 }
 
 const { stderr, stdin, stdout } = process;
