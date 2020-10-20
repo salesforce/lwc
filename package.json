@@ -17,7 +17,7 @@
     "test:ci": "yarn test --no-cache --coverage --runInBand",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
     "test:performance": "lerna exec --scope perf-benchmarks -- best --runner default",
-    "release:ci:publish": "./scripts/release/publish.js",
+    "release:publish:ci": "./scripts/release/publish.js",
     "release:version": "./scripts/release/version.js"
   },
   "devDependencies": {
