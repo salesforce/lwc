@@ -143,7 +143,7 @@ jobs:
           command: npm config set "//registry.npmjs.org/:_authToken" "$NPM_AUTOMATION_TOKEN"
       - run:
           name: Publish package
-          command: lerna publish from-git --dist-tag next
+          command: yarn release:ci:publish
 
 
   test_unit:
@@ -270,8 +270,9 @@ workflows:
 
       - deploy:
           requires:
-            - test_integration
-            - test_integration_compat
+            - build
+#            - test_integration
+#            - test_integration_compat
           filters:
             tags:
               # Trigger on tags that begin with `v`

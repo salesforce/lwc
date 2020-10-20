@@ -10,22 +10,26 @@
 const execa = require('execa');
 
 const ARGS = [
-    // https://github.com/lerna/lerna/tree/master/commands/version
-    'version',
-    // Use exact version number without using semver notation (i.e., ~ and ^)
-    '--exact',
-    // Update version number even if there were no changes in the package
-    '--force-publish',
+    // https://github.com/lerna/lerna/tree/master/commands/publish
+    'publish',
+    // Explicitly publish packages tagged in the current commit
+    'from-git',
+    // Skip all confirmation prompts
+    '--yes',
+    // Publish to npm using the `next` dist-tag
+    '--dist-tag',
+    'next',
+    // Disable lifecycle scripts, specifically `prepare`
+    '--ignore-scripts',
 ];
-
-if (!process.argv.includes('--push')) {
-    // Don't push release commit and tag
-    ARGS.push('--no-push');
-}
 
 const { stderr, stdin, stdout } = process;
 
 try {
+    if (execa.sync('echo', ['$CI'], { shell: true }).stdout !== 'true') {
+        console.error('This script is only meant to run in CI.');
+        process.exit(1);
+    }
     execa.sync('lerna', ARGS, {
         // Prioritize locally installed binaries (node_modules/.bin)
         preferLocal: true,
