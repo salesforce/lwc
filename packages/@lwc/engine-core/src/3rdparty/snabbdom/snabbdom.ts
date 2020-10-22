@@ -171,6 +171,12 @@ export function updateStaticChildren(parentElm: Node, oldCh: VNodes, newCh: VNod
         addVnodes(parentElm, null, newCh, 0, length);
         return;
     }
+    if (length === 0) {
+        // the new list is empty and there's some old nodes, we can directly remove anything old.
+        // this may be the case in which the children are dynamic, and are inside an if.
+        removeVnodes(parentElm, oldCh, 0, oldCh.length);
+        return;
+    }
     // if the old list is not empty, the new list MUST have the same
     // amount of nodes, that's why we call this static children
     let referenceElm: Node | null = null;
