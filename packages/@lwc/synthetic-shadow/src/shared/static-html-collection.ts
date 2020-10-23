@@ -67,7 +67,6 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
             return null;
         },
     },
-
     [Symbol.toStringTag]: {
         configurable: true,
         get() {
