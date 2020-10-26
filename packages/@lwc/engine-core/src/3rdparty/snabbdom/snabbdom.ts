@@ -174,7 +174,7 @@ export function updateStaticChildren(parentElm: Node, oldCh: VNodes, newCh: VNod
         return;
     }
     if (newChLength === 0) {
-        // the new list is empty and there's some old nodes, we can directly remove anything old.
+        // the old list is nonempty and the new list is empty so we can directly remove all old nodes
         // this may be the case in which the children are dynamic, and are inside an if.
         removeVnodes(parentElm, oldCh, 0, oldChLength);
         return;
