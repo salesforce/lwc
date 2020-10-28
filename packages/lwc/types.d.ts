@@ -224,8 +224,4 @@ declare module 'lwc' {
 
     type Contextualizer = (elm: EventTarget, options: ContextProviderOptions) => void;
     export function createContextProvider(config: WireAdapterConstructor): Contextualizer;
-    export function createElement(
-        sel: string,
-        options: { is: typeof LightningElement; mode?: 'open' | 'closed' }
-    ): HTMLElement;
 }
