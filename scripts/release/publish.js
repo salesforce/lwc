@@ -24,7 +24,7 @@ const ARGS = [
 
 const { stderr, stdin, stdout } = process;
 
-const RELEASE_BRANCH_RE = /^(master|((winter|spring|summer)\d+)$/;
+const RELEASE_BRANCH_RE = /^(master|((winter|spring|summer)\d+))$/;
 
 try {
     if (!isCI) {
