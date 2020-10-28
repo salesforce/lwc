@@ -8,6 +8,7 @@
  */
 
 const execa = require('execa');
+const isCI = require('is-ci');
 
 const ARGS = [
     // https://github.com/lerna/lerna/tree/master/commands/publish
@@ -23,10 +24,10 @@ const ARGS = [
 
 const { stderr, stdin, stdout } = process;
 
-const RELEASE_BRANCH_RE = /^(master|winter\d\d|spring\d\d|summer\d\d)$/;
+const RELEASE_BRANCH_RE = /^(master|((winter|spring|summer)\d+)$/;
 
 try {
-    if (execa.sync('echo', ['$CI'], { shell: true }).stdout !== 'true') {
+    if (!isCI) {
         console.error('This script is only meant to run in CI.');
         process.exit(1);
     }
