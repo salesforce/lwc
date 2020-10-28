@@ -14,9 +14,6 @@ const ARGS = [
     'publish',
     // Explicitly publish packages tagged in the current commit
     'from-git',
-    // Publish to npm using the `next` dist-tag
-    '--dist-tag',
-    'next',
     // Disable lifecycle scripts, specifically `prepare`
     '--ignore-scripts',
     // Lerna will otherwise attempt to verify npm user access
@@ -26,11 +23,22 @@ const ARGS = [
 
 const { stderr, stdin, stdout } = process;
 
+const RELEASE_BRANCH_RE = /^(master|winter\d\d|spring\d\d|summer\d\d)$/;
+
 try {
     if (execa.sync('echo', ['$CI'], { shell: true }).stdout !== 'true') {
         console.error('This script is only meant to run in CI.');
         process.exit(1);
     }
+
+    const currentBranch = execa.sync('git', ['branch', '--show-current'], { shell: true }).stdout;
+    if (!RELEASE_BRANCH_RE.test(currentBranch)) {
+        console.error('This script is only meant to run in a release branch.');
+        process.exit(1);
+    }
+
+    ARGS.push('--dist-tag', currentBranch === 'master' ? 'next' : currentBranch);
+
     execa.sync('lerna', ARGS, {
         // Prioritize locally installed binaries (node_modules/.bin)
         preferLocal: true,

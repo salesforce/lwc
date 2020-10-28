@@ -15,8 +15,17 @@ yarn release:version --push
 
 ## `yarn release:publish:ci`
 
-This script publishes our packages to NPM using the `next` dist-tag and is limited to use in CI
-to ensure that all tests are run as part of the process.
+This script publishes packages to NPM from a release branch and is limited to use in CI to ensure
+that all tests are run as part of the process. A release branch is defined as either the `master`
+branch or a branch that matches one of the following regular expressions:
 
-It is triggered when the most recent commit is a release commit associated with a tag matching
-the regular expression /^v.\*/.
+-   `/^winter\d\d$/`
+-   `/^spring\d\d$/`
+-   `/^summer\d\d$/`
+
+This script is triggered when the most recent commit is a release commit associated with a tag
+matching the regular expression /^v.\*/.
+
+The dist-tag used depends on the current branch. If the current branch is `master` then the
+dist-tag is `next`. For all other release branches (e.g., `winter21`), the branch name is used as
+the dist-tag.
