@@ -8,6 +8,14 @@ env_integration_test: &env_integration_test
   - SAUCE_USERNAME: lwc_ci
   - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
 
+deploy_filters: &deploy_filters
+  filters:
+    branches:
+      ignore: /.*/
+    tags:
+      # Trigger on tags that begin with `v`
+      only: /^v.*/
+
 # Jobs definition
 version: 2.1
 
@@ -254,7 +262,7 @@ workflows:
 
       - perf_and_compare:
           filters:
-              <<: *ignore_forks
+            <<: *ignore_forks
           requires:
             - build
 
@@ -268,11 +276,35 @@ workflows:
             - test_unit
             - test_karma
 
+  build_and_test_and_deploy:
+    jobs:
+      - build:
+          <<: *deploy_filters
+
+      - test_unit:
+          <<: *deploy_filters
+          requires:
+            - build
+
+      - test_karma:
+          <<: *deploy_filters
+          requires:
+            - build
+
+      - test_integration:
+          <<: *deploy_filters
+          requires:
+            - test_unit
+            - test_karma
+
+      - test_integration_compat:
+          <<: *deploy_filters
+          requires:
+            - test_unit
+            - test_karma
+
       - deploy:
+          <<: *deploy_filters
           requires:
             - test_integration
             - test_integration_compat
-          filters:
-            tags:
-              # Trigger on tags that begin with `v`
-              only: /^v.*/

@@ -32,9 +32,13 @@ try {
         process.exit(1);
     }
 
-    const currentBranch = execa.sync('git', ['branch', '--show-current'], { shell: true }).stdout;
+    // `git branch --show-current` is only available as of git@2.22.0
+    const currentBranch = execa.sync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { shell: true })
+        .stdout;
     if (!RELEASE_BRANCH_RE.test(currentBranch)) {
-        console.error('This script is only meant to run in a release branch.');
+        console.error(
+            `Invalid branch: "${currentBranch}". This script is only meant to run in a release branch.`
+        );
         process.exit(1);
     }
 
