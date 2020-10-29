@@ -2,12 +2,11 @@
 
 ## `yarn release:version`
 
-This script is used to generate and tag a commit that updates the version of all packages in the
-monorepo. The tag should be specified through an interactive prompt after the script is run.
+This script is used to generate a release commit that updates the version of all packages in this
+monorepo. The version number should be specified through the interactive prompt.
 
-By default, both the release commit and its associated tag are only generated locally. Adding the
-`--push` flag will automatically push both commit and tag to the branch corresponding to the
-local branch on Github:
+The release commit is generated locally, along with a git tag. Pass the `--push` flag to
+immediately push both the release commit and tag.
 
 ```sh
 yarn release:version --push
@@ -15,18 +14,18 @@ yarn release:version --push
 
 ## `yarn release:publish:ci`
 
-This script publishes packages to NPM from a release branch and is limited to use in CI to ensure
-that all tests are run as part of the process. A release branch is defined as a branch that
-matches one of the following regular expressions:
+This script publishes packages to NPM. It restricts usage to a CI context to ensure that all
+tests are run as part of the process. It also restricts usage to release branches. A release
+branch is defined as a branch that matches one of the following regular expressions:
 
 -   /^master\$/
 -   /^winter\d+\$/
 -   /^spring\d+\$/
 -   /^summer\d+\$/
 
-This script is triggered when the most recent commit is a release commit associated with a tag
-matching the regular expression /^v.\*/.
+This script is triggered when a git tag that matches the regular expression /^v.\*/ is pushed to
+Github.
 
-The dist-tag used depends on the current branch. If the current branch is `master` then the
+The npm dist-tag used depends on the current branch. If the current branch is `master` then the
 dist-tag is `next`. For all other release branches (e.g., `winter21`), the branch name is used as
 the dist-tag.
