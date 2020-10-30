@@ -200,7 +200,7 @@ declare module 'lwc' {
     }
 
     abstract class WireAdapter<Value, Config, Context> {
-        constructor(setValue: (value: Value) => void);
+        constructor(setValue: (value: Value) => void): WireAdapter<Value, Config, Context>;
         update(config: Config, context?: Context);
         connect();
         disconnect();
