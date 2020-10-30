@@ -196,7 +196,7 @@ declare module 'lwc' {
     export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
 
     interface WireAdapterConstructor<Value, Config, Context> {
-        new (setValue: (value: Value) => void): WireAdapter<Value, Config, Context>;
+        new(setValue: (value: Value) => void): WireAdapter<Value, Config, Context>;
     }
 
     abstract class WireAdapter<Value, Config, Context> {
@@ -222,7 +222,7 @@ declare module 'lwc' {
         options: ContextProviderOptions<Context>
     ) => void;
 
-    export function createContextProvider<Value, Config, Context> (
+    export function createContextProvider<Value, Config, Context>(
         adapter: WireAdapterConstructor<Value, Config, Context>
     ): Contextualizer<Context>;
 
