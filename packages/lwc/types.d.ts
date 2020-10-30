@@ -196,7 +196,7 @@ declare module 'lwc' {
     export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
 
     interface WireAdapterConstructor<Value, Config, Context> {
-        new(setValue: (value: Value) => void): WireAdapter<Value, Config, Context>;
+        new (setValue: (value: Value) => void): WireAdapter<Value, Config, Context>;
     }
 
     abstract class WireAdapter<Value, Config, Context> {
@@ -204,8 +204,8 @@ declare module 'lwc' {
         update(config: Config, context?: Context);
         connect();
         disconnect();
-        configSchema?: Record<keyof Config, "optional" | "required">;
-        contextSchema?: Record<keyof Context, "optional" | "required">;
+        configSchema?: Record<keyof Config, 'optional' | 'required'>;
+        contextSchema?: Record<keyof Context, 'optional' | 'required'>;
     }
 
     interface ContextConsumer<Context> {
