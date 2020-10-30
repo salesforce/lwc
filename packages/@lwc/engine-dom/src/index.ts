@@ -26,6 +26,9 @@ export {
     sanitizeAttribute,
     getComponentDef,
     isComponentConstructor,
+    swapComponent,
+    swapStyle,
+    swapTemplate,
     __unstable__ProfilerControl,
 } from '@lwc/engine-core';
 
