@@ -195,33 +195,35 @@ declare module 'lwc' {
      */
     export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
 
-    type WireConfigValue = Record<string, any>;
-    type ContextValue = Record<string, any>;
-
-    interface WireAdapter {
-        update(config: WireConfigValue, context?: ContextValue): void;
-        connect(): void;
-        disconnect(): void;
+    interface WireAdapterConstructor<Value, Config, Context> {
+        new (setValue: (value: Value) => void): WireAdapter<Value, Config, Context>;
     }
 
-    type WireDataCallback = (value: any) => void;
-    type WireAdapterSchemaValue = 'optional' | 'required';
-
-    interface ContextConsumer {
-        provide(newContext: ContextValue): void;
+    abstract class WireAdapter<Value, Config, Context> {
+        constructor(setValue: (value: Value) => void);
+        update(config: Config, context?: Context);
+        connect();
+        disconnect();
+        configSchema?: Record<keyof Config, "optional" | "required">;
+        contextSchema?: Record<keyof Context, "optional" | "required">;
     }
 
-    interface ContextProviderOptions {
-        consumerConnectedCallback: (consumer: ContextConsumer) => void;
-        consumerDisconnectedCallback?: (consumer: ContextConsumer) => void;
+    interface ContextConsumer<Context> {
+        provide(newContext: Context): void;
     }
 
-    interface WireAdapterConstructor {
-        new (callback: WireDataCallback): WireAdapter;
-        configSchema?: Record<string, WireAdapterSchemaValue>;
-        contextSchema?: Record<string, WireAdapterSchemaValue>;
+    interface ContextProviderOptions<Context> {
+        consumerConnectedCallback: (consumer: ContextConsumer<Context>) => void;
+        consumerDisconnectedCallback?: (consumer: ContextConsumer<Context>) => void;
     }
 
-    type Contextualizer = (elm: EventTarget, options: ContextProviderOptions) => void;
-    export function createContextProvider(config: WireAdapterConstructor): Contextualizer;
+    type Contextualizer<Context> = (
+        elm: EventTarget,
+        options: ContextProviderOptions<Context>
+    ) => void;
+
+    export function createContextProvider<Value, Config, Context>(
+        adapter: WireAdapterConstructor<Value, Config, Context>
+    ): Contextualizer<Context>;
+
 }
