@@ -222,7 +222,7 @@ declare module 'lwc' {
         options: ContextProviderOptions<Context>
     ) => void;
 
-    export function createContextProvider<Value, Config, Context>(
+    export function createContextProvider<Value, Config, Context> (
         adapter: WireAdapterConstructor<Value, Config, Context>
     ): Contextualizer<Context>;
 
