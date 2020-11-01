@@ -33,8 +33,7 @@ try {
     }
 
     // `git branch --show-current` is only available as of git@2.22.0
-    const currentBranch = execa.sync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { shell: true })
-        .stdout;
+    const currentBranch = execa.commandSync('git rev-parse --abbrev-ref HEAD').stdout;
     if (!RELEASE_BRANCH_RE.test(currentBranch)) {
         console.error(
             `Invalid branch: "${currentBranch}". This script is only meant to run in a release branch.`
