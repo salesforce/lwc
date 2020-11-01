@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine",
-    "version": "1.8.7",
+    "version": "1.9.0",
     "description": "LWC Engine",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -24,7 +24,7 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/engine-dom": "1.8.7"
+        "@lwc/engine-dom": "1.9.0"
     },
     "lwc": {
         "modules": [
