@@ -24,7 +24,7 @@ const ARGS = [
 
 const { stderr, stdin, stdout } = process;
 
-const RELEASE_BRANCH_RE = /^(master|((winter|spring|summer)\d+))$/;
+const RELEASE_BRANCH_RE = /(master|((winter|spring|summer)\d+))/;
 
 try {
     if (!isCI) {
@@ -32,16 +32,29 @@ try {
         process.exit(1);
     }
 
-    // `git branch --show-current` is only available as of git@2.22.0
-    const currentBranch = execa.commandSync('git rev-parse --abbrev-ref HEAD').stdout;
-    if (!RELEASE_BRANCH_RE.test(currentBranch)) {
-        console.error(
-            `Invalid branch: "${currentBranch}". This script is only meant to run in a release branch.`
-        );
+    // We can't use a straightforward git command like `git branch --show-current` because we've
+    // checked out a git tag and we're in a detached HEAD state. The following logic attempts to
+    // verify that this tag points to a commit contained by a release branch.
+
+    // All branches that contain the current commit. Since we only deal with release commits, the
+    // only scenario where this might be an issue is if we try to publish a release commit from
+    // master after CLCO because the commit will show up in two branches.
+    const branches = execa.commandSync('git branch --all --contains').stdout;
+
+    const result = RELEASE_BRANCH_RE.exec(branches);
+    if (result === null) {
+        const tag = execa.commandSync('git tag --points-at HEAD').stdout;
+        console.error(`The commit referenced by "${tag}" is not contained by any release branch.`);
         process.exit(1);
     }
 
-    ARGS.push('--dist-tag', currentBranch === 'master' ? 'next' : currentBranch);
+    const [, releaseBranch] = result;
+    const distTag = releaseBranch === 'master' ? 'next' : releaseBranch;
+    ARGS.push('--dist-tag', distTag);
+
+    console.log(
+        `Attempting to release from branch "${releaseBranch}" using dist-tag "${distTag}".`
+    );
 
     execa.sync('lerna', ARGS, {
         // Prioritize locally installed binaries (node_modules/.bin)
