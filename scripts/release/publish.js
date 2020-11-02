@@ -39,8 +39,6 @@ try {
     // master after CLCO because the commit will show up in two branches.
     const branches = execa.commandSync('git branch --all --contains').stdout;
 
-    console.log('DEBUG', branches);
-
     // Restrict the regex to remote branches to avoid assumptions about local branches.
     const REMOTE_RELEASE_BRANCH_RE = /origin\/(master|((winter|spring|summer)\d+))/;
 
