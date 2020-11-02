@@ -41,6 +41,8 @@ try {
     // master after CLCO because the commit will show up in two branches.
     const branches = execa.commandSync('git branch --all --contains').stdout;
 
+    console.log('DEBUG', branches);
+
     const result = RELEASE_BRANCH_RE.exec(branches);
     if (result === null) {
         const tag = execa.commandSync('git tag --points-at HEAD').stdout;
