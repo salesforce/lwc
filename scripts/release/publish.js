@@ -24,8 +24,6 @@ const ARGS = [
 
 const { stderr, stdin, stdout } = process;
 
-const RELEASE_BRANCH_RE = /(master|((winter|spring|summer)\d+))/;
-
 try {
     if (!isCI) {
         console.error('This script is only meant to run in CI.');
@@ -43,7 +41,10 @@ try {
 
     console.log('DEBUG', branches);
 
-    const result = RELEASE_BRANCH_RE.exec(branches);
+    // Restrict the regex to remote branches to avoid assumptions about local branches.
+    const REMOTE_RELEASE_BRANCH_RE = /origin\/(master|((winter|spring|summer)\d+))/;
+
+    const result = REMOTE_RELEASE_BRANCH_RE.exec(branches);
     if (result === null) {
         const tag = execa.commandSync('git tag --points-at HEAD').stdout;
         console.error(`The commit referenced by "${tag}" is not contained by any release branch.`);
