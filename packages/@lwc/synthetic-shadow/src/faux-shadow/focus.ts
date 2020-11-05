@@ -253,6 +253,9 @@ export function disableKeyboardFocusNavigationRoutines(): void {
 export function enableKeyboardFocusNavigationRoutines(): void {
     letBrowserHandleFocus = false;
 }
+export function isKeyboardFocusNavigationRoutineEnabled(): boolean {
+    return !letBrowserHandleFocus;
+}
 
 function skipHostHandler(event: FocusEvent) {
     if (letBrowserHandleFocus) {
