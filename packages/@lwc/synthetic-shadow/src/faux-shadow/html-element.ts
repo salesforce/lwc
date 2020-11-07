@@ -116,11 +116,11 @@ function blurPatched(this: HTMLElement) {
 }
 
 function focusPatched(this: HTMLElement) {
-    // Capture enabled state at function start
-    const isEnabled = isKeyboardFocusNavigationRoutineEnabled();
+    // Save enabled state
+    const originallyEnabled = isKeyboardFocusNavigationRoutineEnabled();
 
-    // Disable if originally enabled (change state)
-    if (isEnabled) {
+    // Change state by disabling if originally enabled
+    if (originallyEnabled) {
         disableKeyboardFocusNavigationRoutines();
     }
 
@@ -133,8 +133,8 @@ function focusPatched(this: HTMLElement) {
     // @ts-ignore type-mismatch
     focus.apply(this, arguments);
 
-    // Enable if originally enabled (restore state)
-    if (isEnabled) {
+    // Restore state by enabling if originally enabled
+    if (originallyEnabled) {
         enableKeyboardFocusNavigationRoutines();
     }
 }

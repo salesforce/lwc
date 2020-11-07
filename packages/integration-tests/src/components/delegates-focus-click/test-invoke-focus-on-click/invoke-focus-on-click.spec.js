@@ -8,7 +8,7 @@ const assert = require('assert');
 
 const URL = '/invoke-focus-on-click';
 
-describe('focus() method invocation inside a focus handler caused by a click', () => {
+describe('focus() method invocation inside a focus handler triggered by a click', () => {
     before(() => {
         browser.url(URL);
     });
