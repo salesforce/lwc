@@ -11,14 +11,12 @@ import {
     setCreateComment,
     setCreateElement,
     setCreateText,
-    setDefineCustomElement,
     setDispatchEvent,
     setGetAttribute,
     setGetBoundingClientRect,
     setGetChildNodes,
     setGetChildren,
     setGetClassList,
-    setGetCustomElement,
     setGetElementsByClassName,
     setGetElementsByTagName,
     setGetFirstChild,
@@ -26,7 +24,6 @@ import {
     setGetLastChild,
     setGetLastElementChild,
     setGetProperty,
-    setHTMLElement,
     setInsert,
     setIsConnected,
     setIsHydrating,
@@ -45,6 +42,7 @@ import {
     setSsr,
     setAddEventListener,
     setInsertStylesheet,
+    setGetUpgradableElement
 } from '@lwc/engine-core';
 
 import {
@@ -53,14 +51,12 @@ import {
     createComment,
     createElement,
     createText,
-    defineCustomElement,
     dispatchEvent,
     getAttribute,
     getBoundingClientRect,
     getChildNodes,
     getChildren,
     getClassList,
-    getCustomElement,
     getElementsByClassName,
     getElementsByTagName,
     getFirstChild,
@@ -68,7 +64,6 @@ import {
     getLastChild,
     getLastElementChild,
     getProperty,
-    HTMLElement,
     insert,
     isConnected,
     isHydrating,
@@ -87,21 +82,20 @@ import {
     ssr,
     addEventListener,
     insertStylesheet,
-} from './renderer';
+    getUpgradableElement
+} from "./renderer";
 
 setAssertInstanceOfHTMLElement(assertInstanceOfHTMLElement);
 setAttachShadow(attachShadow);
 setCreateComment(createComment);
 setCreateElement(createElement);
 setCreateText(createText);
-setDefineCustomElement(defineCustomElement);
 setDispatchEvent(dispatchEvent);
 setGetAttribute(getAttribute);
 setGetBoundingClientRect(getBoundingClientRect);
 setGetChildNodes(getChildNodes);
 setGetChildren(getChildren);
 setGetClassList(getClassList);
-setGetCustomElement(getCustomElement);
 setGetElementsByClassName(getElementsByClassName);
 setGetElementsByTagName(getElementsByTagName);
 setGetFirstChild(getFirstChild);
@@ -109,7 +103,6 @@ setGetFirstElementChild(getFirstElementChild);
 setGetLastChild(getLastChild);
 setGetLastElementChild(getLastElementChild);
 setGetProperty(getProperty);
-setHTMLElement(HTMLElement);
 setInsert(insert);
 setIsConnected(isConnected);
 setIsHydrating(isHydrating);
@@ -128,3 +121,4 @@ setSetText(setText);
 setSsr(ssr);
 setAddEventListener(addEventListener);
 setInsertStylesheet(insertStylesheet);
+setGetUpgradableElement(getUpgradableElement)

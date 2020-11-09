@@ -11,10 +11,9 @@ import {
     isGlobalHtmlAttribute,
     isAriaAttribute,
     create,
-    StringToLowerCase,
     htmlPropertyToAttribute,
-    noop,
-} from '@lwc/shared';
+    noop, isFunction
+} from "@lwc/shared";
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
@@ -39,25 +38,6 @@ function createElement(name: string): HostElement {
 
 const registry: Record<string, CustomElementConstructor> = create(null);
 const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-function registerCustomElement(name: string, ctor: CustomElementConstructor) {
-    if (name !== StringToLowerCase.call(name) || registry[name]) {
-        throw new TypeError(`Invalid Registration`);
-    }
-    registry[name] = ctor;
-    reverseRegistry.set(ctor, name);
-}
-
-class HTMLElementImpl {
-    constructor() {
-        const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        return createElement(name);
-    }
-}
 
 export const ssr: boolean = true;
 
@@ -385,20 +365,30 @@ export const getLastElementChild = unsupportedMethod('getLastElementChild') as (
     element: HostElement
 ) => HostElement | null;
 
-export function defineCustomElement(
-    name: string,
-    constructor: CustomElementConstructor,
-    _options?: ElementDefinitionOptions
-) {
-    registerCustomElement(name, constructor);
-}
-
-export function getCustomElement(name: string): CustomElementConstructor | undefined {
-    return registry[name];
-}
-
-const HTMLElementExported = HTMLElementImpl as typeof HTMLElement;
-export { HTMLElementExported as HTMLElement };
-
 /* noop */
 export const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
+
+type UpgradeCallback = (elm: HostElement) => void;
+interface UpgradableCustomElementConstructor extends CustomElementConstructor {
+    new (upgradeCallback?: UpgradeCallback): HostElement;
+}
+
+const localRegistryRecord: Record<string, UpgradableCustomElementConstructor> = create(null);
+function getUpgradableConstructor(name: string): UpgradableCustomElementConstructor {
+    return (function (upgradeCallback?: UpgradeCallback) {
+        const elm = createElement(name);
+        if (isFunction(upgradeCallback)) {
+            upgradeCallback(elm); // nothing to do with the result for now
+        }
+        return elm;
+    } as unknown) as UpgradableCustomElementConstructor;
+}
+
+export function getUpgradableElement(name: string): UpgradableCustomElementConstructor {
+    let ctor = localRegistryRecord[name];
+    if (!isUndefined(ctor)) {
+        return ctor;
+    }
+    ctor = localRegistryRecord[name] = getUpgradableConstructor(name);
+    return ctor;
+}

@@ -28,11 +28,11 @@ import {
     createComment,
     getClassList,
     isSyntheticShadowDefined,
+    getUpgradableElement
 } from '../renderer';
 
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
-import { getUpgradableConstructor } from './upgradable-element';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import {
     createVM,
@@ -198,7 +198,7 @@ function patchElement(n1: VElement, n2: VElement) {
 function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
     const { sel, owner } = vnode;
 
-    const UpgradableConstructor = getUpgradableConstructor(sel);
+    const UpgradableConstructor = getUpgradableElement(sel);
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced

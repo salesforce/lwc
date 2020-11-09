@@ -29,13 +29,6 @@ export function setIsSyntheticShadowDefined(isSyntheticShadowDefinedImpl: boolea
     isSyntheticShadowDefined = isSyntheticShadowDefinedImpl;
 }
 
-type HTMLElementType = typeof HTMLElement;
-let HTMLElementExported: HTMLElementType;
-export { HTMLElementExported as HTMLElement };
-export function setHTMLElement(HTMLElementImpl: HTMLElementType) {
-    HTMLElementExported = HTMLElementImpl;
-}
-
 //
 // Functions
 //
@@ -259,18 +252,12 @@ export function setAssertInstanceOfHTMLElement(
     assertInstanceOfHTMLElement = assertInstanceOfHTMLElementImpl;
 }
 
-type defineCustomElementFunc = (
-    name: string,
-    constructor: CustomElementConstructor,
-    options?: ElementDefinitionOptions
-) => void;
-export let defineCustomElement: defineCustomElementFunc;
-export function setDefineCustomElement(defineCustomElementImpl: defineCustomElementFunc) {
-    defineCustomElement = defineCustomElementImpl;
+type UpgradeCallback = (elm: HTMLElement) => void;
+interface UpgradableCustomElementConstructor extends CustomElementConstructor {
+    new (upgradeCallback?: UpgradeCallback): HTMLElement;
 }
-
-type getCustomElementFunc = (name: string) => CustomElementConstructor | undefined;
-export let getCustomElement: getCustomElementFunc;
-export function setGetCustomElement(getCustomElementImpl: getCustomElementFunc) {
-    getCustomElement = getCustomElementImpl;
+type getUpgradableElementFunc = (name: string) => UpgradableCustomElementConstructor
+export let getUpgradableElement: getUpgradableElementFunc
+export function setGetUpgradableElement(getUpgradableElementImpl: getUpgradableElementFunc) {
+    getUpgradableElement = getUpgradableElementImpl;
 }

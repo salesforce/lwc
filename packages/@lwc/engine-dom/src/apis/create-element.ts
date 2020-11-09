@@ -4,14 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, assign, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
+import { assert, assign, isFunction, isNull, isObject, isUndefined, toString, StringToLowerCase } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    getUpgradableConstructor,
 } from '@lwc/engine-core';
+import {
+    getUpgradableElement
+} from '../renderer'
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
@@ -72,28 +74,32 @@ assign(_Node.prototype, {
  * ```
  */
 export function createElement(
-    sel: string,
-    options: {
-        is: typeof LightningElement;
-        mode?: 'open' | 'closed';
-    }
+  sel: string,
+  options: {
+      is: typeof LightningElement;
+      mode?: 'open' | 'closed';
+  }
 ): HTMLElement {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
-            `"createElement" function expects an object as second parameter but received "${toString(
-                options
-            )}".`
+          `"createElement" function expects an object as second parameter but received "${toString(
+            options
+          )}".`
         );
     }
 
     const Ctor = options.is;
     if (!isFunction(Ctor)) {
         throw new TypeError(
-            `"createElement" function expects an "is" option with a valid component constructor.`
+          `"createElement" function expects an "is" option with a valid component constructor.`
         );
     }
 
-    const UpgradableConstructor = getUpgradableConstructor(sel);
+    // tagName must be all lowercase, unfortunately, we have legacy code that is
+    // passing `sel` as a camel-case, which makes them invalid custom elements name
+    // the following line guarantees that this does not leaks beyond this point.
+    const tagName = StringToLowerCase.call(sel);
+    const UpgradableConstructor = getUpgradableElement(tagName);
     let wasComponentUpgraded: boolean = false;
     // the custom element from the registry is expecting an upgrade callback
     /**
@@ -104,7 +110,7 @@ export function createElement(
      */
     const element = new UpgradableConstructor((elm: HTMLElement) => {
         createVM(elm, Ctor, {
-            tagName: sel,
+            tagName,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
         });
@@ -115,7 +121,7 @@ export function createElement(
     if (!wasComponentUpgraded) {
         /* eslint-disable-next-line no-console */
         console.error(
-            `Unexpected tag name "${sel}". This name is a registered custom element, preventing LWC to upgrade the element.`
+          `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
         );
     }
     return element;
