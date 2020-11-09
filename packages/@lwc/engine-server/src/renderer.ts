@@ -11,13 +11,20 @@ import {
     isGlobalHtmlAttribute,
     isAriaAttribute,
     create,
-    StringToLowerCase,
     htmlPropertyToAttribute,
+    isFunction,
 } from '@lwc/shared';
 import { Renderer } from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
+
+type UpgradeCallback = (elm: HostElement) => void;
+interface UpgradableCustomElementConstructor extends CustomElementConstructor {
+    new (upgradeCallback?: UpgradeCallback): HostElement;
+}
+
+const localRegistryRecord: Record<string, UpgradableCustomElementConstructor> = create(null);
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -38,26 +45,14 @@ function createElement(name: string, namespace?: string): HostElement {
     };
 }
 
-const registry: Record<string, CustomElementConstructor> = create(null);
-const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-function registerCustomElement(name: string, ctor: CustomElementConstructor) {
-    if (name !== StringToLowerCase.call(name) || registry[name]) {
-        throw new TypeError(`Invalid Registration`);
-    }
-    registry[name] = ctor;
-    reverseRegistry.set(ctor, name);
-}
-
-class HTMLElement {
-    constructor() {
-        const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
-            throw new TypeError(`Invalid Construction`);
+function getUpgradableConstructor(name: string): UpgradableCustomElementConstructor {
+    return (function (upgradeCallback?: UpgradeCallback) {
+        const elm = createElement(name);
+        if (isFunction(upgradeCallback)) {
+            upgradeCallback(elm); // nothing to do with the result for now
         }
-        return createElement(name);
-    }
+        return elm;
+    } as unknown) as UpgradableCustomElementConstructor;
 }
 
 export const renderer: Renderer<HostNode, HostElement> = {
@@ -303,15 +298,12 @@ export const renderer: Renderer<HostNode, HostElement> = {
     getElementsByTagName: unsupportedMethod('getElementsByTagName'),
     getElementsByClassName: unsupportedMethod('getElementsByClassName'),
 
-    defineCustomElement(
-        name: string,
-        constructor: CustomElementConstructor,
-        _options?: ElementDefinitionOptions
-    ) {
-        registerCustomElement(name, constructor);
+    getUpgradableElement(name: string): UpgradableCustomElementConstructor {
+        let ctor = localRegistryRecord[name];
+        if (!isUndefined(ctor)) {
+            return ctor;
+        }
+        ctor = localRegistryRecord[name] = getUpgradableConstructor(name);
+        return ctor;
     },
-    getCustomElement(name: string): CustomElementConstructor | undefined {
-        return registry[name];
-    },
-    HTMLElement: HTMLElement as any,
 };

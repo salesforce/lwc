@@ -63,7 +63,6 @@ import {
     markAsDynamicChildren,
 } from './hooks';
 import { isComponentConstructor } from './def';
-import { getUpgradableConstructor } from './upgradable-element';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -153,7 +152,7 @@ const CustomElementHook: Hooks<VCustomElement> = {
     create: (vnode) => {
         const { sel, owner } = vnode;
         const { renderer } = owner;
-        const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
+        const UpgradableConstructor = renderer.getUpgradableElement(sel);
         /**
          * Note: if the upgradable constructor does not expect, or throw when we new it
          * with a callback as the first argument, we could implement a more advanced

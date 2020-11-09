@@ -36,7 +36,6 @@ export { unwrap } from './membrane';
 export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
-export { getUpgradableConstructor } from './upgradable-element';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 
 // Types -------------------------------------------------------------------------------------------

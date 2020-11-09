@@ -10,16 +10,24 @@ import {
     hasOwnProperty,
     isUndefined,
     create,
-    StringToLowerCase,
+    isFunction,
     setPrototypeOf,
     htmlPropertyToAttribute,
 } from '@lwc/shared';
 import { Renderer } from '@lwc/engine-core';
 
+type UpgradeCallback = (elm: HTMLElement) => void;
+interface UpgradableCustomElementConstructor extends CustomElementConstructor {
+    new (upgradeCallback?: UpgradeCallback): HTMLElement;
+}
+
 const globalStylesheets: { [content: string]: true } = create(null);
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
 
-let getCustomElement, defineCustomElement, HTMLElementConstructor;
+const localRegistryRecord: Record<string, UpgradableCustomElementConstructor> = create(null);
+
+let getGlobalCustomElement: (name: string) => CustomElementConstructor | undefined;
+let getUpgradableConstructor: (name: string) => CustomElementConstructor;
 
 function isCustomElementRegistryAvailable() {
     if (typeof customElements === 'undefined') {
@@ -44,39 +52,44 @@ function isCustomElementRegistryAvailable() {
 }
 
 if (isCustomElementRegistryAvailable()) {
-    getCustomElement = customElements.get.bind(customElements);
-    defineCustomElement = customElements.define.bind(customElements);
-    HTMLElementConstructor = HTMLElement;
+    const { get, define } = customElements;
+    let iframeWindow: Window & typeof globalThis;
+    let cacheIframeWindow = () => {
+        cacheIframeWindow = () => iframeWindow;
+        // headless iframe used for local registry for LWC components
+        const localRegistryIframe = document.createElement('iframe');
+        localRegistryIframe.hidden = true;
+        (document.body || document).appendChild(localRegistryIframe);
+        iframeWindow = localRegistryIframe.contentWindow! as Window & typeof globalThis;
+        return iframeWindow;
+    };
+    getGlobalCustomElement = get.bind(customElements);
+    getUpgradableConstructor = (name: string) => {
+        class LWCUpgradableElement extends cacheIframeWindow().HTMLElement {
+            constructor(upgradeCallback?: UpgradeCallback) {
+                super();
+                // correcting the proto chain to avoid leaking internals of the iframe
+                setPrototypeOf(this, HTMLElement.prototype);
+                if (isFunction(upgradeCallback)) {
+                    upgradeCallback(this); // nothing to do with the result for now
+                }
+            }
+        }
+        define.call(cacheIframeWindow().customElements, name, LWCUpgradableElement);
+        return LWCUpgradableElement;
+    };
 } else {
-    const registry: Record<string, CustomElementConstructor> = create(null);
-    const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-    defineCustomElement = function define(name: string, ctor: CustomElementConstructor) {
-        if (name !== StringToLowerCase.call(name) || registry[name]) {
-            throw new TypeError(`Invalid Registration`);
-        }
-        registry[name] = ctor;
-        reverseRegistry.set(ctor, name);
+    // no registry available here
+    getGlobalCustomElement = () => undefined;
+    getUpgradableConstructor = (name: string): UpgradableCustomElementConstructor => {
+        return (function (upgradeCallback?: UpgradeCallback) {
+            const elm = document.createElement(name);
+            if (isFunction(upgradeCallback)) {
+                upgradeCallback(elm); // nothing to do with the result for now
+            }
+            return elm;
+        } as unknown) as UpgradableCustomElementConstructor;
     };
-
-    getCustomElement = function get(name: string): CustomElementConstructor | undefined {
-        return registry[name];
-    };
-
-    HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
-        if (!(this instanceof HTMLElement)) {
-            throw new TypeError(`Invalid Invocation`);
-        }
-        const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        const elm = document.createElement(name);
-        setPrototypeOf(elm, constructor.prototype);
-        return elm;
-    };
-    HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
 // TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
@@ -232,7 +245,16 @@ export const renderer: Renderer<Node, Element> = {
         assert.invariant(elm instanceof HTMLElement, msg);
     },
 
-    defineCustomElement,
-    getCustomElement,
-    HTMLElement: HTMLElementConstructor as any,
+    getUpgradableElement(name: string): UpgradableCustomElementConstructor {
+        let ctor = getGlobalCustomElement(name);
+        if (!isUndefined(ctor)) {
+            return ctor;
+        }
+        ctor = localRegistryRecord[name];
+        if (!isUndefined(ctor)) {
+            return ctor;
+        }
+        ctor = localRegistryRecord[name] = getUpgradableConstructor(name);
+        return ctor;
+    },
 };
