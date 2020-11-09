@@ -16,12 +16,8 @@ const ARGS = [
     '--exact',
     // Update version number even if there were no changes in the package
     '--force-publish',
+    '--no-push',
 ];
-
-if (!process.argv.includes('--push')) {
-    // Don't push release commit and tag
-    ARGS.push('--no-push');
-}
 
 const { stderr, stdin, stdout } = process;
 

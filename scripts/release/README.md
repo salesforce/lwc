@@ -5,12 +5,7 @@
 This script is used to generate a release commit that updates the version of all packages in this
 monorepo. The version number should be specified through the interactive prompt.
 
-The release commit is generated locally, along with a git tag. Pass the `--push` flag to
-immediately push both the release commit and tag.
-
-```sh
-yarn release:version --push
-```
+The release commit is generated locally, along with a git tag.
 
 ## `yarn release:publish:ci`
 
