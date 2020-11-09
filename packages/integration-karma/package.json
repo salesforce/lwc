@@ -17,7 +17,7 @@
         "@lwc/synthetic-shadow": "1.9.1",
         "chokidar": "^3.4.2",
         "istanbul-api": "^3.0.0",
-        "karma": "^5.2.2",
+        "karma": "^5.2.3",
         "karma-chrome-launcher": "^3.1.0",
         "karma-coverage": "^2.0.3",
         "karma-jasmine": "^4.0.1",
