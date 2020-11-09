@@ -29,7 +29,7 @@
     "@types/acorn": "^4.0.5",
     "@types/babel__core": "^7.1.12",
     "@types/jest": "^26.0.15",
-    "@types/node": "^14.14.6",
+    "@types/node": "^14.14.7",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
     "babel-plugin-tester": "^10.0.0",
