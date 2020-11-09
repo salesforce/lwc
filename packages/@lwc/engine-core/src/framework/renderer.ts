@@ -8,6 +8,11 @@
 export type HostNode = any;
 export type HostElement = any;
 
+type UpgradeCallback = (elm: HTMLElement) => void;
+interface UpgradableCustomElementConstructor extends CustomElementConstructor {
+    new (upgradeCallback?: UpgradeCallback): HTMLElement;
+}
+
 export interface Renderer<N = HostNode, E = HostElement> {
     ssr: boolean;
     syntheticShadow: boolean;
@@ -46,13 +51,7 @@ export interface Renderer<N = HostNode, E = HostElement> {
     isConnected(node: N): boolean;
     insertGlobalStylesheet(content: string): void;
     assertInstanceOfHTMLElement?(elm: any, msg: string): void;
-    defineCustomElement(
-        name: string,
-        constructor: CustomElementConstructor,
-        options?: ElementDefinitionOptions
-    ): void;
-    getCustomElement(name: string): CustomElementConstructor | undefined;
-    HTMLElement: typeof HTMLElement;
+    getUpgradableElement(name: string): UpgradableCustomElementConstructor;
 }
 
 // This is a temporary workaround to get the @lwc/engine-server to evaluate in node without having
