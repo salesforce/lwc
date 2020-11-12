@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+import { defineProperty, getOwnPropertyDescriptor, isNull } from '@lwc/shared';
+
+import { pathComposer } from '../../3rdparty/polymer/path-composer';
+import { retarget } from '../../3rdparty/polymer/retarget';
+import { eventCurrentTargetGetter } from '../../env/dom';
+import { isNodeShadowed } from '../../faux-shadow/node';
+import { getOwnerDocument } from '../../shared/utils';
+
+const relatedTargetGetter = getOwnPropertyDescriptor(MouseEvent.prototype, 'relatedTarget')!
+    .get as () => typeof MouseEvent.prototype.relatedTarget;
+
+defineProperty(MouseEvent.prototype, 'relatedTarget', {
+    get(this: Event) {
+        const relatedTarget = relatedTargetGetter.call(this);
+        if (isNull(relatedTarget)) {
+            return null;
+        }
+        if (!(relatedTarget instanceof Node) || !isNodeShadowed(relatedTarget as Node)) {
+            return relatedTarget;
+        }
+        let pointOfReference = eventCurrentTargetGetter.call(this);
+        if (isNull(pointOfReference)) {
+            pointOfReference = getOwnerDocument(relatedTarget as Node);
+        }
+        return retarget(pointOfReference, pathComposer(relatedTarget, true));
+    },
+    enumerable: true,
+    configurable: true,
+});

@@ -26,6 +26,7 @@ import './polyfills/clipboard-event-composed/main';
 import './polyfills/iframe-content-window/main';
 import './polyfills/mutation-observer/main';
 import './polyfills/focus-event/main';
+import './polyfills/mouse-event/main';
 
 // Internal Patches
 import './faux-shadow/node';
