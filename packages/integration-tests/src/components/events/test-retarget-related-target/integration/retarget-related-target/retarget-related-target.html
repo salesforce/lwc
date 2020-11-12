@@ -1,6 +1,7 @@
 <template>
-    <span class="related-target-tabname">{relatedTargetTagName}</span>
-    <input type="text" onfocusin={handleFocusIn} />
-    <br />
-    <integration-child></integration-child>
+    <div onmouseover={handleMouseOver}>
+        <integration-child class="first"></integration-child>
+        <integration-child class="second"></integration-child>
+    </div>
+    <span class="related-target-class-name">{relatedTargetClassNames}</span>
 </template>
