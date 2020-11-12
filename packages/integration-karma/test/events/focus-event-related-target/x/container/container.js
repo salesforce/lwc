@@ -12,18 +12,11 @@ export default class extends LightningElement {
     }
 
     @api
-    get relatedTargetTagName() {
-        return this._tagName;
+    get relatedTargetClassName() {
+        return this._className;
     }
 
-    rendered = false;
-    renderedCallback() {
-        if (!this.rendered) {
-            this.rendered = true;
-            this.template.querySelector('textarea').focus();
-            this.template.addEventListener('focusin', (event) => {
-                this._tagName = event.relatedTarget.tagName;
-            });
-        }
+    handleFocusIn(event) {
+        this._className = event.relatedTarget?.className;
     }
 }

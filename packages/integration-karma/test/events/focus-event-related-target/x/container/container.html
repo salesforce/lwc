@@ -1,5 +1,6 @@
 <template>
-    <textarea placeholder="initially focused textarea"></textarea>
-    <x-input class="first"></x-input>
-    <x-input class="second"></x-input>
+    <div onfocusin={handleFocusIn}>
+        <x-input class="first"></x-input>
+        <x-input class="second"></x-input>
+    </div>
 </template>
