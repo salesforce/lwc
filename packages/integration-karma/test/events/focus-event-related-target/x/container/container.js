@@ -17,6 +17,6 @@ export default class extends LightningElement {
     }
 
     handleFocusIn(event) {
-        this._className = event.relatedTarget?.className;
+        this._className = event.relatedTarget && event.relatedTarget.className;
     }
 }
