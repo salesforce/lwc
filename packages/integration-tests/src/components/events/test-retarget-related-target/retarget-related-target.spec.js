@@ -6,27 +6,35 @@
  */
 const assert = require('assert');
 
-describe('Retarget relatedTarget', () => {
-    const URL = '/retarget-related-target';
+const URL = '/retarget-related-target';
 
+describe('Retarget relatedTarget', () => {
     before(() => {
         browser.url(URL);
     });
 
-    it('should retarget relatedTarget from a foreign shadow', () => {
-        browser.execute(function () {
-            document
-                .querySelector('integration-retarget-related-target')
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('input')
-                .focus();
-        });
-        browser.keys(['Shift', 'Tab', 'Shift']);
-        const indicator = browser.$(function () {
+    it('should retarget relatedTarget for MouseEvent', () => {
+        var first = browser.$(function () {
             return document
                 .querySelector('integration-retarget-related-target')
-                .shadowRoot.querySelector('.related-target-tabname');
+                .shadowRoot.querySelector('integration-child.first')
+                .shadowRoot.querySelector('input');
         });
-        assert.equal(indicator.getText(), 'integration-child');
+        var second = browser.$(function () {
+            return document
+                .querySelector('integration-retarget-related-target')
+                .shadowRoot.querySelector('integration-child.second')
+                .shadowRoot.querySelector('input');
+        });
+        var indicator = browser.$(function () {
+            return document
+                .querySelector('integration-retarget-related-target')
+                .shadowRoot.querySelector('.related-target-class-name');
+        });
+
+        first.moveTo();
+        second.moveTo();
+
+        assert.strictEqual(indicator.getText(), 'undefined, first');
     });
 });
