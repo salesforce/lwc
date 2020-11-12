@@ -13,7 +13,6 @@ import {
     defineProperties,
     defineProperty,
     forEach,
-    getPropertyDescriptor,
     isFalse,
     isFunction,
     isNull,
@@ -126,34 +125,6 @@ export function patchEvent(event: Event) {
             configurable: true,
         },
     });
-    // not all events implement the relatedTarget getter, that's why we need to extract it from the instance
-    // Note: we can't really use the super here because of issues with the typescript transpilation for accessors
-    const originalRelatedTargetDescriptor = getPropertyDescriptor(event, 'relatedTarget');
-    if (!isUndefined(originalRelatedTargetDescriptor)) {
-        const relatedTargetGetter: (
-            this: Event
-        ) => EventTarget | null = originalRelatedTargetDescriptor.get!;
-        defineProperty(event, 'relatedTarget', {
-            get(this: Event): EventTarget | null | undefined {
-                const eventContext = eventToContextMap.get(this);
-                const originalCurrentTarget = eventCurrentTargetGetter.call(this);
-                const relatedTarget = relatedTargetGetter.call(this);
-                if (isNull(relatedTarget)) {
-                    return null;
-                }
-                const currentTarget =
-                    eventContext === EventListenerContext.SHADOW_ROOT_LISTENER
-                        ? getShadowRoot(
-                              originalCurrentTarget as HTMLElement
-                          ) /* because the context is a host */
-                        : originalCurrentTarget;
-
-                return retarget(currentTarget, pathComposer(relatedTarget, true));
-            },
-            enumerable: true,
-            configurable: true,
-        });
-    }
     eventToContextMap.set(event, 0);
 }
 
