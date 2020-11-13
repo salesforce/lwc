@@ -48,7 +48,7 @@ module.exports = function LwcClassTransform(api) {
                 // Program.enter; it needs to run here because path.traverse wont visit Program nodes.
                 visitProgram(mergedVisitors, 'enter', path, state);
 
-                // Traverse Program
+                // Traverse Program descendant nodes.
                 path.traverse(mergedVisitors, state);
 
                 // Program.exit; it needs to run here (instead of a Program.exit) to ensure other plugins don't modify the ast.
