@@ -20,7 +20,7 @@ export default class WireExample extends {
 }
 ```
 
-Wire adapters are part of LWC's reactivity system. An `@wire` takes the name of a wire adapter and an optional configuration object, which is specific to the wire adapter. You can use a `$` to mark the property of a configuration object as reactive. When a reactive property’s value changes, the wire adapter's `update` method executes with the new value. When the wire adapter provisions new data, the component rerenders.
+Wire adapters are part of LWC's reactivity system. An `@wire` takes the name of a wire adapter and an optional configuration object, which is specific to the wire adapter. You can use a `$` to mark the property of a configuration object as reactive. When a reactive property’s value changes, the wire adapter's `update` method executes with the new value. When the wire adapter provisions new data, the component rerenders if necessary.
 
 ```js
 // wire-adapter.js
