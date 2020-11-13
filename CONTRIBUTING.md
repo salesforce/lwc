@@ -1,4 +1,5 @@
 # Contributing to Lightning Web Components
+
 We want to encourage the developer community to contribute to Lightning Web Components. This guide has instructions to install, build, test and contribute to the framework.
 
 - [Requirements](#requirements)
@@ -11,10 +12,10 @@ Before you start, familiarize yourself with [Lightning Web Components](https://l
 
 ## Requirements
 
- * [Node](https://nodejs.org/) >= 10
- * [Yarn](https://yarnpkg.com/) >= 1.6
+ * [Node](https://nodejs.org/)
+ * [Yarn](https://yarnpkg.com/)
 
-This project uses [Volta](https://volta.sh/) to ensure that all the contributors share the same version of `Node` and `Yarn` for development. If you are considering making frequent contributions to this project, we recommend installing this tool as well.
+This project uses [Volta](https://volta.sh/) to ensure that all the contributors share the same version of `Node` and `Yarn` for development. If you are considering making frequent contributions to this project, we recommend installing this tool as well. Otherwise, check the `volta` field in `package.json` to see which versions to use.
 
 ## Installation
 
@@ -71,18 +72,13 @@ If you want to debug these tests, you can do as follow:
 3. Click on "Open dedicated DevTools for Node"
 4. In your terminal, type the following command: `yarn test:debug <path_to_test>`
 
-Your test should now be running in the Chrome debugger. And you get your handy console to poke around all sorts of stuff! Now simply hit Enter in the terminal running your Jest process anytime you want to re-run your currently selected specs. You'll be dropped right back into the Chrome debugger.
+Your test should now be running in the Chrome debugger which you can use to poke around and explore. Now simply hit Enter in the terminal running your Jest process anytime you want to re-run your currently selected specs. You'll be dropped right back into the Chrome debugger.
 
 ### Integration Testing LWC
 
 When developing LWC, use integration testing to ensure functionality is correctly reflected in the browser. This repo has two integration test suites.
 - integration-karma: Contains all integration tests that can run with javascript only. For information about usage and contribution, refer to this [documentation][integration-karma-readme].
 - integration-tests: Contains all other integration tests that require web driver API support (e.g., focus, keyboard navigation). For information about usage and contribution, refer to this [documentation][integration-test-readme].
-
-
-## Editor Configurations
-
-Configuring your editor to use our lint and code style rules will make the code review process delightful!
 
 ### Types
 

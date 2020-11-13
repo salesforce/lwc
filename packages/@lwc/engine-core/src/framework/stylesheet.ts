@@ -10,12 +10,13 @@ import * as api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
 import { VM } from './vm';
 import { Template } from './template';
+import { getStyleOrSwappedStyle } from './hot-swaps';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
  */
-type StylesheetFactory = (
+export type StylesheetFactory = (
     hostSelector: string,
     shadowSelector: string,
     nativeShadow: boolean
@@ -81,7 +82,7 @@ function evaluateStylesheetsContent(
     const content: string[] = [];
 
     for (let i = 0; i < stylesheets.length; i++) {
-        const stylesheet = stylesheets[i];
+        let stylesheet = stylesheets[i];
 
         if (isArray(stylesheet)) {
             ArrayPush.apply(
@@ -89,6 +90,12 @@ function evaluateStylesheetsContent(
                 evaluateStylesheetsContent(stylesheet, hostSelector, shadowSelector, nativeShadow)
             );
         } else {
+            if (process.env.NODE_ENV !== 'production') {
+                // in dev-mode, we support hot swapping of stylesheet, which means that
+                // the component instance might be attempting to use an old version of
+                // the stylesheet, while internally, we have a replacement for it.
+                stylesheet = getStyleOrSwappedStyle(stylesheet);
+            }
             ArrayPush.call(content, stylesheet(hostSelector, shadowSelector, nativeShadow));
         }
     }
