@@ -1,6 +1,6 @@
 # Wire Service
 
-This code is the implementation of the Lightning Web Component wire service. The wire service enables declarative binding of data providers called *wire adapters* to a Lightning web component using the `@wire` decorator. It fulfills the goals of the [data service proposal](https://github.com/salesforce/lwc-rfcs/blob/master/text/0000-data-service.md).
+This code is the implementation of the Lightning Web Component wire service. The wire service enables declarative binding of data providers called _wire adapters_ to a Lightning web component using the `@wire` decorator. It fulfills the goals of the [data service proposal](https://github.com/salesforce/lwc-rfcs/blob/master/text/0000-data-service.md).
 
 ## Summary
 
@@ -63,6 +63,7 @@ export class getBook {
     }
 }
 ```
+
 ## Syntax
 
 For complete information about syntax, see [lwc.dev/guide/wire_adapter](https://lwc.dev/guide/wire_adapter#wire-adapters).
