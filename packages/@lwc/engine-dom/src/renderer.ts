@@ -78,6 +78,12 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
+function removeAllChildNodes(parent: Node) :void {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
 // TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
 // to avoid having to synchronize it between the different modules.
 export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');
@@ -109,6 +115,13 @@ export const renderer: Renderer<Node, Element> = {
     },
 
     attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
+        if(element.shadowRoot) {
+            removeAllChildNodes(element.shadowRoot);
+            return element.shadowRoot;
+        }
+        if(useSyntheticShadow) {
+            removeAllChildNodes(element);
+        }
         return element.attachShadow(options);
     },
 
