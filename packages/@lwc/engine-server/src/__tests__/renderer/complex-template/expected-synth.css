@@ -1,0 +1,11 @@
+[x-complex-template_complex-template-host] {
+  display: block;
+}
+
+.red[x-squareRed_squareRed] {
+  color: red;
+}
+
+.blue[x-squareBlue_squareBlue] {
+  color: blue;
+}

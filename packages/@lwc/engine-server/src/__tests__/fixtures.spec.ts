@@ -139,7 +139,7 @@ describe('fixtures', () => {
                 caseTagName,
                 module.ctor,
                 config.props || {}
-            );
+            ).html;
 
             if (!expected) {
                 // Write rendered HTML file if doesn't exist (ie new fixture).

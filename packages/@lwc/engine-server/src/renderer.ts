@@ -60,11 +60,16 @@ class HTMLElement {
     }
 }
 
-export const renderer: Renderer<HostNode, HostElement> = {
-    ssr: true,
-    syntheticShadow: false,
+export class SsrRenderer implements Renderer<HostNode, HostElement> {
+    ssr= true;
+    syntheticShadow: boolean;
+    globalStylesheets = new Set<string>();
 
-    insert(node, parent, anchor) {
+    constructor(options: { syntheticShadow?: boolean }) {
+        this.syntheticShadow = !!options.syntheticShadow;
+    }
+
+    insert(node: HostNode, parent: HostElement, anchor: HostNode | null): void {
         if (node.parent !== null && node.parent !== parent) {
             const nodeIndex = node.parent.children.indexOf(node);
             node.parent.children.splice(nodeIndex, 1);
@@ -78,14 +83,16 @@ export const renderer: Renderer<HostNode, HostElement> = {
         } else {
             parent.children.splice(anchorIndex, 0, node);
         }
-    },
+    }
 
-    remove(node, parent) {
+    remove(node: HostNode, parent: HostElement): void {
         const nodeIndex = parent.children.indexOf(node);
         parent.children.splice(nodeIndex, 1);
-    },
+    }
 
-    createElement,
+    createElement(tagName: string, namespace?: string): HostElement {
+        return createElement(tagName,namespace);
+    }
 
     createText(content: string): HostNode {
         return {
@@ -93,9 +100,9 @@ export const renderer: Renderer<HostNode, HostElement> = {
             value: String(content),
             parent: null,
         };
-    },
+    }
 
-    nextSibling(node) {
+    nextSibling(node: HostNode): HostNode | null {
         const { parent } = node;
 
         if (isNull(parent)) {
@@ -104,9 +111,9 @@ export const renderer: Renderer<HostNode, HostElement> = {
 
         const nodeIndex = parent.children.indexOf(node);
         return parent.children[nodeIndex + 1] || null;
-    },
+    }
 
-    attachShadow(element, config) {
+    attachShadow(element: HostElement, config: ShadowRootInit): HostNode {
         element.shadowRoot = {
             type: HostNodeType.ShadowRoot,
             children: [],
@@ -115,9 +122,9 @@ export const renderer: Renderer<HostNode, HostElement> = {
         };
 
         return (element.shadowRoot as any) as HostNode;
-    },
+    }
 
-    getProperty(node, key) {
+    getProperty(node: HostNode, key: string): any{
         if (key in node) {
             return (node as any)[key];
         }
@@ -146,9 +153,9 @@ export const renderer: Renderer<HostNode, HostElement> = {
             // eslint-disable-next-line no-console
             console.error(`Unexpected "${key}" property access from the renderer`);
         }
-    },
+    }
 
-    setProperty(node, key, value): void {
+    setProperty(node: HostNode, key: string, value: any): void {
         if (key in node) {
             return ((node as any)[key] = value);
         }
@@ -181,9 +188,9 @@ export const renderer: Renderer<HostNode, HostElement> = {
             // eslint-disable-next-line no-console
             console.error(`Unexpected attempt to set "${key}=${value}" property from the renderer`);
         }
-    },
+    }
 
-    setText(node, content) {
+    setText(node: HostNode, content: string): void {
         if (node.type === HostNodeType.Text) {
             node.value = content;
         } else if (node.type === HostNodeType.Element) {
@@ -195,16 +202,16 @@ export const renderer: Renderer<HostNode, HostElement> = {
                 },
             ];
         }
-    },
+    }
 
-    getAttribute(element, name, namespace = null) {
+    getAttribute(element: HostElement, name: string, namespace: string|null=null): string | null {
         const attribute = element.attributes.find(
             (attr) => attr.name === name && attr.namespace === namespace
         );
         return attribute ? attribute.value : null;
-    },
+    }
 
-    setAttribute(element, name, value, namespace = null) {
+    setAttribute(element: HostElement, name: string, value: string, namespace: string | null=null): void {
         const attribute = element.attributes.find(
             (attr) => attr.name === name && attr.namespace === namespace
         );
@@ -218,15 +225,15 @@ export const renderer: Renderer<HostNode, HostElement> = {
         } else {
             attribute.value = value;
         }
-    },
+    }
 
-    removeAttribute(element, name, namespace) {
+    removeAttribute(element: HostElement, name: string, namespace: string | null=null): void {
         element.attributes = element.attributes.filter(
-            (attr) => attr.name !== name && attr.namespace !== namespace
+            (attr) => attr.name !== name || attr.namespace !== namespace
         );
-    },
+    }
 
-    getClassList(element) {
+    getClassList(element: HostElement): DOMTokenList {
         function getClassAttribute(): HostAttribute {
             let classAttribute = element.attributes.find(
                 (attr) => attr.name === 'class' && isNull(attr.namespace)
@@ -260,9 +267,9 @@ export const renderer: Renderer<HostNode, HostElement> = {
                 classAttribute.value = tokenListToClassName(tokenList);
             },
         } as DOMTokenList;
-    },
+    }
 
-    getStyleDeclaration(element) {
+    getStyleDeclaration(element: HostElement): CSSStyleDeclaration {
         function getStyleAttribute(): HostAttribute | undefined {
             return element.attributes.find(
                 (attr) => attr.name === 'style' && isNull(attr.namespace)
@@ -313,30 +320,32 @@ export const renderer: Renderer<HostNode, HostElement> = {
                 },
             }
         ) as CSSStyleDeclaration;
-    },
+    }
 
-    isConnected(node: HostNode) {
+    isConnected(node: HostNode): boolean {
         return !isNull(node.parent);
-    },
+    }
 
-    insertGlobalStylesheet() {
-        // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
-        // synthetic shadow.
-    },
+    insertGlobalStylesheet(content: string): void {
+        if (this.globalStylesheets.has(content)) {
+            return;
+        }
+        this.globalStylesheets.add(content);
+    }
 
     addEventListener() {
         // Noop on SSR.
-    },
+    }
     removeEventListener() {
         // Noop on SSR.
-    },
+    }
 
-    dispatchEvent: unsupportedMethod('dispatchEvent'),
-    getBoundingClientRect: unsupportedMethod('getBoundingClientRect'),
-    querySelector: unsupportedMethod('querySelector'),
-    querySelectorAll: unsupportedMethod('querySelectorAll'),
-    getElementsByTagName: unsupportedMethod('getElementsByTagName'),
-    getElementsByClassName: unsupportedMethod('getElementsByClassName'),
+    dispatchEvent= unsupportedMethod('dispatchEvent')
+    getBoundingClientRect= unsupportedMethod('getBoundingClientRect')
+    querySelector= unsupportedMethod('querySelector')
+    querySelectorAll= unsupportedMethod('querySelectorAll')
+    getElementsByTagName= unsupportedMethod('getElementsByTagName')
+    getElementsByClassName= unsupportedMethod('getElementsByClassName')
 
     defineCustomElement(
         name: string,
@@ -344,9 +353,9 @@ export const renderer: Renderer<HostNode, HostElement> = {
         _options?: ElementDefinitionOptions
     ) {
         registerCustomElement(name, constructor);
-    },
+    }
     getCustomElement(name: string): CustomElementConstructor | undefined {
         return registry[name];
-    },
-    HTMLElement: HTMLElement as any,
+    }
+    HTMLElement= HTMLElement as any
 };
