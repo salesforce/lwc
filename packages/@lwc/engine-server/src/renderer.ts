@@ -358,4 +358,4 @@ export class SsrRenderer implements Renderer<HostNode, HostElement> {
         return registry[name];
     }
     HTMLElement= HTMLElement as any
-};
+}
