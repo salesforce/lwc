@@ -61,7 +61,7 @@ class HTMLElement {
 }
 
 export class SsrRenderer implements Renderer<HostNode, HostElement> {
-    ssr= true;
+    ssr = true;
     syntheticShadow: boolean;
     globalStylesheets = new Set<string>();
 
@@ -91,7 +91,7 @@ export class SsrRenderer implements Renderer<HostNode, HostElement> {
     }
 
     createElement(tagName: string, namespace?: string): HostElement {
-        return createElement(tagName,namespace);
+        return createElement(tagName, namespace);
     }
 
     createText(content: string): HostNode {
@@ -124,7 +124,7 @@ export class SsrRenderer implements Renderer<HostNode, HostElement> {
         return (element.shadowRoot as any) as HostNode;
     }
 
-    getProperty(node: HostNode, key: string): any{
+    getProperty(node: HostNode, key: string): any {
         if (key in node) {
             return (node as any)[key];
         }
@@ -204,14 +204,23 @@ export class SsrRenderer implements Renderer<HostNode, HostElement> {
         }
     }
 
-    getAttribute(element: HostElement, name: string, namespace: string|null=null): string | null {
+    getAttribute(
+        element: HostElement,
+        name: string,
+        namespace: string | null = null
+    ): string | null {
         const attribute = element.attributes.find(
             (attr) => attr.name === name && attr.namespace === namespace
         );
         return attribute ? attribute.value : null;
     }
 
-    setAttribute(element: HostElement, name: string, value: string, namespace: string | null=null): void {
+    setAttribute(
+        element: HostElement,
+        name: string,
+        value: string,
+        namespace: string | null = null
+    ): void {
         const attribute = element.attributes.find(
             (attr) => attr.name === name && attr.namespace === namespace
         );
@@ -227,7 +236,7 @@ export class SsrRenderer implements Renderer<HostNode, HostElement> {
         }
     }
 
-    removeAttribute(element: HostElement, name: string, namespace: string | null=null): void {
+    removeAttribute(element: HostElement, name: string, namespace: string | null = null): void {
         element.attributes = element.attributes.filter(
             (attr) => attr.name !== name || attr.namespace !== namespace
         );
@@ -340,12 +349,12 @@ export class SsrRenderer implements Renderer<HostNode, HostElement> {
         // Noop on SSR.
     }
 
-    dispatchEvent= unsupportedMethod('dispatchEvent')
-    getBoundingClientRect= unsupportedMethod('getBoundingClientRect')
-    querySelector= unsupportedMethod('querySelector')
-    querySelectorAll= unsupportedMethod('querySelectorAll')
-    getElementsByTagName= unsupportedMethod('getElementsByTagName')
-    getElementsByClassName= unsupportedMethod('getElementsByClassName')
+    dispatchEvent = unsupportedMethod('dispatchEvent');
+    getBoundingClientRect = unsupportedMethod('getBoundingClientRect');
+    querySelector = unsupportedMethod('querySelector');
+    querySelectorAll = unsupportedMethod('querySelectorAll');
+    getElementsByTagName = unsupportedMethod('getElementsByTagName');
+    getElementsByClassName = unsupportedMethod('getElementsByClassName');
 
     defineCustomElement(
         name: string,
@@ -357,5 +366,5 @@ export class SsrRenderer implements Renderer<HostNode, HostElement> {
     getCustomElement(name: string): CustomElementConstructor | undefined {
         return registry[name];
     }
-    HTMLElement= HTMLElement as any
+    HTMLElement = HTMLElement as any;
 }

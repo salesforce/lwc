@@ -31,8 +31,8 @@ export function renderComponent(
     tagName: string,
     Ctor: typeof LightningElement,
     props: { [name: string]: any } = {},
-    options: { syntheticShadow?: boolean } = {},
-): {html: string, styles: string[]} {
+    options: { syntheticShadow?: boolean } = {}
+): { html: string; styles: string[] } {
     if (!isString(tagName)) {
         throw new TypeError(
             `"renderComponent" expects a string as the first parameter but instead received ${tagName}.`
@@ -57,7 +57,7 @@ export function renderComponent(
         );
     }
 
-    const renderer = new SsrRenderer(options)
+    const renderer = new SsrRenderer(options);
     const element = renderer.createElement(tagName);
 
     const def = getComponentInternalDef(Ctor);
@@ -77,11 +77,11 @@ export function renderComponent(
 
     connectRootElement(element);
 
-    const html = serializeElement(element,options);
+    const html = serializeElement(element, options);
 
     const styles = Array.from(renderer.globalStylesheets);
     return {
         html,
-        styles
-    }
+        styles,
+    };
 }

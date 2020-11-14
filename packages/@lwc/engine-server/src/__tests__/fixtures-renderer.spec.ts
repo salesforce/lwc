@@ -11,7 +11,7 @@ import { rollup } from 'rollup';
 import prettier from 'prettier';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 
-const FIXTURE_DIR = path.join(__dirname, 'renderer');
+const FIXTURE_DIR = path.join(__dirname, 'fixtures-renderer');
 
 const DIST_DIRNAME = 'dist';
 const MODULE_DIRNAME = 'modules';
@@ -37,14 +37,14 @@ function formatHTML(code: string): string {
 
 function formatCSS(code: string): string {
     return prettier.format(code, {
-        parser: 'css'
+        parser: 'css',
     });
 }
 
 describe('renderer', () => {
     const fixtures = fs.readdirSync(FIXTURE_DIR);
-    
-    for (const synth of [false,true]) {
+
+    for (const synth of [false, true]) {
         for (const caseName of fixtures) {
             const caseTagName = `${FIXTURE_NAMESPACE}-${caseName}`;
             const caseModuleName = `${FIXTURE_NAMESPACE}/${caseName}`;
@@ -129,7 +129,9 @@ describe('renderer', () => {
             testFn(`${caseName}`, async () => {
                 const compiledFixturePath = await compileFixture();
 
-                let expected = readFixtureFile(synth?EXPECTED_HTML_FILENAME_SYNTH:EXPECTED_HTML_FILENAME);
+                let expected = readFixtureFile(
+                    synth ? EXPECTED_HTML_FILENAME_SYNTH : EXPECTED_HTML_FILENAME
+                );
                 let expectedCss = synth ? readFixtureFile(EXPECTED_CSS_FILENAME_SYNTH) : undefined;
                 const config = JSON.parse(readFixtureFile(CONFIG_FILENAME) || '{}');
 
@@ -145,7 +147,7 @@ describe('renderer', () => {
                     module = require(compiledFixturePath);
                 });
 
-                const options = synth ? {syntheticShadow:true} : undefined;
+                const options = synth ? { syntheticShadow: true } : undefined;
                 const result = lwcEngineServer.renderComponent(
                     caseTagName,
                     module.ctor,
@@ -159,9 +161,12 @@ describe('renderer', () => {
                 if (!expected) {
                     // Write rendered HTML file if doesn't exist (ie new fixture).
                     expected = actual;
-                    writeFixtureFile(synth?EXPECTED_HTML_FILENAME_SYNTH:EXPECTED_HTML_FILENAME, formatHTML(expected));
+                    writeFixtureFile(
+                        synth ? EXPECTED_HTML_FILENAME_SYNTH : EXPECTED_HTML_FILENAME,
+                        formatHTML(expected)
+                    );
                 }
-                if( synth && !expectedCss) {
+                if (synth && !expectedCss) {
                     // Write rendered HTML file if doesn't exist (ie new fixture).
                     expectedCss = actualCss;
                     writeFixtureFile(EXPECTED_CSS_FILENAME_SYNTH, formatCSS(actualCss));
@@ -169,9 +174,9 @@ describe('renderer', () => {
 
                 // Check rendered HTML.
                 expect(formatHTML(actual)).toEqual(formatHTML(expected));
-                
+
                 // Check rendered CSS
-                if( synth ) {
+                if (synth) {
                     expect(formatCSS(actualCss)).toEqual(formatCSS(expectedCss));
                 } else {
                     expect(actualCss).toBe('');

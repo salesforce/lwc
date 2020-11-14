@@ -33,16 +33,19 @@ function serializeChildNodes(children: HostChildNode[], options: { [name: string
 
 function serializeShadowRoot(shadowRoot: HostShadowRoot, options: { [name: string]: any }): string {
     const lightDom = options.syntheticShadow;
-    if(lightDom) {
+    if (lightDom) {
         return serializeChildNodes(shadowRoot.children, options);
     } else {
-    const attrs = [`shadowroot="${shadowRoot.mode}"`];
+        const attrs = [`shadowroot="${shadowRoot.mode}"`];
 
-    if (shadowRoot.delegatesFocus) {
-        attrs.push('shadowrootdelegatesfocus');
-    }
+        if (shadowRoot.delegatesFocus) {
+            attrs.push('shadowrootdelegatesfocus');
+        }
 
-        return `<template ${attrs.join(' ')}>${serializeChildNodes(shadowRoot.children, options)}</template>`;
+        return `<template ${attrs.join(' ')}>${serializeChildNodes(
+            shadowRoot.children,
+            options
+        )}</template>`;
     }
 }
 
@@ -54,10 +57,10 @@ export function serializeElement(element: HostElement, options: { [name: string]
 
     // Shadow dom token
     const lightDom = options.syntheticShadow;
-    if(lightDom) {
+    if (lightDom) {
         const tk = (element as any)['$shadowToken$'];
-        if(tk) {
-            attrs += ' '+ tk;
+        if (tk) {
+            attrs += ' ' + tk;
         }
     }
 
