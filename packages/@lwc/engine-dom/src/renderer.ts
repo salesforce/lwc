@@ -78,7 +78,7 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
-function removeAllChildNodes(parent: Node) :void {
+function removeAllChildNodes(parent: Node): void {
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
     }
@@ -115,11 +115,11 @@ export const renderer: Renderer<Node, Element> = {
     },
 
     attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
-        if(element.shadowRoot) {
+        if (element.shadowRoot) {
             removeAllChildNodes(element.shadowRoot);
             return element.shadowRoot;
         }
-        if(useSyntheticShadow) {
+        if (useSyntheticShadow) {
             removeAllChildNodes(element);
         }
         return element.attachShadow(options);
