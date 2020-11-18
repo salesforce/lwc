@@ -6,8 +6,6 @@
  */
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
-
-import { doesEventNeedPatch, patchEvent } from '../faux-shadow/events';
 import { eventToShadowRootMap, isHostElement } from '../faux-shadow/shadow-root';
 
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
@@ -46,10 +44,6 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
             // the current behavior.
             if (eventToShadowRootMap.has(event) && isFalse(composed)) {
                 return;
-            }
-
-            if (doesEventNeedPatch(event)) {
-                patchEvent(event);
             }
 
             return isFunction(fnOrObj)

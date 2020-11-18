@@ -27,6 +27,8 @@ import './polyfills/mutation-observer/main';
 import './polyfills/event-target/main';
 import './polyfills/window-event-target/main';
 import './polyfills/event/main';
+import './polyfills/focus-event/main';
+import './polyfills/mouse-event/main';
 
 // Internal Patches
 import './faux-shadow/node';
