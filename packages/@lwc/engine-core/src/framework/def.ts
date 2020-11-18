@@ -24,8 +24,8 @@ import {
     isNull,
     isUndefined,
     keys,
+    htmlPropertyToAttribute,
 } from '@lwc/shared';
-import { getAttrNameFromPropName } from './attributes';
 import { EmptyObject } from './utils';
 import { ComponentConstructor, ErrorCallback, getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
@@ -281,7 +281,7 @@ export function getComponentDef(Ctor: any): PublicComponentDef {
         publicProps[key] = {
             config: propsConfig[key] || 0, // a property by default
             type: PropDefType.any, // no type inference for public services
-            attr: getAttrNameFromPropName(key),
+            attr: htmlPropertyToAttribute(key),
         };
     }
     const publicMethods: Record<string, PublicMethod> = {};

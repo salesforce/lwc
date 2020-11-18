@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
-import { keys, hasOwnProperty } from './language';
+import { keys, hasOwnProperty, StringReplace } from './language';
 
 /**
  * Maps boolean attribute name to supported tags: 'boolean attr name' => Set of allowed tag names that supports them.
@@ -90,32 +90,43 @@ const HTML_ATTRIBUTES_TO_PROPERTY: Record<string, string> = {
     usemap: 'useMap',
     for: 'htmlFor',
 };
-
 const HTML_PROPERTIES_TO_ATTRIBUTE: Record<string, string> = {};
+
 keys(HTML_ATTRIBUTES_TO_PROPERTY).forEach((attrName) => {
     const propName = HTML_ATTRIBUTES_TO_PROPERTY[attrName];
     HTML_PROPERTIES_TO_ATTRIBUTE[propName] = attrName;
 });
+
+const CAMEL_REGEX = /-([a-z])/g;
 
 export function htmlAttributeToProperty(attrName: string): string {
     if (attrName in AriaAttrNameToPropNameMap) {
         return AriaAttrNameToPropNameMap[attrName];
     }
 
-    if (hasOwnProperty.call(HTML_ATTRIBUTES_TO_PROPERTY, attrName)) {
-        return HTML_ATTRIBUTES_TO_PROPERTY[attrName]!;
+    if (!hasOwnProperty.call(HTML_ATTRIBUTES_TO_PROPERTY, attrName)) {
+        HTML_ATTRIBUTES_TO_PROPERTY[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (match) =>
+            match[1].toUpperCase()
+        );
     }
 
-    return attrName;
+    return HTML_ATTRIBUTES_TO_PROPERTY[attrName]!;
 }
+
+const CAPS_REGEX = /[A-Z]/g;
+
 export function htmlPropertyToAttribute(propName: string): string {
     if (propName in AriaPropNameToAttrNameMap) {
         return AriaPropNameToAttrNameMap[propName];
     }
 
-    if (hasOwnProperty.call(HTML_PROPERTIES_TO_ATTRIBUTE, propName)) {
-        return HTML_PROPERTIES_TO_ATTRIBUTE[propName]!;
+    if (!hasOwnProperty.call(HTML_PROPERTIES_TO_ATTRIBUTE, propName)) {
+        HTML_PROPERTIES_TO_ATTRIBUTE[propName] = StringReplace.call(
+            propName,
+            CAPS_REGEX,
+            (match) => '-' + match.toLowerCase()
+        );
     }
 
-    return propName;
+    return HTML_PROPERTIES_TO_ATTRIBUTE[propName]!;
 }

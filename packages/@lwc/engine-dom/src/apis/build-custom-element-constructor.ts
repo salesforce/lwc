@@ -5,12 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { create, isUndefined, keys } from '@lwc/shared';
+import { create, isUndefined, keys, htmlPropertyToAttribute } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
     disconnectRootElement,
-    getAttrNameFromPropName,
     getComponentInternalDef,
     isAttributeLocked,
     LightningElement,
@@ -57,7 +56,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
     // and false positives in case of inheritance.
     const attributeToPropMap: Record<string, string> = create(null);
     for (const propName in def.props) {
-        attributeToPropMap[getAttrNameFromPropName(propName)] = propName;
+        attributeToPropMap[htmlPropertyToAttribute(propName)] = propName;
     }
 
     return class extends def.bridge {
