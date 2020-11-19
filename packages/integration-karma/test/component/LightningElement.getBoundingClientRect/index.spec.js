@@ -34,6 +34,8 @@ it('should return the host element dimensions', () => {
     document.body.appendChild(elm);
 
     const result = elm.getComponentBoundingClientRect();
-    expect(Math.abs(result.width - 10)).toBeLessThan(0.0001);
-    expect(Math.abs(result.height - 10)).toBeLessThan(0.0001);
+    // elm.getComponentBoundingClientRect returns a DOMRect
+    // Using toBeCloseTo matcher to compare a double value.
+    expect(result.width).toBeCloseTo(10, 3);
+    expect(result.height).toBeCloseTo(10, 3);
 });
