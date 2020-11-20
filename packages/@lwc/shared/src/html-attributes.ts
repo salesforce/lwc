@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { AriaPropNameToAttrNameMap } from './aria';
-import { hasOwnProperty, StringReplace } from './language';
+import { isUndefined, StringCharCodeAt, StringFromCharCode } from './language';
 
 /**
  * Maps boolean attribute name to supported tags: 'boolean attr name' => Set of allowed tag names
@@ -73,39 +73,63 @@ export function isGlobalHtmlAttribute(attrName: string): boolean {
     return GLOBAL_ATTRIBUTE.has(attrName);
 }
 
-const HTML_PROPERTIES_TO_ATTRIBUTE: Record<string, string> = {
-    accessKey: 'accesskey',
-    readOnly: 'readonly',
-    tabIndex: 'tabindex',
-    bgColor: 'bgcolor',
-    colSpan: 'colspan',
-    rowSpan: 'rowspan',
-    contentEditable: 'contenteditable',
-    crossOrigin: 'crossorigin',
-    dateTime: 'datetime',
-    formAction: 'formaction',
-    isMap: 'ismap',
-    maxLength: 'maxlength',
-    minLength: 'minlength',
-    noValidate: 'novalidate',
-    useMap: 'usemap',
-    htmlFor: 'for',
-};
+/**
+ * Map composed of properties to attributes not following the HTML property to attribute mapping
+ * convention.
+ */
+const NO_STANDARD_PROPERTY_ATTRIBUTE_MAPPING = new Map([
+    ['accessKey', 'accesskey'],
+    ['readOnly', 'readonly'],
+    ['tabIndex', 'tabindex'],
+    ['bgColor', 'bgcolor'],
+    ['colSpan', 'colspan'],
+    ['rowSpan', 'rowspan'],
+    ['contentEditable', 'contenteditable'],
+    ['crossOrigin', 'crossorigin'],
+    ['dateTime', 'datetime'],
+    ['formAction', 'formaction'],
+    ['isMap', 'ismap'],
+    ['maxLength', 'maxlength'],
+    ['minLength', 'minlength'],
+    ['noValidate', 'novalidate'],
+    ['useMap', 'usemap'],
+    ['htmlFor', 'for'],
+]);
 
-const CAPS_REGEX = /[A-Z]/g;
+/**
+ * Map associating previously transformed HTML property into HTML attribute.
+ */
+const CACHED_PROPERTY_ATTRIBUTE_MAPPING = new Map<string, string>();
 
 export function htmlPropertyToAttribute(propName: string): string {
-    if (propName in AriaPropNameToAttrNameMap) {
-        return AriaPropNameToAttrNameMap[propName];
+    const ariaAttributeName = AriaPropNameToAttrNameMap[propName];
+    if (!isUndefined(ariaAttributeName)) {
+        return ariaAttributeName;
     }
 
-    if (!hasOwnProperty.call(HTML_PROPERTIES_TO_ATTRIBUTE, propName)) {
-        HTML_PROPERTIES_TO_ATTRIBUTE[propName] = StringReplace.call(
-            propName,
-            CAPS_REGEX,
-            (match) => '-' + match.toLowerCase()
-        );
+    const specialAttributeName = NO_STANDARD_PROPERTY_ATTRIBUTE_MAPPING.get(propName);
+    if (!isUndefined(specialAttributeName)) {
+        return specialAttributeName;
     }
 
-    return HTML_PROPERTIES_TO_ATTRIBUTE[propName]!;
+    const cachedAttributeName = CACHED_PROPERTY_ATTRIBUTE_MAPPING.get(propName);
+    if (!isUndefined(cachedAttributeName)) {
+        return cachedAttributeName;
+    }
+
+    let attributeName = '';
+    for (let i = 0, len = propName.length; i < len; i++) {
+        const code = StringCharCodeAt.call(propName, i);
+        if (
+            code >= 65 && // "A"
+            code <= 90 // "Z"
+        ) {
+            attributeName += '-' + StringFromCharCode(code + 32);
+        } else {
+            attributeName += StringFromCharCode(code);
+        }
+    }
+
+    CACHED_PROPERTY_ATTRIBUTE_MAPPING.set(propName, attributeName);
+    return attributeName;
 }

@@ -37,6 +37,8 @@ const {
     forEach,
 } = Array.prototype;
 
+const { fromCharCode: StringFromCharCode } = String;
+
 const {
     charCodeAt: StringCharCodeAt,
     replace: StringReplace,
@@ -75,6 +77,7 @@ export {
     StringReplace,
     StringSlice,
     StringToLowerCase,
+    StringFromCharCode,
 };
 
 export function isUndefined(obj: any): obj is undefined {
