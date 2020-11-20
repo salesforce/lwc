@@ -6,7 +6,7 @@
  */
 import { assign, create } from '@lwc/shared';
 
-// These properties get added to LWCElement.prototype publicProps automatically.
+// These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = [
     'accessKey',
     'dir',
