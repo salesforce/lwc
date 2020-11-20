@@ -14,22 +14,12 @@ import {
 } from '@lwc/shared';
 
 import { HTMLElementPrototype } from './renderer';
-
-const defaultDefHTMLPropertyNames = [
-    'accessKey',
-    'dir',
-    'draggable',
-    'hidden',
-    'id',
-    'lang',
-    'spellcheck',
-    'tabIndex',
-    'title',
-];
+import { defaultDefHTMLPropertyNames } from './attributes';
 
 /**
- * This is a descriptor map that contains all standard properties that a Custom Element can support
- * (including AOM properties), which determines what kind of capabilities the Base HTML Element and
+ * This is a descriptor map that contains
+ * all standard properties that a Custom Element can support (including AOM properties), which
+ * determines what kind of capabilities the Base HTML Element and
  * Base Lightning Element should support.
  */
 export const HTMLElementOriginalDescriptors: PropertyDescriptorMap = create(null);

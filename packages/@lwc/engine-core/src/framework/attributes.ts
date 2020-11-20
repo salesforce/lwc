@@ -6,6 +6,19 @@
  */
 import { assign, create } from '@lwc/shared';
 
+// These properties get added to LWCElement.prototype publicProps automatically.
+export const defaultDefHTMLPropertyNames = [
+    'accessKey',
+    'dir',
+    'draggable',
+    'hidden',
+    'id',
+    'lang',
+    'spellcheck',
+    'tabIndex',
+    'title',
+];
+
 function offsetPropertyErrorMessage(name: string): string {
     return `Using the \`${name}\` property is an anti-pattern because it rounds the value to an integer. Instead, use the \`getBoundingClientRect\` method to obtain fractional values for the size of an element and its position relative to the viewport.`;
 }
