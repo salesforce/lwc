@@ -11,6 +11,7 @@ import {
     create,
     defineProperties,
     forEach,
+    getOwnPropertyNames,
     getPropertyDescriptor,
     getPrototypeOf,
     isFalse,
@@ -22,6 +23,7 @@ import {
 
 import { LightningElement } from './base-lightning-element';
 import { ComponentInterface } from './component';
+import { globalHTMLProperties } from './attributes';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
@@ -350,6 +352,34 @@ function getLightningElementPrototypeRestrictionsDescriptors(
             },
         }),
     };
+
+    forEach.call(getOwnPropertyNames(globalHTMLProperties), (propName: string) => {
+        if (propName in proto) {
+            return; // no need to redefine something that we are already exposing
+        }
+        descriptors[propName] = generateAccessorDescriptor({
+            get(this: ComponentInterface) {
+                const { error, attribute } = globalHTMLProperties[propName];
+                const msg: string[] = [];
+                msg.push(`Accessing the global HTML property "${propName}" is disabled.`);
+                if (error) {
+                    msg.push(error);
+                } else if (attribute) {
+                    msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
+                }
+                logError(msg.join('\n'), getAssociatedVM(this));
+            },
+            set(this: ComponentInterface) {
+                const { readOnly } = globalHTMLProperties[propName];
+                if (readOnly) {
+                    logError(
+                        `The global HTML property \`${propName}\` is read-only.`,
+                        getAssociatedVM(this)
+                    );
+                }
+            },
+        });
+    });
 
     return descriptors;
 }
