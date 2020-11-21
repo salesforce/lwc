@@ -18,7 +18,10 @@ function serializeAttributes(attributes: HostAttribute[]): string {
         .join(' ');
 }
 
-function serializeChildNodes(children: HostChildNode[], options: { [name: string]: any }): string {
+function serializeChildNodes(
+    children: HostChildNode[],
+    options: { syntheticShadow: boolean }
+): string {
     return children
         .map((child) => {
             switch (child.type) {
@@ -31,7 +34,10 @@ function serializeChildNodes(children: HostChildNode[], options: { [name: string
         .join('');
 }
 
-function serializeShadowRoot(shadowRoot: HostShadowRoot, options: { [name: string]: any }): string {
+function serializeShadowRoot(
+    shadowRoot: HostShadowRoot,
+    options: { syntheticShadow: boolean }
+): string {
     const lightDom = options.syntheticShadow;
     if (lightDom) {
         return serializeChildNodes(shadowRoot.children, options);
@@ -49,7 +55,10 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot, options: { [name: strin
     }
 }
 
-export function serializeElement(element: HostElement, options: { [name: string]: any }): string {
+export function serializeElement(
+    element: HostElement,
+    options: { syntheticShadow: boolean }
+): string {
     let output = '';
     const { name } = element;
 

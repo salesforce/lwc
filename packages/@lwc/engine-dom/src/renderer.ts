@@ -25,7 +25,7 @@ let getCustomElement, defineCustomElement, HTMLElementConstructor;
 // and passed to insertGlobalStylesheet, then set as the data-lwc-ssr value. This way, we would only compare simple attribute
 // values and not the style content.
 (function readExistingStyles() {
-    const styles = globalStylesheetsParentElement.querySelectorAll('style[data-lwc-ssr]');
+    const styles = globalStylesheetsParentElement.querySelectorAll('style[lwc-scoped-style]');
     for (let i = 0; i < styles.length; i++) {
         const text = styles[i].textContent;
         if (text) {

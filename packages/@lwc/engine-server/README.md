@@ -24,6 +24,11 @@ import { renderComponent } from 'lwc';
 import LightningHello from 'lightning/hello';
 
 const componentProps = {};
+
+// Render native Shadow DOM
+const { html } = renderComponent('lightning-hello', LightningHello, componentProps);
+
+// Render synthetic Shadow DOM
 const { html, styles } = renderComponent('lightning-hello', LightningHello, componentProps, {
     syntheticShadow: true,
 });

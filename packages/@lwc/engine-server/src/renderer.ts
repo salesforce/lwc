@@ -65,8 +65,8 @@ export class SsrRenderer implements Renderer<HostNode, HostElement> {
     syntheticShadow: boolean;
     globalStylesheets = new Set<string>();
 
-    constructor(options: { syntheticShadow?: boolean }) {
-        this.syntheticShadow = !!options.syntheticShadow;
+    constructor(options: { syntheticShadow: boolean }) {
+        this.syntheticShadow = options.syntheticShadow;
     }
 
     insert(node: HostNode, parent: HostElement, anchor: HostNode | null): void {
@@ -336,9 +336,6 @@ export class SsrRenderer implements Renderer<HostNode, HostElement> {
     }
 
     insertGlobalStylesheet(content: string): void {
-        if (this.globalStylesheets.has(content)) {
-            return;
-        }
         this.globalStylesheets.add(content);
     }
 

@@ -41,5 +41,9 @@ export interface HostElement {
     eventListeners: Record<string, Function[]>;
 }
 
+export interface SsrOptions {
+    syntheticShadow?: boolean;
+}
+
 export type HostNode = HostText | HostElement;
 export type HostChildNode = HostElement | HostText;

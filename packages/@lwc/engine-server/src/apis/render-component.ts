@@ -14,7 +14,7 @@ import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
 import { SsrRenderer } from '../renderer';
 import { serializeElement } from '../serializer';
-import { HostElement, HostNodeType } from '../types';
+import { HostElement, HostNodeType, SsrOptions } from '../types';
 
 const FakeRootElement: HostElement = {
     type: HostNodeType.Element,
@@ -31,7 +31,7 @@ export function renderComponent(
     tagName: string,
     Ctor: typeof LightningElement,
     props: { [name: string]: any } = {},
-    options: { syntheticShadow?: boolean } = {}
+    options: SsrOptions = {}
 ): { html: string; styles: string[] } {
     if (!isString(tagName)) {
         throw new TypeError(
@@ -57,7 +57,9 @@ export function renderComponent(
         );
     }
 
-    const renderer = new SsrRenderer(options);
+    const opts = { syntheticShadow: !!options.syntheticShadow };
+
+    const renderer = new SsrRenderer(opts);
     const element = renderer.createElement(tagName);
 
     const def = getComponentInternalDef(Ctor);
@@ -77,7 +79,7 @@ export function renderComponent(
 
     connectRootElement(element);
 
-    const html = serializeElement(element, options);
+    const html = serializeElement(element, opts);
 
     const styles = Array.from(renderer.globalStylesheets);
     return {
