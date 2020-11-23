@@ -14,7 +14,7 @@ This package supports the following APIs.
 This function renders a string-representation of a serialized component tree, given a tag name
 and an LWC constructor. The output format itself is aligned with the [current leading
 proposal][explainer], but is subject to change. The result is a pair {html,styles} with
-html being the markup, whyle styles is undefined.
+html being the markup, while styles is undefined for native Shadow DOM.
 
 It also supports synthetic-shadow by generating the proper Light DOM markup. In this case, the result
 returns an array of inline styles to be injected in the parent, typically the head of the document.
