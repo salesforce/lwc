@@ -16,6 +16,6 @@ module.exports = {
         'no-extend-global-constructor': noExtendGlobalConstructor,
         'no-production-assert': noProductionAssert,
         'no-invalid-todo': noInvalidTodo,
-        'no-uppercase-after-underscore': noUppercaseAfterUnderscore
+        'no-uppercase-after-underscore': noUppercaseAfterUnderscore,
     },
 };
