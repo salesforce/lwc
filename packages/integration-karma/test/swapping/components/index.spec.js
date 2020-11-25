@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 
 // TODO [#1869]: getting the global API from global LWC in tests until it is allowed in compiler
 const { swapComponent } = LWC;
@@ -11,6 +11,7 @@ import D from 'base/d';
 import E from 'base/e';
 
 describe('component swapping', () => {
+    setFeatureFlagForTest('ENABLE_HMR', true);
     it('should work before and after instantiation', () => {
         expect(swapComponent(A, B)).toBe(true);
         const elm = createElement('x-container', { is: Container });

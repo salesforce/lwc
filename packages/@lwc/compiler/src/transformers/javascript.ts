@@ -28,21 +28,11 @@ export default function scriptTransform(
 
     let result;
     try {
-        // The LWC babel plugin doesn't play well when associated along with other plugins. We first
-        // run the LWC babel plugin and then run the rest of the transformation on the intermediary
-        // code.
-        const intermediary = babel.transformSync(code, {
-            babelrc: false,
-            configFile: false,
-            plugins: [[lwcClassTransformPlugin, { isExplicitImport, dynamicImports }]],
-            filename,
-            sourceMaps: sourcemap,
-        })!;
-
-        result = babel.transformSync(intermediary.code!, {
+        result = babel.transformSync(code, {
             babelrc: false,
             configFile: false,
             plugins: [
+                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
                 [babelClassPropertiesPlugin, { loose: true }],
 
                 // This plugin should be removed in a future version. The object-rest-spread is
@@ -51,7 +41,6 @@ export default function scriptTransform(
             ],
             filename,
             sourceMaps: sourcemap,
-            inputSourceMap: intermediary.map ?? undefined,
         })!;
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
