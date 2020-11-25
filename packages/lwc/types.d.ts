@@ -188,13 +188,6 @@ declare module 'lwc' {
      */
     export const track: PropertyDecorator;
 
-    /**
-     * Decorator factory to wire a property or method to a wire adapter data source
-     * @param getType imperative accessor for the data source
-     * @param config configuration object for the accessor
-     */
-    export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
-
     interface WireAdapterConstructor<Value, Config, Context> {
         new (setValue: (value: Value) => void): WireAdapter<Value, Config, Context>;
     }
@@ -207,6 +200,13 @@ declare module 'lwc' {
         configSchema?: Record<keyof Config, 'optional' | 'required'>;
         contextSchema?: Record<keyof Context, 'optional' | 'required'>;
     }
+
+    /**
+     * Decorator factory to wire a property or method to a wire adapter data source
+     * @param getType imperative accessor for the data source
+     * @param config configuration object for the accessor
+     */
+    export function wire(WireAdapter): PropertyDecorator;
 
     interface ContextConsumer<Context> {
         provide(newContext: Context): void;
