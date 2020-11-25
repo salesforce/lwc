@@ -44,6 +44,7 @@ import { LightningElement } from './base-lightning-element';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { Renderer, HostNode, HostElement } from './renderer';
+import { removeActiveVM } from './hot-swaps';
 
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
@@ -205,6 +206,7 @@ export function appendVM(vm: VM) {
 // while preventing any attempt to rehydration until after reinsertion.
 function resetComponentStateWhenRemoved(vm: VM) {
     const { state } = vm;
+
     if (state !== VMState.disconnected) {
         const { oar, tro } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
@@ -217,6 +219,10 @@ function resetComponentStateWhenRemoved(vm: VM) {
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runShadowChildNodesDisconnectedCallback(vm);
         runLightChildNodesDisconnectedCallback(vm);
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+        removeActiveVM(vm);
     }
 }
 
@@ -690,5 +696,22 @@ export function runWithBoundaryProtection(
                 logOperationEnd(OperationId.errorCallback, vm);
             }
         }
+    }
+}
+
+export function forceRehydration(vm: VM) {
+    // if we must reset the shadowRoot content and render the template
+    // from scratch on an active instance, the way to force the reset
+    // is by replacing the value of old template, which is used during
+    // to determine if the template has changed or not during the rendering
+    // process. If the template returned by render() is different from the
+    // previous stored template, the styles will be reset, along with the
+    // content of the shadowRoot, this way we can guarantee that all children
+    // elements will be throw away, and new instances will be created.
+    vm.cmpTemplate = () => [];
+    if (isFalse(vm.isDirty)) {
+        // forcing the vm to rehydrate in the next tick
+        markComponentAsDirty(vm);
+        scheduleRehydration(vm);
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "integration-karma",
     "private": true,
-    "version": "1.8.7",
+    "version": "1.9.3",
     "scripts": {
         "start": "karma start ./scripts/karma-configs/local.js",
         "start:compat": "yarn start --browsers Chrome --compat",
@@ -11,16 +11,16 @@
         "coverage": "node ./scripts/merge-coverage.js"
     },
     "devDependencies": {
-        "@lwc/compiler": "1.8.7",
-        "@lwc/engine": "1.8.7",
-        "@lwc/rollup-plugin": "1.8.7",
-        "@lwc/synthetic-shadow": "1.8.7",
-        "chokidar": "^3.4.2",
+        "@lwc/compiler": "1.9.3",
+        "@lwc/engine": "1.9.3",
+        "@lwc/rollup-plugin": "1.9.3",
+        "@lwc/synthetic-shadow": "1.9.3",
+        "chokidar": "^3.4.3",
         "istanbul-api": "^3.0.0",
-        "karma": "^5.2.2",
+        "karma": "^5.2.3",
         "karma-chrome-launcher": "^3.1.0",
         "karma-coverage": "^2.0.3",
         "karma-jasmine": "^4.0.1",
-        "karma-sauce-launcher": "4.1.4"
+        "karma-sauce-launcher": "4.3.3"
     }
 }
