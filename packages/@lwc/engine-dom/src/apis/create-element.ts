@@ -16,6 +16,7 @@ import {
     createHiddenField,
     getHiddenField,
     setHiddenField,
+    StringToLowerCase,
 } from '@lwc/shared';
 import {
     getComponentInternalDef,
@@ -23,7 +24,6 @@ import {
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    getUpgradableConstructor,
 } from '@lwc/engine-core';
 
 import { renderer } from '../renderer';
@@ -104,7 +104,11 @@ export function createElement(
         );
     }
 
-    const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
+    // tagName must be all lowercase, unfortunately, we have legacy code that is
+    // passing `sel` as a camel-case, which makes them invalid custom elements name
+    // the following line guarantees that this does not leaks beyond this point.
+    const tagName = StringToLowerCase.call(sel);
+    const UpgradableConstructor = renderer.getUpgradableElement(tagName);
     let wasComponentUpgraded: boolean = false;
     // the custom element from the registry is expecting an upgrade callback
     /**
@@ -116,7 +120,7 @@ export function createElement(
     const element = new UpgradableConstructor((elm: HTMLElement) => {
         const def = getComponentInternalDef(Ctor);
         createVM(elm, def, {
-            tagName: sel,
+            tagName,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
             renderer,
@@ -128,7 +132,7 @@ export function createElement(
     if (!wasComponentUpgraded) {
         /* eslint-disable-next-line no-console */
         console.error(
-            `Unexpected tag name "${sel}". This name is a registered custom element, preventing LWC to upgrade the element.`
+            `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
         );
     }
     return element;
