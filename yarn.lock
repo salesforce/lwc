@@ -3002,6 +3002,14 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/body-parser@*":
+  version "1.19.0"
+  resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.0.tgz#0685b3c47eb3006ffed117cdd55164b61f80538f"
+  integrity sha512-W98JrE0j2K78swW4ukqMleo8R7h/pFETjM2DQ90MF6XK2i4LO4W3gQ71Lt4w3bfm2EvVSyWHplECvB5sK22yFQ==
+  dependencies:
+    "@types/connect" "*"
+    "@types/node" "*"
+
 "@types/cacheable-request@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@types/cacheable-request/-/cacheable-request-6.0.1.tgz#5d22f3dded1fd3a84c0bbeb5039a7419c2c91976"
@@ -3016,6 +3024,13 @@
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
+
+"@types/connect@*":
+  version "3.4.33"
+  resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.33.tgz#31610c901eca573b8713c3330abc6e6b9f588546"
+  integrity sha512-2+FrkXY4zllzTNfJth7jOqEHC+enpLeGslEhpnTAkg21GkRrWV4SsAtqchtT4YS9/nODBU2/ZfsBY2X4J/dX7A==
+  dependencies:
+    "@types/node" "*"
 
 "@types/cucumber@^6.0.1":
   version "6.0.1"
@@ -3036,6 +3051,25 @@
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
   integrity sha512-EaObqwIvayI5a8dCzhFrjKzVwKLxjoG9T6Ppd5CEo07LRKfQ8Yokw54r5+Wq7FaBQ+yXRvQAYPrHwya1/UFt9g==
+
+"@types/express-serve-static-core@*":
+  version "4.17.14"
+  resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.14.tgz#cabf91debeeb3cb04b798e2cff908864e89b6106"
+  integrity sha512-uFTLwu94TfUFMToXNgRZikwPuZdOtDgs3syBtAIr/OXorL1kJqUJT9qCLnRZ5KBOWfZQikQ2xKgR2tnDj1OgDA==
+  dependencies:
+    "@types/node" "*"
+    "@types/qs" "*"
+    "@types/range-parser" "*"
+
+"@types/express@^4.17.8":
+  version "4.17.9"
+  resolved "https://registry.yarnpkg.com/@types/express/-/express-4.17.9.tgz#f5f2df6add703ff28428add52bdec8a1091b0a78"
+  integrity sha512-SDzEIZInC4sivGIFY4Sz1GG6J9UObPwCInYJjko2jzOf/Imx/dlpume6Xxwj1ORL82tBbmN4cPDIDkLbWHk9hw==
+  dependencies:
+    "@types/body-parser" "*"
+    "@types/express-serve-static-core" "*"
+    "@types/qs" "*"
+    "@types/serve-static" "*"
 
 "@types/fs-extra@^9.0.1":
   version "9.0.4"
@@ -3158,6 +3192,11 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.165.tgz#74d55d947452e2de0742bad65270433b63a8c30f"
   integrity sha512-tjSSOTHhI5mCHTy/OOXYIhi2Wt1qcbHmuXD1Ha7q70CgI/I71afO4XtLb/cVexki1oVYchpul/TOuu3Arcdxrg==
 
+"@types/mime@*":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.3.tgz#c893b73721db73699943bfc3653b1deb7faa4a3a"
+  integrity sha512-Jus9s4CDbqwocc5pOAnh8ShfrnMcPHuJYzVcSUU7lrh8Ni5HuIqX3oilL86p3dlTrk0LzHRCgA/GQ7uNCw6l2Q==
+
 "@types/minimatch@*":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
@@ -3167,6 +3206,13 @@
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.1.tgz#283f669ff76d7b8260df8ab7a4262cc83d988256"
   integrity sha512-fZQQafSREFyuZcdWFAExYjBiCL7AUCdgsk80iO0q4yihYYdcIiH28CcuPTGFgLOCC8RlW49GSQxdHwZP+I7CNg==
+
+"@types/morgan@^1.9.1":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@types/morgan/-/morgan-1.9.2.tgz#450f958a4d3fb0694a3ba012b09c8106f9a2885e"
+  integrity sha512-edtGMEdit146JwwIeyQeHHg9yID4WSolQPxpEorHmN3KuytuCHyn2ELNr5Uxy8SerniFbbkmgKMrGM933am5BQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/node@*":
   version "13.9.1"
@@ -3227,6 +3273,16 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
   integrity sha512-ce5d3q03Ex0sy4R14722Rmt6MT07Ua+k4FwDfdcToYJcMKNtRVQvJ6JCAPdAmAnbRb6CsX6aYb9m96NGod9uTw==
 
+"@types/qs@*":
+  version "6.9.5"
+  resolved "https://registry.yarnpkg.com/@types/qs/-/qs-6.9.5.tgz#434711bdd49eb5ee69d90c1d67c354a9a8ecb18b"
+  integrity sha512-/JHkVHtx/REVG0VVToGRGH2+23hsYLHdyG+GrvoUGlGAd0ErauXDyvHtRI/7H7mzLm+tBCKA7pfcpkQ1lf58iQ==
+
+"@types/range-parser@*":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
+  integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
+
 "@types/resolve@0.0.8":
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/@types/resolve/-/resolve-0.0.8.tgz#f26074d238e02659e323ce1a13d041eee280e194"
@@ -3246,6 +3302,14 @@
   resolved "https://registry.yarnpkg.com/@types/selenium-standalone/-/selenium-standalone-6.15.2.tgz#b6562f8e016d7b656bba9ee6445086364959af01"
   integrity sha512-Jnt4AHHcUOPGuZ5cJRYfP3IpPalNc/o1BmFvuFFmLtU2PtvEGvyyJPdpErqzZDxsP8E4yjTst0GL+QMJiEWuBA==
   dependencies:
+    "@types/node" "*"
+
+"@types/serve-static@*":
+  version "1.13.8"
+  resolved "https://registry.yarnpkg.com/@types/serve-static/-/serve-static-1.13.8.tgz#851129d434433c7082148574ffec263d58309c46"
+  integrity sha512-MoJhSQreaVoL+/hurAZzIm8wafFR6ajiTM1m4A0kv6AGeVBl4r4pOV8bGFrjjq1sGxDTnCoF8i22o0/aE5XCyA==
+  dependencies:
+    "@types/mime" "*"
     "@types/node" "*"
 
 "@types/stack-utils@^1.0.1":
@@ -3465,16 +3529,6 @@
     async-exit-hook "^2.0.1"
     stream-buffers "^3.0.2"
 
-"@wdio/logger@6.4.7":
-  version "6.4.7"
-  resolved "https://registry.yarnpkg.com/@wdio/logger/-/logger-6.4.7.tgz#6d83033a0d7ef20f3b2cc2420956105903a6a4e7"
-  integrity sha512-Mm/rsRa/1u/l8/IrNKM2c9tkvLE90i83d3KZ0Ujh4cicYJv+lNi9whsCi+p3QNFCo64nJ6bfC+0Ho5VgD3MiKw==
-  dependencies:
-    chalk "^4.0.0"
-    loglevel "^1.6.0"
-    loglevel-plugin-prefix "^0.8.4"
-    strip-ansi "^6.0.0"
-
 "@wdio/logger@6.7.3":
   version "6.7.3"
   resolved "https://registry.yarnpkg.com/@wdio/logger/-/logger-6.7.3.tgz#d8b2c2d51e3413b3c9536e679bbd0f4dfbfc1f3f"
@@ -3560,17 +3614,17 @@
     "@wdio/utils" "6.8.0"
     saucelabs "^4.2.0"
 
-"@wdio/selenium-standalone-service@^6.10.0":
-  version "6.10.0"
-  resolved "https://registry.yarnpkg.com/@wdio/selenium-standalone-service/-/selenium-standalone-service-6.10.0.tgz#7f433bf4acdc52da84e7509981cf0d4a1692272b"
-  integrity sha512-rLpiKQQu+8ui8MkS8ISEC6L/8Az0ARLhXcasXk29O9EoVxsjgYwrw4s3av3YcoiBJkuuJffG5o/UW9fSUw9zYw==
+"@wdio/selenium-standalone-service@^6.10.3":
+  version "6.10.3"
+  resolved "https://registry.yarnpkg.com/@wdio/selenium-standalone-service/-/selenium-standalone-service-6.10.3.tgz#a4ef03359c4ba0e703ab0e91128356598c645bd9"
+  integrity sha512-9NEisKJYp8p35gzJV7Ix61CAi6GoeDYTPhZK0Zm5p4XRdUvR/G59VTwHIFPb/yPv/Gs8tM1daNPUNwaWjXwbjg==
   dependencies:
     "@types/fs-extra" "^9.0.1"
     "@types/selenium-standalone" "^6.15.2"
     "@wdio/config" "6.10.0"
     "@wdio/logger" "6.8.0"
     fs-extra "^9.0.1"
-    selenium-standalone "^6.20.1"
+    selenium-standalone "^6.22.1"
 
 "@wdio/spec-reporter@^6.8.1":
   version "6.8.1"
@@ -3582,12 +3636,15 @@
     easy-table "^1.1.1"
     pretty-ms "^7.0.0"
 
-"@wdio/static-server-service@^6.4.7":
-  version "6.4.7"
-  resolved "https://registry.yarnpkg.com/@wdio/static-server-service/-/static-server-service-6.4.7.tgz#3c56339133b27f51cfeb8a8c040bc6dd2663126d"
-  integrity sha512-BDm9pACoKfrcJg+wy2w4Mj+TxPQO8ZUDQ8Sz8T0U+n6Ysu1jsTmH9cfiYcaY+I2WwhPwRL68SK1l7AMH1Y8xgQ==
+"@wdio/static-server-service@^6.10.3":
+  version "6.10.3"
+  resolved "https://registry.yarnpkg.com/@wdio/static-server-service/-/static-server-service-6.10.3.tgz#1c379134de4ce75ae651a7bfe49eabf802e8fcc9"
+  integrity sha512-w8wJ8pKTDYHdso4IhU/V9L9chvD5yHgl5JYJ/e6aY13e97rjMO61pP/P8TMp89t3l7HN5Y0/8JomjMZ5LYn0EQ==
   dependencies:
-    "@wdio/logger" "6.4.7"
+    "@types/express" "^4.17.8"
+    "@types/fs-extra" "^9.0.1"
+    "@types/morgan" "^1.9.1"
+    "@wdio/logger" "6.8.0"
     express "^4.14.0"
     fs-extra "^9.0.0"
     morgan "^1.7.0"
@@ -12636,10 +12693,10 @@ seek-bzip@^1.0.5:
   dependencies:
     commander "~2.8.1"
 
-selenium-standalone@^6.20.1:
-  version "6.22.0"
-  resolved "https://registry.yarnpkg.com/selenium-standalone/-/selenium-standalone-6.22.0.tgz#8f052017897afa4ee98c064628b5649f50eb8c2c"
-  integrity sha512-0xqq05qLZm2viP+VSHYHQ6a9XdGLTlVO96AV8dm/MI1Jk92bnO+Fgzy6y/q15QLQJYzrqUDPtF1jzHHVGJQSlA==
+selenium-standalone@^6.22.1:
+  version "6.22.1"
+  resolved "https://registry.yarnpkg.com/selenium-standalone/-/selenium-standalone-6.22.1.tgz#875495a73852866c42086f202f4cdfc27cea6f0d"
+  integrity sha512-kWlS3KkJNdJWMDYELUoMvGX1CURrOK6eLPjpxZmpd16FAYS+/Ya5qRbAuhpJnIhhKf0K2eKbPNyOkmu2nZ5X2g==
   dependencies:
     commander "^2.20.3"
     cross-spawn "^7.0.3"
