@@ -19,7 +19,6 @@ export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 
 // Internal APIs used by renderers -----------------------------------------------------------------
 export { getComponentInternalDef } from './def';
-export { isAttributeLocked } from './attributes';
 export {
     createVM,
     connectRootElement,
