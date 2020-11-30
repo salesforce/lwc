@@ -36,14 +36,11 @@ describe('bundler', () => {
             },
         });
 
-        expect(result.diagnostics).toEqual([
-            {
-                code: 1120,
-                message:
-                    'LWC1120: Illegal usage of the dynamic import syntax with a relative path.',
-                level: 1,
-            },
-        ]);
+        expect(result.diagnostics).toContainEqual({
+            code: 1120,
+            message: 'LWC1120: Illegal usage of the dynamic import syntax with a relative path.',
+            level: 1,
+        });
     });
 
     test('does not return sourcemap by default', async () => {
