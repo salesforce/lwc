@@ -20,7 +20,7 @@ import {
     seal,
     setPrototypeOf,
     keys,
-    htmlPropertyToAttribute
+    htmlPropertyToAttribute,
 } from '@lwc/shared';
 
 import { getAssociatedVM } from './vm';
