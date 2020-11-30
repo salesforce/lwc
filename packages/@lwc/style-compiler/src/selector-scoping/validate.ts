@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Root, Attribute } from 'postcss-selector-parser';
+import { Root } from 'postcss-selector-parser';
 
 const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
 const UNSUPPORTED_SELECTORS = new Set(['::slotted', ':root', ':host-context']);
@@ -36,7 +36,7 @@ function validateSelectors(root: Root) {
 
 function validateAttribute(root: Root) {
     root.walkAttributes((node) => {
-        const { attribute: attributeName, sourceIndex } = node as Attribute;
+        const { attribute: attributeName, sourceIndex } = node;
         const isTemplateDirective = TEMPLATE_DIRECTIVES.some((directive) => {
             return directive.test(attributeName);
         });

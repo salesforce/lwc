@@ -31,10 +31,10 @@
         "@lwc/shared": "1.9.4",
         "@lwc/style-compiler": "1.9.4",
         "@lwc/template-compiler": "1.9.4",
-        "@rollup/plugin-replace": "~2.3.3",
+        "@rollup/plugin-replace": "~2.3.4",
         "babel-preset-compat": "~0.22.1",
-        "rollup": "~2.28.1",
-        "terser": "~5.3.8"
+        "rollup": "~2.34.0",
+        "terser": "~5.5.1"
     },
     "devDependencies": {
         "source-map": "^0.7.3"

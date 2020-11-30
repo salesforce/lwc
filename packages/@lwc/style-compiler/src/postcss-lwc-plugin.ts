@@ -71,13 +71,13 @@ export default function postCssLwcPlugin(config: PluginConfig): TransformCallbac
             if (fakeShadowSelector !== nativeShadowSelector) {
                 // The cloned selector is inserted before the currently processed selector to avoid processing
                 // again the cloned selector.
-                const currentRule: any = rule;
-                const clonedRule: any = rule.cloneBefore();
+                const currentRule = rule;
+                const clonedRule = rule.cloneBefore();
                 clonedRule.selector = nativeShadowSelector;
 
                 // Safe a reference to each other
-                clonedRule._isHostNative = true;
-                currentRule._isFakeNative = true;
+                (clonedRule as any)._isHostNative = true;
+                (currentRule as any)._isFakeNative = true;
             }
         });
     };

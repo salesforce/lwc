@@ -22,6 +22,8 @@ import { isDirPseudoClass } from '../utils/rtl';
 import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
 import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
 
+type ChildNode = Exclude<Node, Selector>;
+
 export interface SelectorScopingConfig {
     /** When set to true, the :host selector gets replace with the the scoping token. */
     transformHost: boolean;
@@ -37,7 +39,7 @@ function isHostPseudoClass(node: Node): node is Pseudo {
  *   p a -> p[x-foo_tmpl] a[x-foo_tmpl]
  */
 function scopeSelector(selector: Selector) {
-    const compoundSelectors: Node[][] = [[]];
+    const compoundSelectors: ChildNode[][] = [[]];
 
     // Split the selector per compound selector. Compound selectors are interleaved with combinator nodes.
     // https://drafts.csswg.org/selectors-4/#typedef-complex-selector
@@ -61,7 +63,7 @@ function scopeSelector(selector: Selector) {
         const containsHost = compoundSelector.some(isHostPseudoClass);
 
         if (!containsSingleDirSelector && !containsHost) {
-            let nodeToScope: Node | undefined;
+            let nodeToScope: ChildNode | undefined;
 
             // In each compound selector we need to locate the last selector to scope.
             for (const node of compoundSelector) {
@@ -134,13 +136,9 @@ function transformHost(selector: Selector) {
 export default function transformSelector(root: Root, transformConfig: SelectorScopingConfig) {
     validateSelectors(root);
 
-    root.each((selector) => {
-        scopeSelector(selector as Selector);
-    });
+    root.each(scopeSelector);
 
     if (transformConfig.transformHost) {
-        root.each((selector) => {
-            transformHost(selector as Selector);
-        });
+        root.each(transformHost);
     }
 }

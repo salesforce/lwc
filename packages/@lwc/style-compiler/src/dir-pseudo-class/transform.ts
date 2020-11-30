@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { attribute, combinator, Root, Selector, isCombinator } from 'postcss-selector-parser';
+import { attribute, combinator, Root, isCombinator } from 'postcss-selector-parser';
 
 import { isDirPseudoClass } from '../utils/rtl';
 
@@ -13,8 +13,7 @@ function isValidDirValue(value: string): boolean {
 }
 
 export default function (root: Root) {
-    root.nodes.forEach((node) => {
-        const selector = node as Selector;
+    root.nodes.forEach((selector) => {
         selector.nodes.forEach((node) => {
             if (!isDirPseudoClass(node)) {
                 return;
