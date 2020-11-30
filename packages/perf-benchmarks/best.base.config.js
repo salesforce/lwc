@@ -33,6 +33,9 @@ module.exports = {
                 options: {
                     authToken: process.env.HUB_AUTH_TOKEN,
                 },
+                ssl: {
+                    rejectUnauthorized: false,
+                },
             },
         },
     ],
