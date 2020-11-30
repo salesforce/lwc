@@ -12,8 +12,9 @@ import {
     create,
     StringToLowerCase,
     setPrototypeOf,
+    htmlPropertyToAttribute,
 } from '@lwc/shared';
-import { getAttrNameFromPropName, Renderer } from '@lwc/engine-core';
+import { Renderer } from '@lwc/engine-core';
 
 const globalStylesheets: { [content: string]: true } = create(null);
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
@@ -127,7 +128,7 @@ export const renderer: Renderer<Node, Element> = {
                 assert.fail(
                     `Unknown public property "${key}" of element <${
                         node.tagName
-                    }>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(
+                    }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
                         key
                     )}".`
                 );

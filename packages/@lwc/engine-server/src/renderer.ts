@@ -12,8 +12,9 @@ import {
     isAriaAttribute,
     create,
     StringToLowerCase,
+    htmlPropertyToAttribute,
 } from '@lwc/shared';
-import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
+import { Renderer } from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
@@ -123,7 +124,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         }
 
         if (node.type === HostNodeType.Element) {
-            const attrName = getAttrNameFromPropName(key);
+            const attrName = htmlPropertyToAttribute(key);
 
             // Handle all the boolean properties.
             if (isBooleanAttribute(attrName, node.name)) {
@@ -154,7 +155,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         }
 
         if (node.type === HostNodeType.Element) {
-            const attrName = getAttrNameFromPropName(key);
+            const attrName = htmlPropertyToAttribute(key);
 
             // Handle all the boolean properties.
             if (isBooleanAttribute(attrName, node.name)) {
