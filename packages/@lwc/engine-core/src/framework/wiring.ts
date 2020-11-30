@@ -7,7 +7,7 @@
 import { assert, isUndefined, ArrayPush, defineProperty, defineProperties } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
-import { VM, runWithBoundaryProtection } from './vm';
+import { VM, runWithBoundaryProtection, VMState } from './vm';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
@@ -74,12 +74,10 @@ function createMethodDataCallback(vm: VM, method: (data: any) => any) {
 }
 
 function createConfigWatcher(
-    vm: VM,
-    wireDef: WireDef,
+    component: ComponentInterface,
+    configCallback: ConfigCallback,
     callbackWhenConfigIsReady: (newConfig: ConfigValue) => void
-) {
-    const { component } = vm;
-    const { configCallback } = wireDef;
+): { computeConfigAndUpdate: () => void; ro: ReactiveObserver } {
     let hasPendingConfig: boolean = false;
     // creating the reactive observer for reactive params when needed
     const ro = new ReactiveObserver(() => {
@@ -91,11 +89,11 @@ function createConfigWatcher(
                 // resetting current reactive params
                 ro.reset();
                 // dispatching a new config due to a change in the configuration
-                callback();
+                computeConfigAndUpdate();
             });
         }
     });
-    const callback = () => {
+    const computeConfigAndUpdate = () => {
         let config: ConfigValue;
         ro.observe(() => (config = configCallback(component)));
         // eslint-disable-next-line lwc-internal/no-invalid-todo
@@ -103,7 +101,10 @@ function createConfigWatcher(
         // @ts-ignore it is assigned in the observe() callback
         callbackWhenConfigIsReady(config);
     };
-    return callback;
+    return {
+        computeConfigAndUpdate,
+        ro,
+    };
 }
 
 function createContextWatcher(
@@ -144,10 +145,16 @@ function createContextWatcher(
     });
 }
 
-function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
+function createConnector(
+    vm: VM,
+    name: string,
+    wireDef: WireDef
+): {
+    connector: WireAdapter;
+    computeConfigAndUpdate: () => void;
+    resetConfigWatcher: () => void;
+} {
     const { method, adapter, configCallback, dynamic } = wireDef;
-    const hasDynamicParams = dynamic.length > 0;
-    const { component } = vm;
     const dataCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
         : createMethodDataCallback(vm, method);
@@ -188,23 +195,12 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
     };
 
     // Computes the current wire config and calls the update method on the wire adapter.
-    // This initial implementation may change depending on the specific wire instance, if it has params, we will need
-    // to observe changes in the next tick.
-    let computeConfigAndUpdate = () => {
-        updateConnectorConfig(configCallback(component));
-    };
-
-    if (hasDynamicParams) {
-        // This wire has dynamic parameters: we wait for the component instance is created and its values set
-        // in order to call the update(config) method.
-        Promise.resolve().then(() => {
-            computeConfigAndUpdate = createConfigWatcher(vm, wireDef, updateConnectorConfig);
-
-            computeConfigAndUpdate();
-        });
-    } else {
-        computeConfigAndUpdate();
-    }
+    // If it has params, we will need to observe changes in the next tick.
+    const { computeConfigAndUpdate, ro } = createConfigWatcher(
+        vm.component,
+        configCallback,
+        updateConnectorConfig
+    );
 
     // if the adapter needs contextualization, we need to watch for new context and push it alongside the config
     if (!isUndefined(adapter.contextSchema)) {
@@ -216,12 +212,18 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
                 // Note: when new context arrives, the config will be recomputed and pushed along side the new
                 // context, this is to preserve the identity characteristics, config should not have identity
                 // (ever), while context can have identity
-                computeConfigAndUpdate();
+                if (vm.state === VMState.connected) {
+                    computeConfigAndUpdate();
+                }
             }
         });
     }
-    // @ts-ignore the boundary protection executes sync, connector is always defined
-    return connector;
+    return {
+        // @ts-ignore the boundary protection executes sync, connector is always defined
+        connector,
+        computeConfigAndUpdate,
+        resetConfigWatcher: () => ro.reset(),
+    };
 }
 
 export type DataCallback = (value: any) => void;
@@ -323,9 +325,19 @@ export function installWireAdapters(vm: VM) {
             assert.invariant(wireDef, `Internal Error: invalid wire definition found.`);
         }
         if (!isUndefined(wireDef)) {
-            const adapterInstance = createConnector(vm, fieldNameOrMethod, wireDef);
-            ArrayPush.call(wiredConnecting, () => adapterInstance.connect());
-            ArrayPush.call(wiredDisconnecting, () => adapterInstance.disconnect());
+            const { connector, computeConfigAndUpdate, resetConfigWatcher } = createConnector(
+                vm,
+                fieldNameOrMethod,
+                wireDef
+            );
+            ArrayPush.call(wiredConnecting, () => {
+                connector.connect();
+                computeConfigAndUpdate();
+            });
+            ArrayPush.call(wiredDisconnecting, () => {
+                connector.disconnect();
+                resetConfigWatcher();
+            });
         }
     }
 }
