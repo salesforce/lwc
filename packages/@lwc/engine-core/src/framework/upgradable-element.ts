@@ -29,9 +29,7 @@ export function getUpgradableConstructor(
      * LWC Upgradable Element reference to an element that was created
      * via the scoped registry mechanism, and that is ready to be upgraded.
      */
-    CE = class LWCUpgradableElement extends (
-        renderer.HTMLElement
-    ) {
+    CE = class LWCUpgradableElement extends renderer.HTMLElement {
         constructor(upgradeCallback?: UpgradeCallback) {
             super();
             if (isFunction(upgradeCallback)) {
