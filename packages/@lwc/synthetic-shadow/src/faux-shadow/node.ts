@@ -46,21 +46,7 @@ import { getNodeOwnerKey } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
-const OwnKey = '$$OwnKey$$';
-
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
-
-export function setNodeKey(node: Node, value: number) {
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the own key
-        defineProperty(node, OwnKey, {
-            value, // can't be mutated
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        (node as any)[OwnKey] = value;
-    }
-}
 
 export function getNodeNearestOwnerKey(node: Node): number | undefined {
     let ownerNode: Node | null = node;
