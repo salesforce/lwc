@@ -49,14 +49,6 @@ import { isGlobalPatchingSkipped } from '../shared/utils';
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
 /**
- * This function verifies if a node (with or without owner key) is contained in a shadow root.
- * Use with care since has high computational cost.
- */
-export function isNodeDeepShadowed(node: Node): boolean {
-    return !isUndefined(getNodeNearestOwnerKey(node));
-}
-
-/**
  * This method checks whether or not the content of the node is computed
  * based on the light-dom slotting mechanism. This applies to slot elements
  * and elements with shadow dom attached to them.

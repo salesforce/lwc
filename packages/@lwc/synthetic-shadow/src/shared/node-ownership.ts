@@ -72,3 +72,11 @@ export function getNodeKey(node: Node): number | undefined {
 export function isNodeShadowed(node: Node): boolean {
     return !isUndefined(getNodeOwnerKey(node));
 }
+
+/**
+ * This function verifies if a node (with or without owner key) is contained in a shadow root.
+ * Use with care since has high computational cost.
+ */
+export function isNodeDeepShadowed(node: Node): boolean {
+    return !isUndefined(getNodeNearestOwnerKey(node));
+}
