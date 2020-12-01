@@ -53,8 +53,9 @@ import {
     querySelectorAll as elementQuerySelectorAll,
 } from '../env/element';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
+import { getNodeOwnerKey } from '../shared/node-ownership';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
-import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
+import { isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 

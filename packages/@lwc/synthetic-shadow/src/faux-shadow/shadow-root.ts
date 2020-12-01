@@ -45,8 +45,9 @@ import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { retarget } from '../3rdparty/polymer/retarget';
 import { pathComposer } from '../3rdparty/polymer/path-composer';
-import { getInternalChildNodes, setNodeKey, setNodeOwnerKey } from './node';
+import { getInternalChildNodes, setNodeKey } from './node';
 import { innerHTMLSetter } from '../env/element';
+import { setNodeOwnerKey } from '../shared/node-ownership';
 import { getOwnerDocument } from '../shared/utils';
 
 const InternalSlot = createHiddenField<ShadowRootRecord>('shadowRecord', 'synthetic-shadow');

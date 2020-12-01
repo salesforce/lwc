@@ -23,10 +23,10 @@ import {
     getElementsByTagNameNS as documentGetElementsByTagNameNS,
     querySelectorAll as documentQuerySelectorAll,
 } from '../../env/document';
-import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { parentElementGetter } from '../../env/node';
 import { retarget } from '../../3rdparty/polymer/retarget';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
+import { getNodeOwnerKey } from '../../shared/node-ownership';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../../shared/utils';

@@ -42,30 +42,13 @@ import {
 } from './traverse';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from './shadow-root';
+import { getNodeOwnerKey } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
 const OwnKey = '$$OwnKey$$';
-const OwnerKey = '$$OwnerKey$$';
 
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
-
-export function getNodeOwnerKey(node: Node): number | undefined {
-    return (node as any)[OwnerKey];
-}
-
-export function setNodeOwnerKey(node: Node, value: number | undefined) {
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the owner key
-        defineProperty(node, OwnerKey, {
-            value,
-            configurable: true,
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        (node as any)[OwnerKey] = value;
-    }
-}
 
 export function getNodeKey(node: Node): number | undefined {
     return (node as any)[OwnKey];

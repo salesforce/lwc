@@ -7,7 +7,8 @@
 import { isHostElement } from './shadow-root';
 import { getAllMatches, getNodeOwner, getAllSlottedMatches } from './traverse';
 import { ArrayFilter, ArraySlice, isNull, isUndefined } from '@lwc/shared';
-import { getNodeKey, getNodeNearestOwnerKey, getNodeOwnerKey } from './node';
+import { getNodeKey, getNodeNearestOwnerKey } from './node';
+import { getNodeOwnerKey } from '../shared/node-ownership';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
 /**
