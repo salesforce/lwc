@@ -28,7 +28,7 @@ import { arrayFromCollection } from '../shared/utils';
 function foldSlotElement(slot: HTMLElement) {
     let parent = parentElementGetter.call(slot);
     while (!isNull(parent) && isSlotElement(parent)) {
-        slot = parent as HTMLElement;
+        slot = parent;
         parent = parentElementGetter.call(slot);
     }
     return slot;
@@ -166,7 +166,7 @@ export function getAllSlottedMatches<T extends Node>(
 
 export function getFirstSlottedMatch(host: Element, nodeList: Element[]): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
-        const node = nodeList[i] as Element;
+        const node = nodeList[i];
         if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
             return node;
         }
@@ -191,7 +191,7 @@ export function getAllMatches<T extends Node>(owner: Element, nodeList: Node[]):
 export function getFirstMatch(owner: Element, nodeList: Element[]): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedBy(owner, nodeList[i])) {
-            return nodeList[i] as Element;
+            return nodeList[i];
         }
     }
     return null;
