@@ -31,15 +31,28 @@ function serializeChildNodes(children: HostChildNode[]): string {
         .join('');
 }
 
-// function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
-//     const attrs = [`shadowroot="${shadowRoot.mode}"`];
+function serializeChildNodesToStaticMarkup(children: HostChildNode[]): string {
+    return children
+        .map((child) => {
+            switch (child.type) {
+                case HostNodeType.Text:
+                    return htmlEscape(child.value);
+                case HostNodeType.Element:
+                    return serializeElementToStaticMarkup(child);
+            }
+        })
+        .join('');
+}
 
-//     if (shadowRoot.delegatesFocus) {
-//         attrs.push('shadowrootdelegatesfocus');
-//     }
+function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
+    const attrs = [`shadowroot="${shadowRoot.mode}"`];
 
-//     return `<template ${attrs.join(' ')}>${serializeChildNodes(shadowRoot.children)}</template>`;
-// }
+    if (shadowRoot.delegatesFocus) {
+        attrs.push('shadowrootdelegatesfocus');
+    }
+
+    return `<template ${attrs.join(' ')}>${serializeChildNodes(shadowRoot.children)}</template>`;
+}
 
 export function serializeElement(element: HostElement): string {
     let output = '';
@@ -51,7 +64,33 @@ export function serializeElement(element: HostElement): string {
     output += `<${name}${attrs}>`;
 
     if (element.shadowRoot) {
-        output += serializeChildNodes(element.shadowRoot.children);
+        output += serializeShadowRoot(element.shadowRoot.children);
+    }
+
+    output += children;
+
+    if (!isVoidElement(name)) {
+        output += `</${name}>`;
+    }
+
+    return output;
+}
+
+/**
+ * Serialize an LWC component to markup without shadow dom semantics
+ * @param element Seri
+ */
+export function serializeElementToStaticMarkup(element: HostElement): string {
+    let output = '';
+    const { name } = element;
+
+    const attrs = element.attributes.length ? ` ${serializeAttributes(element.attributes)}` : '';
+    const children = serializeChildNodesToStaticMarkup(element.children);
+
+    output += `<${name}${attrs}>`;
+
+    if (element.shadowRoot) {
+        output += serializeChildNodesToStaticMarkup(element.shadowRoot.children);
     }
 
     output += children;

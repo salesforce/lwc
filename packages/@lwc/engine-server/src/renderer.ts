@@ -1,3 +1,5 @@
+import { HostAttribute, HostElement, HostNode, HostNodeType } from './types';
+import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
 /*
  * Copyright (c) 2020, salesforce.com, inc.
  * All rights reserved.
@@ -5,19 +7,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    isUndefined,
-    isNull,
+    StringToLowerCase,
+    create,
+    isAriaAttribute,
     isBooleanAttribute,
     isGlobalHtmlAttribute,
-    isAriaAttribute,
-    create,
-    StringToLowerCase,
+    isNull,
+    isUndefined,
 } from '@lwc/shared';
-import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
-
-import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
-import { styleTextToCssDeclaration, cssDeclarationToStyleText } from './utils/style';
+import { cssDeclarationToStyleText, styleTextToCssDeclaration } from './utils/style';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -350,3 +349,8 @@ export const renderer: Renderer<HostNode, HostElement> = {
     },
     HTMLElement: HTMLElement as any,
 };
+
+export const syntheticShadowRenderer: Renderer<HostNode, HostElement> = Object.assign(
+    { syntheticShadow: true },
+    renderer
+);
