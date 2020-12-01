@@ -76,7 +76,7 @@ function wrapIframeWindow(win: WindowProxy): WindowProxy {
             return win.location;
         },
         set location(value) {
-            (win.location as any) = value;
+            win.location = value;
         },
         get opener() {
             return win.opener;

@@ -34,6 +34,6 @@ export function getTextContent(node: Node): string {
             return content;
         }
         default:
-            return node.nodeValue as string;
+            return node.nodeValue!;
     }
 }

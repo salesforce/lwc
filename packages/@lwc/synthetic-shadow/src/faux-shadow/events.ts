@@ -244,9 +244,9 @@ function domListener(evt: Event) {
     let propagationStopped = false;
     const { type, stopImmediatePropagation, stopPropagation } = evt;
     // currentTarget is always defined
-    const currentTarget = eventCurrentTargetGetter.call(evt) as EventTarget;
+    const currentTarget = eventCurrentTargetGetter.call(evt)!;
     const listenerMap = getEventMap(currentTarget);
-    const listeners = listenerMap![type] as WrappedListener[]; // it must have listeners at this point
+    const listeners = listenerMap![type]; // it must have listeners at this point
     defineProperty(evt, 'stopImmediatePropagation', {
         value() {
             immediatePropagationStopped = true;
