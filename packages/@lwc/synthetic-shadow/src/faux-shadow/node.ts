@@ -9,6 +9,7 @@ import {
     defineProperties,
     defineProperty,
     getOwnPropertyDescriptor,
+    hasNativeSymbolSupport,
     hasOwnProperty,
     isFalse,
     isNull,
@@ -42,75 +43,9 @@ import {
 } from './traverse';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from './shadow-root';
+import { getNodeNearestOwnerKey, getNodeOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
-
-const OwnKey = '$$OwnKey$$';
-const OwnerKey = '$$OwnerKey$$';
-
-export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
-
-export function getNodeOwnerKey(node: Node): number | undefined {
-    return (node as any)[OwnerKey];
-}
-
-export function setNodeOwnerKey(node: Node, value: number | undefined) {
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the owner key
-        defineProperty(node, OwnerKey, {
-            value,
-            configurable: true,
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        (node as any)[OwnerKey] = value;
-    }
-}
-
-export function getNodeKey(node: Node): number | undefined {
-    return (node as any)[OwnKey];
-}
-
-export function setNodeKey(node: Node, value: number) {
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the own key
-        defineProperty(node, OwnKey, {
-            value, // can't be mutated
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        (node as any)[OwnKey] = value;
-    }
-}
-
-export function getNodeNearestOwnerKey(node: Node): number | undefined {
-    let ownerNode: Node | null = node;
-    let ownerKey: number | undefined;
-    // search for the first element with owner identity (just in case of manually inserted elements)
-    while (!isNull(ownerNode)) {
-        ownerKey = getNodeOwnerKey(ownerNode);
-        if (!isUndefined(ownerKey)) {
-            return ownerKey;
-        }
-        ownerNode = parentNodeGetter.call(ownerNode);
-    }
-}
-
-/**
- * This function does not traverse up for performance reasons, but is good enough for most of the use cases.
- * If you need to be sure and verify those nodes that don't have owner key, use isNodeDeepShadowed instead.
- */
-export function isNodeShadowed(node: Node): boolean {
-    return !isUndefined(getNodeOwnerKey(node));
-}
-
-/**
- * This function verifies if a node (with or without owner key) is contained in a shadow root.
- * Use with care since has high computational cost.
- */
-export function isNodeDeepShadowed(node: Node): boolean {
-    return !isUndefined(getNodeNearestOwnerKey(node));
-}
 
 /**
  * This method checks whether or not the content of the node is computed
@@ -235,7 +170,7 @@ function childNodesGetterPatched(this: Node): NodeListOf<Node> {
         const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
         if (
             process.env.NODE_ENV !== 'production' &&
-            isFalse(hasNativeSymbolsSupport) &&
+            isFalse(hasNativeSymbolSupport) &&
             isExternalChildNodeAccessorFlagOn()
         ) {
             // inserting a comment node as the first childNode to trick the IE11
@@ -496,7 +431,7 @@ export function isExternalChildNodeAccessorFlagOn(): boolean {
     return !internalChildNodeAccessorFlag;
 }
 export const getInternalChildNodes: (node: Node) => NodeListOf<ChildNode> =
-    process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)
+    process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolSupport)
         ? function (node) {
               internalChildNodeAccessorFlag = true;
               let childNodes;

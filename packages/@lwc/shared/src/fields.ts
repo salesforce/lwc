@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { create, isUndefined } from './language';
+import { hasNativeSymbolSupport } from './symbol';
 
 /*
  * The __type property on HiddenField doesn't actually exists at runtime. It is only used to store
@@ -12,16 +13,10 @@ import { create, isUndefined } from './language';
  */
 export type HiddenField<T> = { __type: T };
 
-/*
- * In IE11, symbols are expensive.
- * Due to the nature of the symbol polyfill. This method abstract the
- * creation of symbols, so we can fallback to string when native symbols
- * are not supported. Note that we can't use typeof since it will fail when transpiling.
- */
-const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
-
+// This method abstracts the creation of symbols, so we can fallback to strings when native symbols
+// are not supported.
 export function createHiddenField<T = unknown>(key: string, namespace: string): HiddenField<T> {
-    return (hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-${namespace}-${key}$$`) as any;
+    return (hasNativeSymbolSupport ? Symbol(key) : `$$lwc-${namespace}-${key}$$`) as any;
 }
 
 const hiddenFieldsMap: WeakMap<any, Record<any, any>> = new WeakMap();

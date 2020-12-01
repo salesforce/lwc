@@ -16,8 +16,8 @@ import {
     isNull,
     isUndefined,
 } from '@lwc/shared';
-import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
+import { getNodeKey, getNodeNearestOwnerKey } from '../../shared/node-ownership';
 
 const OriginalMutationObserver = MutationObserver;
 const {

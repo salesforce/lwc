@@ -5,17 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperties, isFunction, isNull, isObject } from '@lwc/shared';
-import {
-    windowRemoveEventListener as nativeWindowRemoveEventListener,
-    windowAddEventListener as nativeWindowAddEventListener,
-} from '../../env/window';
+import { eventTargetGetter } from '../../env/dom';
 import {
     removeEventListener as nativeRemoveEventListener,
     addEventListener as nativeAddEventListener,
 } from '../../env/element';
-import { eventTargetGetter } from '../../env/dom';
+import {
+    windowRemoveEventListener as nativeWindowRemoveEventListener,
+    windowAddEventListener as nativeWindowAddEventListener,
+} from '../../env/window';
 import { patchEvent } from '../../faux-shadow/events';
-import { isNodeDeepShadowed } from '../../faux-shadow/node';
+import { isNodeDeepShadowed } from '../../shared/node-ownership';
 
 type EventListenerWrapper = EventListener & {
     $$lwcEventWrapper$$: EventListener;

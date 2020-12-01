@@ -20,13 +20,14 @@ import {
     isUndefined,
     setHiddenField,
 } from '@lwc/shared';
-import { getAttribute, setAttribute } from '../env/element';
 import { dispatchEvent } from '../env/dom';
+import { getAttribute, setAttribute } from '../env/element';
+import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
+import { childNodesGetter, parentNodeGetter } from '../env/node';
 import {
     assignedNodes as originalAssignedNodes,
     assignedElements as originalAssignedElements,
 } from '../env/slot';
-import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import {
     isSlotElement,
     getNodeOwner,
@@ -34,9 +35,8 @@ import {
     getFilteredChildNodes,
     getFilteredSlotAssignedNodes,
 } from '../faux-shadow/traverse';
-import { childNodesGetter, parentNodeGetter } from '../env/node';
+import { getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
-import { isNodeShadowed, getNodeNearestOwnerKey } from '../faux-shadow/node';
 import { arrayFromCollection } from '../shared/utils';
 
 // We can use a single observer without having to worry about leaking because
