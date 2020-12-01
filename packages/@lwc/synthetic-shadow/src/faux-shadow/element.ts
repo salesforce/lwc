@@ -39,12 +39,7 @@ import {
 } from '../env/element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
-import {
-    getNodeKey,
-    getInternalChildNodes,
-    hasMountedChildren,
-    getNodeNearestOwnerKey,
-} from './node';
+import { getInternalChildNodes, hasMountedChildren, getNodeNearestOwnerKey } from './node';
 import {
     innerHTMLSetter,
     getElementsByClassName as elementGetElementsByClassName,
@@ -53,7 +48,7 @@ import {
     querySelectorAll as elementQuerySelectorAll,
 } from '../env/element';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
-import { getNodeOwnerKey } from '../shared/node-ownership';
+import { getNodeKey, getNodeOwnerKey } from '../shared/node-ownership';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import { isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';

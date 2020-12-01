@@ -50,10 +50,6 @@ const OwnKey = '$$OwnKey$$';
 
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
-export function getNodeKey(node: Node): number | undefined {
-    return (node as any)[OwnKey];
-}
-
 export function setNodeKey(node: Node, value: number) {
     if (process.env.NODE_ENV !== 'production') {
         // in dev-mode, we are more restrictive about what you can do with the own key
