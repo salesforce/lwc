@@ -16,43 +16,40 @@ interface ShadowedNode extends Node {
     [ShadowedNodeKey]: number;
 }
 
-export function getNodeOwnerKey(node: Node): number | undefined {
-    return (node as ShadowedNode)[HostElementKey];
-}
-
-export function setNodeOwnerKey(node: Node, value: number) {
+function fastDefineProperty(
+    node: Node,
+    propName: string,
+    config: { value: number; configurable?: boolean }
+) {
     const shadowedNode = node as ShadowedNode;
     if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the owner key
-        defineProperty(shadowedNode, HostElementKey, {
-            value,
-            configurable: true,
-        });
+        // in dev, we are more restrictive
+        defineProperty(shadowedNode, propName, config);
     } else {
-        // in prod, for better perf, we just let it roll
+        const { value } = config;
+        // in prod, we prioritize performance
         shadowedNode[HostElementKey] = value;
     }
 }
 
+export function setNodeOwnerKey(node: Node, value: number) {
+    fastDefineProperty(node, HostElementKey, { value, configurable: true });
+}
+
 export function setNodeKey(node: Node, value: number) {
-    const shadowedNode = node as ShadowedNode;
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the own key
-        defineProperty(shadowedNode, ShadowedNodeKey, {
-            value, // can't be mutated
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        shadowedNode[ShadowedNodeKey] = value;
-    }
+    fastDefineProperty(node, ShadowedNodeKey, { value });
+}
+
+export function getNodeOwnerKey(node: Node): number | undefined {
+    return (node as ShadowedNode)[HostElementKey];
 }
 
 export function getNodeNearestOwnerKey(node: Node): number | undefined {
-    let host = node as ShadowedNode | null;
+    let host: Node | null = node;
     let hostKey: number | undefined;
     // search for the first element with owner identity (just in case of manually inserted elements)
     while (!isNull(host)) {
-        hostKey = host[HostElementKey];
+        hostKey = getNodeOwnerKey(host);
         if (!isUndefined(hostKey)) {
             return hostKey;
         }

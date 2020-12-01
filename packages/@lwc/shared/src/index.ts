@@ -12,4 +12,6 @@ export * from './global-this';
 export * from './fields';
 export * from './void-elements';
 export * from './html-attributes';
+export * from './symbol';
+
 export { assert };

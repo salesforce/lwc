@@ -9,6 +9,7 @@ import {
     defineProperties,
     defineProperty,
     getOwnPropertyDescriptor,
+    hasNativeSymbolSupport,
     hasOwnProperty,
     isFalse,
     isNull,
@@ -45,8 +46,6 @@ import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from '
 import { getNodeNearestOwnerKey, getNodeOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
-
-export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
 /**
  * This method checks whether or not the content of the node is computed
@@ -171,7 +170,7 @@ function childNodesGetterPatched(this: Node): NodeListOf<Node> {
         const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
         if (
             process.env.NODE_ENV !== 'production' &&
-            isFalse(hasNativeSymbolsSupport) &&
+            isFalse(hasNativeSymbolSupport) &&
             isExternalChildNodeAccessorFlagOn()
         ) {
             // inserting a comment node as the first childNode to trick the IE11
@@ -432,7 +431,7 @@ export function isExternalChildNodeAccessorFlagOn(): boolean {
     return !internalChildNodeAccessorFlag;
 }
 export const getInternalChildNodes: (node: Node) => NodeListOf<ChildNode> =
-    process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)
+    process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolSupport)
         ? function (node) {
               internalChildNodeAccessorFlag = true;
               let childNodes;
