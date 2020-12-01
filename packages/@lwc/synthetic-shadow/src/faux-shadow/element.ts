@@ -226,21 +226,21 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'innerHTML')) {
     defineProperty(
         HTMLElement.prototype,
         'innerHTML',
-        getOwnPropertyDescriptor(Element.prototype, 'innerHTML') as PropertyDescriptor
+        getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!
     );
 }
 if (hasOwnProperty.call(HTMLElement.prototype, 'outerHTML')) {
     defineProperty(
         HTMLElement.prototype,
         'outerHTML',
-        getOwnPropertyDescriptor(Element.prototype, 'outerHTML') as PropertyDescriptor
+        getOwnPropertyDescriptor(Element.prototype, 'outerHTML')!
     );
 }
 if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
     defineProperty(
         HTMLElement.prototype,
         'children',
-        getOwnPropertyDescriptor(Element.prototype, 'children') as PropertyDescriptor
+        getOwnPropertyDescriptor(Element.prototype, 'children')!
     );
 }
 
