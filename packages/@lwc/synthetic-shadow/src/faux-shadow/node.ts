@@ -42,24 +42,11 @@ import {
 } from './traverse';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from './shadow-root';
-import { getNodeOwnerKey } from '../shared/node-ownership';
+import { getNodeNearestOwnerKey, getNodeOwnerKey } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
-
-export function getNodeNearestOwnerKey(node: Node): number | undefined {
-    let ownerNode: Node | null = node;
-    let ownerKey: number | undefined;
-    // search for the first element with owner identity (just in case of manually inserted elements)
-    while (!isNull(ownerNode)) {
-        ownerKey = getNodeOwnerKey(ownerNode);
-        if (!isUndefined(ownerKey)) {
-            return ownerKey;
-        }
-        ownerNode = parentNodeGetter.call(ownerNode);
-    }
-}
 
 /**
  * This function does not traverse up for performance reasons, but is good enough for most of the use cases.
