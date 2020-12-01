@@ -18,7 +18,7 @@ interface ShadowedNode extends Node {
 
 function fastDefineProperty(
     node: Node,
-    propName: string,
+    propName: typeof HostElementKey | typeof ShadowedNodeKey,
     config: { value: number; configurable?: boolean }
 ) {
     const shadowedNode = node as ShadowedNode;
@@ -28,7 +28,7 @@ function fastDefineProperty(
     } else {
         const { value } = config;
         // in prod, we prioritize performance
-        shadowedNode[HostElementKey] = value;
+        shadowedNode[propName] = value;
     }
 }
 
