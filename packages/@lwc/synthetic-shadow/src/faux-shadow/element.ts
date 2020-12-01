@@ -407,7 +407,7 @@ if (process.env.NODE_ENV !== 'test') {
                         this,
                         ArraySlice.call(arguments) as [string]
                     )
-                ) as Element[];
+                );
 
                 if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
                     return createStaticHTMLCollection(
@@ -430,7 +430,7 @@ if (process.env.NODE_ENV !== 'test') {
             value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
                 const elements = arrayFromCollection(
                     elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
-                ) as Element[];
+                );
 
                 if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
                     return createStaticHTMLCollection(
@@ -456,7 +456,7 @@ if (process.env.NODE_ENV !== 'test') {
                         this,
                         ArraySlice.call(arguments) as [string, string]
                     )
-                ) as Element[];
+                );
 
                 if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
                     return createStaticHTMLCollection(
