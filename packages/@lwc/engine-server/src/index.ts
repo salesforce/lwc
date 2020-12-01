@@ -27,5 +27,5 @@ export {
 } from '@lwc/engine-core';
 
 // Engine-server public APIs -----------------------------------------------------------------------
-export { renderComponent } from './apis/render-component';
+export { renderComponent, renderComponentToStaticMarkup } from './apis/render-component';
 export { LightningElement } from './apis/lightning-element';
