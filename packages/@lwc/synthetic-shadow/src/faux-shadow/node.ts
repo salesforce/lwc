@@ -42,19 +42,11 @@ import {
 } from './traverse';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from './shadow-root';
-import { getNodeNearestOwnerKey, getNodeOwnerKey } from '../shared/node-ownership';
+import { getNodeNearestOwnerKey, getNodeOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
-
-/**
- * This function does not traverse up for performance reasons, but is good enough for most of the use cases.
- * If you need to be sure and verify those nodes that don't have owner key, use isNodeDeepShadowed instead.
- */
-export function isNodeShadowed(node: Node): boolean {
-    return !isUndefined(getNodeOwnerKey(node));
-}
 
 /**
  * This function verifies if a node (with or without owner key) is contained in a shadow root.

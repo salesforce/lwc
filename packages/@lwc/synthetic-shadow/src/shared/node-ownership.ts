@@ -64,6 +64,10 @@ export function getNodeKey(node: Node): number | undefined {
     return (node as ShadowedNode)[ShadowedNodeKey];
 }
 
+/**
+ * This function does not traverse up for performance reasons, but is good enough for most of the use cases.
+ * If you need to be sure and verify those nodes that don't have owner key, use isNodeDeepShadowed instead.
+ */
 export function isNodeShadowed(node: Node): boolean {
     return !isUndefined(getNodeNearestOwnerKey(node));
 }

@@ -28,7 +28,6 @@ import {
     assignedNodes as originalAssignedNodes,
     assignedElements as originalAssignedElements,
 } from '../env/slot';
-import { isNodeShadowed } from '../faux-shadow/node';
 import {
     isSlotElement,
     getNodeOwner,
@@ -36,7 +35,7 @@ import {
     getFilteredChildNodes,
     getFilteredSlotAssignedNodes,
 } from '../faux-shadow/traverse';
-import { getNodeNearestOwnerKey } from '../shared/node-ownership';
+import { getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { arrayFromCollection } from '../shared/utils';
 
