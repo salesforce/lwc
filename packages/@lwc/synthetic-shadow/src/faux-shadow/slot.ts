@@ -76,7 +76,7 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
         childNodes,
         (seed, child) => {
             if (child instanceof Element && isSlotElement(child)) {
-                ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child as HTMLElement));
+                ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child));
             } else {
                 ArrayPush.call(seed, child);
             }
@@ -101,7 +101,7 @@ export function assignedSlotGetterPatched(this: Element): HTMLSlotElement | null
     ) {
         return null;
     }
-    return parentNode as HTMLSlotElement;
+    return parentNode;
 }
 
 defineProperties(HTMLSlotElement.prototype, {
@@ -119,7 +119,7 @@ defineProperties(HTMLSlotElement.prototype, {
                 if (!observer) {
                     observer = initSlotObserver();
                 }
-                MutationObserverObserve.call(observer, this as Node, observerConfig);
+                MutationObserverObserve.call(observer, this, observerConfig);
             }
         },
         writable: true,

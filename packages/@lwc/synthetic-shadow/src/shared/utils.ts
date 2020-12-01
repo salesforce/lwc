@@ -47,11 +47,15 @@ export function isGlobalPatchingSkipped(node: Node): boolean {
  * This utility should be used to convert NodeList and HTMLCollection into an array before we
  * perform array operations on them. See issue #1545 for more details.
  */
-export function arrayFromCollection<T extends Node, K extends Element>(
-    collection: NodeListOf<T> | HTMLCollectionOf<K>
-): Array<T | K> {
+export function arrayFromCollection<T extends NodeList>(
+    collection: T
+): T extends NodeListOf<infer U> ? U[] : Node[];
+export function arrayFromCollection<T extends HTMLCollection>(
+    collection: T
+): T extends HTMLCollectionOf<infer U> ? U[] : Element[];
+export function arrayFromCollection<T extends HTMLCollection | NodeList>(collection: T): Node[] {
     const size = collection.length;
-    const cloned: T[] | K[] = [];
+    const cloned: any[] = [];
     if (size > 0) {
         for (let i = 0; i < size; i++) {
             cloned[i] = collection[i];

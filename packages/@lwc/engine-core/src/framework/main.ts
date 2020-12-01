@@ -19,7 +19,6 @@ export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 
 // Internal APIs used by renderers -----------------------------------------------------------------
 export { getComponentInternalDef } from './def';
-export { getAttrNameFromPropName, isAttributeLocked } from './attributes';
 export {
     createVM,
     connectRootElement,
@@ -38,6 +37,7 @@ export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
 export { getUpgradableConstructor } from './upgradable-element';
+export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 
 // Types -------------------------------------------------------------------------------------------
 export type { Renderer } from './renderer';

@@ -16,6 +16,7 @@ import {
     hostElementFocus,
     ignoreFocus,
     ignoreFocusIn,
+    isKeyboardFocusNavigationRoutineEnabled,
 } from './focus';
 
 const { blur, focus } = HTMLElement.prototype;
@@ -115,7 +116,13 @@ function blurPatched(this: HTMLElement) {
 }
 
 function focusPatched(this: HTMLElement) {
-    disableKeyboardFocusNavigationRoutines();
+    // Save enabled state
+    const originallyEnabled = isKeyboardFocusNavigationRoutineEnabled();
+
+    // Change state by disabling if originally enabled
+    if (originallyEnabled) {
+        disableKeyboardFocusNavigationRoutines();
+    }
 
     if (isHostElement(this) && isDelegatingFocus(this)) {
         hostElementFocus.call(this);
@@ -126,7 +133,10 @@ function focusPatched(this: HTMLElement) {
     // @ts-ignore type-mismatch
     focus.apply(this, arguments);
 
-    enableKeyboardFocusNavigationRoutines();
+    // Restore state by enabling if originally enabled
+    if (originallyEnabled) {
+        enableKeyboardFocusNavigationRoutines();
+    }
 }
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that

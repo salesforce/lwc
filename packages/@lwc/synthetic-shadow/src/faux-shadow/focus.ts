@@ -142,7 +142,7 @@ export function hostElementFocus(this: HTMLElement) {
 
     let didFocus = false;
     while (!didFocus && focusables.length !== 0) {
-        const focusable = focusables.shift() as HTMLElement;
+        const focusable = focusables.shift()!;
         // @ts-ignore type-mismatch
         focusable.focus.apply(focusable, arguments);
         // Get the root node of the current focusable in case it was slotted.
@@ -252,6 +252,9 @@ export function disableKeyboardFocusNavigationRoutines(): void {
 }
 export function enableKeyboardFocusNavigationRoutines(): void {
     letBrowserHandleFocus = false;
+}
+export function isKeyboardFocusNavigationRoutineEnabled(): boolean {
+    return !letBrowserHandleFocus;
 }
 
 function skipHostHandler(event: FocusEvent) {

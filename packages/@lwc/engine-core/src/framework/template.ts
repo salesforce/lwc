@@ -28,6 +28,7 @@ import {
     updateSyntheticShadowAttributes,
 } from './stylesheet';
 import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
+import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -98,6 +99,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                 html
             )}`
         );
+        // in dev-mode, we support hot swapping of templates, which means that
+        // the component instance might be attempting to use an old version of
+        // the template, while internally, we have a replacement for it.
+        html = getTemplateOrSwappedTemplate(html);
     }
     const isUpdatingTemplateInception = isUpdatingTemplate;
     const vmOfTemplateBeingUpdatedInception = vmBeingRendered;
@@ -159,6 +164,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                 if (process.env.NODE_ENV !== 'production') {
                     // validating slots in every rendering since the allocated content might change over time
                     validateSlots(vm, html);
+                    // add the VM to the list of host VMs that can be re-rendered if html is swapped
+                    setActiveVM(vm);
                 }
 
                 // right before producing the vnodes, we clear up all internal references

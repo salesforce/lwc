@@ -1,5 +1,4 @@
 import { HostAttribute, HostElement, HostNode, HostNodeType } from './types';
-import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
 /*
  * Copyright (c) 2020, salesforce.com, inc.
  * All rights reserved.
@@ -9,6 +8,7 @@ import { Renderer, getAttrNameFromPropName } from '@lwc/engine-core';
 import {
     StringToLowerCase,
     create,
+    htmlPropertyToAttribute,
     isAriaAttribute,
     isBooleanAttribute,
     isGlobalHtmlAttribute,
@@ -17,6 +17,8 @@ import {
 } from '@lwc/shared';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 import { cssDeclarationToStyleText, styleTextToCssDeclaration } from './utils/style';
+
+import { Renderer } from '@lwc/engine-core';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -122,7 +124,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         }
 
         if (node.type === HostNodeType.Element) {
-            const attrName = getAttrNameFromPropName(key);
+            const attrName = htmlPropertyToAttribute(key);
 
             // Handle all the boolean properties.
             if (isBooleanAttribute(attrName, node.name)) {
@@ -153,7 +155,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         }
 
         if (node.type === HostNodeType.Element) {
-            const attrName = getAttrNameFromPropName(key);
+            const attrName = htmlPropertyToAttribute(key);
 
             // Handle all the boolean properties.
             if (isBooleanAttribute(attrName, node.name)) {

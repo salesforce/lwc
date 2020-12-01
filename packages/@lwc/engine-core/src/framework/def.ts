@@ -24,8 +24,8 @@ import {
     isNull,
     isUndefined,
     keys,
+    htmlPropertyToAttribute,
 } from '@lwc/shared';
-import { getAttrNameFromPropName } from './attributes';
 import { EmptyObject } from './utils';
 import { ComponentConstructor, ErrorCallback, getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
@@ -42,6 +42,7 @@ import {
     isCircularModuleDependency,
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
+import { getComponentOrSwappedComponent } from './hot-swaps';
 
 export interface ComponentDef {
     name: string;
@@ -206,6 +207,9 @@ export function isComponentConstructor(ctor: unknown): ctor is ComponentConstruc
 }
 
 export function getComponentInternalDef(Ctor: unknown): ComponentDef {
+    if (process.env.NODE_ENV !== 'production') {
+        Ctor = getComponentOrSwappedComponent(Ctor as ComponentConstructor);
+    }
     let def = CtorToDefMap.get(Ctor);
 
     if (isUndefined(def)) {
@@ -277,7 +281,7 @@ export function getComponentDef(Ctor: any): PublicComponentDef {
         publicProps[key] = {
             config: propsConfig[key] || 0, // a property by default
             type: PropDefType.any, // no type inference for public services
-            attr: getAttrNameFromPropName(key),
+            attr: htmlPropertyToAttribute(key),
         };
     }
     const publicMethods: Record<string, PublicMethod> = {};

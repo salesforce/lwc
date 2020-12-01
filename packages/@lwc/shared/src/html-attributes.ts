@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
-import { keys, hasOwnProperty } from './language';
+import { AriaPropNameToAttrNameMap } from './aria';
+import { isUndefined, StringCharCodeAt, StringFromCharCode } from './language';
 
 /**
- * Maps boolean attribute name to supported tags: 'boolean attr name' => Set of allowed tag names that supports them.
+ * Maps boolean attribute name to supported tags: 'boolean attr name' => Set of allowed tag names
+ * that supports them.
  */
 const BOOLEAN_ATTRIBUTES = new Map([
     ['autofocus', new Set(['button', 'input', 'keygen', 'select', 'textarea'])],
@@ -72,50 +73,63 @@ export function isGlobalHtmlAttribute(attrName: string): boolean {
     return GLOBAL_ATTRIBUTE.has(attrName);
 }
 
-const HTML_ATTRIBUTES_TO_PROPERTY: Record<string, string> = {
-    accesskey: 'accessKey',
-    readonly: 'readOnly',
-    tabindex: 'tabIndex',
-    bgcolor: 'bgColor',
-    colspan: 'colSpan',
-    rowspan: 'rowSpan',
-    contenteditable: 'contentEditable',
-    crossorigin: 'crossOrigin',
-    datetime: 'dateTime',
-    formaction: 'formAction',
-    ismap: 'isMap',
-    maxlength: 'maxLength',
-    minlength: 'minLength',
-    novalidate: 'noValidate',
-    usemap: 'useMap',
-    for: 'htmlFor',
-};
+/**
+ * Map composed of properties to attributes not following the HTML property to attribute mapping
+ * convention.
+ */
+const NO_STANDARD_PROPERTY_ATTRIBUTE_MAPPING = new Map([
+    ['accessKey', 'accesskey'],
+    ['readOnly', 'readonly'],
+    ['tabIndex', 'tabindex'],
+    ['bgColor', 'bgcolor'],
+    ['colSpan', 'colspan'],
+    ['rowSpan', 'rowspan'],
+    ['contentEditable', 'contenteditable'],
+    ['crossOrigin', 'crossorigin'],
+    ['dateTime', 'datetime'],
+    ['formAction', 'formaction'],
+    ['isMap', 'ismap'],
+    ['maxLength', 'maxlength'],
+    ['minLength', 'minlength'],
+    ['noValidate', 'novalidate'],
+    ['useMap', 'usemap'],
+    ['htmlFor', 'for'],
+]);
 
-const HTML_PROPERTIES_TO_ATTRIBUTE: Record<string, string> = {};
-keys(HTML_ATTRIBUTES_TO_PROPERTY).forEach((attrName) => {
-    const propName = HTML_ATTRIBUTES_TO_PROPERTY[attrName];
-    HTML_PROPERTIES_TO_ATTRIBUTE[propName] = attrName;
-});
+/**
+ * Map associating previously transformed HTML property into HTML attribute.
+ */
+const CACHED_PROPERTY_ATTRIBUTE_MAPPING = new Map<string, string>();
 
-export function htmlAttributeToProperty(attrName: string): string {
-    if (attrName in AriaAttrNameToPropNameMap) {
-        return AriaAttrNameToPropNameMap[attrName];
-    }
-
-    if (hasOwnProperty.call(HTML_ATTRIBUTES_TO_PROPERTY, attrName)) {
-        return HTML_ATTRIBUTES_TO_PROPERTY[attrName]!;
-    }
-
-    return attrName;
-}
 export function htmlPropertyToAttribute(propName: string): string {
-    if (propName in AriaPropNameToAttrNameMap) {
-        return AriaPropNameToAttrNameMap[propName];
+    const ariaAttributeName = AriaPropNameToAttrNameMap[propName];
+    if (!isUndefined(ariaAttributeName)) {
+        return ariaAttributeName;
     }
 
-    if (hasOwnProperty.call(HTML_PROPERTIES_TO_ATTRIBUTE, propName)) {
-        return HTML_PROPERTIES_TO_ATTRIBUTE[propName]!;
+    const specialAttributeName = NO_STANDARD_PROPERTY_ATTRIBUTE_MAPPING.get(propName);
+    if (!isUndefined(specialAttributeName)) {
+        return specialAttributeName;
     }
 
-    return propName;
+    const cachedAttributeName = CACHED_PROPERTY_ATTRIBUTE_MAPPING.get(propName);
+    if (!isUndefined(cachedAttributeName)) {
+        return cachedAttributeName;
+    }
+
+    let attributeName = '';
+    for (let i = 0, len = propName.length; i < len; i++) {
+        const code = StringCharCodeAt.call(propName, i);
+        if (
+            code >= 65 && // "A"
+            code <= 90 // "Z"
+        ) {
+            attributeName += '-' + StringFromCharCode(code + 32);
+        } else {
+            attributeName += StringFromCharCode(code);
+        }
+    }
+
+    CACHED_PROPERTY_ATTRIBUTE_MAPPING.set(propName, attributeName);
+    return attributeName;
 }

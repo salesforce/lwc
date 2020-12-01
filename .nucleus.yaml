@@ -1,0 +1,8 @@
+core-deploy:
+  enabled: true
+  project-modules:
+    lwc: lwc.version
+branches:
+  ~DEFAULT~:
+    pull-request:
+      auto-start: false

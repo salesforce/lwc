@@ -165,16 +165,24 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
 }
 
 export function updateStaticChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
-    const { length } = newCh;
-    if (oldCh.length === 0) {
+    const oldChLength = oldCh.length;
+    const newChLength = newCh.length;
+
+    if (oldChLength === 0) {
         // the old list is empty, we can directly insert anything new
-        addVnodes(parentElm, null, newCh, 0, length);
+        addVnodes(parentElm, null, newCh, 0, newChLength);
+        return;
+    }
+    if (newChLength === 0) {
+        // the old list is nonempty and the new list is empty so we can directly remove all old nodes
+        // this is the case in which the dynamic children of an if-directive should be removed
+        removeVnodes(parentElm, oldCh, 0, oldChLength);
         return;
     }
     // if the old list is not empty, the new list MUST have the same
     // amount of nodes, that's why we call this static children
     let referenceElm: Node | null = null;
-    for (let i = length - 1; i >= 0; i -= 1) {
+    for (let i = newChLength - 1; i >= 0; i -= 1) {
         const vnode = newCh[i];
         const oldVNode = oldCh[i];
         if (vnode !== oldVNode) {
