@@ -9,28 +9,29 @@ const assert = require('assert');
 describe('Tabbing into custom element with delegates focus', () => {
     const URL = '/delegates-focus-from-previous-sibling';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should apply focus to input in shadow', function () {
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
-        browser.keys(['Shift', 'Tab', 'Shift']);
+    it('should apply focus to input in shadow', async () => {
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
+        await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        const activeFromDocument = browser.$(function () {
+        const activeFromDocument = await browser.$(function () {
             return document.activeElement;
         });
-        assert.equal(
-            activeFromDocument.getTagName(),
+        assert.strictEqual(
+            await activeFromDocument.getTagName(),
             'integration-delegates-focus-from-previous-sibling'
         );
-        const activeFromShadow = browser.$(function () {
+
+        const activeFromShadow = await browser.$(function () {
             return document.querySelector(
                 'integration-delegates-focus-from-previous-sibling'
             ).shadowRoot.activeElement;
         });
-        assert.equal(activeFromShadow.getTagName(), 'integration-child');
+        assert.strictEqual(await activeFromShadow.getTagName(), 'integration-child');
     });
 });

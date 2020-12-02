@@ -9,22 +9,22 @@ const assert = require('assert');
 describe('Retarget relatedTarget', () => {
     const URL = '/retarget-body-related-target';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should have correct relatedTarget when body was focused', () => {
-        browser.execute(function () {
+    it('should have correct relatedTarget when body was focused', async () => {
+        await browser.execute(function () {
             document.body.focus();
         });
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
-        const indicator = browser.$(function () {
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
+        const indicator = await browser.$(function () {
             return document
                 .querySelector('integration-retarget-body-related-target')
                 .shadowRoot.querySelector('.related-target-tagname');
         });
-        assert.equal(indicator.getText(), 'body');
+        assert.strictEqual(await indicator.getText(), 'body');
     });
 });

@@ -9,31 +9,35 @@ const assert = require('assert');
 describe('Tabbing into custom element with delegates focus', () => {
     const URL = '/delegates-focus-false';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should not apply focus to input in shadow', () => {
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
-        const activeFromDocument = browser.$(function () {
+    it('should not apply focus to input in shadow', async () => {
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
+        const activeFromDocument = await browser.$(function () {
             return document.activeElement;
         });
+        assert.strictEqual(
+            await activeFromDocument.getTagName(),
+            'integration-delegates-focus-false'
+        );
 
-        assert.equal(activeFromDocument.getTagName(), 'integration-delegates-focus-false');
-        const activeFromShadow = browser.$(function () {
+        const activeFromShadow = await browser.$(function () {
             return document.querySelector(
                 'integration-delegates-focus-false'
             ).shadowRoot.activeElement;
         });
-        assert.equal(activeFromShadow.getTagName(), 'integration-child');
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
-        const activeFromShadowAfter = browser.$(function () {
+        assert.strictEqual(await activeFromShadow.getTagName(), 'integration-child');
+
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
+        const activeFromShadowAfter = await browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-false')
                 .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
         });
-        assert.equal(activeFromShadowAfter.getTagName(), 'input');
+        assert.strictEqual(await activeFromShadowAfter.getTagName(), 'input');
     });
 });

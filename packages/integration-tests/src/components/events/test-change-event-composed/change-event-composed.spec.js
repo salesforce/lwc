@@ -9,25 +9,28 @@ const assert = require('assert');
 describe('Composed change event', () => {
     const URL = '/change-event-composed/';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should be composed: false', function () {
+    it('should be composed: false', async () => {
         // Force native "change" event to fire
-        browser.execute(function () {
+        await browser.execute(function () {
             document
                 .querySelector('integration-change-event-composed')
                 .shadowRoot.querySelector('input')
                 .focus();
         });
-        browser.keys('foo');
-        $('body').click();
-        const div = browser.$(function () {
+
+        await browser.keys('foo');
+        const body = await $('body');
+        await body.click();
+
+        const div = await browser.$(function () {
             return document
                 .querySelector('integration-change-event-composed')
                 .shadowRoot.querySelector('.verify-not-composed');
         });
-        assert.deepEqual(div.getText(), 'Not Composed');
+        assert.strictEqual(await div.getText(), 'Not Composed');
     });
 });

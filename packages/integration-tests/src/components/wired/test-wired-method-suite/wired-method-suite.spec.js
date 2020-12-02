@@ -9,29 +9,29 @@ const assert = require('assert');
 describe('Component with a wired method', () => {
     const URL = '/wired-method-suite';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should display data correctly', () => {
-        const todoText = browser.execute(function () {
+    it('should display data correctly', async () => {
+        const todoText = await browser.execute(function () {
             return document
                 .querySelector('integration-wired-method-suite')
                 .shadowRoot.querySelector('integration-wired-method').shadowRoot.textContent;
         });
-        assert.equal(todoText, 'Title:task 0 Completed:true');
+        assert.strictEqual(todoText, 'Title:task 0 Completed:true');
     });
 
-    it('should update data correctly', () => {
-        browser.execute(function () {
+    it('should update data correctly', async () => {
+        await browser.execute(function () {
             document
                 .querySelector('integration-wired-method-suite')
                 .shadowRoot.querySelector('button')
                 .click();
         });
-        browser.waitUntil(
-            () => {
-                const todoText = browser.execute(function () {
+        await browser.waitUntil(
+            async () => {
+                const todoText = await browser.execute(function () {
                     return document
                         .querySelector('integration-wired-method-suite')
                         .shadowRoot.querySelector(

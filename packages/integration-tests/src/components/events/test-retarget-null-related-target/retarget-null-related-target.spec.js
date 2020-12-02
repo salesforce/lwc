@@ -7,14 +7,14 @@
 describe('Retarget relatedTarget', () => {
     const URL = '/retarget-null-related-target';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should not throw when relatedTarget is null', () => {
-        browser.keys(['Tab']);
-        browser.waitUntil(() => {
-            const text = browser.execute(function () {
+    it('should not throw when relatedTarget is null', async () => {
+        await browser.keys(['Tab']);
+        await browser.waitUntil(async () => {
+            const text = await browser.execute(function () {
                 return document
                     .querySelector('integration-retarget-null-related-target')
                     .shadowRoot.querySelector('.related-target-tabname').textContent;

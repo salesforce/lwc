@@ -8,24 +8,27 @@ const assert = require('assert');
 describe('Delegates focus', () => {
     const URL = '/delegate-focus-click-input-in-negative-tabindex';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should focus the input when clicked', function () {
-        browser.keys(['Tab']); // focus first anchor
-        const input = browser.$(function () {
+    it('should focus the input when clicked', async () => {
+        await browser.keys(['Tab']); // focus first anchor
+        const input = await browser.$(function () {
             return document
                 .querySelector('integration-delegate-focus-click-input-in-negative-tabindex')
                 .shadowRoot.querySelector('integration-child')
                 .shadowRoot.querySelector('input');
         });
-        input.click(); // click into input
-        const active = browser.$(function () {
+
+        await input.click(); // click into input
+        const active = await browser.$(function () {
             return document
                 .querySelector('integration-delegate-focus-click-input-in-negative-tabindex')
                 .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
         });
-        assert.equal(active.getTagName(), 'input');
+
+        const tagName = await active.getTagName();
+        assert.strictEqual(tagName, 'input');
     });
 });

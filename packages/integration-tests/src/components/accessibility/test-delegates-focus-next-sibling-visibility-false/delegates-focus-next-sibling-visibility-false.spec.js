@@ -9,16 +9,16 @@ const assert = require('assert');
 describe('Tabbing into custom element proceeding an invisible button', () => {
     const URL = '/delegates-focus-next-sibling-visibility-false';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should apply focus to the document body', function () {
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
-        const activeFromDocument = browser.$(function () {
+    it('should apply focus to the document body', async () => {
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
+        const activeFromDocument = await browser.$(function () {
             return document.activeElement;
         });
-        assert.equal(activeFromDocument.getTagName(), 'body');
+        assert.strictEqual(await activeFromDocument.getTagName(), 'body');
     });
 });

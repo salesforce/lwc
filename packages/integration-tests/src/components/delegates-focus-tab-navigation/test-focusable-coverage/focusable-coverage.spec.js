@@ -16,8 +16,8 @@ describe('sequential focus navigation coverage', () => {
         }
     });
 
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
     describe('should focus', () => {
@@ -46,24 +46,24 @@ describe('sequential focus navigation coverage', () => {
             'textarea',
             'videoControls',
         ].forEach((type) => {
-            it(type, () => {
+            it(type, async () => {
                 // Click and focus on the first input
-                const start = browser.$(function () {
+                const start = await browser.$(function () {
                     return document
                         .querySelector('integration-focusable-coverage')
                         .shadowRoot.querySelector('.start');
                 });
-                start.click();
+                await start.click();
 
                 // Set the type
-                browser.execute(function (type) {
+                await browser.execute(function (type) {
                     var container = document.querySelector('integration-focusable-coverage');
                     container.type = type;
                 }, type);
 
-                browser.keys(['Tab']);
+                await browser.keys(['Tab']);
 
-                const activeElementType = browser.execute(function () {
+                const activeElementType = await browser.execute(function () {
                     const container = document.activeElement;
                     const child = container.shadowRoot.activeElement;
                     const elm = child.shadowRoot.activeElement;

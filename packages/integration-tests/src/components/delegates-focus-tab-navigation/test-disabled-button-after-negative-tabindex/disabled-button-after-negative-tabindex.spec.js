@@ -8,23 +8,22 @@ const assert = require('assert');
 describe('when disabled button comes after a component that is delegating focus with tabindex -1', () => {
     const URL = '/disabled-button-after-negative-tabindex';
 
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
-    it('should transfer focus to the body', function () {
-        browser
-            .$(function () {
-                return document
-                    .querySelector('integration-disabled-button-after-negative-tabindex')
-                    .shadowRoot.querySelector('.first');
-            })
-            .click();
-        browser.keys(['Tab']); // tab into second input
-        browser.keys(['Tab']); // tab over integration-child
-        const tagName = browser.execute(function () {
+    it('should transfer focus to the body', async () => {
+        const first = await browser.$(function () {
+            return document
+                .querySelector('integration-disabled-button-after-negative-tabindex')
+                .shadowRoot.querySelector('.first');
+        });
+        await first.click();
+        await browser.keys(['Tab']); // tab into second input
+        await browser.keys(['Tab']); // tab over integration-child
+        const tagName = await browser.execute(function () {
             return document.activeElement.tagName;
         });
-        assert.equal(tagName, 'BODY');
+        assert.strictEqual(tagName, 'BODY');
     });
 });

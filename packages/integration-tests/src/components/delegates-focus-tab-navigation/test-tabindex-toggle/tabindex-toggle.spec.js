@@ -8,57 +8,57 @@ const assert = require('assert');
 const URL = '/tabindex-toggle';
 
 describe('Tab navigation without tabindex', () => {
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should support tabindex toggling', function () {
-        const secondOutside = browser.$(function () {
+    it('should support tabindex toggling', async () => {
+        const secondOutside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-toggle')
                 .shadowRoot.querySelector('.second-outside');
         });
-        secondOutside.click();
-        browser.keys(['Tab']);
+        await secondOutside.click();
+        await browser.keys(['Tab']);
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
         });
-        assert.equal(className, 'first-inside');
+        assert.strictEqual(className, 'first-inside');
 
         // Toggle the tabindex <x-child tabindex="-1">
-        const toggle = browser.$(function () {
+        const toggle = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-toggle')
                 .shadowRoot.querySelector('.toggle');
         });
-        toggle.click();
+        await toggle.click();
 
-        secondOutside.click();
-        browser.keys(['Tab']);
+        await secondOutside.click();
+        await browser.keys(['Tab']);
 
-        className = browser.execute(function () {
+        className = await browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
         });
-        assert.equal(className, 'third-outside');
+        assert.strictEqual(className, 'third-outside');
 
         // Toggle the tabindex <x-child>
-        toggle.click();
+        await toggle.click();
 
-        secondOutside.click();
-        browser.keys(['Tab']);
+        await secondOutside.click();
+        await browser.keys(['Tab']);
 
-        className = browser.execute(function () {
+        className = await browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
         });
-        assert.equal(className, 'first-inside');
+        assert.strictEqual(className, 'first-inside');
     });
 });

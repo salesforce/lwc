@@ -8,45 +8,45 @@ const assert = require('assert');
 const URL = '/tabindex-none';
 
 describe('Tab navigation without tabindex', () => {
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should delegate focus (forward)', function () {
-        const secondOutside = browser.$(function () {
+    it('should delegate focus (forward)', async () => {
+        const secondOutside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-none')
                 .shadowRoot.querySelector('.second-outside');
         });
-        secondOutside.click();
-        browser.keys(['Tab']);
+        await secondOutside.click();
+        await browser.keys(['Tab']);
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'first-inside');
+        assert.strictEqual(className, 'first-inside');
     });
 
-    it('should delegate focus (backward)', function () {
-        const thirdOutside = browser.$(function () {
+    it('should delegate focus (backward)', async () => {
+        const thirdOutside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-none')
                 .shadowRoot.querySelector('.third-outside');
         });
-        thirdOutside.click();
-        browser.keys(['Shift', 'Tab', 'Shift']);
+        await thirdOutside.click();
+        await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'third-inside');
+        assert.strictEqual(className, 'third-inside');
     });
 });

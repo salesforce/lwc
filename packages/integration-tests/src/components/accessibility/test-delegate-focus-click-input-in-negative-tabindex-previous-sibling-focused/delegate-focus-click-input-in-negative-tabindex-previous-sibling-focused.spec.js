@@ -12,14 +12,14 @@ const assert = require('assert');
 describe('Delegates focus', () => {
     const URL = '/delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should focus the input when clicked', function () {
-        browser.keys(['Tab']); // focus first anchor
-        browser.keys(['Tab']); // focus second anchor
-        const input = browser.$(function () {
+    it('should focus the input when clicked', async () => {
+        await browser.keys(['Tab']); // focus first anchor
+        await browser.keys(['Tab']); // focus second anchor
+        const input = await browser.$(function () {
             return document
                 .querySelector(
                     'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused'
@@ -28,15 +28,16 @@ describe('Delegates focus', () => {
                 .shadowRoot.querySelector('input');
         });
 
-        input.click();
-
-        const active = browser.$(function () {
+        await input.click();
+        const active = await browser.$(function () {
             return document
                 .querySelector(
                     'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused'
                 )
                 .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
         });
-        assert.equal(active.getTagName(), 'input');
+
+        const tagName = await active.getTagName();
+        assert.strictEqual(tagName, 'input');
     });
 });

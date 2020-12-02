@@ -8,43 +8,43 @@ const assert = require('assert');
 const URL = '/tab-navigation-tabindex-negative';
 
 describe('Tab navigation when tabindex -1', () => {
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should skip shadow (forward)', function () {
-        const secondInput = browser.$(function () {
+    it('should skip shadow (forward)', async () => {
+        const secondInput = await browser.$(function () {
             return document
                 .querySelector('integration-tab-navigation-tabindex-negative')
                 .shadowRoot.querySelector('.second-outside');
         });
-        secondInput.click();
-        browser.keys(['Tab']);
+        await secondInput.click();
+        await browser.keys(['Tab']);
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'third-outside');
+        assert.strictEqual(className, 'third-outside');
     });
 
-    it('should skip shadow (backward)', function () {
-        const thirdInput = browser.$(function () {
+    it('should skip shadow (backward)', async () => {
+        const thirdInput = await browser.$(function () {
             return document
                 .querySelector('integration-tab-navigation-tabindex-negative')
                 .shadowRoot.querySelector('.third-outside');
         });
-        thirdInput.click();
-        browser.keys(['Shift', 'Tab', 'Shift']);
+        await thirdInput.click();
+        await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'second-outside');
+        assert.strictEqual(className, 'second-outside');
     });
 });

@@ -8,22 +8,22 @@
 describe('Tabbing into custom element with delegates focus', () => {
     const URL = '/delegates-focus-false-negative-tab-index';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should not apply focus to input in shadow', () => {
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
+    it('should not apply focus to input in shadow', async () => {
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
 
-        browser.waitUntil(
-            () => {
-                const activeFromDocument = browser.$(function () {
+        await browser.waitUntil(
+            async () => {
+                const activeFromDocument = await browser.$(function () {
                     return document.activeElement;
                 });
 
                 return (
-                    activeFromDocument.getTagName() ===
+                    (await activeFromDocument.getTagName()) ===
                     'integration-delegates-focus-false-negative-tab-index'
                 );
             },
@@ -31,15 +31,15 @@ describe('Tabbing into custom element with delegates focus', () => {
             'expect integration-delegates-focus-false-negative-tab-index to be focused'
         );
 
-        browser.waitUntil(
-            () => {
-                const activeFromShadow = browser.$(function () {
+        await browser.waitUntil(
+            async () => {
+                const activeFromShadow = await browser.$(function () {
                     return document.querySelector(
                         'integration-delegates-focus-false-negative-tab-index'
                     ).shadowRoot.activeElement;
                 });
 
-                return activeFromShadow.getTagName() === 'a';
+                return (await activeFromShadow.getTagName()) === 'a';
             },
             undefined,
             'expect anchor to be focused'

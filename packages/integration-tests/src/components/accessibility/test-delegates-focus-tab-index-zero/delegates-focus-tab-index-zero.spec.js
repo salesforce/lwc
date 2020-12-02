@@ -7,64 +7,64 @@
 describe('Delegate focus with tabindex 0', () => {
     const URL = '/delegates-focus-tab-index-zero/';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should correctly focus on the input, not custom element', function () {
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
+    it('should correctly focus on the input, not custom element', async () => {
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
 
-        browser.waitUntil(
-            () => {
-                const active = browser.$(function () {
+        await browser.waitUntil(
+            async () => {
+                const active = await browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
                 });
 
-                return active.getTagName().toLowerCase() === 'input';
+                return (await active.getTagName()).toLowerCase() === 'input';
             },
             undefined,
             'Input should be focused'
         );
     });
 
-    it('should correctly focus on the previous element when shift tabbing', function () {
-        browser.keys(['Tab']);
+    it('should correctly focus on the previous element when shift tabbing', async () => {
+        await browser.keys(['Tab']);
 
-        browser.waitUntil(
-            () => {
-                const active = browser.$(function () {
+        await browser.waitUntil(
+            async () => {
+                const active = await browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement;
                 });
 
-                return active.getText() === 'second button';
+                return (await active.getText()) === 'second button';
             },
             undefined,
             'Second button should be focused'
         );
 
-        browser.keys(['Shift', 'Tab', 'Shift']);
+        await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        browser.waitUntil(
-            () => {
-                const active = browser.$(function () {
+        await browser.waitUntil(
+            async () => {
+                const active = await browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
                 });
 
-                return active.getTagName().toLowerCase() === 'input';
+                return (await active.getTagName()).toLowerCase() === 'input';
             },
             undefined,
             'Input should be focused'
         );
 
-        browser.keys(['Shift', 'Tab', 'Shift']);
+        await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        browser.waitUntil(
-            () => {
-                const active = browser.$(function () {
+        await browser.waitUntil(
+            async () => {
+                const active = await browser.$(function () {
                     return document.activeElement.shadowRoot.activeElement;
                 });
-                return active.getText() === 'first button';
+                return (await active.getText()) === 'first button';
             },
             undefined,
             'First button should be focused'

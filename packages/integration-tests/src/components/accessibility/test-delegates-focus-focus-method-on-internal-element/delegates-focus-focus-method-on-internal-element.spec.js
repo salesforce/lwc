@@ -9,29 +9,28 @@ const assert = require('assert');
 const URL = '/delegates-focus-focus-method-on-internal-element';
 
 describe('Invoking the focus method on an element inside a shadow tree', () => {
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
-    it('should apply focus (tabindex -1)', function () {
+    it('should apply focus (tabindex -1)', async () => {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        const input = browser.$(function () {
+        const input = await browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-focus-method-on-internal-element')
                 .shadowRoot.querySelector('.head');
         });
+        await input.click();
 
-        input.click();
-
-        browser.execute(function () {
+        await browser.execute(function () {
             document
                 .querySelector('integration-delegates-focus-focus-method-on-internal-element')
                 .shadowRoot.querySelector('integration-button.negative')
                 .focus();
         });
 
-        const tagName = browser.execute(function () {
+        const tagName = await browser.execute(function () {
             var container = document.querySelector(
                 'integration-delegates-focus-focus-method-on-internal-element'
             );
@@ -40,28 +39,27 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
             return activeElement.tagName;
         });
 
-        assert.equal(tagName, 'BUTTON');
+        assert.strictEqual(tagName, 'BUTTON');
     });
 
-    it('should apply focus (tabindex 0)', function () {
+    it('should apply focus (tabindex 0)', async () => {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        browser
-            .$(function () {
-                return document
-                    .querySelector('integration-delegates-focus-focus-method-on-internal-element')
-                    .shadowRoot.querySelector('.head');
-            })
-            .click();
+        const head = await browser.$(function () {
+            return document
+                .querySelector('integration-delegates-focus-focus-method-on-internal-element')
+                .shadowRoot.querySelector('.head');
+        });
+        await head.click();
 
-        browser.execute(function () {
+        await browser.execute(function () {
             document
                 .querySelector('integration-delegates-focus-focus-method-on-internal-element')
                 .shadowRoot.querySelector('integration-button.zero')
                 .focus();
         });
 
-        const tagName = browser.execute(function () {
+        const tagName = await browser.execute(function () {
             var container = document.querySelector(
                 'integration-delegates-focus-focus-method-on-internal-element'
             );
@@ -70,28 +68,27 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
             return activeElement.tagName;
         });
 
-        assert.equal(tagName, 'BUTTON');
+        assert.strictEqual(tagName, 'BUTTON');
     });
 
-    it('should apply focus (no tabindex)', function () {
+    it('should apply focus (no tabindex)', async () => {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        browser
-            .$(function () {
-                return document
-                    .querySelector('integration-delegates-focus-focus-method-on-internal-element')
-                    .shadowRoot.querySelector('.head');
-            })
-            .click();
+        const head = await browser.$(function () {
+            return document
+                .querySelector('integration-delegates-focus-focus-method-on-internal-element')
+                .shadowRoot.querySelector('.head');
+        });
+        await head.click();
 
-        browser.execute(function () {
+        await browser.execute(function () {
             document
                 .querySelector('integration-delegates-focus-focus-method-on-internal-element')
                 .shadowRoot.querySelector('integration-button.none')
                 .focus();
         });
 
-        const tagName = browser.execute(function () {
+        const tagName = await browser.execute(function () {
             var container = document.querySelector(
                 'integration-delegates-focus-focus-method-on-internal-element'
             );
@@ -100,6 +97,6 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
             return activeElement.tagName;
         });
 
-        assert.equal(tagName, 'BUTTON');
+        assert.strictEqual(tagName, 'BUTTON');
     });
 });

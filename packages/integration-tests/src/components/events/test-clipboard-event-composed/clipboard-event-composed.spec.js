@@ -9,11 +9,11 @@ const URL = '/clipboard-event-composed';
 
 // https://stackoverflow.com/questions/11750447/performing-a-copy-and-paste-with-selenium-2/41046276#41046276
 function copy() {
-    browser.keys(['Control', 'Insert', 'Control']);
+    return browser.keys(['Control', 'Insert', 'Control']);
 }
 
 function paste() {
-    browser.keys(['Shift', 'Insert', 'Shift']);
+    return browser.keys(['Shift', 'Insert', 'Shift']);
 }
 
 describe('clipboard-event-composed polyfill', () => {
@@ -24,34 +24,33 @@ describe('clipboard-event-composed polyfill', () => {
         }
     });
 
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
-    it('copy event should be composed', () => {
-        browser.$(function () {
+    it('copy event should be composed', async () => {
+        await browser.$(function () {
             window.getSelection().selectAllChildren(document.body);
         });
 
-        copy();
+        await copy();
 
-        const didHandleCopy = browser.execute(() => {
+        const didHandleCopy = await browser.execute(() => {
             var container = document.querySelector('integration-clipboard-event-composed');
             return container.didHandleCopy();
         });
-
         assert.strictEqual(didHandleCopy, true);
     });
 
-    it('paste event should be composed', () => {
-        browser.$(function () {
+    it('paste event should be composed', async () => {
+        await browser.$(function () {
             window.getSelection().selectAllChildren(document.body);
         });
 
-        copy();
-        paste();
+        await copy();
+        await paste();
 
-        const didHandlePaste = browser.execute(() => {
+        const didHandlePaste = await browser.execute(() => {
             var container = document.querySelector('integration-clipboard-event-composed');
             return container.didHandlePaste();
         });

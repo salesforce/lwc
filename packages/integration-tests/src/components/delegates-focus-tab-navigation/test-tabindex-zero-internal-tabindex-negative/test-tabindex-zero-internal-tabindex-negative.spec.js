@@ -12,43 +12,43 @@ describe('Tab navigation when tabindex 0', () => {
         browser.url(URL);
     });
 
-    it('should skip internal elements contained by a negative tabindex subtree when delegating focus (forward)', function () {
-        const firstInput = browser.$(function () {
+    it('should skip internal elements contained by a negative tabindex subtree when delegating focus (forward)', async () => {
+        const firstInput = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero-internal-tabindex-negative')
                 .shadowRoot.querySelector('.first');
         });
-        firstInput.click();
+        await firstInput.click();
 
-        browser.keys(['Tab']);
+        await browser.keys(['Tab']);
 
-        var tagName = browser.execute(function () {
+        var tagName = await browser.execute(function () {
             var container = document.activeElement;
             var parent = container.shadowRoot.activeElement;
             var input = parent.shadowRoot.activeElement;
             return input.tagName;
         });
 
-        assert.equal(tagName, 'INPUT');
+        assert.strictEqual(tagName, 'INPUT');
     });
 
-    it('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', function () {
-        const lastInput = browser.$(function () {
+    it('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', async () => {
+        const lastInput = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-zero-internal-tabindex-negative')
                 .shadowRoot.querySelector('.last');
         });
-        lastInput.click();
+        await lastInput.click();
 
-        browser.keys(['Shift', 'Tab', 'Shift']);
+        await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var tagName = browser.execute(function () {
+        var tagName = await browser.execute(function () {
             var container = document.activeElement;
             var parent = container.shadowRoot.activeElement;
             var input = parent.shadowRoot.activeElement;
             return input.tagName;
         });
 
-        assert.equal(tagName, 'INPUT');
+        assert.strictEqual(tagName, 'INPUT');
     });
 });

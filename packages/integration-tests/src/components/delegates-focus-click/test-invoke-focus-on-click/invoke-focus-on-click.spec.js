@@ -26,24 +26,24 @@ enabling keyboard focus navigation before the subsequent focusin event listener 
 implement shadow semantics for keyboard focus navigation.
 */
 describe('[W-8350504] focus() method invocation, inside a focus handler, triggered by a click', () => {
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should not interfere with focusing the clicked element', function () {
-        browser.keys(['Tab']); // input.before
-        const button = browser.$(function () {
+    it('should not interfere with focusing the clicked element', async () => {
+        await browser.keys(['Tab']); // input.before
+        const button = await browser.$(function () {
             return document
                 .querySelector('integration-invoke-focus-on-click')
                 .shadowRoot.querySelector('integration-child')
                 .shadowRoot.querySelector('button');
         });
-        button.click(); // click into button
-        const active = browser.$(function () {
+        await button.click(); // click into button
+        const active = await browser.$(function () {
             return document
                 .querySelector('integration-invoke-focus-on-click')
                 .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
         });
-        assert.strictEqual(active.getTagName(), 'button');
+        assert.strictEqual(await active.getTagName(), 'button');
     });
 });

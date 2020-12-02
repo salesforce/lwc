@@ -9,24 +9,24 @@ const assert = require('assert');
 describe('Retarget relatedTarget', () => {
     const URL = '/retarget-slotted-input-related-target';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should have correct relatedTarget from slotted input', () => {
-        browser.execute(function () {
+    it('should have correct relatedTarget from slotted input', async () => {
+        await browser.execute(function () {
             document
                 .querySelector('integration-retarget-slotted-input-related-target')
                 .shadowRoot.querySelector('.slotted-input')
                 .focus();
         });
-        browser.keys(['Shift', 'Tab', 'Shift']);
-        const indicator = browser.$(function () {
+        await browser.keys(['Shift', 'Tab', 'Shift']);
+        const indicator = await browser.$(function () {
             return document
                 .querySelector('integration-retarget-slotted-input-related-target')
                 .shadowRoot.querySelector('integration-parent')
                 .shadowRoot.querySelector('.related-target-tagname');
         });
-        assert.equal(indicator.getText(), 'input');
+        assert.strictEqual(await indicator.getText(), 'input');
     });
 });

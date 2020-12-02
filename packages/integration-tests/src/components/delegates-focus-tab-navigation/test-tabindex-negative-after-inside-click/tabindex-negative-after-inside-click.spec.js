@@ -8,97 +8,97 @@ const assert = require('assert');
 const URL = '/tabindex-negative-after-inside-click';
 
 describe('Tab navigation when tabindex -1 after inside click', () => {
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
-    it('should continue skipping elements (forward)', function () {
-        const secondInside = browser.$(function () {
+    it('should continue skipping elements (forward)', async () => {
+        const secondInside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
                 .shadowRoot.querySelector('.second-inside');
         });
-        secondInside.click();
-        const secondOutside = browser.$(function () {
+        await secondInside.click();
+        const secondOutside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('.second-outside');
         });
-        secondOutside.click();
-        browser.keys(['Tab']);
+        await secondOutside.click();
+        await browser.keys(['Tab']);
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'third-outside');
+        assert.strictEqual(className, 'third-outside');
     });
 
-    it('should continue skipping elements after navigating out (forward)', function () {
-        const secondInside = browser.$(function () {
+    it('should continue skipping elements after navigating out (forward)', async () => {
+        const secondInside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
                 .shadowRoot.querySelector('.second-inside');
         });
-        secondInside.click();
-        browser.keys(['Tab']); // third inside
-        browser.keys(['Tab']); // third outside
+        await secondInside.click();
+        await browser.keys(['Tab']); // third inside
+        await browser.keys(['Tab']); // third outside
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'third-outside');
+        assert.strictEqual(className, 'third-outside');
     });
 
-    it('should continue skipping elements (backward)', function () {
-        const secondInside = browser.$(function () {
+    it('should continue skipping elements (backward)', async () => {
+        const secondInside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
                 .shadowRoot.querySelector('.second-inside');
         });
-        secondInside.click();
-        const thirdOutside = browser.$(function () {
+        await secondInside.click();
+        const thirdOutside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('.third-outside');
         });
-        thirdOutside.click();
-        browser.keys(['Shift', 'Tab', 'Shift']);
+        await thirdOutside.click();
+        await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'second-outside');
+        assert.strictEqual(className, 'second-outside');
     });
 
-    it('should continue skipping elements after navigating out (backwards)', function () {
-        const secondInside = browser.$(function () {
+    it('should continue skipping elements after navigating out (backwards)', async () => {
+        const secondInside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
                 .shadowRoot.querySelector('.second-inside');
         });
-        secondInside.click();
-        browser.keys(['Shift', 'Tab', 'Shift']); // first inside
-        browser.keys(['Shift', 'Tab', 'Shift']); // second outside
+        await secondInside.click();
+        await browser.keys(['Shift', 'Tab', 'Shift']); // first inside
+        await browser.keys(['Shift', 'Tab', 'Shift']); // second outside
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'second-outside');
+        assert.strictEqual(className, 'second-outside');
     });
 });

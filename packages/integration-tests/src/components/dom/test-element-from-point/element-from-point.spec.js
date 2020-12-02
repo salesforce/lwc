@@ -8,41 +8,41 @@
 describe('shadow root element from point should return correct element', () => {
     const URL = '/element-from-point/';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should return correct shadow elements', function () {
-        browser.execute(function () {
+    it('should return correct shadow elements', async () => {
+        await browser.execute(function () {
             document
                 .querySelector('integration-element-from-point')
                 .shadowRoot.querySelector('.shadow-element-from-point')
                 .click();
         });
-        browser.waitUntil(() => {
-            const indicator = browser.$(function () {
+        await browser.waitUntil(async () => {
+            const indicator = await browser.$(function () {
                 return document
                     .querySelector('integration-element-from-point')
                     .shadowRoot.querySelector('.correct-shadow-element-indicator');
             });
-            return indicator.getText() === 'Correct shadow element selected';
+            return (await indicator.getText()) === 'Correct shadow element selected';
         });
     });
 
-    it('should return correct document elements', function () {
-        browser.execute(function () {
+    it('should return correct document elements', async () => {
+        await browser.execute(function () {
             document
                 .querySelector('integration-element-from-point')
                 .shadowRoot.querySelector('.document-from-point')
                 .click();
         });
-        browser.waitUntil(() => {
-            const indicator = browser.$(function () {
+        await browser.waitUntil(async () => {
+            const indicator = await browser.$(function () {
                 return document
                     .querySelector('integration-element-from-point')
                     .shadowRoot.querySelector('.correct-document-element-indicator');
             });
-            return indicator.getText() === 'Correct document element selected';
+            return (await indicator.getText()) === 'Correct document element selected';
         });
     });
 });

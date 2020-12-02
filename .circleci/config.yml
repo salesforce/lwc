@@ -21,7 +21,7 @@ executors:
   node:
     working_directory: ~/lwc
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:14
 
 
 # Custom commands definition
