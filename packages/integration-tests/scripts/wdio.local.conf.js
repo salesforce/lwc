@@ -9,7 +9,12 @@ const merge = require('deepmerge');
 
 const baseConfig = require('./wdio.conf.js');
 
-const HEADLESS = process.env.HEADLESS_CHROME !== 'false';
+const headless = process.env.HEADLESS_CHROME !== 'false';
+const drivers = {
+    chrome: {
+        version: 'latest',
+    },
+};
 
 exports.config = merge(baseConfig.config, {
     maxInstances: 5,
@@ -18,10 +23,22 @@ exports.config = merge(baseConfig.config, {
         {
             browserName: 'chrome',
             'goog:chromeOptions': {
-                args: HEADLESS ? ['headless', 'disable-gpu'] : [],
+                args: headless ? ['headless', 'disable-gpu'] : [],
             },
         },
     ],
 
-    services: ['selenium-standalone'],
+    services: [
+        [
+            'selenium-standalone',
+            {
+                installArgs: {
+                    drivers,
+                },
+                args: {
+                    drivers,
+                },
+            },
+        ],
+    ],
 });
