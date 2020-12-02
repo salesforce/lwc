@@ -172,6 +172,12 @@ function getEventMap(elm: EventTarget): ListenerMap {
     return listenerInfo;
 }
 
+const eventsDispatchedDirectlyOnShadowRoot: WeakSet<Event> = new WeakSet();
+
+export function setEventFromShadowRoot(event: Event) {
+    eventsDispatchedDirectlyOnShadowRoot.add(event);
+}
+
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
 function getWrappedShadowRootListener(

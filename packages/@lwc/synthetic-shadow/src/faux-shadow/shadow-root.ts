@@ -18,7 +18,12 @@ import {
     getHiddenField,
     setHiddenField,
 } from '@lwc/shared';
-import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
+import {
+    addShadowRootEventListener,
+    removeShadowRootEventListener,
+    setEventFromShadowRoot,
+} from './events';
+import { dispatchEvent } from '../env/event-target';
 import {
     shadowRootQuerySelector,
     shadowRootQuerySelectorAll,
@@ -314,6 +319,17 @@ const NodePatchDescriptors = {
             options?: boolean | AddEventListenerOptions
         ) {
             addShadowRootEventListener(this, type, listener, options);
+        },
+    },
+    dispatchEvent: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface, evt: Event): boolean {
+            setEventFromShadowRoot(evt);
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
+            return dispatchEvent.apply(getHost(this), arguments);
         },
     },
     removeEventListener: {

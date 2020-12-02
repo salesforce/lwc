@@ -168,7 +168,6 @@ const BLOCKED_SHADOW_ROOT_METHODS = [
     'getElementById',
     'getSelection',
     'elementsFromPoint',
-    'dispatchEvent',
 ];
 
 function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
