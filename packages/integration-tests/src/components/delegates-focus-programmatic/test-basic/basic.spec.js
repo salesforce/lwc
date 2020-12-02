@@ -9,20 +9,20 @@ const assert = require('assert');
 const URL = '/basic';
 
 describe('basic invocation', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         browser.url(URL);
     });
 
-    it('should focus on the first programmatically focusable element', function () {
-        const button = browser.$(function () {
+    it('should focus on the first programmatically focusable element', async () => {
+        const button = await browser.$(function () {
             return document.querySelector('integration-basic').shadowRoot.querySelector('button');
         });
-        button.click();
-        const className = browser.execute(function () {
+        await button.click();
+        const className = await browser.execute(function () {
             const container = document.activeElement;
             const child = container.shadowRoot.activeElement;
             return child.shadowRoot.activeElement.className;
         });
-        assert.equal(className, 'internal-input');
+        assert.strictEqual(className, 'internal-input');
     });
 });

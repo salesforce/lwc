@@ -9,30 +9,30 @@ const assert = require('assert');
 const URL = '/slotted';
 
 describe('when the first focusable element is slotted', () => {
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
-    it('should apply focus to slotted element', function () {
-        const first = browser.$(function () {
+    it('should apply focus to slotted element', async () => {
+        const first = await browser.$(function () {
             return document.querySelector('integration-slotted').shadowRoot.querySelector('.first');
         });
-        first.click();
+        await first.click();
 
-        browser.execute(function () {
+        await browser.execute(function () {
             return document
                 .querySelector('integration-slotted')
                 .shadowRoot.querySelector('integration-child')
                 .focus();
         });
 
-        const className = browser.execute(function () {
+        const className = await browser.execute(function () {
             var active = document.activeElement;
             while (active.shadowRoot) {
                 active = active.shadowRoot.activeElement;
             }
             return active.className;
         });
-        assert.equal(className, 'slotted-input');
+        assert.strictEqual(className, 'slotted-input');
     });
 });

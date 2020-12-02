@@ -9,15 +9,15 @@ const assert = require('assert');
 describe('Delegate focus with tabindex 0, no tabbable elements, and no tabbable elements after', () => {
     const URL = '/delegates-focus-tab-index-zero-no-focusable-elements-no-after-elements';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should correctly have no activeelement', function () {
-        browser.keys(['Tab']);
-        browser.keys(['Tab']);
+    it('should correctly have no activeelement', async () => {
+        await browser.keys(['Tab']);
+        await browser.keys(['Tab']);
 
-        const tagName = browser.execute(function () {
+        const tagName = await browser.execute(function () {
             return document.activeElement.tagName;
         });
 

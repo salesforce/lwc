@@ -9,38 +9,42 @@ const assert = require('assert');
 describe('Composed focusin event', () => {
     const URL = '/focusin-composed-true';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('standard event should be composed', function () {
-        const input = browser.$(function () {
+    it('standard event should be composed', async () => {
+        const input = await browser.$(function () {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('input');
         });
-        input.click();
-        $('body').click();
-        const focusInComposed = browser.$(function () {
+        await input.click();
+        const body = await $('body');
+        await body.click();
+        const focusInComposed = await browser.$(function () {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('.focus-in-composed');
         });
-        assert.deepEqual(focusInComposed.getText(), 'Focus In Composed');
+        assert.strictEqual(await focusInComposed.getText(), 'Focus In Composed');
     });
 
-    it('custom event should not be composed', () => {
-        const button = browser.$(function () {
+    it('custom event should not be composed', async () => {
+        const button = await browser.$(function () {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('button');
         });
-        button.click();
-        const customFocusInNotComposed = browser.$(function () {
+        await button.click();
+        const customFocusInNotComposed = await browser.$(function () {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('.custom-focus-in-not-composed');
         });
-        assert.deepEqual(customFocusInNotComposed.getText(), 'Custom Focus In Not Composed');
+        assert.strictEqual(
+            await customFocusInNotComposed.getText(),
+            'Custom Focus In Not Composed'
+        );
     });
 });

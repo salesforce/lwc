@@ -9,23 +9,23 @@ const assert = require('assert');
 describe('Tabbing into custom element with delegates focus', () => {
     const URL = '/delegates-focus-nested-focusable-custom-elements';
 
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should apply focus to input in shadow', function () {
-        const span = browser.$(function () {
+    it('should apply focus to input in shadow', async () => {
+        const span = await browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-nested-focusable-custom-elements')
                 .shadowRoot.querySelector('integration-parent')
                 .shadowRoot.querySelector('.focusable-span');
         });
-        span.click();
-        const active = browser.$(function () {
+        await span.click();
+        const active = await browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-nested-focusable-custom-elements')
                 .shadowRoot.querySelector('integration-parent').shadowRoot.activeElement;
         });
-        assert.equal(active.getTagName(), 'span');
+        assert.strictEqual(await active.getTagName(), 'span');
     });
 });

@@ -8,27 +8,26 @@ const assert = require('assert');
 describe('Delegates focus', () => {
     const URL = '/focusable-span-after-negative-tabindex';
 
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
-    it('should focus the input when clicked', function () {
-        browser
-            .$(function () {
-                return document
-                    .querySelector('integration-focusable-span-after-negative-tabindex')
-                    .shadowRoot.querySelector('.first');
-            })
-            .click();
+    it('should focus the input when clicked', async () => {
+        const first = await browser.$(function () {
+            return document
+                .querySelector('integration-focusable-span-after-negative-tabindex')
+                .shadowRoot.querySelector('.first');
+        });
+        await first.click();
 
-        browser.keys(['Tab']); // tab over integration-child
+        await browser.keys(['Tab']); // tab over integration-child
 
-        const tagName = browser.execute(function () {
+        const tagName = await browser.execute(function () {
             var container = document.activeElement;
             var activeElement = container.shadowRoot.activeElement;
             return activeElement.tagName;
         });
 
-        assert.equal(tagName, 'SPAN');
+        assert.strictEqual(tagName, 'SPAN');
     });
 });

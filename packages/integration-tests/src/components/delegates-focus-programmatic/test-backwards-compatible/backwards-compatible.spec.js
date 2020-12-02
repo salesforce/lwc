@@ -9,24 +9,24 @@ const assert = require('assert');
 const URL = '/backwards-compatible';
 
 describe('when the component overrides the focus method', () => {
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
-    it('should continue custom focus behavior', function () {
-        browser.execute(function () {
+    it('should continue custom focus behavior', async () => {
+        await browser.execute(function () {
             return document
                 .querySelector('integration-backwards-compatible')
                 .shadowRoot.querySelector('integration-child')
                 .focus();
         });
-        const className = browser.execute(function () {
+        const className = await browser.execute(function () {
             var active = document.activeElement;
             while (active.shadowRoot) {
                 active = active.shadowRoot.activeElement;
             }
             return active.className;
         });
-        assert.equal(className, 'internal-textarea');
+        assert.strictEqual(className, 'internal-textarea');
     });
 });

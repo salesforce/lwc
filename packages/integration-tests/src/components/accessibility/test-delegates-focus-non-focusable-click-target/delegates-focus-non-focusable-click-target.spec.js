@@ -9,20 +9,20 @@ const assert = require('assert');
 describe('focus delegation when clicking on form element label', () => {
     const URL = '/delegates-focus-non-focusable-click-target';
 
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
-    it('should apply focus to element associated with label when relatedTarget is null', function () {
-        const label = browser.$(function () {
+    it('should apply focus to element associated with label when relatedTarget is null', async () => {
+        const label = await browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-non-focusable-click-target')
                 .shadowRoot.querySelector('integration-input')
                 .shadowRoot.querySelector('label');
         });
-        label.click();
+        await label.click();
 
-        const inputClassName = browser.execute(function () {
+        const inputClassName = await browser.execute(function () {
             const container = document.activeElement;
             const integrationInput = container.shadowRoot.activeElement;
             const inputClassName = integrationInput.shadowRoot.activeElement.className;
@@ -32,24 +32,24 @@ describe('focus delegation when clicking on form element label', () => {
         assert.strictEqual(inputClassName, 'internal');
     });
 
-    it('should apply focus to element associated with label when relatedTarget is non-null', function () {
-        const headInput = browser.$(function () {
+    it('should apply focus to element associated with label when relatedTarget is non-null', async () => {
+        const headInput = await browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-non-focusable-click-target')
                 .shadowRoot.querySelector('.head');
         });
         // Focus on input so that relatedTarget will be non-null
-        headInput.click();
+        await headInput.click();
 
-        const label = browser.$(function () {
+        const label = await browser.$(function () {
             return document
                 .querySelector('integration-delegates-focus-non-focusable-click-target')
                 .shadowRoot.querySelector('integration-input')
                 .shadowRoot.querySelector('label');
         });
-        label.click();
+        await label.click();
 
-        const inputClassName = browser.execute(function () {
+        const inputClassName = await browser.execute(function () {
             const container = document.activeElement;
             const integrationInput = container.shadowRoot.activeElement;
             const inputClassName = integrationInput.shadowRoot.activeElement.className;

@@ -8,47 +8,47 @@ const assert = require('assert');
 const URL = '/tabindex-negative-internal';
 
 describe('Internal tab navigation when tabindex -1', () => {
-    before(() => {
-        browser.url(URL);
+    before(async () => {
+        await browser.url(URL);
     });
 
-    it('should navigate (forward)', function () {
-        const secondInside = browser.$(function () {
+    it('should navigate (forward)', async () => {
+        const secondInside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-internal')
                 .shadowRoot.querySelector('integration-child')
                 .shadowRoot.querySelector('.second-inside');
         });
-        secondInside.click();
-        browser.keys(['Tab']);
+        await secondInside.click();
+        await browser.keys(['Tab']);
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'third-inside');
+        assert.strictEqual(className, 'third-inside');
     });
 
-    it('should navigate (backward)', function () {
-        const secondInside = browser.$(function () {
+    it('should navigate (backward)', async () => {
+        const secondInside = await browser.$(function () {
             return document
                 .querySelector('integration-tabindex-negative-internal')
                 .shadowRoot.querySelector('integration-child')
                 .shadowRoot.querySelector('.second-inside');
         });
-        secondInside.click();
-        browser.keys(['Shift', 'Tab', 'Shift']);
+        await secondInside.click();
+        await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = browser.execute(function () {
+        var className = await browser.execute(function () {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
         });
 
-        assert.equal(className, 'first-inside');
+        assert.strictEqual(className, 'first-inside');
     });
 });

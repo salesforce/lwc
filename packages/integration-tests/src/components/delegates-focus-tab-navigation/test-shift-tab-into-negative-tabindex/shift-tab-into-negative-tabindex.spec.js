@@ -8,27 +8,26 @@ const assert = require('assert');
 const URL = '/shift-tab-into-negative-tabindex';
 
 describe('Delegates focus', () => {
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
-    it('should focus the input when clicked', function () {
-        browser
-            .$(function () {
-                return document
-                    .querySelector('integration-shift-tab-into-negative-tabindex')
-                    .shadowRoot.querySelector('.bottom');
-            })
-            .click();
+    it('should focus the input when clicked', async () => {
+        const bottom = await browser.$(function () {
+            return document
+                .querySelector('integration-shift-tab-into-negative-tabindex')
+                .shadowRoot.querySelector('.bottom');
+        });
+        await bottom.click();
 
-        browser.keys(['Shift', 'Tab', 'Shift']); // tab backwards over integration-child
+        await browser.keys(['Shift', 'Tab', 'Shift']); // tab backwards over integration-child
 
-        const className = browser.execute(function () {
+        const className = await browser.execute(function () {
             const container = document.activeElement;
             const activeElement = container.shadowRoot.activeElement;
             return activeElement.className;
         });
 
-        assert.equal(className, 'top');
+        assert.strictEqual(className, 'top');
     });
 });
