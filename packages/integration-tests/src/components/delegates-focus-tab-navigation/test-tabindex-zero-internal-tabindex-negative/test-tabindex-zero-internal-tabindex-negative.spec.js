@@ -8,8 +8,8 @@ const assert = require('assert');
 const URL = '/tabindex-zero-internal-tabindex-negative';
 
 describe('Tab navigation when tabindex 0', () => {
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
     it('should skip internal elements contained by a negative tabindex subtree when delegating focus (forward)', async () => {
