@@ -14,13 +14,11 @@ describe('Retarget relatedTarget', () => {
     it('should not throw when relatedTarget is null', async () => {
         await browser.keys(['Tab']);
         await browser.waitUntil(async () => {
-            const text = await browser.execute(function () {
-                return document
-                    .querySelector('integration-retarget-null-related-target')
-                    .shadowRoot.querySelector('.related-target-tabname').textContent;
-            });
-
-            return text === 'Related target is null';
+            const target = await browser.shadowDeep$(
+                'integration-retarget-null-related-target',
+                '.related-target-tabname'
+            );
+            return (await target.getText()) === 'Related target is null';
         });
     });
 });

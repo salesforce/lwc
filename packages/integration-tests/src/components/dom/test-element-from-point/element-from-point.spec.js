@@ -13,35 +13,33 @@ describe('shadow root element from point should return correct element', () => {
     });
 
     it('should return correct shadow elements', async () => {
-        await browser.execute(function () {
-            document
-                .querySelector('integration-element-from-point')
-                .shadowRoot.querySelector('.shadow-element-from-point')
-                .click();
-        });
+        const target = await browser.shadowDeep$(
+            'integration-element-from-point',
+            '.shadow-element-from-point'
+        );
+        await target.click();
+
         await browser.waitUntil(async () => {
-            const indicator = await browser.$(function () {
-                return document
-                    .querySelector('integration-element-from-point')
-                    .shadowRoot.querySelector('.correct-shadow-element-indicator');
-            });
+            const indicator = await browser.shadowDeep$(
+                'integration-element-from-point',
+                '.correct-shadow-element-indicator'
+            );
             return (await indicator.getText()) === 'Correct shadow element selected';
         });
     });
 
     it('should return correct document elements', async () => {
-        await browser.execute(function () {
-            document
-                .querySelector('integration-element-from-point')
-                .shadowRoot.querySelector('.document-from-point')
-                .click();
-        });
+        const target = await browser.shadowDeep$(
+            'integration-element-from-point',
+            '.document-from-point'
+        );
+        await target.click();
+
         await browser.waitUntil(async () => {
-            const indicator = await browser.$(function () {
-                return document
-                    .querySelector('integration-element-from-point')
-                    .shadowRoot.querySelector('.correct-document-element-indicator');
-            });
+            const indicator = await browser.shadowDeep$(
+                'integration-element-from-point',
+                '.correct-document-element-indicator'
+            );
             return (await indicator.getText()) === 'Correct document element selected';
         });
     });

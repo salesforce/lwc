@@ -14,34 +14,27 @@ describe('Composed focusin event', () => {
     });
 
     it('standard event should be composed', async () => {
-        const input = await browser.$(function () {
-            return document
-                .querySelector('integration-focusin-composed-true')
-                .shadowRoot.querySelector('input');
-        });
+        const input = await browser.shadowDeep$('integration-focusin-composed-true', 'input');
         await input.click();
+
         const body = await $('body');
         await body.click();
-        const focusInComposed = await browser.$(function () {
-            return document
-                .querySelector('integration-focusin-composed-true')
-                .shadowRoot.querySelector('.focus-in-composed');
-        });
+
+        const focusInComposed = await browser.shadowDeep$(
+            'integration-focusin-composed-true',
+            '.focus-in-composed'
+        );
         assert.strictEqual(await focusInComposed.getText(), 'Focus In Composed');
     });
 
     it('custom event should not be composed', async () => {
-        const button = await browser.$(function () {
-            return document
-                .querySelector('integration-focusin-composed-true')
-                .shadowRoot.querySelector('button');
-        });
+        const button = await browser.shadowDeep$('integration-focusin-composed-true', 'button');
         await button.click();
-        const customFocusInNotComposed = await browser.$(function () {
-            return document
-                .querySelector('integration-focusin-composed-true')
-                .shadowRoot.querySelector('.custom-focus-in-not-composed');
-        });
+
+        const customFocusInNotComposed = await browser.shadowDeep$(
+            'integration-focusin-composed-true',
+            '.custom-focus-in-not-composed'
+        );
         assert.strictEqual(
             await customFocusInNotComposed.getText(),
             'Custom Focus In Not Composed'

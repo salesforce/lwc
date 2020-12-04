@@ -15,22 +15,17 @@ describe('Composed change event', () => {
 
     it('should be composed: false', async () => {
         // Force native "change" event to fire
-        await browser.execute(function () {
-            document
-                .querySelector('integration-change-event-composed')
-                .shadowRoot.querySelector('input')
-                .focus();
-        });
+        const input = await browser.shadowDeep$('integration-change-event-composed', 'input');
+        await input.focus();
 
         await browser.keys('foo');
         const body = await $('body');
         await body.click();
 
-        const div = await browser.$(function () {
-            return document
-                .querySelector('integration-change-event-composed')
-                .shadowRoot.querySelector('.verify-not-composed');
-        });
+        const div = await browser.shadowDeep$(
+            'integration-change-event-composed',
+            '.verify-not-composed'
+        );
         assert.strictEqual(await div.getText(), 'Not Composed');
     });
 });

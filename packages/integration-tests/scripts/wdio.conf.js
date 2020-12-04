@@ -77,5 +77,26 @@ exports.config = {
                 return document.activeElement;
             });
         });
+
+        browser.addCommand('shadowDeep$', async function (...selectors) {
+            const [head, ...rest] = selectors;
+
+            let elm = await this.$(head);
+            for (const selector of rest) {
+                elm = await elm.shadow$(selector);
+            }
+
+            return elm;
+        });
+
+        browser.addCommand(
+            'focus',
+            function () {
+                return this.execute(function (target) {
+                    target.focus();
+                }, this);
+            },
+            true
+        );
     },
 };

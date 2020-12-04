@@ -14,19 +14,18 @@ describe('Retarget relatedTarget', () => {
     });
 
     it('should have correct relatedTarget from slotted input', async () => {
-        await browser.execute(function () {
-            document
-                .querySelector('integration-retarget-slotted-input-related-target')
-                .shadowRoot.querySelector('.slotted-input')
-                .focus();
-        });
+        const slottedInput = await browser.shadowDeep$(
+            'integration-retarget-slotted-input-related-target',
+            '.slotted-input'
+        );
+        await slottedInput.focus();
         await browser.keys(['Shift', 'Tab', 'Shift']);
-        const indicator = await browser.$(function () {
-            return document
-                .querySelector('integration-retarget-slotted-input-related-target')
-                .shadowRoot.querySelector('integration-parent')
-                .shadowRoot.querySelector('.related-target-tagname');
-        });
+
+        const indicator = await browser.shadowDeep$(
+            'integration-retarget-slotted-input-related-target',
+            'integration-parent',
+            '.related-target-tagname'
+        );
         assert.strictEqual(await indicator.getText(), 'input');
     });
 });
