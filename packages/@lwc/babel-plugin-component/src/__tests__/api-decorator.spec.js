@@ -55,23 +55,19 @@ describe('Transform property', () => {
         {
             output: {
                 code: `
-                import { registerDecorators as _registerDecorators2, registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
                 import _tmpl from "./test.html";
 
                 class Outer {
                     outer;
-                    a = _registerDecorators2(
-                      class {
-                        innerA;
-                      },
-                      {
-                        publicProps: {
-                          innerA: {
-                            config: 0,
-                          },
+                    a = class {
+                      innerA;
+                      static publicProps = {
+                        innerA: {
+                          config: 0,
                         },
-                      }
-                    );
+                      };
+                    };
                 }
 
                 _registerDecorators(Outer, {

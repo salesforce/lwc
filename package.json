@@ -21,7 +21,7 @@
     "release:version": "./scripts/release/version.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.3",
+    "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",
     "@babel/preset-typescript": "^7.12.7",
     "@commitlint/cli": "^11.0.0",
