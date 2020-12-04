@@ -18,9 +18,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
         await browser.waitUntil(
             async () => {
-                const activeFromDocument = await browser.$(function () {
-                    return document.activeElement;
-                });
+                const activeFromDocument = await browser.activeElement();
 
                 return (
                     (await activeFromDocument.getTagName()) ===

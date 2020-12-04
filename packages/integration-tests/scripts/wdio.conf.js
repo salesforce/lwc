@@ -70,4 +70,12 @@ exports.config = {
             },
         ],
     ],
+
+    before(caps, spec, browser) {
+        browser.addCommand('activeElement', function () {
+            return this.$(function () {
+                return document.activeElement;
+            });
+        });
+    },
 };

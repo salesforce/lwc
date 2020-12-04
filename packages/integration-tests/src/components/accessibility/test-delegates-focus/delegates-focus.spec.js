@@ -15,9 +15,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
     it('should apply focus to input in shadow', async () => {
         await browser.keys(['Tab']);
-        const activeFromDocument = await browser.$(function () {
-            return document.activeElement;
-        });
+        const activeFromDocument = await browser.activeElement();
         assert.strictEqual(await activeFromDocument.getTagName(), 'integration-delegates-focus');
 
         const activeFromShadow = await browser.$(function () {
@@ -28,9 +26,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
     it('should apply focus to body after exiting in shadow', async () => {
         await browser.keys(['Tab']);
-        const activeFromDocument = await browser.$(function () {
-            return document.activeElement;
-        });
+        const activeFromDocument = await browser.activeElement();
 
         const tabName = await activeFromDocument.getTagName();
         const isTopElement = tabName === 'body' || tabName === 'html';
@@ -44,9 +40,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
     it('should apply focus to input in shadow when tabbing backwards', async () => {
         await browser.keys(['Shift', 'Tab', 'Shift']);
-        const activeFromDocument = await browser.$(function () {
-            return document.activeElement;
-        });
+        const activeFromDocument = await browser.activeElement();
         assert.strictEqual(await activeFromDocument.getTagName(), 'integration-delegates-focus');
 
         const activeFromShadow = await browser.$(function () {
