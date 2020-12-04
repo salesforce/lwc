@@ -9,6 +9,8 @@ describe('legacy wire adapters (register call)', () => {
     describe('with static config', () => {
         it('should call config when config is empty (@wire(foo)...)', () => {
             const elm = createElement('x-simple-wire', { is: StaticWiredProps });
+            document.body.appendChild(elm);
+
             const calls = elm.emptyConfigCalls;
             expect(calls.length).toBe(1);
             expect(calls[0]).toEqual({});
@@ -16,6 +18,8 @@ describe('legacy wire adapters (register call)', () => {
 
         it('should call config when config is empty object', () => {
             const elm = createElement('x-simple-wire', { is: StaticWiredProps });
+            document.body.appendChild(elm);
+
             const calls = elm.emptyObjectConfigCalls;
             expect(calls.length).toBe(1);
             expect(calls[0]).toEqual({});
@@ -23,12 +27,16 @@ describe('legacy wire adapters (register call)', () => {
 
         it('should call config when all props of config are undefined', () => {
             const elm = createElement('x-simple-wire', { is: StaticWiredProps });
+            document.body.appendChild(elm);
+
             const calls = elm.allUndefinedPropsInConfigCalls;
             expect(calls.length).toBe(1);
         });
 
         it('should call config when at least one prop in config is defined', () => {
             const elm = createElement('x-simple-wire', { is: StaticWiredProps });
+            document.body.appendChild(elm);
+
             const calls = elm.someUndefinedPropsInConfigCalls;
             expect(calls.length).toBe(1);
             expect(calls[0]).toEqual({ p1: 'test', p2: undefined });
@@ -38,6 +46,7 @@ describe('legacy wire adapters (register call)', () => {
     describe('with dynamic config', () => {
         it('should not call config when all initially all props of config are undefined', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+            document.body.appendChild(elm);
 
             setTimeout(() => {
                 const calls = elm.allUndefinedConfigCalls;
@@ -48,6 +57,7 @@ describe('legacy wire adapters (register call)', () => {
 
         it('should call config when at least one prop in config is defined', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+            document.body.appendChild(elm);
 
             setTimeout(() => {
                 const calls = elm.someDefinedConfigCalls;
@@ -60,6 +70,7 @@ describe('legacy wire adapters (register call)', () => {
 
         it('should call config when all props become undefined after initialization', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+            document.body.appendChild(elm);
 
             setTimeout(() => {
                 const calls = elm.someDefinedConfigCalls;
@@ -79,6 +90,7 @@ describe('legacy wire adapters (register call)', () => {
 
         it('should call config when initially all props of config are undefined and some change', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+            document.body.appendChild(elm);
 
             setTimeout(() => {
                 const calls = elm.allUndefinedConfigCalls;
@@ -99,6 +111,7 @@ describe('legacy wire adapters (register call)', () => {
     describe('with dynamic and static config', () => {
         it('should not call config when initially all props from params in config are undefined', (done) => {
             const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+            document.body.appendChild(elm);
 
             setTimeout(() => {
                 const calls = elm.mixedAllParamsUndefinedCalls;
@@ -124,6 +137,7 @@ describe('legacy wire adapters (register call)', () => {
             const elm = createElement('x-same-config', { is: SameConfigCase });
             elm.a = 3;
             elm.b = 2;
+            document.body.appendChild(elm);
 
             setTimeout(() => {
                 const firstResult = elm.resultMultipleDependenciesForConfig;
@@ -147,6 +161,7 @@ describe('legacy wire adapters (register call)', () => {
         it('should not call config when the generated config is the same as the last one (case 2)', (done) => {
             const elm = createElement('x-same-config', { is: SameConfigCase });
             elm.a = 3;
+            document.body.appendChild(elm);
 
             setTimeout(() => {
                 const firstResult = elm.resultApiValueDependency;
@@ -171,6 +186,7 @@ describe('legacy wire adapters (register call)', () => {
             const elm = createElement('x-same-adapter-different-config', {
                 is: SameAdapterDifferentConfig,
             });
+            document.body.appendChild(elm);
 
             const resultFoo = elm.wireFooData;
             expect(resultFoo.prop).toBe('foo');
