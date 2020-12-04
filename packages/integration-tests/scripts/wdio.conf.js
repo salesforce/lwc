@@ -78,6 +78,20 @@ exports.config = {
             });
         });
 
+        browser.addCommand(
+            'activeElementShadow',
+            function () {
+                return this.$(function () {
+                    if (!this.shadowRoot) {
+                        throw new Error('Invalid target for "activeElementShadow"');
+                    }
+
+                    return this.shadowRoot.activeElement;
+                });
+            },
+            true
+        );
+
         browser.addCommand('activeElementShadowDeep', function () {
             return this.$(function () {
                 var active = document.activeElement;

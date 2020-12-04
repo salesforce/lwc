@@ -25,11 +25,7 @@ describe('Tabbing into custom element with delegates focus', () => {
             'integration-delegates-focus-from-previous-sibling'
         );
 
-        const activeFromShadow = await browser.$(function () {
-            return document.querySelector(
-                'integration-delegates-focus-from-previous-sibling'
-            ).shadowRoot.activeElement;
-        });
-        assert.strictEqual(await activeFromShadow.getTagName(), 'integration-child');
+        const activeInShadow = await activeFromDocument.activeElementShadow();
+        assert.strictEqual(await activeInShadow.getTagName(), 'integration-child');
     });
 });

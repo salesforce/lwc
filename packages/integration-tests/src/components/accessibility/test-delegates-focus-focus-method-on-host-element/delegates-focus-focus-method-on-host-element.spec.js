@@ -28,15 +28,9 @@ describe('Invoking the focus method of a host element', () => {
         );
         await target.focus();
 
-        const className = await browser.execute(function () {
-            var container = document.querySelector(
-                'integration-delegates-focus-focus-method-on-host-element'
-            );
-            var activeElement = container.shadowRoot.activeElement;
-            return activeElement.className;
-        });
-
-        assert.strictEqual(className, 'negative');
+        const root = await browser.$('integration-delegates-focus-focus-method-on-host-element');
+        const hostActiveElement = await root.activeElementShadow();
+        assert.strictEqual(await hostActiveElement.getAttribute('class'), 'negative');
     });
 
     it('should apply focus to the host element (tabindex 0)', async () => {
@@ -54,15 +48,9 @@ describe('Invoking the focus method of a host element', () => {
         );
         await target.focus();
 
-        const className = await browser.execute(function () {
-            var container = document.querySelector(
-                'integration-delegates-focus-focus-method-on-host-element'
-            );
-            var activeElement = container.shadowRoot.querySelector('integration-button.zero');
-            return activeElement.className;
-        });
-
-        assert.strictEqual(className, 'zero');
+        const root = await browser.$('integration-delegates-focus-focus-method-on-host-element');
+        const hostActiveElement = await root.activeElementShadow();
+        assert.strictEqual(await hostActiveElement.getAttribute('class'), 'zero');
     });
 
     it('should apply focus to the host element (no tabindex)', async () => {
@@ -80,14 +68,8 @@ describe('Invoking the focus method of a host element', () => {
         );
         await target.focus();
 
-        const className = await browser.execute(function () {
-            var container = document.querySelector(
-                'integration-delegates-focus-focus-method-on-host-element'
-            );
-            var activeElement = container.shadowRoot.querySelector('integration-button.none');
-            return activeElement.className;
-        });
-
-        assert.strictEqual(className, 'none');
+        const root = await browser.$('integration-delegates-focus-focus-method-on-host-element');
+        const hostActiveElement = await root.activeElementShadow();
+        assert.strictEqual(await hostActiveElement.getAttribute('class'), 'none');
     });
 });

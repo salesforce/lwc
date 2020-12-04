@@ -59,14 +59,8 @@ describe('sequential focus navigation coverage', () => {
 
                 await browser.keys(['Tab']);
 
-                const activeElementType = await browser.execute(function () {
-                    const container = document.activeElement;
-                    const child = container.shadowRoot.activeElement;
-                    const elm = child.shadowRoot.activeElement;
-                    return elm.dataset.focus;
-                });
-
-                assert.strictEqual(activeElementType, type);
+                const activeElement = await browser.activeElementShadowDeep();
+                assert.strictEqual(await activeElement.getAttribute('data-focus'), type);
             });
         });
     });

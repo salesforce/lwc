@@ -21,14 +21,8 @@ describe('focus delegation when clicking on form element label', () => {
         );
         await label.click();
 
-        const inputClassName = await browser.execute(function () {
-            const container = document.activeElement;
-            const integrationInput = container.shadowRoot.activeElement;
-            const inputClassName = integrationInput.shadowRoot.activeElement.className;
-            return inputClassName;
-        });
-
-        assert.strictEqual(inputClassName, 'internal');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'internal');
     });
 
     it('should apply focus to element associated with label when relatedTarget is non-null', async () => {
@@ -46,13 +40,7 @@ describe('focus delegation when clicking on form element label', () => {
         );
         await label.click();
 
-        const inputClassName = await browser.execute(function () {
-            const container = document.activeElement;
-            const integrationInput = container.shadowRoot.activeElement;
-            const inputClassName = integrationInput.shadowRoot.activeElement.className;
-            return inputClassName;
-        });
-
-        assert.strictEqual(inputClassName, 'internal');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'internal');
     });
 });

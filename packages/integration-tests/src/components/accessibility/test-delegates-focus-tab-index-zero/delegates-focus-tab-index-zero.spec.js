@@ -17,11 +17,8 @@ describe('Delegate focus with tabindex 0', () => {
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
-                });
-
-                return (await active.getTagName()).toLowerCase() === 'input';
+                const active = await browser.activeElementShadowDeep();
+                return (await active.getTagName()) === 'input';
             },
             undefined,
             'Input should be focused'
@@ -33,10 +30,7 @@ describe('Delegate focus with tabindex 0', () => {
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement;
-                });
-
+                const active = await browser.activeElementShadowDeep();
                 return (await active.getText()) === 'second button';
             },
             undefined,
@@ -47,11 +41,8 @@ describe('Delegate focus with tabindex 0', () => {
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
-                });
-
-                return (await active.getTagName()).toLowerCase() === 'input';
+                const active = await browser.activeElementShadowDeep();
+                return (await active.getTagName()) === 'input';
             },
             undefined,
             'Input should be focused'
@@ -61,9 +52,7 @@ describe('Delegate focus with tabindex 0', () => {
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement;
-                });
+                const active = await browser.activeElementShadowDeep();
                 return (await active.getText()) === 'first button';
             },
             undefined,

@@ -21,14 +21,8 @@ describe('Tab navigation when tabindex 0', () => {
 
         await browser.keys(['Tab']);
 
-        var tagName = await browser.execute(function () {
-            var container = document.activeElement;
-            var parent = container.shadowRoot.activeElement;
-            var input = parent.shadowRoot.activeElement;
-            return input.tagName;
-        });
-
-        assert.strictEqual(tagName, 'INPUT');
+        const active = await browser.activeElementShadowDeep();
+        assert.strictEqual(await active.getTagName(), 'input');
     });
 
     it('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', async () => {
@@ -40,13 +34,7 @@ describe('Tab navigation when tabindex 0', () => {
 
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var tagName = await browser.execute(function () {
-            var container = document.activeElement;
-            var parent = container.shadowRoot.activeElement;
-            var input = parent.shadowRoot.activeElement;
-            return input.tagName;
-        });
-
-        assert.strictEqual(tagName, 'INPUT');
+        const active = await browser.activeElementShadowDeep();
+        assert.strictEqual(await active.getTagName(), 'input');
     });
 });
