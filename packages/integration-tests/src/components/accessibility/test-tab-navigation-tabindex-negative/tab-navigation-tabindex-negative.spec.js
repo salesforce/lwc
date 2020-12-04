@@ -13,11 +13,10 @@ describe('Tab navigation when tabindex -1', () => {
     });
 
     it('should skip shadow (forward)', async () => {
-        const secondInput = await browser.$(function () {
-            return document
-                .querySelector('integration-tab-navigation-tabindex-negative')
-                .shadowRoot.querySelector('.second-outside');
-        });
+        const secondInput = await browser.shadowDeep$(
+            'integration-tab-navigation-tabindex-negative',
+            '.second-outside'
+        );
         await secondInput.click();
         await browser.keys(['Tab']);
 
@@ -31,11 +30,10 @@ describe('Tab navigation when tabindex -1', () => {
     });
 
     it('should skip shadow (backward)', async () => {
-        const thirdInput = await browser.$(function () {
-            return document
-                .querySelector('integration-tab-navigation-tabindex-negative')
-                .shadowRoot.querySelector('.third-outside');
-        });
+        const thirdInput = await browser.shadowDeep$(
+            'integration-tab-navigation-tabindex-negative',
+            '.third-outside'
+        );
         await thirdInput.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 

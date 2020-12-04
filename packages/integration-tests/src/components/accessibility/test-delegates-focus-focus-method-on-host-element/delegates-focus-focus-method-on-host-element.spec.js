@@ -16,19 +16,17 @@ describe('Invoking the focus method of a host element', () => {
     it('should apply focus to the host element (tabindex -1)', async () => {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        const input = await browser.$(function () {
-            return document
-                .querySelector('integration-delegates-focus-focus-method-on-host-element')
-                .shadowRoot.querySelector('input');
-        });
+        const input = await browser.shadowDeep$(
+            'integration-delegates-focus-focus-method-on-host-element',
+            'input'
+        );
         await input.click();
 
-        await browser.execute(function () {
-            document
-                .querySelector('integration-delegates-focus-focus-method-on-host-element')
-                .shadowRoot.querySelector('integration-button.negative')
-                .focus();
-        });
+        const target = await browser.shadowDeep$(
+            'integration-delegates-focus-focus-method-on-host-element',
+            'integration-button.negative'
+        );
+        await target.focus();
 
         const className = await browser.execute(function () {
             var container = document.querySelector(
@@ -44,19 +42,17 @@ describe('Invoking the focus method of a host element', () => {
     it('should apply focus to the host element (tabindex 0)', async () => {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        await browser.execute(function () {
-            return document
-                .querySelector('integration-delegates-focus-focus-method-on-host-element')
-                .shadowRoot.querySelector('input')
-                .click();
-        });
+        const input = await browser.shadowDeep$(
+            'integration-delegates-focus-focus-method-on-host-element',
+            'input'
+        );
+        await input.click();
 
-        await browser.execute(function () {
-            document
-                .querySelector('integration-delegates-focus-focus-method-on-host-element')
-                .shadowRoot.querySelector('integration-button.zero')
-                .focus();
-        });
+        const target = await browser.shadowDeep$(
+            'integration-delegates-focus-focus-method-on-host-element',
+            'integration-button.zero'
+        );
+        await target.focus();
 
         const className = await browser.execute(function () {
             var container = document.querySelector(
@@ -72,19 +68,17 @@ describe('Invoking the focus method of a host element', () => {
     it('should apply focus to the host element (no tabindex)', async () => {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        await browser.execute(function () {
-            return document
-                .querySelector('integration-delegates-focus-focus-method-on-host-element')
-                .shadowRoot.querySelector('input')
-                .click();
-        });
+        const input = await browser.shadowDeep$(
+            'integration-delegates-focus-focus-method-on-host-element',
+            'input'
+        );
+        await input.click();
 
-        await browser.execute(function () {
-            document
-                .querySelector('integration-delegates-focus-focus-method-on-host-element')
-                .shadowRoot.querySelector('integration-button.none')
-                .focus();
-        });
+        const target = await browser.shadowDeep$(
+            'integration-delegates-focus-focus-method-on-host-element',
+            'integration-button.none'
+        );
+        await target.focus();
 
         const className = await browser.execute(function () {
             var container = document.querySelector(

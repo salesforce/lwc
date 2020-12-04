@@ -14,18 +14,11 @@ describe('when there are no focusable elements in the shadow', () => {
     });
 
     it('should not change the currently focused element', async () => {
-        const first = await browser.$(function () {
-            return document
-                .querySelector('integration-not-focusable')
-                .shadowRoot.querySelector('.first');
-        });
+        const first = await browser.shadowDeep$('integration-not-focusable', '.first');
         await first.click();
 
-        await browser.execute(function () {
-            var container = document.querySelector('integration-not-focusable');
-            var child = container.shadowRoot.querySelector('integration-child');
-            child.focus();
-        });
+        const target = await browser.shadowDeep$('integration-not-focusable', 'integration-child');
+        await target.focus();
 
         const className = await browser.execute(function () {
             return document.activeElement.shadowRoot.activeElement.className;

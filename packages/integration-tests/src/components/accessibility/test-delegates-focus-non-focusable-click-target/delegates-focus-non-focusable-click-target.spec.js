@@ -14,12 +14,11 @@ describe('focus delegation when clicking on form element label', () => {
     });
 
     it('should apply focus to element associated with label when relatedTarget is null', async () => {
-        const label = await browser.$(function () {
-            return document
-                .querySelector('integration-delegates-focus-non-focusable-click-target')
-                .shadowRoot.querySelector('integration-input')
-                .shadowRoot.querySelector('label');
-        });
+        const label = await browser.shadowDeep$(
+            'integration-delegates-focus-non-focusable-click-target',
+            'integration-input',
+            'label'
+        );
         await label.click();
 
         const inputClassName = await browser.execute(function () {
@@ -33,20 +32,18 @@ describe('focus delegation when clicking on form element label', () => {
     });
 
     it('should apply focus to element associated with label when relatedTarget is non-null', async () => {
-        const headInput = await browser.$(function () {
-            return document
-                .querySelector('integration-delegates-focus-non-focusable-click-target')
-                .shadowRoot.querySelector('.head');
-        });
+        const headInput = await browser.shadowDeep$(
+            'integration-delegates-focus-non-focusable-click-target',
+            '.head'
+        );
         // Focus on input so that relatedTarget will be non-null
         await headInput.click();
 
-        const label = await browser.$(function () {
-            return document
-                .querySelector('integration-delegates-focus-non-focusable-click-target')
-                .shadowRoot.querySelector('integration-input')
-                .shadowRoot.querySelector('label');
-        });
+        const label = await browser.shadowDeep$(
+            'integration-delegates-focus-non-focusable-click-target',
+            'integration-input',
+            'label'
+        );
         await label.click();
 
         const inputClassName = await browser.execute(function () {

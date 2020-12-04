@@ -13,11 +13,10 @@ describe('Delegates focus', () => {
     });
 
     it('should focus the input when clicked', async () => {
-        const bottom = await browser.$(function () {
-            return document
-                .querySelector('integration-shift-tab-into-negative-tabindex')
-                .shadowRoot.querySelector('.bottom');
-        });
+        const bottom = await browser.shadowDeep$(
+            'integration-shift-tab-into-negative-tabindex',
+            '.bottom'
+        );
         await bottom.click();
 
         await browser.keys(['Shift', 'Tab', 'Shift']); // tab backwards over integration-child

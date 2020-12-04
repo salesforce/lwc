@@ -13,11 +13,10 @@ describe('Tab navigation when component passes tabindex attribute to an internal
     });
 
     it('should focus on internal element when tabbing forward from a sibling element', async () => {
-        const secondOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-manual-delegation')
-                .shadowRoot.querySelector('.second-outside');
-        });
+        const secondOutside = await browser.shadowDeep$(
+            'integration-manual-delegation',
+            '.second-outside'
+        );
         await secondOutside.click();
         await browser.keys(['Tab']);
 
@@ -31,11 +30,10 @@ describe('Tab navigation when component passes tabindex attribute to an internal
     });
 
     it('should focus on internal element when tabbing backwards from a sibling element', async () => {
-        const thirdOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-manual-delegation')
-                .shadowRoot.querySelector('.third-outside');
-        });
+        const thirdOutside = await browser.shadowDeep$(
+            'integration-manual-delegation',
+            '.third-outside'
+        );
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 

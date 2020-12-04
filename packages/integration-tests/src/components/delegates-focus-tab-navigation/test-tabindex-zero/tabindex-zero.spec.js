@@ -13,11 +13,10 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should delegate focus (forward)', async () => {
-        const secondOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero')
-                .shadowRoot.querySelector('.second-outside');
-        });
+        const secondOutside = await browser.shadowDeep$(
+            'integration-tabindex-zero',
+            '.second-outside'
+        );
         await secondOutside.click();
         await browser.keys(['Tab']);
 
@@ -32,11 +31,10 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should delegate focus (backward)', async () => {
-        const thirdOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero')
-                .shadowRoot.querySelector('.third-outside');
-        });
+        const thirdOutside = await browser.shadowDeep$(
+            'integration-tabindex-zero',
+            '.third-outside'
+        );
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 

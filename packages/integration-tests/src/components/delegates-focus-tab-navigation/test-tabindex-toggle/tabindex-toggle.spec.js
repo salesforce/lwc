@@ -13,11 +13,10 @@ describe('Tab navigation without tabindex', () => {
     });
 
     it('should support tabindex toggling', async () => {
-        const secondOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-toggle')
-                .shadowRoot.querySelector('.second-outside');
-        });
+        const secondOutside = await browser.shadowDeep$(
+            'integration-tabindex-toggle',
+            '.second-outside'
+        );
         await secondOutside.click();
         await browser.keys(['Tab']);
 
@@ -30,11 +29,7 @@ describe('Tab navigation without tabindex', () => {
         assert.strictEqual(className, 'first-inside');
 
         // Toggle the tabindex <x-child tabindex="-1">
-        const toggle = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-toggle')
-                .shadowRoot.querySelector('.toggle');
-        });
+        const toggle = await browser.shadowDeep$('integration-tabindex-toggle', '.toggle');
         await toggle.click();
 
         await secondOutside.click();

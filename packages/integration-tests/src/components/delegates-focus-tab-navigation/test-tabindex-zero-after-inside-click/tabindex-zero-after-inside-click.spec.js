@@ -13,18 +13,16 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
     });
 
     it('should continue delegating focus (forward)', async () => {
-        const secondInside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero-after-inside-click')
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('.second-inside');
-        });
+        const secondInside = await browser.shadowDeep$(
+            'integration-tabindex-zero-after-inside-click',
+            'integration-child',
+            '.second-inside'
+        );
         await secondInside.click();
-        const secondOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero-after-inside-click')
-                .shadowRoot.querySelector('.second-outside');
-        });
+        const secondOutside = await browser.shadowDeep$(
+            'integration-tabindex-zero-after-inside-click',
+            '.second-outside'
+        );
         await secondOutside.click();
 
         await browser.keys(['Tab']);
@@ -40,18 +38,16 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
     });
 
     it('should continue delegating focus (backward)', async () => {
-        const secondInside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero-after-inside-click')
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('.second-inside');
-        });
+        const secondInside = await browser.shadowDeep$(
+            'integration-tabindex-zero-after-inside-click',
+            'integration-child',
+            '.second-inside'
+        );
         await secondInside.click();
-        const thirdOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero-after-inside-click')
-                .shadowRoot.querySelector('.third-outside');
-        });
+        const thirdOutside = await browser.shadowDeep$(
+            'integration-tabindex-zero-after-inside-click',
+            '.third-outside'
+        );
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 

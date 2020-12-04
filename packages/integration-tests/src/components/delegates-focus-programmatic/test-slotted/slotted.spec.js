@@ -14,17 +14,11 @@ describe('when the first focusable element is slotted', () => {
     });
 
     it('should apply focus to slotted element', async () => {
-        const first = await browser.$(function () {
-            return document.querySelector('integration-slotted').shadowRoot.querySelector('.first');
-        });
+        const first = await browser.shadowDeep$('integration-slotted', '.first');
         await first.click();
 
-        await browser.execute(function () {
-            return document
-                .querySelector('integration-slotted')
-                .shadowRoot.querySelector('integration-child')
-                .focus();
-        });
+        const target = await browser.shadowDeep$('integration-slotted', 'integration-child');
+        await target.focus();
 
         const className = await browser.execute(function () {
             var active = document.activeElement;

@@ -13,23 +13,19 @@ describe('Tabbing into custom element with delegates focus', () => {
     });
 
     it('should apply focus to input in shadow', async () => {
-        const input = await browser.$(function () {
-            return document
-                .querySelector('integration-delegates-focus-negative-tabindex-focusin-handler')
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('.focusable-input');
-        });
+        const input = await browser.shadowDeep$(
+            'integration-delegates-focus-negative-tabindex-focusin-handler',
+            'integration-child',
+            '.focusable-input'
+        );
         await input.click();
 
         await browser.waitUntil(
             async () => {
-                const div = await browser.$(function () {
-                    return document
-                        .querySelector(
-                            'integration-delegates-focus-negative-tabindex-focusin-handler'
-                        )
-                        .shadowRoot.querySelector('.focus-in-called');
-                });
+                const div = await browser.shadowDeep$(
+                    'integration-delegates-focus-negative-tabindex-focusin-handler',
+                    '.focus-in-called'
+                );
                 return (await div.getText()) === 'Focus in called';
             },
             undefined,

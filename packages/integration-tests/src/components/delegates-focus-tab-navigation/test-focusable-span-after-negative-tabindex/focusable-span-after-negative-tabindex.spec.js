@@ -13,11 +13,10 @@ describe('Delegates focus', () => {
     });
 
     it('should focus the input when clicked', async () => {
-        const first = await browser.$(function () {
-            return document
-                .querySelector('integration-focusable-span-after-negative-tabindex')
-                .shadowRoot.querySelector('.first');
-        });
+        const first = await browser.shadowDeep$(
+            'integration-focusable-span-after-negative-tabindex',
+            '.first'
+        );
         await first.click();
 
         await browser.keys(['Tab']); // tab over integration-child

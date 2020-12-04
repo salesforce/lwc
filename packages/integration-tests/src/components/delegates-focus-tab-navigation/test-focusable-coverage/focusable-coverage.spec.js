@@ -48,11 +48,7 @@ describe('sequential focus navigation coverage', () => {
         ].forEach((type) => {
             it(type, async () => {
                 // Click and focus on the first input
-                const start = await browser.$(function () {
-                    return document
-                        .querySelector('integration-focusable-coverage')
-                        .shadowRoot.querySelector('.start');
-                });
+                const start = await browser.shadowDeep$('integration-focusable-coverage', '.start');
                 await start.click();
 
                 // Set the type

@@ -23,12 +23,9 @@ describe('Component with a wired method', () => {
     });
 
     it('should update data correctly', async () => {
-        await browser.execute(function () {
-            document
-                .querySelector('integration-wired-method-suite')
-                .shadowRoot.querySelector('button')
-                .click();
-        });
+        const button = await browser.shadowDeep$('integration-wired-method-suite', 'button');
+        await button.click();
+
         await browser.waitUntil(
             async () => {
                 const todoText = await browser.execute(function () {

@@ -14,10 +14,9 @@ describe('basic invocation', () => {
     });
 
     it('should focus on the first programmatically focusable element', async () => {
-        const button = await browser.$(function () {
-            return document.querySelector('integration-basic').shadowRoot.querySelector('button');
-        });
+        const button = await browser.shadowDeep$('integration-basic', 'button');
         await button.click();
+
         const className = await browser.execute(function () {
             const container = document.activeElement;
             const child = container.shadowRoot.activeElement;
