@@ -18,11 +18,11 @@ describe('when disabled button comes after a component that is delegating focus 
             '.first'
         );
         await first.click();
+
         await browser.keys(['Tab']); // tab into second input
         await browser.keys(['Tab']); // tab over integration-child
-        const tagName = await browser.execute(function () {
-            return document.activeElement.tagName;
-        });
-        assert.strictEqual(tagName, 'BODY');
+
+        const activeElement = await browser.activeElement();
+        assert.strictEqual(await activeElement.getTagName(), 'body');
     });
 });

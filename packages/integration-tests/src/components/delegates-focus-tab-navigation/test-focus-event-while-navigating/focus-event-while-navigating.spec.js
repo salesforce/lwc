@@ -7,6 +7,22 @@
 const assert = require('assert');
 const URL = '/focus-event-while-navigating';
 
+function resetCounts() {
+    return browser.execute(function () {
+        document.querySelector('integration-focus-event-while-navigating').reset();
+    });
+}
+
+function getFocusCounts() {
+    return browser.execute(function () {
+        var container = document.querySelector('integration-focus-event-while-navigating');
+        return {
+            host: container.hostFocusCount(),
+            shadow: container.shadowFocusCount(),
+        };
+    });
+}
+
 describe('Focus event while sequential focus navigation', () => {
     beforeEach(async () => {
         await browser.url(URL);
@@ -15,10 +31,7 @@ describe('Focus event while sequential focus navigation', () => {
     // TODO [#1243]: Fix bug where shadow tree receives focus event when it should be skipped
     describe.skip('delegatesFocus: true, tabindex: -1', async () => {
         beforeEach(async () => {
-            // Reset counters
-            await browser.execute(function () {
-                document.querySelector('integration-focus-event-while-navigating').reset();
-            });
+            await resetCounts();
         });
 
         it('should not invoke focus event listeners (forward)', async () => {
@@ -30,14 +43,7 @@ describe('Focus event while sequential focus navigation', () => {
 
             await browser.keys(['Tab']);
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 0,
@@ -59,14 +65,7 @@ describe('Focus event while sequential focus navigation', () => {
 
             await browser.keys(['Shift', 'Tab', 'Shift']);
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 0,
@@ -83,10 +82,7 @@ describe('Focus event while sequential focus navigation', () => {
     // TODO [#1244]: Fix bug where host does not receive focus event when it should
     describe.skip('delegatesFocus: true, tabindex: none', () => {
         beforeEach(async () => {
-            // Reset counters
-            await browser.execute(function () {
-                document.querySelector('integration-focus-event-while-navigating').reset();
-            });
+            await resetCounts();
         });
 
         it('should invoke focus event listeners (forward)', async () => {
@@ -99,14 +95,7 @@ describe('Focus event while sequential focus navigation', () => {
             await browser.keys(['Tab']); // internal input
             await browser.keys(['Tab']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 1,
@@ -129,14 +118,7 @@ describe('Focus event while sequential focus navigation', () => {
             await browser.keys(['Shift', 'Tab', 'Shift']); // internal input
             await browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 1,
@@ -152,10 +134,7 @@ describe('Focus event while sequential focus navigation', () => {
 
     describe('delegatesFocus: true, tabindex: 0', () => {
         beforeEach(async () => {
-            // Reset counters
-            await browser.execute(function () {
-                document.querySelector('integration-focus-event-while-navigating').reset();
-            });
+            await resetCounts();
         });
 
         it('should not invoke focus event listener on host and should invoke focus event listener in shadow (forward)', async () => {
@@ -168,14 +147,7 @@ describe('Focus event while sequential focus navigation', () => {
             await browser.keys(['Tab']); // internal input
             await browser.keys(['Tab']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 1,
@@ -198,14 +170,7 @@ describe('Focus event while sequential focus navigation', () => {
             await browser.keys(['Shift', 'Tab', 'Shift']); // internal input
             await browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 1,
@@ -222,10 +187,7 @@ describe('Focus event while sequential focus navigation', () => {
     // TODO [#1243]: Fix bug where shadow tree receives focus event when it should be skipped
     describe.skip('delegatesFocus: false, tabindex: -1', () => {
         beforeEach(async () => {
-            // Reset counters
-            await browser.execute(function () {
-                document.querySelector('integration-focus-event-while-navigating').reset();
-            });
+            await resetCounts();
         });
 
         it('should not invoke focus event listeners (forward)', async () => {
@@ -237,14 +199,7 @@ describe('Focus event while sequential focus navigation', () => {
 
             await browser.keys(['Tab']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 0,
@@ -266,14 +221,7 @@ describe('Focus event while sequential focus navigation', () => {
 
             await browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 0,
@@ -289,10 +237,7 @@ describe('Focus event while sequential focus navigation', () => {
 
     describe('delegatesFocus: false, tabindex: 0', () => {
         beforeEach(async () => {
-            // Reset counters
-            await browser.execute(function () {
-                document.querySelector('integration-focus-event-while-navigating').reset();
-            });
+            await resetCounts();
         });
 
         it('should invoke focus event listener on both host and in shadow (forward)', async () => {
@@ -306,14 +251,7 @@ describe('Focus event while sequential focus navigation', () => {
             await browser.keys(['Tab']); // internal input
             await browser.keys(['Tab']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 1,
@@ -337,14 +275,7 @@ describe('Focus event while sequential focus navigation', () => {
             await browser.keys(['Shift', 'Tab', 'Shift']); // host
             await browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            });
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 1,
@@ -361,10 +292,7 @@ describe('Focus event while sequential focus navigation', () => {
     // TODO [#1244]: Fix bug where host does not receive focus event when it should
     describe.skip('delegatesFocus: false, tabindex: none', () => {
         beforeEach(async () => {
-            // Reset counters
-            await browser.execute(function () {
-                document.querySelector('integration-focus-event-while-navigating').reset();
-            });
+            await resetCounts();
         });
 
         it('should invoke focus event listeners (forward)', async () => {
@@ -377,14 +305,7 @@ describe('Focus event while sequential focus navigation', () => {
             await browser.keys(['Tab']); // internal input
             await browser.keys(['Tab']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            }).value;
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 1,
@@ -407,14 +328,7 @@ describe('Focus event while sequential focus navigation', () => {
             await browser.keys(['Shift', 'Tab', 'Shift']); // internal input
             await browser.keys(['Shift', 'Tab', 'Shift']); // external input
 
-            var count = await browser.execute(function () {
-                var container = document.querySelector('integration-focus-event-while-navigating');
-                return {
-                    host: container.hostFocusCount(),
-                    shadow: container.shadowFocusCount(),
-                };
-            }).value;
-
+            const count = await getFocusCounts();
             assert.strictEqual(
                 count.host,
                 1,
