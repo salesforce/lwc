@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 
 import AdapterConsumer from 'x/adapterConsumer';
+import AdapterConsumerWithLifecycleEvents from 'x/adapterConsumerWithLifecycleEvents';
 import { EchoWireAdapter } from 'x/echoAdapter';
 
 import BroadcastConsumer from 'x/broadcastConsumer';
@@ -24,6 +25,36 @@ describe('wiring', () => {
             document.body.appendChild(elm);
 
             expect(filterCalls(spy, 'connect').length).toBe(1);
+        });
+
+        it('should call a connect on wire adapter after component connectedCallback is called', () => {
+            const spy = [];
+            const elm = createElement('x-echo-adapter-consumer-lifecycle', {
+                is: AdapterConsumerWithLifecycleEvents,
+            });
+            let isAdapterConnectCalled = false;
+            let isComponentConnectedCallbackCalled = false;
+            let assertionsCount = 0;
+
+            AdapterId.setSpy(spy, (method) => {
+                if (method === 'connect') {
+                    expect(isComponentConnectedCallbackCalled).toBe(true);
+                    assertionsCount++;
+                    isAdapterConnectCalled = true;
+                }
+            });
+
+            elm.addEventListener('connectedcallback', () => {
+                expect(isAdapterConnectCalled).toBe(false);
+                assertionsCount++;
+                isComponentConnectedCallbackCalled = true;
+            });
+            document.body.appendChild(elm);
+
+            // remove the spy notifyCallback.
+            AdapterId.setSpy([]);
+
+            expect(assertionsCount).toBe(2);
         });
 
         it('should call a disconnect when component is disconnected', () => {
@@ -258,6 +289,29 @@ describe('wiring', () => {
 
                     expect(wireResult.simpleParam).toBe('simpleParam modified');
                 });
+        });
+
+        it('should be called with a dynamic config parameter value which is set during the component connected callback', () => {
+            const spy = [];
+            const elm = createElement('x-echo-adapter-consumer-lifecycle', {
+                is: AdapterConsumerWithLifecycleEvents,
+            });
+            let assertionsCount = 0;
+
+            AdapterId.setSpy(spy, (method, args) => {
+                if (method === 'update') {
+                    const config = args[0];
+                    expect(config.value).toBe(true);
+                    assertionsCount++;
+                }
+            });
+
+            document.body.appendChild(elm);
+
+            // remove the spy notifyCallback.
+            AdapterId.setSpy([]);
+
+            expect(assertionsCount).toBe(1);
         });
     });
 });

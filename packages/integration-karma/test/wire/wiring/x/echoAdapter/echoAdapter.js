@@ -1,10 +1,13 @@
 let adapterSpy;
+let adapterNotifyCallback;
 
 export class EchoWireAdapter {
     callback;
+    listeners = {};
 
-    static setSpy(spy) {
+    static setSpy(spy, notifyCallback) {
         adapterSpy = spy;
+        adapterNotifyCallback = notifyCallback;
     }
 
     constructor(callback) {
@@ -29,6 +32,9 @@ export class EchoWireAdapter {
     log(method, args) {
         if (adapterSpy) {
             adapterSpy.push({ method, args });
+        }
+        if (adapterNotifyCallback) {
+            adapterNotifyCallback(method, args);
         }
     }
 }

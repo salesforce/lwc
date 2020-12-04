@@ -449,9 +449,6 @@ export function runConnectedCallback(vm: VM) {
     if (connected) {
         invokeServiceHook(vm, connected);
     }
-    if (hasWireAdapters(vm)) {
-        connectWireAdapters(vm);
-    }
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         if (profilerEnabled) {
@@ -463,6 +460,10 @@ export function runConnectedCallback(vm: VM) {
         if (profilerEnabled) {
             logOperationEnd(OperationId.connectedCallback, vm);
         }
+    }
+
+    if (hasWireAdapters(vm)) {
+        connectWireAdapters(vm);
     }
 }
 
