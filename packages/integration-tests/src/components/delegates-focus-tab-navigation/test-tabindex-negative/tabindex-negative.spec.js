@@ -20,13 +20,8 @@ describe('Tab navigation when tabindex -1', () => {
         await secondOutside.click();
         await browser.keys(['Tab']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var input = container.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'third-outside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'third-outside');
     });
 
     it('should skip shadow (backward)', async () => {
@@ -37,12 +32,7 @@ describe('Tab navigation when tabindex -1', () => {
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var input = container.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'second-outside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'second-outside');
     });
 });

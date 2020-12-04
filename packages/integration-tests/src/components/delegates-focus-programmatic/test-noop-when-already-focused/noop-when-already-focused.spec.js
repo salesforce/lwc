@@ -24,14 +24,8 @@ describe('when the shadow already contains the active element', () => {
         const target = await browser.$('integration-noop-when-already-focused');
         await target.focus();
 
-        const className = await browser.execute(function () {
-            var active = document.activeElement;
-            while (active.shadowRoot) {
-                active = active.shadowRoot.activeElement;
-            }
-            return active.className;
-        });
-        assert.strictEqual(className, 'child-input');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'child-input');
     });
 
     it('should result in the same focused element when invoked twice', async () => {
@@ -39,13 +33,7 @@ describe('when the shadow already contains the active element', () => {
         await target.focus();
         await target.focus();
 
-        const className = await browser.execute(function () {
-            var active = document.activeElement;
-            while (active.shadowRoot) {
-                active = active.shadowRoot.activeElement;
-            }
-            return active.className;
-        });
-        assert.strictEqual(className, 'first');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'first');
     });
 });

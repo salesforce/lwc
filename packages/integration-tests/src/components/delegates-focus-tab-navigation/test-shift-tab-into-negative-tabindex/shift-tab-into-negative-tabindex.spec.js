@@ -21,12 +21,7 @@ describe('Delegates focus', () => {
 
         await browser.keys(['Shift', 'Tab', 'Shift']); // tab backwards over integration-child
 
-        const className = await browser.execute(function () {
-            const container = document.activeElement;
-            const activeElement = container.shadowRoot.activeElement;
-            return activeElement.className;
-        });
-
-        assert.strictEqual(className, 'top');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'top');
     });
 });

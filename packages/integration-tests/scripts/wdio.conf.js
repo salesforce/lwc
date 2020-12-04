@@ -78,6 +78,16 @@ exports.config = {
             });
         });
 
+        browser.addCommand('activeElementShadowDeep', function () {
+            return this.$(function () {
+                var active = document.activeElement;
+                while (active.shadowRoot && active.shadowRoot.activeElement) {
+                    active = active.shadowRoot.activeElement;
+                }
+                return active;
+            });
+        });
+
         browser.addCommand('shadowDeep$', async function (...selectors) {
             const [head, ...rest] = selectors;
 

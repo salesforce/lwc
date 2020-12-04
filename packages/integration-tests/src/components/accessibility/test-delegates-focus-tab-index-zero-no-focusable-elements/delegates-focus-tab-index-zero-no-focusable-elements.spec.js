@@ -17,10 +17,7 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement;
-                });
-
+                const active = await browser.activeElementShadowDeep();
                 return (await active.getText()) === 'second button';
             },
             undefined,
@@ -31,10 +28,7 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement;
-                });
-
+                const active = await browser.activeElementShadowDeep();
                 return (await active.getText()) === 'first button';
             },
             undefined,

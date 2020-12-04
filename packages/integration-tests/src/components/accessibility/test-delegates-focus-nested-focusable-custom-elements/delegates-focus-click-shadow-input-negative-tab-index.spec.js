@@ -20,11 +20,7 @@ describe('Tabbing into custom element with delegates focus', () => {
             '.focusable-span'
         );
         await span.click();
-        const active = await browser.$(function () {
-            return document
-                .querySelector('integration-delegates-focus-nested-focusable-custom-elements')
-                .shadowRoot.querySelector('integration-parent').shadowRoot.activeElement;
-        });
+        const active = await browser.activeElementShadowDeep();
         assert.strictEqual(await active.getTagName(), 'span');
     });
 });

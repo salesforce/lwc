@@ -27,14 +27,8 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
 
         await browser.keys(['Tab']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'first-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
     });
 
     it('should continue delegating focus (backward)', async () => {
@@ -51,13 +45,7 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'third-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'third-inside');
     });
 });

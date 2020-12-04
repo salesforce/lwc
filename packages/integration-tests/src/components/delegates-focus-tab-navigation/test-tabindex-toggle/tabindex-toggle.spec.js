@@ -20,13 +20,8 @@ describe('Tab navigation without tabindex', () => {
         await secondOutside.click();
         await browser.keys(['Tab']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-        assert.strictEqual(className, 'first-inside');
+        let activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
 
         // Toggle the tabindex <x-child tabindex="-1">
         const toggle = await browser.shadowDeep$('integration-tabindex-toggle', '.toggle');
@@ -35,12 +30,8 @@ describe('Tab navigation without tabindex', () => {
         await secondOutside.click();
         await browser.keys(['Tab']);
 
-        className = await browser.execute(function () {
-            var container = document.activeElement;
-            var input = container.shadowRoot.activeElement;
-            return input.className;
-        });
-        assert.strictEqual(className, 'third-outside');
+        activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'third-outside');
 
         // Toggle the tabindex <x-child>
         await toggle.click();
@@ -48,12 +39,7 @@ describe('Tab navigation without tabindex', () => {
         await secondOutside.click();
         await browser.keys(['Tab']);
 
-        className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-        assert.strictEqual(className, 'first-inside');
+        activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
     });
 });

@@ -28,16 +28,8 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
         );
         await target.focus();
 
-        const tagName = await browser.execute(function () {
-            var container = document.querySelector(
-                'integration-delegates-focus-focus-method-on-internal-element'
-            );
-            var button = container.shadowRoot.querySelector('integration-button.negative');
-            var activeElement = button.shadowRoot.activeElement;
-            return activeElement.tagName;
-        });
-
-        assert.strictEqual(tagName, 'BUTTON');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getTagName(), 'button');
     });
 
     it('should apply focus (tabindex 0)', async () => {
@@ -55,16 +47,8 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
         );
         await target.focus();
 
-        const tagName = await browser.execute(function () {
-            var container = document.querySelector(
-                'integration-delegates-focus-focus-method-on-internal-element'
-            );
-            var button = container.shadowRoot.querySelector('integration-button.zero');
-            var activeElement = button.shadowRoot.activeElement;
-            return activeElement.tagName;
-        });
-
-        assert.strictEqual(tagName, 'BUTTON');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getTagName(), 'button');
     });
 
     it('should apply focus (no tabindex)', async () => {
@@ -82,15 +66,7 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
         );
         await target.focus();
 
-        const tagName = await browser.execute(function () {
-            var container = document.querySelector(
-                'integration-delegates-focus-focus-method-on-internal-element'
-            );
-            var button = container.shadowRoot.querySelector('integration-button.none');
-            var activeElement = button.shadowRoot.activeElement;
-            return activeElement.tagName;
-        });
-
-        assert.strictEqual(tagName, 'BUTTON');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getTagName(), 'button');
     });
 });

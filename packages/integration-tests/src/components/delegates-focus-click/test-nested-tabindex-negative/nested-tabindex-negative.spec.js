@@ -24,12 +24,7 @@ describe('nested components with negative tabindex', () => {
         );
         await input.click(); // click into input
 
-        const active = await browser.$(function () {
-            return document
-                .querySelector('integration-nested-tabindex-negative')
-                .shadowRoot.querySelector('integration-parent')
-                .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
-        });
+        const active = await browser.activeElementShadowDeep();
         assert.strictEqual(await active.getTagName(), 'input');
     });
 });

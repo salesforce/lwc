@@ -27,16 +27,8 @@ describe('Tabbing into custom element with delegates focus', () => {
         // browser.click('.negative-tab-index-input');
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document
-                        .querySelector(
-                            'integration-delegates-focus-click-shadow-input-negative-tab-index'
-                        )
-                        .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
-                });
-
-                const tagName = await active.getTagName();
-                return tagName === 'input';
+                const active = await browser.activeElementShadowDeep();
+                return (await active.getTagName()) === 'input';
             },
             undefined,
             'expect input to be focused'

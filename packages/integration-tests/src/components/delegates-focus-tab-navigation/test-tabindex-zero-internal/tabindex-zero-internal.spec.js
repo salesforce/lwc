@@ -21,14 +21,8 @@ describe('Internal tab navigation when tabindex 0', () => {
         await secondInside.click();
         await browser.keys(['Tab']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'third-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'third-inside');
     });
 
     it('should navigate (backward)', async () => {
@@ -40,13 +34,7 @@ describe('Internal tab navigation when tabindex 0', () => {
         await secondInside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'first-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
     });
 });

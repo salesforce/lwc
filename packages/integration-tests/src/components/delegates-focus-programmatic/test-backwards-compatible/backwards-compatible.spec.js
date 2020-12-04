@@ -20,13 +20,7 @@ describe('when the component overrides the focus method', () => {
         );
         await target.focus();
 
-        const className = await browser.execute(function () {
-            var active = document.activeElement;
-            while (active.shadowRoot) {
-                active = active.shadowRoot.activeElement;
-            }
-            return active.className;
-        });
-        assert.strictEqual(className, 'internal-textarea');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'internal-textarea');
     });
 });

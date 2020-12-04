@@ -17,13 +17,7 @@ describe('when the only focusable element is in a nested shadow', () => {
         const button = await browser.shadowDeep$('integration-nested', 'button');
         await button.click();
 
-        const className = await browser.execute(function () {
-            var active = document.activeElement;
-            while (active.shadowRoot) {
-                active = active.shadowRoot.activeElement;
-            }
-            return active.className;
-        });
-        assert.strictEqual(className, 'child-input');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'child-input');
     });
 });

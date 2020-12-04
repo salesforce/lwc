@@ -21,13 +21,8 @@ describe('Delegates focus', () => {
         );
 
         await input.click(); // click into input
-        const active = await browser.$(function () {
-            return document
-                .querySelector('integration-delegate-focus-click-input-in-negative-tabindex')
-                .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
-        });
 
-        const tagName = await active.getTagName();
-        assert.strictEqual(tagName, 'input');
+        const active = await browser.activeElementShadowDeep();
+        assert.strictEqual(await active.getTagName(), 'input');
     });
 });

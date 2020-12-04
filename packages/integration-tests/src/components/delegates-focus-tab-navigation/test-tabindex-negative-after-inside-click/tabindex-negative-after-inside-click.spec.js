@@ -26,13 +26,8 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         await secondOutside.click();
         await browser.keys(['Tab']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var input = container.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'third-outside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'third-outside');
     });
 
     it('should continue skipping elements after navigating out (forward)', async () => {
@@ -45,13 +40,8 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         await browser.keys(['Tab']); // third inside
         await browser.keys(['Tab']); // third outside
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var input = container.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'third-outside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'third-outside');
     });
 
     it('should continue skipping elements (backward)', async () => {
@@ -68,13 +58,8 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var input = container.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'second-outside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'second-outside');
     });
 
     it('should continue skipping elements after navigating out (backwards)', async () => {
@@ -87,12 +72,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         await browser.keys(['Shift', 'Tab', 'Shift']); // first inside
         await browser.keys(['Shift', 'Tab', 'Shift']); // second outside
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var input = container.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'second-outside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'second-outside');
     });
 });

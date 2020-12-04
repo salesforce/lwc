@@ -20,13 +20,7 @@ describe('when the first focusable element is slotted', () => {
         const target = await browser.shadowDeep$('integration-slotted', 'integration-child');
         await target.focus();
 
-        const className = await browser.execute(function () {
-            var active = document.activeElement;
-            while (active.shadowRoot) {
-                active = active.shadowRoot.activeElement;
-            }
-            return active.className;
-        });
-        assert.strictEqual(className, 'slotted-input');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'slotted-input');
     });
 });

@@ -32,17 +32,15 @@ describe('[W-8350504] focus() method invocation, inside a focus handler, trigger
 
     it('should not interfere with focusing the clicked element', async () => {
         await browser.keys(['Tab']); // input.before
+
         const button = await browser.shadowDeep$(
             'integration-invoke-focus-on-click',
             'integration-child',
             'button'
         );
         await button.click(); // click into button
-        const active = await browser.$(function () {
-            return document
-                .querySelector('integration-invoke-focus-on-click')
-                .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
-        });
+
+        const active = await browser.activeElementShadowDeep();
         assert.strictEqual(await active.getTagName(), 'button');
     });
 });
