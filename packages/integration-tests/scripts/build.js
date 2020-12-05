@@ -66,17 +66,6 @@ function getTestName(absPpath) {
         .replace(testPrefix, '');
 }
 
-function testCaseComponentResolverPlugin() {
-    return {
-        name: 'test-case-resolver',
-        resolveId(id) {
-            if (/test\/case/.test(id)) {
-                return path.resolve(`./src/shared/test-case.js`);
-            }
-        },
-    };
-}
-
 function getTodoApp(testBundle) {
     return templates.todoApp(testBundle);
 }
@@ -123,7 +112,6 @@ function createRollupInputConfig() {
             rollupLwcCompilerPlugin({ exclude: `**/*${testSufix}` }),
             isCompat && rollupCompatPlugin({ polyfills: false }),
             isProd && rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
-            testCaseComponentResolverPlugin(),
         ].filter(Boolean),
     };
 }
