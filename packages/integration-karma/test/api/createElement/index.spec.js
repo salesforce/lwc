@@ -15,7 +15,7 @@ function testInvalidOptions(type, option) {
 testInvalidOptions('undefined', undefined);
 testInvalidOptions('null', null);
 testInvalidOptions('String', 'x-component');
-testInvalidOptions('Class not extending LightningElement', class Component {});
+testInvalidOptions('Class not extending LightningElement', class {});
 
 function testInvalidIsValue(type, isValue) {
     it(`throws a TypeError if option.is is a ${type}`, () => {
@@ -40,7 +40,7 @@ function testInvalidComponentConstructor(type, isValue) {
 }
 
 testInvalidComponentConstructor('Function', function () {});
-testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
+testInvalidComponentConstructor('Class not extending LightningElement', class {});
 
 it('returns an HTMLElement', () => {
     const elm = createElement('x-component', { is: Test });

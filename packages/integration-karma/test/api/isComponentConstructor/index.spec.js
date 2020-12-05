@@ -11,7 +11,7 @@ testInvalidComponentConstructor('undefined', undefined);
 testInvalidComponentConstructor('String', 'component');
 testInvalidComponentConstructor('Object', {});
 testInvalidComponentConstructor('Function', function () {});
-testInvalidComponentConstructor('Class', class Foo {});
+testInvalidComponentConstructor('Class', class {});
 
 it('should return true if when passing a class inheriting from LightningElement', () => {
     class Component extends LightningElement {}
