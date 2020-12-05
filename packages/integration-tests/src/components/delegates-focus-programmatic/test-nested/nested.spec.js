@@ -6,13 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = '/nested';
-
 describe('when the only focusable element is in a nested shadow', () => {
-    beforeEach(async () => {
-        await browser.url(URL);
-    });
-
     it('should apply focus in the nested shadow', async () => {
         const button = await browser.shadowDeep$('integration-nested', 'button');
         await button.click();

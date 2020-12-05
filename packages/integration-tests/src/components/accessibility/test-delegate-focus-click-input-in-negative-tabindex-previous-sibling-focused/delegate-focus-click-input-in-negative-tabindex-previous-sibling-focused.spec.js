@@ -10,12 +10,6 @@ const assert = require('assert');
 // the previous sibling to the custom element
 
 describe('Delegates focus', () => {
-    const URL = '/delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused';
-
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('should focus the input when clicked', async () => {
         await browser.keys(['Tab']); // focus first anchor
         await browser.keys(['Tab']); // focus second anchor

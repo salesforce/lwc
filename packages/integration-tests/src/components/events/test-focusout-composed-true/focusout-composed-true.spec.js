@@ -7,12 +7,6 @@
 const assert = require('assert');
 
 describe('Composed focusout event', () => {
-    const URL = '/focusout-composed-true';
-
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('standard event should be composed', async () => {
         const input = await browser.shadowDeep$('integration-focusout-composed-true', 'input');
 

@@ -7,12 +7,6 @@
 const assert = require('assert');
 
 describe('Tabbing into custom element with delegates focus', () => {
-    const URL = '/delegates-focus-from-previous-sibling';
-
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('should apply focus to input in shadow', async () => {
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);

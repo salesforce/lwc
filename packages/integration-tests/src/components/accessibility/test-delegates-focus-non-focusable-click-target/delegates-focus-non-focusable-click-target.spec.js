@@ -7,12 +7,6 @@
 const assert = require('assert');
 
 describe('focus delegation when clicking on form element label', () => {
-    const URL = '/delegates-focus-non-focusable-click-target';
-
-    beforeEach(async () => {
-        await browser.url(URL);
-    });
-
     it('should apply focus to element associated with label when relatedTarget is null', async () => {
         const label = await browser.shadowDeep$(
             'integration-delegates-focus-non-focusable-click-target',

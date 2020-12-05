@@ -123,4 +123,9 @@ exports.config = {
             true
         );
     },
+
+    beforeTest(test) {
+        const location = path.basename(test.file).replace('.spec.js', '');
+        return browser.url(location);
+    },
 };

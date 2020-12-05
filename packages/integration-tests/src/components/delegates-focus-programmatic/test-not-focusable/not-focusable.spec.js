@@ -6,13 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = '/not-focusable';
-
 describe('when there are no focusable elements in the shadow', () => {
-    beforeEach(async () => {
-        await browser.url(URL);
-    });
-
     it('should not change the currently focused element', async () => {
         const first = await browser.shadowDeep$('integration-not-focusable', '.first');
         await first.click();

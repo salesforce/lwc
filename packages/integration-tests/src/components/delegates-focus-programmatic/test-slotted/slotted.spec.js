@@ -6,13 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = '/slotted';
-
 describe('when the first focusable element is slotted', () => {
-    beforeEach(async () => {
-        await browser.url(URL);
-    });
-
     it('should apply focus to slotted element', async () => {
         const first = await browser.shadowDeep$('integration-slotted', '.first');
         await first.click();

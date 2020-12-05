@@ -6,12 +6,6 @@
  */
 
 describe('shadow root element from point should return correct element', () => {
-    const URL = '/element-from-point/';
-
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('should return correct shadow elements', async () => {
         const target = await browser.shadowDeep$(
             'integration-element-from-point',

@@ -7,12 +7,6 @@
 const assert = require('assert');
 
 describe('Composed focusin event', () => {
-    const URL = '/focusin-composed-true';
-
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('standard event should be composed', async () => {
         const input = await browser.shadowDeep$('integration-focusin-composed-true', 'input');
         await input.click();

@@ -5,13 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/issue-1031';
 
 describe('issue #1031', () => {
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('should skip child shadow when tabbing after dynamically updating parent tabindex from 0 to -1', async () => {
         const initialize = await browser.shadowDeep$('integration-issue-1031', '.initialize');
         await initialize.click(); // init tabindex to 0

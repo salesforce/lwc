@@ -5,13 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/tabindex-toggle';
 
 describe('Tab navigation without tabindex', () => {
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('should support tabindex toggling', async () => {
         const secondOutside = await browser.shadowDeep$(
             'integration-tabindex-toggle',

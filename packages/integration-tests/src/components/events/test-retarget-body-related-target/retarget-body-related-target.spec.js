@@ -7,12 +7,6 @@
 const assert = require('assert');
 
 describe('Retarget relatedTarget', () => {
-    const URL = '/retarget-body-related-target';
-
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('should have correct relatedTarget when body was focused', async () => {
         const body = await browser.$('body');
         await body.focus();

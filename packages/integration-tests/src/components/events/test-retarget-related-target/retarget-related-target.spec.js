@@ -7,12 +7,6 @@
 const assert = require('assert');
 
 describe('Retarget relatedTarget', () => {
-    const URL = '/retarget-related-target';
-
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('should retarget relatedTarget from a foreign shadow', async () => {
         const target = await browser.shadowDeep$(
             'integration-retarget-related-target',

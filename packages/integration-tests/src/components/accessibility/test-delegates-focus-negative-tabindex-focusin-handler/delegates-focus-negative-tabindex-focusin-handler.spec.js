@@ -6,12 +6,6 @@
  */
 
 describe('Tabbing into custom element with delegates focus', () => {
-    const URL = '/delegates-focus-negative-tabindex-focusin-handler';
-
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('should apply focus to input in shadow', async () => {
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-negative-tabindex-focusin-handler',

@@ -5,13 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/tabindex-zero-internal-tabindex-negative';
 
 describe('Tab navigation when tabindex 0', () => {
-    beforeEach(async () => {
-        await browser.url(URL);
-    });
-
     it('should skip internal elements contained by a negative tabindex subtree when delegating focus (forward)', async () => {
         const firstInput = await browser.shadowDeep$(
             'integration-tabindex-zero-internal-tabindex-negative',

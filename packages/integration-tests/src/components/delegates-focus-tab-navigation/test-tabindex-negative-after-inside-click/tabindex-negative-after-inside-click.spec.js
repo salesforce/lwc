@@ -5,13 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/tabindex-negative-after-inside-click';
 
 describe('Tab navigation when tabindex -1 after inside click', () => {
-    beforeEach(async () => {
-        await browser.url(URL);
-    });
-
     it('should continue skipping elements (forward)', async () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-negative-after-inside-click',

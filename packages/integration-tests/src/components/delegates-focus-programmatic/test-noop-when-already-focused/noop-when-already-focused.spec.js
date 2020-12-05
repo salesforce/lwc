@@ -6,13 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = '/noop-when-already-focused';
-
 describe('when the shadow already contains the active element', () => {
-    beforeEach(async () => {
-        await browser.url(URL);
-    });
-
     it('should not change the currently focused element', async () => {
         const input = await browser.shadowDeep$(
             'integration-noop-when-already-focused',

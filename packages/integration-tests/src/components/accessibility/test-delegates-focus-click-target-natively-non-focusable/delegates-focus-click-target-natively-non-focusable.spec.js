@@ -6,13 +6,7 @@
  */
 const assert = require('assert');
 
-const URL = '/delegates-focus-click-target-natively-non-focusable';
-
 describe('when the click target is natively non-focusable', () => {
-    beforeEach(async () => {
-        await browser.url(URL);
-    });
-
     it('should apply focus to natively focusable parent (button) when click target is custom element', async () => {
         const input = await browser.shadowDeep$(
             'integration-delegates-focus-click-target-natively-non-focusable',

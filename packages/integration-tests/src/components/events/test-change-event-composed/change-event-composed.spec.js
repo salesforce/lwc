@@ -7,12 +7,6 @@
 const assert = require('assert');
 
 describe('Composed change event', () => {
-    const URL = '/change-event-composed/';
-
-    before(async () => {
-        await browser.url(URL);
-    });
-
     it('should be composed: false', async () => {
         // Force native "change" event to fire
         const input = await browser.shadowDeep$('integration-change-event-composed', 'input');
