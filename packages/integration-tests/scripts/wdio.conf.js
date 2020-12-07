@@ -7,6 +7,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const { registerCustomCommands } = require('./commands');
+
 const port = process.env.PORT || 4567;
 const suiteFolders = path.resolve(__dirname, '../', 'src/components');
 
@@ -72,59 +74,11 @@ exports.config = {
     ],
 
     before(caps, spec, browser) {
-        browser.addCommand('activeElement', function () {
-            return this.$(function () {
-                return document.activeElement;
-            });
-        });
-
-        browser.addCommand(
-            'activeElementShadow',
-            function () {
-                return this.$(function () {
-                    if (!this.shadowRoot) {
-                        throw new Error('Invalid target for "activeElementShadow"');
-                    }
-
-                    return this.shadowRoot.activeElement;
-                });
-            },
-            true
-        );
-
-        browser.addCommand('activeElementShadowDeep', function () {
-            return this.$(function () {
-                var active = document.activeElement;
-                while (active.shadowRoot && active.shadowRoot.activeElement) {
-                    active = active.shadowRoot.activeElement;
-                }
-                return active;
-            });
-        });
-
-        browser.addCommand('shadowDeep$', async function (...selectors) {
-            const [head, ...rest] = selectors;
-
-            let elm = await this.$(head);
-            for (const selector of rest) {
-                elm = await elm.shadow$(selector);
-            }
-
-            return elm;
-        });
-
-        browser.addCommand(
-            'focus',
-            function () {
-                return this.execute(function (target) {
-                    target.focus();
-                }, this);
-            },
-            true
-        );
+        registerCustomCommands(browser);
     },
 
     beforeTest(test) {
+        // Load fixture URL before the test starts.
         const location = path.basename(test.file).replace('.spec.js', '');
         return browser.url(location);
     },
