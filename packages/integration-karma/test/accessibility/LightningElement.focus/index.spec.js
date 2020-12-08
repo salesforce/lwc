@@ -8,13 +8,23 @@ beforeEach(() => {
     document.body.focus();
 });
 
-it('should focus the first internally focusable element (delegatesFocus=true)', () => {
-    const elm = createElement('x-focus', { is: DelegatesFocusTrue });
-    document.body.appendChild(elm);
+describe('host.focus() when { delegatesFocus: true }', () => {
+    it('should focus the host element', () => {
+        const elm = createElement('x-focus', { is: DelegatesFocusTrue });
+        document.body.appendChild(elm);
+        elm.focus();
 
-    elm.focus();
-    const input = elm.shadowRoot.querySelector('.first');
-    expect(elm.shadowRoot.activeElement).toBe(input);
+        expect(document.activeElement).toEqual(elm);
+    });
+
+    it('should focus the first internally focusable element', () => {
+        const elm = createElement('x-focus', { is: DelegatesFocusTrue });
+        document.body.appendChild(elm);
+        elm.focus();
+
+        const input = elm.shadowRoot.querySelector('.first');
+        expect(elm.shadowRoot.activeElement).toEqual(input);
+    });
 });
 
 it('should not focus the first internally focusable element (delegatesFocus=false)', () => {
