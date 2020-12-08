@@ -8,15 +8,27 @@ beforeEach(() => {
     document.body.focus();
 });
 
-// TODO [#1327]: enable after patching focus method
-xit('should focus the first internally focusable element (delegatesFocus=true)', () => {
-    const elm = createElement('x-focus', { is: DelegatesFocusTrue });
-    document.body.appendChild(elm);
+// TODO [#985]: Firefox does not implement delegatesFocus
+if (!process.env.NATIVE_SHADOW) {
+    describe('host.focus() when { delegatesFocus: true }', () => {
+        it('should focus the host element', () => {
+            const elm = createElement('x-focus', { is: DelegatesFocusTrue });
+            document.body.appendChild(elm);
+            elm.focus();
 
-    elm.focus();
-    const input = elm.shadowRoot.querySelector('.delegates-focus-true-first');
-    expect(elm.shadowRoot.activeElement).toBe(input);
-});
+            expect(document.activeElement).toEqual(elm);
+        });
+
+        it('should focus the first internally focusable element', () => {
+            const elm = createElement('x-focus', { is: DelegatesFocusTrue });
+            document.body.appendChild(elm);
+            elm.focus();
+
+            const input = elm.shadowRoot.querySelector('.first');
+            expect(elm.shadowRoot.activeElement).toEqual(input);
+        });
+    });
+}
 
 it('should not focus the first internally focusable element (delegatesFocus=false)', () => {
     const elm = createElement('x-focus', { is: DelegatesFocusFalse });
@@ -26,8 +38,7 @@ it('should not focus the first internally focusable element (delegatesFocus=fals
     expect(elm.shadowRoot.activeElement).toBeNull();
 });
 
-// TODO [#1329]: enable after fixing bug where the custom element does not gain focus
-xit('should focus the host element (delegatesFocus=false, tabIndex=-1)', () => {
+it('should focus the host element (delegatesFocus=false, tabIndex=-1)', () => {
     const container = createElement('x-container', { is: Container });
     document.body.appendChild(container);
 
