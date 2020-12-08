@@ -19,8 +19,10 @@ describe('Tabbing into custom element with delegates focus', () => {
                     'integration-delegates-focus-false-negative-tab-index'
                 );
             },
-            undefined,
-            'expect integration-delegates-focus-false-negative-tab-index to be focused'
+            {
+                timeoutMsg:
+                    'expect integration-delegates-focus-false-negative-tab-index to be focused',
+            }
         );
 
         await browser.waitUntil(
@@ -28,8 +30,9 @@ describe('Tabbing into custom element with delegates focus', () => {
                 const activeFromShadow = await browser.activeElementShadowDeep();
                 return (await activeFromShadow.getTagName()) === 'a';
             },
-            undefined,
-            'expect anchor to be focused'
+            {
+                timeoutMsg: 'expect anchor to be focused',
+            }
         );
     });
 });

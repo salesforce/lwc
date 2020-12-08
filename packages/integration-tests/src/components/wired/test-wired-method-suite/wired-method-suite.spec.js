@@ -31,8 +31,9 @@ describe('Component with a wired method', () => {
                 });
                 return todoText === 'Title:task 1 Completed:false';
             },
-            undefined,
-            'Should update todo id'
+            {
+                timeoutMsg: 'Expected text to be updated',
+            }
         );
     });
 });

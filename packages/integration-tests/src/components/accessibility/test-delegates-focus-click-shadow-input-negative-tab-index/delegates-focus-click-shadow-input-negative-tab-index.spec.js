@@ -24,8 +24,9 @@ describe('Tabbing into custom element with delegates focus', () => {
                 const active = await browser.activeElementShadowDeep();
                 return (await active.getTagName()) === 'input';
             },
-            undefined,
-            'expect input to be focused'
+            {
+                timeoutMsg: 'expected input to be focused',
+            }
         );
     });
 });

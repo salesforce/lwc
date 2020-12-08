@@ -29,8 +29,9 @@ describe('Component with a wired property', () => {
                 });
                 return todoText === 'Title:task 1 Completed:false';
             },
-            undefined,
-            'expect todo item to be updated'
+            {
+                timeoutMsg: 'Expected text to be updated.',
+            }
         );
     });
 });

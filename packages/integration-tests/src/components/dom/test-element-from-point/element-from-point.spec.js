@@ -13,13 +13,18 @@ describe('shadow root element from point should return correct element', () => {
         );
         await target.click();
 
-        await browser.waitUntil(async () => {
-            const indicator = await browser.shadowDeep$(
-                'integration-element-from-point',
-                '.correct-shadow-element-indicator'
-            );
-            return (await indicator.getText()) === 'Correct shadow element selected';
-        });
+        await browser.waitUntil(
+            async () => {
+                const indicator = await browser.shadowDeep$(
+                    'integration-element-from-point',
+                    '.correct-shadow-element-indicator'
+                );
+                return (await indicator.getText()) === 'Correct shadow element selected';
+            },
+            {
+                timeoutMsg: 'Expected correct text to be present',
+            }
+        );
     });
 
     it('should return correct document elements', async () => {
@@ -29,12 +34,17 @@ describe('shadow root element from point should return correct element', () => {
         );
         await target.click();
 
-        await browser.waitUntil(async () => {
-            const indicator = await browser.shadowDeep$(
-                'integration-element-from-point',
-                '.correct-document-element-indicator'
-            );
-            return (await indicator.getText()) === 'Correct document element selected';
-        });
+        await browser.waitUntil(
+            async () => {
+                const indicator = await browser.shadowDeep$(
+                    'integration-element-from-point',
+                    '.correct-document-element-indicator'
+                );
+                return (await indicator.getText()) === 'Correct document element selected';
+            },
+            {
+                timeoutMsg: 'Expected correct text to be present',
+            }
+        );
     });
 });

@@ -7,12 +7,17 @@
 describe('Retarget relatedTarget', () => {
     it('should not throw when relatedTarget is null', async () => {
         await browser.keys(['Tab']);
-        await browser.waitUntil(async () => {
-            const target = await browser.shadowDeep$(
-                'integration-retarget-null-related-target',
-                '.related-target-tabname'
-            );
-            return (await target.getText()) === 'Related target is null';
-        });
+        await browser.waitUntil(
+            async () => {
+                const target = await browser.shadowDeep$(
+                    'integration-retarget-null-related-target',
+                    '.related-target-tabname'
+                );
+                return (await target.getText()) === 'Related target is null';
+            },
+            {
+                timeoutMsg: 'Expected correct message',
+            }
+        );
     });
 });
