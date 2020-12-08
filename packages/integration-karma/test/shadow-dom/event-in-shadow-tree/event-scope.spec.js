@@ -83,8 +83,7 @@ function testEventScopeInShadowTree(type, Ctor) {
             ]);
         });
 
-        // TODO [#1139]: Event constructor doesn't support composed in compat mode
-        xit('{ bubble: true, composed: true }', () => {
+        it('{ bubble: true, composed: true }', () => {
             const evt = new Ctor('test', { bubbles: true, composed: true });
 
             const logs = dispatchEventWithLog(nodes.span, evt);
