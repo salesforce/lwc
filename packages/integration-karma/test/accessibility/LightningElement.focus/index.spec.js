@@ -8,7 +8,7 @@ beforeEach(() => {
     document.body.focus();
 });
 
-// TODO [#2126]: Firefox does not transfer focus to the host element when delegatesFocus is true.
+// TODO [#985]: Firefox does not implement delegatesFocus
 if (!process.env.NATIVE_SHADOW) {
     describe('host.focus() when { delegatesFocus: true }', () => {
         it('should focus the host element', () => {
