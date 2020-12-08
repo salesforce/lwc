@@ -8,24 +8,27 @@ beforeEach(() => {
     document.body.focus();
 });
 
-describe('host.focus() when { delegatesFocus: true }', () => {
-    it('should focus the host element', () => {
-        const elm = createElement('x-focus', { is: DelegatesFocusTrue });
-        document.body.appendChild(elm);
-        elm.focus();
+// TODO [#2126]: Firefox does not transfer focus to the host element when delegatesFocus is true.
+if (!process.env.NATIVE_SHADOW) {
+    describe('host.focus() when { delegatesFocus: true }', () => {
+        it('should focus the host element', () => {
+            const elm = createElement('x-focus', { is: DelegatesFocusTrue });
+            document.body.appendChild(elm);
+            elm.focus();
 
-        expect(document.activeElement).toEqual(elm);
+            expect(document.activeElement).toEqual(elm);
+        });
+
+        it('should focus the first internally focusable element', () => {
+            const elm = createElement('x-focus', { is: DelegatesFocusTrue });
+            document.body.appendChild(elm);
+            elm.focus();
+
+            const input = elm.shadowRoot.querySelector('.first');
+            expect(elm.shadowRoot.activeElement).toEqual(input);
+        });
     });
-
-    it('should focus the first internally focusable element', () => {
-        const elm = createElement('x-focus', { is: DelegatesFocusTrue });
-        document.body.appendChild(elm);
-        elm.focus();
-
-        const input = elm.shadowRoot.querySelector('.first');
-        expect(elm.shadowRoot.activeElement).toEqual(input);
-    });
-});
+}
 
 it('should not focus the first internally focusable element (delegatesFocus=false)', () => {
     const elm = createElement('x-focus', { is: DelegatesFocusFalse });
