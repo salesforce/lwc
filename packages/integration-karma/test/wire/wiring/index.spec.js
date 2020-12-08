@@ -78,6 +78,9 @@ describe('wiring', () => {
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
+            expect(spy).toHaveSize(1);
+            expect(spy[0].method).toBe('connect');
+
             return Promise.resolve().then(() => {
                 expect(spy).toHaveSize(2);
                 expect(spy[0].method).toBe('connect');
