@@ -20,7 +20,7 @@ import {
     isUndefined,
     toString,
 } from '@lwc/shared';
-import { getHost, SyntheticShadowRootInterface, getShadowRoot } from './shadow-root';
+import { getHost, SyntheticShadowRootInterface, getShadowRoot, isHostElement } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
@@ -83,19 +83,47 @@ function targetGetter(this: Event): EventTarget | null {
         return retarget(doc, composedPath);
     }
 
-    const eventContext = eventToContextMap.get(this);
-    const currentTarget =
-        eventContext === EventListenerContext.SHADOW_ROOT_LISTENER
-            ? getShadowRoot(originalCurrentTarget as HTMLElement)
-            : originalCurrentTarget;
-    return retarget(currentTarget, composedPath);
+    let actualCurrentTarget = originalCurrentTarget;
+    let actualPath = composedPath;
+
+    // Address the possibility that `currentTarget` is a shadow root
+    if (isHostElement(originalCurrentTarget)) {
+        const context = eventToContextMap.get(this);
+        if (context === EventListenerContext.SHADOW_ROOT_LISTENER) {
+            actualCurrentTarget = getShadowRoot(originalCurrentTarget as HTMLElement);
+        }
+    }
+
+    // Address the possibility that `target` is a shadow root
+    if (
+        isHostElement(originalTarget as HTMLElement) &&
+        eventsDispatchedDirectlyOnShadowRoot.has(this)
+    ) {
+        actualPath = pathComposer(getShadowRoot(originalTarget as HTMLElement), this.composed);
+    }
+
+    return retarget(actualCurrentTarget, actualPath);
 }
 
 function composedPathValue(this: Event): EventTarget[] {
     const originalTarget = eventTargetGetter.call(this);
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
-    // if the dispatch phase is done, the composedPath should be empty array
-    return isNull(originalCurrentTarget) ? [] : pathComposer(originalTarget as Node, this.composed);
+
+    // If the event has completed propagation, the composedPath should be an empty array.
+    if (isNull(originalCurrentTarget)) {
+        return [];
+    }
+
+    // Address the possibility that `target` is a shadow root
+    let actualTarget = originalTarget;
+    if (
+        isHostElement(originalTarget as HTMLElement) &&
+        eventsDispatchedDirectlyOnShadowRoot.has(this)
+    ) {
+        actualTarget = getShadowRoot(originalTarget as HTMLElement);
+    }
+
+    return pathComposer(actualTarget, this.composed);
 }
 
 export function patchEvent(event: Event) {
