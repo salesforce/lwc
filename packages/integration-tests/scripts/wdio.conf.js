@@ -76,10 +76,4 @@ exports.config = {
     before(caps, spec, browser) {
         registerCustomCommands(browser);
     },
-
-    beforeTest(test) {
-        // Load fixture URL before the test starts.
-        const location = path.basename(test.file).replace('.spec.js', '');
-        return browser.url(location);
-    },
 };

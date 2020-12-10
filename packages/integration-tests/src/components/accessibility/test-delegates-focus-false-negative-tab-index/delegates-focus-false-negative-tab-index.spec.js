@@ -6,6 +6,12 @@
  */
 
 describe('Tabbing into custom element with delegates focus', () => {
+    const URL = '/delegates-focus-false-negative-tab-index';
+
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should not apply focus to input in shadow', async () => {
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);

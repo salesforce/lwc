@@ -6,7 +6,13 @@
  */
 const assert = require('assert');
 
+const URL = '/basic';
+
 describe('basic invocation', () => {
+    beforeEach(async () => {
+        browser.url(URL);
+    });
+
     it('should focus on the first programmatically focusable element', async () => {
         const button = await browser.shadowDeep$('integration-basic', 'button');
         await button.click();

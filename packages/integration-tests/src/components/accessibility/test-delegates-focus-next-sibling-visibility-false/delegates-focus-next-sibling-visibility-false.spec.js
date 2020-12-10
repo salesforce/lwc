@@ -7,6 +7,12 @@
 const assert = require('assert');
 
 describe('Tabbing into custom element proceeding an invisible button', () => {
+    const URL = '/delegates-focus-next-sibling-visibility-false';
+
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should apply focus to the document body', async () => {
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);

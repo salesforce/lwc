@@ -5,6 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+const URL = '/focus-event-while-navigating';
+
+function resetCounts() {
+    return browser.execute(function () {
+        document.querySelector('integration-focus-event-while-navigating').reset();
+    });
+}
 
 function getFocusCounts() {
     return browser.execute(function () {
@@ -17,8 +24,16 @@ function getFocusCounts() {
 }
 
 describe('Focus event while sequential focus navigation', () => {
+    beforeEach(async () => {
+        await browser.url(URL);
+    });
+
     // TODO [#1243]: Fix bug where shadow tree receives focus event when it should be skipped
     describe.skip('delegatesFocus: true, tabindex: -1', async () => {
+        beforeEach(async () => {
+            await resetCounts();
+        });
+
         it('should not invoke focus event listeners (forward)', async () => {
             const headInput = await browser.shadowDeep$(
                 'integration-focus-event-while-navigating',
@@ -66,6 +81,10 @@ describe('Focus event while sequential focus navigation', () => {
 
     // TODO [#1244]: Fix bug where host does not receive focus event when it should
     describe.skip('delegatesFocus: true, tabindex: none', () => {
+        beforeEach(async () => {
+            await resetCounts();
+        });
+
         it('should invoke focus event listeners (forward)', async () => {
             const headInput = await browser.shadowDeep$(
                 'integration-focus-event-while-navigating',
@@ -114,9 +133,9 @@ describe('Focus event while sequential focus navigation', () => {
     });
 
     describe('delegatesFocus: true, tabindex: 0', () => {
-        // beforeEach(async () => {
-        //     await resetCounts();
-        // });
+        beforeEach(async () => {
+            await resetCounts();
+        });
 
         it('should not invoke focus event listener on host and should invoke focus event listener in shadow (forward)', async () => {
             const headInput = await browser.shadowDeep$(
@@ -167,6 +186,10 @@ describe('Focus event while sequential focus navigation', () => {
 
     // TODO [#1243]: Fix bug where shadow tree receives focus event when it should be skipped
     describe.skip('delegatesFocus: false, tabindex: -1', () => {
+        beforeEach(async () => {
+            await resetCounts();
+        });
+
         it('should not invoke focus event listeners (forward)', async () => {
             const headInput = await browser.shadowDeep$(
                 'integration-focus-event-while-navigating',
@@ -213,6 +236,10 @@ describe('Focus event while sequential focus navigation', () => {
     });
 
     describe('delegatesFocus: false, tabindex: 0', () => {
+        beforeEach(async () => {
+            await resetCounts();
+        });
+
         it('should invoke focus event listener on both host and in shadow (forward)', async () => {
             const headInput = await browser.shadowDeep$(
                 'integration-focus-event-while-navigating',
@@ -264,6 +291,10 @@ describe('Focus event while sequential focus navigation', () => {
 
     // TODO [#1244]: Fix bug where host does not receive focus event when it should
     describe.skip('delegatesFocus: false, tabindex: none', () => {
+        beforeEach(async () => {
+            await resetCounts();
+        });
+
         it('should invoke focus event listeners (forward)', async () => {
             const headInput = await browser.shadowDeep$(
                 'integration-focus-event-while-navigating',

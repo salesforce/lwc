@@ -5,6 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
+    const URL = '/delegates-focus-tab-index-zero-no-focusable-elements';
+
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should correctly skip the custom element', async () => {
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);

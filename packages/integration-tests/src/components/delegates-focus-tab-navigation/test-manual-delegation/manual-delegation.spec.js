@@ -5,8 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+const URL = '/manual-delegation';
 
 describe('Tab navigation when component passes tabindex attribute to an internal element', () => {
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should focus on internal element when tabbing forward from a sibling element', async () => {
         const secondOutside = await browser.shadowDeep$(
             'integration-manual-delegation',

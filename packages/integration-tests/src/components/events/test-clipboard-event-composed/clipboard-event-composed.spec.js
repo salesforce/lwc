@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+const URL = '/clipboard-event-composed';
+
 // https://stackoverflow.com/questions/11750447/performing-a-copy-and-paste-with-selenium-2/41046276#41046276
 function copy() {
     return browser.keys(['Control', 'Insert', 'Control']);
@@ -20,6 +22,10 @@ describe('clipboard-event-composed polyfill', () => {
         if (browser.capabilities.browserName === 'internet explorer') {
             this.skip();
         }
+    });
+
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
     it('copy event should be composed', async () => {

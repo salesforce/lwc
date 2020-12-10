@@ -7,6 +7,12 @@
 const assert = require('assert');
 
 describe('Component with a wired property', () => {
+    const URL = '/wired-prop-suite';
+
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should display data correctly', async () => {
         const todoText = await browser.execute(function () {
             return document

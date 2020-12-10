@@ -6,7 +6,13 @@
  */
 const assert = require('assert');
 
+const URL = '/backwards-compatible';
+
 describe('when the component overrides the focus method', () => {
+    beforeEach(async () => {
+        await browser.url(URL);
+    });
+
     it('should continue custom focus behavior', async () => {
         const target = await browser.shadowDeep$(
             'integration-backwards-compatible',

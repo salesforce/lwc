@@ -5,8 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+const URL = '/tabindex-none';
 
 describe('Tab navigation without tabindex', () => {
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should delegate focus (forward)', async () => {
         const secondOutside = await browser.shadowDeep$(
             'integration-tabindex-none',

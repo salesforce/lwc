@@ -5,8 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+const URL = '/tabindex-zero-internal';
 
 describe('Internal tab navigation when tabindex 0', () => {
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should navigate (forward)', async () => {
         const secondInside = await browser.shadowDeep$(
             'integration-tabindex-zero-internal',

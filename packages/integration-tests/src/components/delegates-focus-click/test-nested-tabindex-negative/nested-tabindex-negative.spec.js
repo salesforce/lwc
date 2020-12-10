@@ -6,7 +6,13 @@
  */
 const assert = require('assert');
 
+const URL = '/nested-tabindex-negative';
+
 describe('nested components with negative tabindex', () => {
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should focus the input when clicked', async () => {
         await browser.keys(['Tab']); // focus button
 

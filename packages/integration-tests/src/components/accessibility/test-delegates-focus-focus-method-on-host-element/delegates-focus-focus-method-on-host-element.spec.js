@@ -6,7 +6,13 @@
  */
 const assert = require('assert');
 
+const URL = '/delegates-focus-focus-method-on-host-element';
+
 describe('Invoking the focus method of a host element', () => {
+    beforeEach(async () => {
+        await browser.url(URL);
+    });
+
     it('should apply focus to the host element (tabindex -1)', async () => {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.

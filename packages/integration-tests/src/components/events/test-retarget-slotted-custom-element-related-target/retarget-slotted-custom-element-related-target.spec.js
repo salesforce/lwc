@@ -7,6 +7,12 @@
 const assert = require('assert');
 
 describe('Retarget relatedTarget', () => {
+    const URL = '/retarget-slotted-custom-element-related-target';
+
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should retarget relatedTarget from slotted custom element', async () => {
         const target = await browser.shadowDeep$(
             'integration-retarget-slotted-custom-element-related-target',

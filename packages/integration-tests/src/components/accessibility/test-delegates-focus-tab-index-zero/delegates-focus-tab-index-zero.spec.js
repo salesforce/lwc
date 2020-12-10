@@ -5,6 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 describe('Delegate focus with tabindex 0', () => {
+    const URL = '/delegates-focus-tab-index-zero/';
+
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should correctly focus on the input, not custom element', async () => {
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);
@@ -21,8 +27,6 @@ describe('Delegate focus with tabindex 0', () => {
     });
 
     it('should correctly focus on the previous element when shift tabbing', async () => {
-        await browser.keys(['Tab']);
-        await browser.keys(['Tab']);
         await browser.keys(['Tab']);
 
         await browser.waitUntil(

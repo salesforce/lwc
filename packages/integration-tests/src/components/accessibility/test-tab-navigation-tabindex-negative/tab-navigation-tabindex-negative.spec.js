@@ -5,8 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+const URL = '/tab-navigation-tabindex-negative';
 
 describe('Tab navigation when tabindex -1', () => {
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should skip shadow (forward)', async () => {
         const secondInput = await browser.shadowDeep$(
             'integration-tab-navigation-tabindex-negative',

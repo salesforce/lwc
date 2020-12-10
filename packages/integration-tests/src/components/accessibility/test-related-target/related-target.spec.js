@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+const URL = '/related-target';
+
 function getEvents(elm) {
     return browser.execute(function (elm) {
         return elm.getEvents();
@@ -40,6 +42,10 @@ function getChildInput() {
 // FocusEvent.relatedTarget is always null in IE11
 if (process.env.COMPAT === 'false') {
     describe('relatedTarget', () => {
+        beforeEach(async () => {
+            await browser.url(URL);
+        });
+
         describe('when focus moves downwards in a shadow tree', () => {
             it('should retarget for blur', async () => {
                 const rootInput = await getRootInput();

@@ -7,6 +7,12 @@
 const assert = require('assert');
 
 describe('Component with a wired method', () => {
+    const URL = '/wired-method-suite';
+
+    before(async () => {
+        await browser.url(URL);
+    });
+
     it('should display data correctly', async () => {
         const todoText = await browser.execute(function () {
             return document
