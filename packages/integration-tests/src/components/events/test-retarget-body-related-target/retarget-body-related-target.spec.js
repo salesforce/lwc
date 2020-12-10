@@ -14,17 +14,17 @@ describe('Retarget relatedTarget', () => {
     });
 
     it('should have correct relatedTarget when body was focused', async () => {
-        await browser.execute(function () {
-            document.body.focus();
-        });
+        const body = await browser.$('body');
+        await body.focus();
+
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);
-        const indicator = await browser.$(function () {
-            return document
-                .querySelector('integration-retarget-body-related-target')
-                .shadowRoot.querySelector('.related-target-tagname');
-        });
+
+        const indicator = await browser.shadowDeep$(
+            'integration-retarget-body-related-target',
+            '.related-target-tagname'
+        );
         assert.strictEqual(await indicator.getText(), 'body');
     });
 });

@@ -19,25 +19,15 @@ describe('Delegates focus', () => {
     it('should focus the input when clicked', async () => {
         await browser.keys(['Tab']); // focus first anchor
         await browser.keys(['Tab']); // focus second anchor
-        const input = await browser.$(function () {
-            return document
-                .querySelector(
-                    'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused'
-                )
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('input');
-        });
+        const input = await browser.shadowDeep$(
+            'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused',
+            'integration-child',
+            'input'
+        );
 
         await input.click();
-        const active = await browser.$(function () {
-            return document
-                .querySelector(
-                    'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused'
-                )
-                .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
-        });
 
-        const tagName = await active.getTagName();
-        assert.strictEqual(tagName, 'input');
+        const active = await browser.activeElementShadowDeep();
+        assert.strictEqual(await active.getTagName(), 'input');
     });
 });

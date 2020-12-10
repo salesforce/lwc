@@ -13,42 +13,28 @@ describe('Internal tab navigation when tabindex 0', () => {
     });
 
     it('should navigate (forward)', async () => {
-        const secondInside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero-internal')
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('.second-inside');
-        });
+        const secondInside = await browser.shadowDeep$(
+            'integration-tabindex-zero-internal',
+            'integration-child',
+            '.second-inside'
+        );
         await secondInside.click();
         await browser.keys(['Tab']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'third-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'third-inside');
     });
 
     it('should navigate (backward)', async () => {
-        const secondInside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero-internal')
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('.second-inside');
-        });
+        const secondInside = await browser.shadowDeep$(
+            'integration-tabindex-zero-internal',
+            'integration-child',
+            '.second-inside'
+        );
         await secondInside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'first-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
     });
 });

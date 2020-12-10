@@ -17,10 +17,7 @@ describe('Delegate focus with tabindex 0, no tabbable elements, and no tabbable 
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);
 
-        const tagName = await browser.execute(function () {
-            return document.activeElement.tagName;
-        });
-
-        assert.strictEqual(tagName, 'BODY');
+        const activeElement = await browser.activeElement();
+        assert.strictEqual(await activeElement.getTagName(), 'body');
     });
 });

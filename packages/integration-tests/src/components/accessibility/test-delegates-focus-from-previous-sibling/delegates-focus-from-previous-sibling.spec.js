@@ -17,19 +17,13 @@ describe('Tabbing into custom element with delegates focus', () => {
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);
 
-        const activeFromDocument = await browser.$(function () {
-            return document.activeElement;
-        });
+        const activeFromDocument = await browser.activeElement();
         assert.strictEqual(
             await activeFromDocument.getTagName(),
             'integration-delegates-focus-from-previous-sibling'
         );
 
-        const activeFromShadow = await browser.$(function () {
-            return document.querySelector(
-                'integration-delegates-focus-from-previous-sibling'
-            ).shadowRoot.activeElement;
-        });
+        const activeFromShadow = await activeFromDocument.activeElementShadow();
         assert.strictEqual(await activeFromShadow.getTagName(), 'integration-child');
     });
 });

@@ -23,12 +23,9 @@ describe('Component with a wired property', () => {
     });
 
     it('should update data correctly', async () => {
-        await browser.execute(function () {
-            document
-                .querySelector('integration-wired-prop-suite')
-                .shadowRoot.querySelector('button')
-                .click();
-        });
+        const button = await browser.shadowDeep$('integration-wired-prop-suite', 'button');
+        await button.click();
+
         await browser.waitUntil(
             async () => {
                 const todoText = await browser.execute(function () {
@@ -38,8 +35,9 @@ describe('Component with a wired property', () => {
                 });
                 return todoText === 'Title:task 1 Completed:false';
             },
-            undefined,
-            'expect todo item to be updated'
+            {
+                timeoutMsg: 'Expected text to be updated.',
+            }
         );
     });
 });

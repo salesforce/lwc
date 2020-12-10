@@ -18,31 +18,27 @@ describe('Tabbing into custom element with delegates focus', () => {
 
         await browser.waitUntil(
             async () => {
-                const activeFromDocument = await browser.$(function () {
-                    return document.activeElement;
-                });
+                const activeFromDocument = await browser.activeElement();
 
                 return (
                     (await activeFromDocument.getTagName()) ===
                     'integration-delegates-focus-false-negative-tab-index'
                 );
             },
-            undefined,
-            'expect integration-delegates-focus-false-negative-tab-index to be focused'
+            {
+                timeoutMsg:
+                    'expect integration-delegates-focus-false-negative-tab-index to be focused',
+            }
         );
 
         await browser.waitUntil(
             async () => {
-                const activeFromShadow = await browser.$(function () {
-                    return document.querySelector(
-                        'integration-delegates-focus-false-negative-tab-index'
-                    ).shadowRoot.activeElement;
-                });
-
+                const activeFromShadow = await browser.activeElementShadowDeep();
                 return (await activeFromShadow.getTagName()) === 'a';
             },
-            undefined,
-            'expect anchor to be focused'
+            {
+                timeoutMsg: 'expect anchor to be focused',
+            }
         );
     });
 });

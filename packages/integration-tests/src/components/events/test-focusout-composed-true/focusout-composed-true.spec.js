@@ -14,35 +14,26 @@ describe('Composed focusout event', () => {
     });
 
     it('standard event should be composed', async () => {
-        const input = await browser.$(function () {
-            return document
-                .querySelector('integration-focusout-composed-true')
-                .shadowRoot.querySelector('input');
-        });
+        const input = await browser.shadowDeep$('integration-focusout-composed-true', 'input');
 
         await input.click();
         const body = await $('body');
         await body.click();
 
-        const focusInComposed = await browser.$(function () {
-            return document
-                .querySelector('integration-focusout-composed-true')
-                .shadowRoot.querySelector('.focus-out-composed');
-        });
+        const focusInComposed = await browser.shadowDeep$(
+            'integration-focusout-composed-true',
+            '.focus-out-composed'
+        );
         assert.strictEqual(await focusInComposed.getText(), 'Focus Out Composed');
     });
-    it('custom event shoud not be composed', async () => {
-        const button = await browser.$(function () {
-            return document
-                .querySelector('integration-focusout-composed-true')
-                .shadowRoot.querySelector('button');
-        });
+    it('custom event should not be composed', async () => {
+        const button = await browser.shadowDeep$('integration-focusout-composed-true', 'button');
         await button.click();
-        const customFocusInNotComposed = await browser.$(function () {
-            return document
-                .querySelector('integration-focusout-composed-true')
-                .shadowRoot.querySelector('.custom-focus-out-not-composed');
-        });
+
+        const customFocusInNotComposed = await browser.shadowDeep$(
+            'integration-focusout-composed-true',
+            '.custom-focus-out-not-composed'
+        );
         assert.strictEqual(
             await customFocusInNotComposed.getText(),
             'Custom Focus Out Not Composed'

@@ -7,6 +7,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const { registerCustomCommands } = require('./commands');
+
 const port = process.env.PORT || 4567;
 const suiteFolders = path.resolve(__dirname, '../', 'src/components');
 
@@ -70,4 +72,8 @@ exports.config = {
             },
         ],
     ],
+
+    before(caps, spec, browser) {
+        registerCustomCommands(browser);
+    },
 };

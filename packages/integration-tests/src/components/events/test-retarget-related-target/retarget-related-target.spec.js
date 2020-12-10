@@ -14,19 +14,18 @@ describe('Retarget relatedTarget', () => {
     });
 
     it('should retarget relatedTarget from a foreign shadow', async () => {
-        await browser.execute(function () {
-            document
-                .querySelector('integration-retarget-related-target')
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('input')
-                .focus();
-        });
+        const target = await browser.shadowDeep$(
+            'integration-retarget-related-target',
+            'integration-child',
+            'input'
+        );
+        await target.focus();
         await browser.keys(['Shift', 'Tab', 'Shift']);
-        const indicator = await browser.$(function () {
-            return document
-                .querySelector('integration-retarget-related-target')
-                .shadowRoot.querySelector('.related-target-tabname');
-        });
+
+        const indicator = await browser.shadowDeep$(
+            'integration-retarget-related-target',
+            '.related-target-tabname'
+        );
         assert.strictEqual(await indicator.getText(), 'integration-child');
     });
 });

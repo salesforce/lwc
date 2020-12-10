@@ -13,84 +13,57 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should focus on custom element when tabbing forward from a sibling element', async () => {
-        const secondOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tab-navigation-tabindex-zero')
-                .shadowRoot.querySelector('.second-outside');
-        });
+        const secondOutside = await browser.shadowDeep$(
+            'integration-tab-navigation-tabindex-zero',
+            '.second-outside'
+        );
         await secondOutside.click();
         await browser.keys(['Tab']);
 
-        var tagName = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            return child.tagName.toLowerCase();
-        });
-        assert.strictEqual(tagName, 'integration-child');
+        var activeElementHost = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElementHost.getTagName(), 'integration-child');
 
-        var internal = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input;
-        });
-        assert.strictEqual(internal, null);
+        const activeElementShadow = await browser.execute(function (host) {
+            return host.shadowRoot.activeElement;
+        }, activeElementHost);
+        assert.strictEqual(activeElementShadow, null);
     });
 
     it('should focus on internal element when tabbing forward twice from a sibling element', async () => {
-        const secondOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tab-navigation-tabindex-zero')
-                .shadowRoot.querySelector('.second-outside');
-        });
+        const secondOutside = await browser.shadowDeep$(
+            'integration-tab-navigation-tabindex-zero',
+            '.second-outside'
+        );
         await secondOutside.click();
         await browser.keys(['Tab']);
         await browser.keys(['Tab']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-        assert.strictEqual(className, 'first-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
     });
 
     it('should focus on internal element when tabbing backwards from a sibling element', async () => {
-        const thirdOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tab-navigation-tabindex-zero')
-                .shadowRoot.querySelector('.third-outside');
-        });
+        const thirdOutside = await browser.shadowDeep$(
+            'integration-tab-navigation-tabindex-zero',
+            '.third-outside'
+        );
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-        assert.strictEqual(className, 'third-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'third-inside');
     });
 
     it('should focus on custom element when tabbing backwards out of the shadow', async () => {
-        const firstInside = await browser.$(function () {
-            return document
-                .querySelector('integration-tab-navigation-tabindex-zero')
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('.first-inside');
-        });
+        const firstInside = await browser.shadowDeep$(
+            'integration-tab-navigation-tabindex-zero',
+            'integration-child',
+            '.first-inside'
+        );
         await firstInside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = await browser.execute(function () {
-            var activeElement = document.activeElement;
-            while (activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {
-                activeElement = activeElement.shadowRoot.activeElement;
-            }
-            return activeElement.className;
-        });
-        assert.strictEqual(className, 'integration-child');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'integration-child');
     });
 });

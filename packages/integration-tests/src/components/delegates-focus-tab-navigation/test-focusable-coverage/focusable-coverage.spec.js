@@ -48,11 +48,7 @@ describe('sequential focus navigation coverage', () => {
         ].forEach((type) => {
             it(type, async () => {
                 // Click and focus on the first input
-                const start = await browser.$(function () {
-                    return document
-                        .querySelector('integration-focusable-coverage')
-                        .shadowRoot.querySelector('.start');
-                });
+                const start = await browser.shadowDeep$('integration-focusable-coverage', '.start');
                 await start.click();
 
                 // Set the type
@@ -63,14 +59,8 @@ describe('sequential focus navigation coverage', () => {
 
                 await browser.keys(['Tab']);
 
-                const activeElementType = await browser.execute(function () {
-                    const container = document.activeElement;
-                    const child = container.shadowRoot.activeElement;
-                    const elm = child.shadowRoot.activeElement;
-                    return elm.dataset.focus;
-                });
-
-                assert.strictEqual(activeElementType, type);
+                const activeElement = await browser.activeElementShadowDeep();
+                assert.strictEqual(await activeElement.getAttribute('data-focus'), type);
             });
         });
     });

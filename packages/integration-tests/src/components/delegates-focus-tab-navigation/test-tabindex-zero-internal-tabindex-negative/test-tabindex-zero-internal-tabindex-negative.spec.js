@@ -13,42 +13,28 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should skip internal elements contained by a negative tabindex subtree when delegating focus (forward)', async () => {
-        const firstInput = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero-internal-tabindex-negative')
-                .shadowRoot.querySelector('.first');
-        });
+        const firstInput = await browser.shadowDeep$(
+            'integration-tabindex-zero-internal-tabindex-negative',
+            '.first'
+        );
         await firstInput.click();
 
         await browser.keys(['Tab']);
 
-        var tagName = await browser.execute(function () {
-            var container = document.activeElement;
-            var parent = container.shadowRoot.activeElement;
-            var input = parent.shadowRoot.activeElement;
-            return input.tagName;
-        });
-
-        assert.strictEqual(tagName, 'INPUT');
+        const active = await browser.activeElementShadowDeep();
+        assert.strictEqual(await active.getTagName(), 'input');
     });
 
     it('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', async () => {
-        const lastInput = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-zero-internal-tabindex-negative')
-                .shadowRoot.querySelector('.last');
-        });
+        const lastInput = await browser.shadowDeep$(
+            'integration-tabindex-zero-internal-tabindex-negative',
+            '.last'
+        );
         await lastInput.click();
 
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var tagName = await browser.execute(function () {
-            var container = document.activeElement;
-            var parent = container.shadowRoot.activeElement;
-            var input = parent.shadowRoot.activeElement;
-            return input.tagName;
-        });
-
-        assert.strictEqual(tagName, 'INPUT');
+        const active = await browser.activeElementShadowDeep();
+        assert.strictEqual(await active.getTagName(), 'input');
     });
 });

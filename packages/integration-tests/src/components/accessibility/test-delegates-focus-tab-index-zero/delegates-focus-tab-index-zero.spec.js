@@ -17,14 +17,12 @@ describe('Delegate focus with tabindex 0', () => {
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
-                });
-
-                return (await active.getTagName()).toLowerCase() === 'input';
+                const active = await browser.activeElementShadowDeep();
+                return (await active.getTagName()) === 'input';
             },
-            undefined,
-            'Input should be focused'
+            {
+                timeoutMsg: 'Input should be focused',
+            }
         );
     });
 
@@ -33,41 +31,36 @@ describe('Delegate focus with tabindex 0', () => {
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement;
-                });
-
+                const active = await browser.activeElementShadowDeep();
                 return (await active.getText()) === 'second button';
             },
-            undefined,
-            'Second button should be focused'
+            {
+                timeoutMsg: 'Second button should be focused',
+            }
         );
 
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
-                });
-
-                return (await active.getTagName()).toLowerCase() === 'input';
+                const active = await browser.activeElementShadowDeep();
+                return (await active.getTagName()) === 'input';
             },
-            undefined,
-            'Input should be focused'
+            {
+                timeoutMsg: 'Input should be focused',
+            }
         );
 
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement;
-                });
+                const active = await browser.activeElementShadowDeep();
                 return (await active.getText()) === 'first button';
             },
-            undefined,
-            'First button should be focused'
+            {
+                timeoutMsg: 'First button should be focused',
+            }
         );
     });
 });

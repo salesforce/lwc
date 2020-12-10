@@ -14,48 +14,33 @@ describe('focus delegation when clicking on form element label', () => {
     });
 
     it('should apply focus to element associated with label when relatedTarget is null', async () => {
-        const label = await browser.$(function () {
-            return document
-                .querySelector('integration-delegates-focus-non-focusable-click-target')
-                .shadowRoot.querySelector('integration-input')
-                .shadowRoot.querySelector('label');
-        });
+        const label = await browser.shadowDeep$(
+            'integration-delegates-focus-non-focusable-click-target',
+            'integration-input',
+            'label'
+        );
         await label.click();
 
-        const inputClassName = await browser.execute(function () {
-            const container = document.activeElement;
-            const integrationInput = container.shadowRoot.activeElement;
-            const inputClassName = integrationInput.shadowRoot.activeElement.className;
-            return inputClassName;
-        });
-
-        assert.strictEqual(inputClassName, 'internal');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'internal');
     });
 
     it('should apply focus to element associated with label when relatedTarget is non-null', async () => {
-        const headInput = await browser.$(function () {
-            return document
-                .querySelector('integration-delegates-focus-non-focusable-click-target')
-                .shadowRoot.querySelector('.head');
-        });
+        const headInput = await browser.shadowDeep$(
+            'integration-delegates-focus-non-focusable-click-target',
+            '.head'
+        );
         // Focus on input so that relatedTarget will be non-null
         await headInput.click();
 
-        const label = await browser.$(function () {
-            return document
-                .querySelector('integration-delegates-focus-non-focusable-click-target')
-                .shadowRoot.querySelector('integration-input')
-                .shadowRoot.querySelector('label');
-        });
+        const label = await browser.shadowDeep$(
+            'integration-delegates-focus-non-focusable-click-target',
+            'integration-input',
+            'label'
+        );
         await label.click();
 
-        const inputClassName = await browser.execute(function () {
-            const container = document.activeElement;
-            const integrationInput = container.shadowRoot.activeElement;
-            const inputClassName = integrationInput.shadowRoot.activeElement.className;
-            return inputClassName;
-        });
-
-        assert.strictEqual(inputClassName, 'internal');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'internal');
     });
 });

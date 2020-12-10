@@ -13,21 +13,15 @@ describe('Delegates focus', () => {
     });
 
     it('should focus the input when clicked', async () => {
-        const bottom = await browser.$(function () {
-            return document
-                .querySelector('integration-shift-tab-into-negative-tabindex')
-                .shadowRoot.querySelector('.bottom');
-        });
+        const bottom = await browser.shadowDeep$(
+            'integration-shift-tab-into-negative-tabindex',
+            '.bottom'
+        );
         await bottom.click();
 
         await browser.keys(['Shift', 'Tab', 'Shift']); // tab backwards over integration-child
 
-        const className = await browser.execute(function () {
-            const container = document.activeElement;
-            const activeElement = container.shadowRoot.activeElement;
-            return activeElement.className;
-        });
-
-        assert.strictEqual(className, 'top');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'top');
     });
 });

@@ -17,28 +17,24 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement;
-                });
-
+                const active = await browser.activeElementShadowDeep();
                 return (await active.getText()) === 'second button';
             },
-            undefined,
-            'Second button should be focused'
+            {
+                timeoutMsg: 'Second button should be focused',
+            }
         );
 
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
         await browser.waitUntil(
             async () => {
-                const active = await browser.$(function () {
-                    return document.activeElement.shadowRoot.activeElement;
-                });
-
+                const active = await browser.activeElementShadowDeep();
                 return (await active.getText()) === 'first button';
             },
-            undefined,
-            'First button should be focused'
+            {
+                timeoutMsg: 'First button should be focused',
+            }
         );
     });
 });

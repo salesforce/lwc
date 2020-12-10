@@ -15,20 +15,16 @@ describe('nested components with negative tabindex', () => {
 
     it('should focus the input when clicked', async () => {
         await browser.keys(['Tab']); // focus button
-        const input = await browser.$(function () {
-            return document
-                .querySelector('integration-nested-tabindex-negative')
-                .shadowRoot.querySelector('integration-parent')
-                .shadowRoot.querySelector('integration-child')
-                .shadowRoot.querySelector('input');
-        });
+
+        const input = await browser.shadowDeep$(
+            'integration-nested-tabindex-negative',
+            'integration-parent',
+            'integration-child',
+            'input'
+        );
         await input.click(); // click into input
-        const active = await browser.$(function () {
-            return document
-                .querySelector('integration-nested-tabindex-negative')
-                .shadowRoot.querySelector('integration-parent')
-                .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
-        });
+
+        const active = await browser.activeElementShadowDeep();
         assert.strictEqual(await active.getTagName(), 'input');
     });
 });

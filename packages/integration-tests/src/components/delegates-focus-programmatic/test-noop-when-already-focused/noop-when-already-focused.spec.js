@@ -14,39 +14,26 @@ describe('when the shadow already contains the active element', () => {
     });
 
     it('should not change the currently focused element', async () => {
-        const input = await browser.$(function () {
-            var container = document.querySelector('integration-noop-when-already-focused');
-            var child = container.shadowRoot.querySelector('integration-child');
-            return child.shadowRoot.querySelector('input');
-        });
+        const input = await browser.shadowDeep$(
+            'integration-noop-when-already-focused',
+            'integration-child',
+            'input'
+        );
         await input.click();
 
-        await browser.execute(function () {
-            document.querySelector('integration-noop-when-already-focused').focus();
-        });
+        const target = await browser.$('integration-noop-when-already-focused');
+        await target.focus();
 
-        const className = await browser.execute(function () {
-            var active = document.activeElement;
-            while (active.shadowRoot) {
-                active = active.shadowRoot.activeElement;
-            }
-            return active.className;
-        });
-        assert.strictEqual(className, 'child-input');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'child-input');
     });
 
     it('should result in the same focused element when invoked twice', async () => {
-        await browser.execute(function () {
-            document.querySelector('integration-noop-when-already-focused').focus();
-            document.querySelector('integration-noop-when-already-focused').focus();
-        });
-        const className = await browser.execute(function () {
-            var active = document.activeElement;
-            while (active.shadowRoot) {
-                active = active.shadowRoot.activeElement;
-            }
-            return active.className;
-        });
-        assert.strictEqual(className, 'first');
+        const target = await browser.$('integration-noop-when-already-focused');
+        await target.focus();
+        await target.focus();
+
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'first');
     });
 });

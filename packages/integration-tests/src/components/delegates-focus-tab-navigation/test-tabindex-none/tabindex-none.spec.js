@@ -13,40 +13,26 @@ describe('Tab navigation without tabindex', () => {
     });
 
     it('should delegate focus (forward)', async () => {
-        const secondOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-none')
-                .shadowRoot.querySelector('.second-outside');
-        });
+        const secondOutside = await browser.shadowDeep$(
+            'integration-tabindex-none',
+            '.second-outside'
+        );
         await secondOutside.click();
         await browser.keys(['Tab']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'first-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
     });
 
     it('should delegate focus (backward)', async () => {
-        const thirdOutside = await browser.$(function () {
-            return document
-                .querySelector('integration-tabindex-none')
-                .shadowRoot.querySelector('.third-outside');
-        });
+        const thirdOutside = await browser.shadowDeep$(
+            'integration-tabindex-none',
+            '.third-outside'
+        );
         await thirdOutside.click();
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
-        var className = await browser.execute(function () {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        });
-
-        assert.strictEqual(className, 'third-inside');
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'third-inside');
     });
 });

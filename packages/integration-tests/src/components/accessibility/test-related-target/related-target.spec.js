@@ -7,36 +7,36 @@
 const assert = require('assert');
 const URL = '/related-target';
 
-function getRootEvents() {
-    return browser.execute(function () {
-        return document.querySelector('integration-related-target').getEvents();
-    }).value;
-}
-function getRootInput() {
-    return browser.$(function () {
-        return document
-            .querySelector('integration-related-target')
-            .shadowRoot.querySelector('input');
-    });
+function getEvents(elm) {
+    return browser.execute(function (elm) {
+        return elm.getEvents();
+    }, elm).value;
 }
 
-function getChildEvents() {
-    return browser.execute(function () {
-        return document
-            .querySelector('integration-related-target')
-            .shadowRoot.querySelector('integration-parent')
-            .shadowRoot.querySelector('integration-child')
-            .getEvents();
-    }).value;
+async function getRootEvents() {
+    const root = await browser.$('integration-related-target');
+    return getEvents(root);
 }
+function getRootInput() {
+    return browser.shadowDeep$('integration-related-target', 'input');
+}
+
+async function getChildEvents() {
+    const child = await browser.shadowDeep$(
+        'integration-related-target',
+        'integration-parent',
+        'integration-child'
+    );
+    return getEvents(child);
+}
+
 function getChildInput() {
-    return browser.$(function () {
-        return document
-            .querySelector('integration-related-target')
-            .shadowRoot.querySelector('integration-parent')
-            .shadowRoot.querySelector('integration-child')
-            .shadowRoot.querySelector('input');
-    });
+    return browser.shadowDeep$(
+        'integration-related-target',
+        'integration-parent',
+        'integration-child',
+        'input'
+    );
 }
 
 // FocusEvent.relatedTarget is always null in IE11

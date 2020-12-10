@@ -14,19 +14,13 @@ describe('when the component overrides the focus method', () => {
     });
 
     it('should continue custom focus behavior', async () => {
-        await browser.execute(function () {
-            return document
-                .querySelector('integration-backwards-compatible')
-                .shadowRoot.querySelector('integration-child')
-                .focus();
-        });
-        const className = await browser.execute(function () {
-            var active = document.activeElement;
-            while (active.shadowRoot) {
-                active = active.shadowRoot.activeElement;
-            }
-            return active.className;
-        });
-        assert.strictEqual(className, 'internal-textarea');
+        const target = await browser.shadowDeep$(
+            'integration-backwards-compatible',
+            'integration-child'
+        );
+        await target.focus();
+
+        const activeElement = await browser.activeElementShadowDeep();
+        assert.strictEqual(await activeElement.getAttribute('class'), 'internal-textarea');
     });
 });
