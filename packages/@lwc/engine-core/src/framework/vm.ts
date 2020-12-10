@@ -66,6 +66,11 @@ export enum VMState {
     disconnected,
 }
 
+export interface WireConnector {
+    connect: () => void;
+    disconnect: () => void;
+}
+
 export interface Context {
     /** The attribute name used on the host element to scope the style. */
     hostAttribute: string | undefined;
@@ -76,10 +81,8 @@ export interface Context {
     /** Object used by the template function to store information that can be reused between
      *  different render cycle of the same template. */
     tplCache: TemplateCache;
-    /** List of wire hooks that are invoked when the component gets connected. */
-    wiredConnecting: Array<() => void>;
-    /** List of wire hooks that are invoked when the component gets disconnected. */
-    wiredDisconnecting: Array<() => void>;
+    /** List of wire connectors attached to this component. */
+    wiredConnectors: WireConnector[];
 }
 
 export interface VM<N = HostNode, E = HostElement> {
@@ -275,8 +278,7 @@ export function createVM<HostNode, HostElement>(
             shadowAttribute: undefined,
             styleVNode: null,
             tplCache: EmptyObject,
-            wiredConnecting: EmptyArray,
-            wiredDisconnecting: EmptyArray,
+            wiredConnectors: EmptyArray,
         },
 
         tro: null!, // Set synchronously after the VM creation.

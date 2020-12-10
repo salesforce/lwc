@@ -7,7 +7,8 @@
 import { assert, isUndefined, ArrayPush, defineProperty, defineProperties } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
-import { VM, runWithBoundaryProtection, VMState } from './vm';
+import { VM, runWithBoundaryProtection, WireConnector } from './vm';
+import { HostElement, Renderer } from './renderer';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
@@ -108,57 +109,74 @@ function createConfigWatcher(
 }
 
 function createContextWatcher(
-    vm: VM,
-    wireDef: WireDef,
-    callbackWhenContextIsReady: (newContext: ContextValue) => void
-) {
-    const { adapter } = wireDef;
+    adapter: WireAdapterConstructor,
+    elm: HostElement,
+    renderer: Renderer,
+    computeConfigAndUpdate: () => void
+): ContextWatcher | undefined {
+    if (isUndefined(adapter.contextSchema)) {
+        return; // no config watcher required
+    }
+
     const adapterContextToken = getAdapterToken(adapter);
     if (isUndefined(adapterContextToken)) {
         return; // no provider found, nothing to be done
     }
-    const {
-        elm,
-        renderer,
-        context: { wiredConnecting, wiredDisconnecting },
-    } = vm;
-    // waiting for the component to be connected to formally request the context via the token
-    ArrayPush.call(wiredConnecting, () => {
-        // This event is responsible for connecting the host element with another
-        // element in the composed path that is providing contextual data. The provider
-        // must be listening for a special dom event with the name corresponding to the value of
-        // `adapterContextToken`, which will remain secret and internal to this file only to
-        // guarantee that the linkage can be forged.
-        const contextRegistrationEvent = new WireContextRegistrationEvent(adapterContextToken, {
-            setNewContext(newContext: ContextValue) {
-                // eslint-disable-next-line lwc-internal/no-invalid-todo
-                // TODO: dev-mode validation of config based on the adapter.contextSchema
-                callbackWhenContextIsReady(newContext);
-            },
-            setDisconnectedCallback(disconnectCallback: () => void) {
-                // adds this callback into the disconnect bucket so it gets disconnected from parent
-                // the the element hosting the wire is disconnected
-                ArrayPush.call(wiredDisconnecting, disconnectCallback);
-            },
-        });
-        renderer.dispatchEvent(elm, contextRegistrationEvent);
-    });
+
+    let isConnected = false;
+    let context: ContextValue | undefined;
+    const wiredDisconnecting: Array<() => void> = [];
+
+    return {
+        connect() {
+            isConnected = true;
+
+            // This event is responsible for connecting the host element with another
+            // element in the composed path that is providing contextual data. The provider
+            // must be listening for a special dom event with the name corresponding to the value of
+            // `adapterContextToken`, which will remain secret and internal to this file only to
+            // guarantee that the linkage can be forged.
+            const contextRegistrationEvent = new WireContextRegistrationEvent(adapterContextToken, {
+                setNewContext(newContext: ContextValue) {
+                    // eslint-disable-next-line lwc-internal/no-invalid-todo
+                    // TODO: dev-mode validation of config based on the adapter.contextSchema
+                    if (context !== newContext) {
+                        context = newContext;
+                        // Note: when new context arrives, the config will be recomputed and pushed along side the new
+                        // context, this is to preserve the identity characteristics, config should not have identity
+                        // (ever), while context can have identity
+                        if (isConnected) {
+                            computeConfigAndUpdate();
+                        }
+                    }
+                },
+                setDisconnectedCallback(disconnectCallback: () => void) {
+                    // adds this callback into the disconnect bucket so it gets disconnected from parent
+                    // the the element hosting the wire is disconnected
+                    ArrayPush.call(wiredDisconnecting, disconnectCallback);
+                },
+            });
+            renderer.dispatchEvent(elm, contextRegistrationEvent);
+        },
+        disconnect() {
+            isConnected = false;
+
+            for (let i = 0, n = wiredDisconnecting.length; i < n; i++) {
+                wiredDisconnecting[i]();
+            }
+        },
+        get contextValue() {
+            return context;
+        },
+    };
 }
 
-function createConnector(
-    vm: VM,
-    name: string,
-    wireDef: WireDef
-): {
-    connector: WireAdapter;
-    computeConfigAndUpdate: () => void;
-    resetConfigWatcher: () => void;
-} {
+function createConnector(vm: VM, name: string, wireDef: WireDef): WireConnector {
     const { method, adapter, configCallback, dynamic } = wireDef;
+    const hasDynamicParams = dynamic.length > 0;
     const dataCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
         : createMethodDataCallback(vm, method);
-    let context: ContextValue | undefined;
     let connector: WireAdapter;
 
     // Workaround to pass the component element associated to this wire adapter instance.
@@ -179,6 +197,9 @@ function createConnector(
         },
         noop
     );
+
+    let contextWatcher: ContextWatcher | undefined;
+
     const updateConnectorConfig = (config: ConfigValue) => {
         // every time the config is recomputed due to tracking,
         // this callback will be invoked with the new computed config
@@ -188,7 +209,7 @@ function createConnector(
             noop,
             () => {
                 // job
-                connector.update(config, context);
+                connector.update(config, contextWatcher?.contextValue);
             },
             noop
         );
@@ -202,27 +223,44 @@ function createConnector(
         updateConnectorConfig
     );
 
-    // if the adapter needs contextualization, we need to watch for new context and push it alongside the config
-    if (!isUndefined(adapter.contextSchema)) {
-        createContextWatcher(vm, wireDef, (newContext: ContextValue) => {
-            // every time the context is pushed into this component,
-            // this callback will be invoked with the new computed context
-            if (context !== newContext) {
-                context = newContext;
-                // Note: when new context arrives, the config will be recomputed and pushed along side the new
-                // context, this is to preserve the identity characteristics, config should not have identity
-                // (ever), while context can have identity
-                if (vm.state === VMState.connected) {
-                    computeConfigAndUpdate();
-                }
-            }
-        });
-    }
+    contextWatcher = createContextWatcher(adapter, vm.elm, vm.renderer, computeConfigAndUpdate);
+
     return {
-        // @ts-ignore the boundary protection executes sync, connector is always defined
-        connector,
-        computeConfigAndUpdate,
-        resetConfigWatcher: () => ro.reset(),
+        connect() {
+            runWithBoundaryProtection(
+                vm,
+                vm,
+                noop,
+                () => {
+                    connector.connect();
+
+                    contextWatcher?.connect();
+                },
+                noop
+            );
+
+            // computeConfigAndUpdate already has boundary protection
+            if (hasDynamicParams) {
+                Promise.resolve().then(computeConfigAndUpdate);
+            } else {
+                computeConfigAndUpdate();
+            }
+        },
+        disconnect() {
+            runWithBoundaryProtection(
+                vm,
+                vm,
+                noop,
+                () => {
+                    connector.disconnect();
+
+                    contextWatcher?.disconnect();
+                },
+                noop
+            );
+
+            ro.reset();
+        },
     };
 }
 
@@ -264,6 +302,12 @@ export function setAdapterToken(adapter: WireAdapterConstructor, token: string) 
 
 export type ContextValue = Record<string, any>;
 export type ConfigCallback = (component: ComponentInterface) => ConfigValue;
+
+interface ContextWatcher {
+    connect: () => void;
+    disconnect: () => void;
+    readonly contextValue: ContextValue | undefined;
+}
 
 export interface WireAdapterConstructor {
     new (callback: DataCallback): WireAdapter;
@@ -315,8 +359,7 @@ export function installWireAdapters(vm: VM) {
         def: { wire },
     } = vm;
 
-    const wiredConnecting = (context.wiredConnecting = []);
-    const wiredDisconnecting = (context.wiredDisconnecting = []);
+    const wiredConnectors: WireConnector[] = (context.wiredConnectors = []);
 
     for (const fieldNameOrMethod in wire) {
         const descriptor = wire[fieldNameOrMethod];
@@ -325,49 +368,25 @@ export function installWireAdapters(vm: VM) {
             assert.invariant(wireDef, `Internal Error: invalid wire definition found.`);
         }
         if (!isUndefined(wireDef)) {
-            const { connector, computeConfigAndUpdate, resetConfigWatcher } = createConnector(
-                vm,
-                fieldNameOrMethod,
-                wireDef
-            );
-            const hasDynamicParams = wireDef.dynamic.length > 0;
-            ArrayPush.call(wiredConnecting, () => {
-                connector.connect();
-                if (hasDynamicParams) {
-                    Promise.resolve().then(computeConfigAndUpdate);
-                } else {
-                    computeConfigAndUpdate();
-                }
-            });
-            ArrayPush.call(wiredDisconnecting, () => {
-                connector.disconnect();
-                resetConfigWatcher();
-            });
+            const connector = createConnector(vm, fieldNameOrMethod, wireDef);
+
+            wiredConnectors.push(connector);
         }
     }
 }
 
 export function connectWireAdapters(vm: VM) {
-    const { wiredConnecting } = vm.context;
+    const { wiredConnectors } = vm.context;
 
-    for (let i = 0, len = wiredConnecting.length; i < len; i += 1) {
-        wiredConnecting[i]();
+    for (let i = 0, len = wiredConnectors.length; i < len; i += 1) {
+        wiredConnectors[i].connect();
     }
 }
 
 export function disconnectWireAdapters(vm: VM) {
-    const { wiredDisconnecting } = vm.context;
+    const { wiredConnectors } = vm.context;
 
-    runWithBoundaryProtection(
-        vm,
-        vm,
-        noop,
-        () => {
-            // job
-            for (let i = 0, len = wiredDisconnecting.length; i < len; i += 1) {
-                wiredDisconnecting[i]();
-            }
-        },
-        noop
-    );
+    for (let i = 0, len = wiredConnectors.length; i < len; i += 1) {
+        wiredConnectors[i].disconnect();
+    }
 }
