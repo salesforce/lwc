@@ -7,6 +7,3 @@
 import { hasOwnProperty } from '@lwc/shared';
 
 export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');
-
-export const dispatchEvent =
-    'EventTarget' in window ? EventTarget.prototype.dispatchEvent : Node.prototype.dispatchEvent; // IE11
