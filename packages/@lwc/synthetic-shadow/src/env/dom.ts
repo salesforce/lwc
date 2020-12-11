@@ -6,9 +6,6 @@
  */
 import { getOwnPropertyDescriptor } from '@lwc/shared';
 
-const dispatchEvent =
-    'EventTarget' in window ? EventTarget.prototype.dispatchEvent : Node.prototype.dispatchEvent; // IE11
-
 const eventTargetGetter: (this: Event) => EventTarget = getOwnPropertyDescriptor(
     Event.prototype,
     'target'
@@ -23,9 +20,4 @@ const focusEventRelatedTargetGetter: (
     this: FocusEvent
 ) => EventTarget | null = getOwnPropertyDescriptor(FocusEvent.prototype, 'relatedTarget')!.get!;
 
-export {
-    dispatchEvent,
-    eventTargetGetter,
-    eventCurrentTargetGetter,
-    focusEventRelatedTargetGetter,
-};
+export { eventTargetGetter, eventCurrentTargetGetter, focusEventRelatedTargetGetter };
