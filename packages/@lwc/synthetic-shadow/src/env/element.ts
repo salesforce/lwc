@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { hasOwnProperty, getOwnPropertyDescriptor } from '@lwc/shared';
+import { addEventListener, removeEventListener } from '../env/event-target';
 
 const {
-    addEventListener,
     getAttribute,
     getBoundingClientRect,
     getElementsByTagName,
@@ -16,7 +16,6 @@ const {
     querySelector,
     querySelectorAll,
     removeAttribute,
-    removeEventListener,
     setAttribute,
 } = Element.prototype;
 
