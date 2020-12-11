@@ -7,9 +7,10 @@
 import { defineProperties, isFunction, isNull, isObject } from '@lwc/shared';
 import { eventTargetGetter } from '../../env/dom';
 import {
-    removeEventListener as nativeRemoveEventListener,
     addEventListener as nativeAddEventListener,
-} from '../../env/element';
+    eventTargetPrototype,
+    removeEventListener as nativeRemoveEventListener,
+} from '../../env/event-target';
 import {
     windowRemoveEventListener as nativeWindowRemoveEventListener,
     windowAddEventListener as nativeWindowAddEventListener,
@@ -120,16 +121,11 @@ function removeEventListener(
     nativeRemoveEventListener.call(this, type, listener, optionsOrCapture);
 }
 
-// TODO [#1305]: these patches should be on EventTarget.prototype instead of win and node prototypes
-//       but IE doesn't support that.
+// Patching `window` directly because it is neither an instance of EventTarget nor Node in IE11
 window.addEventListener = windowAddEventListener;
 window.removeEventListener = windowRemoveEventListener;
 
-// IE11 doesn't have EventTarget, so we have to patch it conditionally:
-const protoToBePatched =
-    typeof EventTarget !== 'undefined' ? EventTarget.prototype : Node.prototype;
-
-defineProperties(protoToBePatched, {
+defineProperties(eventTargetPrototype, {
     addEventListener: {
         value: addEventListener,
         enumerable: true,

@@ -7,7 +7,6 @@
 import { hasOwnProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 
 const {
-    addEventListener,
     getAttribute,
     getBoundingClientRect,
     getElementsByTagName,
@@ -16,7 +15,6 @@ const {
     querySelector,
     querySelectorAll,
     removeAttribute,
-    removeEventListener,
     setAttribute,
 } = Element.prototype;
 
@@ -94,7 +92,6 @@ const shadowRootGetter: (this: Element) => ShadowRoot | null = hasOwnProperty.ca
     : () => null;
 
 export {
-    addEventListener,
     attachShadow,
     childrenGetter,
     childElementCountGetter,
@@ -114,7 +111,6 @@ export {
     querySelector,
     querySelectorAll,
     removeAttribute,
-    removeEventListener,
     setAttribute,
     shadowRootGetter,
     tagNameGetter,

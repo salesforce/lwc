@@ -7,6 +7,7 @@
 import { defineProperties } from '@lwc/shared';
 import { addCustomElementEventListener, removeCustomElementEventListener } from './events';
 import { isHostElement } from './shadow-root';
+import { eventTargetPrototype } from '../env/event-target';
 
 // These methods are usually from EventTarget.prototype, but that's not available in IE11, the next best thing
 // is Node.prototype, which is an EventTarget as well.
@@ -41,36 +42,17 @@ function removeEventListenerPatched(
     }
 }
 
-// IE11 doesn't have EventTarget, so we have to patch it conditionally:
-if (typeof EventTarget !== 'undefined') {
-    defineProperties(EventTarget.prototype, {
-        addEventListener: {
-            value: addEventListenerPatched,
-            enumerable: true,
-            writable: true,
-            configurable: true,
-        },
-        removeEventListener: {
-            value: removeEventListenerPatched,
-            enumerable: true,
-            writable: true,
-            configurable: true,
-        },
-    });
-} else {
-    // IE11 extra patches for wrong prototypes
-    defineProperties(Node.prototype, {
-        addEventListener: {
-            value: addEventListenerPatched,
-            enumerable: true,
-            writable: true,
-            configurable: true,
-        },
-        removeEventListener: {
-            value: removeEventListenerPatched,
-            enumerable: true,
-            writable: true,
-            configurable: true,
-        },
-    });
-}
+defineProperties(eventTargetPrototype, {
+    addEventListener: {
+        value: addEventListenerPatched,
+        enumerable: true,
+        writable: true,
+        configurable: true,
+    },
+    removeEventListener: {
+        value: removeEventListenerPatched,
+        enumerable: true,
+        writable: true,
+        configurable: true,
+    },
+});

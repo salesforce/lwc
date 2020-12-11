@@ -20,8 +20,8 @@ import {
     isUndefined,
     setHiddenField,
 } from '@lwc/shared';
-import { dispatchEvent } from '../env/dom';
 import { getAttribute, setAttribute } from '../env/element';
+import { dispatchEvent } from '../env/event-target';
 import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import { childNodesGetter, parentNodeGetter } from '../env/node';
 import {
