@@ -20,14 +20,14 @@ import {
     isUndefined,
     toString,
 } from '@lwc/shared';
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { getHost, SyntheticShadowRootInterface, getShadowRoot } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
+import { addEventListener, removeEventListener } from '../env/event-target';
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { pathComposer } from './../3rdparty/polymer/path-composer';
 import { retarget } from './../3rdparty/polymer/retarget';
 import { getNodeOwnerKey } from '../shared/node-ownership';
 import { getOwnerDocument } from '../shared/utils';
-import { addEventListener, removeEventListener } from '../env/element';
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;

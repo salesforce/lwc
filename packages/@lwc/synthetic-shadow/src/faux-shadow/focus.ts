@@ -17,25 +17,9 @@ import {
     isUndefined,
     toString,
 } from '@lwc/shared';
+
+import { isDelegatingFocus, isHostElement } from './shadow-root';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
-import {
-    matches,
-    querySelector,
-    querySelectorAll,
-    getBoundingClientRect,
-    addEventListener,
-    removeEventListener,
-    tabIndexGetter,
-    tagNameGetter,
-    getAttribute,
-    hasAttribute,
-} from '../env/element';
-import {
-    compareDocumentPosition,
-    DOCUMENT_POSITION_CONTAINED_BY,
-    DOCUMENT_POSITION_PRECEDING,
-    DOCUMENT_POSITION_FOLLOWING,
-} from '../env/node';
 import {
     DocumentPrototypeActiveElement,
     querySelectorAll as documentQuerySelectorAll,
@@ -45,7 +29,23 @@ import {
     eventTargetGetter,
     focusEventRelatedTargetGetter,
 } from '../env/dom';
-import { isDelegatingFocus, isHostElement } from './shadow-root';
+import {
+    matches,
+    querySelector,
+    querySelectorAll,
+    getBoundingClientRect,
+    tabIndexGetter,
+    tagNameGetter,
+    getAttribute,
+    hasAttribute,
+} from '../env/element';
+import { addEventListener, removeEventListener } from '../env/event-target';
+import {
+    compareDocumentPosition,
+    DOCUMENT_POSITION_CONTAINED_BY,
+    DOCUMENT_POSITION_PRECEDING,
+    DOCUMENT_POSITION_FOLLOWING,
+} from '../env/node';
 import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
 
 const FocusableSelector = `

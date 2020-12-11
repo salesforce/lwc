@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { hasOwnProperty, getOwnPropertyDescriptor } from '@lwc/shared';
-import { addEventListener, removeEventListener } from '../env/event-target';
 
 const {
     getAttribute,
@@ -93,7 +92,6 @@ const shadowRootGetter: (this: Element) => ShadowRoot | null = hasOwnProperty.ca
     : () => null;
 
 export {
-    addEventListener,
     attachShadow,
     childrenGetter,
     childElementCountGetter,
@@ -113,7 +111,6 @@ export {
     querySelector,
     querySelectorAll,
     removeAttribute,
-    removeEventListener,
     setAttribute,
     shadowRootGetter,
     tagNameGetter,

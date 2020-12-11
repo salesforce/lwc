@@ -9,7 +9,7 @@ import { eventTargetGetter } from '../../env/dom';
 import {
     removeEventListener as nativeRemoveEventListener,
     addEventListener as nativeAddEventListener,
-} from '../../env/element';
+} from '../../env/event-target';
 import {
     windowRemoveEventListener as nativeWindowRemoveEventListener,
     windowAddEventListener as nativeWindowAddEventListener,
