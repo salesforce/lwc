@@ -35,14 +35,8 @@ function testAssignedElements(testDescription, getContainer) {
     });
 }
 
-// Chrome is the only browser implementing HTMLSlotElement.assignedElement natively.
-// Webkit - https://bugs.webkit.org/show_bug.cgi?id=180908
-// Gecko - https://bugzilla.mozilla.org/show_bug.cgi?id=1425685
-const SUPPORT_ASSIGNED_ELEMENTS =
-    !process.env.NATIVE_SHADOW || 'assignedElements' in document.createElement('slot');
-
 // Should not be expecting native shadow behavior to work in compat mode
-if (SUPPORT_ASSIGNED_ELEMENTS && process.env.COMPAT !== true) {
+if (!process.env.COMPAT) {
     testAssignedElements(
         'assignedElements() retains native behavior in native shadow dom tree',
         () => document.body
