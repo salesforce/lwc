@@ -7,14 +7,11 @@
 import { defineProperties } from '@lwc/shared';
 import { addCustomElementEventListener, removeCustomElementEventListener } from './events';
 import { isHostElement } from './shadow-root';
-import { eventTargetPrototype } from '../env/event-target';
-
-// These methods are usually from EventTarget.prototype, but that's not available in IE11, the next best thing
-// is Node.prototype, which is an EventTarget as well.
-const {
-    addEventListener: superAddEventListener,
-    removeEventListener: superRemoveEventListener,
-} = Node.prototype;
+import {
+    addEventListener as superAddEventListener,
+    eventTargetPrototype,
+    removeEventListener as superRemoveEventListener,
+} from '../env/event-target';
 
 function addEventListenerPatched(
     this: Element,
