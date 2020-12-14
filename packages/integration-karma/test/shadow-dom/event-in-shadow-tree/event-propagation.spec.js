@@ -527,18 +527,21 @@ describe('when dispatched on shadowRoot', () => {
 
         const composedPath = [nodes['x-shadow-tree'].shadowRoot];
 
-        const expectedLogs = [
+        expect(logs).toEqual([
             [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
-        ];
-        if (!process.env.NATIVE_SHADOW) {
-            // TODO [#1569]: Listeners on the following targets should not be invoked when the event is non-composed.
-            expectedLogs.push(
-                [document.body, null, composedPath],
-                [document.documentElement, null, composedPath],
-                [document, null, composedPath]
-            );
-        }
+        ]);
+    });
 
-        expect(logs).toEqual(expectedLogs);
+    it('{ bubbles: false, composed: false }', () => {
+        const logs = dispatchEventWithLog(
+            nodes['x-shadow-tree'].shadowRoot,
+            new CustomEvent('test', { bubbles: false, composed: false })
+        );
+
+        const composedPath = [nodes['x-shadow-tree'].shadowRoot];
+
+        expect(logs).toEqual([
+            [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
+        ]);
     });
 });
