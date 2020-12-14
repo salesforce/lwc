@@ -4,11 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isUndefined, ArrayPush, defineProperty, defineProperties } from '@lwc/shared';
+import {
+    assert,
+    isUndefined,
+    ArrayPush,
+    defineProperty,
+    defineProperties,
+    forEach,
+} from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { VM, runWithBoundaryProtection, WireConnector } from './vm';
-import { HostElement, Renderer } from './renderer';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
@@ -74,106 +80,222 @@ function createMethodDataCallback(vm: VM, method: (data: any) => any) {
     };
 }
 
-function createConfigWatcher(
-    component: ComponentInterface,
-    configCallback: ConfigCallback,
-    callbackWhenConfigIsReady: (newConfig: ConfigValue) => void
-): { computeConfigAndUpdate: () => void; ro: ReactiveObserver } {
-    let hasPendingConfig: boolean = false;
-    // creating the reactive observer for reactive params when needed
-    const ro = new ReactiveObserver(() => {
-        if (hasPendingConfig === false) {
-            hasPendingConfig = true;
-            // collect new config in the micro-task
-            Promise.resolve().then(() => {
-                hasPendingConfig = false;
-                // resetting current reactive params
-                ro.reset();
-                // dispatching a new config due to a change in the configuration
-                computeConfigAndUpdate();
-            });
-        }
-    });
-    const computeConfigAndUpdate = () => {
-        let config: ConfigValue;
-        ro.observe(() => (config = configCallback(component)));
-        // eslint-disable-next-line lwc-internal/no-invalid-todo
-        // TODO: dev-mode validation of config based on the adapter.configSchema
-        // @ts-ignore it is assigned in the observe() callback
-        callbackWhenConfigIsReady(config);
-    };
-    return {
-        computeConfigAndUpdate,
-        ro,
-    };
+interface InternalWireAdapter extends WireAdapter {
+    computeConfig: () => ConfigValue;
 }
 
-function createContextWatcher(
-    adapter: WireAdapterConstructor,
-    elm: HostElement,
-    renderer: Renderer,
-    computeConfigAndUpdate: () => void
-): ContextWatcher | undefined {
-    if (isUndefined(adapter.contextSchema)) {
-        return; // no config watcher required
+class BaseWireAdapter implements InternalWireAdapter {
+    private readonly vm;
+    private readonly connector;
+    private readonly configCallback;
+    private readonly component;
+
+    constructor(connector: WireAdapter, vm: VM, configCallback: ConfigCallback) {
+        this.connector = connector;
+        this.vm = vm;
+        this.component = vm.component;
+        this.configCallback = configCallback;
     }
 
-    const adapterContextToken = getAdapterToken(adapter);
-    if (isUndefined(adapterContextToken)) {
-        return; // no provider found, nothing to be done
+    computeConfig() {
+        return this.configCallback(this.component);
     }
 
-    let isConnected = false;
-    let context: ContextValue | undefined;
-    const wiredDisconnecting: Array<() => void> = [];
+    update(config: ConfigValue, context?: ContextValue) {
+        runWithBoundaryProtection(
+            this.vm,
+            this.vm,
+            noop,
+            () => {
+                // job
+                this.connector.update(config, context);
+            },
+            noop
+        );
+    }
 
-    return {
-        connect() {
-            isConnected = true;
+    connect() {
+        runWithBoundaryProtection(
+            this.vm,
+            this.vm,
+            noop,
+            () => {
+                // job
+                this.connector.connect();
+            },
+            noop
+        );
+    }
 
+    disconnect() {
+        runWithBoundaryProtection(
+            this.vm,
+            this.vm,
+            noop,
+            () => {
+                // job
+                this.connector.disconnect();
+            },
+            noop
+        );
+    }
+}
+
+class ContextAwareWireAdapter implements InternalWireAdapter {
+    private readonly decoratedWireAdapter;
+    private readonly vm;
+    private readonly adapterContextToken;
+    private readonly renderer;
+    private readonly elm;
+
+    private context: ContextValue | undefined;
+    private wiredDisconnecting: Array<() => void> = [];
+
+    private setNewContext = (newContext: ContextValue) => {
+        // eslint-disable-next-line lwc-internal/no-invalid-todo
+        // TODO: dev-mode validation of config based on the adapter.contextSchema
+        if (this.context !== newContext) {
+            this.context = newContext;
+
+            // Note: when new context arrives, the config will be recomputed and pushed along side the new
+            // context, this is to preserve the identity characteristics, config should not have identity
+            // (ever), while context can have identity
+            const config = this.computeConfig();
+            this.update(config);
+        }
+    };
+
+    private setDisconnectedCallback = (disconnectCallback: () => void) => {
+        // adds this callback into the disconnect bucket so it gets disconnected from parent
+        // when the element hosting the wire is disconnected
+        ArrayPush.call(this.wiredDisconnecting, disconnectCallback);
+    };
+
+    constructor(
+        decoratedWireAdapter: InternalWireAdapter,
+        vm: VM,
+        adapter: WireAdapterConstructor
+    ) {
+        this.decoratedWireAdapter = decoratedWireAdapter;
+        this.vm = vm;
+        this.adapterContextToken = getAdapterToken(adapter);
+        this.renderer = vm.renderer;
+        this.elm = vm.elm;
+    }
+
+    computeConfig() {
+        return this.decoratedWireAdapter.computeConfig();
+    }
+
+    update(config: ConfigValue) {
+        this.decoratedWireAdapter.update(config, this.context);
+    }
+
+    connect() {
+        this.decoratedWireAdapter.connect();
+
+        if (!isUndefined(this.adapterContextToken)) {
             // This event is responsible for connecting the host element with another
             // element in the composed path that is providing contextual data. The provider
             // must be listening for a special dom event with the name corresponding to the value of
             // `adapterContextToken`, which will remain secret and internal to this file only to
-            // guarantee that the linkage can be forged.
-            const contextRegistrationEvent = new WireContextRegistrationEvent(adapterContextToken, {
-                setNewContext(newContext: ContextValue) {
-                    // eslint-disable-next-line lwc-internal/no-invalid-todo
-                    // TODO: dev-mode validation of config based on the adapter.contextSchema
-                    if (context !== newContext) {
-                        context = newContext;
-                        // Note: when new context arrives, the config will be recomputed and pushed along side the new
-                        // context, this is to preserve the identity characteristics, config should not have identity
-                        // (ever), while context can have identity
-                        if (isConnected) {
-                            computeConfigAndUpdate();
-                        }
-                    }
-                },
-                setDisconnectedCallback(disconnectCallback: () => void) {
-                    // adds this callback into the disconnect bucket so it gets disconnected from parent
-                    // the the element hosting the wire is disconnected
-                    ArrayPush.call(wiredDisconnecting, disconnectCallback);
-                },
-            });
-            renderer.dispatchEvent(elm, contextRegistrationEvent);
-        },
-        disconnect() {
-            isConnected = false;
+            // guarantee that the linkage can't be forged.
+            const contextRegistrationEvent = new WireContextRegistrationEvent(
+                this.adapterContextToken,
+                {
+                    setNewContext: this.setNewContext,
+                    setDisconnectedCallback: this.setDisconnectedCallback,
+                }
+            );
 
-            for (let i = 0, n = wiredDisconnecting.length; i < n; i++) {
-                wiredDisconnecting[i]();
-            }
-        },
-        get contextValue() {
-            return context;
-        },
+            this.renderer.dispatchEvent(this.elm, contextRegistrationEvent);
+        }
+    }
+
+    disconnect() {
+        runWithBoundaryProtection(
+            this.vm,
+            this.vm,
+            noop,
+            () => {
+                // job
+                forEach.call(this.wiredDisconnecting, (cb) => cb());
+            },
+            noop
+        );
+
+        this.decoratedWireAdapter.disconnect();
+    }
+}
+
+class ConfigAwareWireAdapter implements InternalWireAdapter {
+    private readonly decoratedWireAdapter: InternalWireAdapter;
+    private readonly hasDynamicConfigParams: boolean;
+    private readonly ro: ReactiveObserver;
+    private hasPendingConfig = false;
+
+    private handleConfigChange = () => {
+        if (this.hasPendingConfig === false) {
+            this.hasPendingConfig = true;
+            // Debounce all config changes until next micro-task
+            Promise.resolve().then(this.handleDebouncedConfigChanges);
+        }
     };
+
+    private handleDebouncedConfigChanges = () => {
+        this.hasPendingConfig = false;
+        // resetting current reactive params
+        this.ro.reset();
+        // dispatching a new config due to a change in the configuration
+        this.computeConfigAndUpdate();
+    };
+
+    private computeConfigAndUpdate = () => {
+        let config: ConfigValue;
+        this.ro.observe(() => (config = this.computeConfig()));
+        // eslint-disable-next-line lwc-internal/no-invalid-todo
+        // TODO: dev-mode validation of config based on the adapter.configSchema
+        this.update(config!);
+    };
+
+    constructor(
+        decoratedWireAdapter: InternalWireAdapter,
+        vm: VM,
+        hasDynamicConfigParams: boolean
+    ) {
+        this.decoratedWireAdapter = decoratedWireAdapter;
+
+        this.ro = new ReactiveObserver(this.handleConfigChange);
+        this.hasDynamicConfigParams = hasDynamicConfigParams;
+    }
+
+    computeConfig() {
+        return this.decoratedWireAdapter.computeConfig();
+    }
+
+    update(config: ConfigValue) {
+        this.decoratedWireAdapter.update(config);
+    }
+
+    connect() {
+        this.decoratedWireAdapter.connect();
+
+        if (this.hasDynamicConfigParams) {
+            Promise.resolve().then(this.computeConfigAndUpdate);
+        } else {
+            this.computeConfigAndUpdate();
+        }
+    }
+
+    disconnect() {
+        this.ro.reset();
+
+        this.decoratedWireAdapter.disconnect();
+    }
 }
 
 function createConnector(vm: VM, name: string, wireDef: WireDef): WireConnector {
-    const { method, adapter, configCallback, dynamic } = wireDef;
-    const hasDynamicParams = dynamic.length > 0;
+    const { method, adapter, dynamic } = wireDef;
     const dataCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
         : createMethodDataCallback(vm, method);
@@ -198,70 +320,19 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireConnector 
         noop
     );
 
-    let contextWatcher: ContextWatcher | undefined;
-
-    const updateConnectorConfig = (config: ConfigValue) => {
-        // every time the config is recomputed due to tracking,
-        // this callback will be invoked with the new computed config
-        runWithBoundaryProtection(
-            vm,
-            vm,
-            noop,
-            () => {
-                // job
-                connector.update(config, contextWatcher?.contextValue);
-            },
-            noop
-        );
-    };
-
-    // Computes the current wire config and calls the update method on the wire adapter.
-    // If it has params, we will need to observe changes in the next tick.
-    const { computeConfigAndUpdate, ro } = createConfigWatcher(
-        vm.component,
-        configCallback,
-        updateConnectorConfig
+    let wireConnector: InternalWireAdapter = new BaseWireAdapter(
+        connector!,
+        vm,
+        wireDef.configCallback
     );
 
-    contextWatcher = createContextWatcher(adapter, vm.elm, vm.renderer, computeConfigAndUpdate);
+    if (!isUndefined(adapter.contextSchema)) {
+        wireConnector = new ContextAwareWireAdapter(wireConnector, vm, adapter);
+    }
 
-    return {
-        connect() {
-            runWithBoundaryProtection(
-                vm,
-                vm,
-                noop,
-                () => {
-                    connector.connect();
+    wireConnector = new ConfigAwareWireAdapter(wireConnector, vm, dynamic.length > 0);
 
-                    contextWatcher?.connect();
-                },
-                noop
-            );
-
-            // computeConfigAndUpdate already has boundary protection
-            if (hasDynamicParams) {
-                Promise.resolve().then(computeConfigAndUpdate);
-            } else {
-                computeConfigAndUpdate();
-            }
-        },
-        disconnect() {
-            runWithBoundaryProtection(
-                vm,
-                vm,
-                noop,
-                () => {
-                    connector.disconnect();
-
-                    contextWatcher?.disconnect();
-                },
-                noop
-            );
-
-            ro.reset();
-        },
-    };
+    return wireConnector;
 }
 
 export type DataCallback = (value: any) => void;
@@ -302,12 +373,6 @@ export function setAdapterToken(adapter: WireAdapterConstructor, token: string) 
 
 export type ContextValue = Record<string, any>;
 export type ConfigCallback = (component: ComponentInterface) => ConfigValue;
-
-interface ContextWatcher {
-    connect: () => void;
-    disconnect: () => void;
-    readonly contextValue: ContextValue | undefined;
-}
 
 export interface WireAdapterConstructor {
     new (callback: DataCallback): WireAdapter;
@@ -358,7 +423,7 @@ export function installWireAdapters(vm: VM) {
         context,
         def: { wire },
     } = vm;
-
+    // Note: A new array has to be allocated here. Until this point, all the VM has shared the same reference to an empty array/
     const wiredConnectors: WireConnector[] = (context.wiredConnectors = []);
 
     for (const fieldNameOrMethod in wire) {
