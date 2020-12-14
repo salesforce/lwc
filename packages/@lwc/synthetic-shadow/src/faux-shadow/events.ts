@@ -400,7 +400,7 @@ function isValidEventForShadowRoot(event: Event): boolean {
 export function addCustomElementEventListener(
     elm: Element,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
@@ -412,18 +412,22 @@ export function addCustomElementEventListener(
             );
         }
     }
-    const wrappedListener = getWrappedCustomElementListener(elm, listener);
-    attachDOMListener(elm, type, wrappedListener);
+    if (isFunction(listener)) {
+        const wrappedListener = getWrappedCustomElementListener(elm, listener);
+        attachDOMListener(elm, type, wrappedListener);
+    }
 }
 
 export function removeCustomElementEventListener(
     elm: Element,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
-    const wrappedListener = getWrappedCustomElementListener(elm, listener);
-    detachDOMListener(elm, type, wrappedListener);
+    if (isFunction(listener)) {
+        const wrappedListener = getWrappedCustomElementListener(elm, listener);
+        detachDOMListener(elm, type, wrappedListener);
+    }
 }
 
 export function addShadowRootEventListener(

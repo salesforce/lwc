@@ -33,6 +33,5 @@ import './faux-shadow/text';
 import './faux-shadow/element';
 import './faux-shadow/html-element';
 import './faux-shadow/slot';
-import './faux-shadow/event-target';
 import './faux-shadow/portal';
 import './faux-shadow/shadow-token';
