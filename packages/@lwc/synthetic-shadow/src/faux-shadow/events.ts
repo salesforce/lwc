@@ -239,6 +239,11 @@ function getWrappedShadowRootListener(
                     listener.call(sr, event);
                 }
             }
+
+            // If the event was dispatched directly on the shadow root
+            if (target === currentTarget) {
+                listener.call(sr, event);
+            }
         } as WrappedListener;
         shadowRootWrappedListener!.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
         if (process.env.NODE_ENV !== 'production') {
