@@ -80,11 +80,11 @@ function createMethodDataCallback(vm: VM, method: (data: any) => any) {
     };
 }
 
-interface InternalWireAdapter extends WireAdapter {
+interface WireAdapterDecorator extends WireAdapter {
     computeConfig: () => ConfigValue;
 }
 
-class BaseWireAdapter implements InternalWireAdapter {
+class BaseWireAdapter implements WireAdapterDecorator {
     private readonly vm;
     private readonly connector;
     private readonly configCallback;
@@ -141,7 +141,7 @@ class BaseWireAdapter implements InternalWireAdapter {
     }
 }
 
-class ContextAwareWireAdapter implements InternalWireAdapter {
+class ContextAwareWireAdapter implements WireAdapterDecorator {
     private readonly decoratedWireAdapter;
     private readonly vm;
     private readonly adapterContextToken;
@@ -172,7 +172,7 @@ class ContextAwareWireAdapter implements InternalWireAdapter {
     };
 
     constructor(
-        decoratedWireAdapter: InternalWireAdapter,
+        decoratedWireAdapter: WireAdapterDecorator,
         vm: VM,
         adapter: WireAdapterConstructor
     ) {
@@ -228,8 +228,8 @@ class ContextAwareWireAdapter implements InternalWireAdapter {
     }
 }
 
-class ConfigAwareWireAdapter implements InternalWireAdapter {
-    private readonly decoratedWireAdapter: InternalWireAdapter;
+class ConfigAwareWireAdapter implements WireAdapterDecorator {
+    private readonly decoratedWireAdapter: WireAdapterDecorator;
     private readonly hasDynamicConfigParams: boolean;
     private readonly ro: ReactiveObserver;
     private hasPendingConfig = false;
@@ -259,7 +259,7 @@ class ConfigAwareWireAdapter implements InternalWireAdapter {
     };
 
     constructor(
-        decoratedWireAdapter: InternalWireAdapter,
+        decoratedWireAdapter: WireAdapterDecorator,
         vm: VM,
         hasDynamicConfigParams: boolean
     ) {
@@ -320,7 +320,7 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireConnector 
         noop
     );
 
-    let wireConnector: InternalWireAdapter = new BaseWireAdapter(
+    let wireConnector: WireAdapterDecorator = new BaseWireAdapter(
         connector!,
         vm,
         wireDef.configCallback
