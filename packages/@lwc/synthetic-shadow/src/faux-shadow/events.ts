@@ -27,7 +27,7 @@ import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { pathComposer } from './../3rdparty/polymer/path-composer';
 import { retarget } from './../3rdparty/polymer/retarget';
-import { getNodeOwnerKey } from '../shared/node-ownership';
+import { getNodeOwnerKey, isNodeDeepShadowed } from '../shared/node-ownership';
 import { getOwnerDocument } from '../shared/utils';
 
 interface WrappedListener extends EventListener {
@@ -127,6 +127,11 @@ function composedPathValue(this: Event): EventTarget[] {
     return pathComposer(actualTarget, this.composed);
 }
 
+export function doesEventNeedPatch(e: Event): boolean {
+    const originalTarget = eventTargetGetter.call(e);
+    return originalTarget instanceof Node && isNodeDeepShadowed(originalTarget);
+}
+
 export function patchEvent(event: Event) {
     if (eventToContextMap.has(event)) {
         return; // already patched
@@ -201,7 +206,7 @@ function getEventMap(elm: EventTarget): ListenerMap {
     return listenerInfo;
 }
 
-const eventsDispatchedDirectlyOnShadowRoot: WeakSet<Event> = new WeakSet();
+export const eventsDispatchedDirectlyOnShadowRoot: WeakSet<Event> = new WeakSet();
 
 export function setEventFromShadowRoot(event: Event) {
     eventsDispatchedDirectlyOnShadowRoot.add(event);
