@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperties, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
+import { defineProperties, isFunction, isNull, isObject } from '@lwc/shared';
 import {
     addEventListener as nativeAddEventListener,
     eventTargetPrototype,
@@ -12,38 +12,16 @@ import {
 } from '../../env/event-target';
 import {
     addCustomElementEventListener,
-    doesEventNeedPatch,
-    patchEvent,
     removeCustomElementEventListener,
 } from '../../faux-shadow/events';
 import { isHostElement } from '../../faux-shadow/shadow-root';
-
-const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
+import { getEventListenerWrapper } from '../../shared/event-target';
 
 function isValidEventListener(listener: EventListenerOrEventListenerObject): boolean {
     return (
         isFunction(listener) ||
         (!isNull(listener) && isObject(listener) && isFunction(listener.handleEvent))
     );
-}
-
-function getEventListenerWrapper(fnOrObj: EventListenerOrEventListenerObject): EventListener {
-    let wrapperFn = EventListenerMap.get(fnOrObj);
-    if (isUndefined(wrapperFn)) {
-        wrapperFn = function (this: EventTarget, event: Event) {
-            // We don't want to patch every event, only when the original target is coming from
-            // inside a synthetic shadow
-            if (doesEventNeedPatch(event)) {
-                patchEvent(event);
-            }
-            return isFunction(fnOrObj)
-                ? (fnOrObj as EventListener).call(this, event)
-                : (fnOrObj as EventListenerObject).handleEvent &&
-                      (fnOrObj as EventListenerObject).handleEvent(event);
-        };
-        EventListenerMap.set(fnOrObj, wrapperFn);
-    }
-    return wrapperFn;
 }
 
 function addEventListener(
