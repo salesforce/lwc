@@ -435,7 +435,7 @@ export function installWireAdapters(vm: VM) {
         if (!isUndefined(wireDef)) {
             const connector = createConnector(vm, fieldNameOrMethod, wireDef);
 
-            wiredConnectors.push(connector);
+            ArrayPush.call(wiredConnectors, connector);
         }
     }
 }
