@@ -17,6 +17,7 @@ import {
     isFalse,
     isFunction,
     isNull,
+    isTrue,
     isUndefined,
     toString,
 } from '@lwc/shared';
@@ -218,30 +219,7 @@ function getWrappedShadowRootListener(
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
         shadowRootWrappedListener = function (event: Event) {
-            // * if the event is dispatched directly on the host, it is not observable from root
-            // * if the event is dispatched in an element that does not belongs to the shadow and it is not composed,
-            //   it is not observable from the root
-            const { composed } = event;
-            const target = eventTargetGetter.call(event);
-            const currentTarget = eventCurrentTargetGetter.call(event);
-            if (target !== currentTarget) {
-                const rootNode = getRootNodeHost(
-                    target as Node /* because wrapping on shadowRoot */,
-                    {
-                        composed,
-                    }
-                );
-
-                if (
-                    isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
-                    (composed === false && rootNode === currentTarget)
-                ) {
-                    listener.call(sr, event);
-                }
-            }
-
-            // If the event was dispatched directly on the shadow root
-            if (target === currentTarget) {
+            if (isValidEventForShadowRoot(event)) {
                 listener.call(sr, event);
             }
         } as WrappedListener;
@@ -363,20 +341,55 @@ function isValidEventForCustomElement(event: Event): boolean {
     const target = eventTargetGetter.call(event);
     const currentTarget = eventCurrentTargetGetter.call(event);
     const { composed } = event;
-    return (
-        // it is composed, and we should always get it, or
-        composed === true ||
-        // it is dispatched onto the custom element directly, or
-        target === currentTarget ||
+
+    let shouldInvoke = false;
+
+    if (isTrue(composed)) {
+        shouldInvoke = true;
+    } else if (target === currentTarget) {
+        // Address the possibility that `target` is a shadow root
+        shouldInvoke = !eventsDispatchedDirectlyOnShadowRoot.has(event);
+    } else {
         // it is coming from a slotted element
-        isChildNode(
+        shouldInvoke = isChildNode(
             getRootNodeHost(
                 target as Node /* because wrap on shadowRoot */,
                 GET_ROOT_NODE_CONFIG_FALSE
             ) as Element,
             currentTarget as Node
-        )
-    );
+        );
+    }
+
+    return shouldInvoke;
+}
+
+function isValidEventForShadowRoot(event: Event): boolean {
+    const { composed } = event;
+
+    let shouldInvoke = false;
+
+    if (isTrue(composed)) {
+        shouldInvoke = true;
+    } else {
+        const target = eventTargetGetter.call(event);
+        const currentTarget = eventCurrentTargetGetter.call(event);
+
+        if (eventsDispatchedDirectlyOnShadowRoot.has(event)) {
+            // If this event was directly dispatched on a root, then we should only handle
+            // it if it was dispatched on the current root because {composed: false} here.
+            shouldInvoke = target === currentTarget;
+        } else {
+            // The event was not dispatched directly on the current root so it must be bubbles:true.
+            // { bubbles: true, composed: false }
+
+            // Only invoke the listener if the target element is in the current root.
+            const currentRoot = getShadowRoot(currentTarget as HTMLElement);
+            const targetRoot = (target as HTMLElement).getRootNode();
+            shouldInvoke = currentRoot === targetRoot;
+        }
+    }
+
+    return shouldInvoke;
 }
 
 export function addCustomElementEventListener(
