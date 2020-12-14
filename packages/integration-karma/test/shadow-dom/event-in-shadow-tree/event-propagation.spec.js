@@ -484,4 +484,38 @@ describe('when dispatched on shadowRoot', () => {
             [document, nodes['x-nested-shadow-tree'], composedPath],
         ]);
     });
+
+    it('{ bubbles: false, composed: true }', () => {
+        const logs = dispatchEventWithLog(
+            nodes['x-shadow-tree'].shadowRoot,
+            new CustomEvent('test', { bubbles: false, composed: true })
+        );
+
+        const composedPath = [
+            nodes['x-shadow-tree'].shadowRoot,
+            nodes['x-shadow-tree'],
+            nodes['x-nested-shadow-tree'].shadowRoot,
+            nodes['x-nested-shadow-tree'],
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ];
+
+        const expectedLogs = [
+            [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
+            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
+        ];
+
+        // TODO [#1138]: Composed and non-bubbling events should invoke all ancestor host listeners
+        if (process.env.NATIVE_SHADOW) {
+            expectedLogs.push([
+                nodes['x-nested-shadow-tree'],
+                nodes['x-nested-shadow-tree'],
+                composedPath,
+            ]);
+        }
+
+        expect(logs).toEqual(expectedLogs);
+    });
 });
