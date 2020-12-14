@@ -450,3 +450,38 @@ describe('Event.stopImmediatePropagation', () => {
         ]);
     });
 });
+
+describe('when dispatched on shadowRoot', () => {
+    let nodes;
+
+    beforeEach(() => {
+        nodes = createNestedShadowTree(document.body);
+    });
+
+    it('{ bubbles: true, composed: true }', () => {
+        const logs = dispatchEventWithLog(
+            nodes['x-shadow-tree'].shadowRoot,
+            new CustomEvent('test', { bubbles: true, composed: true })
+        );
+
+        const composedPath = [
+            nodes['x-shadow-tree'].shadowRoot,
+            nodes['x-shadow-tree'],
+            nodes['x-nested-shadow-tree'].shadowRoot,
+            nodes['x-nested-shadow-tree'],
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ];
+        expect(logs).toEqual([
+            [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
+            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
+            [nodes['x-nested-shadow-tree'].shadowRoot, nodes['x-shadow-tree'], composedPath],
+            [nodes['x-nested-shadow-tree'], nodes['x-nested-shadow-tree'], composedPath],
+            [document.body, nodes['x-nested-shadow-tree'], composedPath],
+            [document.documentElement, nodes['x-nested-shadow-tree'], composedPath],
+            [document, nodes['x-nested-shadow-tree'], composedPath],
+        ]);
+    });
+});
