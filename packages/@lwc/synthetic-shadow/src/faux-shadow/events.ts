@@ -406,6 +406,7 @@ export function addCustomElementEventListener(
             );
         }
     }
+    // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
         const wrappedListener = getWrappedCustomElementListener(elm, listener);
         attachDOMListener(elm, type, wrappedListener);
@@ -418,6 +419,7 @@ export function removeCustomElementEventListener(
     listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
+    // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
         const wrappedListener = getWrappedCustomElementListener(elm, listener);
         detachDOMListener(elm, type, wrappedListener);
@@ -427,7 +429,7 @@ export function removeCustomElementEventListener(
 export function addShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
@@ -439,18 +441,24 @@ export function addShadowRootEventListener(
             );
         }
     }
-    const elm = getHost(sr);
-    const wrappedListener = getWrappedShadowRootListener(sr, listener);
-    attachDOMListener(elm, type, wrappedListener);
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const elm = getHost(sr);
+        const wrappedListener = getWrappedShadowRootListener(sr, listener);
+        attachDOMListener(elm, type, wrappedListener);
+    }
 }
 
 export function removeShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
-    const elm = getHost(sr);
-    const wrappedListener = getWrappedShadowRootListener(sr, listener);
-    detachDOMListener(elm, type, wrappedListener);
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const elm = getHost(sr);
+        const wrappedListener = getWrappedShadowRootListener(sr, listener);
+        detachDOMListener(elm, type, wrappedListener);
+    }
 }
