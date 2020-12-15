@@ -27,6 +27,8 @@ function removeEventListener(
 ) {
     const wrapperFn = getEventListenerWrapper(listener);
     windowRemoveEventListener.call(this, type, wrapperFn, options);
+    // Account for listeners that were added before this polyfill was applied
+    windowRemoveEventListener.call(this, type, listener, options);
 }
 
 export default function apply() {

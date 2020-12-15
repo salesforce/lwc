@@ -56,9 +56,8 @@ function removeEventListener(
         removeCustomElementEventListener(this, type, listener);
     } else {
         const wrapperFn = getEventListenerWrapper(listener);
-        // In case the listener was wrapped by the engine's addEventListener routine
         nativeRemoveEventListener.call(this, type, wrapperFn, optionsOrCapture);
-        // If the listener was added before synthetic-shadow was loaded, the listener might not be wrapped
+        // Account for listeners that were added before this polyfill was applied
         nativeRemoveEventListener.call(this, type, listener, optionsOrCapture);
     }
 }
