@@ -26,7 +26,7 @@ export function getEventListenerWrapper(
             if (process.env.NODE_ENV !== 'production') {
                 const currentTarget = eventCurrentTargetGetter.call(event);
                 assert.invariant(
-                    isFalse(isHostElement(currentTarget as Node)),
+                    isFalse(isHostElement(currentTarget)),
                     'This routine should not be used to wrap event listeners for host elements and shadow roots.'
                 );
             }

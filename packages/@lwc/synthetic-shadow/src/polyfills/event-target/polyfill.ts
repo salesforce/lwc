@@ -33,8 +33,8 @@ function addEventListener(
     if (!isValidEventListener(listener)) {
         return;
     }
-    if (isHostElement(this as Node)) {
-        addCustomElementEventListener(this as HTMLElement, type, listener);
+    if (isHostElement(this)) {
+        addCustomElementEventListener(this, type, listener);
     } else {
         const wrapperFn = getEventListenerWrapper(listener);
         nativeAddEventListener.call(this, type, wrapperFn, optionsOrCapture);
@@ -50,8 +50,8 @@ function removeEventListener(
     if (!isValidEventListener(listener)) {
         return;
     }
-    if (isHostElement(this as Node)) {
-        removeCustomElementEventListener(this as HTMLElement, type, listener);
+    if (isHostElement(this)) {
+        removeCustomElementEventListener(this, type, listener);
     } else {
         const wrapperFn = getEventListenerWrapper(listener);
         // In case the listener was wrapped by the engine's addEventListener routine

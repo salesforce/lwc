@@ -91,16 +91,13 @@ function targetGetter(this: Event): EventTarget | null {
     if (isHostElement(originalCurrentTarget)) {
         const context = eventToContextMap.get(this);
         if (context === EventListenerContext.SHADOW_ROOT_LISTENER) {
-            actualCurrentTarget = getShadowRoot(originalCurrentTarget as HTMLElement);
+            actualCurrentTarget = getShadowRoot(originalCurrentTarget);
         }
     }
 
     // Address the possibility that `target` is a shadow root
-    if (
-        isHostElement(originalTarget as HTMLElement) &&
-        eventsDispatchedDirectlyOnShadowRoot.has(this)
-    ) {
-        actualPath = pathComposer(getShadowRoot(originalTarget as HTMLElement), this.composed);
+    if (isHostElement(originalTarget) && eventsDispatchedDirectlyOnShadowRoot.has(this)) {
+        actualPath = pathComposer(getShadowRoot(originalTarget), this.composed);
     }
 
     return retarget(actualCurrentTarget, actualPath);
@@ -117,11 +114,8 @@ function composedPathValue(this: Event): EventTarget[] {
 
     // Address the possibility that `target` is a shadow root
     let actualTarget = originalTarget;
-    if (
-        isHostElement(originalTarget as HTMLElement) &&
-        eventsDispatchedDirectlyOnShadowRoot.has(this)
-    ) {
-        actualTarget = getShadowRoot(originalTarget as HTMLElement);
+    if (isHostElement(originalTarget) && eventsDispatchedDirectlyOnShadowRoot.has(this)) {
+        actualTarget = getShadowRoot(originalTarget);
     }
 
     return pathComposer(actualTarget, this.composed);
