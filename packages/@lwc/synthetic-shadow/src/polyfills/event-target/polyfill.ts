@@ -30,6 +30,7 @@ function addEventListener(
     listener: EventListenerOrEventListenerObject,
     optionsOrCapture?: boolean | AddEventListenerOptions
 ) {
+    // TODO [#2134]: Delegate this validation to the browser instead of silently swallowing
     if (!isValidEventListener(listener)) {
         return;
     }
@@ -47,6 +48,7 @@ function removeEventListener(
     listener: EventListenerOrEventListenerObject,
     optionsOrCapture?: boolean | EventListenerOptions
 ) {
+    // TODO [#2134]: Delegate this validation to the browser instead of silently swallowing
     if (!isValidEventListener(listener)) {
         return;
     }
