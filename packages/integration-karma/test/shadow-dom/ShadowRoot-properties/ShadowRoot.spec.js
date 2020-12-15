@@ -66,13 +66,7 @@ describe('Properties overrides', () => {
     });
 });
 
-const SHADOW_ROOT_RESTRICTED = [
-    'cloneNode',
-    'getElementById',
-    'getSelection',
-    'elementsFromPoint',
-    'dispatchEvent',
-];
+const SHADOW_ROOT_RESTRICTED = ['cloneNode', 'getElementById', 'getSelection', 'elementsFromPoint'];
 
 describe('restrictions', () => {
     let elm;

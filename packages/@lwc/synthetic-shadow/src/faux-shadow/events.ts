@@ -17,16 +17,17 @@ import {
     isFalse,
     isFunction,
     isNull,
+    isTrue,
     isUndefined,
     toString,
 } from '@lwc/shared';
-import { getHost, SyntheticShadowRootInterface, getShadowRoot } from './shadow-root';
+import { getHost, SyntheticShadowRootInterface, getShadowRoot, isHostElement } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { pathComposer } from './../3rdparty/polymer/path-composer';
 import { retarget } from './../3rdparty/polymer/retarget';
-import { getNodeOwnerKey } from '../shared/node-ownership';
+import { getNodeOwnerKey, isNodeDeepShadowed } from '../shared/node-ownership';
 import { getOwnerDocument } from '../shared/utils';
 
 interface WrappedListener extends EventListener {
@@ -83,19 +84,46 @@ function targetGetter(this: Event): EventTarget | null {
         return retarget(doc, composedPath);
     }
 
-    const eventContext = eventToContextMap.get(this);
-    const currentTarget =
-        eventContext === EventListenerContext.SHADOW_ROOT_LISTENER
-            ? getShadowRoot(originalCurrentTarget as HTMLElement)
-            : originalCurrentTarget;
-    return retarget(currentTarget, composedPath);
+    let actualCurrentTarget = originalCurrentTarget;
+    let actualPath = composedPath;
+
+    // Address the possibility that `currentTarget` is a shadow root
+    if (isHostElement(originalCurrentTarget)) {
+        const context = eventToContextMap.get(this);
+        if (context === EventListenerContext.SHADOW_ROOT_LISTENER) {
+            actualCurrentTarget = getShadowRoot(originalCurrentTarget);
+        }
+    }
+
+    // Address the possibility that `target` is a shadow root
+    if (isHostElement(originalTarget) && eventsDispatchedDirectlyOnShadowRoot.has(this)) {
+        actualPath = pathComposer(getShadowRoot(originalTarget), this.composed);
+    }
+
+    return retarget(actualCurrentTarget, actualPath);
 }
 
 function composedPathValue(this: Event): EventTarget[] {
     const originalTarget = eventTargetGetter.call(this);
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
-    // if the dispatch phase is done, the composedPath should be empty array
-    return isNull(originalCurrentTarget) ? [] : pathComposer(originalTarget as Node, this.composed);
+
+    // If the event has completed propagation, the composedPath should be an empty array.
+    if (isNull(originalCurrentTarget)) {
+        return [];
+    }
+
+    // Address the possibility that `target` is a shadow root
+    let actualTarget = originalTarget;
+    if (isHostElement(originalTarget) && eventsDispatchedDirectlyOnShadowRoot.has(this)) {
+        actualTarget = getShadowRoot(originalTarget);
+    }
+
+    return pathComposer(actualTarget, this.composed);
+}
+
+export function doesEventNeedPatch(e: Event): boolean {
+    const originalTarget = eventTargetGetter.call(e);
+    return originalTarget instanceof Node && isNodeDeepShadowed(originalTarget);
 }
 
 export function patchEvent(event: Event) {
@@ -172,6 +200,12 @@ function getEventMap(elm: EventTarget): ListenerMap {
     return listenerInfo;
 }
 
+export const eventsDispatchedDirectlyOnShadowRoot: WeakSet<Event> = new WeakSet();
+
+export function setEventFromShadowRoot(event: Event) {
+    eventsDispatchedDirectlyOnShadowRoot.add(event);
+}
+
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
 function getWrappedShadowRootListener(
@@ -184,26 +218,8 @@ function getWrappedShadowRootListener(
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
         shadowRootWrappedListener = function (event: Event) {
-            // * if the event is dispatched directly on the host, it is not observable from root
-            // * if the event is dispatched in an element that does not belongs to the shadow and it is not composed,
-            //   it is not observable from the root
-            const { composed } = event;
-            const target = eventTargetGetter.call(event);
-            const currentTarget = eventCurrentTargetGetter.call(event);
-            if (target !== currentTarget) {
-                const rootNode = getRootNodeHost(
-                    target as Node /* because wrapping on shadowRoot */,
-                    {
-                        composed,
-                    }
-                );
-
-                if (
-                    isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
-                    (composed === false && rootNode === currentTarget)
-                ) {
-                    listener.call(sr, event);
-                }
+            if (shouldInvokeShadowRootListener(event)) {
+                listener.call(sr, event);
             }
         } as WrappedListener;
         shadowRootWrappedListener!.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
@@ -224,7 +240,7 @@ function getWrappedCustomElementListener(elm: Element, listener: EventListener):
     let customElementWrappedListener = customElementEventListenerMap.get(listener);
     if (isUndefined(customElementWrappedListener)) {
         customElementWrappedListener = function (event: Event) {
-            if (isValidEventForCustomElement(event)) {
+            if (shouldInvokeCustomEventListener(event)) {
                 // all handlers on the custom element should be called with undefined 'this'
                 listener.call(elm, event);
             }
@@ -320,30 +336,65 @@ function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
     }
 }
 
-function isValidEventForCustomElement(event: Event): boolean {
+function shouldInvokeCustomEventListener(event: Event): boolean {
     const target = eventTargetGetter.call(event);
     const currentTarget = eventCurrentTargetGetter.call(event);
     const { composed } = event;
-    return (
-        // it is composed, and we should always get it, or
-        composed === true ||
-        // it is dispatched onto the custom element directly, or
-        target === currentTarget ||
+
+    let shouldInvoke = false;
+
+    if (isTrue(composed)) {
+        shouldInvoke = true;
+    } else if (target === currentTarget) {
+        // Address the possibility that `target` is a shadow root
+        shouldInvoke = !eventsDispatchedDirectlyOnShadowRoot.has(event);
+    } else {
         // it is coming from a slotted element
-        isChildNode(
+        shouldInvoke = isChildNode(
             getRootNodeHost(
                 target as Node /* because wrap on shadowRoot */,
                 GET_ROOT_NODE_CONFIG_FALSE
             ) as Element,
             currentTarget as Node
-        )
-    );
+        );
+    }
+
+    return shouldInvoke;
+}
+
+function shouldInvokeShadowRootListener(event: Event): boolean {
+    const { composed } = event;
+
+    let shouldInvoke = false;
+
+    if (isTrue(composed)) {
+        shouldInvoke = true;
+    } else {
+        const target = eventTargetGetter.call(event);
+        const currentTarget = eventCurrentTargetGetter.call(event);
+
+        if (eventsDispatchedDirectlyOnShadowRoot.has(event)) {
+            // If this event was directly dispatched on a root, then we should only handle
+            // it if it was dispatched on the current root because {composed: false} here.
+            shouldInvoke = target === currentTarget;
+        } else {
+            // The event was not dispatched directly on the current root so it must be bubbles:true.
+            // { bubbles: true, composed: false }
+
+            // Only invoke the listener if the target element is in the current root.
+            const currentRoot = getShadowRoot(currentTarget as HTMLElement);
+            const targetRoot = (target as HTMLElement).getRootNode();
+            shouldInvoke = currentRoot === targetRoot;
+        }
+    }
+
+    return shouldInvoke;
 }
 
 export function addCustomElementEventListener(
     elm: Element,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
@@ -355,24 +406,30 @@ export function addCustomElementEventListener(
             );
         }
     }
-    const wrappedListener = getWrappedCustomElementListener(elm, listener);
-    attachDOMListener(elm, type, wrappedListener);
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const wrappedListener = getWrappedCustomElementListener(elm, listener);
+        attachDOMListener(elm, type, wrappedListener);
+    }
 }
 
 export function removeCustomElementEventListener(
     elm: Element,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
-    const wrappedListener = getWrappedCustomElementListener(elm, listener);
-    detachDOMListener(elm, type, wrappedListener);
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const wrappedListener = getWrappedCustomElementListener(elm, listener);
+        detachDOMListener(elm, type, wrappedListener);
+    }
 }
 
 export function addShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
@@ -384,18 +441,24 @@ export function addShadowRootEventListener(
             );
         }
     }
-    const elm = getHost(sr);
-    const wrappedListener = getWrappedShadowRootListener(sr, listener);
-    attachDOMListener(elm, type, wrappedListener);
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const elm = getHost(sr);
+        const wrappedListener = getWrappedShadowRootListener(sr, listener);
+        attachDOMListener(elm, type, wrappedListener);
+    }
 }
 
 export function removeShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
-    const elm = getHost(sr);
-    const wrappedListener = getWrappedShadowRootListener(sr, listener);
-    detachDOMListener(elm, type, wrappedListener);
+    // TODO [#1824]: Lift this restriction on the option parameter
+    if (isFunction(listener)) {
+        const elm = getHost(sr);
+        const wrappedListener = getWrappedShadowRootListener(sr, listener);
+        detachDOMListener(elm, type, wrappedListener);
+    }
 }

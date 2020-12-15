@@ -202,7 +202,7 @@ function createNestedShadowTree(parentNode) {
     return extractDataIds(elm);
 }
 
-describe('event propagation in nested shadow tree', () => {
+describe('composed and bubbling event propagation in nested shadow tree', () => {
     let nodes;
     beforeEach(() => {
         nodes = createNestedShadowTree(document.body);
@@ -275,7 +275,7 @@ describe('event propagation in nested shadow tree', () => {
         });
     });
 
-    it('propagate event from a inner host', () => {
+    it('propagate event from an inner host', () => {
         const logs = dispatchEventWithLog(
             nodes['x-shadow-tree'],
             new CustomEvent('test', { composed: true, bubbles: true })
@@ -298,6 +298,90 @@ describe('event propagation in nested shadow tree', () => {
             [document.documentElement, nodes['x-nested-shadow-tree'], composedPath],
             [document, nodes['x-nested-shadow-tree'], composedPath],
         ]);
+    });
+});
+
+describe('non-composed and bubbling event propagation in nested shadow tree', () => {
+    let nodes;
+    beforeEach(() => {
+        nodes = createNestedShadowTree(document.body);
+    });
+
+    it('propagate event from a child element', () => {
+        const logs = dispatchEventWithLog(
+            nodes.span,
+            new CustomEvent('test', { composed: false, bubbles: true })
+        );
+
+        const composedPath = [nodes.span, nodes.div, nodes['x-shadow-tree'].shadowRoot];
+        const expectedLogs = [
+            [nodes.span, nodes.span, composedPath],
+            [nodes.div, nodes.span, composedPath],
+            [nodes['x-shadow-tree'].shadowRoot, nodes.span, composedPath],
+        ];
+        if (!process.env.NATIVE_SHADOW) {
+            // TODO [#1569]: Listeners on the following targets should not be invoked when the event is non-composed.
+            expectedLogs.push(
+                [document.body, null, composedPath],
+                [document.documentElement, null, composedPath],
+                [document, null, composedPath]
+            );
+        }
+        expect(logs).toEqual(expectedLogs);
+    });
+
+    it('propagate event from a child element added via lwc:dom="manual"', () => {
+        // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
+        return new Promise((resolve) => {
+            setTimeout(resolve);
+        }).then(() => {
+            const logs = dispatchEventWithLog(
+                nodes['span-manual'],
+                new CustomEvent('test', { composed: false, bubbles: true })
+            );
+
+            const composedPath = [
+                nodes['span-manual'],
+                nodes['div-manual'],
+                nodes['x-shadow-tree'].shadowRoot,
+            ];
+            const expectedLogs = [
+                [nodes['span-manual'], nodes['span-manual'], composedPath],
+                [nodes['div-manual'], nodes['span-manual'], composedPath],
+                [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
+            ];
+            if (!process.env.NATIVE_SHADOW) {
+                // TODO [#1569]: Listeners on the following targets should not be invoked when the event is non-composed.
+                expectedLogs.push(
+                    [document.body, null, composedPath],
+                    [document.documentElement, null, composedPath],
+                    [document, null, composedPath]
+                );
+            }
+            expect(logs).toEqual(expectedLogs);
+        });
+    });
+
+    it('propagate event from an inner host', () => {
+        const logs = dispatchEventWithLog(
+            nodes['x-shadow-tree'],
+            new CustomEvent('test', { composed: false, bubbles: true })
+        );
+
+        const composedPath = [nodes['x-shadow-tree'], nodes['x-nested-shadow-tree'].shadowRoot];
+        const expectedLogs = [
+            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
+            [nodes['x-nested-shadow-tree'].shadowRoot, nodes['x-shadow-tree'], composedPath],
+        ];
+        if (!process.env.NATIVE_SHADOW) {
+            // TODO [#1569]: Listeners on the following targets should not be invoked when the event is non-composed.
+            expectedLogs.push(
+                [document.body, null, composedPath],
+                [document.documentElement, null, composedPath],
+                [document, null, composedPath]
+            );
+        }
+        expect(logs).toEqual(expectedLogs);
     });
 });
 
@@ -363,6 +447,101 @@ describe('Event.stopImmediatePropagation', () => {
                     window,
                 ],
             ],
+        ]);
+    });
+});
+
+describe('when dispatched on shadowRoot', () => {
+    let nodes;
+
+    beforeEach(() => {
+        nodes = createNestedShadowTree(document.body);
+    });
+
+    it('{ bubbles: true, composed: true }', () => {
+        const logs = dispatchEventWithLog(
+            nodes['x-shadow-tree'].shadowRoot,
+            new CustomEvent('test', { bubbles: true, composed: true })
+        );
+
+        const composedPath = [
+            nodes['x-shadow-tree'].shadowRoot,
+            nodes['x-shadow-tree'],
+            nodes['x-nested-shadow-tree'].shadowRoot,
+            nodes['x-nested-shadow-tree'],
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ];
+        expect(logs).toEqual([
+            [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
+            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
+            [nodes['x-nested-shadow-tree'].shadowRoot, nodes['x-shadow-tree'], composedPath],
+            [nodes['x-nested-shadow-tree'], nodes['x-nested-shadow-tree'], composedPath],
+            [document.body, nodes['x-nested-shadow-tree'], composedPath],
+            [document.documentElement, nodes['x-nested-shadow-tree'], composedPath],
+            [document, nodes['x-nested-shadow-tree'], composedPath],
+        ]);
+    });
+
+    it('{ bubbles: false, composed: true }', () => {
+        const logs = dispatchEventWithLog(
+            nodes['x-shadow-tree'].shadowRoot,
+            new CustomEvent('test', { bubbles: false, composed: true })
+        );
+
+        const composedPath = [
+            nodes['x-shadow-tree'].shadowRoot,
+            nodes['x-shadow-tree'],
+            nodes['x-nested-shadow-tree'].shadowRoot,
+            nodes['x-nested-shadow-tree'],
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ];
+
+        const expectedLogs = [
+            [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
+            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
+        ];
+
+        // TODO [#1138]: Composed and non-bubbling events should invoke all ancestor host listeners
+        if (process.env.NATIVE_SHADOW) {
+            expectedLogs.push([
+                nodes['x-nested-shadow-tree'],
+                nodes['x-nested-shadow-tree'],
+                composedPath,
+            ]);
+        }
+
+        expect(logs).toEqual(expectedLogs);
+    });
+
+    it('{ bubbles: true, composed: false }', () => {
+        const logs = dispatchEventWithLog(
+            nodes['x-shadow-tree'].shadowRoot,
+            new CustomEvent('test', { bubbles: true, composed: false })
+        );
+
+        const composedPath = [nodes['x-shadow-tree'].shadowRoot];
+
+        expect(logs).toEqual([
+            [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
+        ]);
+    });
+
+    it('{ bubbles: false, composed: false }', () => {
+        const logs = dispatchEventWithLog(
+            nodes['x-shadow-tree'].shadowRoot,
+            new CustomEvent('test', { bubbles: false, composed: false })
+        );
+
+        const composedPath = [nodes['x-shadow-tree'].shadowRoot];
+
+        expect(logs).toEqual([
+            [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
         ]);
     });
 });

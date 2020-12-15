@@ -18,7 +18,12 @@ import {
     getHiddenField,
     setHiddenField,
 } from '@lwc/shared';
-import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
+import {
+    addShadowRootEventListener,
+    removeShadowRootEventListener,
+    setEventFromShadowRoot,
+} from './events';
+import { dispatchEvent } from '../env/event-target';
 import {
     shadowRootQuerySelector,
     shadowRootQuerySelectorAll,
@@ -109,11 +114,10 @@ export function getShadowRoot(elm: Element): SyntheticShadowRootInterface {
     return getInternalSlot(elm).shadowRoot;
 }
 
-// Intentionally adding Node here as possible the first argument
-// since this check is harmless for nodes as well, and it speeds up things
-// to avoid casting before calling this method in few places.
-export function isHostElement(elm: Element | Node): boolean {
-    return !isUndefined(getHiddenField(elm, InternalSlot));
+// Intentionally adding `Node` here in addition to `Element` since this check is harmless for nodes
+// and we can avoid having to cast the type before calling this method in a few places.
+export function isHostElement(node: unknown): node is HTMLElement {
+    return !isUndefined(getHiddenField(node, InternalSlot));
 }
 
 let uid = 0;
@@ -314,6 +318,17 @@ const NodePatchDescriptors = {
             options?: boolean | AddEventListenerOptions
         ) {
             addShadowRootEventListener(this, type, listener, options);
+        },
+    },
+    dispatchEvent: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface, evt: Event): boolean {
+            setEventFromShadowRoot(evt);
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
+            return dispatchEvent.apply(getHost(this), arguments);
         },
     },
     removeEventListener: {
