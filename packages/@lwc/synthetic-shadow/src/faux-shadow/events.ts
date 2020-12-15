@@ -218,7 +218,7 @@ function getWrappedShadowRootListener(
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
         shadowRootWrappedListener = function (event: Event) {
-            if (isValidEventForShadowRoot(event)) {
+            if (shouldInvokeShadowRootListener(event)) {
                 listener.call(sr, event);
             }
         } as WrappedListener;
@@ -240,7 +240,7 @@ function getWrappedCustomElementListener(elm: Element, listener: EventListener):
     let customElementWrappedListener = customElementEventListenerMap.get(listener);
     if (isUndefined(customElementWrappedListener)) {
         customElementWrappedListener = function (event: Event) {
-            if (isValidEventForCustomElement(event)) {
+            if (shouldInvokeCustomEventListener(event)) {
                 // all handlers on the custom element should be called with undefined 'this'
                 listener.call(elm, event);
             }
@@ -336,7 +336,7 @@ function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
     }
 }
 
-function isValidEventForCustomElement(event: Event): boolean {
+function shouldInvokeCustomEventListener(event: Event): boolean {
     const target = eventTargetGetter.call(event);
     const currentTarget = eventCurrentTargetGetter.call(event);
     const { composed } = event;
@@ -362,7 +362,7 @@ function isValidEventForCustomElement(event: Event): boolean {
     return shouldInvoke;
 }
 
-function isValidEventForShadowRoot(event: Event): boolean {
+function shouldInvokeShadowRootListener(event: Event): boolean {
     const { composed } = event;
 
     let shouldInvoke = false;
