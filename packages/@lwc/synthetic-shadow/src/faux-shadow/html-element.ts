@@ -249,6 +249,9 @@ if (outerTextGetter !== null && outerTextSetter !== null) {
             return getInnerText(this);
         },
         set(this: HTMLElement, v: string) {
+            // Invoking the `outerText` setter on a host element should trigger its disconnection, but until we merge node reactions, it will not work.
+            // We could reimplement the outerText setter in JavaScript ([blink implementation](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/html/html_element.cc;l=841-879;drc=6e8b402a6231405b753919029c9027404325ea00;bpv=0;bpt=1))
+            // but the benefits don't worth the efforts.
             outerTextSetter!.call(this, v);
         },
         enumerable: true,

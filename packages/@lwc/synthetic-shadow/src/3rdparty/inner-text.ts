@@ -91,7 +91,6 @@ function restoreSelectionState(state: SelectionState | null): void {
  *
  * NOTE: For performance reasons, since this function will be called multiple times while calculating the innerText of
  *       an element, it does not restore the current selection.
- * @param textNode
  */
 function getTextNodeInnerText(textNode: Text): string {
     const selection = getWindowSelection(textNode);
@@ -122,7 +121,6 @@ const nodeIsText = (node: Node): node is Text => node.nodeType === TEXT_NODE;
 /**
  * Spec: https://html.spec.whatwg.org/multipage/dom.html#inner-text-collection-steps
  * One spec implementation: https://github.com/servo/servo/blob/721271dcd3c20db5ca8cf146e2b5907647afb4d6/components/layout/query.rs#L1132
- * @param node
  */
 function innerTextCollectionSteps(node: Node): InnerTextItem[] {
     const items: InnerTextItem[] = [];
