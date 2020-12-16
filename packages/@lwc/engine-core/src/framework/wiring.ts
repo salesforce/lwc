@@ -14,7 +14,7 @@ import {
 } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
-import { VM, runWithBoundaryProtection, WireConnector } from './vm';
+import { VM, runWithBoundaryProtection } from './vm';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
@@ -238,35 +238,29 @@ class ConfigAwareWireAdapter implements WireAdapterDecorator {
         if (this.hasPendingConfig === false) {
             this.hasPendingConfig = true;
             // Debounce all config changes until next micro-task
-            Promise.resolve().then(this.handleDebouncedConfigChanges);
+            Promise.resolve().then(() => {
+                this.hasPendingConfig = false;
+                // resetting current reactive params
+                this.ro.reset();
+                // dispatching a new config due to a change in the configuration
+                this.computeConfigAndUpdate();
+            });
         }
     };
 
-    private handleDebouncedConfigChanges = () => {
-        this.hasPendingConfig = false;
-        // resetting current reactive params
-        this.ro.reset();
-        // dispatching a new config due to a change in the configuration
-        this.computeConfigAndUpdate();
-    };
+    constructor(decoratedWireAdapter: WireAdapterDecorator, hasDynamicConfigParams: boolean) {
+        this.decoratedWireAdapter = decoratedWireAdapter;
 
-    private computeConfigAndUpdate = () => {
+        this.ro = new ReactiveObserver(this.handleConfigChange);
+        this.hasDynamicConfigParams = hasDynamicConfigParams;
+    }
+
+    computeConfigAndUpdate() {
         let config: ConfigValue;
         this.ro.observe(() => (config = this.computeConfig()));
         // eslint-disable-next-line lwc-internal/no-invalid-todo
         // TODO: dev-mode validation of config based on the adapter.configSchema
         this.update(config!);
-    };
-
-    constructor(
-        decoratedWireAdapter: WireAdapterDecorator,
-        vm: VM,
-        hasDynamicConfigParams: boolean
-    ) {
-        this.decoratedWireAdapter = decoratedWireAdapter;
-
-        this.ro = new ReactiveObserver(this.handleConfigChange);
-        this.hasDynamicConfigParams = hasDynamicConfigParams;
     }
 
     computeConfig() {
@@ -281,7 +275,7 @@ class ConfigAwareWireAdapter implements WireAdapterDecorator {
         this.decoratedWireAdapter.connect();
 
         if (this.hasDynamicConfigParams) {
-            Promise.resolve().then(this.computeConfigAndUpdate);
+            Promise.resolve().then(() => this.computeConfigAndUpdate());
         } else {
             this.computeConfigAndUpdate();
         }
@@ -294,7 +288,7 @@ class ConfigAwareWireAdapter implements WireAdapterDecorator {
     }
 }
 
-function createConnector(vm: VM, name: string, wireDef: WireDef): WireConnector {
+function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
     const { method, adapter, dynamic } = wireDef;
     const dataCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
@@ -330,7 +324,7 @@ function createConnector(vm: VM, name: string, wireDef: WireDef): WireConnector 
         wireConnector = new ContextAwareWireAdapter(wireConnector, vm, adapter);
     }
 
-    wireConnector = new ConfigAwareWireAdapter(wireConnector, vm, dynamic.length > 0);
+    wireConnector = new ConfigAwareWireAdapter(wireConnector, dynamic.length > 0);
 
     return wireConnector;
 }
@@ -424,7 +418,7 @@ export function installWireAdapters(vm: VM) {
         def: { wire },
     } = vm;
     // Note: A new array has to be allocated here. Until this point, all the VM has shared the same reference to an empty array/
-    const wiredConnectors: WireConnector[] = (context.wiredConnectors = []);
+    const wiredConnectors: WireAdapter[] = (context.wiredConnectors = []);
 
     for (const fieldNameOrMethod in wire) {
         const descriptor = wire[fieldNameOrMethod];

@@ -41,7 +41,12 @@ import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } f
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { LightningElement } from './base-lightning-element';
-import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
+import {
+    connectWireAdapters,
+    disconnectWireAdapters,
+    installWireAdapters,
+    WireAdapter,
+} from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { Renderer, HostNode, HostElement } from './renderer';
 import { removeActiveVM } from './hot-swaps';
@@ -66,11 +71,6 @@ export enum VMState {
     disconnected,
 }
 
-export interface WireConnector {
-    connect: () => void;
-    disconnect: () => void;
-}
-
 export interface Context {
     /** The attribute name used on the host element to scope the style. */
     hostAttribute: string | undefined;
@@ -82,7 +82,7 @@ export interface Context {
      *  different render cycle of the same template. */
     tplCache: TemplateCache;
     /** List of wire connectors attached to this component. */
-    wiredConnectors: WireConnector[];
+    wiredConnectors: WireAdapter[];
 }
 
 export interface VM<N = HostNode, E = HostElement> {
