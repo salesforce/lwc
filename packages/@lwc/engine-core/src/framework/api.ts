@@ -98,9 +98,11 @@ const SymbolIterator = Symbol.iterator;
 
 const TextHook: Hooks<VText> = {
     create: (vnode) => {
-        const { renderer } = vnode.owner;
+        const { owner } = vnode;
+        const { renderer } = owner;
+
         const elm = renderer.createText(vnode.text!);
-        linkNodeToShadow(elm, vnode);
+        linkNodeToShadow(elm, owner);
         vnode.elm = elm;
     },
     update: updateNodeHook,
@@ -118,12 +120,13 @@ const ElementHook: Hooks<VElement> = {
     create: (vnode) => {
         const {
             sel,
+            owner,
             data: { ns },
-            owner: { renderer },
         } = vnode;
+        const { renderer } = owner;
         const elm = renderer.createElement(sel, ns);
 
-        linkNodeToShadow(elm, vnode);
+        linkNodeToShadow(elm, owner);
         fallbackElmHook(elm, vnode);
         vnode.elm = elm;
 
@@ -148,10 +151,8 @@ const ElementHook: Hooks<VElement> = {
 
 const CustomElementHook: Hooks<VCustomElement> = {
     create: (vnode) => {
-        const {
-            sel,
-            owner: { renderer },
-        } = vnode;
+        const { sel, owner } = vnode;
+        const { renderer } = owner;
         const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
         /**
          * Note: if the upgradable constructor does not expect, or throw when we new it
@@ -163,8 +164,9 @@ const CustomElementHook: Hooks<VCustomElement> = {
             // the custom element from the registry is expecting an upgrade callback
             createViewModelHook(elm, vnode);
         });
+
+        linkNodeToShadow(elm, owner);
         vnode.elm = elm;
-        linkNodeToShadow(elm, vnode);
 
         const vm = getAssociatedVMIfPresent(elm);
         if (vm) {
@@ -225,9 +227,13 @@ const CustomElementHook: Hooks<VCustomElement> = {
     },
 };
 
-function linkNodeToShadow(elm: Node, vnode: VNode) {
+function linkNodeToShadow(elm: Node, owner: VM) {
+    const { renderer, cmpRoot } = owner;
+
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    (elm as any).$shadowResolver$ = (vnode.owner.cmpRoot as any).$shadowResolver$;
+    if (renderer.syntheticShadow) {
+        (elm as any).$shadowResolver$ = (cmpRoot as any).$shadowResolver$;
+    }
 }
 
 // TODO [#1136]: this should be done by the compiler, adding ns to every sub-element
