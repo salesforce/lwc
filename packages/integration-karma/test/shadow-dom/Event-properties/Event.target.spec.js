@@ -62,7 +62,7 @@ if (!process.env.NATIVE_SHADOW) {
             document.body.appendChild(container);
 
             const child = container.shadowRoot.querySelector('x-child');
-            const span = child.shadowRoot.querySelector('.container-for-manually-added-span span');
+            const span = child.appendSpanAndReturn();
 
             container.addEventListener('test', (event) => {
                 expect(event.target).toEqual(container);
@@ -80,7 +80,7 @@ if (!process.env.NATIVE_SHADOW) {
             document.body.appendChild(container);
 
             const child = container.shadowRoot.querySelector('x-child');
-            const span = child.shadowRoot.querySelector('.container-for-manually-added-span span');
+            const span = child.appendSpanAndReturn();
 
             document.addEventListener(
                 'test',
