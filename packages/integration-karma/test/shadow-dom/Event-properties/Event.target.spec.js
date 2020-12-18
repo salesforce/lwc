@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import XDocumentEventListener from 'x/documentEventListener';
 import XParentWithDynamicChild from 'x/parentWithDynamicChild';
 
 import Container from 'x/container';
@@ -34,23 +33,22 @@ it('should retarget to the root component when accessed asynchronously', () => {
     expect(event.target).toEqual(container);
 });
 
-describe('event.target on document event listener', () => {
-    let actual;
-    const listener = (evt) => {
-        actual = evt.target.tagName.toLowerCase();
-    };
-    beforeAll(() => {
-        document.addEventListener('click', listener);
-    });
-    afterAll(() => {
-        document.removeEventListener('click', listener);
-    });
-    it('should return correct target', function () {
-        const elm = createElement('x-document-event-listener', { is: XDocumentEventListener });
-        document.body.appendChild(elm);
-        elm.shadowRoot.querySelector('button').click();
-        expect(actual).toBe('x-document-event-listener');
-    });
+it('should retarget when accessed in a document event listener', (done) => {
+    const container = createElement('x-container', { is: Container });
+    document.body.appendChild(container);
+
+    document.addEventListener(
+        'test',
+        (event) => {
+            expect(event.target).toEqual(container);
+            done();
+        },
+        { once: true }
+    );
+
+    const child = container.shadowRoot.querySelector('x-child');
+    const span = child.shadowRoot.querySelector('span');
+    span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
 });
 
 // legacy usecases
