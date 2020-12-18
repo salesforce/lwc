@@ -13,8 +13,8 @@ it('should retarget', (done) => {
         done();
     });
 
-    const span = child.shadowRoot.querySelector('span');
-    span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+    const div = child.shadowRoot.querySelector('div');
+    div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
 });
 
 it('should retarget to the root component when accessed asynchronously', () => {
@@ -27,8 +27,8 @@ it('should retarget to the root component when accessed asynchronously', () => {
         event = e;
     });
 
-    const span = child.shadowRoot.querySelector('span');
-    span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+    const div = child.shadowRoot.querySelector('div');
+    div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
 
     expect(event.target).toEqual(container);
 });
@@ -47,38 +47,43 @@ it('should retarget when accessed in a document event listener', (done) => {
     );
 
     const child = container.shadowRoot.querySelector('x-child');
-    const span = child.shadowRoot.querySelector('span');
-    span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+    const div = child.shadowRoot.querySelector('div');
+    div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
 });
 
-// legacy usecases
-describe('should not retarget event', () => {
-    if (!process.env.NATIVE_SHADOW) {
+if (!process.env.NATIVE_SHADOW) {
+    describe('legacy behavior', () => {
+        it('should not retarget when the target was manually added and accessed asynchronously [W-6626752]', (done) => {
+            const container = createElement('x-container', { is: Container });
+            document.body.appendChild(container);
+
+            const child = container.shadowRoot.querySelector('x-child');
+            const span = child.shadowRoot.querySelector(
+                'span.manually-appended-in-rendered-callback'
+            );
+
+            container.addEventListener('test', (event) => {
+                expect(event.target).toEqual(container);
+                setTimeout(() => {
+                    expect(event.target).toEqual(span);
+                    done();
+                });
+            });
+
+            span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+        });
+
         let elm;
         let child;
         let originalTarget;
 
         beforeAll(() => {
-            spyOn(console, 'error');
             elm = createElement('x-parent-with-dynamic-child', {
                 is: XParentWithDynamicChild,
             });
             document.body.appendChild(elm);
             child = elm.shadowRoot.querySelector('x-child-with-out-lwc-dom-manual');
             originalTarget = child.shadowRoot.querySelector('span');
-        });
-        it('when original target node is not keyed and event is accessed async (W-6586380)', (done) => {
-            elm.eventListener = (evt) => {
-                expect(evt.currentTarget).toBe(elm.shadowRoot.querySelector('div'));
-                expect(evt.target).toBe(child);
-                setTimeout(() => {
-                    // Expect event target to be not retargeted
-                    expect(evt.currentTarget).toBeNull();
-                    expect(evt.target).toBe(originalTarget);
-                    done();
-                });
-            };
-            originalTarget.click();
         });
 
         describe('received at a global listener', () => {
@@ -99,5 +104,5 @@ describe('should not retarget event', () => {
                 expect(actualTarget).toBe(originalTarget);
             });
         });
-    }
-});
+    });
+}
