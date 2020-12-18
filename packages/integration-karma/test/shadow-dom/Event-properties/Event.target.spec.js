@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import XAsyncEventTarget from 'x/asyncEventTarget';
 import XDocumentEventListener from 'x/documentEventListener';
 import XParentWithDynamicChild from 'x/parentWithDynamicChild';
 
@@ -19,15 +18,20 @@ it('should retarget', (done) => {
     span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
 });
 
-it('Async event target should be root node', function () {
-    const elm = createElement('x-async-event-target', { is: XAsyncEventTarget });
-    document.body.appendChild(elm);
-    const triggerElm = elm.shadowRoot.querySelector('x-child');
-    triggerElm.click();
-    expect(elm.syncTargetIsCorrect).toBe(true);
-    return new Promise(setTimeout).then(() => {
-        expect(elm.asyncTargetIsCorrect).toBe(true);
+it('should retarget to the root component when accessed asynchronously', () => {
+    const container = createElement('x-container', { is: Container });
+    document.body.appendChild(container);
+
+    let event;
+    const child = container.shadowRoot.querySelector('x-child');
+    child.addEventListener('test', (e) => {
+        event = e;
     });
+
+    const span = child.shadowRoot.querySelector('span');
+    span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+
+    expect(event.target).toEqual(container);
 });
 
 describe('event.target on document event listener', () => {
