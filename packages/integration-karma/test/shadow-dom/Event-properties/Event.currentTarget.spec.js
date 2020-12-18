@@ -1,13 +1,18 @@
 import { createElement } from 'lwc';
-import XAsyncEventCurrentTarget from 'x/asyncEventCurrentTarget';
 
-it('Async event currentTarget should be null', function () {
-    const elm = createElement('x-async-event-current-target', { is: XAsyncEventCurrentTarget });
-    document.body.appendChild(elm);
-    const triggerElm = elm.shadowRoot.querySelector('div.triggerEventHandler');
-    triggerElm.click();
-    return new Promise(setTimeout).then(() => {
-        const conditionalChild = elm.shadowRoot.querySelector('.current-target-is-null');
-        expect(conditionalChild).not.toBe(null);
+import Container from 'x/container';
+
+it('should be null when accessed asynchronously', function (done) {
+    const container = createElement('x-container', { is: Container });
+    document.body.appendChild(container);
+
+    container.addEventListener('test', (event) => {
+        expect(event.currentTarget).toEqual(container);
+        setTimeout(() => {
+            expect(event.currentTarget).toBeNull();
+            done();
+        });
     });
+    const div = container.shadowRoot.querySelector('div');
+    div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
 });
