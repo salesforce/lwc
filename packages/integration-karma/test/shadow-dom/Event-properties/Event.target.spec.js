@@ -53,7 +53,7 @@ it('should retarget when accessed in a document event listener', (done) => {
 if (!process.env.NATIVE_SHADOW) {
     describe('legacy behavior', () => {
         beforeAll(() => {
-            // Supresses error logging
+            // Suppress error logging
             spyOn(console, 'error');
         });
 
