@@ -52,6 +52,11 @@ it('should retarget when accessed in a document event listener', (done) => {
 
 if (!process.env.NATIVE_SHADOW) {
     describe('legacy behavior', () => {
+        beforeAll(() => {
+            // Supresses error logging
+            spyOn(console, 'error');
+        });
+
         it('should not retarget when the target was manually added without lwc:dom="manual" and accessed asynchronously [W-6626752]', (done) => {
             const container = createElement('x-container', { is: Container });
             document.body.appendChild(container);
