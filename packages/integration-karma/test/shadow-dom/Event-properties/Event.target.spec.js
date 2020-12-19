@@ -1,96 +1,97 @@
 import { createElement } from 'lwc';
-import XAsyncEventTarget from 'x/asyncEventTarget';
-import XEventHandlingParent from 'x/eventHandlingParent';
-import XDocumentEventListener from 'x/documentEventListener';
-import XParentWithDynamicChild from 'x/parentWithDynamicChild';
 
-it('Async event target should be root node', function () {
-    const elm = createElement('x-async-event-target', { is: XAsyncEventTarget });
-    document.body.appendChild(elm);
-    const triggerElm = elm.shadowRoot.querySelector('x-child');
-    triggerElm.click();
-    expect(elm.syncTargetIsCorrect).toBe(true);
-    return new Promise(setTimeout).then(() => {
-        expect(elm.asyncTargetIsCorrect).toBe(true);
-    });
-});
+import Container from 'x/container';
 
-it('parent should receive composed event with correct target', function () {
-    const elm = createElement('x-parent', { is: XEventHandlingParent });
-    document.body.appendChild(elm);
-    const child = elm.shadowRoot.querySelector('x-event-dispatching-child');
-    child.dispatchFoo();
-    expect(elm.evtTargetIsXChild).toBe(true);
-    return Promise.resolve().then(() => {
-        expect(elm.shadowRoot.querySelector('.evt-target-is-x-child')).not.toBe(null);
+describe('Event.target', () => {
+    let globalListener = () => {};
+    afterEach(() => {
+        document.removeEventListener('test', globalListener);
     });
-});
 
-describe('event.target on document event listener', () => {
-    let actual;
-    const listener = (evt) => {
-        actual = evt.target.tagName.toLowerCase();
-    };
-    beforeAll(() => {
-        document.addEventListener('click', listener);
-    });
-    afterAll(() => {
-        document.removeEventListener('click', listener);
-    });
-    it('should return correct target', function () {
-        const elm = createElement('x-document-event-listener', { is: XDocumentEventListener });
-        document.body.appendChild(elm);
-        elm.shadowRoot.querySelector('button').click();
-        expect(actual).toBe('x-document-event-listener');
-    });
-});
+    it('should retarget', (done) => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
 
-// legacy usecases
-describe('should not retarget event', () => {
+        const child = container.shadowRoot.querySelector('x-child');
+        child.addEventListener('test', (event) => {
+            expect(event.target).toEqual(child);
+            done();
+        });
+
+        const div = child.shadowRoot.querySelector('div');
+        div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+    });
+
+    it('should retarget to the root component when accessed asynchronously', () => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
+
+        let event;
+        const child = container.shadowRoot.querySelector('x-child');
+        child.addEventListener('test', (e) => {
+            event = e;
+        });
+
+        const div = child.shadowRoot.querySelector('div');
+        div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+
+        expect(event.target).toEqual(container);
+    });
+
+    it('should retarget when accessed in a document event listener', (done) => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
+
+        globalListener = (event) => {
+            expect(event.target).toEqual(container);
+            done();
+        };
+        document.addEventListener('test', globalListener);
+
+        const child = container.shadowRoot.querySelector('x-child');
+        const div = child.shadowRoot.querySelector('div');
+        div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+    });
+
     if (!process.env.NATIVE_SHADOW) {
-        let elm;
-        let child;
-        let originalTarget;
-
-        beforeAll(() => {
-            spyOn(console, 'error');
-            elm = createElement('x-parent-with-dynamic-child', {
-                is: XParentWithDynamicChild,
+        describe('legacy behavior', () => {
+            beforeAll(() => {
+                // Suppress error logging
+                spyOn(console, 'error');
             });
-            document.body.appendChild(elm);
-            child = elm.shadowRoot.querySelector('x-child-with-out-lwc-dom-manual');
-            originalTarget = child.shadowRoot.querySelector('span');
-        });
-        it('when original target node is not keyed and event is accessed async (W-6586380)', (done) => {
-            elm.eventListener = (evt) => {
-                expect(evt.currentTarget).toBe(elm.shadowRoot.querySelector('div'));
-                expect(evt.target).toBe(child);
-                setTimeout(() => {
-                    // Expect event target to be not retargeted
-                    expect(evt.currentTarget).toBeNull();
-                    expect(evt.target).toBe(originalTarget);
-                    done();
+
+            it('should not retarget when the target was manually added without lwc:dom="manual" and accessed asynchronously [W-6626752]', (done) => {
+                const container = createElement('x-container', { is: Container });
+                document.body.appendChild(container);
+
+                const child = container.shadowRoot.querySelector('x-child');
+                const span = child.appendSpanAndReturn();
+
+                container.addEventListener('test', (event) => {
+                    expect(event.target).toEqual(container);
+                    setTimeout(() => {
+                        expect(event.target).toEqual(span);
+                        done();
+                    });
                 });
-            };
-            originalTarget.click();
-        });
 
-        describe('received at a global listener', () => {
-            let actualCurrentTarget;
-            let actualTarget;
-            const globalListener = (evt) => {
-                actualCurrentTarget = evt.currentTarget;
-                actualTarget = evt.target;
-            };
-            afterAll(() => {
-                document.removeEventListener(globalListener);
+                span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
             });
 
-            it('when original target node is not keyed and currentTarget is document (W-6626752)', () => {
-                document.addEventListener('click', globalListener);
-                originalTarget.click();
-                expect(actualCurrentTarget).toBe(document);
-                expect(actualTarget).toBe(originalTarget);
+            it('should not retarget when the target was manually added without lwc:dom="manual" and accessed in a document event listener [W-6626752]', (done) => {
+                const container = createElement('x-container', { is: Container });
+                document.body.appendChild(container);
+
+                const child = container.shadowRoot.querySelector('x-child');
+                const span = child.appendSpanAndReturn();
+
+                globalListener = (event) => {
+                    expect(event.target).toEqual(span);
+                    done();
+                };
+                document.addEventListener('test', globalListener);
+
+                span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
             });
         });
     }
