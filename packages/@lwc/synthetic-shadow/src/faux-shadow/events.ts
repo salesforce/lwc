@@ -10,7 +10,6 @@ import {
     ArraySlice,
     ArraySplice,
     create,
-    defineProperties,
     defineProperty,
     forEach,
     getPropertyDescriptor,
@@ -29,9 +28,6 @@ import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { EventListenerContext, getEventContext, setEventContext } from '../shared/event-context';
 import { isNodeDeepShadowed } from '../shared/node-ownership';
-
-// We don't usually import anything from a polyfill but this is temporary.
-import { composedPathValue, targetGetter } from '../polyfills/event/polyfill';
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -60,34 +56,14 @@ export function doesEventNeedPatch(e: Event): boolean {
     return originalTarget instanceof Node && isNodeDeepShadowed(originalTarget);
 }
 
+const patchedEvents: WeakSet<Event> = new WeakSet();
+
 export function patchEvent(event: Event) {
-    if (!isUndefined(getEventContext(event))) {
-        return; // already patched
+    if (patchedEvents.has(event)) {
+        return;
     }
-    defineProperties(event, {
-        target: {
-            get: targetGetter,
-            enumerable: true,
-            configurable: true,
-        },
-        composedPath: {
-            value: composedPathValue,
-            writable: true,
-            enumerable: true,
-            configurable: true,
-        },
-        // non-standard but important accessor
-        srcElement: {
-            get: targetGetter,
-            enumerable: true,
-            configurable: true,
-        },
-        path: {
-            get: composedPathValue,
-            enumerable: true,
-            configurable: true,
-        },
-    });
+    patchedEvents.add(event);
+
     // not all events implement the relatedTarget getter, that's why we need to extract it from the instance
     // Note: we can't really use the super here because of issues with the typescript transpilation for accessors
     const originalRelatedTargetDescriptor = getPropertyDescriptor(event, 'relatedTarget');
@@ -116,7 +92,6 @@ export function patchEvent(event: Event) {
             configurable: true,
         });
     }
-    setEventContext(event, EventListenerContext.UNKNOWN_LISTENER);
 }
 
 interface ListenerMap {
