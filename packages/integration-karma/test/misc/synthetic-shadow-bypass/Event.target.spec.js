@@ -17,7 +17,7 @@ function createShadowTree(parentNode) {
 
 function addInstrumentation(target, type) {
     var log = [];
-    for (var node = target; node; node = node.parentNode || node.host || node.defaultView) {
+    for (var node = target; node; node = node.parentNode || node.host) {
         node.addEventListener(
             type,
             function (event) {
@@ -25,6 +25,14 @@ function addInstrumentation(target, type) {
             }.bind(node)
         );
     }
+    // node.defaultView does not work in IE11
+    window.addEventListener(
+        'click',
+        function (event) {
+            log.push([this, targetGetter.call(event), event.composedPath()]);
+        }.bind(window)
+    );
+
     return log;
 }
 
