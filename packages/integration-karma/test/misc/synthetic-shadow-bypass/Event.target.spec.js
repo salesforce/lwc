@@ -25,7 +25,7 @@ function addInstrumentation(target, type) {
             }.bind(node)
         );
     }
-    // node.defaultView does not work in IE11
+    // document.defaultView does not work in IE11
     window.addEventListener(
         'click',
         function (event) {

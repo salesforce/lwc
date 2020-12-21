@@ -6,9 +6,8 @@
  */
 
 window.originalDomApis = (function () {
-    const targetGetter = Object.getOwnPropertyDescriptor(Event.prototype, 'target').get;
-
+    var targetGetter = Object.getOwnPropertyDescriptor(Event.prototype, 'target').get;
     return {
-        targetGetter,
+        targetGetter: targetGetter,
     };
 })();
