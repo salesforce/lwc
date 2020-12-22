@@ -13,7 +13,7 @@ describe('Retarget relatedTarget', () => {
         await browser.url(URL);
     });
 
-    it('should retarget relatedTarget for MouseEvent', () => {
+    it('should retarget relatedTarget for MouseEvent', async () => {
         const first = await browser.shadowDeep$(
             'integration-retarget-related-target',
             'integration-child.first',
@@ -24,7 +24,7 @@ describe('Retarget relatedTarget', () => {
             'integration-child.second',
             'input'
         );
-        const indicator = browser.shadowDeep$(
+        const indicator = await browser.shadowDeep$(
             'integration-retarget-related-target',
             '.related-target-class-name'
         );
