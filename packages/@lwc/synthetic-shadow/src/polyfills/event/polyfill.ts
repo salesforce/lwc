@@ -10,7 +10,7 @@ import { retarget } from '../../3rdparty/polymer/retarget';
 import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
 import { eventsDispatchedDirectlyOnShadowRoot } from '../../faux-shadow/events';
 import { getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
-import { EventListenerContext, getEventContext } from '../../shared/event-context';
+import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
 import { getOwnerDocument } from '../../shared/utils';
 
@@ -43,7 +43,7 @@ export function targetGetter(this: Event): EventTarget | null {
 
     // Address the possibility that `currentTarget` is a shadow root
     if (isHostElement(originalCurrentTarget)) {
-        const context = getEventContext(this);
+        const context = eventToContextMap.get(this);
         if (context === EventListenerContext.SHADOW_ROOT_LISTENER) {
             actualCurrentTarget = getShadowRoot(originalCurrentTarget);
         }

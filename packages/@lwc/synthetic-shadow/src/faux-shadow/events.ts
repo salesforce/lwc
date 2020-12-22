@@ -26,8 +26,15 @@ import { retarget } from '../3rdparty/polymer/retarget';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
-import { EventListenerContext, getEventContext, setEventContext } from '../shared/event-context';
 import { isNodeDeepShadowed } from '../shared/node-ownership';
+
+export enum EventListenerContext {
+    CUSTOM_ELEMENT_LISTENER,
+    SHADOW_ROOT_LISTENER,
+    UNKNOWN_LISTENER,
+}
+
+export const eventToContextMap: WeakMap<Event, EventListenerContext> = new WeakMap();
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -73,7 +80,7 @@ export function patchEvent(event: Event) {
         ) => EventTarget | null = originalRelatedTargetDescriptor.get!;
         defineProperty(event, 'relatedTarget', {
             get(this: Event): EventTarget | null | undefined {
-                const eventContext = getEventContext(this);
+                const eventContext = eventToContextMap.get(this);
                 const originalCurrentTarget = eventCurrentTargetGetter.call(this);
                 const relatedTarget = relatedTargetGetter.call(this);
                 if (isNull(relatedTarget)) {
@@ -205,14 +212,14 @@ function domListener(evt: Event) {
         });
     }
 
-    setEventContext(evt, EventListenerContext.SHADOW_ROOT_LISTENER);
+    eventToContextMap.set(evt, EventListenerContext.SHADOW_ROOT_LISTENER);
     invokeListenersByPlacement(EventListenerContext.SHADOW_ROOT_LISTENER);
     if (isFalse(immediatePropagationStopped) && isFalse(propagationStopped)) {
         // doing the second iteration only if the first one didn't interrupt the event propagation
-        setEventContext(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
+        eventToContextMap.set(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
         invokeListenersByPlacement(EventListenerContext.CUSTOM_ELEMENT_LISTENER);
     }
-    setEventContext(evt, EventListenerContext.UNKNOWN_LISTENER);
+    eventToContextMap.set(evt, EventListenerContext.UNKNOWN_LISTENER);
 }
 
 function attachDOMListener(elm: Element, type: string, wrappedListener: WrappedListener) {
