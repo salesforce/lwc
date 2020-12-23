@@ -11,7 +11,7 @@ function createShadowTree(parentNode) {
 }
 
 if (!process.env.NATIVE_SHADOW) {
-    describe('EventTarget.addEventListener', () => {
+    describe('EventTarget.removeEventListener', () => {
         let nodes;
         beforeEach(() => {
             nodes = createShadowTree(document.body);
@@ -29,19 +29,17 @@ if (!process.env.NATIVE_SHADOW) {
                 window,
             ];
 
-            const log = [];
+            const listener = jasmine.createSpy();
             targets.forEach((node) => {
-                node.addEventListener(
-                    'click',
-                    function () {
-                        log.push(this);
-                    }.bind(node)
-                );
+                node.addEventListener('click', listener);
+            });
+            targets.forEach((node) => {
+                node.removeEventListener('click', listener);
             });
 
             nodes.button.click();
 
-            expect(log).toEqual(targets);
+            expect(listener).not.toHaveBeenCalled();
         });
 
         it('should accept a listener config as second parameter for all nodes except shadow root and host', () => {
@@ -54,28 +52,17 @@ if (!process.env.NATIVE_SHADOW) {
                 window,
             ];
 
-            const log = [];
+            const listener = { handleEvent: jasmine.createSpy() };
             targets.forEach((node) => {
-                node.addEventListener('click', {
-                    handleEvent: function () {
-                        log.push(this);
-                    }.bind(node),
-                });
+                node.addEventListener('click', listener);
+            });
+            targets.forEach((node) => {
+                node.removeEventListener('click', listener);
             });
 
             nodes.button.click();
 
-            expect(log).toEqual(targets);
-        });
-
-        it('should throw error when a listener config is passed for shadow root and host', () => {
-            [nodes['x-container'], nodes['x-container'].shadowRoot].forEach((node) => {
-                expect(() => {
-                    node.addEventListener('click', {
-                        handleEvent: () => {},
-                    });
-                }).toThrowMatching((e) => e.message.startsWith('Invalid second argument'));
-            });
+            expect(listener.handleEvent).not.toHaveBeenCalled();
         });
     });
 }
