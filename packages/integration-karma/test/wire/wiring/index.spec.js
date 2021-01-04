@@ -60,12 +60,14 @@ describe('wiring', () => {
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
 
-            createElement('x-echo-adapter-consumer', { is: InheritedMethods });
+            const elm = createElement('x-echo-adapter-consumer', { is: InheritedMethods });
+            document.body.appendChild(elm);
 
-            expect(spy.length).toBe(3);
-            expect(spy[0].method).toBe('update'); // parentMethod
-            expect(spy[1].method).toBe('update'); // childMethod
-            expect(spy[2].method).toBe('update'); // overriddenInChild
+            const updateCalls = filterCalls(spy, 'update');
+            expect(updateCalls).toHaveSize(3);
+            expect(updateCalls[0].method).toBe('update'); // parentMethod
+            expect(updateCalls[1].method).toBe('update'); // childMethod
+            expect(updateCalls[2].method).toBe('update'); // overriddenInChild
         });
 
         it('should be called next tick when component with wire that has dynamic params is created', () => {
@@ -73,11 +75,16 @@ describe('wiring', () => {
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
 
-            createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            document.body.appendChild(elm);
+
+            expect(spy).toHaveSize(1);
+            expect(spy[0].method).toBe('connect');
 
             return Promise.resolve().then(() => {
-                expect(spy.length).toBe(1);
-                expect(spy[0].method).toBe('update');
+                expect(spy).toHaveSize(2);
+                expect(spy[0].method).toBe('connect');
+                expect(spy[1].method).toBe('update');
             });
         });
 
@@ -94,7 +101,7 @@ describe('wiring', () => {
                 // in the old wire protocol, there is only one call because
                 // on the same tick the config was modified
                 const updateCalls = filterCalls(spy, 'update');
-                expect(updateCalls.length).toBe(1);
+                expect(updateCalls).toHaveSize(1);
             });
         });
 
@@ -106,13 +113,13 @@ describe('wiring', () => {
 
             return Promise.resolve()
                 .then(() => {
-                    expect(filterCalls(spy, 'update').length).toBe(1);
+                    expect(filterCalls(spy, 'update')).toHaveSize(1);
                     elm.forceRerender();
 
                     return Promise.resolve();
                 })
                 .then(() => {
-                    expect(filterCalls(spy, 'update').length).toBe(1);
+                    expect(filterCalls(spy, 'update')).toHaveSize(1);
                 });
         });
 
@@ -124,13 +131,13 @@ describe('wiring', () => {
 
             return Promise.resolve()
                 .then(() => {
-                    expect(filterCalls(spy, 'update').length).toBe(1);
+                    expect(filterCalls(spy, 'update')).toHaveSize(1);
                     elm.setDynamicParamSource('simpleParam modified');
 
                     return Promise.resolve();
                 })
                 .then(() => {
-                    expect(filterCalls(spy, 'update').length).toBe(2);
+                    expect(filterCalls(spy, 'update')).toHaveSize(2);
                     const wireResult = elm.getWiredProp();
 
                     expect(wireResult.simpleParam).toBe('simpleParam modified');
@@ -144,11 +151,11 @@ describe('wiring', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
-                expect(filterCalls(spy, 'update').length).toBe(2);
+                expect(filterCalls(spy, 'update')).toHaveSize(2);
                 elm.setCommonParameter('modified');
 
                 return Promise.resolve().then(() => {
-                    expect(filterCalls(spy, 'update').length).toBe(4);
+                    expect(filterCalls(spy, 'update')).toHaveSize(4);
                     const wireResult1 = elm.getEchoWiredProp1();
                     const wireResult2 = elm.getEchoWiredProp2();
 
@@ -209,6 +216,50 @@ describe('wiring', () => {
 
                         done();
                     }, 5);
+                });
+        });
+
+        it('should not call update when component is disconnected.', () => {
+            const spy = [];
+            AdapterId.setSpy(spy);
+            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            document.body.appendChild(elm);
+
+            return Promise.resolve()
+                .then(() => {
+                    expect(filterCalls(spy, 'update')).toHaveSize(1);
+                    document.body.removeChild(elm);
+                    elm.setDynamicParamSource('simpleParam modified');
+                })
+                .then(() => {
+                    expect(filterCalls(spy, 'update')).toHaveSize(1);
+                });
+        });
+
+        it('should call update when component is re-connected.', () => {
+            const spy = [];
+            AdapterId.setSpy(spy);
+            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            document.body.appendChild(elm);
+
+            return Promise.resolve()
+                .then(() => {
+                    expect(filterCalls(spy, 'update')).toHaveSize(1);
+                    document.body.removeChild(elm);
+                    elm.setDynamicParamSource('simpleParam modified');
+                })
+                .then(() => {
+                    expect(filterCalls(spy, 'update')).toHaveSize(1);
+                    const wireResult = elm.getWiredProp();
+
+                    expect(wireResult.simpleParam).not.toBeDefined();
+                    document.body.appendChild(elm);
+                })
+                .then(() => {
+                    expect(filterCalls(spy, 'update')).toHaveSize(2);
+                    const wireResult = elm.getWiredProp();
+
+                    expect(wireResult.simpleParam).toBe('simpleParam modified');
                 });
         });
     });

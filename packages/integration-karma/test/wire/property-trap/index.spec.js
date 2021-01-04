@@ -31,17 +31,17 @@ describe('wire adapter update', () => {
         const wireKey = { b: { c: { d: 'a.b.c.d value' } } };
         const elm = createElement('x-echo-adapter-consumer', { is: EchoAdapterConsumer });
 
-        document.body.appendChild(elm);
         elm.setWireKeyParameter(wireKey);
+        document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
             const actualWiredValues = elm.getWiredProp();
-            expect(spy.length).toBe(1);
+            expect(spy).toHaveSize(1);
             expect(actualWiredValues.data.recordId).toBe('default value');
             elm.setWireKeyParameter(wireKey);
 
             return Promise.resolve().then(() => {
-                expect(spy.length).toBe(1);
+                expect(spy).toHaveSize(1);
             });
         });
     });
@@ -68,7 +68,6 @@ describe('wire adapter update', () => {
         });
     });
 
-    // all currently failing
     describe('reactivity when vm.isDirty === true', () => {
         it('should call update with value set before connected (using observed fields)', () => {
             const wireKey = { b: { c: { d: 'expected' } } };
