@@ -11,13 +11,12 @@ const path = require('path');
 const { getModulePath } = require('lwc');
 const karmaPluginLwc = require('../karma-plugins/lwc');
 const karmaPluginEnv = require('../karma-plugins/env');
-const babelIstanbulInstrumenter = require('../karma-plugins/babel-istanbul-instrumenter');
 
 const BASE_DIR = path.resolve(__dirname, '../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
 
-const SHADOW_POLYFILL = getModulePath('synthetic-shadow', 'iife', 'es2017', 'dev');
-const SHADOW_POLYFILL_COMPAT = getModulePath('synthetic-shadow', 'iife', 'es5', 'dev');
+const SYNTHETIC_SHADOW = getModulePath('synthetic-shadow', 'iife', 'es2017', 'dev');
+const SYNTHETIC_SHADOW_COMPAT = getModulePath('synthetic-shadow', 'iife', 'es5', 'dev');
 const LWC_ENGINE = getModulePath('engine', 'iife', 'es2017', 'dev');
 const LWC_ENGINE_COMPAT = getModulePath('engine', 'iife', 'es5', 'dev');
 const WIRE_SERVICE = getModulePath('wire-service', 'iife', 'es2017', 'dev');
@@ -53,12 +52,12 @@ function getFiles(lwcConfig) {
     const frameworkFiles = [];
     if (lwcConfig.compat) {
         frameworkFiles.push(createPattern(POLYFILL_COMPAT));
-        frameworkFiles.push(createPattern(SHADOW_POLYFILL_COMPAT));
+        frameworkFiles.push(createPattern(SYNTHETIC_SHADOW_COMPAT));
         frameworkFiles.push(createPattern(LWC_ENGINE_COMPAT));
         frameworkFiles.push(createPattern(WIRE_SERVICE_COMPAT));
     } else {
         if (!lwcConfig.nativeShadow) {
-            frameworkFiles.push(createPattern(SHADOW_POLYFILL));
+            frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
         }
         frameworkFiles.push(createPattern(LWC_ENGINE));
         frameworkFiles.push(createPattern(WIRE_SERVICE));
@@ -78,6 +77,7 @@ function getFiles(lwcConfig) {
  */
 module.exports = (config) => {
     const lwcConfig = getLwcConfig(config);
+    const { compat, tags } = lwcConfig;
 
     config.set({
         basePath: BASE_DIR,
@@ -112,26 +112,17 @@ module.exports = (config) => {
 
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
     if (config.coverage) {
-        // Indicate to Karma to instrument the engine to gather code coverage.
-        config.preprocessors[lwcConfig.compat ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
-        // Indicate to Karma to instrument the wire service to gather code coverage.
-        config.preprocessors[lwcConfig.compat ? WIRE_SERVICE_COMPAT : WIRE_SERVICE] = ['coverage'];
+        // Indicate to Karma to instrument the code to gather code coverage.
+        config.preprocessors[compat ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
+        config.preprocessors[compat ? WIRE_SERVICE_COMPAT : WIRE_SERVICE] = ['coverage'];
+        config.preprocessors[compat ? SYNTHETIC_SHADOW_COMPAT : SYNTHETIC_SHADOW] = ['coverage'];
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');
 
         config.coverageReporter = {
-            dir: path.resolve(COVERAGE_DIR, lwcConfig.tags.join('_')),
+            dir: path.resolve(COVERAGE_DIR, tags.join('_')),
             reporters: [{ type: 'html' }, { type: 'json' }],
-
-            // The instrumenter used by default by karma-coverage doesn't play well with es6+ syntax. We need to
-            // override the default instrumenter with a more recent version using Babel.
-            instrumenter: {
-                '**/*.js': 'babel-instanbul',
-            },
-            instrumenters: {
-                'babel-instanbul': babelIstanbulInstrumenter,
-            },
         };
     }
 };
