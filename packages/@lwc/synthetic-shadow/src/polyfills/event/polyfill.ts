@@ -14,25 +14,29 @@ import { EventListenerContext, eventToContextMap } from '../../faux-shadow/event
 import { getNodeOwnerKey } from '../../shared/node-ownership';
 import { getOwnerDocument } from '../../shared/utils';
 
-export function targetGetter(this: Event): EventTarget | null {
-    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
+function patchedTargetGetter(this: Event): EventTarget | null {
     const originalTarget = eventTargetGetter.call(this);
+    if (!(originalTarget instanceof Node)) {
+        return originalTarget;
+    }
+
+    const doc = getOwnerDocument(originalTarget);
     const composedPath = pathComposer(originalTarget, this.composed);
-    const doc = getOwnerDocument(originalTarget as Node);
+    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
     // Handle cases where the currentTarget is null (for async events), and when an event has been
     // added to Window
     if (!(originalCurrentTarget instanceof Node)) {
         // TODO [#1511]: Special escape hatch to support legacy behavior. Should be fixed.
         // If the event's target is being accessed async and originalTarget is not a keyed element, do not retarget
-        if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget as Node))) {
+        if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget))) {
             return originalTarget;
         }
         return retarget(doc, composedPath);
     } else if (originalCurrentTarget === doc || originalCurrentTarget === doc.body) {
         // TODO [#1530]: If currentTarget is document or document.body (Third party libraries that have global event listeners)
         // and the originalTarget is not a keyed element, do not retarget
-        if (isUndefined(getNodeOwnerKey(originalTarget as Node))) {
+        if (isUndefined(getNodeOwnerKey(originalTarget))) {
             return originalTarget;
         }
         return retarget(doc, composedPath);
@@ -57,7 +61,7 @@ export function targetGetter(this: Event): EventTarget | null {
     return retarget(actualCurrentTarget, actualPath);
 }
 
-export function composedPathValue(this: Event): EventTarget[] {
+function patchedComposedPathValue(this: Event): EventTarget[] {
     const originalTarget = eventTargetGetter.call(this);
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
@@ -77,26 +81,26 @@ export function composedPathValue(this: Event): EventTarget[] {
 
 defineProperties(Event.prototype, {
     target: {
-        get: targetGetter,
+        get: patchedTargetGetter,
         enumerable: true,
         configurable: true,
     },
     composedPath: {
-        value: composedPathValue,
+        value: patchedComposedPathValue,
         writable: true,
         enumerable: true,
         configurable: true,
     },
     // Non-standard but widely supported for backwards-compatibility
     srcElement: {
-        get: targetGetter,
+        get: patchedTargetGetter,
         enumerable: true,
         configurable: true,
     },
     // Non-standard but implemented in Chrome and continues to exist for backwards-compatibility
     // https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/renderer/core/dom/events/event.idl;l=58?q=event.idl&ss=chromium
     path: {
-        get: composedPathValue,
+        get: patchedComposedPathValue,
         enumerable: true,
         configurable: true,
     },
