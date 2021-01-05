@@ -123,15 +123,6 @@ module.exports = (config) => {
         config.coverageReporter = {
             dir: path.resolve(COVERAGE_DIR, tags.join('_')),
             reporters: [{ type: 'html' }, { type: 'json' }],
-
-            // // The instrumenter used by default by karma-coverage doesn't play well with es6+ syntax. We need to
-            // // override the default instrumenter with a more recent version using Babel.
-            // instrumenter: {
-            //     '**/*.js': 'babel-instanbul',
-            // },
-            // instrumenters: {
-            //     'babel-instanbul': babelIstanbulInstrumenter,
-            // },
         };
     }
 };
