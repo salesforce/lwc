@@ -22,6 +22,27 @@ describe('Event.target', () => {
         div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
     });
 
+    it('should patch the prototype instead of the instance', () => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
+
+        function dispatchEventWithAssertions(target, event) {
+            const hasOwnProperty = Object.prototype.hasOwnProperty;
+            for (var node = target; node; node = node.parentNode || node.host) {
+                node.addEventListener(event.type, function (event) {
+                    expect(hasOwnProperty.call(event, 'target')).toBeFalse();
+                });
+            }
+            target.dispatchEvent(event);
+        }
+        dispatchEventWithAssertions(
+            container.shadowRoot.querySelector('x-child'),
+            new CustomEvent('test', { bubbles: true, composed: true })
+        );
+
+        expect(hasOwnProperty.call(Event.prototype, 'target')).toBeTrue();
+    });
+
     it('should retarget to the root component when accessed asynchronously', () => {
         const container = createElement('x-container', { is: Container });
         document.body.appendChild(container);
