@@ -8,7 +8,6 @@ import { ArrayPush } from '@lwc/shared';
 import { innerTextGetter } from '../env/element';
 import { ELEMENT_NODE, TEXT_NODE } from '../env/node';
 import { windowGetComputedStyle, windowGetSelection } from '../env/window';
-import { childNodesGetterPatched } from '../faux-shadow/node';
 import { getOwnerWindow } from '../shared/utils';
 import { getTextContent } from './polymer/text-content';
 
@@ -135,7 +134,7 @@ function innerTextCollectionSteps(node: Node): InnerTextItem[] {
         } else if (tagName === 'TEXTAREA') {
             return [];
         } else {
-            const childNodes = childNodesGetterPatched.call(node);
+            const childNodes = node.childNodes;
             for (let i = 0, n = childNodes.length; i < n; i++) {
                 ArrayPush.apply(items, innerTextCollectionSteps(childNodes[i]));
             }
@@ -202,7 +201,7 @@ export function getInnerText(element: Element): string {
 
     const selectionState = getSelectionState(element);
     const results: InnerTextItem[] = [];
-    const childNodes = childNodesGetterPatched.call(element);
+    const childNodes = element.childNodes;
 
     for (let i = 0, n = childNodes.length; i < n; i++) {
         ArrayPush.apply(results, innerTextCollectionSteps(childNodes[i]));

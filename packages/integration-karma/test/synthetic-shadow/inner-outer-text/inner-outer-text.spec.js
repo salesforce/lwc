@@ -118,6 +118,24 @@ Cat`);
 
             expect(testElement.innerText).toBe('first text\n\nslotted element\n\nsecond text');
         });
+
+        describe('slot element', () => {
+            it('should return default slot content when no content is passed into the slot', () => {
+                const testElement = elm.shadowRoot
+                    .querySelector('.without-slotted-content x-slotable')
+                    .shadowRoot.querySelector('slot');
+
+                expect(testElement.innerText).toBe('default slot content');
+            });
+
+            it('should be empty when default slot content is overwritten', () => {
+                const testElement = elm.shadowRoot
+                    .querySelector('.with-slotted-content x-slotable')
+                    .shadowRoot.querySelector('slot');
+
+                expect(testElement.innerText).toBe('');
+            });
+        });
     });
 
     const outerTextDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'outerText');
