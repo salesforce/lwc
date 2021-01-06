@@ -88,4 +88,14 @@ describe('EventTarget.addEventListener', () => {
         target.dispatchEvent(new CustomEvent('foo'));
         expect(logs).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     });
+
+    it('should accept null as second parameter', () => {
+        const target = new EventTarget();
+        expect(() => target.addEventListener('dummy', null)).not.toThrowError();
+    });
+
+    it('should accept undefined as second parameter', () => {
+        const target = new EventTarget();
+        expect(() => target.addEventListener('dummy', undefined)).not.toThrowError();
+    });
 });
