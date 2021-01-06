@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperties, isFunction, isNull, isObject } from '@lwc/shared';
+import { defineProperties, isFunction, isUndefined, isObject } from '@lwc/shared';
 import {
     addEventListener as nativeAddEventListener,
     eventTargetPrototype,
@@ -17,11 +17,20 @@ import {
 import { isHostElement } from '../../faux-shadow/shadow-root';
 import { getEventListenerWrapper } from '../../shared/event-target';
 
-function isValidEventListener(listener: EventListenerOrEventListenerObject): boolean {
-    return (
-        isFunction(listener) ||
-        (!isNull(listener) && isObject(listener) && isFunction(listener.handleEvent))
-    );
+function assertValidEventListenerArgs(args: IArguments) {
+    if (args.length < 2) {
+        throw new TypeError(
+            `Failed to execute 'addEventListener' on 'EventTarget': 2 arguments required, but only ${args.length} present.`
+        );
+    }
+
+    const listener = args[1];
+
+    if (!(isObject(listener) || isFunction(listener) || isUndefined(listener))) {
+        throw new TypeError(
+            `Failed to execute 'addEventListener' on 'EventTarget': parameter 2 is not of type 'Object'`
+        );
+    }
 }
 
 function addEventListener(
@@ -30,10 +39,7 @@ function addEventListener(
     listener: EventListenerOrEventListenerObject,
     optionsOrCapture?: boolean | AddEventListenerOptions
 ) {
-    // TODO [#2134]: Delegate this validation to the browser instead of silently swallowing
-    if (!isValidEventListener(listener)) {
-        return;
-    }
+    assertValidEventListenerArgs(arguments);
     if (isHostElement(this)) {
         addCustomElementEventListener(this, type, listener);
     } else {
@@ -48,10 +54,7 @@ function removeEventListener(
     listener: EventListenerOrEventListenerObject,
     optionsOrCapture?: boolean | EventListenerOptions
 ) {
-    // TODO [#2134]: Delegate this validation to the browser instead of silently swallowing
-    if (!isValidEventListener(listener)) {
-        return;
-    }
+    assertValidEventListenerArgs(arguments);
     if (isHostElement(this)) {
         removeCustomElementEventListener(this, type, listener);
     } else {

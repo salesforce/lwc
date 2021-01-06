@@ -68,4 +68,21 @@ describe('EventTarget.removeEventListener', () => {
         const target = new EventTarget();
         expect(() => target.removeEventListener('dummy', () => {})).not.toThrowError();
     });
+
+    ['string', 123, 123n, true, Symbol('dummy')].forEach((primitive) => {
+        it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
+            const target = new EventTarget();
+            expect(() => target.removeEventListener('dummy', primitive)).toThrow();
+        });
+    });
+
+    it('should throw error when second parameter is not passed', () => {
+        const target = new EventTarget();
+        expect(() => target.removeEventListener('dummy')).toThrowError();
+    });
+
+    it('should throw error when no parameters are passed', () => {
+        const target = new EventTarget();
+        expect(() => target.removeEventListener()).toThrowError();
+    });
 });

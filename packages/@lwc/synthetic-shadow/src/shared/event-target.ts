@@ -19,6 +19,8 @@ const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListene
 export function getEventListenerWrapper(
     fnOrObj: EventListenerOrEventListenerObject
 ): EventListener {
+    if (!fnOrObj) return fnOrObj; // handle null or undefined
+
     let wrapperFn = EventListenerMap.get(fnOrObj);
 
     if (isUndefined(wrapperFn)) {
