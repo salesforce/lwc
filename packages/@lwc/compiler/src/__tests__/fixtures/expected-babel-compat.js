@@ -44,8 +44,8 @@ var keys = Object.compatKeys(object);
 if (Object.getOwnPropertySymbols) {
 var symbols = Object.getOwnPropertySymbols(object);
 if (enumerableOnly) symbols = __callKey1(symbols, "filter", function (sym) {
-var _Object$compatGetOwnP, _enumerable;
-return _Object$compatGetOwnP = Object.compatGetOwnPropertyDescriptor(object, sym), _enumerable = _Object$compatGetOwnP._ES5ProxyType ? _Object$compatGetOwnP.get("enumerable") : _Object$compatGetOwnP.enumerable;
+var _Object$compatGetOwnP;
+return _Object$compatGetOwnP = Object.compatGetOwnPropertyDescriptor(object, sym), _Object$compatGetOwnP._ES5ProxyType ? _Object$compatGetOwnP.get("enumerable") : _Object$compatGetOwnP.enumerable;
 });
 __callKey2(keys.push, "apply", keys, symbols);
 }
@@ -179,7 +179,6 @@ _createClass(Foo, [{
 key: "foo",
 value: function () {
 var _foo = _asyncToGenerator( /*#__PURE__*/__callKey1(_regeneratorRuntime, "mark", function _callee() {
-var wat;
 return __callKey3(_regeneratorRuntime, "wrap", function _callee$(_context) {
 while (1) {
 switch (__setKey(_context, "prev", _context._ES5ProxyType ? _context.get("next") : _context.next)) {
@@ -187,7 +186,7 @@ case 0:
 __setKey(_context, "next", 2);
 return bar();
 case 2:
-wat = _context._ES5ProxyType ? _context.get("sent") : _context.sent;
+_context._ES5ProxyType ? _context.get("sent") : _context.sent;
 case 3:
 case "end":
 return __callKey0(_context, "stop");
