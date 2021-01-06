@@ -8,11 +8,13 @@ import { assert, isFunction, isUndefined } from '@lwc/shared';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
-import { ComponentConstructor, ComponentInterface } from './component';
+import { ComponentConstructor } from './component';
 import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 
-import { VNodes } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
+
+import type { VNodes } from '../3rdparty/snabbdom/types';
+import type { LightningElement } from './base-lightning-element';
 
 export let isInvokingRender: boolean = false;
 
@@ -160,7 +162,7 @@ export function invokeComponentRenderedCallback(vm: VM): void {
 export function invokeEventListener(
     vm: VM,
     fn: EventListener,
-    thisValue: undefined | ComponentInterface,
+    thisValue: LightningElement | undefined,
     event: Event
 ) {
     const { callHook, owner } = vm;

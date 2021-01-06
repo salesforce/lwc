@@ -5,10 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert } from '@lwc/shared';
-import { ComponentInterface } from '../component';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
 import { WireAdapterConstructor } from '../wiring';
+
+import { LightningElement } from '../base-lightning-element';
 
 /**
  * @wire decorator to wire fields and methods to a wire adapter in
@@ -27,12 +28,12 @@ export default function wire(
 
 export function internalWireFieldDecorator(key: string): PropertyDescriptor {
     return {
-        get(this: ComponentInterface): any {
+        get(this: LightningElement): any {
             const vm = getAssociatedVM(this);
             componentValueObserved(vm, key);
             return vm.cmpFields[key];
         },
-        set(this: ComponentInterface, value: any) {
+        set(this: LightningElement, value: any) {
             const vm = getAssociatedVM(this);
             /**
              * Reactivity for wired fields is provided in wiring.

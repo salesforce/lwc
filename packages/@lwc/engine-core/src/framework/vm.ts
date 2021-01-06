@@ -35,20 +35,20 @@ import { invokeComponentCallback, invokeComponentRenderedCallback } from './invo
 
 import { Template } from './template';
 import { ComponentDef } from './def';
-import { ComponentInterface } from './component';
 import { startGlobalMeasure, endGlobalMeasure, GlobalMeasurementPhase } from './performance-timing';
 import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
-import { LightningElement } from './base-lightning-element';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
-import { Renderer, HostNode, HostElement } from './renderer';
 import { removeActiveVM } from './hot-swaps';
 
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
-import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
+
+import type { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
+import type { LightningElement } from './base-lightning-element';
+import type { Renderer, HostNode, HostElement } from './renderer';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -123,7 +123,7 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The template method returning the VDOM tree. */
     cmpTemplate: Template | null;
     /** The component instance. */
-    component: ComponentInterface;
+    component: LightningElement;
     /** The custom element shadow root. */
     cmpRoot: ShadowRoot;
     /** The template reactive observer. */
@@ -133,23 +133,19 @@ export interface VM<N = HostNode, E = HostElement> {
     oar: { [name: string]: AccessorReactiveObserver };
     /** Hook invoked whenever a property is accessed on the host element. This hook is used by
      *  Locker only. */
-    setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
+    setHook: (cmp: LightningElement, prop: PropertyKey, newValue: any) => void;
     /** Hook invoked whenever a property is set on the host element. This hook is used by Locker
      *  only. */
-    getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
+    getHook: (cmp: LightningElement, prop: PropertyKey) => any;
     /** Hook invoked whenever a method is called on the component (life-cycle hooks, public
      *  properties and event handlers). This hook is used by Locker. */
-    callHook: (
-        cmp: ComponentInterface | undefined,
-        fn: (...args: any[]) => any,
-        args?: any[]
-    ) => any;
+    callHook: (cmp: LightningElement | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
 }
 
 let profilerEnabled = false;
 trackProfilerState((t) => (profilerEnabled = t));
 
-type VMAssociable = HostNode | LightningElement | ComponentInterface;
+type VMAssociable = HostNode | LightningElement;
 
 let idx: number = 0;
 
@@ -157,18 +153,18 @@ let idx: number = 0;
 const ViewModelReflection = createHiddenField<VM>('ViewModel', 'engine');
 
 function callHook(
-    cmp: ComponentInterface | undefined,
+    cmp: LightningElement | undefined,
     fn: (...args: any[]) => any,
     args: any[] = []
 ): any {
     return fn.apply(cmp, args);
 }
 
-function setHook(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
+function setHook(cmp: LightningElement, prop: PropertyKey, newValue: any) {
     (cmp as any)[prop] = newValue;
 }
 
-function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
+function getHook(cmp: LightningElement, prop: PropertyKey): any {
     return (cmp as any)[prop];
 }
 
