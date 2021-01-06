@@ -139,7 +139,7 @@
       _inherits(Foo, _LightningElement);
 
       function Foo() {
-        var _getPrototypeOf2, _getPrototypeOf3, _call;
+        var _getPrototypeOf2, _getPrototypeOf3;
 
         var _this;
 
@@ -157,9 +157,9 @@
           this,
           __callKey2(
             ((_getPrototypeOf3 = _getPrototypeOf2 = _getPrototypeOf(Foo)),
-            (_call = _getPrototypeOf3._ES5ProxyType
+            _getPrototypeOf3._ES5ProxyType
               ? _getPrototypeOf3.get("call")
-              : _getPrototypeOf3.call)),
+              : _getPrototypeOf3.call),
             "apply",
             _getPrototypeOf2,
             __concat([this], args)
