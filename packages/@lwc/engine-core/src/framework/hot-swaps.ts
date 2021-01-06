@@ -8,17 +8,19 @@ import { isFalse, isUndefined, isNull } from '@lwc/shared';
 import featureFlags from '@lwc/features';
 import { VM, scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
-import { markComponentAsDirty, ComponentConstructor } from './component';
-import { Template } from './template';
+import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
+import type { Template } from './template';
+import type { LightningElementConstructor } from './base-lightning-element';
+
 const swappedTemplateMap = new WeakMap<Template, Template>();
-const swappedComponentMap = new WeakMap<ComponentConstructor, ComponentConstructor>();
+const swappedComponentMap = new WeakMap<LightningElementConstructor, LightningElementConstructor>();
 const swappedStyleMap = new WeakMap<StylesheetFactory, StylesheetFactory>();
 
 const activeTemplates = new WeakMap<Template, Set<VM>>();
-const activeComponents = new WeakMap<ComponentConstructor, Set<VM>>();
+const activeComponents = new WeakMap<LightningElementConstructor, Set<VM>>();
 const activeStyles = new WeakMap<StylesheetFactory, Set<VM>>();
 
 function rehydrateHotTemplate(tpl: Template): boolean {
@@ -55,7 +57,7 @@ function rehydrateHotStyle(style: StylesheetFactory): boolean {
     return true;
 }
 
-function rehydrateHotComponent(Ctor: ComponentConstructor): boolean {
+function rehydrateHotComponent(Ctor: LightningElementConstructor): boolean {
     const list = activeComponents.get(Ctor);
     let canRefreshAllInstances = true;
     if (!isUndefined(list)) {
@@ -112,14 +114,16 @@ export function getTemplateOrSwappedTemplate(tpl: Template): Template {
     return tpl;
 }
 
-export function getComponentOrSwappedComponent(Ctor: ComponentConstructor): ComponentConstructor {
+export function getComponentOrSwappedComponent(
+    Ctor: LightningElementConstructor
+): LightningElementConstructor {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
 
     if (featureFlags.ENABLE_HMR) {
-        const visited: Set<ComponentConstructor> = new Set();
+        const visited: Set<LightningElementConstructor> = new Set();
         while (swappedComponentMap.has(Ctor) && !visited.has(Ctor)) {
             visited.add(Ctor);
             Ctor = swappedComponentMap.get(Ctor)!;
@@ -253,8 +257,8 @@ export function swapTemplate(oldTpl: Template, newTpl: Template): boolean {
 }
 
 export function swapComponent(
-    oldComponent: ComponentConstructor,
-    newComponent: ComponentConstructor
+    oldComponent: LightningElementConstructor,
+    newComponent: LightningElementConstructor
 ): boolean {
     if (process.env.NODE_ENV !== 'production') {
         if (isComponentConstructor(oldComponent) && isComponentConstructor(newComponent)) {

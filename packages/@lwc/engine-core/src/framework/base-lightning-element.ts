@@ -124,6 +124,8 @@ export interface LightningElementConstructor {
     new (): LightningElement;
     readonly prototype: LightningElement;
     readonly CustomElementConstructor: HTMLElementConstructor;
+
+    delegatesFocus?: boolean;
 }
 
 export declare let LightningElement: LightningElementConstructor;

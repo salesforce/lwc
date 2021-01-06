@@ -8,13 +8,12 @@ import { assert, isFunction, isUndefined } from '@lwc/shared';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
-import { ComponentConstructor } from './component';
 import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 
 import { addErrorComponentStack } from '../shared/error';
 
 import type { VNodes } from '../3rdparty/snabbdom/types';
-import type { LightningElement } from './base-lightning-element';
+import type { LightningElement, LightningElementConstructor } from './base-lightning-element';
 
 export let isInvokingRender: boolean = false;
 
@@ -49,7 +48,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     return result;
 }
 
-export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
+export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstructor) {
     const vmBeingConstructedInception = vmBeingConstructed;
     let error;
     if (profilerEnabled) {

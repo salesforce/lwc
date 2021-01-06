@@ -35,17 +35,6 @@ import {
     rerenderVM,
     appendVM,
 } from './vm';
-import { ComponentConstructor } from './component';
-import {
-    VNode,
-    VNodeData,
-    VNodes,
-    VElement,
-    VText,
-    Hooks,
-    Key,
-    VCustomElement,
-} from '../3rdparty/snabbdom/types';
 import {
     createViewModelHook,
     fallbackElmHook,
@@ -65,6 +54,18 @@ import {
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
 
+import type {
+    VNode,
+    VNodeData,
+    VNodes,
+    VElement,
+    VText,
+    Hooks,
+    Key,
+    VCustomElement,
+} from '../3rdparty/snabbdom/types';
+import { LightningElementConstructor } from './base-lightning-element';
+
 export interface ElementCompilerData extends VNodeData {
     key: Key;
 }
@@ -78,7 +79,7 @@ export interface RenderAPI {
     h(tagName: string, data: ElementCompilerData, children: VNodes): VNode;
     c(
         tagName: string,
-        Ctor: ComponentConstructor,
+        Ctor: LightningElementConstructor,
         data: CustomElementCompilerData,
         children?: VNodes
     ): VNode;
@@ -369,7 +370,7 @@ export function s(
 // [c]ustom element node
 export function c(
     sel: string,
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     data: CustomElementCompilerData,
     children: VNodes = EmptyArray
 ): VCustomElement {
@@ -645,7 +646,7 @@ export function fid(url: string | undefined | null): string | null | undefined {
  * by dc() api. This allows us to generate a unique unique per template per dynamic
  * component reference to avoid diffing algo mismatches.
  */
-const DynamicImportedComponentMap: Map<ComponentConstructor, number> = new Map();
+const DynamicImportedComponentMap: Map<LightningElementConstructor, number> = new Map();
 let dynamicImportedComponentCounter = 0;
 
 /**
@@ -653,7 +654,7 @@ let dynamicImportedComponentCounter = 0;
  */
 export function dc(
     sel: string,
-    Ctor: ComponentConstructor | null | undefined,
+    Ctor: LightningElementConstructor | null | undefined,
     data: CustomElementCompilerData,
     children?: VNodes
 ): VCustomElement | null {
