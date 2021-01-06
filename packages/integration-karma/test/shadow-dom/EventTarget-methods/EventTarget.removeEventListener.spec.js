@@ -63,4 +63,9 @@ describe('EventTarget.removeEventListener', () => {
 
         expect(listener.handleEvent).not.toHaveBeenCalled();
     });
+
+    it('should not throw error when listener is not added', () => {
+        const target = new EventTarget();
+        expect(() => target.removeEventListener('dummy', () => {})).not.toThrowError();
+    });
 });

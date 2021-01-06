@@ -30,12 +30,7 @@ describe('EventTarget.addEventListener', () => {
 
         const log = [];
         targets.forEach((node) => {
-            node.addEventListener(
-                'click',
-                function () {
-                    log.push(this);
-                }.bind(node)
-            );
+            node.addEventListener('click', () => log.push(node));
         });
 
         nodes.button.click();
@@ -47,6 +42,11 @@ describe('EventTarget.addEventListener', () => {
         const targets = [
             nodes.button,
             nodes['container_div'],
+            /*
+            TODO [#2134]: These are valid cases but currently fail.
+            nodes['x-container'].shadowRoot,
+            nodes['x-container'],
+            */
             document.body,
             document.documentElement,
             document,
@@ -55,11 +55,7 @@ describe('EventTarget.addEventListener', () => {
 
         const log = [];
         targets.forEach((node) => {
-            node.addEventListener('click', {
-                handleEvent: function () {
-                    log.push(this);
-                }.bind(node),
-            });
+            node.addEventListener('click', { handleEvent: () => log.push(node) });
         });
 
         nodes.button.click();
@@ -67,15 +63,29 @@ describe('EventTarget.addEventListener', () => {
         expect(log).toEqual(targets);
     });
 
-    if (!process.env.NATIVE_SHADOW) {
-        it('should throw error when a listener config is passed for shadow root and host', () => {
-            [nodes['x-container'], nodes['x-container'].shadowRoot].forEach((node) => {
-                expect(() => {
-                    node.addEventListener('click', {
-                        handleEvent: () => {},
-                    });
-                }).toThrowMatching((e) => e.message.startsWith('Invalid second argument'));
-            });
-        });
-    }
+    it('should accept a function listener as second parameter for a non-node EventTarget', () => {
+        const target = new EventTarget();
+        const listener = jasmine.createSpy();
+        target.addEventListener('dummy', listener);
+        target.dispatchEvent(new CustomEvent('dummy'));
+        expect(listener).toHaveBeenCalled();
+    });
+
+    it('should accept a listener config as second parameter for a non-node EventTarget', () => {
+        const target = new EventTarget();
+        const listener = jasmine.createSpy();
+        target.addEventListener('dummy', { handleEvent: listener });
+        target.dispatchEvent(new CustomEvent('dummy'));
+        expect(listener).toHaveBeenCalled();
+    });
+
+    it('should call event listener with the same order', () => {
+        const target = new EventTarget();
+        const logs = [];
+        for (let i = 1; i <= 10; i++) {
+            target.addEventListener('foo', () => logs.push(i));
+        }
+        target.dispatchEvent(new CustomEvent('foo'));
+        expect(logs).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    });
 });
