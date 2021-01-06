@@ -25,11 +25,6 @@ export interface ComponentConstructor extends LightningElementConstructor {
     readonly delegatesFocus?: boolean;
 }
 
-export interface ComponentMeta {
-    readonly name: string;
-    readonly template?: Template;
-}
-
 const signedTemplateMap: Map<ComponentConstructor, Template> = new Map();
 
 /**
