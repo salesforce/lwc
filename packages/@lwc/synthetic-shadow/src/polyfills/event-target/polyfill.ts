@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperties, isFunction, isUndefined, isObject } from '@lwc/shared';
+import { defineProperties } from '@lwc/shared';
 import {
     addEventListener as nativeAddEventListener,
     eventTargetPrototype,
@@ -17,29 +17,17 @@ import {
 import { isHostElement } from '../../faux-shadow/shadow-root';
 import { getEventListenerWrapper } from '../../shared/event-target';
 
-function assertValidEventListenerArgs(args: IArguments) {
-    if (args.length < 2) {
-        throw new TypeError(
-            `Failed to execute 'addEventListener' on 'EventTarget': 2 arguments required, but only ${args.length} present.`
-        );
-    }
-
-    const listener = args[1];
-
-    if (!(isObject(listener) || isFunction(listener) || isUndefined(listener))) {
-        throw new TypeError(
-            `Failed to execute 'addEventListener' on 'EventTarget': parameter 2 is not of type 'Object'`
-        );
-    }
-}
-
 function addEventListener(
     this: EventTarget,
     type: string,
     listener: EventListenerOrEventListenerObject,
     optionsOrCapture?: boolean | AddEventListenerOptions
 ) {
-    assertValidEventListenerArgs(arguments);
+    if (arguments.length < 2) {
+        // Delegate to the browser for throwing these errors.
+        // @ts-ignore type-mismatch
+        return nativeAddEventListener.apply(this, arguments);
+    }
     if (isHostElement(this)) {
         addCustomElementEventListener(this, type, listener);
     } else {
@@ -54,7 +42,11 @@ function removeEventListener(
     listener: EventListenerOrEventListenerObject,
     optionsOrCapture?: boolean | EventListenerOptions
 ) {
-    assertValidEventListenerArgs(arguments);
+    if (arguments.length < 2) {
+        // Delegate to the browser for throwing these errors.
+        // @ts-ignore type-mismatch
+        return nativeAddEventListener.apply(this, arguments);
+    }
     if (isHostElement(this)) {
         removeCustomElementEventListener(this, type, listener);
     } else {
