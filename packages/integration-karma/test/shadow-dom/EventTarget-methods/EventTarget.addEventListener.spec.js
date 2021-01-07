@@ -63,61 +63,57 @@ describe('EventTarget.addEventListener', () => {
         expect(log).toEqual(targets);
     });
 
-    it('should accept a function listener as second parameter for a non-node EventTarget', () => {
-        const target = new EventTarget();
-        const listener = jasmine.createSpy();
-        target.addEventListener('dummy', listener);
-        target.dispatchEvent(new CustomEvent('dummy'));
-        expect(listener).toHaveBeenCalled();
-    });
+    if (!process.env.COMPAT) {
+        it('should accept a function listener as second parameter for a non-node EventTarget', () => {
+            const target = new EventTarget();
+            const listener = jasmine.createSpy();
+            target.addEventListener('dummy', listener);
+            target.dispatchEvent(new CustomEvent('dummy'));
+            expect(listener).toHaveBeenCalled();
+        });
 
-    it('should accept a listener config as second parameter for a non-node EventTarget', () => {
-        const target = new EventTarget();
-        const listener = jasmine.createSpy();
-        target.addEventListener('dummy', { handleEvent: listener });
-        target.dispatchEvent(new CustomEvent('dummy'));
-        expect(listener).toHaveBeenCalled();
-    });
+        it('should accept a listener config as second parameter for a non-node EventTarget', () => {
+            const target = new EventTarget();
+            const listener = jasmine.createSpy();
+            target.addEventListener('dummy', { handleEvent: listener });
+            target.dispatchEvent(new CustomEvent('dummy'));
+            expect(listener).toHaveBeenCalled();
+        });
+    }
 
     it('should call event listener with the same order', () => {
-        const target = new EventTarget();
         const logs = [];
         for (let i = 1; i <= 10; i++) {
-            target.addEventListener('foo', () => logs.push(i));
+            nodes.button.addEventListener('foo', () => logs.push(i));
         }
-        target.dispatchEvent(new CustomEvent('foo'));
+        nodes.button.dispatchEvent(new CustomEvent('foo'));
         expect(logs).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     });
 
     it('should accept null as second parameter', () => {
-        const target = new EventTarget();
-        expect(() => target.addEventListener('dummy', null)).not.toThrowError();
+        expect(() => nodes.button.addEventListener('dummy', null)).not.toThrowError();
     });
 
     it('should accept undefined as second parameter', () => {
-        const target = new EventTarget();
-        expect(() => target.addEventListener('dummy', undefined)).not.toThrowError();
+        expect(() => nodes.button.addEventListener('dummy', undefined)).not.toThrowError();
     });
 
-    // there's another bigint primitive, but its literal throws syntax error in IE 11
     const primitives = ['string', 123, true];
     if (!process.env.COMPAT) {
+        primitives.push(BigInt('123')); // Literal throws syntax error in IE 11
         primitives.push(Symbol('dummy'));
     }
     primitives.forEach((primitive) => {
         it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
-            const target = new EventTarget();
-            expect(() => target.addEventListener('dummy', primitive)).toThrow();
+            expect(() => nodes.button.addEventListener('dummy', primitive)).toThrow();
         });
     });
 
     it('should throw error when second parameter is not passed', () => {
-        const target = new EventTarget();
-        expect(() => target.addEventListener('dummy')).toThrowError();
+        expect(() => nodes.button.addEventListener('dummy')).toThrowError();
     });
 
     it('should throw error when no parameters are passed', () => {
-        const target = new EventTarget();
-        expect(() => target.addEventListener()).toThrowError();
+        expect(() => nodes.button.addEventListener()).toThrowError();
     });
 });

@@ -10,7 +10,7 @@ function createShadowTree(parentNode) {
     return extractDataIds(elm);
 }
 
-describe('EventTarget.removeEventListener', () => {
+describe('Eventnodes.button.removeEventListener', () => {
     let nodes;
     beforeEach(() => {
         nodes = createShadowTree(document.body);
@@ -65,24 +65,25 @@ describe('EventTarget.removeEventListener', () => {
     });
 
     it('should not throw error when listener is not added', () => {
-        const target = new EventTarget();
-        expect(() => target.removeEventListener('dummy', () => {})).not.toThrowError();
+        expect(() => nodes.button.removeEventListener('dummy', () => {})).not.toThrowError();
     });
 
-    ['string', 123, 123n, true, Symbol('dummy')].forEach((primitive) => {
+    const primitives = ['string', 123, true];
+    if (!process.env.COMPAT) {
+        primitives.push(BigInt('123')); // Literal throws syntax error in IE 11
+        primitives.push(Symbol('dummy'));
+    }
+    primitives.forEach((primitive) => {
         it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
-            const target = new EventTarget();
-            expect(() => target.removeEventListener('dummy', primitive)).toThrow();
+            expect(() => nodes.button.removeEventListener('dummy', primitive)).toThrow();
         });
     });
 
     it('should throw error when second parameter is not passed', () => {
-        const target = new EventTarget();
-        expect(() => target.removeEventListener('dummy')).toThrowError();
+        expect(() => nodes.button.removeEventListener('dummy')).toThrowError();
     });
 
     it('should throw error when no parameters are passed', () => {
-        const target = new EventTarget();
-        expect(() => target.removeEventListener()).toThrowError();
+        expect(() => nodes.button.removeEventListener()).toThrowError();
     });
 });
