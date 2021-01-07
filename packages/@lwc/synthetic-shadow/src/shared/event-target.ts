@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isUndefined } from '@lwc/shared';
+import { assert, isFalse, isFunction, isNull, isUndefined } from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
 
 import {
@@ -19,7 +19,7 @@ const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListene
 export function getEventListenerWrapper(
     fnOrObj: EventListenerOrEventListenerObject
 ): EventListener {
-    if (!fnOrObj) return fnOrObj; // handle null or undefined
+    if (isNull(fnOrObj) || isUndefined(fnOrObj)) return fnOrObj;
 
     let wrapperFn = EventListenerMap.get(fnOrObj);
 
