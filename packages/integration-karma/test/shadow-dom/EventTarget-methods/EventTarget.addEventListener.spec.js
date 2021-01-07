@@ -99,7 +99,12 @@ describe('EventTarget.addEventListener', () => {
         expect(() => target.addEventListener('dummy', undefined)).not.toThrowError();
     });
 
-    ['string', 123, 123n, true, Symbol('dummy')].forEach((primitive) => {
+    // there's another bigint primitive, but its literal throws syntax error in IE 11
+    const primitives = ['string', 123, true];
+    if (!process.env.COMPAT) {
+        primitives.push(Symbol('dummy'));
+    }
+    primitives.forEach((primitive) => {
         it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
             const target = new EventTarget();
             expect(() => target.addEventListener('dummy', primitive)).toThrow();
