@@ -26,7 +26,7 @@ function patchedAddEventListener(
     if (isHostElement(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        return addCustomElementEventListener.apply(this, arguments);
+        return addCustomElementEventListener(this, ...arguments);
     }
     if (arguments.length > 1) {
         const args = ArraySlice.call(arguments);
@@ -49,7 +49,7 @@ function patchedRemoveEventListener(
     if (isHostElement(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        return removeCustomElementEventListener.apply(this, arguments);
+        return removeCustomElementEventListener(this, ...arguments);
     }
     if (arguments.length > 1) {
         const args = ArraySlice.call(arguments);
