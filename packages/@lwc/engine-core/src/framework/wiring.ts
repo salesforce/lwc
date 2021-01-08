@@ -5,11 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isUndefined, ArrayPush, defineProperty, defineProperties } from '@lwc/shared';
+import { LightningElement } from './base-lightning-element';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
-import { runWithBoundaryProtection, VMState } from './vm';
-
-import type { LightningElement } from './base-lightning-element';
-import type { VM } from './vm';
+import { runWithBoundaryProtection, VMState, VM } from './vm';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';

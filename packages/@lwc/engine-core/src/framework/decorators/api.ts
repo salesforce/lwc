@@ -13,11 +13,10 @@ import {
     componentValueMutated,
     ReactiveObserver,
 } from '../mutation-tracker';
+import { LightningElement } from '../base-lightning-element';
 import { getAssociatedVM, rerenderVM, VM } from '../vm';
 import { addCallbackToNextTick } from '../utils';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
-
-import type { LightningElement } from '../base-lightning-element';
 
 /**
  * @api decorator to mark public fields and public methods in

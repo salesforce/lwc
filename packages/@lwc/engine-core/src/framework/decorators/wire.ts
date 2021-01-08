@@ -5,11 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert } from '@lwc/shared';
+import { LightningElement } from '../base-lightning-element';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
 import { WireAdapterConstructor } from '../wiring';
-
-import { LightningElement } from '../base-lightning-element';
 
 /**
  * @wire decorator to wire fields and methods to a wire adapter in

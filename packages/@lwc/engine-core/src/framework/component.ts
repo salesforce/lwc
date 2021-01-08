@@ -14,9 +14,8 @@ import {
 import { VM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { ReactiveObserver } from '../libs/mutation-tracker';
+import { LightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
-
-import type { LightningElementConstructor } from './base-lightning-element';
 
 const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
 

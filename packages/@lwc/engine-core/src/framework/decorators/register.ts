@@ -15,6 +15,7 @@ import {
     toString,
     isFalse,
 } from '@lwc/shared';
+import { LightningElementConstructor } from '../base-lightning-element';
 import { internalWireFieldDecorator } from './wire';
 import { internalTrackDecorator } from './track';
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from './api';
@@ -26,8 +27,6 @@ import {
 } from '../wiring';
 import { EmptyObject } from '../utils';
 import { createObservedFieldPropertyDescriptor } from '../observed-fields';
-
-import type { LightningElementConstructor } from '../base-lightning-element';
 
 // data produced by compiler
 type WireCompilerMeta = Record<string, WireCompilerDef>;

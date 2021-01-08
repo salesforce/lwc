@@ -9,9 +9,8 @@ import { componentValueObserved, componentValueMutated } from '../mutation-track
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
+import { LightningElement } from '../base-lightning-element';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
-
-import type { LightningElement } from '../base-lightning-element';
 
 /**
  * @track decorator function to mark field value as reactive in

@@ -36,6 +36,17 @@ import {
     appendVM,
 } from './vm';
 import {
+    VNode,
+    VNodeData,
+    VNodes,
+    VElement,
+    VText,
+    Hooks,
+    Key,
+    VCustomElement,
+} from '../3rdparty/snabbdom/types';
+import { LightningElementConstructor } from './base-lightning-element';
+import {
     createViewModelHook,
     fallbackElmHook,
     removeElmHook,
@@ -53,18 +64,6 @@ import {
 } from './hooks';
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
-
-import type {
-    VNode,
-    VNodeData,
-    VNodes,
-    VElement,
-    VText,
-    Hooks,
-    Key,
-    VCustomElement,
-} from '../3rdparty/snabbdom/types';
-import { LightningElementConstructor } from './base-lightning-element';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;

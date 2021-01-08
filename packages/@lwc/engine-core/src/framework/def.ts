@@ -28,6 +28,8 @@ import {
 } from '@lwc/shared';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
+import { Template } from './template';
+import { LightningElement, LightningElementConstructor } from './base-lightning-element';
 import { BaseLightningElement, lightningBasedDescriptors } from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
@@ -42,9 +44,6 @@ import {
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
 import { getComponentOrSwappedComponent } from './hot-swaps';
-
-import type { Template } from './template';
-import type { LightningElement, LightningElementConstructor } from './base-lightning-element';
 
 export interface ComponentDef {
     name: string;
