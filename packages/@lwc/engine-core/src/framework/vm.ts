@@ -35,20 +35,19 @@ import { invokeComponentCallback, invokeComponentRenderedCallback } from './invo
 
 import { Template } from './template';
 import { ComponentDef } from './def';
+import { LightningElement } from './base-lightning-element';
 import { startGlobalMeasure, endGlobalMeasure, GlobalMeasurementPhase } from './performance-timing';
 import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
+import { Renderer, HostNode, HostElement } from './renderer';
 import { removeActiveVM } from './hot-swaps';
 
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
+import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
-
-import type { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
-import type { LightningElement } from './base-lightning-element';
-import type { Renderer, HostNode, HostElement } from './renderer';
 
 type ShadowRootMode = 'open' | 'closed';
 

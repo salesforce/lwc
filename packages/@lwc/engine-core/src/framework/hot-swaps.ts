@@ -8,12 +8,11 @@ import { isFalse, isUndefined, isNull } from '@lwc/shared';
 import featureFlags from '@lwc/features';
 import { VM, scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
+import { LightningElementConstructor } from './base-lightning-element';
+import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
-
-import type { Template } from './template';
-import type { LightningElementConstructor } from './base-lightning-element';
 
 const swappedTemplateMap = new WeakMap<Template, Template>();
 const swappedComponentMap = new WeakMap<LightningElementConstructor, LightningElementConstructor>();

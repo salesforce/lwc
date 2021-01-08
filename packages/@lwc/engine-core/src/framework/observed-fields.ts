@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { LightningElement } from './base-lightning-element';
 import { getAssociatedVM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
-
-import type { LightningElement } from './base-lightning-element';
 
 export function createObservedFieldPropertyDescriptor(key: string): PropertyDescriptor {
     return {
