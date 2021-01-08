@@ -4,43 +4,62 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperties } from '@lwc/shared';
+import { ArraySlice, defineProperties } from '@lwc/shared';
 
 import { windowAddEventListener, windowRemoveEventListener } from '../../env/window';
 import { getEventListenerWrapper } from '../../shared/event-target';
 
-function addEventListener(
+function patchedAddEventListener(
     this: Window,
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    options?: boolean | AddEventListenerOptions
+    _type: string,
+    _listener: EventListenerOrEventListenerObject,
+    _options?: boolean | AddEventListenerOptions
 ) {
-    const wrapperFn = getEventListenerWrapper(listener);
-    return windowAddEventListener.call(this, type, wrapperFn, options);
+    if (arguments.length > 1) {
+        const args = ArraySlice.call(arguments);
+        args[1] = getEventListenerWrapper(args[1]);
+
+        // Ignore types because we're passing through to native method
+        // @ts-ignore type-mismatch
+        return windowAddEventListener.apply(this, args);
+    }
+
+    // Typescript does not like it when you treat the `arguments` object as an array
+    // @ts-ignore type-mismatch
+    return windowAddEventListener.apply(this, arguments);
 }
 
-function removeEventListener(
+function patchedRemoveEventListener(
     this: Window,
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    options?: boolean | EventListenerOptions
+    _type: string,
+    _listener: EventListenerOrEventListenerObject,
+    _options?: boolean | EventListenerOptions
 ) {
-    const wrapperFn = getEventListenerWrapper(listener);
-    windowRemoveEventListener.call(this, type, wrapperFn, options);
+    if (arguments.length > 1) {
+        const args = ArraySlice.call(arguments);
+        args[1] = getEventListenerWrapper(args[1]);
+
+        // Ignore types because we're passing through to native method
+        // @ts-ignore type-mismatch
+        windowRemoveEventListener.apply(this, args);
+    }
+
     // Account for listeners that were added before this polyfill was applied
-    windowRemoveEventListener.call(this, type, listener, options);
+    // Typescript does not like it when you treat the `arguments` object as an array
+    // @ts-ignore type-mismatch
+    windowRemoveEventListener.apply(this, arguments);
 }
 
 export default function apply() {
     defineProperties(Window.prototype, {
         addEventListener: {
-            value: addEventListener,
+            value: patchedAddEventListener,
             enumerable: true,
             writable: true,
             configurable: true,
         },
         removeEventListener: {
-            value: removeEventListener,
+            value: patchedRemoveEventListener,
             enumerable: true,
             writable: true,
             configurable: true,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isNull, isUndefined } from '@lwc/shared';
+import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
 
 import {
@@ -16,13 +16,25 @@ import { isHostElement } from '../faux-shadow/shadow-root';
 
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
 
-export function getEventListenerWrapper(
-    fnOrObj: EventListenerOrEventListenerObject
-): EventListener {
-    if (isNull(fnOrObj) || isUndefined(fnOrObj)) return fnOrObj;
+function isEventListenerOrEventListenerObject(
+    fnOrObj: unknown
+): fnOrObj is EventListenerOrEventListenerObject {
+    return (
+        !isFunction(fnOrObj) &&
+        !(
+            isObject(fnOrObj) &&
+            !isNull(fnOrObj) &&
+            isFunction((fnOrObj as EventListenerObject).handleEvent)
+        )
+    );
+}
+
+export function getEventListenerWrapper(fnOrObj: unknown) {
+    if (!isEventListenerOrEventListenerObject(fnOrObj)) {
+        return fnOrObj;
+    }
 
     let wrapperFn = EventListenerMap.get(fnOrObj);
-
     if (isUndefined(wrapperFn)) {
         wrapperFn = function (this: EventTarget, event: Event) {
             if (process.env.NODE_ENV !== 'production') {
@@ -47,9 +59,8 @@ export function getEventListenerWrapper(
             }
 
             return isFunction(fnOrObj)
-                ? (fnOrObj as EventListener).call(this, event)
-                : (fnOrObj as EventListenerObject).handleEvent &&
-                      (fnOrObj as EventListenerObject).handleEvent(event);
+                ? fnOrObj.call(this, event)
+                : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
         };
         EventListenerMap.set(fnOrObj, wrapperFn);
     }
