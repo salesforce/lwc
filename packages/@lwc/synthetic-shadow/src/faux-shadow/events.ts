@@ -10,7 +10,6 @@ import {
     ArraySlice,
     ArraySplice,
     create,
-    defineProperties,
     defineProperty,
     forEach,
     getPropertyDescriptor,
@@ -21,26 +20,26 @@ import {
     isUndefined,
     toString,
 } from '@lwc/shared';
-import { getHost, SyntheticShadowRootInterface, getShadowRoot, isHostElement } from './shadow-root';
+import { getHost, SyntheticShadowRootInterface, getShadowRoot } from './shadow-root';
+import { pathComposer } from '../3rdparty/polymer/path-composer';
+import { retarget } from '../3rdparty/polymer/retarget';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
-import { pathComposer } from './../3rdparty/polymer/path-composer';
-import { retarget } from './../3rdparty/polymer/retarget';
-import { getNodeOwnerKey, isNodeDeepShadowed } from '../shared/node-ownership';
-import { getOwnerDocument } from '../shared/utils';
+import { isNodeDeepShadowed } from '../shared/node-ownership';
+
+export enum EventListenerContext {
+    CUSTOM_ELEMENT_LISTENER,
+    SHADOW_ROOT_LISTENER,
+    UNKNOWN_LISTENER,
+}
+
+export const eventToContextMap: WeakMap<Event, EventListenerContext> = new WeakMap();
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
     original: EventListener;
 }
-
-enum EventListenerContext {
-    CUSTOM_ELEMENT_LISTENER = 1,
-    SHADOW_ROOT_LISTENER = 2,
-}
-
-const eventToContextMap: WeakMap<Event, EventListenerContext> = new WeakMap();
 
 function isChildNode(root: Element, node: Node): boolean {
     return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
@@ -59,101 +58,19 @@ function getRootNodeHost(node: Node, options: GetRootNodeOptions): Node {
     return rootNode;
 }
 
-function targetGetter(this: Event): EventTarget | null {
-    // currentTarget is always defined
-    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
-    const originalTarget = eventTargetGetter.call(this);
-    const composedPath = pathComposer(originalTarget, this.composed);
-    const doc = getOwnerDocument(originalTarget as Node);
-
-    // Handle cases where the currentTarget is null (for async events),
-    // and when an event has been added to Window
-    if (!(originalCurrentTarget instanceof Node)) {
-        // TODO [#1511]: Special escape hatch to support legacy behavior. Should be fixed.
-        // If the event's target is being accessed async and originalTarget is not a keyed element, do not retarget
-        if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget as Node))) {
-            return originalTarget;
-        }
-        return retarget(doc, composedPath);
-    } else if (originalCurrentTarget === doc || originalCurrentTarget === doc.body) {
-        // TODO [#1530]: If currentTarget is document or document.body (Third party libraries that have global event listeners)
-        // and the originalTarget is not a keyed element, do not retarget
-        if (isUndefined(getNodeOwnerKey(originalTarget as Node))) {
-            return originalTarget;
-        }
-        return retarget(doc, composedPath);
-    }
-
-    let actualCurrentTarget = originalCurrentTarget;
-    let actualPath = composedPath;
-
-    // Address the possibility that `currentTarget` is a shadow root
-    if (isHostElement(originalCurrentTarget)) {
-        const context = eventToContextMap.get(this);
-        if (context === EventListenerContext.SHADOW_ROOT_LISTENER) {
-            actualCurrentTarget = getShadowRoot(originalCurrentTarget);
-        }
-    }
-
-    // Address the possibility that `target` is a shadow root
-    if (isHostElement(originalTarget) && eventsDispatchedDirectlyOnShadowRoot.has(this)) {
-        actualPath = pathComposer(getShadowRoot(originalTarget), this.composed);
-    }
-
-    return retarget(actualCurrentTarget, actualPath);
-}
-
-function composedPathValue(this: Event): EventTarget[] {
-    const originalTarget = eventTargetGetter.call(this);
-    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
-
-    // If the event has completed propagation, the composedPath should be an empty array.
-    if (isNull(originalCurrentTarget)) {
-        return [];
-    }
-
-    // Address the possibility that `target` is a shadow root
-    let actualTarget = originalTarget;
-    if (isHostElement(originalTarget) && eventsDispatchedDirectlyOnShadowRoot.has(this)) {
-        actualTarget = getShadowRoot(originalTarget);
-    }
-
-    return pathComposer(actualTarget, this.composed);
-}
-
 export function doesEventNeedPatch(e: Event): boolean {
     const originalTarget = eventTargetGetter.call(e);
     return originalTarget instanceof Node && isNodeDeepShadowed(originalTarget);
 }
 
+const patchedEvents: WeakSet<Event> = new WeakSet();
+
 export function patchEvent(event: Event) {
-    if (eventToContextMap.has(event)) {
-        return; // already patched
+    if (patchedEvents.has(event)) {
+        return;
     }
-    defineProperties(event, {
-        target: {
-            get: targetGetter,
-            enumerable: true,
-            configurable: true,
-        },
-        composedPath: {
-            value: composedPathValue,
-            writable: true,
-            enumerable: true,
-            configurable: true,
-        },
-        // non-standard but important accessor
-        srcElement: {
-            get: targetGetter,
-            enumerable: true,
-            configurable: true,
-        },
-        path: {
-            get: composedPathValue,
-            enumerable: true,
-            configurable: true,
-        },
-    });
+    patchedEvents.add(event);
+
     // not all events implement the relatedTarget getter, that's why we need to extract it from the instance
     // Note: we can't really use the super here because of issues with the typescript transpilation for accessors
     const originalRelatedTargetDescriptor = getPropertyDescriptor(event, 'relatedTarget');
@@ -182,7 +99,6 @@ export function patchEvent(event: Event) {
             configurable: true,
         });
     }
-    eventToContextMap.set(event, 0);
 }
 
 interface ListenerMap {
@@ -303,7 +219,7 @@ function domListener(evt: Event) {
         eventToContextMap.set(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
         invokeListenersByPlacement(EventListenerContext.CUSTOM_ELEMENT_LISTENER);
     }
-    eventToContextMap.set(evt, 0);
+    eventToContextMap.set(evt, EventListenerContext.UNKNOWN_LISTENER);
 }
 
 function attachDOMListener(elm: Element, type: string, wrappedListener: WrappedListener) {

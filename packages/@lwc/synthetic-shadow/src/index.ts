@@ -26,6 +26,7 @@ import './polyfills/iframe-content-window/main';
 import './polyfills/mutation-observer/main';
 import './polyfills/event-target/main';
 import './polyfills/window-event-target/main';
+import './polyfills/event/main';
 
 // Internal Patches
 import './faux-shadow/node';
