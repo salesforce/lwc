@@ -109,11 +109,14 @@ describe('EventTarget.addEventListener', () => {
         });
     });
 
-    it('should throw error when second parameter is not passed', () => {
-        expect(() => nodes.button.addEventListener('dummy')).toThrowError();
-    });
+    if (!process.env.COMPAT) {
+        // Safari 10 does not throw these errors even though they are part of the spec
+        it('should throw error when second parameter is not passed', () => {
+            expect(() => nodes.button.addEventListener('dummy')).toThrowError();
+        });
 
-    it('should throw error when no parameters are passed', () => {
-        expect(() => nodes.button.addEventListener()).toThrowError();
-    });
+        it('should throw error when no parameters are passed', () => {
+            expect(() => nodes.button.addEventListener()).toThrowError();
+        });
+    }
 });
