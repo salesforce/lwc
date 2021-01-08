@@ -20,12 +20,10 @@ function isEventListenerOrEventListenerObject(
     fnOrObj: unknown
 ): fnOrObj is EventListenerOrEventListenerObject {
     return (
-        !isFunction(fnOrObj) &&
-        !(
-            isObject(fnOrObj) &&
+        isFunction(fnOrObj) ||
+        (isObject(fnOrObj) &&
             !isNull(fnOrObj) &&
-            isFunction((fnOrObj as EventListenerObject).handleEvent)
-        )
+            isFunction((fnOrObj as EventListenerObject).handleEvent))
     );
 }
 
