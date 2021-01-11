@@ -41,7 +41,12 @@ import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } f
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { LightningElement } from './base-lightning-element';
-import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
+import {
+    connectWireAdapters,
+    disconnectWireAdapters,
+    installWireAdapters,
+    WireAdapter,
+} from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { Renderer, HostNode, HostElement } from './renderer';
 import { removeActiveVM } from './hot-swaps';
@@ -76,10 +81,8 @@ export interface Context {
     /** Object used by the template function to store information that can be reused between
      *  different render cycle of the same template. */
     tplCache: TemplateCache;
-    /** List of wire hooks that are invoked when the component gets connected. */
-    wiredConnecting: Array<() => void>;
-    /** List of wire hooks that are invoked when the component gets disconnected. */
-    wiredDisconnecting: Array<() => void>;
+    /** List of wire connectors attached to this component. */
+    wiredConnectors: WireAdapter[];
 }
 
 export interface VM<N = HostNode, E = HostElement> {
@@ -275,8 +278,7 @@ export function createVM<HostNode, HostElement>(
             shadowAttribute: undefined,
             styleVNode: null,
             tplCache: EmptyObject,
-            wiredConnecting: EmptyArray,
-            wiredDisconnecting: EmptyArray,
+            wiredConnectors: EmptyArray,
         },
 
         tro: null!, // Set synchronously after the VM creation.
