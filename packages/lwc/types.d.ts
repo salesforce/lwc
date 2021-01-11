@@ -193,8 +193,12 @@ declare module 'lwc' {
      * @param getType imperative accessor for the data source
      * @param config configuration object for the accessor
      */
-    export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
+    export function wire(
+        getType: WireAdapterConstructor | LegacyWireAdapterConstructor,
+        config?: WireConfigValue
+    ): PropertyDecorator;
 
+    type LegacyWireAdapterConstructor = (config?: any) => any;
     type WireConfigValue = Record<string, any>;
     type ContextValue = Record<string, any>;
 
