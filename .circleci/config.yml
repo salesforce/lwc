@@ -250,27 +250,23 @@ workflows:
             - build
 
       - test_karma:
-          filters:
-            <<: *ignore_forks
+          context: lwc-sauce-labs
           requires:
             - build
 
       - perf_and_compare:
-          filters:
-            <<: *ignore_forks
+          context: lwc-sauce-labs
           requires:
             - build
 
       - test_integration:
-          filters:
-            <<: *ignore_forks
+          context: lwc-sauce-labs
           requires:
             - test_unit
             - test_karma
 
       - test_integration_compat:
-          filters:
-            <<: *ignore_forks
+          context: lwc-sauce-labs
           requires:
             - test_unit
             - test_karma
