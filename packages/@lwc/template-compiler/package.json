@@ -34,7 +34,7 @@
         "@babel/types": "~7.11.5",
         "@lwc/errors": "1.11.0",
         "@lwc/shared": "1.11.0",
-        "acorn": "~8.0.1",
+        "acorn": "~8.0.4",
         "esutils": "~2.0.3",
         "he": "~1.2.0",
         "parse5-with-errors": "~4.0.4"
