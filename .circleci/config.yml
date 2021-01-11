@@ -1,9 +1,4 @@
 # Shared config
-ignore_forks: &ignore_forks
-  branches:
-    # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
-    ignore: /pull\/[0-9]+/
-
 deploy_filters: &deploy_filters
   filters:
     branches:
@@ -250,27 +245,23 @@ workflows:
             - build
 
       - test_karma:
-          filters:
-            <<: *ignore_forks
+          context: lwc-sauce-labs
           requires:
             - build
 
       - perf_and_compare:
-          filters:
-            <<: *ignore_forks
+          context: lwc-sauce-labs
           requires:
             - build
 
       - test_integration:
-          filters:
-            <<: *ignore_forks
+          context: lwc-sauce-labs
           requires:
             - test_unit
             - test_karma
 
       - test_integration_compat:
-          filters:
-            <<: *ignore_forks
+          context: lwc-sauce-labs
           requires:
             - test_unit
             - test_karma
