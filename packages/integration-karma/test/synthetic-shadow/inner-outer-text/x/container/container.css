@@ -1,0 +1,30 @@
+.table {
+    display: table;
+}
+
+.table-cell {
+    display: table-cell;
+}
+
+.table-row {
+    display: table-row;
+}
+
+.multiple-layers .container {
+    position: relative;
+}
+
+.multiple-layers .container div {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+}
+
+.multiple-layers .in-bg {
+    z-index: 0;
+}
+
+.multiple-layers .in-front {
+    z-index: 1;
+    background-color: red;
+}

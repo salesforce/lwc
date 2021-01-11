@@ -43,6 +43,25 @@ const lastElementChildGetter: (this: ParentNode) => Element | null = getOwnPrope
     'lastElementChild'
 )!.get!;
 
+const innerTextDescriptor = getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
+
+const innerTextGetter: ((this: Element) => string) | null = innerTextDescriptor
+    ? innerTextDescriptor.get!
+    : null;
+const innerTextSetter: ((this: Element, s: string) => void) | null = innerTextDescriptor
+    ? innerTextDescriptor.set!
+    : null;
+
+// Note: Firefox does not have outerText, https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/outerText
+const outerTextDescriptor = getOwnPropertyDescriptor(HTMLElement.prototype, 'outerText');
+
+const outerTextGetter: ((this: Element) => string) | null = outerTextDescriptor
+    ? outerTextDescriptor.get!
+    : null;
+const outerTextSetter: ((this: Element, s: string) => void) | null = outerTextDescriptor
+    ? outerTextDescriptor.set!
+    : null;
+
 const innerHTMLDescriptor = hasOwnProperty.call(Element.prototype, 'innerHTML')
     ? getOwnPropertyDescriptor(Element.prototype, 'innerHTML')
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML'); // IE11
@@ -104,10 +123,14 @@ export {
     hasAttribute,
     innerHTMLGetter,
     innerHTMLSetter,
+    innerTextGetter,
+    innerTextSetter,
     lastElementChildGetter,
     matches,
     outerHTMLGetter,
     outerHTMLSetter,
+    outerTextGetter,
+    outerTextSetter,
     querySelector,
     querySelectorAll,
     removeAttribute,
