@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, LightningElement, api } from 'lwc';
 
 import Properties from 'x/properties';
 import Mutate from 'x/mutate';
@@ -110,4 +110,18 @@ it('should not log an error when initializing api value to null', () => {
     const elm = createElement('x-foo-init-api', { is: NullInitialValue });
 
     expect(() => document.body.appendChild(elm)).not.toLogErrorDev();
+});
+
+describe('restrictions', () => {
+    it('throws a property error when a public field conflicts with a method', () => {
+        expect(() => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            class Invalid extends LightningElement {
+                @api showFeatures;
+                showFeatures() {}
+            }
+        }).toThrowError(
+            'Invalid @api showFeatures field. Found a duplicate method with the same name.'
+        );
+    });
 });

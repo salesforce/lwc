@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, LightningElement } from 'lwc';
 
 import Simple from 'x/simple';
 import SideEffect from './x/fieldWithSideEffect/fieldWithSideEffect';
@@ -127,6 +127,20 @@ describe('observed-fields', () => {
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('.static-value').textContent).toBe(
                 'static value modified'
+            );
+        });
+    });
+
+    describe('restrictions', () => {
+        it('throws a property error when a reactive field conflicts with a method', () => {
+            expect(() => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                class Invalid extends LightningElement {
+                    showFeatures;
+                    showFeatures() {}
+                }
+            }).toThrowError(
+                'Invalid observed showFeatures field. Found a duplicate method with the same name.'
             );
         });
     });
