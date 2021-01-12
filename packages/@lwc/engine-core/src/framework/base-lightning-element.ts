@@ -24,7 +24,7 @@ import {
     setPrototypeOf,
 } from '@lwc/shared';
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { ComponentInterface, getWrappedComponentsListener } from './component';
+import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
 import { associateVM, getAssociatedVM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
@@ -72,7 +72,7 @@ function createBridgeToElementDescriptor(
     return {
         enumerable,
         configurable,
-        get(this: ComponentInterface) {
+        get(this: LightningElement) {
             const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -86,7 +86,7 @@ function createBridgeToElementDescriptor(
             componentValueObserved(vm, propName);
             return get.call(vm.elm);
         },
-        set(this: ComponentInterface, newValue: any) {
+        set(this: LightningElement, newValue: any) {
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
@@ -124,6 +124,8 @@ export interface LightningElementConstructor {
     new (): LightningElement;
     readonly prototype: LightningElement;
     readonly CustomElementConstructor: HTMLElementConstructor;
+
+    delegatesFocus?: boolean;
 }
 
 export declare let LightningElement: LightningElementConstructor;

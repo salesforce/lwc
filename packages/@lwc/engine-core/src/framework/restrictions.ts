@@ -22,7 +22,6 @@ import {
 } from '@lwc/shared';
 
 import { LightningElement } from './base-lightning-element';
-import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
 import { logError } from '../shared/logger';
@@ -302,7 +301,7 @@ function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
     }
     return {
         tagName: generateAccessorDescriptor({
-            get(this: ComponentInterface) {
+            get(this: LightningElement) {
                 throw new Error(
                     `Usage of property \`tagName\` is disallowed because the component itself does` +
                         ` not know which tagName will be used to create the element, therefore writing` +
@@ -357,7 +356,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
             return; // no need to redefine something that we are already exposing
         }
         descriptors[propName] = generateAccessorDescriptor({
-            get(this: ComponentInterface) {
+            get(this: LightningElement) {
                 const { error, attribute } = globalHTMLProperties[propName];
                 const msg: string[] = [];
                 msg.push(`Accessing the global HTML property "${propName}" is disabled.`);
@@ -368,7 +367,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                 }
                 logError(msg.join('\n'), getAssociatedVM(this));
             },
-            set(this: ComponentInterface) {
+            set(this: LightningElement) {
                 const { readOnly } = globalHTMLProperties[propName];
                 if (readOnly) {
                     logError(
@@ -395,7 +394,7 @@ export function patchCustomElementWithRestrictions(elm: HTMLElement) {
     setPrototypeOf(elm, create(elmProto, restrictionsDescriptors));
 }
 
-export function patchComponentWithRestrictions(cmp: ComponentInterface) {
+export function patchComponentWithRestrictions(cmp: LightningElement) {
     defineProperties(cmp, getComponentRestrictionsDescriptors());
 }
 

@@ -15,7 +15,7 @@ import {
     toString,
     isFalse,
 } from '@lwc/shared';
-import { ComponentConstructor } from '../component';
+import { LightningElementConstructor } from '../base-lightning-element';
 import { internalWireFieldDecorator } from './wire';
 import { internalTrackDecorator } from './track';
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from './api';
@@ -59,7 +59,7 @@ interface RegisterDecoratorMeta {
 }
 
 function validateObservedField(
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
@@ -71,7 +71,7 @@ function validateObservedField(
 }
 
 function validateFieldDecoratedWithTrack(
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
@@ -83,7 +83,7 @@ function validateFieldDecoratedWithTrack(
 }
 
 function validateFieldDecoratedWithWire(
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
@@ -95,7 +95,7 @@ function validateFieldDecoratedWithWire(
 }
 
 function validateMethodDecoratedWithWire(
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     methodName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
@@ -111,7 +111,7 @@ function validateMethodDecoratedWithWire(
 }
 
 function validateFieldDecoratedWithApi(
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
@@ -123,7 +123,7 @@ function validateFieldDecoratedWithApi(
 }
 
 function validateAccessorDecoratedWithApi(
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
@@ -144,7 +144,7 @@ function validateAccessorDecoratedWithApi(
 }
 
 function validateMethodDecoratedWithApi(
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     methodName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
@@ -164,9 +164,9 @@ function validateMethodDecoratedWithApi(
  * will prevent this function from being imported by user-land code.
  */
 export function registerDecorators(
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     meta: RegisterDecoratorMeta
-): ComponentConstructor {
+): LightningElementConstructor {
     const proto = Ctor.prototype;
     const { publicProps, publicMethods, wire, track, fields } = meta;
     const apiMethods: PropertyDescriptorMap = create(null);
@@ -280,7 +280,7 @@ export function registerDecorators(
     return Ctor;
 }
 
-const signedDecoratorToMetaMap: Map<ComponentConstructor, DecoratorMeta> = new Map();
+const signedDecoratorToMetaMap: Map<LightningElementConstructor, DecoratorMeta> = new Map();
 
 interface DecoratorMeta {
     readonly apiMethods: PropertyDescriptorMap;
@@ -291,7 +291,7 @@ interface DecoratorMeta {
     readonly observedFields: PropertyDescriptorMap;
 }
 
-function setDecoratorsMeta(Ctor: ComponentConstructor, meta: DecoratorMeta) {
+function setDecoratorsMeta(Ctor: LightningElementConstructor, meta: DecoratorMeta) {
     signedDecoratorToMetaMap.set(Ctor, meta);
 }
 
@@ -304,7 +304,7 @@ const defaultMeta: DecoratorMeta = {
     observedFields: EmptyObject,
 };
 
-export function getDecoratorsMeta(Ctor: ComponentConstructor): DecoratorMeta {
+export function getDecoratorsMeta(Ctor: LightningElementConstructor): DecoratorMeta {
     const meta = signedDecoratorToMetaMap.get(Ctor);
     return isUndefined(meta) ? defaultMeta : meta;
 }

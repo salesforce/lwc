@@ -17,44 +17,29 @@ import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 
-export type ErrorCallback = (error: any, stack: string) => void;
-export interface ComponentInterface {
-    // TODO [#1291]: complete the entire interface used by the engine
-    setAttribute(attrName: string, value: any): void;
-}
-
-export interface ComponentConstructor extends LightningElementConstructor {
-    readonly name: string;
-    readonly labels?: string[];
-    readonly delegatesFocus?: boolean;
-}
-
-export interface ComponentMeta {
-    readonly name: string;
-    readonly template?: Template;
-}
-
-const signedTemplateMap: Map<ComponentConstructor, Template> = new Map();
+const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
  * will prevent this function from being imported by userland code.
  */
 export function registerComponent(
-    Ctor: ComponentConstructor,
+    Ctor: LightningElementConstructor,
     { tmpl }: { tmpl: Template }
-): ComponentConstructor {
+): LightningElementConstructor {
     signedTemplateMap.set(Ctor, tmpl);
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation
     return Ctor;
 }
 
-export function getComponentRegisteredTemplate(Ctor: ComponentConstructor): Template | undefined {
+export function getComponentRegisteredTemplate(
+    Ctor: LightningElementConstructor
+): Template | undefined {
     return signedTemplateMap.get(Ctor);
 }
 
-export function createComponent(vm: VM, Ctor: ComponentConstructor) {
+export function createComponent(vm: VM, Ctor: LightningElementConstructor) {
     // create the component instance
     invokeComponentConstructor(vm, Ctor);
 
