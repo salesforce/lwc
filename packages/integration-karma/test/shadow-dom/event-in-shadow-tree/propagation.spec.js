@@ -6,16 +6,21 @@ import { extractDataIds } from 'test-utils';
 
 import Container from 'x/container';
 
-function dispatchEventWithLog(target, event) {
-    var log = [];
-    for (var node = target; node; node = node.parentNode || node.host) {
+function dispatchEventWithLog(target, nodes, event) {
+    const log = [];
+
+    // We take this appraoch instead of traversing up the DOM from the target, so that we can add
+    // listeners to targets that cannot be reached by parentNode/host traversal (e.g., shadow roots
+    // of components containing assigned slots).
+    [...Object.values(nodes), document.body, document.documentElement, document].forEach((node) => {
         node.addEventListener(
             event.type,
             function (event) {
                 log.push([this, event.target, event.composedPath()]);
             }.bind(node)
         );
-    }
+    });
+
     target.dispatchEvent(event);
     return log;
 }
@@ -36,7 +41,7 @@ describe('event propagation', () => {
 
         it('{bubbles: true, composed: true}', () => {
             const event = new CustomEvent('test', { bubbles: true, composed: true });
-            const actualLogs = dispatchEventWithLog(nodes.button, event);
+            const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
 
             const composedPath = [
                 nodes.button,
@@ -62,6 +67,9 @@ describe('event propagation', () => {
                 [nodes['x-button'].shadowRoot, nodes.button, composedPath],
                 [nodes['x-button'], nodes['x-button'], composedPath],
                 [nodes.container_slot, nodes['x-button'], composedPath],
+                [nodes.button_group_slot, nodes['x-button'], composedPath],
+                [nodes.button_group_div, nodes['x-button'], composedPath],
+                [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
                 [nodes['x-button-group'], nodes['x-button'], composedPath],
                 [nodes.container_div, nodes['x-button'], composedPath],
                 [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
@@ -76,7 +84,7 @@ describe('event propagation', () => {
 
         it('{bubbles: true, composed: false}', () => {
             const event = new CustomEvent('test', { bubbles: true, composed: false });
-            const actualLogs = dispatchEventWithLog(nodes.button, event);
+            const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
 
             const composedPath = [nodes.button, nodes.button_div, nodes['x-button'].shadowRoot];
 
@@ -93,6 +101,8 @@ describe('event propagation', () => {
                     [nodes.button_div, nodes.button, composedPath],
                     [nodes['x-button'].shadowRoot, nodes.button, composedPath],
                     [nodes.container_slot, null, composedPath],
+                    [nodes.button_group_slot, null, composedPath],
+                    [nodes.button_group_div, null, composedPath],
                     [nodes.container_div, null, composedPath],
                     [document.body, null, composedPath],
                     [document.documentElement, null, composedPath],
@@ -105,7 +115,7 @@ describe('event propagation', () => {
 
         it('{bubbles: false, composed: true}', () => {
             const event = new CustomEvent('test', { bubbles: false, composed: true });
-            const actualLogs = dispatchEventWithLog(nodes.button, event);
+            const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
 
             const composedPath = [
                 nodes.button,
@@ -142,7 +152,7 @@ describe('event propagation', () => {
 
         it('{bubbles: false, composed: false}', () => {
             const event = new CustomEvent('test', { bubbles: false, composed: false });
-            const actualLogs = dispatchEventWithLog(nodes.button, event);
+            const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
 
             const composedPath = [nodes.button, nodes.button_div, nodes['x-button'].shadowRoot];
             const expectedLogs = [[nodes.button, nodes.button, composedPath]];
@@ -159,7 +169,7 @@ describe('event propagation', () => {
 
         it('{bubbles: true, composed: true}', () => {
             const event = new CustomEvent('test', { bubbles: true, composed: true });
-            const actualLogs = dispatchEventWithLog(nodes['x-button'], event);
+            const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
 
             const composedPath = [
                 nodes['x-button'],
@@ -179,6 +189,9 @@ describe('event propagation', () => {
             const expectedLogs = [
                 [nodes['x-button'], nodes['x-button'], composedPath],
                 [nodes.container_slot, nodes['x-button'], composedPath],
+                [nodes.button_group_slot, nodes['x-button'], composedPath],
+                [nodes.button_group_div, nodes['x-button'], composedPath],
+                [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
                 [nodes['x-button-group'], nodes['x-button'], composedPath],
                 [nodes.container_div, nodes['x-button'], composedPath],
                 [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
@@ -193,7 +206,7 @@ describe('event propagation', () => {
 
         it('{bubbles: true, composed: false}', () => {
             const event = new CustomEvent('test', { bubbles: true, composed: false });
-            const actualLogs = dispatchEventWithLog(nodes['x-button'], event);
+            const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
 
             const composedPath = [
                 nodes['x-button'],
@@ -211,6 +224,9 @@ describe('event propagation', () => {
                 expectedLogs = [
                     [nodes['x-button'], nodes['x-button'], composedPath],
                     [nodes.container_slot, nodes['x-button'], composedPath],
+                    [nodes.button_group_slot, nodes['x-button'], composedPath],
+                    [nodes.button_group_div, nodes['x-button'], composedPath],
+                    [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
                     [nodes['x-button-group'], nodes['x-button'], composedPath],
                     [nodes.container_div, nodes['x-button'], composedPath],
                     [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
@@ -219,6 +235,9 @@ describe('event propagation', () => {
                 expectedLogs = [
                     [nodes['x-button'], nodes['x-button'], composedPath],
                     [nodes.container_slot, nodes['x-button'], composedPath],
+                    [nodes.button_group_slot, nodes['x-button'], composedPath],
+                    [nodes.button_group_div, nodes['x-button'], composedPath],
+                    [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
                     [nodes['x-button-group'], nodes['x-button'], composedPath],
                     [nodes.container_div, nodes['x-button'], composedPath],
                     [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
@@ -233,7 +252,7 @@ describe('event propagation', () => {
 
         it('{bubbles: false, composed: true}', () => {
             const event = new CustomEvent('test', { bubbles: false, composed: true });
-            const actualLogs = dispatchEventWithLog(nodes['x-button'], event);
+            const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
 
             const composedPath = [
                 nodes['x-button'],
@@ -266,7 +285,7 @@ describe('event propagation', () => {
 
         it('{bubbles: false, composed: false}', () => {
             const event = new CustomEvent('test', { bubbles: false, composed: false });
-            const actualLogs = dispatchEventWithLog(nodes['x-button'], event);
+            const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
 
             const composedPath = [
                 nodes['x-button'],
