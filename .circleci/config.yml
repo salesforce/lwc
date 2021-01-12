@@ -256,7 +256,7 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - version_echo:
+      - version_echo: 
          filters:
             <<: *ignore_forks
  
