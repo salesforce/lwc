@@ -190,11 +190,15 @@ declare module 'lwc' {
 
     /**
      * Decorator factory to wire a property or method to a wire adapter data source
-     * @param getType imperative accessor for the data source
-     * @param config configuration object for the accessor
+     * @param adapter the adapter used to provision data
+     * @param config configuration object for the adapter
      */
-    export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
+    export function wire(
+        adapter: WireAdapterConstructor | LegacyWireAdapterConstructor,
+        config?: WireConfigValue
+    ): PropertyDecorator;
 
+    type LegacyWireAdapterConstructor = (config?: any) => any;
     type WireConfigValue = Record<string, any>;
     type ContextValue = Record<string, any>;
 
