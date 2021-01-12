@@ -249,8 +249,8 @@ workflows:
   build_and_test:
     jobs:
       - build:
-        filters:
-          <<: *ignore_forks
+          filters:
+            <<: *ignore_forks
 
       - test_unit:
           filters:
@@ -287,8 +287,8 @@ workflows:
   build_and_test_for_forked_repos:
     jobs:
       - build:
-        filters:
-          <<: *only_forks
+          filters:
+            <<: *only_forks
 
       - test_unit:
           filters:
