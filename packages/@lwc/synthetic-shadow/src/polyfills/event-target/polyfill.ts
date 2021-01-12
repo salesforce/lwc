@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArraySlice, defineProperties } from '@lwc/shared';
+import { defineProperties } from '@lwc/shared';
 import {
     addEventListener as nativeAddEventListener,
     eventTargetPrototype,
@@ -23,21 +23,18 @@ function patchedAddEventListener(
     _listener: EventListenerOrEventListenerObject,
     _optionsOrCapture?: boolean | AddEventListenerOptions
 ) {
+    const args = [...arguments];
     if (isHostElement(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        return addCustomElementEventListener(this, ...arguments);
+        return addCustomElementEventListener(this, ...args);
     }
-    if (arguments.length > 1) {
-        const args = ArraySlice.call(arguments);
+    if (args.length > 1) {
         args[1] = getEventListenerWrapper(args[1]);
-        // Ignore types because we're passing through to native method
-        // @ts-ignore type-mismatch
-        return nativeAddEventListener.apply(this, args);
     }
     // Typescript does not like it when you treat the `arguments` object as an array
     // @ts-ignore type-mismatch
-    return nativeAddEventListener.apply(this, arguments);
+    return nativeAddEventListener.apply(this, args);
 }
 
 function patchedRemoveEventListener(
@@ -46,20 +43,19 @@ function patchedRemoveEventListener(
     _listener: EventListenerOrEventListenerObject,
     _optionsOrCapture?: boolean | EventListenerOptions
 ) {
+    const args = [...arguments];
     if (isHostElement(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        return removeCustomElementEventListener(this, ...arguments);
+        return removeCustomElementEventListener(this, ...args);
     }
     if (arguments.length > 1) {
-        const args = ArraySlice.call(arguments);
         args[1] = getEventListenerWrapper(args[1]);
-        // Ignore types because we're passing through to native method
-        // @ts-ignore type-mismatch
-        nativeRemoveEventListener.apply(this, args);
     }
-    // Account for listeners that were added before this polyfill was applied
     // Typescript does not like it when you treat the `arguments` object as an array
+    // @ts-ignore type-mismatch
+    nativeRemoveEventListener.apply(this, args);
+    // Account for listeners that were added before this polyfill was applied
     // @ts-ignore type-mismatch
     nativeRemoveEventListener.apply(this, arguments);
 }

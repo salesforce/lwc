@@ -98,11 +98,12 @@ describe('EventTarget.addEventListener', () => {
         expect(() => nodes.button.addEventListener('dummy', undefined)).not.toThrowError();
     });
 
-    const primitives = ['string', 123, true];
-    if (!process.env.COMPAT) {
-        primitives.push(BigInt('123')); // Literal throws syntax error in IE 11
-        primitives.push(Symbol('dummy'));
-    }
+    // IE throws error only when we pass numbers.
+    // It doesn't throw error for string and boolean
+    // BigInt and Symbol don't even exist in IE
+    const primitives = process.env.COMPAT
+        ? [123]
+        : [123, 'string', true, BigInt('123'), Symbol('dummy')];
     primitives.forEach((primitive) => {
         it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
             expect(() => nodes.button.addEventListener('dummy', primitive)).toThrow();
