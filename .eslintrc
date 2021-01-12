@@ -113,17 +113,16 @@
             ],
 
             "env": {
-                "jest": true
+                "jest": true,
+                "es6": true,
+                "es2017": true,
+                "es2020": true
             },
 
             "rules": {
                 "jest/no-focused-tests": "error",
                 "jest/valid-expect": "error",
                 "jest/valid-expect-in-promise": "error"
-            },
-
-            "globals": {
-                "BigInt": true
             }
         },
         {

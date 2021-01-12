@@ -34,5 +34,13 @@ describe('EventTarget.dispatchEvent', () => {
 
             expect(result).toBeFalse();
         });
+
+        it('should return true when "Event.preventDefault" is invoked on non-node EventTarget', () => {
+            const target = new EventTarget();
+            target.addEventListener('custom-event', () => {});
+            const result = target.dispatchEvent(new Event('custom-event', { cancelable: true }));
+
+            expect(result).toBeTrue();
+        });
     }
 });

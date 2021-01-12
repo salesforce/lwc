@@ -91,27 +91,29 @@ describe('EventTarget.addEventListener', () => {
     });
 
     it('should accept null as second parameter', () => {
-        expect(() => nodes.button.addEventListener('dummy', null)).not.toThrowError();
+        expect(() => nodes.button.addEventListener('dummy', null)).not.toThrowError(TypeError);
     });
 
     it('should accept undefined as second parameter', () => {
-        expect(() => nodes.button.addEventListener('dummy', undefined)).not.toThrowError();
+        expect(() => nodes.button.addEventListener('dummy', undefined)).not.toThrowError(TypeError);
     });
 
     if (!process.env.COMPAT) {
         // Safari 10 does not throw these errors even though they are part of the spec
         it('should throw error when second parameter is not passed', () => {
-            expect(() => nodes.button.addEventListener('dummy')).toThrowError();
+            expect(() => nodes.button.addEventListener('dummy')).toThrowError(TypeError);
         });
 
         it('should throw error when no parameters are passed', () => {
-            expect(() => nodes.button.addEventListener()).toThrowError();
+            expect(() => nodes.button.addEventListener()).toThrowError(TypeError);
         });
 
         // IE, Firefox etc don't throw these errors
         [123, 'string', true, BigInt('123'), Symbol('dummy')].forEach((primitive) => {
             it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
-                expect(() => nodes.button.addEventListener('dummy', primitive)).toThrow();
+                expect(() => nodes.button.addEventListener('dummy', primitive)).toThrowError(
+                    TypeError
+                );
             });
         });
     }
