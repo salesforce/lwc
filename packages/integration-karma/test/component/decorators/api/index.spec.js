@@ -115,7 +115,7 @@ it('should not log an error when initializing api value to null', () => {
 describe('restrictions', () => {
     it('throws a property error when a public field conflicts with a method', () => {
         expect(() => {
-            // The following class is wrapper by the compiler with registerDecorators. We check
+            // The following class is wrapped by the compiler with registerDecorators. We check
             // here if the fields are validated properly.
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             class Invalid extends LightningElement {
