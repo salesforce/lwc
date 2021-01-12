@@ -308,6 +308,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     function extractShadowDataIds(shadowRoot) {
         const nodes = {};
 
+        // Add the shadow root here even if they don't have [data-id] attributes. This reference is
+        // subsequently used to add event listeners.
+        nodes[`${shadowRoot.host.getAttribute('data-id')}.shadowRoot`] = shadowRoot;
+
         // We can't use a TreeWalker directly on the ShadowRoot since with synthetic shadow the ShadowRoot is not an
         // actual DOM nodes. So we need to iterate over the children manually and run the tree walker on each child.
         for (var i = 0; i < shadowRoot.childNodes.length; i++) {
