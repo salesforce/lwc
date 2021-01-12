@@ -68,15 +68,6 @@ describe('Eventnodes.button.removeEventListener', () => {
         expect(() => nodes.button.removeEventListener('dummy', () => {})).not.toThrowError();
     });
 
-    const primitives = process.env.COMPAT
-        ? [123]
-        : [123, 'string', true, BigInt('123'), Symbol('dummy')];
-    primitives.forEach((primitive) => {
-        it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
-            expect(() => nodes.button.removeEventListener('dummy', primitive)).toThrow();
-        });
-    });
-
     if (!process.env.COMPAT) {
         // Safari 10 does not throw these errors even though they are part of the spec
         it('should throw error when second parameter is not passed', () => {
@@ -85,6 +76,13 @@ describe('Eventnodes.button.removeEventListener', () => {
 
         it('should throw error when no parameters are passed', () => {
             expect(() => nodes.button.removeEventListener()).toThrowError();
+        });
+
+        // IE, Firefox etc don't throw these errors
+        [123, 'string', true, BigInt('123'), Symbol('dummy')].forEach((primitive) => {
+            it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
+                expect(() => nodes.button.removeEventListener('dummy', primitive)).toThrow();
+            });
         });
     }
 });
