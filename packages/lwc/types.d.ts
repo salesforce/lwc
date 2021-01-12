@@ -194,7 +194,7 @@ declare module 'lwc' {
      * @param config configuration object for the accessor
      */
     export function wire(
-        getType: WireAdapterConstructor | LegacyWireAdapterConstructor,
+        adapter: WireAdapterConstructor | LegacyWireAdapterConstructor,
         config?: WireConfigValue
     ): PropertyDecorator;
 
