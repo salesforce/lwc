@@ -21,7 +21,7 @@ function testInvalidIsValue(type, isValue) {
     it(`throws a TypeError if option.is is a ${type}`, () => {
         expect(() => createElement('x-component', { is: isValue })).toThrowError(
             TypeError,
-            '"createElement" function expects an "is" option with a valid component constructor.'
+            '"createElement" function expect an "is" option with a valid component constructor.'
         );
     });
 }
