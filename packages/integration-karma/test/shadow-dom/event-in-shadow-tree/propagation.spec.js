@@ -150,4 +150,137 @@ describe('event propagation', () => {
             expect(actualLogs).toEqual(expectedLogs);
         });
     });
+
+    describe('dispatched on host', () => {
+        let nodes;
+        beforeEach(() => {
+            nodes = createTestElement(document.body);
+        });
+
+        it('{bubbles: true, composed: true}', () => {
+            const event = new CustomEvent('test', { bubbles: true, composed: true });
+            const actualLogs = dispatchEventWithLog(nodes['x-button'], event);
+
+            const composedPath = [
+                nodes['x-button'],
+                nodes.container_slot,
+                nodes.button_group_slot,
+                nodes.button_group_div,
+                nodes['x-button-group'].shadowRoot,
+                nodes['x-button-group'],
+                nodes.container_div,
+                nodes['x-container'].shadowRoot,
+                nodes['x-container'],
+                document.body,
+                document.documentElement,
+                document,
+                window,
+            ];
+            const expectedLogs = [
+                [nodes['x-button'], nodes['x-button'], composedPath],
+                [nodes.container_slot, nodes['x-button'], composedPath],
+                [nodes['x-button-group'], nodes['x-button'], composedPath],
+                [nodes.container_div, nodes['x-button'], composedPath],
+                [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
+                [nodes['x-container'], nodes['x-container'], composedPath],
+                [document.body, nodes['x-container'], composedPath],
+                [document.documentElement, nodes['x-container'], composedPath],
+                [document, nodes['x-container'], composedPath],
+            ];
+
+            expect(actualLogs).toEqual(expectedLogs);
+        });
+
+        it('{bubbles: true, composed: false}', () => {
+            const event = new CustomEvent('test', { bubbles: true, composed: false });
+            const actualLogs = dispatchEventWithLog(nodes['x-button'], event);
+
+            const composedPath = [
+                nodes['x-button'],
+                nodes.container_slot,
+                nodes.button_group_slot,
+                nodes.button_group_div,
+                nodes['x-button-group'].shadowRoot,
+                nodes['x-button-group'],
+                nodes.container_div,
+                nodes['x-container'].shadowRoot,
+            ];
+
+            let expectedLogs;
+            if (process.env.NATIVE_SHADOW) {
+                expectedLogs = [
+                    [nodes['x-button'], nodes['x-button'], composedPath],
+                    [nodes.container_slot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group'], nodes['x-button'], composedPath],
+                    [nodes.container_div, nodes['x-button'], composedPath],
+                    [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
+                ];
+            } else {
+                expectedLogs = [
+                    [nodes['x-button'], nodes['x-button'], composedPath],
+                    [nodes.container_slot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group'], nodes['x-button'], composedPath],
+                    [nodes.container_div, nodes['x-button'], composedPath],
+                    [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
+                    [document.body, null, composedPath],
+                    [document.documentElement, null, composedPath],
+                    [document, null, composedPath],
+                ];
+            }
+
+            expect(actualLogs).toEqual(expectedLogs);
+        });
+
+        it('{bubbles: false, composed: true}', () => {
+            const event = new CustomEvent('test', { bubbles: false, composed: true });
+            const actualLogs = dispatchEventWithLog(nodes['x-button'], event);
+
+            const composedPath = [
+                nodes['x-button'],
+                nodes.container_slot,
+                nodes.button_group_slot,
+                nodes.button_group_div,
+                nodes['x-button-group'].shadowRoot,
+                nodes['x-button-group'],
+                nodes.container_div,
+                nodes['x-container'].shadowRoot,
+                nodes['x-container'],
+                document.body,
+                document.documentElement,
+                document,
+                window,
+            ];
+
+            let expectedLogs;
+            if (process.env.NATIVE_SHADOW) {
+                expectedLogs = [
+                    [nodes['x-button'], nodes['x-button'], composedPath],
+                    [nodes['x-container'], nodes['x-container'], composedPath],
+                ];
+            } else {
+                expectedLogs = [[nodes['x-button'], nodes['x-button'], composedPath]];
+            }
+
+            expect(actualLogs).toEqual(expectedLogs);
+        });
+
+        it('{bubbles: false, composed: false}', () => {
+            const event = new CustomEvent('test', { bubbles: false, composed: false });
+            const actualLogs = dispatchEventWithLog(nodes['x-button'], event);
+
+            const composedPath = [
+                nodes['x-button'],
+                nodes.container_slot,
+                nodes.button_group_slot,
+                nodes.button_group_div,
+                nodes['x-button-group'].shadowRoot,
+                nodes['x-button-group'],
+                nodes.container_div,
+                nodes['x-container'].shadowRoot,
+            ];
+            const expectedLogs = [[nodes['x-button'], nodes['x-button'], composedPath]];
+
+            expect(actualLogs).toEqual(expectedLogs);
+        });
+    });
 });
