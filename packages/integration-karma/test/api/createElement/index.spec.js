@@ -18,7 +18,7 @@ testInvalidOptions('String', 'x-component');
 testInvalidOptions('Class not extending LightningElement', class Component {});
 
 function testInvalidIsValue(type, isValue) {
-    it(`throws a TypeError if option.is is ${type}`, () => {
+    it(`throws a TypeError option.is is ${type}`, () => {
         expect(() => createElement('x-component', { is: isValue })).toThrowError(
             TypeError,
             '"createElement" function expects an "is" option with a valid component constructor.'
