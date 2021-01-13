@@ -12,7 +12,6 @@ import {
     forEach,
     defineProperty,
     getOwnPropertyDescriptor,
-    toString,
     isFalse,
 } from '@lwc/shared';
 import { LightningElementConstructor } from '../base-lightning-element';
@@ -58,15 +57,26 @@ interface RegisterDecoratorMeta {
     readonly fields?: string[];
 }
 
+function getClassDescriptorType(descriptor: PropertyDescriptor): string {
+    if (isFunction(descriptor.value)) {
+        return 'method';
+    } else if (isFunction(descriptor.set) || isFunction(descriptor.get)) {
+        return 'accessor';
+    } else {
+        return 'field';
+    }
+}
+
 function validateObservedField(
     Ctor: LightningElementConstructor,
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(descriptor)) {
-            assert.fail(`Compiler Error: Invalid field ${fieldName} declaration.`);
-        }
+    if (!isUndefined(descriptor)) {
+        const type = getClassDescriptorType(descriptor);
+        assert.fail(
+            `Invalid observed ${fieldName} field. Found a duplicate ${type} with the same name.`
+        );
     }
 }
 
@@ -75,10 +85,11 @@ function validateFieldDecoratedWithTrack(
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(descriptor)) {
-            assert.fail(`Compiler Error: Invalid @track ${fieldName} declaration.`);
-        }
+    if (!isUndefined(descriptor)) {
+        const type = getClassDescriptorType(descriptor);
+        assert.fail(
+            `Invalid @track ${fieldName} field. Found a duplicate ${type} with the same name.`
+        );
     }
 }
 
@@ -87,10 +98,11 @@ function validateFieldDecoratedWithWire(
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(descriptor)) {
-            assert.fail(`Compiler Error: Invalid @wire(...) ${fieldName} field declaration.`);
-        }
+    if (!isUndefined(descriptor)) {
+        const type = getClassDescriptorType(descriptor);
+        assert.fail(
+            `Invalid @wire ${fieldName} field. Found a duplicate ${type} with the same name.`
+        );
     }
 }
 
@@ -99,14 +111,8 @@ function validateMethodDecoratedWithWire(
     methodName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
-    if (process.env.NODE_ENV !== 'production') {
-        if (
-            isUndefined(descriptor) ||
-            !isFunction(descriptor.value) ||
-            isFalse(descriptor.writable)
-        ) {
-            assert.fail(`Compiler Error: Invalid @wire(...) ${methodName} method declaration.`);
-        }
+    if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
+        assert.fail(`Invalid @wire ${methodName} method.`);
     }
 }
 
@@ -115,10 +121,11 @@ function validateFieldDecoratedWithApi(
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(descriptor)) {
-            assert.fail(`Compiler Error: Invalid @api ${fieldName} field declaration.`);
-        }
+    if (!isUndefined(descriptor)) {
+        const type = getClassDescriptorType(descriptor);
+        assert.fail(
+            `Invalid @api ${fieldName} field. Found a duplicate ${type} with the same name.`
+        );
     }
 }
 
@@ -127,19 +134,15 @@ function validateAccessorDecoratedWithApi(
     fieldName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
-    if (process.env.NODE_ENV !== 'production') {
-        if (isUndefined(descriptor)) {
-            assert.fail(`Compiler Error: Invalid @api get ${fieldName} accessor declaration.`);
-        } else if (isFunction(descriptor.set)) {
-            assert.isTrue(
-                isFunction(descriptor.get),
-                `Compiler Error: Missing getter for property ${toString(
-                    fieldName
-                )} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
-            );
-        } else if (!isFunction(descriptor.get)) {
-            assert.fail(`Compiler Error: Missing @api get ${fieldName} accessor declaration.`);
-        }
+    if (isUndefined(descriptor)) {
+        assert.fail(`Invalid @api get ${fieldName} accessor.`);
+    } else if (isFunction(descriptor.set)) {
+        assert.isTrue(
+            isFunction(descriptor.get),
+            `Missing getter for property ${fieldName} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
+        );
+    } else if (!isFunction(descriptor.get)) {
+        assert.fail(`Missing @api get ${fieldName} accessor.`);
     }
 }
 
@@ -148,14 +151,8 @@ function validateMethodDecoratedWithApi(
     methodName: string,
     descriptor: PropertyDescriptor | undefined
 ) {
-    if (process.env.NODE_ENV !== 'production') {
-        if (
-            isUndefined(descriptor) ||
-            !isFunction(descriptor.value) ||
-            isFalse(descriptor.writable)
-        ) {
-            assert.fail(`Compiler Error: Invalid @api ${methodName} method declaration.`);
-        }
+    if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
+        assert.fail(`Invalid @api ${methodName} method.`);
     }
 }
 

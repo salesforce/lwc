@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { LightningElement, track, createElement } from 'lwc';
 
 import Properties from 'x/properties';
 import SideEffect from 'x/sideEffect';
@@ -38,6 +38,37 @@ describe('restrictions', () => {
         }).toThrowErrorDev(
             Error,
             /Invariant Violation: \[.+\]\.render\(\) method has side effects on the state of \[.+\]\.prop/
+        );
+    });
+
+    it('throws a property error when a track field conflicts with a method', () => {
+        expect(() => {
+            // The following class is wrapped by the compiler with registerDecorators. We check here
+            // if the fields are validated properly.
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            class Invalid extends LightningElement {
+                @track showFeatures;
+                showFeatures() {}
+            }
+        }).toThrowError(
+            'Invalid @track showFeatures field. Found a duplicate method with the same name.'
+        );
+    });
+
+    it('throws a property error when a track field conflicts with an accessor', () => {
+        expect(() => {
+            // The following class is wrapped by the compiler with registerDecorators. We check here
+            // if the fields are validated properly.
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            class Invalid extends LightningElement {
+                @track showFeatures;
+                get showFeatures() {
+                    return 1;
+                }
+                set showFeatures(v) {}
+            }
+        }).toThrowError(
+            'Invalid @track showFeatures field. Found a duplicate accessor with the same name.'
         );
     });
 });
