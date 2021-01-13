@@ -7,36 +7,19 @@ import { extractDataIds } from 'test-utils';
 import Container from 'x/container';
 
 function dispatchEventWithLog(target, nodes, event) {
-    const seen = new WeakSet();
     const log = [];
 
-    // Add listeners to targets that cannot be reached by parentNode traversal (e.g., the root of
-    // components containing the slot being assigned to).
-    Object.values(nodes).forEach((node) => {
-        if (seen.has(node)) {
-            throw new Error('Invalid attempt to add two event listeners to same node.');
-        }
+    // We take this appraoch instead of traversing up the DOM from the target, so that we can add
+    // listeners to targets that cannot be reached by parentNode/host traversal (e.g., shadow roots
+    // of components containing assigned slots).
+    [...Object.values(nodes), document.body, document.documentElement, document].forEach((node) => {
         node.addEventListener(
             event.type,
             function (event) {
                 log.push([this, event.target, event.composedPath()]);
             }.bind(node)
         );
-        seen.add(node);
     });
-
-    // Add listeners to `document.body`, `document.documentElement`, and `document`.
-    for (let node = target; node; node = node.parentNode || node.host) {
-        if (!seen.has(node)) {
-            node.addEventListener(
-                event.type,
-                function (event) {
-                    log.push([this, event.target, event.composedPath()]);
-                }.bind(node)
-            );
-            seen.add(node);
-        }
-    }
 
     target.dispatchEvent(event);
     return log;
