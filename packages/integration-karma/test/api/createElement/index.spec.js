@@ -4,7 +4,7 @@ import Test from 'x/test';
 import ShadowRootGetter from 'x/shadowRootGetter';
 
 function testInvalidOptions(type, option) {
-    it(`throws a TypeError if option is a ${type}`, () => {
+    it(`throws a TypeError if option is ${type}`, () => {
         expect(() => createElement('x-component', option)).toThrowError(
             TypeError,
             /"createElement" function expects an object as second parameter but received/
