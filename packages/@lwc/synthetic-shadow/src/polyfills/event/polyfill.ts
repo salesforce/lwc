@@ -8,8 +8,7 @@ import { defineProperties, isNull, isUndefined } from '@lwc/shared';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { retarget } from '../../3rdparty/polymer/retarget';
 import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
-import { eventsDispatchedDirectlyOnShadowRoot } from '../../faux-shadow/events';
-import { getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
+import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
 import { getOwnerDocument } from '../../shared/utils';
@@ -54,7 +53,7 @@ function patchedTargetGetter(this: Event): EventTarget | null {
     }
 
     // Address the possibility that `target` is a shadow root
-    if (isHostElement(originalTarget) && eventsDispatchedDirectlyOnShadowRoot.has(this)) {
+    if (isHostElement(originalTarget) && eventToShadowRootMap.has(this)) {
         actualPath = pathComposer(getShadowRoot(originalTarget), this.composed);
     }
 
@@ -72,7 +71,7 @@ function patchedComposedPathValue(this: Event): EventTarget[] {
 
     // Address the possibility that `target` is a shadow root
     let actualTarget = originalTarget;
-    if (isHostElement(originalTarget) && eventsDispatchedDirectlyOnShadowRoot.has(this)) {
+    if (isHostElement(originalTarget) && eventToShadowRootMap.has(this)) {
         actualTarget = getShadowRoot(originalTarget);
     }
 
