@@ -385,10 +385,10 @@ function shouldInvokeShadowRootListener(event: Event): boolean {
             if (isTrue(eventToShadowRootMap.has(event))) {
                 shouldInvoke = false;
             } else {
-                const rootNode = getRootNodeHost(target as Node, { composed });
-                shouldInvoke =
-                    isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
-                    rootNode === currentTarget;
+                const targetHost = getRootNodeHost(target as Node, { composed }) as HTMLElement;
+                const currentTargetHost = currentTarget as HTMLElement;
+                const isCurrentTargetSlotted = isChildNode(targetHost, currentTargetHost);
+                shouldInvoke = isCurrentTargetSlotted || targetHost === currentTargetHost;
             }
         }
     }

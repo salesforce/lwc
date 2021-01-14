@@ -9,26 +9,25 @@ import Container from 'x/container';
 function dispatchEventWithLog(target, nodes, event) {
     const log = [];
 
-    // We take this appraoch instead of traversing up the DOM from the target, so that we can add
-    // listeners to targets that cannot be reached by parentNode/host traversal (e.g., shadow roots
-    // of components containing assigned slots).
-    [...Object.values(nodes), document.body, document.documentElement, document].forEach((node) => {
-        node.addEventListener(
-            event.type,
-            function (event) {
-                log.push([this, event.target, event.composedPath()]);
-            }.bind(node)
-        );
-    });
+    [...Object.values(nodes), document.body, document.documentElement, document, window].forEach(
+        (node) => {
+            node.addEventListener(
+                event.type,
+                function (event) {
+                    log.push([this, event.target, event.composedPath()]);
+                }.bind(node)
+            );
+        }
+    );
 
     target.dispatchEvent(event);
     return log;
 }
 
-function createTestElement(parentNode) {
+function createTestElement() {
     const elm = createElement('x-container', { is: Container });
     elm.setAttribute('data-id', 'x-container');
-    parentNode.appendChild(elm);
+    document.body.appendChild(elm);
     return extractDataIds(elm);
 }
 
@@ -36,7 +35,7 @@ describe('event propagation', () => {
     describe('dispatched on native element', () => {
         let nodes;
         beforeEach(() => {
-            nodes = createTestElement(document.body);
+            nodes = createTestElement();
         });
 
         it('{bubbles: true, composed: true}', () => {
@@ -48,8 +47,10 @@ describe('event propagation', () => {
                 nodes.button_div,
                 nodes['x-button'].shadowRoot,
                 nodes['x-button'],
-                nodes.container_slot,
                 nodes.button_group_slot,
+                nodes.button_group_internal_slot,
+                nodes['x-button-group-internal'].shadowRoot,
+                nodes['x-button-group-internal'],
                 nodes.button_group_div,
                 nodes['x-button-group'].shadowRoot,
                 nodes['x-button-group'],
@@ -66,8 +67,10 @@ describe('event propagation', () => {
                 [nodes.button_div, nodes.button, composedPath],
                 [nodes['x-button'].shadowRoot, nodes.button, composedPath],
                 [nodes['x-button'], nodes['x-button'], composedPath],
-                [nodes.container_slot, nodes['x-button'], composedPath],
                 [nodes.button_group_slot, nodes['x-button'], composedPath],
+                [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
+                [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
+                [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
                 [nodes.button_group_div, nodes['x-button'], composedPath],
                 [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
                 [nodes['x-button-group'], nodes['x-button'], composedPath],
@@ -77,6 +80,7 @@ describe('event propagation', () => {
                 [document.body, nodes['x-container'], composedPath],
                 [document.documentElement, nodes['x-container'], composedPath],
                 [document, nodes['x-container'], composedPath],
+                [window, nodes['x-container'], composedPath],
             ];
 
             expect(actualLogs).toEqual(expectedLogs);
@@ -100,13 +104,14 @@ describe('event propagation', () => {
                     [nodes.button, nodes.button, composedPath],
                     [nodes.button_div, nodes.button, composedPath],
                     [nodes['x-button'].shadowRoot, nodes.button, composedPath],
-                    [nodes.container_slot, null, composedPath],
                     [nodes.button_group_slot, null, composedPath],
+                    [nodes.button_group_internal_slot, null, composedPath],
                     [nodes.button_group_div, null, composedPath],
                     [nodes.container_div, null, composedPath],
                     [document.body, null, composedPath],
                     [document.documentElement, null, composedPath],
                     [document, null, composedPath],
+                    [window, null, composedPath],
                 ];
             }
 
@@ -122,8 +127,10 @@ describe('event propagation', () => {
                 nodes.button_div,
                 nodes['x-button'].shadowRoot,
                 nodes['x-button'],
-                nodes.container_slot,
                 nodes.button_group_slot,
+                nodes.button_group_internal_slot,
+                nodes['x-button-group-internal'].shadowRoot,
+                nodes['x-button-group-internal'],
                 nodes.button_group_div,
                 nodes['x-button-group'].shadowRoot,
                 nodes['x-button-group'],
@@ -164,7 +171,7 @@ describe('event propagation', () => {
     describe('dispatched on host', () => {
         let nodes;
         beforeEach(() => {
-            nodes = createTestElement(document.body);
+            nodes = createTestElement();
         });
 
         it('{bubbles: true, composed: true}', () => {
@@ -173,8 +180,10 @@ describe('event propagation', () => {
 
             const composedPath = [
                 nodes['x-button'],
-                nodes.container_slot,
                 nodes.button_group_slot,
+                nodes.button_group_internal_slot,
+                nodes['x-button-group-internal'].shadowRoot,
+                nodes['x-button-group-internal'],
                 nodes.button_group_div,
                 nodes['x-button-group'].shadowRoot,
                 nodes['x-button-group'],
@@ -188,8 +197,10 @@ describe('event propagation', () => {
             ];
             const expectedLogs = [
                 [nodes['x-button'], nodes['x-button'], composedPath],
-                [nodes.container_slot, nodes['x-button'], composedPath],
                 [nodes.button_group_slot, nodes['x-button'], composedPath],
+                [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
+                [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
+                [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
                 [nodes.button_group_div, nodes['x-button'], composedPath],
                 [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
                 [nodes['x-button-group'], nodes['x-button'], composedPath],
@@ -199,6 +210,7 @@ describe('event propagation', () => {
                 [document.body, nodes['x-container'], composedPath],
                 [document.documentElement, nodes['x-container'], composedPath],
                 [document, nodes['x-container'], composedPath],
+                [window, nodes['x-container'], composedPath],
             ];
 
             expect(actualLogs).toEqual(expectedLogs);
@@ -210,8 +222,10 @@ describe('event propagation', () => {
 
             const composedPath = [
                 nodes['x-button'],
-                nodes.container_slot,
                 nodes.button_group_slot,
+                nodes.button_group_internal_slot,
+                nodes['x-button-group-internal'].shadowRoot,
+                nodes['x-button-group-internal'],
                 nodes.button_group_div,
                 nodes['x-button-group'].shadowRoot,
                 nodes['x-button-group'],
@@ -223,8 +237,10 @@ describe('event propagation', () => {
             if (process.env.NATIVE_SHADOW) {
                 expectedLogs = [
                     [nodes['x-button'], nodes['x-button'], composedPath],
-                    [nodes.container_slot, nodes['x-button'], composedPath],
                     [nodes.button_group_slot, nodes['x-button'], composedPath],
+                    [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
                     [nodes.button_group_div, nodes['x-button'], composedPath],
                     [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
                     [nodes['x-button-group'], nodes['x-button'], composedPath],
@@ -234,8 +250,10 @@ describe('event propagation', () => {
             } else {
                 expectedLogs = [
                     [nodes['x-button'], nodes['x-button'], composedPath],
-                    [nodes.container_slot, nodes['x-button'], composedPath],
                     [nodes.button_group_slot, nodes['x-button'], composedPath],
+                    [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
                     [nodes.button_group_div, nodes['x-button'], composedPath],
                     [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
                     [nodes['x-button-group'], nodes['x-button'], composedPath],
@@ -244,6 +262,7 @@ describe('event propagation', () => {
                     [document.body, null, composedPath],
                     [document.documentElement, null, composedPath],
                     [document, null, composedPath],
+                    [window, null, composedPath],
                 ];
             }
 
@@ -256,8 +275,10 @@ describe('event propagation', () => {
 
             const composedPath = [
                 nodes['x-button'],
-                nodes.container_slot,
                 nodes.button_group_slot,
+                nodes.button_group_internal_slot,
+                nodes['x-button-group-internal'].shadowRoot,
+                nodes['x-button-group-internal'],
                 nodes.button_group_div,
                 nodes['x-button-group'].shadowRoot,
                 nodes['x-button-group'],
@@ -289,8 +310,10 @@ describe('event propagation', () => {
 
             const composedPath = [
                 nodes['x-button'],
-                nodes.container_slot,
                 nodes.button_group_slot,
+                nodes.button_group_internal_slot,
+                nodes['x-button-group-internal'].shadowRoot,
+                nodes['x-button-group-internal'],
                 nodes.button_group_div,
                 nodes['x-button-group'].shadowRoot,
                 nodes['x-button-group'],
