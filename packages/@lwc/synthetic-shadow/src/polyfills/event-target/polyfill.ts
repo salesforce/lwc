@@ -23,12 +23,12 @@ function patchedAddEventListener(
     _listener: EventListenerOrEventListenerObject,
     _optionsOrCapture?: boolean | AddEventListenerOptions
 ) {
-    const args = ArraySlice.call(arguments);
     if (isHostElement(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        return addCustomElementEventListener.apply(this, [this].concat(args));
+        return addCustomElementEventListener.apply(this, arguments);
     }
+    const args = ArraySlice.call(arguments);
     if (args.length > 1) {
         args[1] = getEventListenerWrapper(args[1]);
     }
@@ -43,12 +43,12 @@ function patchedRemoveEventListener(
     _listener: EventListenerOrEventListenerObject,
     _optionsOrCapture?: boolean | EventListenerOptions
 ) {
-    const args = ArraySlice.call(arguments);
     if (isHostElement(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
-        return removeCustomElementEventListener.apply(this, [this].concat(args));
+        return removeCustomElementEventListener.apply(this, arguments);
     }
+    const args = ArraySlice.call(arguments);
     if (arguments.length > 1) {
         args[1] = getEventListenerWrapper(args[1]);
     }
