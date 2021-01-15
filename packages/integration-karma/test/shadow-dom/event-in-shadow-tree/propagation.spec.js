@@ -11,12 +11,9 @@ function dispatchEventWithLog(target, nodes, event) {
 
     [...Object.values(nodes), document.body, document.documentElement, document, window].forEach(
         (node) => {
-            node.addEventListener(
-                event.type,
-                function (event) {
-                    log.push([this, event.target, event.composedPath()]);
-                }.bind(node)
-            );
+            node.addEventListener(event.type, (event) => {
+                log.push([node, event.target, event.composedPath()]);
+            });
         }
     );
 
