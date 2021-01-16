@@ -20,7 +20,12 @@ import {
     isUndefined,
     toString,
 } from '@lwc/shared';
-import { getHost, SyntheticShadowRootInterface, getShadowRoot } from './shadow-root';
+import {
+    eventToShadowRootMap,
+    getHost,
+    getShadowRoot,
+    SyntheticShadowRootInterface,
+} from './shadow-root';
 import { pathComposer } from '../3rdparty/polymer/path-composer';
 import { retarget } from '../3rdparty/polymer/retarget';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
@@ -116,12 +121,6 @@ function getEventMap(elm: EventTarget): ListenerMap {
     return listenerInfo;
 }
 
-export const eventsDispatchedDirectlyOnShadowRoot: WeakSet<Event> = new WeakSet();
-
-export function setEventFromShadowRoot(event: Event) {
-    eventsDispatchedDirectlyOnShadowRoot.add(event);
-}
-
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
 function getWrappedShadowRootListener(
@@ -156,7 +155,7 @@ function getWrappedCustomElementListener(elm: Element, listener: EventListener):
     let customElementWrappedListener = customElementEventListenerMap.get(listener);
     if (isUndefined(customElementWrappedListener)) {
         customElementWrappedListener = function (event: Event) {
-            if (shouldInvokeCustomEventListener(event)) {
+            if (shouldInvokeCustomElementListener(event)) {
                 // all handlers on the custom element should be called with undefined 'this'
                 listener.call(elm, event);
             }
@@ -252,59 +251,67 @@ function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
     }
 }
 
-function shouldInvokeCustomEventListener(event: Event): boolean {
-    const target = eventTargetGetter.call(event);
-    const currentTarget = eventCurrentTargetGetter.call(event);
+function shouldInvokeCustomElementListener(event: Event): boolean {
     const { composed } = event;
 
-    let shouldInvoke = false;
-
     if (isTrue(composed)) {
-        shouldInvoke = true;
-    } else if (target === currentTarget) {
-        // Address the possibility that `target` is a shadow root
-        shouldInvoke = !eventsDispatchedDirectlyOnShadowRoot.has(event);
-    } else {
-        // it is coming from a slotted element
-        shouldInvoke = isChildNode(
-            getRootNodeHost(
-                target as Node /* because wrap on shadowRoot */,
-                GET_ROOT_NODE_CONFIG_FALSE
-            ) as Element,
-            currentTarget as Node
-        );
+        // Listeners on host elements should always be invoked for {composed: true} events.
+        return true;
     }
 
-    return shouldInvoke;
+    // If this {composed: false} event was dispatched on any root.
+    if (eventToShadowRootMap.has(event)) {
+        return false;
+    }
+
+    const target = eventTargetGetter.call(event);
+    const currentTarget = eventCurrentTargetGetter.call(event);
+
+    // If this {composed: false} event was dispatched on the current target host.
+    if (target === currentTarget) {
+        return true;
+    }
+
+    // At this point the event must be {bubbles: true, composed: false} and was dispatched from a
+    // shadow-excluding descendant node. In this case, we only invoke the listener if the target
+    // host was assigned to a slot in the composed subtree of the current target host.
+    const targetHost = getRootNodeHost(target as Node, GET_ROOT_NODE_CONFIG_FALSE) as HTMLElement;
+    const currentTargetHost = currentTarget as HTMLElement;
+    return isChildNode(targetHost, currentTargetHost);
 }
 
 function shouldInvokeShadowRootListener(event: Event): boolean {
     const { composed } = event;
+    const target = eventTargetGetter.call(event);
+    const currentTarget = eventCurrentTargetGetter.call(event);
 
-    let shouldInvoke = false;
-
-    if (isTrue(composed)) {
-        shouldInvoke = true;
-    } else {
-        const target = eventTargetGetter.call(event);
-        const currentTarget = eventCurrentTargetGetter.call(event);
-
-        if (eventsDispatchedDirectlyOnShadowRoot.has(event)) {
-            // If this event was directly dispatched on a root, then we should only handle
-            // it if it was dispatched on the current root because {composed: false} here.
-            shouldInvoke = target === currentTarget;
-        } else {
-            // The event was not dispatched directly on the current root so it must be bubbles:true.
-            // { bubbles: true, composed: false }
-
-            // Only invoke the listener if the target element is in the current root.
-            const currentRoot = getShadowRoot(currentTarget as HTMLElement);
-            const targetRoot = (target as HTMLElement).getRootNode();
-            shouldInvoke = currentRoot === targetRoot;
-        }
+    // If the event was dispatched on the host or its root.
+    if (target === currentTarget) {
+        // Invoke the listener if the event was dispatched directly on the root.
+        return eventToShadowRootMap.get(event) === getShadowRoot(target as Element);
     }
 
-    return shouldInvoke;
+    // At this point the event is {bubbles: true} and was dispatched from a shadow-including descendant node.
+    if (isTrue(composed)) {
+        // Invoke the listener if the event is {composed: true}.
+        return true;
+    }
+
+    // At this point the event must be {bubbles: true, composed: false}.
+    if (isTrue(eventToShadowRootMap.has(event))) {
+        // Don't invoke the listener because the event was dispatched on a descendant root.
+        return false;
+    }
+
+    const targetHost = getRootNodeHost(target as Node, GET_ROOT_NODE_CONFIG_FALSE) as HTMLElement;
+    const currentTargetHost = currentTarget as HTMLElement;
+    const isCurrentTargetSlotted = isChildNode(targetHost, currentTargetHost);
+
+    // At this point the event must be {bubbles: true, composed: false} and was dispatched from a
+    // shadow-excluding descendant node. In this case, we only invoke the listener if the target
+    // host was assigned to a slot in the composed subtree of the current target host, or the
+    // descendant node is in the shadow tree of the current root.
+    return isCurrentTargetSlotted || targetHost === currentTargetHost;
 }
 
 export function addCustomElementEventListener(
