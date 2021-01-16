@@ -260,7 +260,7 @@ function shouldInvokeCustomElementListener(event: Event): boolean {
     }
 
     // If this {composed: false} event was dispatched on any root.
-    if (eventToShadowRootMap.get(event)) {
+    if (eventToShadowRootMap.has(event)) {
         return false;
     }
 
