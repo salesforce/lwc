@@ -162,12 +162,7 @@ export function patchElementWithRestrictions(elm: Element, options: { isPortal: 
     defineProperties(elm, descriptors);
 }
 
-const BLOCKED_SHADOW_ROOT_METHODS = [
-    'cloneNode',
-    'getElementById',
-    'getSelection',
-    'elementsFromPoint',
-];
+const BLOCKED_SHADOW_ROOT_METHODS = ['cloneNode', 'getElementById'];
 
 function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
