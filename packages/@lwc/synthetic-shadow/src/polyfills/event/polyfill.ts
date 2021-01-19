@@ -64,6 +64,12 @@ function patchedComposedPathValue(this: Event): EventTarget[] {
     const originalTarget = eventTargetGetter.call(this);
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
+    // Account for events with targets that are not instances of Node (e.g., when a readystatechange
+    // handler is listening on an instance of XMLHttpRequest).
+    if (!(originalTarget instanceof Node)) {
+        return [];
+    }
+
     // If the event has completed propagation, the composedPath should be an empty array.
     if (isNull(originalCurrentTarget)) {
         return [];
