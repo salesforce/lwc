@@ -32,7 +32,7 @@ function patchedAddEventListener(
     if (args.length > 1) {
         args[1] = getEventListenerWrapper(args[1]);
     }
-    // Typescript does not like it when you treat the `arguments` object as an array
+    // Ignore types because we're passing through to native method
     // @ts-ignore type-mismatch
     return nativeAddEventListener.apply(this, args);
 }
