@@ -315,7 +315,7 @@ function shouldInvokeShadowRootListener(event: Event): boolean {
 }
 
 export function addCustomElementEventListener(
-    elm: Element,
+    this: Element,
     type: string,
     listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
@@ -324,28 +324,28 @@ export function addCustomElementEventListener(
         if (!isFunction(listener)) {
             throw new TypeError(
                 `Invalid second argument for Element.addEventListener() in ${toString(
-                    elm
+                    this
                 )} for event "${type}". Expected an EventListener but received ${listener}.`
             );
         }
     }
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(elm, listener);
-        attachDOMListener(elm, type, wrappedListener);
+        const wrappedListener = getWrappedCustomElementListener(this, listener);
+        attachDOMListener(this, type, wrappedListener);
     }
 }
 
 export function removeCustomElementEventListener(
-    elm: Element,
+    this: Element,
     type: string,
     listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(elm, listener);
-        detachDOMListener(elm, type, wrappedListener);
+        const wrappedListener = getWrappedCustomElementListener(this, listener);
+        detachDOMListener(this, type, wrappedListener);
     }
 }
 

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperties, isFunction, isNull, isObject } from '@lwc/shared';
+import { ArraySlice, defineProperties } from '@lwc/shared';
 import {
     addEventListener as nativeAddEventListener,
     eventTargetPrototype,
@@ -17,60 +17,59 @@ import {
 import { isHostElement } from '../../faux-shadow/shadow-root';
 import { getEventListenerWrapper } from '../../shared/event-target';
 
-function isValidEventListener(listener: EventListenerOrEventListenerObject): boolean {
-    return (
-        isFunction(listener) ||
-        (!isNull(listener) && isObject(listener) && isFunction(listener.handleEvent))
-    );
+function patchedAddEventListener(
+    this: EventTarget,
+    _type: string,
+    _listener: EventListenerOrEventListenerObject,
+    _optionsOrCapture?: boolean | AddEventListenerOptions
+) {
+    if (isHostElement(this)) {
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
+        return addCustomElementEventListener.apply(this, arguments);
+    }
+    const args = ArraySlice.call(arguments);
+    if (args.length > 1) {
+        args[1] = getEventListenerWrapper(args[1]);
+    }
+    // Ignore types because we're passing through to native method
+    // @ts-ignore type-mismatch
+    return nativeAddEventListener.apply(this, args);
 }
 
-function addEventListener(
+function patchedRemoveEventListener(
     this: EventTarget,
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    optionsOrCapture?: boolean | AddEventListenerOptions
+    _type: string,
+    _listener: EventListenerOrEventListenerObject,
+    _optionsOrCapture?: boolean | EventListenerOptions
 ) {
-    // TODO [#2134]: Delegate this validation to the browser instead of silently swallowing
-    if (!isValidEventListener(listener)) {
-        return;
-    }
     if (isHostElement(this)) {
-        addCustomElementEventListener(this, type, listener);
-    } else {
-        const wrapperFn = getEventListenerWrapper(listener);
-        nativeAddEventListener.call(this, type, wrapperFn, optionsOrCapture);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
+        return removeCustomElementEventListener.apply(this, arguments);
     }
-}
-
-function removeEventListener(
-    this: EventTarget,
-    type: string,
-    listener: EventListenerOrEventListenerObject,
-    optionsOrCapture?: boolean | EventListenerOptions
-) {
-    // TODO [#2134]: Delegate this validation to the browser instead of silently swallowing
-    if (!isValidEventListener(listener)) {
-        return;
+    const args = ArraySlice.call(arguments);
+    if (arguments.length > 1) {
+        args[1] = getEventListenerWrapper(args[1]);
     }
-    if (isHostElement(this)) {
-        removeCustomElementEventListener(this, type, listener);
-    } else {
-        const wrapperFn = getEventListenerWrapper(listener);
-        nativeRemoveEventListener.call(this, type, wrapperFn, optionsOrCapture);
-        // Account for listeners that were added before this polyfill was applied
-        nativeRemoveEventListener.call(this, type, listener, optionsOrCapture);
-    }
+    // Ignore types because we're passing through to native method
+    // @ts-ignore type-mismatch
+    nativeRemoveEventListener.apply(this, args);
+    // Account for listeners that were added before this polyfill was applied
+    // Typescript does not like it when you treat the `arguments` object as an array
+    // @ts-ignore type-mismatch
+    nativeRemoveEventListener.apply(this, arguments);
 }
 
 defineProperties(eventTargetPrototype, {
     addEventListener: {
-        value: addEventListener,
+        value: patchedAddEventListener,
         enumerable: true,
         writable: true,
         configurable: true,
     },
     removeEventListener: {
-        value: removeEventListener,
+        value: patchedRemoveEventListener,
         enumerable: true,
         writable: true,
         configurable: true,
