@@ -11,6 +11,7 @@ describe('static style attribute', () => {
         const target = elm.shadowRoot.querySelector('div');
         expect(target.style.position).toBe('absolute');
         expect(target.style.top).toBe('10px');
+        expect(target.style.getPropertyValue('--custom-property')).toBe('blue');
     });
 });
 
@@ -29,6 +30,11 @@ describe('dynamic style attribute', () => {
     testRenderStyleAttribute('undefined', undefined, null);
     testRenderStyleAttribute('empty string', '', null);
     testRenderStyleAttribute('css style string', 'position: relative;', 'position: relative;');
+    testRenderStyleAttribute(
+        'css custom property',
+        '--custom-property: blue;',
+        '--custom-property: blue;'
+    );
 
     function testUpdateStyleAttribute(type, value, expectedValue) {
         it(`updates the style attribute for ${type}`, () => {
@@ -53,4 +59,9 @@ describe('dynamic style attribute', () => {
     testUpdateStyleAttribute('undefined', undefined, null);
     testUpdateStyleAttribute('empty string', '', null);
     testUpdateStyleAttribute('css style string', 'position: absolute;', 'position: absolute;');
+    testUpdateStyleAttribute(
+        'css custom property',
+        '--custom-property: blue;',
+        '--custom-property: blue;'
+    );
 });

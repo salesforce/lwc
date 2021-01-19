@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          boxShadow: "10px 5px 5px black"
+          "box-shadow": "10px 5px 5px black"
         },
         key: 3
       },
@@ -47,7 +47,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          fontSize: "12px",
+          "font-size": "12px",
           background: "blue",
           color: "red"
         },
@@ -59,7 +59,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          fontSize: "12px",
+          "font-size": "12px",
           background: "blue",
           color: "red"
         },
@@ -71,7 +71,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          backgroundColor: "rgba(255,0,0,0.3)"
+          "background-color": "rgba(255,0,0,0.3)"
         },
         key: 6
       },

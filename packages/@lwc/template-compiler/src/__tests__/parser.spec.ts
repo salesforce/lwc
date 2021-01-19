@@ -93,7 +93,7 @@ describe('class and style', () => {
             <section style="font-size: 12px; color: red; margin: 10px 5px 10px"></section>
         </template>`);
         expect(root.children[0].styleMap).toEqual({
-            fontSize: '12px',
+            'font-size': '12px',
             color: 'red',
             margin: '10px 5px 10px',
         });

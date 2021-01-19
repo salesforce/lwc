@@ -36,8 +36,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   "stop",
                   {
                     styleMap: {
-                      stopColor: "rgb(255,255,0)",
-                      stopOpacity: "1"
+                      "stop-color": "rgb(255,255,0)",
+                      "stop-opacity": "1"
                     },
                     attrs: {
                       offset: "0%"
@@ -50,8 +50,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   "stop",
                   {
                     styleMap: {
-                      stopColor: "rgb(255,0,0)",
-                      stopOpacity: "1"
+                      "stop-color": "rgb(255,0,0)",
+                      "stop-opacity": "1"
                     },
                     attrs: {
                       offset: "100%"

@@ -23,7 +23,7 @@ function createStyleAttribute(vnode: VNode) {
 
     const style = renderer.getStyleDeclaration(elm);
     for (const name in styleMap) {
-        (style as any)[name] = styleMap[name];
+        style.setProperty(name, styleMap[name]);
     }
 }
 

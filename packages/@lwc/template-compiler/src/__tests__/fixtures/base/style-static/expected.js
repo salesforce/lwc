@@ -7,7 +7,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       {
         styleMap: {
-          fontSize: "12px",
+          "font-size": "12px",
           color: "red",
           margin: "10px 5px 10px"
         },
