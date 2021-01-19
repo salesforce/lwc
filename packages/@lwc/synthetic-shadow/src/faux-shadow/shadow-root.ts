@@ -229,7 +229,7 @@ const ShadowRootDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface, _left: number, _top: number): Element[] {
-            throw new Error(`Disallowed method "elementsFromPoint" in ShadowRoot.`);
+            throw new Error('Disallowed method "elementsFromPoint" in ShadowRoot.');
         },
     },
     getSelection: {
@@ -237,7 +237,7 @@ const ShadowRootDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface): Selection | null {
-            throw new Error(`Disallowed method "getSelection" in ShadowRoot.`);
+            throw new Error('Disallowed method "getSelection" in ShadowRoot.');
         },
     },
     host: {
