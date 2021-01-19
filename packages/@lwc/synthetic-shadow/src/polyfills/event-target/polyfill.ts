@@ -56,6 +56,7 @@ function patchedRemoveEventListener(
     // @ts-ignore type-mismatch
     nativeRemoveEventListener.apply(this, args);
     // Account for listeners that were added before this polyfill was applied
+    // Typescript does not like it when you treat the `arguments` object as an array
     // @ts-ignore type-mismatch
     nativeRemoveEventListener.apply(this, arguments);
 }
