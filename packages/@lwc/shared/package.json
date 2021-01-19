@@ -17,6 +17,7 @@
     "license": "MIT",
     "scripts": {
         "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js",
+        "postbuild": "node ../../../scripts/tasks/verify-treeshakable.js ./dist/index.js",
         "clean": "rm -rf dist/ types/"
     },
     "files": [

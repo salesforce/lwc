@@ -7,4 +7,5 @@
 
 // We use this to detect symbol support in order to avoid the expensive symbol polyfill. Note that
 // we can't use typeof since it will fail when transpiling.
-export const hasNativeSymbolSupport = Symbol('x').toString() === 'Symbol(x)';
+export const hasNativeSymbolSupport = /*@__PURE__*/ (() =>
+    Symbol('x').toString() === 'Symbol(x)')();

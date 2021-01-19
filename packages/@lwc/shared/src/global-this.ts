@@ -6,7 +6,7 @@
  */
 
 // Inspired from: https://mathiasbynens.be/notes/globalthis
-const _globalThis = (function (): any {
+const _globalThis = /*@__PURE__*/ (function (): any {
     // On recent browsers, `globalThis` is already defined. In this case return it directly.
     if (typeof globalThis === 'object') {
         return globalThis;

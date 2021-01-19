@@ -124,7 +124,7 @@ export function toString(obj: any): string {
     } else if (typeof obj === 'object') {
         return OtS.call(obj);
     } else {
-        return obj + emptyString;
+        return obj + '';
     }
 }
 
@@ -137,5 +137,3 @@ export function getPropertyDescriptor(o: any, p: PropertyKey): PropertyDescripto
         o = getPrototypeOf(o);
     } while (o !== null);
 }
-
-export const emptyString = '';
