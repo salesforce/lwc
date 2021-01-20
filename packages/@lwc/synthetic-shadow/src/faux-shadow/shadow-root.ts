@@ -237,7 +237,7 @@ const ShadowRootDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface): Selection | null {
-            throw new Error('Disallowed method "getSelection" in ShadowRoot.');
+            throw new Error('Disallowed method "getSelection" on ShadowRoot.');
         },
     },
     host: {
