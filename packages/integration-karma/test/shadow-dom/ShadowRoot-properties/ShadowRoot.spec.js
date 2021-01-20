@@ -66,7 +66,7 @@ describe('Properties overrides', () => {
     });
 });
 
-const SHADOW_ROOT_RESTRICTED = ['cloneNode', 'getElementById', 'getSelection', 'elementsFromPoint'];
+const SHADOW_ROOT_RESTRICTED = ['cloneNode', 'getElementById'];
 
 describe('restrictions', () => {
     let elm;
@@ -84,3 +84,25 @@ describe('restrictions', () => {
         });
     }
 });
+
+if (!process.env.NATIVE_SHADOW) {
+    describe('synthetic-shadow restrictions', () => {
+        let elm;
+
+        beforeAll(() => {
+            elm = createElement('x-test', { is: Test });
+        });
+
+        it(`should throw when invoking ShadowRoot.elementsFromPoint`, () => {
+            expect(() => elm.shadowRoot.elementsFromPoint(0, 0)).toThrowError(
+                `Disallowed method "elementsFromPoint" on ShadowRoot.`
+            );
+        });
+
+        it(`should throw when invoking ShadowRoot.getSelection`, () => {
+            expect(() => elm.shadowRoot.getSelection()).toThrowError(
+                `Disallowed method "getSelection" on ShadowRoot.`
+            );
+        });
+    });
+}
