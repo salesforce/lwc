@@ -22,12 +22,12 @@ export function retargetRelatedTarget(Ctor: typeof FocusEvent | typeof MouseEven
             if (isNull(relatedTarget)) {
                 return null;
             }
-            if (!(relatedTarget instanceof Node) || !isNodeShadowed(relatedTarget as Node)) {
+            if (!(relatedTarget instanceof Node) || !isNodeShadowed(relatedTarget)) {
                 return relatedTarget;
             }
             let pointOfReference = eventCurrentTargetGetter.call(this);
             if (isNull(pointOfReference)) {
-                pointOfReference = getOwnerDocument(relatedTarget as Node);
+                pointOfReference = getOwnerDocument(relatedTarget);
             }
             return retarget(pointOfReference, pathComposer(relatedTarget, true));
         },
