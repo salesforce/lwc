@@ -229,7 +229,7 @@ const ShadowRootDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface, _left: number, _top: number): Element[] {
-            throw new Error('Disallowed method "elementsFromPoint" in ShadowRoot.');
+            throw new Error('Disallowed method "elementsFromPoint" on ShadowRoot.');
         },
     },
     getSelection: {
