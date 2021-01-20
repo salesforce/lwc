@@ -261,7 +261,7 @@ function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
 }
 
 export function attributeToPropertyName(element: IRElement, attrName: string): string {
-    if (!shouldCamelCaseAttribute) {
+    if (!shouldCamelCaseAttribute(element, attrName)) {
         return attrName;
     }
     return toPropertyName(ATTRS_PROPS_TRANFORMS[attrName] || attrName);
