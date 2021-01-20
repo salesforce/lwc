@@ -94,16 +94,14 @@ if (!process.env.NATIVE_SHADOW) {
         });
 
         it(`should throw when invoking ShadowRoot.elementsFromPoint`, () => {
-            expect(() => elm.shadowRoot.elementsFromPoint(0, 0)).toThrow(
-                Error,
-                `Disallowed method "elementsFromPoint" in ShadowRoot.`
+            expect(() => elm.shadowRoot.elementsFromPoint(0, 0)).toThrowError(
+                `Disallowed method "elementsFromPoint" on ShadowRoot.`
             );
         });
 
         it(`should throw when invoking ShadowRoot.getSelection`, () => {
-            expect(() => elm.shadowRoot.getSelection()).toThrowErrorDev(
-                Error,
-                `Disallowed method "getSelection" in ShadowRoot.`
+            expect(() => elm.shadowRoot.getSelection()).toThrowError(
+                `Disallowed method "getSelection" on ShadowRoot.`
             );
         });
     });
