@@ -94,7 +94,7 @@ if (!process.env.NATIVE_SHADOW) {
         });
 
         it(`should throw when invoking ShadowRoot.elementsFromPoint`, () => {
-            expect(() => elm.shadowRoot.elementsFromPoint(0, 0)).toThrowErrorDev(
+            expect(() => elm.shadowRoot.elementsFromPoint(0, 0)).toThrow(
                 Error,
                 `Disallowed method "elementsFromPoint" in ShadowRoot.`
             );
