@@ -8,30 +8,33 @@ const assert = require('assert');
 
 const URL = '/retarget-related-target';
 
-describe('Retarget relatedTarget', () => {
-    before(async () => {
-        await browser.url(URL);
+if (process.env.COMPAT === 'false') {
+    describe('Retarget relatedTarget', () => {
+        before(async () => {
+            await browser.url(URL);
+        });
+
+        it('should retarget relatedTarget for MouseEvent', async () => {
+            const first = await browser.shadowDeep$(
+                'integration-retarget-related-target',
+                'integration-child.first',
+                'input'
+            );
+            const second = await browser.shadowDeep$(
+                'integration-retarget-related-target',
+                'integration-child.second',
+                'input'
+            );
+            const indicator = await browser.shadowDeep$(
+                'integration-retarget-related-target',
+                '.related-target-class-name'
+            );
+
+            await first.moveTo();
+            await second.moveTo();
+            await first.moveTo();
+
+            assert.strictEqual(await indicator.getText(), 'undefined, first, second');
+        });
     });
-
-    it('should retarget relatedTarget for MouseEvent', async () => {
-        const first = await browser.shadowDeep$(
-            'integration-retarget-related-target',
-            'integration-child.first',
-            'input'
-        );
-        const second = await browser.shadowDeep$(
-            'integration-retarget-related-target',
-            'integration-child.second',
-            'input'
-        );
-        const indicator = await browser.shadowDeep$(
-            'integration-retarget-related-target',
-            '.related-target-class-name'
-        );
-
-        await first.moveTo();
-        await second.moveTo();
-
-        assert.strictEqual(await indicator.getText(), 'undefined, first');
-    });
-});
+}
