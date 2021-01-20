@@ -1,6 +1,6 @@
 {
     "name": "@lwc/template-compiler",
-    "version": "1.11.3",
+    "version": "1.11.4",
     "description": "Template compiler package",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -32,8 +32,8 @@
         "@babel/template": "~7.12.7",
         "@babel/traverse": "~7.12.12",
         "@babel/types": "~7.11.5",
-        "@lwc/errors": "1.11.3",
-        "@lwc/shared": "1.11.3",
+        "@lwc/errors": "1.11.4",
+        "@lwc/shared": "1.11.4",
         "acorn": "~8.0.4",
         "esutils": "~2.0.3",
         "he": "~1.2.0",
