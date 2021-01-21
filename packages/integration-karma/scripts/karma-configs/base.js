@@ -33,12 +33,9 @@ function createPattern(location, config = {}) {
     };
 }
 
-function getLwcConfig() {
-    const { LWC__COMPAT, LWC__COVERAGE, LWC__NATIVE } = process.env;
-
-    const compat = LWC__COMPAT === 'true';
-    const coverage = LWC__COVERAGE === 'true';
-    const nativeShadow = LWC__NATIVE === 'true';
+function getLwcConfig(config) {
+    const compat = Boolean(config.compat);
+    const nativeShadow = Boolean(config.nativeShadow);
 
     const tags = [`${nativeShadow ? 'native' : 'synthetic'}-shadow`, compat && 'compat'].filter(
         Boolean
@@ -46,7 +43,6 @@ function getLwcConfig() {
 
     return {
         compat,
-        coverage,
         nativeShadow,
         tags,
     };
@@ -80,9 +76,8 @@ function getFiles(lwcConfig) {
  * https://karma-runner.github.io/3.0/config/configuration-file.html
  */
 module.exports = (config) => {
-    const lwcConfig = getLwcConfig();
-    console.log(JSON.stringify(lwcConfig, null, 2));
-    const { compat, coverage, tags } = lwcConfig;
+    const lwcConfig = getLwcConfig(config);
+    const { compat, tags } = lwcConfig;
 
     config.set({
         basePath: BASE_DIR,
@@ -116,7 +111,7 @@ module.exports = (config) => {
     });
 
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
-    if (coverage) {
+    if (config.coverage) {
         // Indicate to Karma to instrument the code to gather code coverage.
         config.preprocessors[compat ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
         config.preprocessors[compat ? WIRE_SERVICE_COMPAT : WIRE_SERVICE] = ['coverage'];

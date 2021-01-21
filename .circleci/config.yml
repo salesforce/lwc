@@ -110,11 +110,11 @@ commands:
       - run:
           name: Run karma integration tests
           working_directory: packages/integration-karma
-          command: |
-              LWC__COMPAT=<< parameters.compat >> \
-              LWC__COVERAGE=<< parameters.coverage >> \
-              LWC__NATIVE=<< parameters.native_shadow >> \
+          command: >
               yarn sauce
+              <<# parameters.native_shadow >> --native-shadow <</ parameters.native_shadow >>
+              <<# parameters.compat >> --compat <</ parameters.compat >>
+              <<# parameters.coverage >> --coverage <</ parameters.coverage >>
 
 
 # Jobs definition
