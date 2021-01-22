@@ -6,26 +6,35 @@
  */
 const assert = require('assert');
 
-describe('Retarget relatedTarget', () => {
-    const URL = '/retarget-related-target';
+const URL = '/retarget-related-target';
 
-    before(async () => {
-        await browser.url(URL);
+if (process.env.COMPAT === 'false') {
+    describe('Retarget relatedTarget', () => {
+        before(async () => {
+            await browser.url(URL);
+        });
+
+        it('should retarget relatedTarget for MouseEvent', async () => {
+            const first = await browser.shadowDeep$(
+                'integration-retarget-related-target',
+                'integration-child.first',
+                'input'
+            );
+            const second = await browser.shadowDeep$(
+                'integration-retarget-related-target',
+                'integration-child.second',
+                'input'
+            );
+            const indicator = await browser.shadowDeep$(
+                'integration-retarget-related-target',
+                '.related-target-class-name'
+            );
+
+            await first.moveTo();
+            await second.moveTo();
+            await first.moveTo();
+
+            assert.strictEqual(await indicator.getText(), 'undefined, first, second');
+        });
     });
-
-    it('should retarget relatedTarget from a foreign shadow', async () => {
-        const target = await browser.shadowDeep$(
-            'integration-retarget-related-target',
-            'integration-child',
-            'input'
-        );
-        await target.focus();
-        await browser.keys(['Shift', 'Tab', 'Shift']);
-
-        const indicator = await browser.shadowDeep$(
-            'integration-retarget-related-target',
-            '.related-target-tabname'
-        );
-        assert.strictEqual(await indicator.getText(), 'integration-child');
-    });
-});
+}

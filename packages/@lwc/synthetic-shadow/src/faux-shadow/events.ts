@@ -12,10 +12,8 @@ import {
     create,
     defineProperty,
     forEach,
-    getPropertyDescriptor,
     isFalse,
     isFunction,
-    isNull,
     isTrue,
     isUndefined,
     toString,
@@ -26,12 +24,9 @@ import {
     getShadowRoot,
     SyntheticShadowRootInterface,
 } from './shadow-root';
-import { pathComposer } from '../3rdparty/polymer/path-composer';
-import { retarget } from '../3rdparty/polymer/retarget';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
-import { isNodeDeepShadowed } from '../shared/node-ownership';
 
 export enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,
@@ -61,49 +56,6 @@ function getRootNodeHost(node: Node, options: GetRootNodeOptions): Node {
     }
 
     return rootNode;
-}
-
-export function doesEventNeedPatch(e: Event): boolean {
-    const originalTarget = eventTargetGetter.call(e);
-    return originalTarget instanceof Node && isNodeDeepShadowed(originalTarget);
-}
-
-const patchedEvents: WeakSet<Event> = new WeakSet();
-
-export function patchEvent(event: Event) {
-    if (patchedEvents.has(event)) {
-        return;
-    }
-    patchedEvents.add(event);
-
-    // not all events implement the relatedTarget getter, that's why we need to extract it from the instance
-    // Note: we can't really use the super here because of issues with the typescript transpilation for accessors
-    const originalRelatedTargetDescriptor = getPropertyDescriptor(event, 'relatedTarget');
-    if (!isUndefined(originalRelatedTargetDescriptor)) {
-        const relatedTargetGetter: (
-            this: Event
-        ) => EventTarget | null = originalRelatedTargetDescriptor.get!;
-        defineProperty(event, 'relatedTarget', {
-            get(this: Event): EventTarget | null | undefined {
-                const eventContext = eventToContextMap.get(this);
-                const originalCurrentTarget = eventCurrentTargetGetter.call(this);
-                const relatedTarget = relatedTargetGetter.call(this);
-                if (isNull(relatedTarget)) {
-                    return null;
-                }
-                const currentTarget =
-                    eventContext === EventListenerContext.SHADOW_ROOT_LISTENER
-                        ? getShadowRoot(
-                              originalCurrentTarget as HTMLElement
-                          ) /* because the context is a host */
-                        : originalCurrentTarget;
-
-                return retarget(currentTarget, pathComposer(relatedTarget, true));
-            },
-            enumerable: true,
-            configurable: true,
-        });
-    }
 }
 
 interface ListenerMap {
@@ -170,7 +122,6 @@ function getWrappedCustomElementListener(elm: Element, listener: EventListener):
 }
 
 function domListener(evt: Event) {
-    patchEvent(evt);
     let immediatePropagationStopped = false;
     let propagationStopped = false;
     const { type, stopImmediatePropagation, stopPropagation } = evt;
