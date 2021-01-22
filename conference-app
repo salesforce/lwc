@@ -1,0 +1,1 @@
+npx create-lwc-app conference-app --yes -o edge,express
