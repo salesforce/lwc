@@ -1,0 +1,36 @@
+<x-complex-template>
+  <template shadowroot="open">
+    <style type="text/css">
+      :host {
+        display: block;
+      }
+    </style>
+    This is a ore complex template
+    <x-square-red>
+      <template shadowroot="open">
+        <style type="text/css">
+          .red {
+            color: red;
+          }
+        </style>
+        <div class="red">
+          Red Text, clicked $0,
+          <button type="button">Click Me!</button>
+        </div>
+      </template>
+    </x-square-red>
+    <x-square-blue>
+      <template shadowroot="open">
+        <style type="text/css">
+          .blue {
+            color: blue;
+          }
+        </style>
+        <div class="blue">
+          Blue Text, clicked $0,
+          <button type="button">Click Me!</button>
+        </div>
+      </template>
+    </x-square-blue>
+  </template>
+</x-complex-template>

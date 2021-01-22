@@ -1,0 +1,23 @@
+<x-if-conditional-slot>
+  <div class="active-if-blocks">
+    <x-parent>
+      <x-slotted>
+        Should be active when true === true
+        <slot name="trueslot">
+          <x-child slot="trueslot" class="slotted-child">
+            <slot>Testing if:true</slot>
+          </x-child>
+        </slot>
+        Should be active when false === false
+        <slot name="falseslot">
+          <x-child slot="falseslot" class="slotted-child">
+            <slot>Testing if:false</slot>
+          </x-child>
+        </slot>
+      </x-slotted>
+    </x-parent>
+  </div>
+  <div class="inactive-if-blocks">
+    <x-parent><x-slotted></x-slotted></x-parent>
+  </div>
+</x-if-conditional-slot>

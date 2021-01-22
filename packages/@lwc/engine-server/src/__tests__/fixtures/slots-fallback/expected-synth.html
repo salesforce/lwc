@@ -1,0 +1,14 @@
+<x-slots-fallback>
+  <x-receiver>
+    <div>
+      With fallback:
+      <slot name="with-fallback">I am the slot fallback</slot>
+    </div>
+    <div>
+      With fallback:
+      <slot name="without-fallback">
+        <div slot="without-fallback">I am a slotted content</div>
+      </slot>
+    </div>
+  </x-receiver>
+</x-slots-fallback>

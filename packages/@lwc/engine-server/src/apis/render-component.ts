@@ -12,9 +12,9 @@ import {
 } from '@lwc/engine-core';
 import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
-import { renderer } from '../renderer';
+import { SsrRenderer } from '../renderer';
 import { serializeElement } from '../serializer';
-import { HostElement, HostNodeType } from '../types';
+import { HostElement, HostNodeType, SsrOptions } from '../types';
 
 const FakeRootElement: HostElement = {
     type: HostNodeType.Element,
@@ -30,8 +30,9 @@ const FakeRootElement: HostElement = {
 export function renderComponent(
     tagName: string,
     Ctor: typeof LightningElement,
-    props: { [name: string]: any } = {}
-): string {
+    props: { [name: string]: any } = {},
+    options: SsrOptions = {}
+): { html: string; styles: string[] } {
     if (!isString(tagName)) {
         throw new TypeError(
             `"renderComponent" expects a string as the first parameter but instead received ${tagName}.`
@@ -50,6 +51,15 @@ export function renderComponent(
         );
     }
 
+    if (!isObject(options) || isNull(options)) {
+        throw new TypeError(
+            `"renderComponent" expects an object as the fourth parameter but instead received ${options}.`
+        );
+    }
+
+    const opts = { syntheticShadow: !!options.syntheticShadow };
+
+    const renderer = new SsrRenderer(opts);
     const element = renderer.createElement(tagName);
 
     const def = getComponentInternalDef(Ctor);
@@ -69,5 +79,11 @@ export function renderComponent(
 
     connectRootElement(element);
 
-    return serializeElement(element);
+    const html = serializeElement(element, opts);
+
+    const styles = Array.from(renderer.globalStylesheets);
+    return {
+        html,
+        styles,
+    };
 }

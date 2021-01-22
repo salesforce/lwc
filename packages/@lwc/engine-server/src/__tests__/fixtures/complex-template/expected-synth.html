@@ -1,0 +1,18 @@
+<x-complex-template x-complex-template_complex-template-host>
+  This is a ore complex template
+  <x-square-red x-squareRed_squareRed-host x-complex-template_complex-template>
+    <div class="red" x-squareRed_squareRed>
+      Red Text, clicked $0,
+      <button type="button" x-squareRed_squareRed>Click Me!</button>
+    </div>
+  </x-square-red>
+  <x-square-blue
+    x-squareBlue_squareBlue-host
+    x-complex-template_complex-template
+  >
+    <div class="blue" x-squareBlue_squareBlue>
+      Blue Text, clicked $0,
+      <button type="button" x-squareBlue_squareBlue>Click Me!</button>
+    </div>
+  </x-square-blue>
+</x-complex-template>

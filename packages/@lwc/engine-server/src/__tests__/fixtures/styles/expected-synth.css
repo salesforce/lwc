@@ -1,0 +1,9 @@
+[x-styles_styles-host] {
+  color: red;
+}
+.foo[x-styles_styles] {
+  color: blue;
+}
+.foo[x-styles_styles] .bar[x-styles_styles] {
+  color: green;
+}

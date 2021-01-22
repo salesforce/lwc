@@ -1,0 +1,24 @@
+<x-if-conditional-slot-content>
+  <div class="active-if-blocks">
+    <x-conditional-slot-content>
+      <x-slotted>
+        <slot>
+          Testing if:true
+          <x-child><slot>Should be slotted when true === true</slot></x-child>
+        </slot>
+      </x-slotted>
+      <x-slotted>
+        <slot>
+          Testing if:false
+          <x-child><slot>Should be slotted when false === false</slot></x-child>
+        </slot>
+      </x-slotted>
+    </x-conditional-slot-content>
+  </div>
+  <div class="inactive-if-blocks">
+    <x-conditional-slot-content>
+      <x-slotted><slot></slot></x-slotted>
+      <x-slotted><slot></slot></x-slotted>
+    </x-conditional-slot-content>
+  </div>
+</x-if-conditional-slot-content>
