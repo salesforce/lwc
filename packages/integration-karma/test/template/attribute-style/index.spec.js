@@ -32,8 +32,8 @@ describe('dynamic style attribute', () => {
     testRenderStyleAttribute('css style string', 'position: relative;', 'position: relative;');
     testRenderStyleAttribute(
         'css custom property',
-        '--custom-property: blue;',
-        '--custom-property: blue;'
+        '--custom-property:blue;',
+        '--custom-property:blue;'
     );
 
     function testUpdateStyleAttribute(type, value, expectedValue) {
@@ -61,7 +61,7 @@ describe('dynamic style attribute', () => {
     testUpdateStyleAttribute('css style string', 'position: absolute;', 'position: absolute;');
     testUpdateStyleAttribute(
         'css custom property',
-        '--custom-property: blue;',
-        '--custom-property: blue;'
+        '--custom-property:blue;',
+        '--custom-property:blue;'
     );
 });

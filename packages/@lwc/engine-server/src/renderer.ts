@@ -18,7 +18,6 @@ import { Renderer } from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
-import { styleTextToCssDeclaration, cssDeclarationToStyleText } from './utils/style';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -263,57 +262,22 @@ export const renderer: Renderer<HostNode, HostElement> = {
         } as DOMTokenList;
     },
 
-    getStyleDeclaration(element) {
-        function getStyleAttribute(): HostAttribute | undefined {
-            return element.attributes.find(
-                (attr) => attr.name === 'style' && isNull(attr.namespace)
-            );
+    setCSSStyleProperty(element, name, value) {
+        let styleAttribute = element.attributes.find(
+            (attr) => attr.name === 'style' && isNull(attr.namespace)
+        );
+
+        if (isUndefined(styleAttribute)) {
+            styleAttribute = {
+                name: 'style',
+                namespace: null,
+                value: '',
+            };
+
+            element.attributes.push(styleAttribute);
         }
 
-        return new Proxy(
-            {},
-            {
-                get(target, property): string {
-                    let value: string;
-
-                    const styleAttribute = getStyleAttribute();
-                    if (isUndefined(styleAttribute)) {
-                        return '';
-                    }
-
-                    if (property === 'cssText') {
-                        value = styleAttribute.value;
-                    } else {
-                        const cssDeclaration = styleTextToCssDeclaration(styleAttribute.value);
-                        value = cssDeclaration[property as string] || '';
-                    }
-
-                    return value;
-                },
-                set(target, property, value) {
-                    let styleAttribute = getStyleAttribute();
-
-                    if (isUndefined(styleAttribute)) {
-                        styleAttribute = {
-                            name: 'style',
-                            namespace: null,
-                            value: '',
-                        };
-                        element.attributes.push(styleAttribute);
-                    }
-
-                    if (property === 'cssText') {
-                        styleAttribute.value = value;
-                    } else {
-                        const cssDeclaration = styleTextToCssDeclaration(styleAttribute.value);
-                        cssDeclaration[property as string] = value;
-                        styleAttribute.value = cssDeclarationToStyleText(cssDeclaration);
-                    }
-
-                    return value;
-                },
-            }
-        ) as CSSStyleDeclaration;
+        styleAttribute.value = `${styleAttribute.value}; ${name}: ${value}`;
     },
 
     isConnected(node: HostNode) {

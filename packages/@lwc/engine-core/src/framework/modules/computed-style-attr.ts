@@ -14,17 +14,20 @@ function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
         data: { style: newStyle },
         owner: { renderer },
     } = vnode;
-    const { getStyleDeclaration, removeAttribute } = renderer;
+    const { setCSSStyleProperty, removeAttribute } = renderer;
     if (oldVnode.data.style === newStyle) {
         return;
     }
 
-    const style = getStyleDeclaration(elm);
+    removeAttribute(elm, 'style');
 
-    if (!isString(newStyle) || newStyle === '') {
-        removeAttribute(elm, 'style');
-    } else {
-        style.cssText = newStyle;
+    if (isString(newStyle) && newStyle !== '') {
+        newStyle.split(';').forEach((style) => {
+            if (style.trim().length) {
+                const [name, value] = style.split(':');
+                setCSSStyleProperty(elm, name.trim(), value.trim());
+            }
+        });
     }
 }
 
