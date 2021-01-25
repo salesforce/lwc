@@ -428,6 +428,7 @@ export function c(
         ctor: Ctor,
         owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
+        shadowDomMode: Ctor.forceNativeShadow ?? 'synthetic-shadow',
     };
     addVNodeToChildLWC(vnode);
     return vnode;

@@ -126,6 +126,7 @@ export interface LightningElementConstructor {
     readonly CustomElementConstructor: HTMLElementConstructor;
 
     delegatesFocus?: boolean;
+    forceNativeShadow?: 'native-shadow' | 'synthetic-shadow';
 }
 
 export declare let LightningElement: LightningElementConstructor;

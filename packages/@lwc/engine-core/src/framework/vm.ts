@@ -94,6 +94,8 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly owner: VM<N, E> | null;
     /** Rendering operations associated with the VM */
     readonly renderer: Renderer<N, E>;
+    /** The shadow dom implementation to be used**/
+    readonly shadowDomMode: 'native-shadow' | 'synthetic-shadow';
     /** The component creation index. */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -241,9 +243,10 @@ export function createVM<HostNode, HostElement>(
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
         renderer: Renderer;
+        shadowDomMode: 'native-shadow' | 'synthetic-shadow';
     }
 ): VM {
-    const { mode, owner, renderer, tagName } = options;
+    const { mode, owner, renderer, tagName, shadowDomMode } = options;
 
     const vm: VM = {
         elm,
@@ -256,6 +259,7 @@ export function createVM<HostNode, HostElement>(
         mode,
         owner,
         renderer,
+        shadowDomMode: shadowDomMode,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,

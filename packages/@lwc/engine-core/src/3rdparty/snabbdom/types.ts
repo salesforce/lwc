@@ -52,6 +52,7 @@ export interface VCustomElement extends VElement {
     ctor: any;
     // copy of the last allocated children.
     aChildren?: VNodes;
+    shadowDomMode: 'native-shadow' | 'synthetic-shadow';
 }
 
 export interface VText extends VNode {

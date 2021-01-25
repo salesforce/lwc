@@ -87,6 +87,7 @@ export function createElement(
     options: {
         is: typeof LightningElement;
         mode?: 'open' | 'closed';
+        shadowDomMode?: 'native-shadow' | 'synthetic-shadow';
     }
 ): HTMLElement {
     if (!isObject(options) || isNull(options)) {
@@ -120,6 +121,8 @@ export function createElement(
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
             renderer,
+            shadowDomMode:
+                options.shadowDomMode !== 'native-shadow' ? 'synthetic-shadow' : 'native-shadow',
         });
         setHiddenField(elm, ConnectingSlot, connectRootElement);
         setHiddenField(elm, DisconnectingSlot, disconnectRootElement);
