@@ -16,6 +16,7 @@ import {
     createHiddenField,
     getHiddenField,
     setHiddenField,
+    isTrue,
 } from '@lwc/shared';
 import {
     getComponentInternalDef,
@@ -87,7 +88,6 @@ export function createElement(
     options: {
         is: typeof LightningElement;
         mode?: 'open' | 'closed';
-        shadowDomMode?: 'native-shadow' | 'synthetic-shadow';
     }
 ): HTMLElement {
     if (!isObject(options) || isNull(options)) {
@@ -121,8 +121,7 @@ export function createElement(
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
             renderer,
-            shadowDomMode:
-                options.shadowDomMode !== 'native-shadow' ? 'synthetic-shadow' : 'native-shadow',
+            shadowDomMode: isTrue(Ctor.forceNativeShadow) ? 'native-shadow' : 'synthetic-shadow',
         });
         setHiddenField(elm, ConnectingSlot, connectRootElement);
         setHiddenField(elm, DisconnectingSlot, disconnectRootElement);
