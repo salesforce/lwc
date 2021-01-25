@@ -188,6 +188,7 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
         mode,
         renderer,
         def: { ctor, bridge },
+        shadowDomMode,
     } = vm;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -202,7 +203,7 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
     const cmpRoot = renderer.attachShadow(elm, {
         mode,
         delegatesFocus: !!ctor.delegatesFocus,
-        '$$lwc-synthetic-mode$$': true,
+        '$$lwc-synthetic-mode$$': shadowDomMode === 'synthetic-shadow',
     } as any);
 
     vm.component = this;

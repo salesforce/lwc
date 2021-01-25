@@ -160,7 +160,7 @@ module.exports = function postProcess({ types: t }) {
             // If native shadow is forced on, add a static property to signal this info
             if (state.opts.forceNativeShadow) {
                 const forceNativeShadowNode = t.classProperty(
-                    t.identifier('forcedNativeShadow'),
+                    t.identifier('forceNativeShadow'),
                     t.booleanLiteral(true)
                 );
                 forceNativeShadowNode.static = true;
