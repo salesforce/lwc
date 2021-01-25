@@ -156,22 +156,21 @@ module.exports = function postProcess({ types: t }) {
         // Decorator collector for class declarations
         ClassDeclaration(path, state) {
             const { node } = path;
+            // TODO [#0000]: narrow this down to only component classes
+            // If native shadow is forced on, add a static property to signal this info
+            if (state.opts.forceNativeShadow) {
+                const forceNativeShadowNode = t.classProperty(
+                    t.identifier('forcedNativeShadow'),
+                    t.booleanLiteral(true)
+                );
+                forceNativeShadowNode.static = true;
+                node.body.body.push(forceNativeShadowNode);
+            }
             const metaPropertyList = collectMetaPropertyList(path.get('body'));
-
             if (metaPropertyList.length) {
                 const statementPath = path.getStatementParent();
                 const hasIdentifier = t.isIdentifier(node.id);
-
                 if (hasIdentifier) {
-                    // If native shadow is forced on, add a static property to signal this info
-                    if (state.opts.forceNativeShadow) {
-                        const forceNativeShadowNode = t.classProperty(
-                            t.identifier('forcedNativeShadow'),
-                            t.booleanLiteral(true)
-                        );
-                        forceNativeShadowNode.static = true;
-                        node.body.body.push(forceNativeShadowNode);
-                    }
                     statementPath.insertAfter(
                         createRegisterDecoratorsCall(path, node.id, metaPropertyList)
                     );
