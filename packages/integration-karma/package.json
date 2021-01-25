@@ -6,7 +6,7 @@
         "start": "karma start ./scripts/karma-configs/local.js",
         "start:compat": "yarn start --browsers Chrome --compat",
         "start:native": "yarn start --browsers Chrome --native-shadow",
-        "start:mixed": "yarn start --browsers Chrome --mixed-mode",
+        "start:mixed": "yarn start --browsers Chrome --force-mixed-mode",
         "test": "karma start ./scripts/karma-configs/local.js --single-run --browsers Chrome",
         "sauce": "karma start ./scripts/karma-configs/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js"

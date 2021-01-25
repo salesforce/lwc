@@ -154,7 +154,7 @@ module.exports = function postProcess({ types: t }) {
             }
         },
         // Decorator collector for class declarations
-        ClassDeclaration(path) {
+        ClassDeclaration(path, state) {
             const { node } = path;
             const metaPropertyList = collectMetaPropertyList(path.get('body'));
 
@@ -163,6 +163,15 @@ module.exports = function postProcess({ types: t }) {
                 const hasIdentifier = t.isIdentifier(node.id);
 
                 if (hasIdentifier) {
+                    // If native shadow is forced on, add a static property to signal this info
+                    if (state.opts.forceNativeShadow) {
+                        const forceNativeShadowNode = t.classProperty(
+                            t.identifier('forcedNativeShadow'),
+                            t.booleanLiteral(true)
+                        );
+                        forceNativeShadowNode.static = true;
+                        node.body.body.push(forceNativeShadowNode);
+                    }
                     statementPath.insertAfter(
                         createRegisterDecoratorsCall(path, node.id, metaPropertyList)
                     );

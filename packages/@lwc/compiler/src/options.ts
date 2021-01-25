@@ -10,6 +10,7 @@ import { CompilerValidationErrors, invariant } from '@lwc/errors';
 const DEFAULT_OPTIONS = {
     baseDir: '',
     isExplicitImport: false,
+    forceNativeShadow: false,
 };
 
 const DEFAULT_DYNAMIC_CMP_CONFIG: NormalizedDynamicComponentConfig = {
@@ -72,6 +73,7 @@ export interface TransformOptions {
     baseDir?: string;
     stylesheetConfig?: StylesheetConfig;
     experimentalDynamicComponent?: DynamicComponentConfig;
+    forceNativeShadow?: boolean;
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
 }
@@ -85,6 +87,7 @@ export interface NormalizedTransformOptions extends TransformOptions {
     stylesheetConfig: NormalizedStylesheetConfig;
     experimentalDynamicComponent: NormalizedDynamicComponentConfig;
     isExplicitImport: boolean;
+    forceNativeShadow: boolean;
 }
 
 export interface NormalizedCompileOptions extends CompileOptions {
@@ -94,6 +97,7 @@ export interface NormalizedCompileOptions extends CompileOptions {
     stylesheetConfig: NormalizedStylesheetConfig;
     experimentalDynamicComponent: NormalizedDynamicComponentConfig;
     isExplicitImport: boolean;
+    forceNativeShadow: boolean;
 }
 
 export interface NormalizedStylesheetConfig extends StylesheetConfig {

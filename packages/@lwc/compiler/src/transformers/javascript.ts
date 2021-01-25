@@ -24,6 +24,7 @@ export default function scriptTransform(
         isExplicitImport,
         experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
+        forceNativeShadow,
     } = options;
 
     let result;
@@ -32,7 +33,7 @@ export default function scriptTransform(
             babelrc: false,
             configFile: false,
             plugins: [
-                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
+                [lwcClassTransformPlugin, { isExplicitImport, dynamicImports, forceNativeShadow }],
                 [babelClassPropertiesPlugin, { loose: true }],
 
                 // This plugin should be removed in a future version. The object-rest-spread is
