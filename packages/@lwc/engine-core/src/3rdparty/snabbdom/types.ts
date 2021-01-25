@@ -47,12 +47,17 @@ export interface VElement extends VNode {
     key: Key;
 }
 
+export enum ShadowDomMode {
+    nativeShadow = 0,
+    syntheticShadow = 1,
+}
+
 export interface VCustomElement extends VElement {
     mode: 'closed' | 'open';
     ctor: any;
     // copy of the last allocated children.
     aChildren?: VNodes;
-    shadowDomMode: 'native-shadow' | 'synthetic-shadow';
+    shadowDomMode: ShadowDomMode;
 }
 
 export interface VText extends VNode {

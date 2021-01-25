@@ -46,7 +46,7 @@ import { Renderer, HostNode, HostElement } from './renderer';
 import { removeActiveVM } from './hot-swaps';
 
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
-import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
+import { VNodes, VCustomElement, VNode, ShadowDomMode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
 type ShadowRootMode = 'open' | 'closed';
@@ -95,7 +95,7 @@ export interface VM<N = HostNode, E = HostElement> {
     /** Rendering operations associated with the VM */
     readonly renderer: Renderer<N, E>;
     /** The shadow dom implementation to be used**/
-    readonly shadowDomMode: 'native-shadow' | 'synthetic-shadow';
+    readonly shadowDomMode: ShadowDomMode;
     /** The component creation index. */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -243,7 +243,7 @@ export function createVM<HostNode, HostElement>(
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
         renderer: Renderer;
-        shadowDomMode: 'native-shadow' | 'synthetic-shadow';
+        shadowDomMode: ShadowDomMode;
     }
 ): VM {
     const { mode, owner, renderer, tagName, shadowDomMode } = options;
@@ -259,7 +259,7 @@ export function createVM<HostNode, HostElement>(
         mode,
         owner,
         renderer,
-        shadowDomMode: shadowDomMode,
+        shadowDomMode,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,

@@ -15,7 +15,7 @@ import {
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
-import { VNode, VNodes } from '../3rdparty/snabbdom/types';
+import { ShadowDomMode, VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';
 import { SlotSet, TemplateCache, VM, resetShadowRoot, runWithBoundaryProtection } from './vm';
@@ -120,7 +120,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         },
         () => {
             // job
-            const { component, context, cmpSlots, cmpTemplate, tro, renderer } = vm;
+            const { component, context, cmpSlots, cmpTemplate, tro, renderer, shadowDomMode } = vm;
             tro.observe(() => {
                 // Reset the cache memoizer for template when needed.
                 if (html !== cmpTemplate) {
@@ -148,7 +148,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                     context.tplCache = create(null);
 
                     // Update the synthetic shadow attributes on the host element if necessary.
-                    if (renderer.syntheticShadow) {
+                    if (renderer.syntheticShadow && shadowDomMode & ShadowDomMode.syntheticShadow) {
                         updateSyntheticShadowAttributes(vm, html);
                     }
 

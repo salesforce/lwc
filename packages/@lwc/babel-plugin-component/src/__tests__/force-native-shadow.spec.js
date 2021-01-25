@@ -22,7 +22,7 @@ describe('forceNativeShadow flag', () => {
                 import { registerComponent as _registerComponent, LightningElement } from "lwc";
 
                 class Test extends LightningElement {
-                    static forcedNativeShadow = true;
+                    static forceNativeShadow = true;
                 }
 
                 export default _registerComponent(Test, {

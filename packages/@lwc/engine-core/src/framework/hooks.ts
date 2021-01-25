@@ -13,7 +13,7 @@ import {
     getAssociatedVMIfPresent,
     VM,
 } from './vm';
-import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
+import { VNode, VCustomElement, VElement, VNodes, ShadowDomMode } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
 import modProps from './modules/props';
@@ -96,7 +96,10 @@ enum LWCDOMMode {
 
 export function fallbackElmHook(elm: Element, vnode: VElement) {
     const { owner } = vnode;
-    if (isTrue(owner.renderer.syntheticShadow)) {
+    if (
+        isTrue(owner.renderer.syntheticShadow) &&
+        owner.shadowDomMode & ShadowDomMode.syntheticShadow
+    ) {
         const {
             data: { context },
         } = vnode;
@@ -163,7 +166,7 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     const children = vnode.aChildren || vnode.children;
 
     vm.aChildren = children;
-    if (isTrue(vm.renderer.syntheticShadow)) {
+    if (isTrue(vm.renderer.syntheticShadow) && vm.shadowDomMode & ShadowDomMode.syntheticShadow) {
         // slow path
         allocateInSlot(vm, children);
         // save the allocated children in case this vnode is reused.
@@ -182,7 +185,7 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     }
     const { sel, mode, ctor, owner, shadowDomMode } = vnode;
     const def = getComponentInternalDef(ctor);
-    if (isTrue(owner.renderer.syntheticShadow)) {
+    if (isTrue(owner.renderer.syntheticShadow) && shadowDomMode & ShadowDomMode.syntheticShadow) {
         const { shadowAttribute } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.

@@ -11,6 +11,7 @@ import {
     disconnectRootElement,
     getComponentInternalDef,
     LightningElement,
+    ShadowDomMode,
 } from '@lwc/engine-core';
 import { isTrue } from '@lwc/shared';
 
@@ -60,8 +61,8 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 tagName: this.tagName,
                 renderer,
                 shadowDomMode: isTrue(Ctor.forceNativeShadow)
-                    ? 'synthetic-shadow'
-                    : 'native-shadow',
+                    ? ShadowDomMode.nativeShadow
+                    : ShadowDomMode.syntheticShadow,
             });
         }
         connectedCallback() {
