@@ -14,7 +14,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 0
       },
       []
-    )
+    ),
+    api_element(
+      "section",
+      {
+        styleMap: {
+          "--my-color": "blue",
+          color: "var(--my-color)",
+        },
+        key: 1,
+      },
+      []
+    ),
   ];
 }
 
