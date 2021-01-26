@@ -28,7 +28,7 @@ function createEnvFile(lwcConfig) {
         `    env: {`,
         `        NODE_ENV: "development",`,
         `        COMPAT: ${lwcConfig.compat},`,
-        `        NATIVE_SHADOW: ${lwcConfig.nativeShadow}`,
+        `        NATIVE_SHADOW: ${lwcConfig.nativeShadow || lwcConfig.forceMixedMode}`,
         `    }`,
         `};`,
     ];

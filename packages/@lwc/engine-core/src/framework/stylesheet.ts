@@ -105,7 +105,8 @@ function evaluateStylesheetsContent(
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
     const { stylesheets, stylesheetTokens: tokens } = template;
-    const { syntheticShadow } = vm.renderer;
+    const syntheticShadow =
+        vm.renderer.syntheticShadow && vm.shadowDomMode & ShadowDomMode.syntheticShadow;
 
     let content: string[] = [];
 
