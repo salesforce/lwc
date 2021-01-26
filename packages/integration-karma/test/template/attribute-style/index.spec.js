@@ -3,31 +3,18 @@ import { createElement } from 'lwc';
 import Static from 'x/static';
 import Dynamic from 'x/dynamic';
 
-const isIE = (function () {
-    const div = document.createElement('div');
-    div.style.setProperty('--test', 'red');
-    const customPropertiesAvailable = div.style.getPropertyValue('--test') === 'red';
-
-    return !customPropertiesAvailable;
-})();
-
-const getExpectedValue = function (value) {
-    if (value && value.indexOf('--') === 0) {
-        return !isIE ? value : '';
-    }
-
-    return value;
-};
-
 describe('static style attribute', () => {
     it('renders the style attribute', () => {
         const elm = createElement('x-static', { is: Static });
         document.body.appendChild(elm);
 
         const target = elm.shadowRoot.querySelector('div');
+
         expect(target.style.position).toBe('absolute');
         expect(target.style.top).toBe('10px');
-        expect(target.style.getPropertyValue('--custom-property')).toBe(isIE ? '' : 'blue');
+        if (!process.env.COMPAT) {
+            expect(target.style.getPropertyValue('--custom-property')).toBe('blue');
+        }
     });
 });
 
@@ -38,9 +25,7 @@ describe('dynamic style attribute', () => {
             elm.dynamicStyle = value;
             document.body.appendChild(elm);
 
-            expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(
-                getExpectedValue(expectedValue)
-            );
+            expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(expectedValue);
         });
     }
 
@@ -48,11 +33,13 @@ describe('dynamic style attribute', () => {
     testRenderStyleAttribute('undefined', undefined, null);
     testRenderStyleAttribute('empty string', '', null);
     testRenderStyleAttribute('css style string', 'position: relative;', 'position: relative;');
-    testRenderStyleAttribute(
-        'css custom property',
-        '--custom-property:blue;',
-        '--custom-property:blue;'
-    );
+    if (!process.env.COMPAT) {
+        testRenderStyleAttribute(
+            'css custom property',
+            '--custom-property:blue;',
+            '--custom-property:blue;'
+        );
+    }
 
     function testUpdateStyleAttribute(type, value, expectedValue) {
         it(`updates the style attribute for ${type}`, () => {
@@ -67,7 +54,7 @@ describe('dynamic style attribute', () => {
             elm.dynamicStyle = value;
             return Promise.resolve().then(() => {
                 expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(
-                    getExpectedValue(expectedValue)
+                    expectedValue
                 );
             });
         });
@@ -77,9 +64,11 @@ describe('dynamic style attribute', () => {
     testUpdateStyleAttribute('undefined', undefined, null);
     testUpdateStyleAttribute('empty string', '', null);
     testUpdateStyleAttribute('css style string', 'position: absolute;', 'position: absolute;');
-    testUpdateStyleAttribute(
-        'css custom property',
-        '--custom-property:blue;',
-        '--custom-property:blue;'
-    );
+    if (!process.env.COMPAT) {
+        testUpdateStyleAttribute(
+            'css custom property',
+            '--custom-property:blue;',
+            '--custom-property:blue;'
+        );
+    }
 });
