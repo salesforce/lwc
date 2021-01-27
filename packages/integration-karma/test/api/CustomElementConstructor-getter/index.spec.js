@@ -35,7 +35,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         expect(elm.shadowRoot.mode).toBe('open');
     });
 
-    describe('lifecycle', () => {
+    describe('lifecycle ', () => {
         beforeAll(() => {
             const LifecycleParentCustomElement = LifecycleParent.CustomElementConstructor;
             customElements.define('test-lifecycle-parent', LifecycleParentCustomElement);
