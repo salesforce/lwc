@@ -604,7 +604,7 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
 }
 
 // slow path routine
-// NOTE: we should probably more this routine to the synthetic shadow folder
+// NOTE: we should probably move this routine to the synthetic shadow folder
 // and get the allocation to be cached by in the elm instead of in the VM
 export function allocateInSlot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {

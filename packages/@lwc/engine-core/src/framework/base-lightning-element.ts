@@ -204,6 +204,7 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
     const cmpRoot = renderer.attachShadow(elm, {
         mode,
         delegatesFocus: !!ctor.delegatesFocus,
+        // Signal the shadow dom mode based on component's choice
         '$$lwc-synthetic-mode$$': (shadowDomMode & ShadowDomMode.syntheticShadow) === 1,
     } as any);
 

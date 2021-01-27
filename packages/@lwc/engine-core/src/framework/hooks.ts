@@ -96,6 +96,8 @@ enum LWCDOMMode {
 
 export function fallbackElmHook(elm: Element, vnode: VElement) {
     const { owner } = vnode;
+    // If the environment is in synthetic shadow mode and the owner component favors synthetic shadow dom,
+    // the node will be marked with a key which will be propagated
     if (
         isTrue(owner.renderer.syntheticShadow) &&
         owner.shadowDomMode & ShadowDomMode.syntheticShadow
@@ -166,6 +168,9 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     const children = vnode.aChildren || vnode.children;
 
     vm.aChildren = children;
+    // If the environment is in synthetic shadow mode and the slot receiver component favors synthetic shadow dom
+    // then allocate the slot content into the shadow tree of the receiver
+    // else retain the slot content in the light dom of the receiver(aka native shadow behavior)
     if (isTrue(vm.renderer.syntheticShadow) && vm.shadowDomMode & ShadowDomMode.syntheticShadow) {
         // slow path
         allocateInSlot(vm, children);
@@ -185,6 +190,7 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     }
     const { sel, mode, ctor, owner, shadowDomMode } = vnode;
     const def = getComponentInternalDef(ctor);
+    // If the environment is in synthetic shadow mode and the component favors synthetic shadow dom
     if (isTrue(owner.renderer.syntheticShadow) && shadowDomMode & ShadowDomMode.syntheticShadow) {
         const { shadowAttribute } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value

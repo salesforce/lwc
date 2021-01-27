@@ -105,6 +105,8 @@ function evaluateStylesheetsContent(
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
     const { stylesheets, stylesheetTokens: tokens } = template;
+    // If the environment is in synthetic shadow mode and the component favors synthetic shadow dom
+    // use global styling else use shadow styling
     const syntheticShadow =
         vm.renderer.syntheticShadow && vm.shadowDomMode & ShadowDomMode.syntheticShadow;
 

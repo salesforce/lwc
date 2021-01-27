@@ -232,6 +232,7 @@ function linkNodeToShadow(elm: Node, owner: VM) {
     const { renderer, cmpRoot } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
+    // If the environment is in synthetic shadow mode and the component favors synthetic shadow dom
     if (renderer.syntheticShadow && owner.shadowDomMode & ShadowDomMode.syntheticShadow) {
         (elm as any).$shadowResolver$ = (cmpRoot as any).$shadowResolver$;
     }
@@ -360,6 +361,8 @@ export function s(
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
+    // If the environment is in synthetic shadow mode and the default slot content belongs to a
+    // component that favors synthetic shadow dom
     if (
         vnode.owner.renderer.syntheticShadow &&
         vnode.owner.shadowDomMode & ShadowDomMode.syntheticShadow
