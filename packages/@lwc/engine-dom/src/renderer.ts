@@ -187,7 +187,7 @@ export const renderer: Renderer<Node, Element> = {
     setCSSStyleProperty(element: Element, name: string, value: string): void {
         // TODO [#0]: How to avoid this type casting? Shall we use a different type interface to
         // represent elements in the engine?
-        (element as HTMLElement | SVGAElement).style.setProperty(name, value);
+        (element as HTMLElement | SVGElement).style.setProperty(name, value);
     },
 
     getBoundingClientRect(element: Element): DOMRect {
