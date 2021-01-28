@@ -206,10 +206,6 @@ function isCustomElementAttribute(attrName: string): boolean {
     return attrName === 'key' || attrName === 'slot' || !!attrName.match(DATA_RE);
 }
 
-function isInputStateAttribute(element: IRElement, attrName: string) {
-    return element.tag === 'input' && (attrName === 'value' || attrName === 'checked');
-}
-
 export function isAttribute(element: IRElement, attrName: string): boolean {
     const isCustomElm = isCustomElement(element);
     if (isCustomElm) {
@@ -218,7 +214,7 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
-    if (isInputStateAttribute(element, attrName)) {
+    if (element.tag === 'input' && (attrName === 'value' || attrName === 'checked')) {
         return false;
     }
 
@@ -250,9 +246,7 @@ function isTemplateDirective(attrName: string): boolean {
 }
 
 /**
- * convert attribute name from kebab case to camel case property name
- * Note: Should not invoke this function for data attribute
- * @param attrName
+ * Convert attribute name from kebab case to camel case property name
  */
 export function attributeToPropertyName(attrName: string): string {
     return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);

@@ -751,7 +751,6 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             // the if branch handles
             // 1. All attributes for standard elements except 1 case are handled as attributes
-            //    * value and checked attribute for input element is treated as property
             // 2. For custom elements, only key, slot and data are handled as attributes, rest as properties
             if (isAttribute(element, name)) {
                 const attrs = element.attrs || (element.attrs = {});
