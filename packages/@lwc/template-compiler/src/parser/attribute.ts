@@ -255,5 +255,5 @@ function isTemplateDirective(attrName: string): boolean {
  * @param attrName
  */
 export function attributeToPropertyName(attrName: string): string {
-    return toPropertyName(ATTRS_PROPS_TRANFORMS[attrName] || attrName);
+    return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);
 }
