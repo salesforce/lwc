@@ -37,7 +37,7 @@ export interface Renderer<N = HostNode, E = HostElement> {
     ): void;
     dispatchEvent(target: N, event: Event): boolean;
     getClassList(element: E): DOMTokenList;
-    getStyleDeclaration(element: E): CSSStyleDeclaration;
+    setCSSStyleProperty(element: E, name: string, value: string): void;
     getBoundingClientRect(element: E): ClientRect;
     querySelector(element: E, selectors: string): E | null;
     querySelectorAll(element: E, selectors: string): NodeList;

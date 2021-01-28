@@ -14,17 +14,15 @@ function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
         data: { style: newStyle },
         owner: { renderer },
     } = vnode;
-    const { getStyleDeclaration, removeAttribute } = renderer;
+    const { setAttribute, removeAttribute } = renderer;
     if (oldVnode.data.style === newStyle) {
         return;
     }
 
-    const style = getStyleDeclaration(elm);
-
     if (!isString(newStyle) || newStyle === '') {
         removeAttribute(elm, 'style');
     } else {
-        style.cssText = newStyle;
+        setAttribute(elm, 'style', newStyle);
     }
 }
 

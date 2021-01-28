@@ -9,8 +9,12 @@ describe('static style attribute', () => {
         document.body.appendChild(elm);
 
         const target = elm.shadowRoot.querySelector('div');
+
         expect(target.style.position).toBe('absolute');
         expect(target.style.top).toBe('10px');
+        if (!process.env.COMPAT) {
+            expect(target.style.getPropertyValue('--custom-property')).toBe('blue');
+        }
     });
 });
 
@@ -29,6 +33,13 @@ describe('dynamic style attribute', () => {
     testRenderStyleAttribute('undefined', undefined, null);
     testRenderStyleAttribute('empty string', '', null);
     testRenderStyleAttribute('css style string', 'position: relative;', 'position: relative;');
+    if (!process.env.COMPAT) {
+        testRenderStyleAttribute(
+            'css custom property',
+            '--custom-property:blue;',
+            '--custom-property:blue;'
+        );
+    }
 
     function testUpdateStyleAttribute(type, value, expectedValue) {
         it(`updates the style attribute for ${type}`, () => {
@@ -53,4 +64,11 @@ describe('dynamic style attribute', () => {
     testUpdateStyleAttribute('undefined', undefined, null);
     testUpdateStyleAttribute('empty string', '', null);
     testUpdateStyleAttribute('css style string', 'position: absolute;', 'position: absolute;');
+    if (!process.env.COMPAT) {
+        testUpdateStyleAttribute(
+            'css custom property',
+            '--custom-property:blue;',
+            '--custom-property:blue;'
+        );
+    }
 });
