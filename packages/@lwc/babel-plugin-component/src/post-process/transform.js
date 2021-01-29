@@ -130,19 +130,16 @@ module.exports = function postProcess({ types: t }) {
         );
     }
 
-    function needsNativeShadowField(declaration, state) {
+    function addNativeShadowField(declaration) {
         const node = declaration.node;
-        // TODO [#0000]: narrow this down to only component classes
-        // If native shadow is forced on, add a static property to signal this info
-        if (state.opts.forceNativeShadow) {
-            const forceNativeShadowNode = t.classProperty(
-                t.identifier('forceNativeShadow'),
-                t.booleanLiteral(true)
-            );
-            forceNativeShadowNode.static = true;
-            node.body.body.push(forceNativeShadowNode);
-        }
+        const forceNativeShadowNode = t.classProperty(
+            t.identifier('forceNativeShadow'),
+            t.booleanLiteral(true)
+        );
+        forceNativeShadowNode.static = true;
+        node.body.body.push(forceNativeShadowNode);
     }
+
     return {
         // Register component
         ExportDefaultDeclaration(path, state) {
@@ -150,7 +147,11 @@ module.exports = function postProcess({ types: t }) {
             if (implicitResolution) {
                 const declaration = path.get('declaration');
                 if (needsComponentRegistration(declaration)) {
-                    needsNativeShadowField(declaration, state);
+                    // If native shadow is forced on, add a static property to signal this info
+                    if (state.opts.forceNativeShadow) {
+                        addNativeShadowField(declaration);
+                    }
+                    addNativeShadowField(declaration, state);
                     declaration.replaceWith(createRegisterComponent(declaration, state));
                 }
             }
