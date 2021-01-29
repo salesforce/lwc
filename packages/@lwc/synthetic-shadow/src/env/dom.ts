@@ -20,4 +20,7 @@ const focusEventRelatedTargetGetter: (
     this: FocusEvent
 ) => EventTarget | null = getOwnPropertyDescriptor(FocusEvent.prototype, 'relatedTarget')!.get!;
 
-export { eventTargetGetter, eventCurrentTargetGetter, focusEventRelatedTargetGetter };
+// TODO [#000]: composedPath is not present in IE11, guard against this being absent
+const { composedPath } = Event.prototype;
+
+export { composedPath, eventTargetGetter, eventCurrentTargetGetter, focusEventRelatedTargetGetter };

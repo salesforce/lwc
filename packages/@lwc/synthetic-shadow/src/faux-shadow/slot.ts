@@ -20,7 +20,11 @@ import {
     isUndefined,
     setHiddenField,
 } from '@lwc/shared';
-import { getAttribute, setAttribute } from '../env/element';
+import {
+    getAttribute,
+    setAttribute,
+    assignedSlotGetter as originalElementAssignedSlotGetter,
+} from '../env/element';
 import { dispatchEvent } from '../env/event-target';
 import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import { childNodesGetter, parentNodeGetter } from '../env/node';
@@ -28,6 +32,8 @@ import {
     assignedNodes as originalAssignedNodes,
     assignedElements as originalAssignedElements,
 } from '../env/slot';
+import { assignedSlotGetter as originalTextAssignedSlotGetter } from '../env/text';
+
 import {
     isSlotElement,
     getNodeOwner,
@@ -38,6 +44,7 @@ import {
 import { getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { arrayFromCollection } from '../shared/utils';
+import { isHostElement } from './shadow-root';
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -86,22 +93,47 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     );
 }
 
-export function assignedSlotGetterPatched(this: Element): HTMLSlotElement | null {
-    const parentNode = parentNodeGetter.call(this);
-    /**
-     * if it doesn't have a parent node,
-     * or the parent is not an slot element
-     * or they both belong to the same template (default content)
-     * we should assume that it is not slotted
-     */
-    if (
-        isNull(parentNode) ||
-        !isSlotElement(parentNode) ||
-        getNodeNearestOwnerKey(parentNode) === getNodeNearestOwnerKey(this)
-    ) {
-        return null;
+function getUnpatchedAssignedSlot(node: Element | Text): HTMLSlotElement | null {
+    if (node instanceof Text) {
+        return originalTextAssignedSlotGetter.call(node);
+    } else {
+        return originalElementAssignedSlotGetter.call(node);
     }
-    return parentNode;
+}
+
+export function assignedSlotGetterPatched(this: Element | Text): HTMLSlotElement | null {
+    // 'this' is in synthetic-shadow tree
+    if (isNodeShadowed(this)) {
+        const parentNode = parentNodeGetter.call(this);
+        // If parent node is null, exit
+        if (isNull(parentNode)) {
+            return null;
+        }
+        // If parent node is a host element, this could be start of mixed mode
+        // 'this' could be slotted into a native shadow tree
+        if (isHostElement(parentNode)) {
+            // The native assignedSlot property will give the right result
+            // 1. If 'this' is slotted into a synthetic shadow tree, it will return null
+            // 2. If 'this' is slotted into a native shadow tree, it will return the <slot> element
+            return getUnpatchedAssignedSlot(this);
+        }
+        // At this point, 'this' is determined as not being slotted into a native shadow tree
+
+        /**
+         * if the parent is not an slot element
+         * or they both belong to the same template (default content)
+         * we should assume that it is not slotted
+         */
+        if (
+            !isSlotElement(parentNode) ||
+            getNodeNearestOwnerKey(parentNode) === getNodeNearestOwnerKey(this)
+        ) {
+            return null;
+        }
+        return parentNode;
+    } else {
+        return getUnpatchedAssignedSlot(this);
+    }
 }
 
 defineProperties(HTMLSlotElement.prototype, {

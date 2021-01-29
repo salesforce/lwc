@@ -8,6 +8,7 @@ import { isUndefined, isTrue } from '@lwc/shared';
 import { ownerDocumentGetter } from '../env/node';
 import { defaultViewGetter } from '../env/document';
 import { getAttribute } from '../env/element';
+import { composedPath, eventTargetGetter } from '../env/dom';
 
 // Helpful for tests running with jsdom
 export function getOwnerDocument(node: Node): Document {
@@ -62,4 +63,18 @@ export function arrayFromCollection<T extends HTMLCollection | NodeList>(collect
         }
     }
     return cloned;
+}
+
+/**
+ * Get the original target of the event.
+ * This function is mixed mode aware.
+ * The target can be nested in a synthetic-shadow tree or a native shadow tree
+ * @param event Event object
+ */
+export function getOriginalEventTarget(event: Event) {
+    if (!isUndefined(composedPath)) {
+        return composedPath.call(event)[0];
+    } else {
+        return eventTargetGetter.call(event);
+    }
 }
