@@ -10,9 +10,9 @@ about: Create an issue to help us improve
 
 
 <!--
-If LWC specific issue, update playground link with your example
+If LWC specific issue, update link with your example
 -->
-https://developer.salesforce.com/docs/component-library/tools/playground
+https://webcomponents.dev/create/lwc
 
 <!--
 if specific code snippet, paste the example here
