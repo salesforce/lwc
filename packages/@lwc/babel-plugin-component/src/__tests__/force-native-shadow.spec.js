@@ -10,7 +10,7 @@ const pluginTest = require('./utils/test-transform').pluginTest(require('../inde
 
 describe('forceNativeShadow flag', () => {
     pluginTest(
-        'adds static field if flag is set',
+        'adds static field to named class if flag is set',
         `
         import { LightningElement } from 'lwc';
         export default class Test extends LightningElement {}
@@ -27,6 +27,27 @@ describe('forceNativeShadow flag', () => {
 
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
+                });
+                `,
+            },
+        }
+    );
+
+    pluginTest(
+        'adds static field to anonymous class if flag is set',
+        `
+        import { LightningElement } from 'lwc';
+        export default class extends LightningElement {}
+    `,
+        {
+            output: {
+                code: `
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent, LightningElement } from "lwc";
+                export default _registerComponent(class extends LightningElement {
+                    static forceNativeShadow = true;
+                }, {
+                    tmpl: _tmpl
                 });
                 `,
             },
