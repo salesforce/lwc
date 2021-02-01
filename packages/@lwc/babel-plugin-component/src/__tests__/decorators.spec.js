@@ -16,8 +16,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'api' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 2,
                     column: 0,
@@ -38,8 +37,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'api' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 2,
                     column: 0,
@@ -70,7 +68,27 @@ describe('decorators', () => {
     );
 
     pluginTest(
-        'throws if a decorator is dereferenced',
+        'should throw if a decorator is used as a member expression',
+        `
+        export default class Test {
+            @foo.bar field
+        }
+    `,
+        {
+            error: {
+                message: `Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
+                loc: {
+                    line: 2,
+                    column: 0,
+                    length: 14,
+                    start: 28,
+                },
+            },
+        }
+    );
+
+    pluginTest(
+        'should throw if a decorator is dereferenced',
         `
         import { track } from 'lwc';
         const trock = track;
@@ -92,7 +110,7 @@ describe('decorators', () => {
     );
 
     pluginTest(
-        'throws if a decorator is not used on class properties',
+        'should throw if a decorator is used on a class',
         `
         import { track } from 'lwc';
         @track
@@ -112,7 +130,7 @@ describe('decorators', () => {
     );
 
     pluginTest(
-        'compiler should throw when "api" decorator was not imported from lwc',
+        'should throw when "api" decorator was not imported from lwc',
         `
         import { LightningElement } from 'lwc';
         export default class Test extends LightningElement {
@@ -121,8 +139,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'api' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 3,
                     column: 0,
@@ -134,7 +151,7 @@ describe('decorators', () => {
     );
 
     pluginTest(
-        'compiler should throw when "track" decorator was not imported from lwc',
+        'should throw when "track" decorator was not imported from lwc',
         `
         import { LightningElement } from 'lwc';
         export default class Test extends LightningElement {
@@ -143,8 +160,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'track' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 3,
                     column: 0,
@@ -156,7 +172,7 @@ describe('decorators', () => {
     );
 
     pluginTest(
-        'compiler should throw when "wire" decorator was not imported from lwc',
+        'should throw when "wire" decorator was not imported from lwc',
         `
         import { LightningElement } from 'lwc';
         import { getTodo } from "todo";
@@ -167,8 +183,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'wire' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 4,
                     column: 0,
