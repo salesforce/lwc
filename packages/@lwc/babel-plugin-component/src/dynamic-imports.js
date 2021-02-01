@@ -63,8 +63,6 @@ module.exports = function () {
 
             if (sourcePath.isStringLiteral()) {
                 addDynamicImportDependency(sourcePath.node.value, state);
-            } else {
-                state.unknownDynamicDependencies = true;
             }
         },
     };
