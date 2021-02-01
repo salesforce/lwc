@@ -264,8 +264,8 @@ describe('observed fields', () => {
         {
             output: {
                 code: `
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, createElement } from "lwc";
                 import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent, registerDecorators as _registerDecorators, createElement } from "lwc";
                 
                 const Test = _registerDecorators(
                   class {

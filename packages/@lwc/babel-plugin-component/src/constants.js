@@ -70,6 +70,9 @@ const DECORATOR_TYPES = {
     METHOD: 'method',
 };
 
+const REGISTER_COMPONENT_ID = 'registerComponent';
+const REGISTER_DECORATORS_ID = 'registerDecorators';
+
 module.exports = {
     AMBIGUOUS_PROP_SET,
     DISALLOWED_PROP_SET,
@@ -78,4 +81,6 @@ module.exports = {
     LWC_SUPPORTED_APIS,
     LWC_COMPONENT_PROPERTIES,
     DECORATOR_TYPES,
+    REGISTER_COMPONENT_ID,
+    REGISTER_DECORATORS_ID,
 };
