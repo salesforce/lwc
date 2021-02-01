@@ -9,8 +9,8 @@ const { basename, extname } = require('path');
 const moduleImports = require('@babel/helper-module-imports');
 const { LWCClassErrors } = require('@lwc/errors');
 
-const { generateError, getEngineImportSpecifiers } = require('./utils');
 const { LWC_SUPPORTED_APIS, REGISTER_COMPONENT_ID } = require('./constants');
+const { generateError, getEngineImportSpecifiers } = require('./utils');
 
 module.exports = function ({ types: t }) {
     function getBaseName({ file }) {
