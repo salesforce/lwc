@@ -19,7 +19,7 @@ const {
 const { DecoratorErrors } = require('@lwc/errors');
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
-const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name);
+const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
 
 function isLwcDecoratorName(name) {
     return DECORATOR_TRANSFORMS.some((transform) => transform.name === name);
@@ -138,12 +138,29 @@ function removeImportSpecifiers(specifiers) {
     }
 }
 
-function getDecoratorName(path) {
+function generateInvalidDecoratorError(path) {
+    const expressionPath = path.get('expression');
     const { node } = path;
     const { expression } = node;
-    const { type } = expression;
-    // Decorators can be a CallExpression if invoked as a function (e.g., @wire())
-    return type === 'Identifier' ? expression.name : expression.callee.name;
+
+    let name;
+    if (expressionPath.isIdentifier()) {
+        name = expression.name;
+    } else if (expressionPath.isCallExpression()) {
+        name = expression.callee.name;
+    }
+
+    if (name) {
+        return generateError(path.parentPath, {
+            errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
+            messageArgs: [name, AVAILABLE_DECORATORS, LWC_PACKAGE_ALIAS],
+        });
+    } else {
+        return generateError(path.parentPath, {
+            errorInfo: DecoratorErrors.INVALID_DECORATOR,
+            messageArgs: [AVAILABLE_DECORATORS, LWC_PACKAGE_ALIAS],
+        });
+    }
 }
 
 function decorators({ types: t }) {
@@ -175,14 +192,7 @@ function decorators({ types: t }) {
 
         Decorator(path) {
             // All valid decorators have been processed so only invalid decorators remain.
-            throw generateError(path.parentPath, {
-                errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
-                messageArgs: [
-                    getDecoratorName(path),
-                    AVAILABLE_DECORATORS.join(', '),
-                    LWC_PACKAGE_ALIAS,
-                ],
-            });
+            throw generateInvalidDecoratorError(path);
         },
     };
 }

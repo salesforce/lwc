@@ -10,9 +10,7 @@ function exit(api) {
     return {
         Program: {
             exit(path, state) {
-                const visitors = api.traverse.visitors.merge([postProcess(api)]);
-
-                path.traverse(visitors, state);
+                path.traverse(postProcess(api), state);
                 dedupeImports(api, path);
             },
         },
