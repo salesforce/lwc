@@ -9,8 +9,8 @@ const { basename, extname } = require('path');
 const moduleImports = require('@babel/helper-module-imports');
 const { LWCClassErrors } = require('@lwc/errors');
 
+const { LWC_SUPPORTED_APIS, REGISTER_COMPONENT_ID } = require('./constants');
 const { generateError, getEngineImportSpecifiers } = require('./utils');
-const { LWC_PACKAGE_EXPORTS, LWC_SUPPORTED_APIS, REGISTER_COMPONENT_ID } = require('./constants');
 
 module.exports = function ({ types: t }) {
     function getBaseName({ file }) {
@@ -60,7 +60,7 @@ module.exports = function ({ types: t }) {
     }
 
     return {
-        Program(path, state) {
+        Program(path) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
 
             // validate internal api imports
@@ -72,11 +72,6 @@ module.exports = function ({ types: t }) {
                     });
                 }
             });
-
-            // Store on state local identifiers referencing engine base component
-            state.componentBaseClassImports = engineImportSpecifiers
-                .filter(({ name }) => name === LWC_PACKAGE_EXPORTS.BASE_COMPONENT)
-                .map(({ path }) => path.get('local'));
         },
 
         ExportDefaultDeclaration(path, state) {
