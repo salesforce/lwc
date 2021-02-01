@@ -32,6 +32,7 @@ export { registerTemplate } from './secure-template';
 export { registerDecorators } from './decorators/register';
 
 // Mics. internal APIs -----------------------------------------------------------------------------
+export { ShadowDomMode } from '../3rdparty/snabbdom/types';
 export { unwrap } from './membrane';
 export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';

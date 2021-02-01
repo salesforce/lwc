@@ -41,6 +41,7 @@ import { getComponentTag } from '../shared/format';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { lockerLivePropertyKey } from './membrane';
 import { EmptyObject } from './utils';
+import { ShadowDomMode } from '../3rdparty/snabbdom/types';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -126,6 +127,7 @@ export interface LightningElementConstructor {
     readonly CustomElementConstructor: HTMLElementConstructor;
 
     delegatesFocus?: boolean;
+    forceNativeShadow?: 'native-shadow' | 'synthetic-shadow';
 }
 
 export declare let LightningElement: LightningElementConstructor;
@@ -187,6 +189,7 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
         mode,
         renderer,
         def: { ctor, bridge },
+        shadowDomMode,
     } = vm;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -201,7 +204,8 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
     const cmpRoot = renderer.attachShadow(elm, {
         mode,
         delegatesFocus: !!ctor.delegatesFocus,
-        '$$lwc-synthetic-mode$$': true,
+        // Signal the shadow dom mode based on component's choice
+        '$$lwc-synthetic-mode$$': (shadowDomMode & ShadowDomMode.syntheticShadow) === 1,
     } as any);
 
     vm.component = this;

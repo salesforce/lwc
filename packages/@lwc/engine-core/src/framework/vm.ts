@@ -46,7 +46,7 @@ import { Renderer, HostNode, HostElement } from './renderer';
 import { removeActiveVM } from './hot-swaps';
 
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
-import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
+import { VNodes, VCustomElement, VNode, ShadowDomMode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
 type ShadowRootMode = 'open' | 'closed';
@@ -94,6 +94,8 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly owner: VM<N, E> | null;
     /** Rendering operations associated with the VM */
     readonly renderer: Renderer<N, E>;
+    /** The shadow dom implementation to be used**/
+    readonly shadowDomMode: ShadowDomMode;
     /** The component creation index. */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -241,9 +243,10 @@ export function createVM<HostNode, HostElement>(
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
         renderer: Renderer;
+        shadowDomMode: ShadowDomMode;
     }
 ): VM {
-    const { mode, owner, renderer, tagName } = options;
+    const { mode, owner, renderer, tagName, shadowDomMode } = options;
 
     const vm: VM = {
         elm,
@@ -256,6 +259,7 @@ export function createVM<HostNode, HostElement>(
         mode,
         owner,
         renderer,
+        shadowDomMode,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,
@@ -600,7 +604,7 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
 }
 
 // slow path routine
-// NOTE: we should probably more this routine to the synthetic shadow folder
+// NOTE: we should probably move this routine to the synthetic shadow folder
 // and get the allocation to be cached by in the elm instead of in the VM
 export function allocateInSlot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {

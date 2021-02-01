@@ -44,6 +44,7 @@ import {
     Hooks,
     Key,
     VCustomElement,
+    ShadowDomMode,
 } from '../3rdparty/snabbdom/types';
 import { LightningElementConstructor } from './base-lightning-element';
 import {
@@ -231,7 +232,8 @@ function linkNodeToShadow(elm: Node, owner: VM) {
     const { renderer, cmpRoot } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (renderer.syntheticShadow) {
+    // If the environment is in synthetic shadow mode and the component favors synthetic shadow dom
+    if (renderer.syntheticShadow && owner.shadowDomMode & ShadowDomMode.syntheticShadow) {
         (elm as any).$shadowResolver$ = (cmpRoot as any).$shadowResolver$;
     }
 }
@@ -359,7 +361,12 @@ export function s(
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    if (vnode.owner.renderer.syntheticShadow) {
+    // If the environment is in synthetic shadow mode and the default slot content belongs to a
+    // component that favors synthetic shadow dom
+    if (
+        vnode.owner.renderer.syntheticShadow &&
+        vnode.owner.shadowDomMode & ShadowDomMode.syntheticShadow
+    ) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
@@ -428,6 +435,9 @@ export function c(
         ctor: Ctor,
         owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
+        shadowDomMode: isTrue(Ctor.forceNativeShadow)
+            ? ShadowDomMode.nativeShadow
+            : ShadowDomMode.syntheticShadow,
     };
     addVNodeToChildLWC(vnode);
     return vnode;

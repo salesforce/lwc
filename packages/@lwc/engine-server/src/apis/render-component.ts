@@ -9,8 +9,9 @@ import {
     connectRootElement,
     getComponentInternalDef,
     LightningElement,
+    ShadowDomMode,
 } from '@lwc/engine-core';
-import { isString, isFunction, isObject, isNull } from '@lwc/shared';
+import { isString, isFunction, isObject, isNull, isTrue } from '@lwc/shared';
 
 import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
@@ -59,6 +60,9 @@ export function renderComponent(
         owner: null,
         renderer,
         tagName,
+        shadowDomMode: isTrue(Ctor.forceNativeShadow)
+            ? ShadowDomMode.nativeShadow
+            : ShadowDomMode.syntheticShadow,
     });
 
     for (const [key, value] of Object.entries(props)) {

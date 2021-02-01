@@ -11,7 +11,7 @@ import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
 import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
-import { getOwnerDocument } from '../../shared/utils';
+import { getOriginalEventTarget, getOwnerDocument } from '../../shared/utils';
 
 function patchedTargetGetter(this: Event): EventTarget | null {
     const originalTarget = eventTargetGetter.call(this);
@@ -61,7 +61,7 @@ function patchedTargetGetter(this: Event): EventTarget | null {
 }
 
 function patchedComposedPathValue(this: Event): EventTarget[] {
-    const originalTarget = eventTargetGetter.call(this);
+    const originalTarget = getOriginalEventTarget(this);
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
     // Account for events with targets that are not instances of Node (e.g., when a readystatechange

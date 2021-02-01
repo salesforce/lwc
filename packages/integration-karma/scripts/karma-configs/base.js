@@ -36,14 +36,18 @@ function createPattern(location, config = {}) {
 function getLwcConfig(config) {
     const compat = Boolean(config.compat);
     const nativeShadow = Boolean(config.nativeShadow);
+    const forceMixedMode = Boolean(config.forceMixedMode);
 
-    const tags = [`${nativeShadow ? 'native' : 'synthetic'}-shadow`, compat && 'compat'].filter(
-        Boolean
-    );
+    const tags = [
+        `${nativeShadow ? 'native' : 'synthetic'}-shadow`,
+        compat && 'compat',
+        forceMixedMode && 'force-mixed-shadow-mode',
+    ].filter(Boolean);
 
     return {
         compat,
         nativeShadow,
+        forceMixedMode,
         tags,
     };
 }

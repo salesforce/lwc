@@ -7,7 +7,7 @@
 import { isArray, isUndefined, ArrayJoin, ArrayPush } from '@lwc/shared';
 
 import * as api from './api';
-import { VNode } from '../3rdparty/snabbdom/types';
+import { ShadowDomMode, VNode } from '../3rdparty/snabbdom/types';
 import { VM } from './vm';
 import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
@@ -105,7 +105,10 @@ function evaluateStylesheetsContent(
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
     const { stylesheets, stylesheetTokens: tokens } = template;
-    const { syntheticShadow } = vm.renderer;
+    // If the environment is in synthetic shadow mode and the component favors synthetic shadow dom
+    // use global styling else use shadow styling
+    const syntheticShadow =
+        vm.renderer.syntheticShadow && vm.shadowDomMode & ShadowDomMode.syntheticShadow;
 
     let content: string[] = [];
 
@@ -127,7 +130,7 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
     const { renderer } = vm;
 
-    if (renderer.syntheticShadow) {
+    if (renderer.syntheticShadow && vm.shadowDomMode & ShadowDomMode.syntheticShadow) {
         for (let i = 0; i < stylesheets.length; i++) {
             renderer.insertGlobalStylesheet(stylesheets[i]);
         }

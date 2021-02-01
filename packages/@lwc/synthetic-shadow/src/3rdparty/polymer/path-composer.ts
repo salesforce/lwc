@@ -16,6 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { isNull } from '@lwc/shared';
+import { NativeShadowRoot } from '../../env/shadow-root';
 import { getOwnerDocument } from '../../shared/utils';
 
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
@@ -35,7 +36,10 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
             } else {
                 current = current.parentNode;
             }
-        } else if (current instanceof ShadowRoot && (composed || current !== startRoot)) {
+        } else if (
+            (current instanceof ShadowRoot || current instanceof NativeShadowRoot) &&
+            (composed || current !== startRoot)
+        ) {
             current = current.host;
         } else if (current instanceof Node) {
             current = current.parentNode;

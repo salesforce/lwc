@@ -130,6 +130,16 @@ module.exports = function postProcess({ types: t }) {
         );
     }
 
+    function addNativeShadowField(declaration) {
+        const node = declaration.node;
+        const forceNativeShadowNode = t.classProperty(
+            t.identifier('forceNativeShadow'),
+            t.booleanLiteral(true)
+        );
+        forceNativeShadowNode.static = true;
+        node.body.body.push(forceNativeShadowNode);
+    }
+
     return {
         // Register component
         ExportDefaultDeclaration(path, state) {
@@ -137,6 +147,11 @@ module.exports = function postProcess({ types: t }) {
             if (implicitResolution) {
                 const declaration = path.get('declaration');
                 if (needsComponentRegistration(declaration)) {
+                    // If native shadow is forced on, add a static property to signal this info
+                    if (state.opts.forceNativeShadow) {
+                        addNativeShadowField(declaration);
+                    }
+                    addNativeShadowField(declaration, state);
                     declaration.replaceWith(createRegisterComponent(declaration, state));
                 }
             }
@@ -157,11 +172,9 @@ module.exports = function postProcess({ types: t }) {
         ClassDeclaration(path) {
             const { node } = path;
             const metaPropertyList = collectMetaPropertyList(path.get('body'));
-
             if (metaPropertyList.length) {
                 const statementPath = path.getStatementParent();
                 const hasIdentifier = t.isIdentifier(node.id);
-
                 if (hasIdentifier) {
                     statementPath.insertAfter(
                         createRegisterDecoratorsCall(path, node.id, metaPropertyList)

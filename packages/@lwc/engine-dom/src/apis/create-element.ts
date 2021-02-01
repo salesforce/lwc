@@ -16,6 +16,7 @@ import {
     createHiddenField,
     getHiddenField,
     setHiddenField,
+    isTrue,
 } from '@lwc/shared';
 import {
     getComponentInternalDef,
@@ -24,6 +25,7 @@ import {
     disconnectRootElement,
     LightningElement,
     getUpgradableConstructor,
+    ShadowDomMode,
 } from '@lwc/engine-core';
 
 import { renderer } from '../renderer';
@@ -120,6 +122,9 @@ export function createElement(
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
             renderer,
+            shadowDomMode: isTrue(Ctor.forceNativeShadow)
+                ? ShadowDomMode.nativeShadow
+                : ShadowDomMode.syntheticShadow,
         });
         setHiddenField(elm, ConnectingSlot, connectRootElement);
         setHiddenField(elm, DisconnectingSlot, disconnectRootElement);

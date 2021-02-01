@@ -19,7 +19,11 @@ const lwcRollupPlugin = require('@lwc/rollup-plugin');
 const compatRollupPlugin = require('rollup-plugin-compat');
 
 function createPreprocessor(config, emitter, logger) {
-    const { basePath, compat = false } = config;
+    const {
+        basePath,
+        compat = false,
+        lwc: { forceMixedMode },
+    } = config;
 
     const log = logger.create('preprocessor-lwc');
     const watcher = new Watcher(config, emitter, log);
@@ -41,6 +45,7 @@ function createPreprocessor(config, emitter, logger) {
 
         const plugins = [
             lwcRollupPlugin({
+                forceNativeShadow: forceMixedMode,
                 experimentalDynamicComponent: {
                     loader: 'test-utils',
                     strict: true,
