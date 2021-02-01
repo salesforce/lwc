@@ -206,29 +206,21 @@ function isCustomElementAttribute(attrName: string): boolean {
     return attrName === 'key' || attrName === 'slot' || !!attrName.match(DATA_RE);
 }
 
-function isInputStateAttribute(element: IRElement, attrName: string) {
-    return element.tag === 'input' && (attrName === 'value' || attrName === 'checked');
-}
-
 export function isAttribute(element: IRElement, attrName: string): boolean {
-    const isCustom = isCustomElement(element);
-    if (isCustom) {
+    const isCustomElm = isCustomElement(element);
+    if (isCustomElm) {
         return isCustomElementAttribute(attrName);
-    }
-
-    // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
-    if (isGlobalHtmlAttribute(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
-        return true;
     }
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
-    if (isInputStateAttribute(element, attrName)) {
+    if (element.tag === 'input' && (attrName === 'value' || attrName === 'checked')) {
         return false;
     }
 
+    // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
     // Handle general case where only standard element have attribute value.
-    return !isCustomElement(element);
+    return true;
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
@@ -253,16 +245,9 @@ function isTemplateDirective(attrName: string): boolean {
     });
 }
 
-function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
-    const { tag } = element;
-    const isDataAttributeOrFmk = isDataAttribute(attrName) || isFmkAttribute(attrName);
-    const isSvgTag = SUPPORTED_SVG_TAGS.has(tag);
-    return !isSvgTag && !isDataAttributeOrFmk;
-}
-
-export function attributeToPropertyName(element: IRElement, attrName: string): string {
-    if (!shouldCamelCaseAttribute) {
-        return attrName;
-    }
-    return toPropertyName(ATTRS_PROPS_TRANFORMS[attrName] || attrName);
+/**
+ * Convert attribute name from kebab case to camel case property name
+ */
+export function attributeToPropertyName(attrName: string): string {
+    return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);
 }
