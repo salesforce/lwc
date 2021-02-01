@@ -100,14 +100,6 @@ export const DecoratorErrors = {
         url: '',
     },
 
-    INVALID_DECORATOR: {
-        code: 1100,
-        message:
-            'Invalid decorator usage. Supported decorators ({0}) should be imported from "{1}"',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     INVALID_DECORATOR_TYPE: {
         code: 1101,
         message: 'Invalid property of field type',

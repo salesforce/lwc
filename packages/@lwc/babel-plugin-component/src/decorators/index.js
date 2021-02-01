@@ -8,7 +8,7 @@ const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
 
-const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES, LWC_DECORATORS } = require('../constants');
+const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
 const {
     generateError,
     getEngineImportSpecifiers,
@@ -19,6 +19,7 @@ const {
 const { DecoratorErrors } = require('@lwc/errors');
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
+const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name);
 
 function isLwcDecoratorName(name) {
     return DECORATOR_TRANSFORMS.some((transform) => transform.name === name);
@@ -137,19 +138,12 @@ function removeImportSpecifiers(specifiers) {
     }
 }
 
-function invalidDecorators() {
-    return {
-        Decorator(path) {
-            throw generateError(path.parentPath, {
-                errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
-                messageArgs: [
-                    path.node.expression.name,
-                    LWC_DECORATORS.join(', '),
-                    LWC_PACKAGE_ALIAS,
-                ],
-            });
-        },
-    };
+function getDecoratorName(path) {
+    const { node } = path;
+    const { expression } = node;
+    const { type } = expression;
+    // Decorators can be a CallExpression if invoked as a function (e.g., @wire())
+    return type === 'Identifier' ? expression.name : expression.callee.name;
 }
 
 function decorators({ types: t }) {
@@ -180,16 +174,18 @@ function decorators({ types: t }) {
         },
 
         Decorator(path) {
-            const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name);
-
+            // All valid decorators have been processed so only invalid decorators remain.
             throw generateError(path.parentPath, {
-                errorInfo: DecoratorErrors.INVALID_DECORATOR,
-                messageArgs: [AVAILABLE_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
+                errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
+                messageArgs: [
+                    getDecoratorName(path),
+                    AVAILABLE_DECORATORS.join(', '),
+                    LWC_PACKAGE_ALIAS,
+                ],
             });
         },
     };
 }
 module.exports = {
     decorators,
-    invalidDecorators,
 };

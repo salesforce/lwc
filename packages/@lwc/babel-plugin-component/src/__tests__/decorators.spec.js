@@ -16,8 +16,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'api' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 2,
                     column: 0,
@@ -38,8 +37,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'api' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 2,
                     column: 0,
@@ -121,8 +119,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'api' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 3,
                     column: 0,
@@ -143,8 +140,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'track' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 3,
                     column: 0,
@@ -167,8 +163,7 @@ describe('decorators', () => {
     `,
         {
             error: {
-                message:
-                    'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                message: `Invalid 'wire' decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"`,
                 loc: {
                     line: 4,
                     column: 0,
