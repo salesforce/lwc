@@ -9,25 +9,43 @@ const { basename, extname } = require('path');
 const moduleImports = require('@babel/helper-module-imports');
 const { LWCClassErrors } = require('@lwc/errors');
 
-const { LWC_SUPPORTED_APIS, REGISTER_COMPONENT_ID } = require('./constants');
+const { LWC_PACKAGE_ALIAS, LWC_SUPPORTED_APIS, REGISTER_COMPONENT_ID } = require('./constants');
 const { generateError, getEngineImportSpecifiers } = require('./utils');
 
+const TEMPLATE_KEY = 'tmpl';
+
+function getBaseName(classPath) {
+    const ext = extname(classPath);
+    return basename(classPath, ext);
+}
+
+function importDefaultTemplate(path, state) {
+    const { file } = state;
+    const { opts } = file;
+    const { filename } = opts;
+    const componentName = getBaseName(filename);
+    return moduleImports.addDefault(path, `./${componentName}.html`, {
+        nameHint: TEMPLATE_KEY,
+    });
+}
+
+function needsComponentRegistration(path) {
+    return (
+        (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
+        // path.isMemberExpression() || // this will probably yield more false positives than anything else
+        path.isCallExpression() ||
+        path.isClassDeclaration() ||
+        path.isConditionalExpression()
+    );
+}
+
 module.exports = function ({ types: t }) {
-    function getBaseName({ file }) {
-        const classPath = file.opts.filename;
-        const ext = extname(classPath);
-        return basename(classPath, ext);
-    }
-
-    function importDefaultTemplate(path, state) {
-        const componentName = getBaseName(state);
-        return moduleImports.addDefault(path, `./${componentName}.html`, {
-            nameHint: 'tmpl',
-        });
-    }
-
     function createRegisterComponent(declarationPath, state) {
-        const id = moduleImports.addNamed(declarationPath, REGISTER_COMPONENT_ID, 'lwc');
+        const id = moduleImports.addNamed(
+            declarationPath,
+            REGISTER_COMPONENT_ID,
+            LWC_PACKAGE_ALIAS
+        );
         const templateIdentifier = importDefaultTemplate(declarationPath, state);
         const statementPath = declarationPath.getStatementParent();
         let node = declarationPath.node;
@@ -45,18 +63,8 @@ module.exports = function ({ types: t }) {
 
         return t.callExpression(id, [
             node,
-            t.objectExpression([t.objectProperty(t.identifier('tmpl'), templateIdentifier)]),
+            t.objectExpression([t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier)]),
         ]);
-    }
-
-    function needsComponentRegistration(path) {
-        return (
-            (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
-            // path.isMemberExpression() || // this will probably yield more false positives than anything else
-            path.isCallExpression() ||
-            path.isClassDeclaration() ||
-            path.isConditionalExpression()
-        );
     }
 
     return {
