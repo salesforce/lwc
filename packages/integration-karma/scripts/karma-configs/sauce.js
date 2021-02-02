@@ -8,6 +8,16 @@
 'use strict';
 
 const localConfig = require('./base');
+const {
+    SAUCE_USERNAME,
+    SAUCE_ACCESS_KEY,
+    SAUCE_TUNNEL_ID,
+    IS_CI,
+    CIRCLE_BRANCH,
+    CIRCLE_BUILD_NUM,
+    CIRCLE_BUILD_URL,
+    CIRCLE_SHA1,
+} = require('./env');
 
 const SAUCE_BROWSERS = [
     // Standard browsers
@@ -66,17 +76,17 @@ const SAUCE_BROWSERS = [
 ];
 
 function getSauceConfig(config) {
-    const username = process.env.SAUCE_USERNAME;
+    const username = SAUCE_USERNAME;
     if (!username) {
         throw new TypeError('Missing SAUCE_USERNAME environment variable');
     }
 
-    const accessKey = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
+    const accessKey = SAUCE_ACCESS_KEY;
     if (!accessKey) {
-        throw new TypeError('Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable');
+        throw new TypeError('Missing SAUCE_ACCESS_KEY environment variable');
     }
 
-    const buildId = process.env.CIRCLE_BUILD_NUM || Date.now();
+    const buildId = CIRCLE_BUILD_NUM || Date.now();
 
     const tags = config.lwc.tags;
     const testName = ['integration-karma', ...tags].join(' - ');
@@ -85,7 +95,7 @@ function getSauceConfig(config) {
     return {
         username,
         accessKey,
-        tunnelIdentifier: process.env.SAUCE_TUNNEL_ID,
+        tunnelIdentifier: SAUCE_TUNNEL_ID,
 
         build,
         testName,
@@ -94,12 +104,12 @@ function getSauceConfig(config) {
         customData: {
             lwc: config.lwc,
 
-            ci: !!process.env.CI,
-            build: process.env.CIRCLE_BUILD_NUM,
+            ci: IS_CI,
 
-            commit: process.env.CIRCLE_SHA1,
-            branch: process.env.CIRCLE_BRANCH,
-            buildUrl: process.env.CIRCLE_BUILD_URL,
+            build: CIRCLE_BUILD_NUM,
+            commit: CIRCLE_SHA1,
+            branch: CIRCLE_BRANCH,
+            buildUrl: CIRCLE_BUILD_URL,
         },
 
         startConnect: false,
@@ -145,7 +155,7 @@ module.exports = (config) => {
         }, {}),
 
         // Use a less verbose reporter for the CI to avoid generating too much log.
-        reporters: process.env.CI
+        reporters: IS_CI
             ? [...config.reporters, 'dots', 'saucelabs']
             : [...config.reporters, 'progress', 'saucelabs'],
 

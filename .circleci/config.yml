@@ -110,11 +110,11 @@ commands:
       - run:
           name: Run karma integration tests
           working_directory: packages/integration-karma
-          command: >
-              yarn sauce
-              <<# parameters.native_shadow >> --native-shadow <</ parameters.native_shadow >>
-              <<# parameters.compat >> --compat <</ parameters.compat >>
-              <<# parameters.coverage >> --coverage <</ parameters.coverage >>
+          command: yarn sauce
+          environment:
+            NATIVE_SHADOW: << parameters.native_shadow >>
+            COMPAT: << parameters.compat >>
+            COVERAGE: << parameters.coverage >>
 
 
 # Jobs definition

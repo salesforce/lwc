@@ -9,8 +9,10 @@
 
 const path = require('path');
 const { getModulePath } = require('lwc');
+
 const karmaPluginLwc = require('../karma-plugins/lwc');
 const karmaPluginEnv = require('../karma-plugins/env');
+const { COMPAT, NATIVE_SHADOW, GREP, COVERAGE } = require('./env');
 
 const BASE_DIR = path.resolve(__dirname, '../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
@@ -33,9 +35,9 @@ function createPattern(location, config = {}) {
     };
 }
 
-function getLwcConfig(config) {
-    const compat = Boolean(config.compat);
-    const nativeShadow = Boolean(config.nativeShadow);
+function getLwcConfig() {
+    const compat = COMPAT;
+    const nativeShadow = NATIVE_SHADOW;
 
     const tags = [`${nativeShadow ? 'native' : 'synthetic'}-shadow`, compat && 'compat'].filter(
         Boolean
@@ -48,15 +50,16 @@ function getLwcConfig(config) {
     };
 }
 
-function getFiles(lwcConfig) {
+function getFiles() {
     const frameworkFiles = [];
-    if (lwcConfig.compat) {
+
+    if (COMPAT) {
         frameworkFiles.push(createPattern(POLYFILL_COMPAT));
         frameworkFiles.push(createPattern(SYNTHETIC_SHADOW_COMPAT));
         frameworkFiles.push(createPattern(LWC_ENGINE_COMPAT));
         frameworkFiles.push(createPattern(WIRE_SERVICE_COMPAT));
     } else {
-        if (!lwcConfig.nativeShadow) {
+        if (!NATIVE_SHADOW) {
             frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
         }
         frameworkFiles.push(createPattern(LWC_ENGINE));
@@ -77,11 +80,11 @@ function getFiles(lwcConfig) {
  */
 module.exports = (config) => {
     const lwcConfig = getLwcConfig(config);
-    const { compat, tags } = lwcConfig;
+    const { tags } = lwcConfig;
 
     config.set({
         basePath: BASE_DIR,
-        files: getFiles(lwcConfig),
+        files: getFiles(),
 
         // Transform all the spec files with the lwc karma plugin.
         preprocessors: {
@@ -102,7 +105,7 @@ module.exports = (config) => {
         // Since the karma start command doesn't allow arguments passing, so we need to pass the grep arg manually.
         // The grep flag is consumed at runtime by jasmine to filter what suite to run.
         client: {
-            args: [...config.client.args, '--grep', config.grep],
+            args: [...config.client.args, '--grep', GREP],
         },
 
         // Attach the config object so configurations extending this one will be able to tap into the parsed
@@ -111,11 +114,11 @@ module.exports = (config) => {
     });
 
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
-    if (config.coverage) {
+    if (COVERAGE) {
         // Indicate to Karma to instrument the code to gather code coverage.
-        config.preprocessors[compat ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
-        config.preprocessors[compat ? WIRE_SERVICE_COMPAT : WIRE_SERVICE] = ['coverage'];
-        config.preprocessors[compat ? SYNTHETIC_SHADOW_COMPAT : SYNTHETIC_SHADOW] = ['coverage'];
+        config.preprocessors[COMPAT ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
+        config.preprocessors[COMPAT ? WIRE_SERVICE_COMPAT : WIRE_SERVICE] = ['coverage'];
+        config.preprocessors[COMPAT ? SYNTHETIC_SHADOW_COMPAT : SYNTHETIC_SHADOW] = ['coverage'];
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');

@@ -4,8 +4,6 @@
     "version": "1.17.0",
     "scripts": {
         "start": "karma start ./scripts/karma-configs/local.js",
-        "start:compat": "yarn start --browsers Chrome --compat",
-        "start:native": "yarn start --browsers Chrome --native-shadow",
         "test": "karma start ./scripts/karma-configs/local.js --single-run --browsers Chrome",
         "sauce": "karma start ./scripts/karma-configs/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js"
@@ -19,10 +17,10 @@
         "istanbul-lib-coverage": "^3.0.0",
         "istanbul-lib-report": "^3.0.0",
         "istanbul-reports": "^3.0.2",
-        "karma": "^5.2.3",
+        "karma": "^6.0.3",
         "karma-chrome-launcher": "^3.1.0",
         "karma-coverage": "^2.0.3",
         "karma-jasmine": "^4.0.1",
-        "karma-sauce-launcher": "4.3.4"
+        "karma-sauce-launcher": "4.3.5"
     }
 }
