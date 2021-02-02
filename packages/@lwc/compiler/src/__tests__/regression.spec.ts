@@ -18,7 +18,7 @@ describe('regression test', () => {
                 const base = {
                     foo: true
                 };
-                const res = _objectSpread(_objectSpread({}, base), {}, {
+                _objectSpread(_objectSpread({}, base), {}, {
                     bar: false
                 });
             });
