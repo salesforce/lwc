@@ -78,7 +78,7 @@ const SAUCE_BROWSERS = [
     },
 ];
 
-function getSauceConfig(config) {
+function getSauceConfig() {
     const username = SAUCE_USERNAME;
     if (!username) {
         throw new TypeError('Missing SAUCE_USERNAME environment variable');
@@ -91,9 +91,8 @@ function getSauceConfig(config) {
 
     const buildId = CIRCLE_BUILD_NUM || Date.now();
 
-    const tags = config.lwc.tags;
-    const testName = ['integration-karma', ...tags].join(' - ');
-    const build = ['integration-karma', buildId, ...tags].join(' - ');
+    const testName = ['integration-karma', ...TAGS].join(' - ');
+    const build = ['integration-karma', buildId, ...TAGS].join(' - ');
 
     return {
         username,
@@ -102,13 +101,12 @@ function getSauceConfig(config) {
 
         build,
         testName,
-        tags,
+        tags: TAGS,
 
         customData: {
             lwc: {
                 COMPAT,
                 NATIVE_SHADOW,
-                TAGS,
             },
 
             ci: IS_CI,
@@ -137,9 +135,9 @@ function getMatchingBrowsers() {
 module.exports = (config) => {
     localConfig(config);
 
-    const sauceConfig = getSauceConfig(config);
-
+    const sauceConfig = getSauceConfig();
     const matchingBrowsers = getMatchingBrowsers();
+
     if (matchingBrowsers.length === 0) {
         throw new Error('No matching browser found for the passed configuration.');
     }
