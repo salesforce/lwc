@@ -1,9 +1,4 @@
 {
-  "command": {
-    "publish": {
-      "forcePublish": "*"
-    }
-  },
   "exact": true,
   "npmClient": "yarn",
   "useWorkspaces": true,
