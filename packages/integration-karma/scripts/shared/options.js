@@ -7,10 +7,17 @@
 
 'use strict';
 
+const COMPAT = Boolean(process.env.COMPAT);
+const NATIVE_SHADOW = Boolean(process.env.NATIVE_SHADOW);
+const TAGS = [`${NATIVE_SHADOW ? 'native' : 'synthetic'}-shadow`, COMPAT && 'compat'].filter((v) =>
+    Boolean(v)
+);
+
 module.exports = {
     // Test configuration
-    COMPAT: Boolean(process.env.COMPAT),
-    NATIVE_SHADOW: Boolean(process.env.NATIVE_SHADOW),
+    COMPAT,
+    NATIVE_SHADOW,
+    TAGS,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),
 

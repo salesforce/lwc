@@ -9,6 +9,9 @@
 
 const localConfig = require('./base');
 const {
+    COMPAT,
+    NATIVE_SHADOW,
+    TAGS,
     SAUCE_USERNAME,
     SAUCE_ACCESS_KEY,
     SAUCE_TUNNEL_ID,
@@ -17,7 +20,7 @@ const {
     CIRCLE_BUILD_NUM,
     CIRCLE_BUILD_URL,
     CIRCLE_SHA1,
-} = require('./env');
+} = require('../shared/options');
 
 const SAUCE_BROWSERS = [
     // Standard browsers
@@ -102,7 +105,11 @@ function getSauceConfig(config) {
         tags,
 
         customData: {
-            lwc: config.lwc,
+            lwc: {
+                COMPAT,
+                NATIVE_SHADOW,
+                TAGS,
+            },
 
             ci: IS_CI,
 
@@ -118,11 +125,11 @@ function getSauceConfig(config) {
     };
 }
 
-function getMatchingBrowsers({ compat, nativeShadow }) {
+function getMatchingBrowsers() {
     return SAUCE_BROWSERS.filter((browser) => {
         return (
-            browser.compat === compat &&
-            (!nativeShadow || browser.nativeShadowCompatible === nativeShadow)
+            browser.compat === COMPAT &&
+            (!NATIVE_SHADOW || browser.nativeShadowCompatible === NATIVE_SHADOW)
         );
     });
 }
@@ -132,7 +139,7 @@ module.exports = (config) => {
 
     const sauceConfig = getSauceConfig(config);
 
-    const matchingBrowsers = getMatchingBrowsers(config.lwc);
+    const matchingBrowsers = getMatchingBrowsers();
     if (matchingBrowsers.length === 0) {
         throw new Error('No matching browser found for the passed configuration.');
     }

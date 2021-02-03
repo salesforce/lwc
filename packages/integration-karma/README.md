@@ -16,7 +16,7 @@ Run the test suite a single time on Google Chrome.
 
 Combine the coverage produced by the different runs into a single coverage report.
 
-Every time the test suite runs with the `--coverage` flag it produces a folder based on the run configuration and browser, in the `coverage/` folder. Running the `coverage` command merge all the coverages files in the into a single report in the `coverage/combined` folder.
+Every time the test suite runs with the `COVERAGE=1` environment variable it produces a folder based on the run configuration and browser, in the `coverage/` folder. Running the `coverage` command merge all the coverages files in the into a single report in the `coverage/combined` folder.
 
 ## Test environment variables
 

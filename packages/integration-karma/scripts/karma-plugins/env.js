@@ -15,10 +15,12 @@
 const fs = require('fs');
 const path = require('path');
 
+const { COMPAT, NATIVE_SHADOW } = require('../shared/options');
+
 const DIST_DIR = path.resolve(__dirname, '../../dist');
 const ENV_FILENAME = path.resolve(DIST_DIR, 'env.js');
 
-function createEnvFile(lwcConfig) {
+function createEnvFile() {
     if (!fs.existsSync(DIST_DIR)) {
         fs.mkdirSync(DIST_DIR);
     }
@@ -27,22 +29,22 @@ function createEnvFile(lwcConfig) {
         `window.process = {`,
         `    env: {`,
         `        NODE_ENV: "development",`,
-        `        COMPAT: ${lwcConfig.compat},`,
-        `        NATIVE_SHADOW: ${lwcConfig.nativeShadow}`,
+        `        COMPAT: ${COMPAT},`,
+        `        NATIVE_SHADOW: ${NATIVE_SHADOW}`,
         `    }`,
         `};`,
     ];
     fs.writeFileSync(ENV_FILENAME, content.join('\n'));
 }
 
-function initEnv(lwcConfig, files) {
-    createEnvFile(lwcConfig);
+function initEnv(files) {
+    createEnvFile();
     files.unshift({
         pattern: ENV_FILENAME,
     });
 }
 
-initEnv.$inject = ['config.lwc', 'config.files'];
+initEnv.$inject = ['config.files'];
 
 module.exports = {
     'framework:env': ['factory', initEnv],

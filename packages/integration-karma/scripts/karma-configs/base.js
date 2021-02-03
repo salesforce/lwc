@@ -12,7 +12,7 @@ const { getModulePath } = require('lwc');
 
 const karmaPluginLwc = require('../karma-plugins/lwc');
 const karmaPluginEnv = require('../karma-plugins/env');
-const { COMPAT, NATIVE_SHADOW, GREP, COVERAGE } = require('./env');
+const { COMPAT, NATIVE_SHADOW, TAGS, GREP, COVERAGE } = require('../shared/options');
 
 const BASE_DIR = path.resolve(__dirname, '../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
@@ -32,21 +32,6 @@ function createPattern(location, config = {}) {
     return {
         ...config,
         pattern: location,
-    };
-}
-
-function getLwcConfig() {
-    const compat = COMPAT;
-    const nativeShadow = NATIVE_SHADOW;
-
-    const tags = [`${nativeShadow ? 'native' : 'synthetic'}-shadow`, compat && 'compat'].filter(
-        Boolean
-    );
-
-    return {
-        compat,
-        nativeShadow,
-        tags,
     };
 }
 
@@ -79,9 +64,6 @@ function getFiles() {
  * https://karma-runner.github.io/3.0/config/configuration-file.html
  */
 module.exports = (config) => {
-    const lwcConfig = getLwcConfig(config);
-    const { tags } = lwcConfig;
-
     config.set({
         basePath: BASE_DIR,
         files: getFiles(),
@@ -107,10 +89,6 @@ module.exports = (config) => {
         client: {
             args: [...config.client.args, '--grep', GREP],
         },
-
-        // Attach the config object so configurations extending this one will be able to tap into the parsed
-        // configuration.
-        lwc: lwcConfig,
     });
 
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
@@ -124,7 +102,7 @@ module.exports = (config) => {
         config.plugins.push('karma-coverage');
 
         config.coverageReporter = {
-            dir: path.resolve(COVERAGE_DIR, tags.join('_')),
+            dir: path.resolve(COVERAGE_DIR, TAGS.join('_')),
             reporters: [{ type: 'html' }, { type: 'json' }],
         };
     }
