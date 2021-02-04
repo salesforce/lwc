@@ -14,6 +14,9 @@ const ARGS = [
     'version',
     // Use exact version number without using semver notation (i.e., ~ and ^)
     '--exact',
+    // Skip lerna change detection and force version number updates across all packages
+    '--force-publish',
+    // Skip git commit and tag push
     '--no-push',
 ];
 
