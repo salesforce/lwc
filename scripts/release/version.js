@@ -14,8 +14,6 @@ const ARGS = [
     'version',
     // Use exact version number without using semver notation (i.e., ~ and ^)
     '--exact',
-    // Update version number even if there were no changes in the package
-    '--force-publish',
     '--no-push',
 ];
 
