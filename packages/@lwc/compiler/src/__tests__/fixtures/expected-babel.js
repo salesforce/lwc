@@ -84,7 +84,7 @@ assert.notEqual(string, match, ts); // babel-plugin-transform-async-to-generator
 
 class Foo {
     async foo() {
-    var wat = await bar();
+        await bar();
     }
 
 } // babel-plugin-transform-exponentiation-operator

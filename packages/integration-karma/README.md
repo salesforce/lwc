@@ -1,6 +1,6 @@
 # integration-karma
 
-Karma integration test for the `@lwc/compiler` and `@lwc/engine`.
+Karma integration test for the `@lwc/compiler`, `@lwc/engine` and `@lwc/synthetic-shadow`.
 
 ## Getting started
 
@@ -16,16 +16,23 @@ Run the test suite a single time on Google Chrome.
 
 Combine the coverage produced by the different runs into a single coverage report.
 
-Every time the test suite runs with the `--coverage` flag it produces a folder based on the run configuration and browser, in the `coverage/` folder. Running the `coverage` command merge all the coverages files in the into a single report in the `coverage/combined` folder.
+Every time the test suite runs with the `COVERAGE=1` environment variable it produces a folder based on the run configuration and browser, in the `coverage/` folder. Running the `coverage` command merge all the coverages files in the into a single report in the `coverage/combined` folder.
 
-## Test command options
+## Test environment variables
 
-This set of options applies to the `start` and `test` commands. On top of the standard Karma [command line options](http://karma-runner.github.io/3.0/config/configuration-file.html), this package offers extra command line options:
+This set of environment variables applies to the `start` and `test` commands:
 
--   **`--compat`:** Compile and deliver tests in COMPAT mode.
--   **`--native-shadow`:** Force the components to be created with native shadow enabled.
--   **`--coverage`:** Gather engine code coverage, and store it in the `coverage` folder.
--   **`--grep=<pattern>`:** Filter the spec to run based on the pattern.
+-   **`COMPAT=1`:** Compile and deliver tests in COMPAT mode.
+-   **`NATIVE_SHADOW=1`:** Force the components to be created with native shadow enabled.
+-   **`COVERAGE=1`:** Gather engine code coverage, and store it in the `coverage` folder.
+-   **`GREP="pattern"`:** Filter the spec to run based on the pattern.
+
+## Examples
+
+```sh
+NATIVE_SHADOW=1 GREP=ShadowRoot yarn start          # Run in watch mode the "ShadowRoot" related tests with native shadow enable
+COVERAGE=1 yarn test                                # Run all the test once and compute coverage
+```
 
 ## Contributing
 

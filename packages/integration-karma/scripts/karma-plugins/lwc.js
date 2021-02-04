@@ -18,8 +18,10 @@ const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 const compatRollupPlugin = require('rollup-plugin-compat');
 
+const { COMPAT } = require('../shared/options');
+
 function createPreprocessor(config, emitter, logger) {
-    const { basePath, compat = false } = config;
+    const { basePath } = config;
 
     const log = logger.create('preprocessor-lwc');
     const watcher = new Watcher(config, emitter, log);
@@ -48,7 +50,7 @@ function createPreprocessor(config, emitter, logger) {
             }),
         ];
 
-        if (compat) {
+        if (COMPAT) {
             plugins.push(
                 compatRollupPlugin({
                     // The compat polyfills are injected at runtime by Karma, polyfills can be shared between all the

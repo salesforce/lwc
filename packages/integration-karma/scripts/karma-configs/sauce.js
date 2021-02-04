@@ -8,6 +8,19 @@
 'use strict';
 
 const localConfig = require('./base');
+const {
+    COMPAT,
+    NATIVE_SHADOW,
+    TAGS,
+    SAUCE_USERNAME,
+    SAUCE_ACCESS_KEY,
+    SAUCE_TUNNEL_ID,
+    IS_CI,
+    CIRCLE_BRANCH,
+    CIRCLE_BUILD_NUM,
+    CIRCLE_BUILD_URL,
+    CIRCLE_SHA1,
+} = require('../shared/options');
 
 const SAUCE_BROWSERS = [
     // Standard browsers
@@ -65,41 +78,43 @@ const SAUCE_BROWSERS = [
     },
 ];
 
-function getSauceConfig(config) {
-    const username = process.env.SAUCE_USERNAME;
+function getSauceConfig() {
+    const username = SAUCE_USERNAME;
     if (!username) {
         throw new TypeError('Missing SAUCE_USERNAME environment variable');
     }
 
-    const accessKey = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
+    const accessKey = SAUCE_ACCESS_KEY;
     if (!accessKey) {
-        throw new TypeError('Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable');
+        throw new TypeError('Missing SAUCE_ACCESS_KEY environment variable');
     }
 
-    const buildId = process.env.CIRCLE_BUILD_NUM || Date.now();
+    const buildId = CIRCLE_BUILD_NUM || Date.now();
 
-    const tags = config.lwc.tags;
-    const testName = ['integration-karma', ...tags].join(' - ');
-    const build = ['integration-karma', buildId, ...tags].join(' - ');
+    const testName = ['integration-karma', ...TAGS].join(' - ');
+    const build = ['integration-karma', buildId, ...TAGS].join(' - ');
 
     return {
         username,
         accessKey,
-        tunnelIdentifier: process.env.SAUCE_TUNNEL_ID,
+        tunnelIdentifier: SAUCE_TUNNEL_ID,
 
         build,
         testName,
-        tags,
+        tags: TAGS,
 
         customData: {
-            lwc: config.lwc,
+            lwc: {
+                COMPAT,
+                NATIVE_SHADOW,
+            },
 
-            ci: !!process.env.CI,
-            build: process.env.CIRCLE_BUILD_NUM,
+            ci: IS_CI,
 
-            commit: process.env.CIRCLE_SHA1,
-            branch: process.env.CIRCLE_BRANCH,
-            buildUrl: process.env.CIRCLE_BUILD_URL,
+            build: CIRCLE_BUILD_NUM,
+            commit: CIRCLE_SHA1,
+            branch: CIRCLE_BRANCH,
+            buildUrl: CIRCLE_BUILD_URL,
         },
 
         startConnect: false,
@@ -108,11 +123,11 @@ function getSauceConfig(config) {
     };
 }
 
-function getMatchingBrowsers({ compat, nativeShadow }) {
+function getMatchingBrowsers() {
     return SAUCE_BROWSERS.filter((browser) => {
         return (
-            browser.compat === compat &&
-            (!nativeShadow || browser.nativeShadowCompatible === nativeShadow)
+            browser.compat === COMPAT &&
+            (!NATIVE_SHADOW || browser.nativeShadowCompatible === NATIVE_SHADOW)
         );
     });
 }
@@ -120,9 +135,9 @@ function getMatchingBrowsers({ compat, nativeShadow }) {
 module.exports = (config) => {
     localConfig(config);
 
-    const sauceConfig = getSauceConfig(config);
+    const sauceConfig = getSauceConfig();
+    const matchingBrowsers = getMatchingBrowsers();
 
-    const matchingBrowsers = getMatchingBrowsers(config.lwc);
     if (matchingBrowsers.length === 0) {
         throw new Error('No matching browser found for the passed configuration.');
     }
@@ -145,7 +160,7 @@ module.exports = (config) => {
         }, {}),
 
         // Use a less verbose reporter for the CI to avoid generating too much log.
-        reporters: process.env.CI
+        reporters: IS_CI
             ? [...config.reporters, 'dots', 'saucelabs']
             : [...config.reporters, 'progress', 'saucelabs'],
 
