@@ -9,6 +9,7 @@ import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { isHostElement } from '../faux-shadow/shadow-root';
 
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
+const ComposedPathMap: WeakMap<Event, EventTarget[]> = new WeakMap();
 
 function isEventListenerOrEventListenerObject(
     fnOrObj: unknown
@@ -37,12 +38,20 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
                 );
             }
 
-            const composedPath = event.composedPath();
             const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
             const target = eventTargetGetter.call(event);
 
-            if (currentTarget !== target && !composedPath.includes(currentTarget)) {
-                return;
+            // This check is not meant to be a micro-optimization. It accounts for the edge case
+            // where a listener is invoked on an instance of EventTarget (i.e., new EventTarget()).
+            if (currentTarget !== target) {
+                let composedPath = ComposedPathMap.get(event);
+                if (isUndefined(composedPath)) {
+                    composedPath = event.composedPath();
+                    ComposedPathMap.set(event, composedPath);
+                }
+                if (!composedPath.includes(currentTarget)) {
+                    return;
+                }
             }
 
             return isFunction(fnOrObj)
