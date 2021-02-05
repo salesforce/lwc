@@ -26,7 +26,6 @@ import {
 } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 
 export enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,
@@ -39,23 +38,6 @@ export const eventToContextMap: WeakMap<Event, EventListenerContext> = new WeakM
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
     original: EventListener;
-}
-
-function isChildNode(root: Element, node: Node): boolean {
-    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
-}
-
-const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
-
-function getRootNodeHost(node: Node, options: GetRootNodeOptions): Node {
-    let rootNode = node.getRootNode(options);
-
-    // is SyntheticShadowRootInterface
-    if ('mode' in rootNode && 'delegatesFocus' in rootNode) {
-        rootNode = getHost(rootNode);
-    }
-
-    return rootNode;
 }
 
 interface ListenerMap {
@@ -199,30 +181,14 @@ function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
 function shouldInvokeCustomElementListener(event: Event): boolean {
     const { composed } = event;
 
+    // Listeners on host elements should always be invoked for {composed: true} events.
     if (isTrue(composed)) {
-        // Listeners on host elements should always be invoked for {composed: true} events.
         return true;
     }
 
-    // If this {composed: false} event was dispatched on any root.
-    if (eventToShadowRootMap.has(event)) {
-        return false;
-    }
-
-    const target = eventTargetGetter.call(event);
-    const currentTarget = eventCurrentTargetGetter.call(event);
-
-    // If this {composed: false} event was dispatched on the current target host.
-    if (target === currentTarget) {
-        return true;
-    }
-
-    // At this point the event must be {bubbles: true, composed: false} and was dispatched from a
-    // shadow-excluding descendant node. In this case, we only invoke the listener if the target
-    // host was assigned to a slot in the composed subtree of the current target host.
-    const targetHost = getRootNodeHost(target as Node, GET_ROOT_NODE_CONFIG_FALSE) as HTMLElement;
-    const currentTargetHost = currentTarget as HTMLElement;
-    return isChildNode(targetHost, currentTargetHost);
+    const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
+    const composedPath = event.composedPath();
+    return composedPath.includes(currentTarget);
 }
 
 function shouldInvokeShadowRootListener(event: Event): boolean {
@@ -242,21 +208,8 @@ function shouldInvokeShadowRootListener(event: Event): boolean {
         return true;
     }
 
-    // At this point the event must be {bubbles: true, composed: false}.
-    if (isTrue(eventToShadowRootMap.has(event))) {
-        // Don't invoke the listener because the event was dispatched on a descendant root.
-        return false;
-    }
-
-    const targetHost = getRootNodeHost(target as Node, GET_ROOT_NODE_CONFIG_FALSE) as HTMLElement;
-    const currentTargetHost = currentTarget as HTMLElement;
-    const isCurrentTargetSlotted = isChildNode(targetHost, currentTargetHost);
-
-    // At this point the event must be {bubbles: true, composed: false} and was dispatched from a
-    // shadow-excluding descendant node. In this case, we only invoke the listener if the target
-    // host was assigned to a slot in the composed subtree of the current target host, or the
-    // descendant node is in the shadow tree of the current root.
-    return isCurrentTargetSlotted || targetHost === currentTargetHost;
+    const composedPath = event.composedPath();
+    return composedPath.includes(getShadowRoot(currentTarget as Element));
 }
 
 export function addCustomElementEventListener(
