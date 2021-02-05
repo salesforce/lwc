@@ -13,6 +13,7 @@ import './env/dom';
 import './env/document';
 import './env/window';
 import './env/mutation-observer';
+import './env/shadow-root';
 
 // Initialization Routines
 import './polyfills/HTMLSlotElement/main';
