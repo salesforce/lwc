@@ -162,8 +162,6 @@ export function patchElementWithRestrictions(elm: Element, options: { isPortal: 
     defineProperties(elm, descriptors);
 }
 
-const BLOCKED_SHADOW_ROOT_METHODS = ['cloneNode', 'getElementById'];
-
 function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -177,7 +175,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
     const originalInnerHTMLDescriptor = getPropertyDescriptor(sr, 'innerHTML')!;
     const originalTextContentDescriptor = getPropertyDescriptor(sr, 'textContent')!;
 
-    const descriptors: PropertyDescriptorMap = {
+    return {
         innerHTML: generateAccessorDescriptor({
             get(this: ShadowRoot): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
@@ -215,16 +213,6 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
             },
         }),
     };
-
-    forEach.call(BLOCKED_SHADOW_ROOT_METHODS, (methodName: string) => {
-        descriptors[methodName] = generateAccessorDescriptor({
-            get() {
-                throw new Error(`Disallowed method "${methodName}" in ShadowRoot.`);
-            },
-        });
-    });
-
-    return descriptors;
 }
 
 // Custom Elements Restrictions:

@@ -356,6 +356,14 @@ const NodePatchDescriptors = {
             return createStaticNodeList(shadowRootChildNodes(this));
         },
     },
+    cloneNode: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface): Selection | null {
+            throw new Error('Disallowed method "cloneNode" on ShadowRoot.');
+        },
+    },
     compareDocumentPosition: {
         writable: true,
         enumerable: true,
@@ -572,6 +580,14 @@ const ParentNodePatchDescriptors = {
         get(this: Element): Element | null {
             const { children } = this;
             return children.item(children.length - 1) || null;
+        },
+    },
+    getElementById: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface): Selection | null {
+            throw new Error('Disallowed method "getElementById" on ShadowRoot.');
         },
     },
     querySelector: {
