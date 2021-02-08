@@ -50,7 +50,6 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'secure',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
-    'stylesheetConfig',
 ]);
 
 export function mergeConfig(config: Config): ResolvedConfig {

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as babylon from '@babel/parser';
 import * as t from '@babel/types';
 import * as esutils from 'esutils';
 
@@ -53,47 +52,9 @@ export default class CodeGen {
     usedApis: { [name: string]: t.Identifier } = {};
     usedSlots: { [name: string]: t.Identifier } = {};
     memorizedIds: t.Identifier[] = [];
-    inlineStyleImports: t.ImportDeclaration[] = [];
-    inlineStyleBody: t.Statement[] = [];
 
     generateKey() {
         return this.currentKey++;
-    }
-
-    genInlineStyles(src: string | undefined): void {
-        if (src) {
-            // We get back a AST module which may have three pieces:
-            // 1) import statements
-            // 2) the inline function
-            // 3) default export
-            // We need to separate the imports and change the default export for a correct inlining
-            const importDeclarations: t.ImportDeclaration[] = [];
-            const styleBody: t.Statement[] = [];
-
-            // Parse the generated module code and return it's body.
-            const parsed = babylon.parse(src, { sourceType: 'module' });
-            const inlineStylesAst = parsed.program.body;
-
-            inlineStylesAst.forEach((node) => {
-                if (t.isImportDeclaration(node)) {
-                    importDeclarations.push(node);
-                } else if (t.isExportDefaultDeclaration(node)) {
-                    const stylesheetDeclaration = t.variableDeclaration('const', [
-                        t.variableDeclarator(
-                            t.identifier('stylesheets'),
-                            node.declaration as t.ArrayExpression
-                        ),
-                    ]);
-
-                    styleBody.push(stylesheetDeclaration);
-                } else {
-                    styleBody.push(node);
-                }
-            });
-
-            this.inlineStyleImports = importDeclarations;
-            this.inlineStyleBody = styleBody;
-        }
     }
 
     genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {

@@ -33,7 +33,6 @@ import {
     identifierFromComponentName,
     objectToAST,
     isTemplate,
-    isStyleSheet,
     shouldFlatten,
     destructuringAssignmentFromObject,
     isSlot,
@@ -138,11 +137,6 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             },
 
             exit(element: IRElement) {
-                if (isStyleSheet(element)) {
-                    codeGen.genInlineStyles(element.inlineStyles);
-                    return;
-                }
-
                 let children = stack.pop();
 
                 // Apply children flattening
@@ -531,13 +525,9 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
     return (stack.peek() as t.ArrayExpression).elements[0] as t.Expression;
 }
 
-function generateTemplateFunction(templateRoot: IRElement, state: State): t.FunctionDeclaration {
+function generateTemplateFunction(templateRoot: IRElement): t.FunctionDeclaration {
     const codeGen = new CodeGen();
     const statement = transform(templateRoot, codeGen);
-
-    // Copy AST generated styles to the state
-    state.inlineStyle.body = codeGen.inlineStyleBody;
-    state.inlineStyle.imports = codeGen.inlineStyleImports;
 
     const apis = destructuringAssignmentFromObject(
         t.identifier(TEMPLATE_PARAMS.API),
@@ -583,7 +573,7 @@ function format({ config }: State) {
 }
 
 export default function (templateRoot: IRElement, state: State): CompilationOutput {
-    const templateFunction = generateTemplateFunction(templateRoot, state);
+    const templateFunction = generateTemplateFunction(templateRoot);
     const formatter = format(state);
     const program = formatter(templateFunction, state);
 

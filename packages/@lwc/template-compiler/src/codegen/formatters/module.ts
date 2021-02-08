@@ -45,17 +45,13 @@ function generateSecureImports(additionalImports: string[]): t.ImportDeclaration
     );
 }
 
-function generateInlineStylesImports(state: State) {
-    return state.inlineStyle.imports;
-}
-
 export function format(templateFn: t.FunctionDeclaration, state: State): t.Program {
-    const imports = state.dependencies.map((cmpClassName) => moduleNameToImport(cmpClassName));
+    const imports = [
+        ...state.dependencies.map((cmpClassName) => moduleNameToImport(cmpClassName)),
+        generateSecureImports(state.secureDependencies),
+    ];
 
     const metadata = generateTemplateMetadata(state);
-
-    imports.push(generateSecureImports(state.secureDependencies));
-    imports.push(...generateInlineStylesImports(state));
 
     const templateBody = [
         templateFn,
