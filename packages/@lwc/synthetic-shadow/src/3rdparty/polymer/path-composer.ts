@@ -36,14 +36,12 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
     while (!isNull(current)) {
         composedPath.push(current);
 
-        if ((current as Element | Text).assignedSlot) {
-            // Element and Text include the Slottable mixin
-            const slottable = current as Element | Text;
-            const assignedSlot: HTMLSlotElement | null = slottable.assignedSlot;
+        if (current instanceof Element || current instanceof Text) {
+            const assignedSlot: HTMLSlotElement | null = current.assignedSlot;
             if (!isNull(assignedSlot)) {
                 current = assignedSlot;
             } else {
-                current = slottable.parentNode;
+                current = current.parentNode;
             }
         } else if (
             (current instanceof SyntheticShadowRoot || isInstanceOfNativeShadowRoot(current)) &&
@@ -57,12 +55,14 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
             current = null;
         }
     }
+
     let doc: Document;
     if (startNode instanceof Window) {
         doc = startNode.document;
     } else {
         doc = getOwnerDocument(startNode as Node);
     }
+
     // event composedPath includes window when startNode's ownerRoot is document
     if ((composedPath[composedPath.length - 1] as any) === doc) {
         composedPath.push(window);
