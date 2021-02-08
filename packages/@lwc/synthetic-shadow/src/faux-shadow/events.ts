@@ -89,10 +89,7 @@ function getWrappedShadowRootListener(
                 listener.call(sr, event);
             }
         } as WrappedListener;
-        shadowRootWrappedListener!.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
-        if (process.env.NODE_ENV !== 'production') {
-            shadowRootWrappedListener!.original = listener; // for logging purposes
-        }
+        shadowRootWrappedListener.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
         shadowRootEventListenerMap.set(listener, shadowRootWrappedListener);
     }
     return shadowRootWrappedListener;
@@ -112,10 +109,7 @@ function getWrappedCustomElementListener(elm: Element, listener: EventListener):
                 listener.call(elm, event);
             }
         } as WrappedListener;
-        customElementWrappedListener!.placement = EventListenerContext.CUSTOM_ELEMENT_LISTENER;
-        if (process.env.NODE_ENV !== 'production') {
-            customElementWrappedListener!.original = listener; // for logging purposes
-        }
+        customElementWrappedListener.placement = EventListenerContext.CUSTOM_ELEMENT_LISTENER;
         customElementEventListenerMap.set(listener, customElementWrappedListener);
     }
     return customElementWrappedListener;
@@ -196,7 +190,7 @@ function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
     ) {
         ArraySplice.call(listeners, p, 1);
         // only remove from DOM if there is no other listener on the same placement
-        if (listeners!.length === 0) {
+        if (listeners.length === 0) {
             removeEventListener.call(elm, type, domListener);
         }
     }

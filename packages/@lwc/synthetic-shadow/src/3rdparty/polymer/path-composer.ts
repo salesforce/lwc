@@ -22,15 +22,21 @@ import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
     const composedPath: EventTarget[] = [];
-    let current: EventTarget | null = startNode;
-    const startRoot: Window | Node =
-        startNode instanceof Window ? startNode : (startNode as Node).getRootNode();
+
+    let startRoot: Window | Node;
+    if (startNode instanceof Window) {
+        startRoot = startNode;
+    } else if (startNode instanceof Node) {
+        startRoot = startNode.getRootNode();
+    } else {
+        return composedPath;
+    }
+
+    let current: Window | Node | null = startNode;
     while (!isNull(current)) {
         composedPath.push(current);
 
-        if (current instanceof Element) {
-            // Text also implements the Slottable mixin but is not an EventTarget, nor a ParentNode,
-            // which means it is safe to only look for Elements here.
+        if (current instanceof Element || current instanceof Text) {
             const assignedSlot: HTMLSlotElement | null = current.assignedSlot;
             if (!isNull(assignedSlot)) {
                 current = assignedSlot;
@@ -49,12 +55,14 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
             current = null;
         }
     }
+
     let doc: Document;
     if (startNode instanceof Window) {
         doc = startNode.document;
     } else {
         doc = getOwnerDocument(startNode as Node);
     }
+
     // event composedPath includes window when startNode's ownerRoot is document
     if ((composedPath[composedPath.length - 1] as any) === doc) {
         composedPath.push(window);
