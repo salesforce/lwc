@@ -30,27 +30,31 @@ describe('Event.composedPath', () => {
         req.dispatchEvent(new CustomEvent('test'));
     });
 
-    it('should return expected composed path when the target is a text node', (done) => {
-        const container = createElement('x-container', { is: Container });
-        document.body.appendChild(container);
+    // Excluding IE11 from this test involving text nodes since our IE11 shadow root polyfill
+    // injects comments outside of production for debugging purposes.
+    if (!process.env.COMPAT) {
+        it('should return expected composed path when the target is a text node', (done) => {
+            const container = createElement('x-container', { is: Container });
+            document.body.appendChild(container);
 
-        const div = container.shadowRoot.querySelector('div');
-        const child = container.shadowRoot.querySelector('x-child');
-        const textNode = child.childNodes[0];
-        const slot = textNode.assignedSlot;
+            const div = container.shadowRoot.querySelector('div');
+            const child = container.shadowRoot.querySelector('x-child');
+            const textNode = child.childNodes[0];
+            const slot = textNode.assignedSlot;
 
-        textNode.addEventListener('test', (event) => {
-            expect(event.composedPath()).toEqual([
-                textNode,
-                slot,
-                child.shadowRoot,
-                child,
-                div,
-                container.shadowRoot,
-            ]);
-            done();
+            textNode.addEventListener('test', (event) => {
+                expect(event.composedPath()).toEqual([
+                    textNode,
+                    slot,
+                    child.shadowRoot,
+                    child,
+                    div,
+                    container.shadowRoot,
+                ]);
+                done();
+            });
+
+            textNode.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: false }));
         });
-
-        textNode.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: false }));
-    });
+    }
 });
