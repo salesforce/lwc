@@ -66,25 +66,6 @@ describe('Properties overrides', () => {
     });
 });
 
-const SHADOW_ROOT_RESTRICTED = ['cloneNode', 'getElementById'];
-
-describe('restrictions', () => {
-    let elm;
-
-    beforeAll(() => {
-        elm = createElement('x-test', { is: Test });
-    });
-
-    for (const methodName of SHADOW_ROOT_RESTRICTED) {
-        it(`should throw when accessing ShadowRoot.${methodName} in dev mode`, () => {
-            expect(() => elm.shadowRoot[methodName]).toThrowErrorDev(
-                Error,
-                `Disallowed method "${methodName}" in ShadowRoot.`
-            );
-        });
-    }
-});
-
 if (!process.env.NATIVE_SHADOW) {
     describe('synthetic-shadow restrictions', () => {
         let elm;
@@ -102,6 +83,18 @@ if (!process.env.NATIVE_SHADOW) {
         it(`should throw when invoking ShadowRoot.getSelection`, () => {
             expect(() => elm.shadowRoot.getSelection()).toThrowError(
                 `Disallowed method "getSelection" on ShadowRoot.`
+            );
+        });
+
+        it(`should throw when invoking ShadowRoot.cloneNode`, () => {
+            expect(() => elm.shadowRoot.cloneNode()).toThrowError(
+                `Disallowed method "cloneNode" on ShadowRoot.`
+            );
+        });
+
+        it(`should throw when invoking ShadowRoot.getElementById`, () => {
+            expect(() => elm.shadowRoot.getElementById()).toThrowError(
+                `Disallowed method "getElementById" on ShadowRoot.`
             );
         });
     });
