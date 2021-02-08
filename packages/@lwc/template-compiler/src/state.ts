@@ -7,7 +7,6 @@
 import { MarkupData } from 'parse5-with-errors';
 
 import { ResolvedConfig } from './config';
-import { Statement, ImportDeclaration } from '@babel/types';
 
 export interface IdAttributeData {
     location: MarkupData.Location;
@@ -21,14 +20,6 @@ export default class State {
     slots: string[] = [];
     dependencies: string[] = [];
     secureDependencies: string[] = []; // imports patched by locker service at runtime
-
-    inlineStyle: {
-        body: Statement[];
-        imports: ImportDeclaration[];
-    } = {
-        body: [],
-        imports: [],
-    };
 
     idAttrData: IdAttributeData[] = [];
 

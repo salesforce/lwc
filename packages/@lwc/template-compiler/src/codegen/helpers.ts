@@ -43,10 +43,6 @@ export function isTemplate(element: IRElement) {
     return element.tag === 'template';
 }
 
-export function isStyleSheet(element: IRElement) {
-    return element.tag === 'style';
-}
-
 /** Returns true if the passed element is a slot element */
 export function isSlot(element: IRElement) {
     return element.tag === 'slot';
@@ -115,8 +111,6 @@ export function memorizeHandler(
 export function generateTemplateMetadata(state: State): t.Statement[] {
     const metadataExpressions: t.Statement[] = [];
 
-    // Generate the slots property on template function if slots are defined in the template:
-    //      tmpl.slots = ['', 'x']
     if (state.slots.length) {
         const slotsProperty = t.memberExpression(
             t.identifier(TEMPLATE_FUNCTION_NAME),
@@ -129,19 +123,10 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
         metadataExpressions.push(t.expressionStatement(slotsMetadata));
     }
 
-    metadataExpressions.push(...state.inlineStyle.body);
-
-    const hasInlineStyles = state.inlineStyle.body.length;
-
-    const stylesheetsProperty = t.memberExpression(
-        t.identifier(TEMPLATE_FUNCTION_NAME),
-        t.identifier('stylesheets')
-    );
-
     const stylesheetsMetadata = t.assignmentExpression(
         '=',
-        stylesheetsProperty,
-        hasInlineStyles ? t.identifier('stylesheets') : t.arrayExpression()
+        t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('stylesheets')),
+        t.arrayExpression()
     );
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
