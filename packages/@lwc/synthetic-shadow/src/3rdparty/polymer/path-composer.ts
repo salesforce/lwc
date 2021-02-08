@@ -20,22 +20,34 @@ import { getOwnerDocument } from '../../shared/utils';
 import { isInstanceOfNativeShadowRoot } from '../../env/shadow-root';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
+interface Slotable extends Node {
+    assignedSlot: HTMLSlotElement;
+}
+
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
     const composedPath: EventTarget[] = [];
-    let current: EventTarget | null = startNode;
-    const startRoot: Window | Node =
-        startNode instanceof Window ? startNode : (startNode as Node).getRootNode();
+
+    let startRoot: Window | Node;
+    if (startNode instanceof Window) {
+        startRoot = startNode;
+    } else if (startNode instanceof Node) {
+        startRoot = startNode.getRootNode();
+    } else {
+        return composedPath;
+    }
+
+    let current: Window | Node | null = startNode;
     while (!isNull(current)) {
         composedPath.push(current);
 
-        if (current instanceof Element) {
-            // Text also implements the Slottable mixin but is not an EventTarget, nor a ParentNode,
-            // which means it is safe to only look for Elements here.
-            const assignedSlot: HTMLSlotElement | null = current.assignedSlot;
+        const _slotable: unknown = current;
+        if ((_slotable as Slotable).assignedSlot) {
+            const slotable = _slotable as Slotable;
+            const assignedSlot: HTMLSlotElement | null = slotable.assignedSlot;
             if (!isNull(assignedSlot)) {
                 current = assignedSlot;
             } else {
-                current = current.parentNode;
+                current = slotable.parentNode;
             }
         } else if (
             (current instanceof SyntheticShadowRoot || isInstanceOfNativeShadowRoot(current)) &&
