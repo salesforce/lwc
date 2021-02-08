@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
+
+import { isString } from '@lwc/shared';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
 
 import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
@@ -12,12 +14,9 @@ import styleTransform from './style';
 import templateTransformer from './template';
 import scriptTransformer from './javascript';
 
-import { isString } from '../utils';
-import { SourceMap } from '../compiler/compiler';
-
 export interface TransformResult {
     code: string;
-    map: SourceMap | null;
+    map: any | null;
 }
 
 /**

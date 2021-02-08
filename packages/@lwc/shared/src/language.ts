@@ -96,6 +96,10 @@ export function isFalse(obj: any): obj is false {
     return obj === false;
 }
 
+export function isBoolean(obj: any): obj is boolean {
+    return typeof obj === 'boolean';
+}
+
 export function isFunction(obj: any): obj is Function {
     return typeof obj === 'function';
 }

@@ -6,6 +6,7 @@
  */
 import * as styleCompiler from '@lwc/style-compiler';
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
 
