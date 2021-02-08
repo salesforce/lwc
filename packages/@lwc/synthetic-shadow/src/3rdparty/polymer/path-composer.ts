@@ -20,10 +20,6 @@ import { getOwnerDocument } from '../../shared/utils';
 import { isInstanceOfNativeShadowRoot } from '../../env/shadow-root';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
-interface Slotable extends Node {
-    assignedSlot: HTMLSlotElement;
-}
-
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
     const composedPath: EventTarget[] = [];
 
@@ -40,14 +36,14 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
     while (!isNull(current)) {
         composedPath.push(current);
 
-        const _slotable: unknown = current;
-        if ((_slotable as Slotable).assignedSlot) {
-            const slotable = _slotable as Slotable;
-            const assignedSlot: HTMLSlotElement | null = slotable.assignedSlot;
+        if ((current as Element | Text).assignedSlot) {
+            // Element and Text include the Slottable mixin
+            const slottable = current as Element | Text;
+            const assignedSlot: HTMLSlotElement | null = slottable.assignedSlot;
             if (!isNull(assignedSlot)) {
                 current = assignedSlot;
             } else {
-                current = slotable.parentNode;
+                current = slottable.parentNode;
             }
         } else if (
             (current instanceof SyntheticShadowRoot || isInstanceOfNativeShadowRoot(current)) &&
