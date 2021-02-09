@@ -8,7 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: 1
       },
-      api_iterator($cmp.items, function (xValue, xIndex, xFirst, xLast) {
+      api_iterator($cmp.items, function(xValue, xIndex, xFirst, xLast) {
         const x = {
           value: xValue,
           index: xIndex,
