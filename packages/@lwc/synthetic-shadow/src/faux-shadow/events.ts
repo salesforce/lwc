@@ -55,10 +55,14 @@ function getEventMap(elm: EventTarget): ListenerMap {
     return listenerInfo;
 }
 
+/**
+ * This function exists because events dispatched on shadow roots are actually dispatched on their
+ * hosts and listeners added to shadow roots are actually added to their hosts.
+ */
 export function getActualTarget(event: Event): EventTarget {
-    const actualTarget = eventToShadowRootMap.get(event);
-    if (!isUndefined(actualTarget)) {
-        return actualTarget;
+    const shadowRoot = eventToShadowRootMap.get(event);
+    if (!isUndefined(shadowRoot)) {
+        return shadowRoot;
     }
     return eventTargetGetter.call(event);
 }
@@ -75,10 +79,8 @@ function getWrappedShadowRootListener(
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
         shadowRootWrappedListener = function (event: Event) {
-            const currentTarget = eventCurrentTargetGetter.call(event) as HTMLElement;
-
-            // The current target is actually the shadow host in this listener.
-            const actualCurrentTarget = getShadowRoot(currentTarget);
+            const hostElement = eventCurrentTargetGetter.call(event) as HTMLElement;
+            const actualCurrentTarget = getShadowRoot(hostElement);
             const actualTarget = getActualTarget(event);
 
             if (shouldInvokeListener(event, actualTarget, actualCurrentTarget)) {
