@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
-import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
+import { eventCurrentTargetGetter } from '../env/dom';
+import { getActualTarget } from '../faux-shadow/events';
 import { isHostElement } from '../faux-shadow/shadow-root';
 
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
@@ -51,7 +52,7 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
     if (isUndefined(wrapperFn)) {
         wrapperFn = function (this: EventTarget, event: Event) {
             const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
-            const target = eventTargetGetter.call(event);
+            const actualTarget = getActualTarget(event);
 
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
@@ -60,7 +61,7 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
                 );
             }
 
-            if (!shouldInvokeListener(event, target, currentTarget)) {
+            if (!shouldInvokeListener(event, actualTarget, currentTarget)) {
                 return;
             }
 
