@@ -771,6 +771,10 @@ export default function parse(source: string, state: State): TemplateParseResult
                 removeAttribute(element, name);
             }
         });
+
+        if ((!state.shouldScopeFragmentId && element.props?.id) || element.attrs?.id) {
+            state.shouldScopeFragmentId = true;
+        }
     }
 
     function validateElement(element: IRElement) {

@@ -23,6 +23,15 @@ export default class State {
 
     idAttrData: IdAttributeData[] = [];
 
+    /**
+     * This flag indicates if a the generated code should scope the template fragment id. It is set
+     * to true if the template also contains ids.
+     *
+     * TODO [#1150]: Remove this code once we can figure out how to do this in a deterministic
+     * fashion.
+     */
+    shouldScopeFragmentId: boolean = false;
+
     constructor(code: string, config: ResolvedConfig) {
         this.code = code;
         this.config = config;
