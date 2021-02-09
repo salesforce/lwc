@@ -12,9 +12,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 3
+        key: 3,
       },
-      api_iterator($cmp.items, function (x) {
+      api_iterator($cmp.items, function (xValue, xIndex, xFirst, xLast) {
+        const x = {
+          value: xValue,
+          index: xIndex,
+          first: xFirst,
+          last: xLast,
+        };
         return [
           api_element(
             "div",

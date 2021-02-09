@@ -268,14 +268,34 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         }
 
         const { expression, iterator } = element.forOf;
+        const { name: iteratorName } = iterator;
 
-        const { expression: iterable } = bindExpression(expression, element);
-        const iterationFunction = t.functionExpression(
-            undefined,
-            [t.identifier(iterator.name)],
-            t.blockStatement([t.returnStatement(babelNode)])
+        const argsMapping = {
+            value: `${iteratorName}Value`,
+            index: `${iteratorName}Index`,
+            first: `${iteratorName}First`,
+            last: `${iteratorName}Last`,
+        };
+
+        const iteratorArgs = Object.values(argsMapping).map((arg) => t.identifier(arg));
+        const iteratorObjet = t.objectExpression(
+            Object.entries(argsMapping).map(([prop, arg]) =>
+                t.objectProperty(t.identifier(prop), t.identifier(arg))
+            )
         );
 
+        const iterationFunction = t.functionExpression(
+            undefined,
+            iteratorArgs,
+            t.blockStatement([
+                t.variableDeclaration('const', [
+                    t.variableDeclarator(t.identifier(iteratorName), iteratorObjet),
+                ]),
+                t.returnStatement(babelNode),
+            ])
+        );
+
+        const { expression: iterable } = bindExpression(expression, element);
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
