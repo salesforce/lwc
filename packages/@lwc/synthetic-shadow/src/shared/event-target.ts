@@ -6,7 +6,7 @@
  */
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
-import { isHostElement, SyntheticShadowRootInterface } from '../faux-shadow/shadow-root';
+import { isHostElement } from '../faux-shadow/shadow-root';
 
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
 const ComposedPathMap: WeakMap<Event, EventTarget[]> = new WeakMap();
@@ -22,17 +22,11 @@ function isEventListenerOrEventListenerObject(
     );
 }
 
-/**
- * Returns true if the listener wrapper handling the event should invoke the actual listener.
- * @param {Event} event - The event being handled by the listener wrapper.
- * @param {SyntheticShadowRootInterface} [shadowRoot] - If the listener wrapper is associated with
- * a synthetic shadow root, it means that event.currentTarget will return the host element instead
- * of the shadow root. In this case, pass a reference to the shadow root.
- */
-export function shouldInvokeListener(event: Event, shadowRoot?: SyntheticShadowRootInterface) {
-    const target = eventTargetGetter.call(event);
-    const currentTarget = shadowRoot || (eventCurrentTargetGetter.call(event) as EventTarget);
-
+export function shouldInvokeListener(
+    event: Event,
+    target: EventTarget,
+    currentTarget: EventTarget
+) {
     // Handle this case early because some events will return an empty array when composedPath() is
     // invoked (e.g., a disconnected instance of EventTarget, an instance of XMLHttpRequest, etc).
     if (target === currentTarget) {
@@ -56,15 +50,17 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
     let wrapperFn = EventListenerMap.get(fnOrObj);
     if (isUndefined(wrapperFn)) {
         wrapperFn = function (this: EventTarget, event: Event) {
+            const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
+            const target = eventTargetGetter.call(event);
+
             if (process.env.NODE_ENV !== 'production') {
-                const currentTarget = eventCurrentTargetGetter.call(event);
                 assert.invariant(
                     isFalse(isHostElement(currentTarget)),
                     'This routine should not be used to wrap event listeners for host elements and shadow roots.'
                 );
             }
 
-            if (!shouldInvokeListener(event)) {
+            if (!shouldInvokeListener(event, target, currentTarget)) {
                 return;
             }
 
