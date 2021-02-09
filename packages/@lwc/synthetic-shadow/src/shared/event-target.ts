@@ -29,7 +29,7 @@ function isEventListenerOrEventListenerObject(
  * a synthetic shadow root, it means that event.currentTarget will return the host element instead
  * of the shadow root. In this case, pass a reference to the shadow root.
  */
-function shouldInvokeListener(event: Event, shadowRoot?: SyntheticShadowRootInterface) {
+export function shouldInvokeListener(event: Event, shadowRoot?: SyntheticShadowRootInterface) {
     const target = eventTargetGetter.call(event);
     const currentTarget = shadowRoot || (eventCurrentTargetGetter.call(event) as EventTarget);
 
