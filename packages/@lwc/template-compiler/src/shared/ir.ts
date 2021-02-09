@@ -89,13 +89,3 @@ export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): 
     // Delegate to parent component if no binding is found at this point
     return isComponentProp(identifier, node.parent);
 }
-
-export function isBoundToIterator(identifierName: string, anode: IRNode): boolean {
-    let node: IRNode | undefined = anode;
-
-    while (node && !(isElement(node) && node.forOf?.iterator.name === identifierName)) {
-        node = node.parent;
-    }
-
-    return node !== undefined;
-}

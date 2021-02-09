@@ -902,7 +902,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function parseTemplateExpression(node: IRNode, sourceExpression: string) {
-        const expression = parseExpression(sourceExpression, node, state);
+        const expression = parseExpression(sourceExpression, state);
         const { bounded } = bindExpression(expression, node, false);
 
         for (const boundedIdentifier of bounded) {

@@ -13,9 +13,7 @@ import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors
 
 import State from '../state';
 
-import { TemplateExpression, TemplateIdentifier, IRNode, IRElement } from '../shared/types';
-
-import { isBoundToIterator } from '../shared/ir';
+import { TemplateExpression, TemplateIdentifier, IRElement } from '../shared/types';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -23,8 +21,6 @@ export const EXPRESSION_SYMBOL_END = '}';
 const VALID_EXPRESSION_RE = /^{.+}$/;
 const POTENTIAL_EXPRESSION_RE = /^.?{.+}.*$/;
 const WHITESPACES_RE = /\s/;
-
-const ITERATOR_NEXT_KEY = 'next';
 
 export function isExpression(source: string): boolean {
     return !!source.match(VALID_EXPRESSION_RE);
@@ -42,7 +38,7 @@ function isEsTreeMemberExpression(node: estree.BaseNode): node is estree.MemberE
     return node.type === 'MemberExpression';
 }
 
-function validateExpression(node: estree.BaseNode, element: IRNode, state: State) {
+function validateExpression(node: estree.BaseNode, state: State) {
     const isValidNode = isEsTreeIdentifier(node) || isEsTreeMemberExpression(node);
     invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
 
@@ -54,14 +50,12 @@ function validateExpression(node: estree.BaseNode, element: IRNode, state: State
 
         const { object, property } = node;
 
-        // Validate if the expression is modifying an iterator (only the leftmost). Ex: it.next in it.next.foo
-        if (isEsTreeIdentifier(object) && isEsTreeIdentifier(property)) {
-            invariant(
-                property.name !== ITERATOR_NEXT_KEY || !isBoundToIterator(object.name, element),
-                ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
-            );
-        } else {
-            validateExpression(object, element, state);
+        if (!isEsTreeIdentifier(object)) {
+            validateExpression(object, state);
+        }
+
+        if (!isEsTreeIdentifier(property)) {
+            validateExpression(property, state);
         }
     }
 }
@@ -105,12 +99,12 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
 }
 
 // FIXME: Avoid throwing errors and return it properly
-export function parseExpression(source: string, element: IRNode, state: State): TemplateExpression {
+export function parseExpression(source: string, state: State): TemplateExpression {
     try {
         const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
 
         validateSourceIsParsedExpression(source, parsed);
-        validateExpression(parsed, element, state);
+        validateExpression(parsed, state);
 
         return (parsed as unknown) as TemplateExpression;
     } catch (err) {
