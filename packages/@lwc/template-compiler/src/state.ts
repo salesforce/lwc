@@ -12,15 +12,13 @@ export interface IdAttributeData {
     location: MarkupData.Location;
     value: string;
 }
+
 export default class State {
-    code: string;
     config: ResolvedConfig;
 
-    ids: string[] = [];
     slots: string[] = [];
     dependencies: string[] = [];
-    secureDependencies: string[] = []; // imports patched by locker service at runtime
-
+    secureDependencies: string[] = [];
     idAttrData: IdAttributeData[] = [];
 
     /**
@@ -32,8 +30,7 @@ export default class State {
      */
     shouldScopeFragmentId: boolean = false;
 
-    constructor(code: string, config: ResolvedConfig) {
-        this.code = code;
+    constructor(config: ResolvedConfig) {
         this.config = config;
     }
 }

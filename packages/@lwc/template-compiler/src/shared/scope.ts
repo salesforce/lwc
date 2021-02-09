@@ -11,11 +11,6 @@ import { TEMPLATE_PARAMS } from './constants';
 import { isComponentProp } from './ir';
 import { IRNode, TemplateExpression } from './types';
 
-export interface BindingResult {
-    expression: types.Expression;
-    bounded: string[];
-}
-
 /**
  * Bind the passed expression to the component instance. It applies the following transformation to the expression:
  * - {value} --> {$cmp.value}
@@ -25,14 +20,13 @@ export function bindExpression(
     expression: TemplateExpression,
     node: IRNode,
     applyBinding: boolean = true
-): BindingResult {
+): TemplateExpression {
     const wrappedExpression = types.expressionStatement(expression);
-    const boundIdentifiers: Set<string> = new Set();
 
     traverse(wrappedExpression, {
         noScope: true,
         Identifier(path) {
-            const identifierNode = path.node as types.Identifier;
+            const identifierNode = path.node;
             let shouldBind = false;
 
             if (types.isMemberExpression(path.parent)) {
@@ -58,15 +52,9 @@ export function bindExpression(
                     );
                     path.replaceWith(boundedExpression);
                 }
-
-                // Save the bounded identifier
-                boundIdentifiers.add(identifierNode.name);
             }
         },
     });
 
-    return {
-        expression: wrappedExpression.expression,
-        bounded: Array.from(boundIdentifiers),
-    };
+    return wrappedExpression.expression as TemplateExpression;
 }

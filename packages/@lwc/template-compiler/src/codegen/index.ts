@@ -100,7 +100,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
                 let { value } = textNode;
 
                 if (typeof value !== 'string') {
-                    value = bindExpression(value, textNode).expression as t.MemberExpression;
+                    value = bindExpression(value, textNode) as t.MemberExpression;
                 }
 
                 (stack.peek() as t.ArrayExpression).elements.push(codeGen.genText(value));
@@ -139,7 +139,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
 
         // Check wether it has the special directive lwc:dynamic
         if (element.lwc && element.lwc.dynamic) {
-            const { expression } = bindExpression(element.lwc.dynamic, element);
+            const expression = bindExpression(element.lwc.dynamic, element);
             babelElement = codeGen.genDynamicElement(element.tag, expression, databag, children);
         } else if (isCustomElement(element)) {
             // Make sure to register the component
@@ -194,7 +194,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
         }
 
         if (!testExpression) {
-            testExpression = bindExpression(element.if!, element).expression;
+            testExpression = bindExpression(element.if!, element);
         }
 
         let leftExpression: t.Expression;
@@ -225,7 +225,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
             params.push(index);
         }
 
-        const { expression: iterable } = bindExpression(expression, element);
+        const iterable = bindExpression(expression, element);
         const iterationFunction = t.functionExpression(
             undefined,
             params,
@@ -257,6 +257,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
             )
         );
 
+        const iterable = bindExpression(expression, element);
         const iterationFunction = t.functionExpression(
             undefined,
             iteratorArgs,
@@ -268,7 +269,6 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
             ])
         );
 
-        const { expression: iterable } = bindExpression(expression, element);
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
@@ -297,7 +297,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
 
         if (t.isArrayExpression(fragmentNodes)) {
             // Bind the expression once for all the template children
-            const { expression: testExpression } = bindExpression(element.if!, element);
+            const testExpression = bindExpression(element.if!, element);
 
             return t.arrayExpression(
                 fragmentNodes.elements.map((child) =>
@@ -333,7 +333,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
 
         switch (attr.type) {
             case IRAttributeType.Expression: {
-                const { expression } = bindExpression(attr.value, element);
+                const expression = bindExpression(attr.value, element);
 
                 // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
                 if (isUsedAsAttribute && isBooleanAttribute(attr.name, tagName)) {
@@ -416,7 +416,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
 
         // Class attibute defined via string
         if (className) {
-            const { expression: classExpression } = bindExpression(className, element);
+            const classExpression = bindExpression(className, element);
             data.push(t.objectProperty(t.identifier('className'), classExpression));
         }
 
@@ -439,7 +439,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
 
         // Style attribute defined via string
         if (style) {
-            const { expression: styleExpression } = bindExpression(style, element);
+            const styleExpression = bindExpression(style, element);
             data.push(t.objectProperty(t.identifier('style'), styleExpression));
         }
 
@@ -466,7 +466,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
         // Key property on VNode
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
-            const { expression: forKeyExpression } = bindExpression(forKey, element);
+            const forKeyExpression = bindExpression(forKey, element);
             const generatedKey = codeGen.genKey(
                 t.numericLiteral(codeGen.generateKey()),
                 forKeyExpression
@@ -483,7 +483,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
         // Event handler
         if (on) {
             const onObj = objectToAST(on, (key) => {
-                const { expression: componentHandler } = bindExpression(on[key], element);
+                const componentHandler = bindExpression(on[key], element);
                 let handler: t.Expression = codeGen.genBind(componentHandler);
 
                 handler = memorizeHandler(codeGen, element, componentHandler, handler);
