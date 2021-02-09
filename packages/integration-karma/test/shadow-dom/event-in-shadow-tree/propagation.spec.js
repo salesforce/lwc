@@ -89,28 +89,11 @@ describe('event propagation', () => {
 
             const composedPath = [nodes.button, nodes.button_div, nodes['x-button'].shadowRoot];
 
-            let expectedLogs;
-            if (process.env.NATIVE_SHADOW) {
-                expectedLogs = [
-                    [nodes.button, nodes.button, composedPath],
-                    [nodes.button_div, nodes.button, composedPath],
-                    [nodes['x-button'].shadowRoot, nodes.button, composedPath],
-                ];
-            } else {
-                expectedLogs = [
-                    [nodes.button, nodes.button, composedPath],
-                    [nodes.button_div, nodes.button, composedPath],
-                    [nodes['x-button'].shadowRoot, nodes.button, composedPath],
-                    [nodes.button_group_slot, null, composedPath],
-                    [nodes.button_group_internal_slot, null, composedPath],
-                    [nodes.button_group_div, null, composedPath],
-                    [nodes.container_div, null, composedPath],
-                    [document.body, null, composedPath],
-                    [document.documentElement, null, composedPath],
-                    [document, null, composedPath],
-                    [window, null, composedPath],
-                ];
-            }
+            const expectedLogs = [
+                [nodes.button, nodes.button, composedPath],
+                [nodes.button_div, nodes.button, composedPath],
+                [nodes['x-button'].shadowRoot, nodes.button, composedPath],
+            ];
 
             expect(actualLogs).toEqual(expectedLogs);
         });
@@ -230,38 +213,18 @@ describe('event propagation', () => {
                 nodes['x-container'].shadowRoot,
             ];
 
-            let expectedLogs;
-            if (process.env.NATIVE_SHADOW) {
-                expectedLogs = [
-                    [nodes['x-button'], nodes['x-button'], composedPath],
-                    [nodes.button_group_slot, nodes['x-button'], composedPath],
-                    [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
-                    [nodes.button_group_div, nodes['x-button'], composedPath],
-                    [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group'], nodes['x-button'], composedPath],
-                    [nodes.container_div, nodes['x-button'], composedPath],
-                    [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
-                ];
-            } else {
-                expectedLogs = [
-                    [nodes['x-button'], nodes['x-button'], composedPath],
-                    [nodes.button_group_slot, nodes['x-button'], composedPath],
-                    [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
-                    [nodes.button_group_div, nodes['x-button'], composedPath],
-                    [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group'], nodes['x-button'], composedPath],
-                    [nodes.container_div, nodes['x-button'], composedPath],
-                    [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
-                    [document.body, null, composedPath],
-                    [document.documentElement, null, composedPath],
-                    [document, null, composedPath],
-                    [window, null, composedPath],
-                ];
-            }
+            const expectedLogs = [
+                [nodes['x-button'], nodes['x-button'], composedPath],
+                [nodes.button_group_slot, nodes['x-button'], composedPath],
+                [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
+                [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
+                [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
+                [nodes.button_group_div, nodes['x-button'], composedPath],
+                [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
+                [nodes['x-button-group'], nodes['x-button'], composedPath],
+                [nodes.container_div, nodes['x-button'], composedPath],
+                [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
+            ];
 
             expect(actualLogs).toEqual(expectedLogs);
         });

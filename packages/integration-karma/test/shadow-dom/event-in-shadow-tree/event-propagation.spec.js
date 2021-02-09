@@ -223,14 +223,7 @@ describe('non-composed and bubbling event propagation in nested shadow tree', ()
                 [nodes['div-manual'], nodes['span-manual'], composedPath],
                 [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
             ];
-            if (!process.env.NATIVE_SHADOW) {
-                // TODO [#1569]: Listeners on the following targets should not be invoked when the event is non-composed.
-                expectedLogs.push(
-                    [document.body, null, composedPath],
-                    [document.documentElement, null, composedPath],
-                    [document, null, composedPath]
-                );
-            }
+
             expect(logs).toEqual(expectedLogs);
         });
     });

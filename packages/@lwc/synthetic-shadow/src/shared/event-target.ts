@@ -5,10 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
-import { eventCurrentTargetGetter } from '../env/dom';
-import { eventToShadowRootMap, isHostElement } from '../faux-shadow/shadow-root';
+import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
+import { isHostElement } from '../faux-shadow/shadow-root';
 
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
+const ComposedPathMap: WeakMap<Event, EventTarget[]> = new WeakMap();
 
 function isEventListenerOrEventListenerObject(
     fnOrObj: unknown
@@ -37,13 +38,20 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
                 );
             }
 
-            const { composed } = event;
+            const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
+            const target = eventTargetGetter.call(event);
 
-            // TODO [#2121]: We should also be filtering out other non-composed events at this point
-            // but we only do so for events dispatched via shadowRoot.dispatchEvent() to preserve
-            // the current behavior.
-            if (eventToShadowRootMap.has(event) && isFalse(composed)) {
-                return;
+            // This check is not meant to be a micro-optimization. It accounts for the edge case
+            // where a listener is invoked on an instance of EventTarget (i.e., new EventTarget()).
+            if (currentTarget !== target) {
+                let composedPath = ComposedPathMap.get(event);
+                if (isUndefined(composedPath)) {
+                    composedPath = event.composedPath();
+                    ComposedPathMap.set(event, composedPath);
+                }
+                if (!composedPath.includes(currentTarget)) {
+                    return;
+                }
             }
 
             return isFunction(fnOrObj)
