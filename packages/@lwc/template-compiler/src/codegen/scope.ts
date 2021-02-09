@@ -7,9 +7,9 @@
 import * as types from '@babel/types';
 import traverse from '@babel/traverse';
 
-import { TEMPLATE_PARAMS } from './constants';
-import { isComponentProp } from './ir';
-import { IRNode, TemplateExpression } from './types';
+import { TEMPLATE_PARAMS } from '../shared/constants';
+import { isComponentProp } from '../shared/ir';
+import { IRNode, TemplateExpression } from '../shared/types';
 
 /**
  * Bind the passed expression to the component instance. It applies the following transformation to the expression:

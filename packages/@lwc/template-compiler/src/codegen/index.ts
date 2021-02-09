@@ -8,16 +8,15 @@ import generate from '@babel/generator';
 import * as t from '@babel/types';
 import template from '@babel/template';
 import * as parse5 from 'parse5-with-errors';
+
 import { isBooleanAttribute } from '@lwc/shared';
+import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 
 import State from '../state';
 
-import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
-
-import { bindExpression } from '../shared/scope';
-
+import Stack from '../shared/stack';
 import { traverse, isCustomElement } from '../shared/ir';
-
+import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
     IRNode,
     IRElement,
@@ -27,8 +26,18 @@ import {
     CompilationOutput,
 } from '../shared/types';
 
-import Stack from '../shared/stack';
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isAttribute,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
 
+import CodeGen from './codegen';
+import { bindExpression } from './scope';
+import { format as formatModule } from './formatters/module';
+import { format as formatFunction } from './formatters/function';
 import {
     identifierFromComponentName,
     objectToAST,
@@ -39,20 +48,6 @@ import {
     memorizeHandler,
     containsDynamicChildren,
 } from './helpers';
-
-import CodeGen from './codegen';
-
-import { format as formatModule } from './formatters/module';
-import { format as formatFunction } from './formatters/function';
-import {
-    isAllowedFragOnlyUrlsXHTML,
-    isAttribute,
-    isFragmentOnlyUrl,
-    isIdReferencingAttribute,
-    isSvgUseHref,
-} from '../parser/attribute';
-
-import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 
 const TEMPLATE_FUNCTION = template(
     `function ${TEMPLATE_FUNCTION_NAME}(
