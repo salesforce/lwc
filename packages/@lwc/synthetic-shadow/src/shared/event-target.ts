@@ -6,7 +6,7 @@
  */
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
-import { isHostElement } from '../faux-shadow/shadow-root';
+import { isHostElement, SyntheticShadowRootInterface } from '../faux-shadow/shadow-root';
 
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
 const ComposedPathMap: WeakMap<Event, EventTarget[]> = new WeakMap();
@@ -20,6 +20,32 @@ function isEventListenerOrEventListenerObject(
             !isNull(fnOrObj) &&
             isFunction((fnOrObj as EventListenerObject).handleEvent))
     );
+}
+
+/**
+ * Returns true if the listener wrapper handling the event should invoke the actual listener.
+ * @param {Event} event - The event being handled by the listener wrapper.
+ * @param {SyntheticShadowRootInterface} [shadowRoot] - If the listener wrapper is associated with
+ * a synthetic shadow root, it means that event.currentTarget will return the host element instead
+ * of the shadow root. In this case, pass a reference to the shadow root.
+ */
+function shouldInvokeListener(event: Event, shadowRoot?: SyntheticShadowRootInterface) {
+    const target = eventTargetGetter.call(event);
+    const currentTarget = shadowRoot || (eventCurrentTargetGetter.call(event) as EventTarget);
+
+    // Handle this case early because some events will return an empty array when composedPath() is
+    // invoked (e.g., a disconnected instance of EventTarget, an instance of XMLHttpRequest, etc).
+    if (target === currentTarget) {
+        return true;
+    }
+
+    let composedPath = ComposedPathMap.get(event);
+    if (isUndefined(composedPath)) {
+        composedPath = event.composedPath();
+        ComposedPathMap.set(event, composedPath);
+    }
+
+    return composedPath.includes(currentTarget);
 }
 
 export function getEventListenerWrapper(fnOrObj: unknown) {
@@ -38,20 +64,8 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
                 );
             }
 
-            const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
-            const target = eventTargetGetter.call(event);
-
-            // This check is not meant to be a micro-optimization. It accounts for the edge case
-            // where a listener is invoked on an instance of EventTarget (i.e., new EventTarget()).
-            if (currentTarget !== target) {
-                let composedPath = ComposedPathMap.get(event);
-                if (isUndefined(composedPath)) {
-                    composedPath = event.composedPath();
-                    ComposedPathMap.set(event, composedPath);
-                }
-                if (!composedPath.includes(currentTarget)) {
-                    return;
-                }
+            if (!shouldInvokeListener(event)) {
+                return;
             }
 
             return isFunction(fnOrObj)
