@@ -7,7 +7,7 @@
 import { Root } from 'postcss-selector-parser';
 
 const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
-const UNSUPPORTED_SELECTORS = new Set(['::slotted', ':root', ':host-context']);
+const UNSUPPORTED_SELECTORS = new Set([':root', ':host-context']);
 const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iterator:*/];
 
 function validateSelectors(root: Root) {
