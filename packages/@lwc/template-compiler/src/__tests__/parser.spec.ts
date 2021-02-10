@@ -22,7 +22,7 @@ const EXPECTED_LOCATION = expect.objectContaining({
 
 function parseTemplate(src: string): any {
     const config = mergeConfig({});
-    const state = new State(src, config);
+    const state = new State(config);
 
     const res = parse(src, state);
     return {
@@ -659,24 +659,6 @@ describe('props and attributes', () => {
 });
 
 describe('metadata', () => {
-    it('usedIds simple', () => {
-        const { state } = parseTemplate(
-            `<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`
-        );
-        expect(Array.from(state.ids)).toEqual(['visible', 'titleClass', 'text']);
-    });
-
-    it('usedIds with expression', () => {
-        const { state } = parseTemplate(`<template>
-            <div for:each={state.items} for:item="item">
-                <template if:true={item.visible}>
-                    {componentProp} - {item.value}
-                </template>
-            </div>
-        </template>`);
-        expect(Array.from(state.ids)).toEqual(['state', 'componentProp']);
-    });
-
     it('slots', () => {
         const { state } = parseTemplate(`<template>
             <slot></slot>
