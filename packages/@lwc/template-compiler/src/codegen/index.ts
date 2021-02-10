@@ -14,8 +14,7 @@ import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 
 import State from '../state';
 
-import Stack from '../shared/stack';
-import { traverse, isCustomElement } from '../shared/ir';
+import { isCustomElement, isElement } from '../shared/ir';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
     IRNode,
@@ -26,18 +25,8 @@ import {
     CompilationOutput,
 } from '../shared/types';
 
-import {
-    isAllowedFragOnlyUrlsXHTML,
-    isAttribute,
-    isFragmentOnlyUrl,
-    isIdReferencingAttribute,
-    isSvgUseHref,
-} from '../parser/attribute';
-
 import CodeGen from './codegen';
 import { bindExpression } from './scope';
-import { format as formatModule } from './formatters/module';
-import { format as formatFunction } from './formatters/function';
 import {
     identifierFromComponentName,
     objectToAST,
@@ -48,6 +37,17 @@ import {
     memorizeHandler,
     containsDynamicChildren,
 } from './helpers';
+
+import { format as formatModule } from './formatters/module';
+import { format as formatFunction } from './formatters/function';
+
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isAttribute,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
 
 const TEMPLATE_FUNCTION = template(
     `function ${TEMPLATE_FUNCTION_NAME}(
@@ -85,62 +85,23 @@ function generateContext(element: IRElement, data: t.ObjectProperty[]) {
     data.push(t.objectProperty(t.identifier('context'), t.objectExpression(contextExpressions)));
 }
 
-function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
-    const stack = new Stack<t.Expression>();
-    stack.push(t.arrayExpression([]));
 
-    traverse(root, {
-        text: {
-            exit(textNode: IRText) {
-                let { value } = textNode;
-
-                if (typeof value !== 'string') {
-                    value = bindExpression(value, textNode) as t.MemberExpression;
-                }
-
-                (stack.peek() as t.ArrayExpression).elements.push(codeGen.genText(value));
-            },
-        },
-
-        element: {
-            enter() {
-                // Create a new frame when visiting a child
-                stack.push(t.arrayExpression([]));
-            },
-
-            exit(element: IRElement) {
-                let children = stack.pop();
-
-                // Apply children flattening
-                if (shouldFlatten(element) && t.isArrayExpression(children)) {
-                    children =
-                        element.children.length === 1 && !containsDynamicChildren(element) // if it contains only one dynamic we need to flatten anyway
-                            ? (children.elements[0] as t.Expression)
-                            : codeGen.genFlatten([children]);
-                }
-
-                // Applied the transformation to itself
-                isTemplate(element)
-                    ? transformTemplate(element, children)
-                    : transformElement(element, children);
-            },
-        },
-    });
-
-    /** Transforms IRElement to Javascript AST node and add it at the to of the stack  */
-    function transformElement(element: IRElement, children: t.Expression) {
+function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expression {
+    function transformElement(element: IRElement): t.Expression {
         const databag = elementDataBag(element);
-        let babelElement: t.Expression;
+        let res: t.Expression;
+
+        const children = transformChildren(element.children);
 
         // Check wether it has the special directive lwc:dynamic
         if (element.lwc && element.lwc.dynamic) {
             const expression = bindExpression(element.lwc.dynamic, element);
-            babelElement = codeGen.genDynamicElement(element.tag, expression, databag, children);
+            res = codeGen.genDynamicElement(element.tag, expression, databag, children);
         } else if (isCustomElement(element)) {
             // Make sure to register the component
             const componentClassName = element.component!;
 
-            babelElement = codeGen.genCustomElement(
+            res = codeGen.genCustomElement(
                 element.tag,
                 identifierFromComponentName(componentClassName),
                 databag,
@@ -149,32 +110,65 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
         } else if (isSlot(element)) {
             const defaultSlot = children;
 
-            babelElement = codeGen.getSlot(element.slotName!, databag, defaultSlot);
+            res = codeGen.getSlot(element.slotName!, databag, defaultSlot);
         } else {
-            babelElement = codeGen.genElement(element.tag, databag, children);
+            res = codeGen.genElement(element.tag, databag, children);
         }
 
-        babelElement = applyInlineIf(element, babelElement);
-        babelElement = applyInlineFor(element, babelElement);
+        res = applyInlineIf(element, res);
+        res = applyInlineFor(element, res);
 
-        (stack.peek() as t.ArrayExpression).elements.push(babelElement);
+        return res;
     }
 
-    /** Transform template IRElement and add it at the top of the stack */
-    function transformTemplate(element: IRElement, children: t.Expression) {
-        let expression = applyTemplateIf(element, children);
+    function transformTemplate(
+        element: IRElement
+    ): t.Expression | Array<null | t.Expression | t.SpreadElement> {
+        const children = transformChildren(element.children);
+
+        let res = applyTemplateIf(element, children);
 
         if (element.forEach) {
-            expression = applyTemplateFor(element, expression);
-            (stack.peek() as t.ArrayExpression).elements.push(expression);
+            res = applyTemplateFor(element, res);
         } else if (element.forOf) {
-            expression = applyTemplateForOf(element, expression);
-            (stack.peek() as t.ArrayExpression).elements.push(expression);
-        } else if (t.isArrayExpression(expression) && element.if) {
-            // Inject inlined if elements directly
-            return (stack.peek() as t.ArrayExpression).elements.push(...expression.elements);
+            res = applyTemplateForOf(element, res);
+        }
+
+        if (t.isArrayExpression(res) && element.if) {
+            return res.elements;
         } else {
-            (stack.peek() as t.ArrayExpression).elements.push(expression);
+            return res;
+        }
+    }
+
+    function transformText(text: IRText): t.Expression {
+        const { value } = text;
+        return codeGen.genText(
+            typeof value === 'string' ? value : bindExpression(value, text)
+        );
+    }
+
+    function transformChildren(children: IRNode[]): t.Expression {
+        const res = children.reduce<t.Expression[]>((acc, child) => {
+            let expr;
+
+            if (isElement(child)) {
+                expr = isTemplate(child) ? transformTemplate(child) : transformElement(child);
+            } else {
+                expr = transformText(child);
+            }
+
+            return acc.concat(expr as t.Expression[]);
+        }, []);
+
+        if (shouldFlatten(children)) {
+            if (children.length === 1 && !containsDynamicChildren(children)) {
+                return res[0];
+            } else {
+                return codeGen.genFlatten([t.arrayExpression(res)]);
+            }
+        } else {
+            return t.arrayExpression(res);
         }
     }
 
@@ -491,7 +485,7 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
         return t.objectExpression(data);
     }
 
-    return (stack.peek() as t.ArrayExpression).elements[0] as t.Expression;
+    return transformChildren(root.children);
 }
 
 function generateTemplateFunction(templateRoot: IRElement, state: State): t.FunctionDeclaration {

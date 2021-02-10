@@ -3,8 +3,8 @@ import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    d: api_dynamic,
     k: api_key,
+    d: api_dynamic,
     c: api_custom_element,
     i: api_iterator,
     h: api_element
@@ -13,14 +13,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "ul",
       {
-        key: 1
+        key: 0
       },
       api_iterator($cmp.items, function(item) {
         return api_custom_element(
           "ns-item",
           _nsItem,
           {
-            key: api_key(0, item.key)
+            key: api_key(1, item.key)
           },
           [api_dynamic(item.value)]
         );
