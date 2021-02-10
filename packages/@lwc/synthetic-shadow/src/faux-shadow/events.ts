@@ -14,7 +14,6 @@ import {
     forEach,
     isFalse,
     isFunction,
-    isTrue,
     isUndefined,
     toString,
 } from '@lwc/shared';
@@ -26,6 +25,7 @@ import {
 } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
+import { shouldInvokeListener } from '../shared/event-target';
 
 export enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,
@@ -55,6 +55,18 @@ function getEventMap(elm: EventTarget): ListenerMap {
     return listenerInfo;
 }
 
+/**
+ * This function exists because events dispatched on shadow roots are actually dispatched on their
+ * hosts and listeners added to shadow roots are actually added to their hosts.
+ */
+export function getActualTarget(event: Event): EventTarget {
+    const shadowRoot = eventToShadowRootMap.get(event);
+    if (!isUndefined(shadowRoot)) {
+        return shadowRoot;
+    }
+    return eventTargetGetter.call(event);
+}
+
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
 function getWrappedShadowRootListener(
@@ -67,7 +79,11 @@ function getWrappedShadowRootListener(
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
         shadowRootWrappedListener = function (event: Event) {
-            if (shouldInvokeShadowRootListener(event)) {
+            const hostElement = eventCurrentTargetGetter.call(event) as HTMLElement;
+            const actualCurrentTarget = getShadowRoot(hostElement);
+            const actualTarget = getActualTarget(event);
+
+            if (shouldInvokeListener(event, actualTarget, actualCurrentTarget)) {
                 listener.call(sr, event);
             }
         } as WrappedListener;
@@ -86,7 +102,10 @@ function getWrappedCustomElementListener(elm: Element, listener: EventListener):
     let customElementWrappedListener = customElementEventListenerMap.get(listener);
     if (isUndefined(customElementWrappedListener)) {
         customElementWrappedListener = function (event: Event) {
-            if (shouldInvokeCustomElementListener(event)) {
+            const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
+            const actualTarget = getActualTarget(event);
+
+            if (shouldInvokeListener(event, actualTarget, currentTarget)) {
                 // all handlers on the custom element should be called with undefined 'this'
                 listener.call(elm, event);
             }
@@ -176,40 +195,6 @@ function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
             removeEventListener.call(elm, type, domListener);
         }
     }
-}
-
-function shouldInvokeCustomElementListener(event: Event): boolean {
-    const { composed } = event;
-
-    // Listeners on host elements should always be invoked for {composed: true} events.
-    if (isTrue(composed)) {
-        return true;
-    }
-
-    const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
-    const composedPath = event.composedPath();
-    return composedPath.includes(currentTarget);
-}
-
-function shouldInvokeShadowRootListener(event: Event): boolean {
-    const { composed } = event;
-    const target = eventTargetGetter.call(event);
-    const currentTarget = eventCurrentTargetGetter.call(event);
-
-    // If the event was dispatched on the host or its root.
-    if (target === currentTarget) {
-        // Invoke the listener if the event was dispatched directly on the root.
-        return eventToShadowRootMap.get(event) === getShadowRoot(target as Element);
-    }
-
-    // At this point the event is {bubbles: true} and was dispatched from a shadow-including descendant node.
-    if (isTrue(composed)) {
-        // Invoke the listener if the event is {composed: true}.
-        return true;
-    }
-
-    const composedPath = event.composedPath();
-    return composedPath.includes(getShadowRoot(currentTarget as Element));
 }
 
 export function addCustomElementEventListener(
