@@ -772,7 +772,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
         });
 
-        if ((!state.shouldScopeFragmentId && element.props?.id) || element.attrs?.id) {
+        if (!state.shouldScopeFragmentId && (element.props?.id || element.attrs?.id)) {
             state.shouldScopeFragmentId = true;
         }
     }
