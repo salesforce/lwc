@@ -14,7 +14,7 @@ import State from '../state';
 
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 
-import { bindExpression, rewriteIteratorToArguments } from '../shared/scope';
+import { bindExpression } from '../shared/scope';
 
 import { traverse, isCustomElement } from '../shared/ir';
 
@@ -243,28 +243,33 @@ function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
         const { expression, iterator } = element.forOf;
         const { name: iteratorName } = iterator;
 
-        const argNames: { [key: string]: t.Identifier } = {
-            value: t.identifier(`${iteratorName}Value`),
-            index: t.identifier(`${iteratorName}Index`),
-            first: t.identifier(`${iteratorName}First`),
-            last: t.identifier(`${iteratorName}Last`),
+        const argsMapping = {
+            value: `${iteratorName}Value`,
+            index: `${iteratorName}Index`,
+            first: `${iteratorName}First`,
+            last: `${iteratorName}Last`,
         };
 
-        const functionParams = Object.keys(argNames).map((key) => argNames[key]);
+        const iteratorArgs = Object.values(argsMapping).map((arg) => t.identifier(arg));
+        const iteratorObjet = t.objectExpression(
+            Object.entries(argsMapping).map(([prop, arg]) =>
+                t.objectProperty(t.identifier(prop), t.identifier(arg))
+            )
+        );
+
         const iterationFunction = t.functionExpression(
             undefined,
-            functionParams,
-            t.blockStatement([t.returnStatement(babelNode)])
+            iteratorArgs,
+            t.blockStatement([
+                t.variableDeclaration('const', [
+                    t.variableDeclarator(t.identifier(iteratorName), iteratorObjet),
+                ]),
+                t.returnStatement(babelNode),
+            ])
         );
 
         const { expression: iterable } = bindExpression(expression, element);
-        const { expression: mappedIterationFunction } = rewriteIteratorToArguments(
-            iterationFunction,
-            iterator,
-            argNames
-        );
-
-        return codeGen.genIterator(iterable, mappedIterationFunction);
+        return codeGen.genIterator(iterable, iterationFunction);
     }
 
     function applyTemplateForOf(element: IRElement, fragmentNodes: t.Expression) {

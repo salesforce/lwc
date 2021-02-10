@@ -9,12 +9,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1
       },
       api_iterator($cmp.items, function(xValue, xIndex, xFirst, xLast) {
+        const x = {
+          value: xValue,
+          index: xIndex,
+          first: xFirst,
+          last: xLast,
+        };
         return api_element(
           "p",
           {
-            key: api_key(0, xValue)
+            key: api_key(0, x.value)
           },
-          [api_dynamic(xValue)]
+          [api_dynamic(x.value)]
         );
       })
     )

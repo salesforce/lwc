@@ -16,39 +16,6 @@ export interface BindingResult {
     bounded: string[];
 }
 
-export interface MappedFunctionResult {
-    expression: types.FunctionExpression;
-    error?: string;
-}
-
-/**
- * Rewrite member expressions in function body that are referencing iterator.
- * - function (iteratorIndex) { iterator.index } -> function (iteratorIndex) { iteratorIndex }
- */
-export function rewriteIteratorToArguments(
-    expression: types.FunctionExpression,
-    identifier: types.Identifier,
-    argNames: { [key: string]: types.Identifier }
-): MappedFunctionResult {
-    traverse(expression, {
-        noScope: true,
-        MemberExpression(path) {
-            const memberNode = path.node as types.MemberExpression;
-            const memberObject = memberNode.object as types.Identifier;
-            const memberProperty = memberNode.property as types.Identifier;
-            const rewrite = memberObject.name === identifier.name;
-
-            if (rewrite && argNames[memberProperty.name]) {
-                path.replaceWith(argNames[memberProperty.name]);
-            }
-        },
-    });
-
-    return {
-        expression,
-    };
-}
-
 /**
  * Bind the passed expression to the component instance. It applies the following transformation to the expression:
  * - {value} --> {$cmp.value}
