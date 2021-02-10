@@ -90,32 +90,9 @@ function generateContext(element: IRElement, data: t.ObjectProperty[]) {
     data.push(t.objectProperty(t.identifier('context'), t.objectExpression(contextExpressions)));
 }
 
-function initialPassToCheckForIds(root: IRNode) {
-    let templateContainsId = false;
-    traverse(root, {
-        element: {
-            exit(element: IRElement) {
-                const { attrs, props } = element;
-                if (attrs && attrs.id) {
-                    templateContainsId = true;
-                }
-                if (props && props.id) {
-                    templateContainsId = true;
-                }
-            },
-        },
-    });
-    return templateContainsId;
-}
-
-function transform(root: IRNode, codeGen: CodeGen): t.Expression {
+function transform(root: IRNode, codeGen: CodeGen, state: State): t.Expression {
     const stack = new Stack<t.Expression>();
     stack.push(t.arrayExpression([]));
-
-    // Initial scan to detect any id attributes in order to avoid manging href
-    // values in this case. This is only temporary:
-    // https://github.com/salesforce/lwc/issues/1150
-    const templateContainsId = initialPassToCheckForIds(root);
 
     traverse(root, {
         text: {
@@ -150,18 +127,14 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 // Applied the transformation to itself
                 isTemplate(element)
                     ? transformTemplate(element, children)
-                    : transformElement(element, children, templateContainsId);
+                    : transformElement(element, children);
             },
         },
     });
 
     /** Transforms IRElement to Javascript AST node and add it at the to of the stack  */
-    function transformElement(
-        element: IRElement,
-        children: t.Expression,
-        templateContainsId: boolean
-    ) {
-        const databag = elementDataBag(element, templateContainsId);
+    function transformElement(element: IRElement, children: t.Expression) {
+        const databag = elementDataBag(element);
         let babelElement: t.Expression;
 
         // Check wether it has the special directive lwc:dynamic
@@ -349,11 +322,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         return t.templateLiteral(quasis, expressions);
     }
 
-    function computeAttrValue(
-        attr: IRAttribute,
-        element: IRElement,
-        templateContainsId: boolean
-    ): t.Expression {
+    function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
         const { namespaceURI, tagName } = element.__original as parse5.AST.Default.Element;
         const isUsedAsAttribute = isAttribute(element, attr.name);
 
@@ -374,7 +343,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                     return codeGen.genScopedId(expression);
                 }
                 if (
-                    templateContainsId &&
+                    state.shouldScopeFragmentId &&
                     isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI)
                 ) {
                     return codeGen.genScopedFragId(expression);
@@ -409,7 +378,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
                 }
                 if (
-                    templateContainsId &&
+                    state.shouldScopeFragmentId &&
                     isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI) &&
                     isFragmentOnlyUrl(attr.value)
                 ) {
@@ -436,7 +405,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         }
     }
 
-    function elementDataBag(element: IRElement, templateContainsId: boolean): t.ObjectExpression {
+    function elementDataBag(element: IRElement): t.ObjectExpression {
         const data: t.ObjectProperty[] = [];
         const { classMap, className, style, styleMap, attrs, props, on, forKey, lwc } = element;
 
@@ -472,7 +441,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         // Attributes
         if (attrs) {
             const attrsObj = objectToAST(attrs, (key) => {
-                return computeAttrValue(attrs[key], element, templateContainsId);
+                return computeAttrValue(attrs[key], element);
             });
             data.push(t.objectProperty(t.identifier('attrs'), attrsObj));
         }
@@ -480,7 +449,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         // Properties
         if (props) {
             const propsObj = objectToAST(props, (key) => {
-                return computeAttrValue(props[key], element, templateContainsId);
+                return computeAttrValue(props[key], element);
             });
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
@@ -525,9 +494,9 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
     return (stack.peek() as t.ArrayExpression).elements[0] as t.Expression;
 }
 
-function generateTemplateFunction(templateRoot: IRElement): t.FunctionDeclaration {
+function generateTemplateFunction(templateRoot: IRElement, state: State): t.FunctionDeclaration {
     const codeGen = new CodeGen();
-    const statement = transform(templateRoot, codeGen);
+    const statement = transform(templateRoot, codeGen, state);
 
     const apis = destructuringAssignmentFromObject(
         t.identifier(TEMPLATE_PARAMS.API),
@@ -573,7 +542,7 @@ function format({ config }: State) {
 }
 
 export default function (templateRoot: IRElement, state: State): CompilationOutput {
-    const templateFunction = generateTemplateFunction(templateRoot);
+    const templateFunction = generateTemplateFunction(templateRoot, state);
     const formatter = format(state);
     const program = formatter(templateFunction, state);
 
