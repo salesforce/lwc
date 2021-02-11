@@ -60,19 +60,12 @@ function getEventMap(elm: EventTarget): ListenerMap {
  * hosts and listeners added to shadow roots are actually added to their hosts.
  */
 export function getActualTarget(event: Event): EventTarget {
-    const shadowRoot = eventToShadowRootMap.get(event);
-    if (!isUndefined(shadowRoot)) {
-        return shadowRoot;
-    }
-    return eventTargetGetter.call(event);
+    return eventToShadowRootMap.get(event) ?? eventTargetGetter.call(event);
 }
 
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedShadowRootListener(
-    sr: SyntheticShadowRootInterface,
-    listener: EventListener
-): WrappedListener {
+function getWrappedShadowRootListener(listener: EventListener): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
@@ -84,7 +77,7 @@ function getWrappedShadowRootListener(
             const actualTarget = getActualTarget(event);
 
             if (shouldInvokeListener(event, actualTarget, actualCurrentTarget)) {
-                listener.call(sr, event);
+                listener.call(actualCurrentTarget, event);
             }
         } as WrappedListener;
         shadowRootWrappedListener.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
@@ -95,7 +88,7 @@ function getWrappedShadowRootListener(
 
 const customElementEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedCustomElementListener(elm: Element, listener: EventListener): WrappedListener {
+function getWrappedCustomElementListener(listener: EventListener): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
@@ -107,7 +100,7 @@ function getWrappedCustomElementListener(elm: Element, listener: EventListener):
 
             if (shouldInvokeListener(event, actualTarget, currentTarget)) {
                 // all handlers on the custom element should be called with undefined 'this'
-                listener.call(elm, event);
+                listener.call(currentTarget, event);
             }
         } as WrappedListener;
         customElementWrappedListener.placement = EventListenerContext.CUSTOM_ELEMENT_LISTENER;
@@ -214,7 +207,7 @@ export function addCustomElementEventListener(
     }
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(this, listener);
+        const wrappedListener = getWrappedCustomElementListener(listener);
         attachDOMListener(this, type, wrappedListener);
     }
 }
@@ -227,7 +220,7 @@ export function removeCustomElementEventListener(
 ) {
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(this, listener);
+        const wrappedListener = getWrappedCustomElementListener(listener);
         detachDOMListener(this, type, wrappedListener);
     }
 }
@@ -250,7 +243,7 @@ export function addShadowRootEventListener(
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
         const elm = getHost(sr);
-        const wrappedListener = getWrappedShadowRootListener(sr, listener);
+        const wrappedListener = getWrappedShadowRootListener(listener);
         attachDOMListener(elm, type, wrappedListener);
     }
 }
@@ -264,7 +257,7 @@ export function removeShadowRootEventListener(
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
         const elm = getHost(sr);
-        const wrappedListener = getWrappedShadowRootListener(sr, listener);
+        const wrappedListener = getWrappedShadowRootListener(listener);
         detachDOMListener(elm, type, wrappedListener);
     }
 }

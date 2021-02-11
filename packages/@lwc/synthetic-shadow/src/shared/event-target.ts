@@ -51,7 +51,8 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
     let wrapperFn = EventListenerMap.get(fnOrObj);
     if (isUndefined(wrapperFn)) {
         wrapperFn = function (this: EventTarget, event: Event) {
-            const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
+            //currentTarget can't be null as this function is invoked from an event listener
+            const currentTarget = eventCurrentTargetGetter.call(event)!;
             const actualTarget = getActualTarget(event);
 
             if (process.env.NODE_ENV !== 'production') {
