@@ -400,4 +400,58 @@ describe('event propagation', () => {
             expect(actualLogs).toEqual(expectedLogs);
         });
     });
+
+    describe('event listener should always be invoked in actual current target context', () => {
+        let a, aShadow, b, bShadow;
+        let logs = [];
+        let expectedLogs = [];
+
+        beforeEach(() => {
+            a = document.createElement('div');
+            a.setAttribute('id', 'a');
+            aShadow = a.attachShadow({ mode: 'open' });
+
+            b = document.createElement('div');
+            b.setAttribute('id', 'b');
+            bShadow = b.attachShadow({ mode: 'open' });
+        });
+
+        it('for shadow root', () => {
+            logs = [];
+            expectedLogs = [
+                ['a', aShadow],
+                ['b', bShadow],
+            ];
+            const handler = function (evt) {
+                logs.push([this.host.id, evt.currentTarget]);
+            };
+
+            aShadow.addEventListener('test', handler);
+            bShadow.addEventListener('test', handler);
+
+            aShadow.dispatchEvent(new Event('test'));
+            bShadow.dispatchEvent(new Event('test'));
+
+            expect(logs).toEqual(expectedLogs);
+        });
+
+        it('for host element', () => {
+            logs = [];
+            expectedLogs = [
+                ['a', a],
+                ['b', b],
+            ];
+            const handler = function (evt) {
+                logs.push([this.id, evt.currentTarget]);
+            };
+
+            a.addEventListener('test', handler);
+            b.addEventListener('test', handler);
+
+            a.dispatchEvent(new Event('test'));
+            b.dispatchEvent(new Event('test'));
+
+            expect(logs).toEqual(expectedLogs);
+        });
+    });
 });
