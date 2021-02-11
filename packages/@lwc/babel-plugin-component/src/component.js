@@ -20,9 +20,7 @@ function getBaseName(classPath) {
 }
 
 function importDefaultTemplate(path, state) {
-    const { file } = state;
-    const { opts } = file;
-    const { filename } = opts;
+    const { filename } = state.file.opts;
     const componentName = getBaseName(filename);
     return moduleImports.addDefault(path, `./${componentName}.html`, {
         nameHint: TEMPLATE_KEY,
@@ -41,7 +39,7 @@ function needsComponentRegistration(path) {
 
 module.exports = function ({ types: t }) {
     function createRegisterComponent(declarationPath, state) {
-        const id = moduleImports.addNamed(
+        const registerComponentId = moduleImports.addNamed(
             declarationPath,
             REGISTER_COMPONENT_ID,
             LWC_PACKAGE_ALIAS
@@ -57,11 +55,11 @@ module.exports = function ({ types: t }) {
                 node = node.id;
             } else {
                 // if it does not have an id, we can treat it as a ClassExpression
-                node.type = 'ClassExpression';
+                t.toExpression(node);
             }
         }
 
-        return t.callExpression(id, [
+        return t.callExpression(registerComponentId, [
             node,
             t.objectExpression([t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier)]),
         ]);
