@@ -7,8 +7,8 @@
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
 import { getActualTarget } from '../faux-shadow/events';
-import { isHostElement } from '../faux-shadow/shadow-root';
-
+import { eventToShadowRootMap, isHostElement } from '../faux-shadow/shadow-root';
+import featureFlags from '@lwc/features';
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
 const ComposedPathMap: WeakMap<Event, EventTarget[]> = new WeakMap();
 
@@ -39,7 +39,6 @@ export function shouldInvokeListener(
         composedPath = event.composedPath();
         ComposedPathMap.set(event, composedPath);
     }
-
     return composedPath.includes(currentTarget);
 }
 
@@ -50,26 +49,51 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
 
     let wrapperFn = EventListenerMap.get(fnOrObj);
     if (isUndefined(wrapperFn)) {
-        wrapperFn = function (this: EventTarget, event: Event) {
-            //currentTarget can't be null as this function is invoked from an event listener
-            const currentTarget = eventCurrentTargetGetter.call(event)!;
-            const actualTarget = getActualTarget(event);
+        if (featureFlags.ENABLE_COMPOSED_PATH_FIX_REVERT) {
+            wrapperFn = function (this: EventTarget, event: Event) {
+                if (process.env.NODE_ENV !== 'production') {
+                    const currentTarget = eventCurrentTargetGetter.call(event);
+                    assert.invariant(
+                        isFalse(isHostElement(currentTarget)),
+                        'This routine should not be used to wrap event listeners for host elements and shadow roots.'
+                    );
+                }
 
-            if (process.env.NODE_ENV !== 'production') {
-                assert.invariant(
-                    isFalse(isHostElement(currentTarget)),
-                    'This routine should not be used to wrap event listeners for host elements and shadow roots.'
-                );
-            }
+                const { composed } = event;
 
-            if (!shouldInvokeListener(event, actualTarget, currentTarget)) {
-                return;
-            }
+                // TODO [#2121]: We should also be filtering out other non-composed events at this point
+                // but we only do so for events dispatched via shadowRoot.dispatchEvent() to preserve
+                // the current behavior.
+                if (eventToShadowRootMap.has(event) && isFalse(composed)) {
+                    return;
+                }
 
-            return isFunction(fnOrObj)
-                ? fnOrObj.call(this, event)
-                : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
-        };
+                return isFunction(fnOrObj)
+                    ? fnOrObj.call(this, event)
+                    : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
+            };
+        } else {
+            wrapperFn = function (this: EventTarget, event: Event) {
+                //currentTarget can't be null as this function is invoked from an event listener
+                const currentTarget = eventCurrentTargetGetter.call(event)!;
+                const actualTarget = getActualTarget(event);
+
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.invariant(
+                        isFalse(isHostElement(currentTarget)),
+                        'This routine should not be used to wrap event listeners for host elements and shadow roots.'
+                    );
+                }
+
+                if (!shouldInvokeListener(event, actualTarget, currentTarget)) {
+                    return;
+                }
+
+                return isFunction(fnOrObj)
+                    ? fnOrObj.call(this, event)
+                    : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
+            };
+        }
         EventListenerMap.set(fnOrObj, wrapperFn);
     }
 

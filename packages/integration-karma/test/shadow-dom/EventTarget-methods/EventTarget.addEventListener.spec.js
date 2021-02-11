@@ -121,15 +121,11 @@ describe('EventTarget.addEventListener', () => {
     }
 
     describe('should always invoke listener with actual current target context', () => {
-        let parentElm, parentShadow, childElm, childShadow;
+        let parentElm, childElm;
         let logs = [];
 
         function hostElementHandler(evt) {
             logs.push([this.id, evt.currentTarget]);
-        }
-
-        function shadowRootHandler(evt) {
-            logs.push([this.host.id, evt.currentTarget]);
         }
 
         beforeEach(() => {
@@ -137,25 +133,9 @@ describe('EventTarget.addEventListener', () => {
             parentElm = createElement('x-parent', { is: Parent });
             parentElm.setAttribute('id', 'x-parent');
             document.body.appendChild(parentElm);
-            parentShadow = parentElm.shadowRoot;
             childElm = createElement('x-child', { is: Child });
             childElm.setAttribute('id', 'x-child');
             document.body.appendChild(childElm);
-            childShadow = childElm.shadowRoot;
-        });
-
-        it('for shadow root', () => {
-            parentShadow.addEventListener('test', shadowRootHandler);
-            childShadow.addEventListener('test', shadowRootHandler);
-            parentShadow.dispatchEvent(new Event('test'));
-            childShadow.dispatchEvent(new Event('test'));
-
-            const expectedLogs = [
-                ['x-parent', parentElm],
-                ['x-child', childElm],
-            ];
-
-            expect(logs).toEqual(expectedLogs);
         });
 
         it('for host element', () => {

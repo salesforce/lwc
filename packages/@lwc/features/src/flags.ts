@@ -18,6 +18,7 @@ const featureFlagLookup: FeatureFlagLookup = {
     ENABLE_NODE_LIST_PATCH: null,
     ENABLE_HTML_COLLECTIONS_PATCH: null,
     ENABLE_NODE_PATCH: null,
+    ENABLE_COMPOSED_PATH_FIX_REVERT: null,
 };
 export default featureFlagLookup;
 
