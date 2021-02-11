@@ -4,57 +4,50 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as types from '@babel/types';
-import traverse from '@babel/traverse';
+import estree from 'estree';
+import { walk } from 'estree-walker';
 
 import { TEMPLATE_PARAMS } from '../shared/constants';
 import { isComponentProp } from '../shared/ir';
 import { IRNode, TemplateExpression } from '../shared/types';
+import {
+    createIdentifier,
+    createMemberExpression,
+    isIdentifier,
+    isMemberExpression,
+} from '../shared/estree';
 
 /**
  * Bind the passed expression to the component instance. It applies the following transformation to the expression:
  * - {value} --> {$cmp.value}
  * - {value[state.index]} --> {$cmp.value[$cmp.index]}
  */
-export function bindExpression(
-    expression: TemplateExpression,
-    node: IRNode,
-    applyBinding: boolean = true
-): TemplateExpression {
-    const wrappedExpression = types.expressionStatement(expression);
+export function bindExpression(expression: TemplateExpression, irNode: IRNode): TemplateExpression {
+    const root: estree.BaseNode = expression as any;
 
-    traverse(wrappedExpression, {
-        noScope: true,
-        Identifier(path) {
-            const identifierNode = path.node;
-            let shouldBind = false;
+    if (isIdentifier(root)) {
+        if (isComponentProp(root as any, irNode)) {
+            return createMemberExpression(createIdentifier(TEMPLATE_PARAMS.INSTANCE), root) as any;
+        } else {
+            return root as any;
+        }
+    }
 
-            if (types.isMemberExpression(path.parent)) {
-                // If identifier is the 'object' of the member expression we can safely deduce,
-                // the current identifier is the left most identifier of the expression
-                shouldBind = path.parent.object === identifierNode;
-            } else if (types.isExpressionStatement(path.parent)) {
-                // In case the template expression is only composed of an identifier, we check
-                // if the wrapper expression is the direct parent
-                shouldBind = path.parent.expression === identifierNode;
-            }
-
-            // Checks if the identifier is a component property
-            if (shouldBind && isComponentProp(identifierNode, node)) {
-                // Need to skip children once bounded, because the replaceWith call will creates
-                // an infinite loop
-                path.skip();
-
-                if (applyBinding) {
-                    const boundedExpression = types.memberExpression(
-                        types.identifier(TEMPLATE_PARAMS.INSTANCE),
-                        identifierNode
-                    );
-                    path.replaceWith(boundedExpression);
-                }
+    walk(root, {
+        leave(node, parent) {
+            if (
+                parent !== null &&
+                isIdentifier(node) &&
+                isMemberExpression(parent) &&
+                parent.object === node &&
+                isComponentProp(node as any, irNode)
+            ) {
+                this.replace(
+                    createMemberExpression(createIdentifier(TEMPLATE_PARAMS.INSTANCE), node)
+                );
             }
         },
     });
 
-    return wrappedExpression.expression as TemplateExpression;
+    return root as any;
 }

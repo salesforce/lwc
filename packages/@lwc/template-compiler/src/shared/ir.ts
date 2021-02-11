@@ -41,23 +41,29 @@ export function isCustomElement(node: IRNode): boolean {
     return !!(node as IRElement).component;
 }
 
-export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): boolean {
-    if (!node) {
-        return true;
-    }
+export function isComponentProp(identifier: TemplateIdentifier, root: IRNode): boolean {
+    const { name } = identifier;
+    let current: IRNode | undefined = root;
 
-    // Make sure the identifier is not bound to any iteration variable
-    if (isElement(node)) {
-        const { forEach, forOf } = node;
-        const boundToForItem = forEach && forEach.item.name === identifier.name;
-        const boundToForIndex = forEach && forEach.index && forEach.index.name === identifier.name;
-        const boundToForIterator = forOf && forOf.iterator.name === identifier.name;
+    // Walking up the AST and checking for each node to find if the identifer name is identical to
+    //  an iteration variable.
+    while (current !== undefined) {
+        if (isElement(current)) {
+            const { forEach, forOf } = current;
 
-        if (boundToForItem || boundToForIndex || boundToForIterator) {
-            return false;
+            if (
+                forEach?.item.name === name ||
+                forEach?.index?.name === name ||
+                forOf?.iterator.name === name
+            ) {
+                return false;
+            }
         }
+
+        current = current.parent;
     }
 
-    // Delegate to parent component if no binding is found at this point
-    return isComponentProp(identifier, node.parent);
+    // The identifier is bound to a component property if no match is found after reaching to AST
+    // root.
+    return true;
 }
