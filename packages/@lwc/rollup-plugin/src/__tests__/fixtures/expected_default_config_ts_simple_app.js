@@ -56,12 +56,12 @@
       classMap: {
         "container": true
       },
-      key: 1
+      key: 0
     }, [api_custom_element("ts-foo", _tsFoo, {
       props: {
         "x": "1"
       },
-      key: 0
+      key: 1
     }, [])])];
   }
 
