@@ -85,7 +85,6 @@ function generateContext(element: IRElement, data: t.ObjectProperty[]) {
     data.push(t.objectProperty(t.identifier('context'), t.objectExpression(contextExpressions)));
 }
 
-
 function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expression {
     function transformElement(element: IRElement): t.Expression {
         const databag = elementDataBag(element);
@@ -143,9 +142,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
 
     function transformText(text: IRText): t.Expression {
         const { value } = text;
-        return codeGen.genText(
-            typeof value === 'string' ? value : bindExpression(value, text)
-        );
+        return codeGen.genText(typeof value === 'string' ? value : bindExpression(value, text));
     }
 
     function transformChildren(children: IRNode[]): t.Expression {
