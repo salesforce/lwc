@@ -14,16 +14,6 @@ import {
     HTMLText,
 } from './types';
 
-export interface NodeVisitor<T extends IRNode> {
-    enter?: (element: T) => void;
-    exit?: (element: T) => void;
-}
-
-export interface Visitor {
-    text?: NodeVisitor<IRText>;
-    element?: NodeVisitor<IRElement>;
-}
-
 export function createElement(tag: string, original: HTMLElement): IRElement {
     return {
         type: 'element',
@@ -51,24 +41,6 @@ export function isCustomElement(node: IRNode): boolean {
     return !!(node as IRElement).component;
 }
 
-export function traverse(node: IRNode, visitor: Visitor): void {
-    const { enter, exit }: NodeVisitor<any> = visitor[node.type] || {};
-
-    if (enter) {
-        enter(node);
-    }
-
-    if (isElement(node)) {
-        for (const child of node.children) {
-            traverse(child, visitor);
-        }
-    }
-
-    if (exit) {
-        exit(node);
-    }
-}
-
 export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): boolean {
     if (!node) {
         return true;
@@ -88,14 +60,4 @@ export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): 
 
     // Delegate to parent component if no binding is found at this point
     return isComponentProp(identifier, node.parent);
-}
-
-export function isBoundToIterator(identifierName: string, anode: IRNode): boolean {
-    let node: IRNode | undefined = anode;
-
-    while (node && !(isElement(node) && node.forOf?.iterator.name === identifierName)) {
-        node = node.parent;
-    }
-
-    return node !== undefined;
 }

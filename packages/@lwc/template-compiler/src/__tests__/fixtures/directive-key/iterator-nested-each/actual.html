@@ -1,0 +1,10 @@
+<template>
+    <template for:each={features} for:item="feature">
+        <template iterator:feature={feature.innerFeatures}>
+            <p key={feature.value.label}>
+                {feature.value.label}
+                {feature.label}
+            </p>
+        </template>
+    </template>
+</template>

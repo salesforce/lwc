@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "aria-hidden": "true",
           title: "when needed"
         },
-        key: 1
+        key: 0
       },
       [
         api_element(
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_scoped_frag_id($cmp.getXLink)
               )
             },
-            key: 0
+            key: 1
           },
           []
         )

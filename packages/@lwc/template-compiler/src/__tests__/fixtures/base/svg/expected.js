@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           viewBox: "0 0 5 5",
           "aria-hidden": "true"
         },
-        key: 1
+        key: 0
       },
       [
         api_element(
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "/x"
               )
             },
-            key: 0
+            key: 1
           },
           []
         )

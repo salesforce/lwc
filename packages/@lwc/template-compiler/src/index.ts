@@ -28,13 +28,13 @@ export { Config } from './config';
 
 export function parse(source: string, config?: Config): TemplateParseResult {
     const options = mergeConfig(config || {});
-    const state = new State(source, options);
+    const state = new State(options);
     return parseTemplate(source, state);
 }
 
 export default function compile(source: string, config: Config): TemplateCompileResult {
     const options = mergeConfig(config);
-    const state = new State(source, options);
+    const state = new State(options);
 
     let code = '';
     const warnings: CompilerDiagnostic[] = [];
@@ -65,7 +65,7 @@ export function compileToFunction(source: string): Function {
     const options = mergeConfig({});
     options.format = 'function';
 
-    const state = new State(source, options);
+    const state = new State(options);
 
     const parsingResults = parseTemplate(source, state);
 

@@ -2,11 +2,11 @@ import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    t: api_text,
     b: api_bind,
+    t: api_text,
     h: api_element,
-    d: api_dynamic,
     k: api_key,
+    d: api_dynamic,
     i: api_iterator
   } = $api;
   const { _m0 } = $ctx;
@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "ul",
       {
-        key: 3
+        key: 1
       },
       api_iterator($cmp.list, function(task) {
         return api_element(
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_element(
               "button",
               {
-                key: 1,
+                key: 3,
                 on: {
                   click: api_bind(task.delete)
                 }

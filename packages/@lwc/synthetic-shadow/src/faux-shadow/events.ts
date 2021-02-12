@@ -26,6 +26,7 @@ import {
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { shouldInvokeListener } from '../shared/event-target';
+import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 
 export enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,
@@ -69,22 +70,23 @@ export function getActualTarget(event: Event): EventTarget {
 
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedShadowRootListener(
-    sr: SyntheticShadowRootInterface,
-    listener: EventListener
-): WrappedListener {
+function getWrappedShadowRootListener(listener: EventListener): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
         shadowRootWrappedListener = function (event: Event) {
-            const hostElement = eventCurrentTargetGetter.call(event) as HTMLElement;
-            const actualCurrentTarget = getShadowRoot(hostElement);
+            // currentTarget is always defined inside an event listener
+            let currentTarget = eventCurrentTargetGetter.call(event)!;
+            // If currentTarget is not an instance of a native shadow root then we're dealing with a
+            // host element whose synthetic shadow root must be accessed via getShadowRoot().
+            if (!isInstanceOfNativeShadowRoot(currentTarget)) {
+                currentTarget = getShadowRoot(currentTarget as Element);
+            }
             const actualTarget = getActualTarget(event);
-
-            if (shouldInvokeListener(event, actualTarget, actualCurrentTarget)) {
-                listener.call(sr, event);
+            if (shouldInvokeListener(event, actualTarget, currentTarget)) {
+                listener.call(currentTarget, event);
             }
         } as WrappedListener;
         shadowRootWrappedListener.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
@@ -95,19 +97,19 @@ function getWrappedShadowRootListener(
 
 const customElementEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedCustomElementListener(elm: Element, listener: EventListener): WrappedListener {
+function getWrappedCustomElementListener(listener: EventListener): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
     let customElementWrappedListener = customElementEventListenerMap.get(listener);
     if (isUndefined(customElementWrappedListener)) {
         customElementWrappedListener = function (event: Event) {
-            const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
+            // currentTarget is always defined inside an event listener
+            const currentTarget = eventCurrentTargetGetter.call(event)!;
             const actualTarget = getActualTarget(event);
-
             if (shouldInvokeListener(event, actualTarget, currentTarget)) {
                 // all handlers on the custom element should be called with undefined 'this'
-                listener.call(elm, event);
+                listener.call(currentTarget, event);
             }
         } as WrappedListener;
         customElementWrappedListener.placement = EventListenerContext.CUSTOM_ELEMENT_LISTENER;
@@ -214,7 +216,7 @@ export function addCustomElementEventListener(
     }
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(this, listener);
+        const wrappedListener = getWrappedCustomElementListener(listener);
         attachDOMListener(this, type, wrappedListener);
     }
 }
@@ -227,7 +229,7 @@ export function removeCustomElementEventListener(
 ) {
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
-        const wrappedListener = getWrappedCustomElementListener(this, listener);
+        const wrappedListener = getWrappedCustomElementListener(listener);
         detachDOMListener(this, type, wrappedListener);
     }
 }
@@ -250,7 +252,7 @@ export function addShadowRootEventListener(
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
         const elm = getHost(sr);
-        const wrappedListener = getWrappedShadowRootListener(sr, listener);
+        const wrappedListener = getWrappedShadowRootListener(listener);
         attachDOMListener(elm, type, wrappedListener);
     }
 }
@@ -264,7 +266,7 @@ export function removeShadowRootEventListener(
     // TODO [#1824]: Lift this restriction on the option parameter
     if (isFunction(listener)) {
         const elm = getHost(sr);
-        const wrappedListener = getWrappedShadowRootListener(sr, listener);
+        const wrappedListener = getWrappedShadowRootListener(listener);
         detachDOMListener(elm, type, wrappedListener);
     }
 }

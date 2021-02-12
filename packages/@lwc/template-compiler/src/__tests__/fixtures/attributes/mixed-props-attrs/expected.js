@@ -67,7 +67,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           focusable: "true"
         },
-        key: 4
+        key: 3
       },
       [
         api_element(
@@ -81,7 +81,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "xx"
               )
             },
-            key: 3
+            key: 4
           },
           []
         )

@@ -3,8 +3,8 @@ import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    t: api_text,
     k: api_key,
+    t: api_text,
     h: api_element,
     i: api_iterator,
     c: api_custom_element
@@ -17,14 +17,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s2: true
         },
-        key: 1
+        key: 0
       },
       $cmp.isTrue
         ? api_iterator($cmp.items, function(item) {
             return api_element(
               "p",
               {
-                key: api_key(0, item.id)
+                key: api_key(1, item.id)
               },
               [api_text("X")]
             );

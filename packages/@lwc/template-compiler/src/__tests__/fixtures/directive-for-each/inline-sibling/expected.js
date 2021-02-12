@@ -2,8 +2,8 @@ import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    d: api_dynamic,
     k: api_key,
+    d: api_dynamic,
     h: api_element,
     i: api_iterator,
     t: api_text,
@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "ul",
       {
-        key: 2
+        key: 0
       },
       api_flatten([
         api_iterator($cmp.items, function(item) {
@@ -21,7 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             "li",
             {
               className: item.x,
-              key: api_key(0, item.id)
+              key: api_key(1, item.id)
             },
             [api_dynamic(item)]
           );
@@ -29,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "li",
           {
-            key: 1
+            key: 2
           },
           [api_text("Last")]
         )

@@ -32,11 +32,11 @@ import {
 
 import {
     isExpression,
-    parseExpression,
     parseIdentifier,
     isIteratorElement,
     getForOfParent,
     getForEachParent,
+    parseExpression,
 } from './expression';
 
 import { parseStyleText, parseClassNames } from './style';
@@ -44,7 +44,6 @@ import { parseStyleText, parseClassNames } from './style';
 import { createElement, isCustomElement, createText } from '../shared/ir';
 
 import {
-    IRNode,
     IRElement,
     IRAttribute,
     IRAttributeType,
@@ -57,8 +56,6 @@ import {
     LWCDirectiveDomMode,
     LWCDirectives,
 } from '../shared/types';
-
-import { bindExpression } from '../shared/scope';
 
 import State from '../state';
 
@@ -216,7 +213,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                     let value;
                     if (isExpression(token)) {
                         try {
-                            value = parseTemplateExpression(parent, token);
+                            value = parseExpression(token, state);
                         } catch (error) {
                             addDiagnostic(
                                 normalizeToDiagnostic(
@@ -771,6 +768,10 @@ export default function parse(source: string, state: State): TemplateParseResult
                 removeAttribute(element, name);
             }
         });
+
+        if (!state.shouldScopeFragmentId && (element.props?.id || element.attrs?.id)) {
+            state.shouldScopeFragmentId = true;
+        }
     }
 
     function validateElement(element: IRElement) {
@@ -901,19 +902,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
-    function parseTemplateExpression(node: IRNode, sourceExpression: string) {
-        const expression = parseExpression(sourceExpression, node, state);
-        const { bounded } = bindExpression(expression, node, false);
-
-        for (const boundedIdentifier of bounded) {
-            if (!state.ids.includes(boundedIdentifier)) {
-                state.ids.push(boundedIdentifier);
-            }
-        }
-
-        return expression;
-    }
-
     function getTemplateAttribute(
         el: IRElement,
         pattern: string | RegExp
@@ -956,7 +944,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                     name,
                     location,
                     type: IRAttributeType.Expression,
-                    value: parseTemplateExpression(el, value),
+                    value: parseExpression(value, state),
                 };
             } else if (isBooleanAttribute) {
                 return {
