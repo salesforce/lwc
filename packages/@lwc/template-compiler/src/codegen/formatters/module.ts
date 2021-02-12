@@ -6,18 +6,16 @@
  */
 
 import State from '../../state';
+
 import * as t from '../../shared/estree';
+import { kebabcaseToCamelcase } from '../../shared/naming';
 import {
     TEMPLATE_FUNCTION_NAME,
     SECURE_REGISTER_TEMPLATE_METHOD_NAME,
     LWC_MODULE_NAME,
 } from '../../shared/constants';
 
-import {
-    identifierFromComponentName,
-    generateTemplateMetadata,
-    kebabcaseToCamelcase,
-} from '../helpers';
+import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
 
 function moduleNameToImport(name: string): t.ImportDeclaration {
     const localIdentifier = identifierFromComponentName(name);

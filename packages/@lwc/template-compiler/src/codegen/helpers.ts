@@ -4,22 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { toPropertyName } from '../shared/utils';
-
 import State from '../state';
+
 import * as t from '../shared/estree';
-import { isElement, isComponentProp } from '../shared/ir';
+import { toPropertyName } from '../shared/utils';
 import { IRElement, IRNode } from '../shared/types';
+import { isElement, isTemplate, isComponentProp } from '../shared/ir';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
-import { kebabcaseToCamelcase } from '../shared/naming';
 
 import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toPropertyName(name)}`);
 }
-
-export { kebabcaseToCamelcase };
 
 export function getMemberExpressionRoot(expression: t.MemberExpression): t.Identifier {
     let current: t.Expression | t.Identifier = expression;
@@ -40,18 +37,8 @@ export function objectToAST(
     );
 }
 
-/** Returns true if the passed element is a template element */
-export function isTemplate(element: IRElement) {
-    return element.tag === 'template';
-}
-
-/** Returns true if the passed element is a slot element */
-export function isSlot(element: IRElement) {
-    return element.tag === 'slot';
-}
-
 function isDynamic(element: IRElement): boolean {
-    return !!(element.lwc && element.lwc.dynamic);
+    return element.lwc?.dynamic !== undefined;
 }
 
 export function containsDynamicChildren(children: IRNode[]): boolean {
