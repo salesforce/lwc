@@ -1,7 +1,7 @@
 import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element, gid: api_scoped_id } = $api;
+  const { gid: api_scoped_id, h: api_element } = $api;
   return [
     api_element(
       "svg",
@@ -10,13 +10,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           height: "150",
           width: "400"
         },
-        key: 5
+        key: 0
       },
       [
         api_element(
           "defs",
           {
-            key: 3
+            key: 1
           },
           [
             api_element(
@@ -42,7 +42,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     attrs: {
                       offset: "0%"
                     },
-                    key: 0
+                    key: 3
                   },
                   []
                 ),
@@ -56,7 +56,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     attrs: {
                       offset: "100%"
                     },
-                    key: 1
+                    key: 4
                   },
                   []
                 )
@@ -74,7 +74,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               ry: "55",
               fill: "url(#grad1)"
             },
-            key: 4
+            key: 5
           },
           []
         )

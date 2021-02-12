@@ -10,7 +10,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           width: "200",
           height: "200"
         },
-        key: 1
+        key: 0
       },
       [
         api_element(
@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               height: "200",
               width: "200"
             },
-            key: 0
+            key: 1
           },
           []
         )

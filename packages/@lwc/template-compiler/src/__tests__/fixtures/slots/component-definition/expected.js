@@ -8,13 +8,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "x-foo",
       _xFoo,
       {
-        key: 1
+        key: 0
       },
       [
         api_slot(
           "",
           {
-            key: 0
+            key: 1
           },
           [],
           $slotset

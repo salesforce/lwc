@@ -1,7 +1,7 @@
 import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element, gid: api_scoped_id, t: api_text } = $api;
+  const { gid: api_scoped_id, h: api_element, t: api_text } = $api;
   return [
     api_element(
       "svg",
@@ -11,13 +11,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           height: "400",
           xmlns: "http://www.w3.org/2000/svg"
         },
-        key: 26
+        key: 0
       },
       [
         api_element(
           "defs",
           {
-            key: 8
+            key: 1
           },
           [
             api_element(
@@ -31,7 +31,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   height: "100%",
                   primitiveUnits: "objectBoundingBox"
                 },
-                key: 1
+                key: 2
               },
               [
                 api_element(
@@ -45,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       "flood-color": "green",
                       "flood-opacity": "0.75"
                     },
-                    key: 0
+                    key: 3
                   },
                   []
                 )
@@ -58,7 +58,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   id: api_scoped_id("blend"),
                   primitiveUnits: "objectBoundingBox"
                 },
-                key: 3
+                key: 4
               },
               [
                 api_element(
@@ -72,7 +72,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       in2: "SourceGraphic",
                       mode: "multiply"
                     },
-                    key: 2
+                    key: 5
                   },
                   []
                 )
@@ -85,7 +85,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   id: api_scoped_id("merge"),
                   primitiveUnits: "objectBoundingBox"
                 },
-                key: 7
+                key: 6
               },
               [
                 api_element(
@@ -97,7 +97,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       width: "50%",
                       height: "50%"
                     },
-                    key: 6
+                    key: 7
                   },
                   [
                     api_element(
@@ -106,7 +106,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                         attrs: {
                           in: "SourceGraphic"
                         },
-                        key: 4
+                        key: 8
                       },
                       []
                     ),
@@ -116,7 +116,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                         attrs: {
                           in: "FillPaint"
                         },
-                        key: 5
+                        key: 9
                       },
                       []
                     )
@@ -134,7 +134,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               stroke: "blue",
               "stroke-width": "4"
             },
-            key: 12
+            key: 10
           },
           [
             api_element(
@@ -144,7 +144,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   width: "200",
                   height: "200"
                 },
-                key: 9
+                key: 11
               },
               []
             ),
@@ -155,7 +155,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   x2: "200",
                   y2: "200"
                 },
-                key: 10
+                key: 12
               },
               []
             ),
@@ -166,7 +166,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   x1: "200",
                   y2: "200"
                 },
-                key: 11
+                key: 13
               },
               []
             )
@@ -182,7 +182,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               cy: "100",
               r: "90"
             },
-            key: 13
+            key: 14
           },
           []
         ),
@@ -192,7 +192,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               transform: "translate(200 0)"
             },
-            key: 19
+            key: 15
           },
           [
             api_element(
@@ -203,7 +203,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   stroke: "blue",
                   "stroke-width": "4"
                 },
-                key: 17
+                key: 16
               },
               [
                 api_element(
@@ -213,7 +213,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       width: "200",
                       height: "200"
                     },
-                    key: 14
+                    key: 17
                   },
                   []
                 ),
@@ -224,7 +224,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       x2: "200",
                       y2: "200"
                     },
-                    key: 15
+                    key: 18
                   },
                   []
                 ),
@@ -235,7 +235,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       x1: "200",
                       y2: "200"
                     },
-                    key: 16
+                    key: 19
                   },
                   []
                 )
@@ -251,7 +251,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   cy: "100",
                   r: "90"
                 },
-                key: 18
+                key: 20
               },
               []
             )
@@ -263,7 +263,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               transform: "translate(0 200)"
             },
-            key: 25
+            key: 21
           },
           [
             api_element(
@@ -274,7 +274,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   stroke: "blue",
                   "stroke-width": "4"
                 },
-                key: 23
+                key: 22
               },
               [
                 api_element(
@@ -284,7 +284,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       width: "200",
                       height: "200"
                     },
-                    key: 20
+                    key: 23
                   },
                   []
                 ),
@@ -295,7 +295,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       x2: "200",
                       y2: "200"
                     },
-                    key: 21
+                    key: 24
                   },
                   []
                 ),
@@ -306,7 +306,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       x1: "200",
                       y2: "200"
                     },
-                    key: 22
+                    key: 25
                   },
                   []
                 )
@@ -323,7 +323,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   cy: "100",
                   r: "90"
                 },
-                key: 24
+                key: 26
               },
               []
             )
@@ -341,7 +341,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           xmlns: "http://www.w3.org/2000/svg",
           "xmlns:xlink": "http://www.w3.org/1999/xlink"
         },
-        key: 46
+        key: 27
       },
       [
         api_element(
@@ -355,14 +355,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               width: "598",
               height: "248"
             },
-            key: 27
+            key: 28
           },
           []
         ),
         api_element(
           "g",
           {
-            key: 34
+            key: 29
           },
           [
             api_element(
@@ -375,35 +375,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   height: "200",
                   filter: "url(#Default)"
                 },
-                key: 28
-              },
-              []
-            ),
-            api_element(
-              "rect",
-              {
-                attrs: {
-                  x: "50",
-                  y: "25",
-                  width: "100",
-                  height: "200",
-                  fill: "none",
-                  stroke: "green"
-                },
-                key: 29
-              },
-              []
-            ),
-            api_element(
-              "rect",
-              {
-                attrs: {
-                  x: "250",
-                  y: "25",
-                  width: "100",
-                  height: "200",
-                  filter: "url(#Fitted)"
-                },
                 key: 30
               },
               []
@@ -412,7 +383,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "rect",
               {
                 attrs: {
-                  x: "250",
+                  x: "50",
                   y: "25",
                   width: "100",
                   height: "200",
@@ -427,13 +398,42 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "rect",
               {
                 attrs: {
+                  x: "250",
+                  y: "25",
+                  width: "100",
+                  height: "200",
+                  filter: "url(#Fitted)"
+                },
+                key: 32
+              },
+              []
+            ),
+            api_element(
+              "rect",
+              {
+                attrs: {
+                  x: "250",
+                  y: "25",
+                  width: "100",
+                  height: "200",
+                  fill: "none",
+                  stroke: "green"
+                },
+                key: 33
+              },
+              []
+            ),
+            api_element(
+              "rect",
+              {
+                attrs: {
                   x: "450",
                   y: "25",
                   width: "100",
                   height: "200",
                   filter: "url(#Shifted)"
                 },
-                key: 32
+                key: 34
               },
               []
             ),
@@ -448,7 +448,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   fill: "none",
                   stroke: "green"
                 },
-                key: 33
+                key: 35
               },
               []
             )
@@ -465,13 +465,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               width: "200",
               height: "120"
             },
-            key: 45
+            key: 36
           },
           [
             api_element(
               "desc",
               {
-                key: 35
+                key: 37
               },
               [api_text("Produces a 3D lighting effect.")]
             ),
@@ -483,7 +483,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   stdDeviation: "4",
                   result: "blur"
                 },
-                key: 36
+                key: 38
               },
               []
             ),
@@ -496,7 +496,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   dy: "4",
                   result: "offsetBlur"
                 },
-                key: 37
+                key: 39
               },
               []
             ),
@@ -511,7 +511,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   "lighting-color": "#bbbbbb",
                   result: "specOut"
                 },
-                key: 39
+                key: 40
               },
               [
                 api_element(
@@ -522,7 +522,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       y: "-10000",
                       z: "20000"
                     },
-                    key: 38
+                    key: 41
                   },
                   []
                 )
@@ -537,7 +537,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   operator: "in",
                   result: "specOut"
                 },
-                key: 40
+                key: 42
               },
               []
             ),
@@ -554,7 +554,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   k4: "0",
                   result: "litPaint"
                 },
-                key: 41
+                key: 43
               },
               []
             ),
@@ -570,7 +570,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     attrs: {
                       in: "offsetBlur"
                     },
-                    key: 42
+                    key: 45
                   },
                   []
                 ),
@@ -580,7 +580,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     attrs: {
                       in: "litPaint"
                     },
-                    key: 43
+                    key: 46
                   },
                   []
                 )

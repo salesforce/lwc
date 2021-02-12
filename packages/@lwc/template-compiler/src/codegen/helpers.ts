@@ -9,7 +9,7 @@ import { toPropertyName } from '../shared/utils';
 
 import State from '../state';
 import { isElement, isComponentProp } from '../shared/ir';
-import { IRElement } from '../shared/types';
+import { IRElement, IRNode } from '../shared/types';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 import { kebabcaseToCamelcase } from '../shared/naming';
 import CodeGen from './codegen';
@@ -48,28 +48,22 @@ export function isSlot(element: IRElement) {
     return element.tag === 'slot';
 }
 
-export function containsDynamicChildren(element: IRElement) {
-    return element.children.some((child) => isElement(child) && isDynamic(child));
-}
-
-export function isDynamic(element: IRElement): boolean {
+function isDynamic(element: IRElement): boolean {
     return !!(element.lwc && element.lwc.dynamic);
 }
 
-/**
- * Returns true if the passed element should be flattened.
- *
- * TODO [#1303]: Move this logic into the optimizing compiler. This kind of optimization should be
- * done before the actual code generation.
- */
-export function shouldFlatten(element: IRElement): boolean {
-    return element.children.some(
+export function containsDynamicChildren(children: IRNode[]): boolean {
+    return children.some((child) => isElement(child) && isDynamic(child));
+}
+
+export function shouldFlatten(children: IRNode[]): boolean {
+    return children.some(
         (child) =>
             isElement(child) &&
             (isDynamic(child) ||
                 !!child.forEach ||
                 !!child.forOf ||
-                (isTemplate(child) && shouldFlatten(child)))
+                (isTemplate(child) && shouldFlatten(child.children)))
     );
 }
 

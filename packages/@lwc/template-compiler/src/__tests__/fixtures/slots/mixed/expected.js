@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        key: 2
+        key: 0
       },
       [
         api_custom_element(
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               ? api_element(
                   "div",
                   {
-                    key: 0
+                    key: 2
                   },
                   []
                 )
