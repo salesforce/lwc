@@ -117,4 +117,46 @@ describe('EventTarget.addEventListener', () => {
             });
         });
     }
+
+    describe('should invoke listener with correct current target', () => {
+        it('for host element', () => {
+            let id;
+            function handleTest() {
+                id = this.id;
+            }
+
+            const firstContainer = createElement('x-container', { is: Container });
+            firstContainer.setAttribute('id', 'first-container');
+            const secondContainer = createElement('x-container', { is: Container });
+            secondContainer.setAttribute('id', 'second-container');
+
+            firstContainer.addEventListener('test', handleTest);
+            secondContainer.addEventListener('test', handleTest);
+            firstContainer.dispatchEvent(new CustomEvent('test'));
+            expect(id).toEqual('first-container');
+            secondContainer.dispatchEvent(new CustomEvent('test'));
+            expect(id).toEqual('second-container');
+        });
+
+        it('for shadow root', () => {
+            let id;
+            function handleTest() {
+                id = this.host.id;
+            }
+
+            const firstContainer = createElement('x-container', { is: Container });
+            firstContainer.setAttribute('id', 'first-container');
+            const firstContainerShadowRoot = firstContainer.shadowRoot;
+            const secondContainer = createElement('x-container', { is: Container });
+            secondContainer.setAttribute('id', 'second-container');
+            const secondContainerShadowRoot = secondContainer.shadowRoot;
+
+            firstContainerShadowRoot.addEventListener('test', handleTest);
+            secondContainerShadowRoot.addEventListener('test', handleTest);
+            firstContainerShadowRoot.dispatchEvent(new CustomEvent('test'));
+            expect(id).toEqual('first-container');
+            secondContainerShadowRoot.dispatchEvent(new CustomEvent('test'));
+            expect(id).toEqual('second-container');
+        });
+    });
 });
