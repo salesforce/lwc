@@ -197,10 +197,6 @@ defineProperties(HTMLElement.prototype, {
 if (innerTextGetter !== null && innerTextSetter !== null) {
     defineProperty(HTMLElement.prototype, 'innerText', {
         get(this: HTMLElement): string {
-            if (!featureFlags.ENABLE_INNER_OUTER_TEXT_PATCH) {
-                return innerTextGetter!.call(this);
-            }
-
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
                 if (isNodeShadowed(this) || isHostElement(this)) {
                     return getInnerText(this);
@@ -230,10 +226,6 @@ if (outerTextGetter !== null && outerTextSetter !== null) {
     // As a setter, it removes the current node and replaces it with the given text.
     defineProperty(HTMLElement.prototype, 'outerText', {
         get(this: HTMLElement): string {
-            if (!featureFlags.ENABLE_INNER_OUTER_TEXT_PATCH) {
-                return outerTextGetter!.call(this);
-            }
-
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
                 if (isNodeShadowed(this) || isHostElement(this)) {
                     return getInnerText(this);
