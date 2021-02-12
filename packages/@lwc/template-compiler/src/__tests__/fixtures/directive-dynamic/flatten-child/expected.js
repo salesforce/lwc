@@ -18,9 +18,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "x-foo",
       $cmp.trackedProp.foo,
       {
-        context: {
-          lwc: {},
-        },
         key: 1,
       },
       []

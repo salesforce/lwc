@@ -26,14 +26,14 @@ import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 export { IRAttributeType, IRElement, TemplateExpression, TemplateIdentifier } from './shared/types';
 export { Config } from './config';
 
-export function parse(source: string, config?: Config): TemplateParseResult {
-    const options = mergeConfig(config || {});
+export function parse(source: string, config: Config = {}): TemplateParseResult {
+    const options = mergeConfig(config, { format: 'module' });
     const state = new State(options);
     return parseTemplate(source, state);
 }
 
 export default function compile(source: string, config: Config): TemplateCompileResult {
-    const options = mergeConfig(config);
+    const options = mergeConfig(config, { format: 'module' });
     const state = new State(options);
 
     let code = '';
@@ -61,9 +61,7 @@ export default function compile(source: string, config: Config): TemplateCompile
     };
 }
 export function compileToFunction(source: string): Function {
-    const options = mergeConfig({});
-    options.format = 'function';
-
+    const options = mergeConfig({}, { format: 'function' });
     const state = new State(options);
 
     const parsingResults = parseTemplate(source, state);
