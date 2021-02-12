@@ -41,8 +41,8 @@ import {
 
 import { parseStyleText, parseClassNames } from './style';
 
+import * as t from '../shared/estree';
 import { createElement, isCustomElement, createText } from '../shared/ir';
-
 import {
     IRElement,
     IRAttribute,
@@ -78,7 +78,6 @@ import {
     LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
 } from './constants';
-import { isMemberExpression, isIdentifier } from '@babel/types';
 import {
     CompilerDiagnostic,
     generateCompilerDiagnostic,
@@ -98,12 +97,12 @@ function attributeExpressionReferencesForOfIndex(
 ): boolean {
     const { value } = attribute;
     // if not an expression, it is not referencing iterator index
-    if (!isMemberExpression(value)) {
+    if (!t.isMemberExpression(value)) {
         return false;
     }
 
     const { object, property } = value;
-    if (!isIdentifier(object) || !isIdentifier(property)) {
+    if (!t.isIdentifier(object) || !t.isIdentifier(property)) {
         return false;
     }
 
@@ -122,7 +121,7 @@ function attributeExpressionReferencesForEachIndex(
     const { value } = attribute;
 
     // No index defined on foreach
-    if (!index || !isIdentifier(index) || !isIdentifier(value)) {
+    if (!index || !t.isIdentifier(index) || !t.isIdentifier(value)) {
         return false;
     }
 

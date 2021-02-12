@@ -4,27 +4,27 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as t from '@babel/types';
 
 import State from '../../state';
-import {
-    identifierFromComponentName,
-    generateTemplateMetadata,
-    kebabcaseToCamelcase,
-} from '../helpers';
-
+import * as t from '../../shared/estree';
 import {
     TEMPLATE_FUNCTION_NAME,
     SECURE_REGISTER_TEMPLATE_METHOD_NAME,
     LWC_MODULE_NAME,
 } from '../../shared/constants';
 
+import {
+    identifierFromComponentName,
+    generateTemplateMetadata,
+    kebabcaseToCamelcase,
+} from '../helpers';
+
 function moduleNameToImport(name: string): t.ImportDeclaration {
     const localIdentifier = identifierFromComponentName(name);
 
     return t.importDeclaration(
         [t.importDefaultSpecifier(localIdentifier)],
-        t.stringLiteral(kebabcaseToCamelcase(name))
+        t.literal(kebabcaseToCamelcase(name))
     );
 }
 
@@ -41,7 +41,7 @@ function generateSecureImports(additionalImports: string[]): t.ImportDeclaration
             ),
             ...imports,
         ],
-        t.stringLiteral(LWC_MODULE_NAME)
+        t.literal(LWC_MODULE_NAME)
     );
 }
 
@@ -56,9 +56,11 @@ export function format(templateFn: t.FunctionDeclaration, state: State): t.Progr
     const templateBody = [
         templateFn,
         t.exportDefaultDeclaration(
-            t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [
-                t.identifier(TEMPLATE_FUNCTION_NAME),
-            ])
+            t.expressionStatement(
+                t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [
+                    t.identifier(TEMPLATE_FUNCTION_NAME),
+                ])
+            ) as any
         ),
     ];
 

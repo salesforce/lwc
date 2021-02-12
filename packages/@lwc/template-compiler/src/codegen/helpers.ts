@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as t from '@babel/types';
 import { toPropertyName } from '../shared/utils';
 
 import State from '../state';
+import * as t from '../shared/estree';
 import { isElement, isComponentProp } from '../shared/ir';
 import { IRElement, IRNode } from '../shared/types';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 import { kebabcaseToCamelcase } from '../shared/naming';
+
 import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
@@ -22,8 +23,9 @@ export { kebabcaseToCamelcase };
 
 export function getMemberExpressionRoot(expression: t.MemberExpression): t.Identifier {
     let current: t.Expression | t.Identifier = expression;
+
     while (t.isMemberExpression(current)) {
-        current = current.object;
+        current = current.object as t.Expression;
     }
 
     return current as t.Identifier;
@@ -34,7 +36,7 @@ export function objectToAST(
     valueMapper: (key: string) => t.Expression
 ): t.ObjectExpression {
     return t.objectExpression(
-        Object.keys(obj).map((key) => t.objectProperty(t.stringLiteral(key), valueMapper(key)))
+        Object.keys(obj).map((key) => t.property(t.literal(key), valueMapper(key)))
     );
 }
 
@@ -65,16 +67,6 @@ export function shouldFlatten(children: IRNode[]): boolean {
                 !!child.forOf ||
                 (isTemplate(child) && shouldFlatten(child.children)))
     );
-}
-
-export function destructuringAssignmentFromObject(
-    target: t.Identifier | t.MemberExpression,
-    keys: t.ObjectProperty[],
-    type: string = 'const'
-) {
-    return t.variableDeclaration(type as any, [
-        t.variableDeclarator(t.objectPattern(keys as any), target),
-    ]);
 }
 
 export function memorizeHandler(
@@ -111,7 +103,7 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
             t.identifier('slots')
         );
 
-        const slotsArray = t.arrayExpression(state.slots.map((slot) => t.stringLiteral(slot)));
+        const slotsArray = t.arrayExpression(state.slots.map((slot) => t.literal(slot)));
 
         const slotsMetadata = t.assignmentExpression('=', slotsProperty, slotsArray);
         metadataExpressions.push(t.expressionStatement(slotsMetadata));
@@ -120,7 +112,7 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
     const stylesheetsMetadata = t.assignmentExpression(
         '=',
         t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('stylesheets')),
-        t.arrayExpression()
+        t.arrayExpression([])
     );
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 

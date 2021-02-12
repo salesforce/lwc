@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as t from '@babel/types';
 import * as esutils from 'esutils';
 
+import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 
 type RenderPrimitive =
@@ -58,7 +58,7 @@ export default class CodeGen {
     }
 
     genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {
-        return this._renderApiCall(RENDER_APIS.element, [t.stringLiteral(tagName), data, children]);
+        return this._renderApiCall(RENDER_APIS.element, [t.literal(tagName), data, children]);
     }
 
     genCustomElement(
@@ -68,7 +68,7 @@ export default class CodeGen {
         children: t.Expression
     ) {
         return this._renderApiCall(RENDER_APIS.customElement, [
-            t.stringLiteral(tagName),
+            t.literal(tagName),
             componentClass,
             data,
             children,
@@ -81,7 +81,7 @@ export default class CodeGen {
         children: t.Expression
     ) {
         return this._renderApiCall(RENDER_APIS.dynamicCtor, [
-            t.stringLiteral(tagName),
+            t.literal(tagName),
             ctor,
             data,
             children,
@@ -90,7 +90,7 @@ export default class CodeGen {
 
     genText(value: string | t.Expression): t.Expression {
         if (typeof value === 'string') {
-            return this._renderApiCall(RENDER_APIS.text, [t.stringLiteral(value)]);
+            return this._renderApiCall(RENDER_APIS.text, [t.literal(value)]);
         } else {
             return this._renderApiCall(RENDER_APIS.dynamic, [value]);
         }
@@ -108,27 +108,27 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.flatten, children);
     }
 
-    genKey(compilerKey: t.NumericLiteral, value: t.Expression) {
+    genKey(compilerKey: t.Literal, value: t.Expression) {
         return this._renderApiCall(RENDER_APIS.key, [compilerKey, value]);
     }
 
     genScopedId(id: string | t.Expression): t.CallExpression {
         if (typeof id === 'string') {
-            return this._renderApiCall(RENDER_APIS.scopedId, [t.stringLiteral(id)]);
+            return this._renderApiCall(RENDER_APIS.scopedId, [t.literal(id)]);
         }
         return this._renderApiCall(RENDER_APIS.scopedId, [id]);
     }
 
     genScopedFragId(id: string | t.Expression): t.CallExpression {
         if (typeof id === 'string') {
-            return this._renderApiCall(RENDER_APIS.scopedFragId, [t.stringLiteral(id)]);
+            return this._renderApiCall(RENDER_APIS.scopedFragId, [t.literal(id)]);
         }
         return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
     }
 
     getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
         return this._renderApiCall(RENDER_APIS.slot, [
-            t.stringLiteral(slotName),
+            t.literal(slotName),
             data,
             children,
             t.identifier('$slotset'),
@@ -147,7 +147,7 @@ export default class CodeGen {
     }
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
-        return t.conditionalExpression(bindExpr, t.stringLiteral(''), t.identifier('null'));
+        return t.conditionalExpression(bindExpr, t.literal(''), t.literal('null'));
     }
 
     private _genUniqueIdentifier(name: string) {

@@ -4,15 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as babelTypes from '@babel/types';
 import * as parse5 from 'parse5-with-errors';
 import { CompilerDiagnostic } from '@lwc/errors';
 
-export type TemplateIdentifier = babelTypes.Identifier;
+export type TemplateIdentifier = { type: 'Identifier'; name: string };
 export type TemplateExpression =
-    | babelTypes.MemberExpression
-    | babelTypes.Literal
-    | babelTypes.Identifier;
+    | {
+          type: 'MemberExpression';
+          object: TemplateExpression;
+          key: TemplateExpression;
+          computed: boolean;
+          optional: boolean;
+      }
+    | { type: 'Literal'; value: string | number | boolean | null }
+    | TemplateIdentifier;
 
 export type TemplateCompileResult = {
     code: string;
@@ -132,22 +137,3 @@ export interface IRBooleanAttribute extends IRBaseAttribute {
 }
 
 export type IRAttribute = IRStringAttribute | IRExpressionAttribute | IRBooleanAttribute;
-
-export type WarningLevel = 'info' | 'warning' | 'error';
-
-export interface CompilationWarning {
-    message: string;
-    start: number;
-    length: number;
-    level: WarningLevel;
-}
-
-export interface CompilationOptions {
-    token: string;
-    experimentalComputedMemberExpression?: boolean;
-}
-
-export interface CompilationOutput {
-    code: string;
-    ast: babelTypes.Node;
-}

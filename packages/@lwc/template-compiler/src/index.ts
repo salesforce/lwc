@@ -47,8 +47,7 @@ export default function compile(source: string, config: Config): TemplateCompile
         );
 
         if (!hasParsingError && parsingResults.root) {
-            const output = generate(parsingResults.root, state);
-            code = output.code;
+            code = generate(parsingResults.root, state);
         }
     } catch (error) {
         const diagnostic = normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error);
@@ -85,6 +84,6 @@ export function compileToFunction(source: string): Function {
         throw generateCompilerError(TemplateErrors.INVALID_TEMPLATE);
     }
 
-    const { code } = generate(parsingResults.root, state);
+    const code = generate(parsingResults.root, state);
     return new Function(TEMPLATE_MODULES_PARAMETER, code);
 }
