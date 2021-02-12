@@ -44,33 +44,6 @@ it('should apply transformation for stylesheet file', async () => {
 });
 
 describe('custom properties', () => {
-    it('should allow custom properties if allowDefinition is true', async () => {
-        await expect(
-            transform(`:host { --bg-color: red; }`, 'foo.css', {
-                ...TRANSFORMATION_OPTIONS,
-                stylesheetConfig: {
-                    customProperties: { allowDefinition: true },
-                },
-            })
-        ).resolves.toMatchObject({
-            code: expect.any(String),
-        });
-    });
-
-    it('should throw if custom properties are defined and allowDefinition is false', async () => {
-        await expect(
-            transform(`:host { --bg-color: red; }`, 'foo.css', {
-                ...TRANSFORMATION_OPTIONS,
-                stylesheetConfig: {
-                    customProperties: { allowDefinition: false },
-                },
-            })
-        ).rejects.toMatchObject({
-            filename: 'foo.css',
-            message: expect.stringContaining('Invalid definition of custom property "--bg-color"'),
-        });
-    });
-
     it('should not transform var functions if custom properties a resolved natively', async () => {
         const actual = `div { color: var(--bg-color); }`;
         const expected = `

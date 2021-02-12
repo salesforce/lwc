@@ -12,9 +12,6 @@ import postcssLwc from './postcss-lwc-plugin';
 export interface Config {
     /** CSS custom properties configuration */
     customProperties?: {
-        /** Disallow definition of CSS custom properties when set to false */
-        allowDefinition?: boolean;
-
         /** Name of the module to resolve custom properties lookup */
         resolverModule?: string;
     };
@@ -30,24 +27,9 @@ export function transform(src: string, id: string, config: Config = {}): { code:
         return { code: 'export default undefined' };
     }
 
-    const allowDefinition = Boolean(
-        !config.customProperties || config.customProperties.allowDefinition
-    );
-    const collectVarFunctions = Boolean(
-        config.customProperties && config.customProperties.resolverModule
-    );
-    const minify = config.outputConfig && config.outputConfig.minify;
+    let plugins = [postcssLwc()];
 
-    let plugins = [
-        postcssLwc({
-            customProperties: {
-                allowDefinition,
-                collectVarFunctions,
-            },
-        }),
-    ];
-
-    if (minify) {
+    if (config.outputConfig?.minify) {
         const postcssMinify = require('./postcss-minify-plugins').default;
         // It's important to run the postcss minification plugins before the LWC one because we
         // need to clone the CSS declarations and they shouldn't be mangled by the minifier.

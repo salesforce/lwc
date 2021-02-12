@@ -24,7 +24,6 @@ describe('bundler', () => {
             },
             stylesheetConfig: {
                 customProperties: {
-                    allowDefinition: false,
                     resolution: { type: 'native' },
                 },
             },
@@ -53,7 +52,6 @@ describe('bundler', () => {
             },
             stylesheetConfig: {
                 customProperties: {
-                    allowDefinition: false,
                     resolution: { type: 'native' },
                 },
             },
@@ -78,7 +76,6 @@ describe('bundler', () => {
             },
             stylesheetConfig: {
                 customProperties: {
-                    allowDefinition: false,
                     resolution: { type: 'native' },
                 },
             },

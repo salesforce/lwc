@@ -196,7 +196,6 @@ The compiler configuration object is always normalized to apply necessary defaul
     },
     stylesheetConfig: {
         customProperties: {
-            allowDefinition: false,
             resolution: { type: 'native' }
         }
     }

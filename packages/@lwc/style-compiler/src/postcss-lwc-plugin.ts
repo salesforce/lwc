@@ -7,20 +7,12 @@
 import { Rule, AtRule, TransformCallback } from 'postcss';
 import postCssSelector from 'postcss-selector-parser';
 
-import validateCustomProperties from './custom-properties/validate';
 import validateIdSelectors from './no-id-selectors/validate';
 
 import transformImport from './css-import/transform';
 import transformSelectorScoping, { SelectorScopingConfig } from './selector-scoping/transform';
 import transformCustomProperties from './custom-properties/transform';
 import transformDirPseudoClass from './dir-pseudo-class/transform';
-
-export interface PluginConfig {
-    customProperties: {
-        allowDefinition: boolean;
-        collectVarFunctions: boolean;
-    };
-}
 
 function shouldTransformSelector(rule: Rule) {
     // @keyframe at-rules are special, rules inside are not standard selectors and should not be
@@ -37,7 +29,7 @@ function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
     });
 }
 
-export default function postCssLwcPlugin(config: PluginConfig): TransformCallback {
+export default function postCssLwcPlugin(): TransformCallback {
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
     const nativeShadowSelectorProcessor = selectorProcessorFactory({
@@ -48,13 +40,7 @@ export default function postCssLwcPlugin(config: PluginConfig): TransformCallbac
     });
 
     return (root, result) => {
-        const { customProperties } = config;
         transformImport(root, result);
-
-        if (!customProperties || !customProperties.allowDefinition) {
-            validateCustomProperties(root);
-        }
-
         transformCustomProperties(root, result);
 
         root.walkRules((rule) => {

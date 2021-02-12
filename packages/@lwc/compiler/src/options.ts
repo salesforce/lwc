@@ -19,7 +19,6 @@ const DEFAULT_DYNAMIC_CMP_CONFIG: NormalizedDynamicComponentConfig = {
 
 const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
     customProperties: {
-        allowDefinition: false,
         resolution: { type: 'native' },
     },
 };
@@ -37,7 +36,6 @@ export type CustomPropertiesResolution = { type: 'native' } | { type: 'module'; 
 
 export interface StylesheetConfig {
     customProperties?: {
-        allowDefinition?: boolean;
         resolution?: CustomPropertiesResolution;
     };
 }
@@ -98,7 +96,6 @@ export interface NormalizedCompileOptions extends CompileOptions {
 
 export interface NormalizedStylesheetConfig extends StylesheetConfig {
     customProperties: {
-        allowDefinition: boolean;
         resolution: CustomPropertiesResolution;
     };
 }
@@ -167,13 +164,7 @@ function validateStylesheetConfig(config: StylesheetConfig) {
     const { customProperties } = config;
 
     if (!isUndefined(customProperties)) {
-        const { allowDefinition, resolution } = customProperties;
-
-        invariant(
-            isUndefined(allowDefinition) || isBoolean(allowDefinition),
-            CompilerValidationErrors.INVALID_ALLOWDEFINITION_PROPERTY,
-            [allowDefinition]
-        );
+        const { resolution } = customProperties;
 
         if (!isUndefined(resolution)) {
             invariant(isObject(resolution), CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY, [
