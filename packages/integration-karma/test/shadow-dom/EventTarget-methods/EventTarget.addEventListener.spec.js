@@ -118,7 +118,7 @@ describe('EventTarget.addEventListener', () => {
         });
     }
 
-    describe('should always invoke listener with actual current target context', () => {
+    describe('should invoke listener with correct current target', () => {
         it('for host element', () => {
             let id;
             function handleTest() {
@@ -133,6 +133,7 @@ describe('EventTarget.addEventListener', () => {
             firstContainer.addEventListener('test', handleTest);
             secondContainer.addEventListener('test', handleTest);
             firstContainer.dispatchEvent(new CustomEvent('test'));
+            expect(id).toEqual('first-container');
             secondContainer.dispatchEvent(new CustomEvent('test'));
             expect(id).toEqual('second-container');
         });
@@ -153,6 +154,7 @@ describe('EventTarget.addEventListener', () => {
             firstContainerShadowRoot.addEventListener('test', handleTest);
             secondContainerShadowRoot.addEventListener('test', handleTest);
             firstContainerShadowRoot.dispatchEvent(new CustomEvent('test'));
+            expect(id).toEqual('first-container');
             secondContainerShadowRoot.dispatchEvent(new CustomEvent('test'));
             expect(id).toEqual('second-container');
         });

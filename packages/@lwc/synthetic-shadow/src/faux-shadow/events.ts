@@ -27,6 +27,7 @@ import {
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
+import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 
 export enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,
@@ -82,10 +83,15 @@ function getWrappedShadowRootListener(listener: EventListener): WrappedListener 
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
         shadowRootWrappedListener = function (event: Event) {
-            const hostElement = eventCurrentTargetGetter.call(event) as HTMLElement;
-            const actualCurrentTarget = getShadowRoot(hostElement);
+            // currentTarget is always defined inside an event listener
+            let currentTarget = eventCurrentTargetGetter.call(event)!;
+            // If currentTarget is not an instance of a native shadow root then we're dealing with a
+            // host element whose synthetic shadow root must be accessed via getShadowRoot().
+            if (!isInstanceOfNativeShadowRoot(currentTarget)) {
+                currentTarget = getShadowRoot(currentTarget as Element);
+            }
             if (shouldInvokeShadowRootListener(event)) {
-                listener.call(actualCurrentTarget, event);
+                listener.call(currentTarget, event);
             }
         } as WrappedListener;
         shadowRootWrappedListener.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
@@ -103,7 +109,8 @@ function getWrappedCustomElementListener(listener: EventListener): WrappedListen
     let customElementWrappedListener = customElementEventListenerMap.get(listener);
     if (isUndefined(customElementWrappedListener)) {
         customElementWrappedListener = function (event: Event) {
-            const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
+            // currentTarget is always defined inside an event listener
+            const currentTarget = eventCurrentTargetGetter.call(event)!;
             if (shouldInvokeCustomElementListener(event)) {
                 // all handlers on the custom element should be called with undefined 'this'
                 listener.call(currentTarget, event);
