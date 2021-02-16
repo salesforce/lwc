@@ -30,13 +30,10 @@ it('should apply transformation for template file', async () => {
 
     const expected = `
         import _implicitStylesheets from "./foo.css";
-        import { registerTemplate } from "lwc";
+        import {registerTemplate} from "lwc";
 
         function tmpl($api, $cmp, $slotset, $ctx) {
-            const {
-                t: api_text,
-                h: api_element
-            } = $api;
+            const {t: api_text, h: api_element} = $api;
 
             return [api_element("div", {
                 key: 0

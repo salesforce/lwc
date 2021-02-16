@@ -39,7 +39,6 @@
       ),
     ];
   }
-
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];
 
@@ -97,7 +96,6 @@
       ),
     ];
   }
-
   var _tmpl$1 = lwc.registerTemplate(tmpl$1);
   tmpl$1.stylesheets = [];
   tmpl$1.stylesheetTokens = {

@@ -15,7 +15,6 @@
       key: 0
     }, [api_dynamic($cmp.x)])];
   }
-
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];
 
@@ -64,7 +63,6 @@
       key: 1
     }, [])])];
   }
-
   var _tmpl$1 = lwc.registerTemplate(tmpl$1);
   tmpl$1.stylesheets = [];
   tmpl$1.stylesheetTokens = {
