@@ -29,11 +29,11 @@
     "dependencies": {
         "@babel/generator": "~7.12.11",
         "@babel/template": "~7.12.7",
-        "@babel/traverse": "~7.12.12",
         "@babel/types": "~7.11.5",
         "@lwc/errors": "1.17.4",
         "@lwc/shared": "1.17.4",
         "acorn": "~8.0.5",
+        "estree-walker": "~2.0.2",
         "esutils": "~2.0.3",
         "he": "~1.2.0",
         "parse5-with-errors": "~4.0.4"
