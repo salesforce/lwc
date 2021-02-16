@@ -1,15 +1,7 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import Container from 'x/container';
 
 if (!process.env.NATIVE_SHADOW) {
-    beforeAll(() => {
-        setFeatureFlagForTest('ENABLE_INNER_OUTER_TEXT_PATCH', true);
-    });
-
-    afterAll(() => {
-        setFeatureFlagForTest('ENABLE_INNER_OUTER_TEXT_PATCH', false);
-    });
-
     describe('innerText', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
