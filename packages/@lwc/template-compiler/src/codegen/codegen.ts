@@ -147,7 +147,7 @@ export default class CodeGen {
     }
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
-        return t.conditionalExpression(bindExpr, t.literal(''), t.literal('null'));
+        return t.conditionalExpression(bindExpr, t.literal(''), t.literal(null));
     }
 
     private _genUniqueIdentifier(name: string) {

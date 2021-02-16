@@ -8,7 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     d: api_dynamic,
     i: api_iterator,
   } = $api;
-  const { _m0: _m0 } = $ctx;
+  const { _m0 } = $ctx;
   return [
     api_element(
       "button",

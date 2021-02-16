@@ -8,7 +8,7 @@ import * as esutils from 'esutils';
 import { Node, parseExpressionAt } from 'acorn';
 import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors';
 
-import { identifier, isIdentifier, isMemberExpression, BaseNode } from '../shared/estree';
+import * as t from '../shared/estree';
 import { TemplateExpression, TemplateIdentifier, IRElement } from '../shared/types';
 
 import State from '../state';
@@ -28,11 +28,11 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
-function validateExpression(node: BaseNode, state: State): asserts node is TemplateExpression {
-    const isValidNode = isIdentifier(node) || isMemberExpression(node);
+function validateExpression(node: t.BaseNode, state: State): asserts node is TemplateExpression {
+    const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
     invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
 
-    if (isMemberExpression(node)) {
+    if (t.isMemberExpression(node)) {
         invariant(
             state.config.experimentalComputedMemberExpression || !node.computed,
             ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
@@ -40,11 +40,11 @@ function validateExpression(node: BaseNode, state: State): asserts node is Templ
 
         const { object, property } = node;
 
-        if (!isIdentifier(object)) {
+        if (!t.isIdentifier(object)) {
             validateExpression(object, state);
         }
 
-        if (!isIdentifier(property)) {
+        if (!t.isIdentifier(property)) {
             validateExpression(property, state);
         }
     }
@@ -104,7 +104,7 @@ export function parseExpression(source: string, state: State): TemplateExpressio
 
 export function parseIdentifier(source: string): TemplateIdentifier | never {
     if (esutils.keyword.isIdentifierES6(source)) {
-        return identifier(source);
+        return t.identifier(source);
     } else {
         throw generateCompilerError(ParserDiagnostics.INVALID_IDENTIFIER, {
             messageArgs: [source],

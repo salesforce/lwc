@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "p",
       {
         attrs: {
-          hidden: $cmp.computed ? "" : "null",
+          hidden: $cmp.computed ? "" : null,
         },
         key: 3,
       },

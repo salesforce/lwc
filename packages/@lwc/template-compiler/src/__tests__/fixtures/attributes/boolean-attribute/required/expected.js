@@ -46,7 +46,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "input",
       {
         attrs: {
-          required: $cmp.computed ? "" : "null",
+          required: $cmp.computed ? "" : null,
         },
         props: {
           value: "computed value",

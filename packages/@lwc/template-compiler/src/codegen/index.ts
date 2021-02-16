@@ -489,7 +489,11 @@ function generateTemplateFunction(templateRoot: IRElement, state: State): t.Func
         body.push(
             t.variableDeclaration('const', [
                 t.variableDeclarator(
-                    t.objectPattern(codeGen.memorizedIds.map((id) => t.assignmentProperty(id, id))),
+                    t.objectPattern(
+                        codeGen.memorizedIds.map((id) =>
+                            t.assignmentProperty(id, id, { shorthand: true })
+                        )
+                    ),
                     t.identifier(TEMPLATE_PARAMS.CONTEXT)
                 ),
             ])

@@ -2,7 +2,7 @@ import _nsFoo from "ns/foo";
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, c: api_custom_element, h: api_element } = $api;
-  const { _m0: _m0 } = $ctx;
+  const { _m0 } = $ctx;
   return [
     api_element(
       "section",

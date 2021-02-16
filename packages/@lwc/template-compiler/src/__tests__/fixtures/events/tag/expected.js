@@ -1,7 +1,7 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, t: api_text, h: api_element } = $api;
-  const { _m0: _m0, _m1: _m1 } = $ctx;
+  const { _m0, _m1 } = $ctx;
   return [
     api_element(
       "section",

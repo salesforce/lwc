@@ -42,7 +42,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "input",
       {
         attrs: {
-          readonly: $cmp.getReadOnly ? "" : "null",
+          readonly: $cmp.getReadOnly ? "" : null,
           disabled: "",
           title: "foo",
         },
