@@ -18,6 +18,8 @@ const featureFlagLookup: FeatureFlagLookup = {
     ENABLE_NODE_LIST_PATCH: null,
     ENABLE_HTML_COLLECTIONS_PATCH: null,
     ENABLE_NODE_PATCH: null,
+    // Disables the fix for #2121
+    ENABLE_LEAKING_EVENTS: null,
 };
 export default featureFlagLookup;
 
