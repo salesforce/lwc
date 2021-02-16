@@ -67,7 +67,7 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
             const { composed } = event;
             let shouldInvoke;
 
-            if (featureFlags.ENABLE_LEAKING_EVENTS) {
+            if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
                 shouldInvoke = !(eventToShadowRootMap.has(event) && isFalse(composed));
             } else {
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);

@@ -102,7 +102,7 @@ function getWrappedShadowRootListener(listener: EventListener): WrappedListener 
             const actualTarget = getActualTarget(event);
             let shouldInvoke;
 
-            if (featureFlags.ENABLE_LEAKING_EVENTS) {
+            if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
                 shouldInvoke = shouldInvokeShadowRootListener(event);
             } else {
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
@@ -132,7 +132,7 @@ function getWrappedCustomElementListener(listener: EventListener): WrappedListen
             const actualTarget = getActualTarget(event);
             let shouldInvoke;
 
-            if (featureFlags.ENABLE_LEAKING_EVENTS) {
+            if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
                 shouldInvoke = shouldInvokeCustomElementListener(event);
             } else {
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);

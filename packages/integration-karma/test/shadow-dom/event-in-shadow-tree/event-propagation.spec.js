@@ -1,7 +1,7 @@
 // Inspired from WPT:
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-inside-shadow-tree.html
 
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import ShadowTree from 'x/shadowTree';
@@ -199,8 +199,20 @@ describe('composed and bubbling event propagation in nested shadow tree', () => 
 
 describe('non-composed and bubbling event propagation in nested shadow tree', () => {
     let nodes;
+    let composedPath;
+    let expectedLogs;
     beforeEach(() => {
         nodes = createNestedShadowTree(document.body);
+        composedPath = [
+            nodes['span-manual'],
+            nodes['div-manual'],
+            nodes['x-shadow-tree'].shadowRoot,
+        ];
+        expectedLogs = [
+            [nodes['span-manual'], nodes['span-manual'], composedPath],
+            [nodes['div-manual'], nodes['span-manual'], composedPath],
+            [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
+        ];
     });
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
@@ -213,18 +225,37 @@ describe('non-composed and bubbling event propagation in nested shadow tree', ()
                 new CustomEvent('test', { composed: false, bubbles: true })
             );
 
-            const composedPath = [
-                nodes['span-manual'],
-                nodes['div-manual'],
-                nodes['x-shadow-tree'].shadowRoot,
-            ];
-            const expectedLogs = [
-                [nodes['span-manual'], nodes['span-manual'], composedPath],
-                [nodes['div-manual'], nodes['span-manual'], composedPath],
-                [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
-            ];
-
             expect(logs).toEqual(expectedLogs);
+        });
+    });
+
+    describe('when non-composed event crosses immediate shadow root boundary', () => {
+        beforeEach(() => {
+            setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
+        });
+        afterEach(() => {
+            setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', false);
+        });
+
+        it('propagate event from a child element added via lwc:dom="manual"', () => {
+            // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
+            return new Promise((resolve) => {
+                setTimeout(resolve);
+            }).then(() => {
+                const logs = dispatchEventWithLog(
+                    nodes['span-manual'],
+                    new CustomEvent('test', { composed: false, bubbles: true })
+                );
+
+                if (!process.env.NATIVE_SHADOW) {
+                    expectedLogs.push(
+                        [document.body, null, composedPath],
+                        [document.documentElement, null, composedPath],
+                        [document, null, composedPath]
+                    );
+                }
+                expect(logs).toEqual(expectedLogs);
+            });
         });
     });
 });
