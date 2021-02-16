@@ -19,7 +19,6 @@ export default function styleTransform(
 
     const styleCompilerConfig = {
         customProperties: {
-            allowDefinition: customProperties.allowDefinition,
             resolverModule:
                 customProperties.resolution.type === 'module'
                     ? customProperties.resolution.name

@@ -18,14 +18,6 @@ export const GENERIC_COMPILER_ERROR = {
 };
 
 export const CompilerValidationErrors = {
-    INVALID_ALLOWDEFINITION_PROPERTY: {
-        code: 1012,
-        message:
-            'Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "{0}".',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     INVALID_COMPAT_PROPERTY: {
         code: 1013,
         message: 'Expected a boolean for outputConfig.compat, received "{0}".',

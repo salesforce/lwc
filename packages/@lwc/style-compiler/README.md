@@ -45,7 +45,6 @@ const { code } = compile(source, 'example.css');
 -   `id` (string, required) - the css source file path, used by the compiler to produce errors with the file name
 -   `options` (object, optional)
     -   `customProperties` (object, optional)
-        -   `allowDefinition` (boolean, optional, default: `false`) - allow CSS custom properties definition in the css source
         -   `resolverModule` (boolean, optional) - module name for the custom properties resolve
     -   `outputConfig` (object, optional)
         -   `minify` (boolean, optional, default: `false`) - compress the generated output

@@ -106,25 +106,6 @@ describe('compiler options', () => {
         });
     });
 
-    it('should validate stylesheetConfig.customProperties.allowDefinition', async () => {
-        await expect(
-            compile({
-                name: 'foo',
-                namespace: 'x',
-                files: { x: 'foo' },
-                stylesheetConfig: {
-                    customProperties: {
-                        allowDefinition: 'foo',
-                    },
-                },
-            })
-        ).rejects.toMatchObject({
-            message: expect.stringContaining(
-                'Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "foo".'
-            ),
-        });
-    });
-
     it('should validate stylesheetConfig.customProperties.resolution', async () => {
         await expect(
             compile({
