@@ -77,8 +77,7 @@ function getEventMap(elm: EventTarget): ListenerMap {
 }
 
 /**
- * This function exists because events dispatched on shadow roots are actually dispatched on their
- * hosts and listeners added to shadow roots are actually added to their hosts.
+ * This function exists because events dispatched on shadow roots are actually dispatched on their hosts.
  */
 export function getActualTarget(event: Event): EventTarget {
     return eventToShadowRootMap.get(event) ?? eventTargetGetter.call(event);
