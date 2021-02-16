@@ -20,7 +20,7 @@ import {
 /**
  * Bind the passed expression to the component instance. It applies the following transformation to the expression:
  * - {value} --> {$cmp.value}
- * - {value[state.index]} --> {$cmp.value[$cmp.index]}
+ * - {value[index]} --> {$cmp.value[$cmp.index]}
  */
 export function bindExpression(expression: TemplateExpression, irNode: IRNode): TemplateExpression {
     const root: estree.BaseNode = expression as any;

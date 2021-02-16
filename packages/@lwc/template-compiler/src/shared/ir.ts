@@ -46,7 +46,7 @@ export function isComponentProp(identifier: TemplateIdentifier, root: IRNode): b
     let current: IRNode | undefined = root;
 
     // Walking up the AST and checking for each node to find if the identifer name is identical to
-    //  an iteration variable.
+    // an iteration variable.
     while (current !== undefined) {
         if (isElement(current)) {
             const { forEach, forOf } = current;
