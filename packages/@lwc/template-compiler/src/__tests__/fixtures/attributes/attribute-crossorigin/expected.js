@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
@@ -8,9 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         attrs: {
           src: "http://www.example.com/image.png",
-          crossorigin: "anonymous"
+          crossorigin: "anonymous",
         },
-        key: 0
+        key: 0,
       },
       []
     ),
@@ -19,9 +18,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         attrs: {
           src: "http://www.example.com/video.mp4",
-          crossorigin: "anonymous"
+          crossorigin: "anonymous",
         },
-        key: 1
+        key: 1,
       },
       []
     ),
@@ -30,14 +29,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         attrs: {
           src: "http://www.example.com/video.mp3",
-          crossorigin: "anonymous"
+          crossorigin: "anonymous",
         },
-        key: 2
+        key: 2,
       },
       []
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

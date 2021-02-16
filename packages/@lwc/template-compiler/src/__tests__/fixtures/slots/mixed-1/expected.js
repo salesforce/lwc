@@ -1,18 +1,17 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, s: api_slot } = $api;
   return [
     api_element(
       "section",
       {
-        key: 0
+        key: 0,
       },
       [
         api_element(
           "p",
           {
-            key: 1
+            key: 1,
           },
           [api_text("Before header")]
         ),
@@ -20,9 +19,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "header",
           {
             attrs: {
-              name: "header"
+              name: "header",
             },
-            key: 2
+            key: 2,
           },
           [api_text("Default header")],
           $slotset
@@ -30,30 +29,30 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "p",
           {
-            key: 3
+            key: 3,
           },
           [api_text("In")]
         ),
         api_element(
           "p",
           {
-            key: 4
+            key: 4,
           },
           [api_text("between")]
         ),
         api_slot(
           "",
           {
-            key: 5
+            key: 5,
           },
           [
             api_element(
               "p",
               {
-                key: 6
+                key: 6,
               },
               [api_text("Default body")]
-            )
+            ),
           ],
           $slotset
         ),
@@ -61,26 +60,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "footer",
           {
             attrs: {
-              name: "footer"
+              name: "footer",
             },
-            key: 7
+            key: 7,
           },
           [
             api_element(
               "p",
               {
-                key: 8
+                key: 8,
               },
               [api_text("Default footer")]
-            )
+            ),
           ],
           $slotset
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.slots = ["header", "", "footer"];
 tmpl.stylesheets = [];

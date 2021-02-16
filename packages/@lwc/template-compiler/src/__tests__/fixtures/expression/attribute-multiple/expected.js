@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
@@ -7,21 +6,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       {
         className: $cmp.foo.c,
-        key: 0
+        key: 0,
       },
       [
         api_element(
           "p",
           {
             className: $cmp.bar.c,
-            key: 1
+            key: 1,
           },
           []
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

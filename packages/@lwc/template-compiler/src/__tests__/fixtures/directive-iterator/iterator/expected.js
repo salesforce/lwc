@@ -1,20 +1,19 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
     t: api_text,
     d: api_dynamic,
     h: api_element,
-    i: api_iterator
+    i: api_iterator,
   } = $api;
   return [
     api_element(
       "section",
       {
-        key: 0
+        key: 0,
       },
-      api_iterator($cmp.items, function(xValue, xIndex, xFirst, xLast) {
+      api_iterator($cmp.items, function (xValue, xIndex, xFirst, xLast) {
         const x = {
           value: xValue,
           index: xIndex,
@@ -26,26 +25,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           {
             attrs: {
               "data-islast": x.last,
-              "data-isfirst": x.first
+              "data-isfirst": x.first,
             },
-            key: api_key(1, x.value.id)
+            key: api_key(1, x.value.id),
           },
           [
             api_element(
               "span",
               {
-                key: 2
+                key: 2,
               },
               [api_text("Row: "), api_dynamic(x.index)]
             ),
             api_text(". Value: "),
-            api_dynamic(x.value)
+            api_dynamic(x.value),
           ]
         );
       })
     ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

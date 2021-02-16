@@ -1,6 +1,5 @@
 import _fooBar from "foo/bar";
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, c: api_custom_element } = $api;
   return [
@@ -8,9 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "p",
       {
         attrs: {
-          title: ""
+          title: "",
         },
-        key: 0
+        key: 0,
       },
       []
     ),
@@ -20,14 +19,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         props: {
           content: "",
-          visible: true
+          visible: true,
         },
-        key: 1
+        key: 1,
       },
       []
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
@@ -33,6 +32,5 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     );
   });
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
