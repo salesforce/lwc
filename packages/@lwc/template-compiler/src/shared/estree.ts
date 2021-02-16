@@ -378,6 +378,7 @@ export function program(body: t.Program['body'], config?: Partial<t.Program>): t
     };
 }
 
+export type BaseNode = t.BaseNode;
 export type Identifier = t.Identifier;
 export type MemberExpression = t.MemberExpression;
 export type CallExpression = t.CallExpression;

@@ -4,16 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as types from '@babel/types';
 import * as esutils from 'esutils';
 import { Node, parseExpressionAt } from 'acorn';
-import estree from 'estree';
-
 import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors';
 
-import State from '../state';
-
+import { identifier, isIdentifier, isMemberExpression, BaseNode } from '../shared/estree';
 import { TemplateExpression, TemplateIdentifier, IRElement } from '../shared/types';
+
+import State from '../state';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -30,19 +28,11 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
-function isEsTreeIdentifier(node: estree.BaseNode): node is estree.Identifier {
-    return node.type === 'Identifier';
-}
-
-function isEsTreeMemberExpression(node: estree.BaseNode): node is estree.MemberExpression {
-    return node.type === 'MemberExpression';
-}
-
-function validateExpression(node: estree.BaseNode, state: State) {
-    const isValidNode = isEsTreeIdentifier(node) || isEsTreeMemberExpression(node);
+function validateExpression(node: BaseNode, state: State): asserts node is TemplateExpression {
+    const isValidNode = isIdentifier(node) || isMemberExpression(node);
     invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
 
-    if (isEsTreeMemberExpression(node)) {
+    if (isMemberExpression(node)) {
         invariant(
             state.config.experimentalComputedMemberExpression || !node.computed,
             ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
@@ -50,11 +40,11 @@ function validateExpression(node: estree.BaseNode, state: State) {
 
         const { object, property } = node;
 
-        if (!isEsTreeIdentifier(object)) {
+        if (!isIdentifier(object)) {
             validateExpression(object, state);
         }
 
-        if (!isEsTreeIdentifier(property)) {
+        if (!isIdentifier(property)) {
             validateExpression(property, state);
         }
     }
@@ -98,7 +88,6 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
     ]);
 }
 
-// FIXME: Avoid throwing errors and return it properly
 export function parseExpression(source: string, state: State): TemplateExpression {
     try {
         const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
@@ -106,7 +95,7 @@ export function parseExpression(source: string, state: State): TemplateExpressio
         validateSourceIsParsedExpression(source, parsed);
         validateExpression(parsed, state);
 
-        return (parsed as unknown) as TemplateExpression;
+        return parsed;
     } catch (err) {
         err.message = `Invalid expression ${source} - ${err.message}`;
         throw err;
@@ -115,7 +104,7 @@ export function parseExpression(source: string, state: State): TemplateExpressio
 
 export function parseIdentifier(source: string): TemplateIdentifier | never {
     if (esutils.keyword.isIdentifierES6(source)) {
-        return types.identifier(source);
+        return identifier(source);
     } else {
         throw generateCompilerError(ParserDiagnostics.INVALID_IDENTIFIER, {
             messageArgs: [source],
