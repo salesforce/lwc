@@ -229,35 +229,39 @@ describe('non-composed and bubbling event propagation in nested shadow tree', ()
         });
     });
 
-    describe('when non-composed event crosses immediate shadow root boundary', () => {
-        beforeEach(() => {
-            setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
-        });
-        afterEach(() => {
-            setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', false);
-        });
+    if (!process.env.NATIVE_SHADOW) {
+        describe('when the ENABLE_NON_COMPOSED_EVENTS_LEAKAGE flag is enabled', () => {
+            beforeEach(() => {
+                setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
+            });
+            afterEach(() => {
+                setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', false);
+            });
 
-        it('propagate event from a child element added via lwc:dom="manual"', () => {
-            // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-            return new Promise((resolve) => {
-                setTimeout(resolve);
-            }).then(() => {
-                const logs = dispatchEventWithLog(
-                    nodes['span-manual'],
-                    new CustomEvent('test', { composed: false, bubbles: true })
-                );
+            it('propagate event from a child element added via lwc:dom="manual"', () => {
+                // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
+                return new Promise((resolve) => {
+                    setTimeout(resolve);
+                }).then(() => {
+                    const logs = dispatchEventWithLog(
+                        nodes['span-manual'],
+                        new CustomEvent('test', { composed: false, bubbles: true })
+                    );
 
-                if (!process.env.NATIVE_SHADOW) {
-                    expectedLogs.push(
+                    expectedLogs = [
+                        [nodes['span-manual'], nodes['span-manual'], composedPath],
+                        [nodes['div-manual'], nodes['span-manual'], composedPath],
+                        [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
                         [document.body, null, composedPath],
                         [document.documentElement, null, composedPath],
-                        [document, null, composedPath]
-                    );
-                }
-                expect(logs).toEqual(expectedLogs);
+                        [document, null, composedPath],
+                    ];
+
+                    expect(logs).toEqual(expectedLogs);
+                });
             });
         });
-    });
+    }
 });
 
 describe('Event.stopPropagation', () => {
