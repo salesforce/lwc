@@ -56,11 +56,9 @@ export function format(templateFn: t.FunctionDeclaration, state: State): t.Progr
     const templateBody = [
         templateFn,
         t.exportDefaultDeclaration(
-            t.expressionStatement(
-                t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [
-                    t.identifier(TEMPLATE_FUNCTION_NAME),
-                ])
-            ) as any
+            t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [
+                t.identifier(TEMPLATE_FUNCTION_NAME),
+            ])
         ),
     ];
 

@@ -17,29 +17,27 @@ import { IRNode, TemplateExpression } from '../shared/types';
  * - {value[index]} --> {$cmp.value[$cmp.index]}
  */
 export function bindExpression(expression: TemplateExpression, irNode: IRNode): t.Expression {
-    const root: t.Expression = expression as any;
-
-    if (t.isIdentifier(root)) {
-        if (isComponentProp(root as any, irNode)) {
-            return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), root);
+    if (t.isIdentifier(expression)) {
+        if (isComponentProp(expression, irNode)) {
+            return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
         } else {
-            return root;
+            return expression;
         }
     }
 
-    walk(root, {
+    walk(expression, {
         leave(node, parent) {
             if (
                 parent !== null &&
                 t.isIdentifier(node) &&
                 t.isMemberExpression(parent) &&
                 parent.object === node &&
-                isComponentProp(node as any, irNode)
+                isComponentProp(node, irNode)
             ) {
                 this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
             }
         },
     });
 
-    return root;
+    return expression;
 }

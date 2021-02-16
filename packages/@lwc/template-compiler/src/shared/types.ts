@@ -12,7 +12,7 @@ export type TemplateExpression =
     | {
           type: 'MemberExpression';
           object: TemplateExpression;
-          key: TemplateExpression;
+          property: TemplateExpression;
           computed: boolean;
           optional: boolean;
       }

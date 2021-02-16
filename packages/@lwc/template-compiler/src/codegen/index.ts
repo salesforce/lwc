@@ -260,11 +260,11 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
             const testExpression = bindExpression(element.if!, element);
 
             return t.arrayExpression(
-                fragmentNodes.elements
-                    .map((child) =>
-                        child !== null ? applyInlineIf(element, child as any, testExpression) : null
-                    )
-                    .filter((item) => item !== null) as any
+                fragmentNodes.elements.map((child) =>
+                    child !== null
+                        ? applyInlineIf(element, child as t.Expression, testExpression)
+                        : null
+                )
             );
         } else {
             // If the template has a single children, make sure the ternary expression returns an array
