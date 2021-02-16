@@ -145,12 +145,12 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
 
     function applyInlineIf(
         element: IRElement,
-        babelNode: t.Expression,
+        node: t.Expression,
         testExpression?: t.Expression,
         falseValue?: t.Expression
     ): t.Expression {
         if (!element.if) {
-            return babelNode;
+            return node;
         }
 
         if (!testExpression) {
@@ -171,12 +171,12 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
             });
         }
 
-        return t.conditionalExpression(leftExpression, babelNode, falseValue ?? t.literal(null));
+        return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
     }
 
-    function applyInlineFor(element: IRElement, babelNode: t.Expression) {
+    function applyInlineFor(element: IRElement, node: t.Expression) {
         if (!element.forEach) {
-            return babelNode;
+            return node;
         }
 
         const { expression, item, index } = element.forEach;
@@ -189,15 +189,15 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         const iterationFunction = t.functionExpression(
             null,
             params,
-            t.blockStatement([t.returnStatement(babelNode)])
+            t.blockStatement([t.returnStatement(node)])
         );
 
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function applyInlineForOf(element: IRElement, babelNode: t.Expression) {
+    function applyInlineForOf(element: IRElement, node: t.Expression) {
         if (!element.forOf) {
-            return babelNode;
+            return node;
         }
 
         const { expression, iterator } = element.forOf;
@@ -225,7 +225,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                 t.variableDeclaration('const', [
                     t.variableDeclarator(t.identifier(iteratorName), iteratorObjet),
                 ]),
-                t.returnStatement(babelNode),
+                t.returnStatement(node),
             ])
         );
 
