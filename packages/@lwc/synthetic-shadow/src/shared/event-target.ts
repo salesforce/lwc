@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import featureFlags from '@lwc/features';
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
 import { getActualTarget } from '../faux-shadow/events';
-import { isHostElement } from '../faux-shadow/shadow-root';
+import { eventToShadowRootMap, isHostElement } from '../faux-shadow/shadow-root';
 
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
 const ComposedPathMap: WeakMap<Event, EventTarget[]> = new WeakMap();
@@ -51,7 +52,9 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
     let wrapperFn = EventListenerMap.get(fnOrObj);
     if (isUndefined(wrapperFn)) {
         wrapperFn = function (this: EventTarget, event: Event) {
-            const currentTarget = eventCurrentTargetGetter.call(event) as EventTarget;
+            // this function is invoked from an event listener and
+            // currentTarget is always defined inside an event listener
+            const currentTarget = eventCurrentTargetGetter.call(event)!;
             const actualTarget = getActualTarget(event);
 
             if (process.env.NODE_ENV !== 'production') {
@@ -61,7 +64,16 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
                 );
             }
 
-            if (!shouldInvokeListener(event, actualTarget, currentTarget)) {
+            const { composed } = event;
+            let shouldInvoke;
+
+            if (featureFlags.ENABLE_LEAKING_EVENTS) {
+                shouldInvoke = !(eventToShadowRootMap.has(event) && isFalse(composed));
+            } else {
+                shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
+            }
+
+            if (!shouldInvoke) {
                 return;
             }
 
