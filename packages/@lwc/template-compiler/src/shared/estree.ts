@@ -6,10 +6,7 @@
  */
 import { BaseNode, Identifier, MemberExpression, Expression } from 'estree';
 
-export function createIdentifier(
-    name: string,
-    config?: Partial<Omit<Identifier, 'type' | 'name'>>
-): Identifier {
+export function createIdentifier(name: string, config?: Partial<Identifier>): Identifier {
     return {
         type: 'Identifier',
         name,
@@ -24,7 +21,7 @@ export function isIdentifier(node: BaseNode): node is Identifier {
 export function createMemberExpression(
     object: Expression,
     property: Expression,
-    config?: Partial<Omit<MemberExpression, 'type' | 'object' | 'property'>>
+    config?: Partial<MemberExpression>
 ): MemberExpression {
     return {
         type: 'MemberExpression',
