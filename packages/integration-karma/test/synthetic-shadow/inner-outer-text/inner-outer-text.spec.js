@@ -7,16 +7,12 @@ if (!process.env.NATIVE_SHADOW) {
         document.body.appendChild(elm);
 
         it('should get innerText of custom element when DISABLE_INNER_OUTER_TEXT_PATCH = true', () => {
-            expect(elm.innerText).toBe('');
-
             setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', true);
             expect(elm.innerText).not.toBe('');
             setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', false);
         });
 
         it('should get outerText of custom element when DISABLE_INNER_OUTER_TEXT_PATCH = true', () => {
-            expect(elm.outerText).toBe('');
-
             setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', true);
             expect(elm.outerText).not.toBe('');
             setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', false);
