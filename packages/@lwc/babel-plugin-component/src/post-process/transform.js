@@ -11,9 +11,9 @@
  */
 
 const moduleImports = require('@babel/helper-module-imports');
+
 const { REGISTER_DECORATORS_ID } = require('../constants');
 const { isLWCNode } = require('../utils');
-const LWC_POST_PROCCESED = Symbol();
 
 module.exports = function postProcess({ types: t }) {
     function collectDecoratedProperties(body) {
@@ -81,37 +81,37 @@ module.exports = function postProcess({ types: t }) {
         return t.callExpression(id, [klass, t.objectExpression(props)]);
     }
 
+    // Babel reinvokes visitors for node reinsertion so we use this to avoid an infinite loop.
+    const visitedClasses = new WeakSet();
+
     return {
-        // Decorator collector for class expressions
-        ClassExpression(path) {
+        Class(path) {
             const { node } = path;
-            if (!node[LWC_POST_PROCCESED]) {
-                const metaPropertyList = collectMetaPropertyList(path.get('body'));
 
-                if (metaPropertyList.length) {
-                    path.replaceWith(createRegisterDecoratorsCall(path, node, metaPropertyList));
-                }
-                node[LWC_POST_PROCCESED] = true;
+            if (visitedClasses.has(node)) {
+                return;
             }
-        },
-        // Decorator collector for class declarations
-        ClassDeclaration(path) {
-            const { node } = path;
+            visitedClasses.add(node);
+
             const metaPropertyList = collectMetaPropertyList(path.get('body'));
+            if (metaPropertyList.length === 0) {
+                return;
+            }
 
-            if (metaPropertyList.length) {
+            const hasIdentifier = t.isIdentifier(node.id);
+            const shouldTransformAsClassExpression =
+                path.isClassExpression() || (path.isClassDeclaration() && !hasIdentifier);
+
+            if (shouldTransformAsClassExpression) {
+                const classExpression = t.toExpression(node);
+                path.replaceWith(
+                    createRegisterDecoratorsCall(path, classExpression, metaPropertyList)
+                );
+            } else {
                 const statementPath = path.getStatementParent();
-                const hasIdentifier = t.isIdentifier(node.id);
-
-                if (hasIdentifier) {
-                    statementPath.insertAfter(
-                        createRegisterDecoratorsCall(path, node.id, metaPropertyList)
-                    );
-                } else {
-                    // if it does not have an id, we can treat it as a ClassExpression
-                    node.type = 'ClassExpression';
-                    path.replaceWith(createRegisterDecoratorsCall(path, node, metaPropertyList));
-                }
+                statementPath.insertAfter(
+                    createRegisterDecoratorsCall(path, node.id, metaPropertyList)
+                );
             }
         },
     };
