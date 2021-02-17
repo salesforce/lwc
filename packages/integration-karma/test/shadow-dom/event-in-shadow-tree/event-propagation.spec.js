@@ -203,16 +203,6 @@ describe('non-composed and bubbling event propagation in nested shadow tree', ()
     let expectedLogs;
     beforeEach(() => {
         nodes = createNestedShadowTree(document.body);
-        composedPath = [
-            nodes['span-manual'],
-            nodes['div-manual'],
-            nodes['x-shadow-tree'].shadowRoot,
-        ];
-        expectedLogs = [
-            [nodes['span-manual'], nodes['span-manual'], composedPath],
-            [nodes['div-manual'], nodes['span-manual'], composedPath],
-            [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
-        ];
     });
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
@@ -224,6 +214,17 @@ describe('non-composed and bubbling event propagation in nested shadow tree', ()
                 nodes['span-manual'],
                 new CustomEvent('test', { composed: false, bubbles: true })
             );
+
+            composedPath = [
+                nodes['span-manual'],
+                nodes['div-manual'],
+                nodes['x-shadow-tree'].shadowRoot,
+            ];
+            expectedLogs = [
+                [nodes['span-manual'], nodes['span-manual'], composedPath],
+                [nodes['div-manual'], nodes['span-manual'], composedPath],
+                [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
+            ];
 
             expect(logs).toEqual(expectedLogs);
         });
@@ -248,6 +249,11 @@ describe('non-composed and bubbling event propagation in nested shadow tree', ()
                         new CustomEvent('test', { composed: false, bubbles: true })
                     );
 
+                    composedPath = [
+                        nodes['span-manual'],
+                        nodes['div-manual'],
+                        nodes['x-shadow-tree'].shadowRoot,
+                    ];
                     expectedLogs = [
                         [nodes['span-manual'], nodes['span-manual'], composedPath],
                         [nodes['div-manual'], nodes['span-manual'], composedPath],
