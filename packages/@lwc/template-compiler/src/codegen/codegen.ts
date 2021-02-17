@@ -108,7 +108,7 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.flatten, children);
     }
 
-    genKey(compilerKey: t.Literal, value: t.Expression) {
+    genKey(compilerKey: t.SimpleLiteral, value: t.Expression) {
         return this._renderApiCall(RENDER_APIS.key, [compilerKey, value]);
     }
 
