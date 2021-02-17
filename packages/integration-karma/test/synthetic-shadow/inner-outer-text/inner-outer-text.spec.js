@@ -1,7 +1,28 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from 'x/container';
 
 if (!process.env.NATIVE_SHADOW) {
+    describe('DISABLE_INNER_OUTER_TEXT_PATCH flag', () => {
+        const elm = createElement('x-container', { is: Container });
+        document.body.appendChild(elm);
+
+        it('should get innerText of custom element when DISABLE_INNER_OUTER_TEXT_PATCH = true', () => {
+            expect(elm.innerText).toBe('');
+
+            setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', true);
+            expect(elm.innerText).not.toBe('');
+            setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', false);
+        });
+
+        it('should get outerText of custom element when DISABLE_INNER_OUTER_TEXT_PATCH = true', () => {
+            expect(elm.outerText).toBe('');
+
+            setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', true);
+            expect(elm.outerText).not.toBe('');
+            setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', false);
+        });
+    });
+
     describe('innerText', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
