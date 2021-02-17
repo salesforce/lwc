@@ -6,4 +6,16 @@
  */
 const transform = require('./transform');
 const dedupeImports = require('./dedupe-imports');
-module.exports = { transform, dedupeImports };
+
+function exit(api) {
+    return {
+        Program: {
+            exit(path, state) {
+                path.traverse(transform(api), state);
+                dedupeImports(api, path);
+            },
+        },
+    };
+}
+
+module.exports = { exit };

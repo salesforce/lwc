@@ -6,7 +6,7 @@
  */
 const component = require('./component');
 const { decorators } = require('./decorators');
-const { exit } = require('./program');
+const { exit } = require('./post-process');
 const dynamicImports = require('./dynamic-imports');
 
 function visitProgram(mergedVisitors, stage, path, state) {

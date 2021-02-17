@@ -137,7 +137,7 @@ function validateUniqueness(decorators) {
     }
 }
 
-module.exports = function validate(klass, decorators) {
+module.exports = function validate(decorators) {
     decorators.filter(isApiDecorator).forEach(({ path, type }) => {
         validateConflict(path, decorators);
 

@@ -108,8 +108,8 @@ function groupDecorator(decorators) {
 }
 
 /** Validate the usage of decorator by calling each validation function */
-function validate(klass, decorators) {
-    DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(klass, decorators));
+function validate(decorators) {
+    DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(decorators));
 }
 
 /** Transform the decorators */
@@ -176,7 +176,7 @@ function decorators({ types: t }) {
                 const grouped = groupDecorator(decorators);
 
                 for (const [klass, decorators] of grouped) {
-                    validate(klass, decorators);
+                    validate(decorators);
                     transform(t, klass, decorators);
                 }
 

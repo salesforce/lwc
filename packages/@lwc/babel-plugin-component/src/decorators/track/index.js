@@ -17,7 +17,7 @@ function isTrackDecorator(decorator) {
     return decorator.name === TRACK_DECORATOR;
 }
 
-function validate(klass, decorators) {
+function validate(decorators) {
     decorators.filter(isTrackDecorator).forEach(({ path }) => {
         if (!path.parentPath.isClassProperty()) {
             throw generateError(path, {

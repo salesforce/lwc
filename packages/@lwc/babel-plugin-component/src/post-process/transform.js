@@ -98,11 +98,12 @@ module.exports = function postProcess({ types: t }) {
                 return;
             }
 
-            const hasIdentifier = t.isIdentifier(node.id);
-            const shouldTransformAsClassExpression =
-                path.isClassExpression() || (path.isClassDeclaration() && !hasIdentifier);
+            const isAnonymousClassDeclaration =
+                path.isClassDeclaration() && !t.isIdentifier(node.id);
+            const transformAsClassExpression =
+                path.isClassExpression() || isAnonymousClassDeclaration;
 
-            if (shouldTransformAsClassExpression) {
+            if (transformAsClassExpression) {
                 const classExpression = t.toExpression(node);
                 path.replaceWith(
                     createRegisterDecoratorsCall(path, classExpression, metaPropertyList)
