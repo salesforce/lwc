@@ -105,7 +105,7 @@ describe('Element import', () => {
     `,
         {
             output: {
-                code: `import { api, track, wire, LightningElement, getComponentDef, getComponentConstructor, isComponentConstructor, readonly, register, unwrap } from "lwc";`,
+                code: `import { LightningElement, getComponentDef, getComponentConstructor, isComponentConstructor, readonly, register, unwrap } from "lwc";`,
             },
         }
     );
