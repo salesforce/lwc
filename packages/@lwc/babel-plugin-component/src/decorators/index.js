@@ -165,24 +165,22 @@ function generateInvalidDecoratorError(path) {
 
 function decorators({ types: t }) {
     return {
-        Program: {
-            enter(path) {
-                const engineImportSpecifiers = getEngineImportSpecifiers(path);
-                const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
-                    isLwcDecoratorName(name)
-                );
+        Program(path) {
+            const engineImportSpecifiers = getEngineImportSpecifiers(path);
+            const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
+                isLwcDecoratorName(name)
+            );
 
-                const decorators = getLwcDecorators(decoratorImportSpecifiers);
-                const grouped = groupDecorator(decorators);
+            const decorators = getLwcDecorators(decoratorImportSpecifiers);
+            const grouped = groupDecorator(decorators);
 
-                for (const [klass, decorators] of grouped) {
-                    validate(decorators);
-                    transform(t, klass, decorators);
-                }
+            for (const [klass, decorators] of grouped) {
+                validate(decorators);
+                transform(t, klass, decorators);
+            }
 
-                removeDecorators(decorators);
-                removeImportSpecifiers(decoratorImportSpecifiers);
-            },
+            removeDecorators(decorators);
+            removeImportSpecifiers(decoratorImportSpecifiers);
         },
         Decorator(path) {
             // All valid decorators have been processed so only invalid decorators remain.
