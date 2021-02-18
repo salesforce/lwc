@@ -6,7 +6,7 @@
  */
 const component = require('./component');
 const { decorators } = require('./decorators');
-const { exit } = require('./post-process');
+const dedupeImports = require('./dedupe-imports');
 const dynamicImports = require('./dynamic-imports');
 
 function visitProgram(mergedVisitors, stage, path, state) {
@@ -29,7 +29,7 @@ module.exports = function LwcClassTransform(api) {
         decorators(api),
         component(api),
         dynamicImports(api),
-        exit(api),
+        dedupeImports(api),
     ]);
 
     return {
