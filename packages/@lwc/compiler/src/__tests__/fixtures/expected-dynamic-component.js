@@ -1,5 +1,5 @@
-import { registerTemplate, registerComponent, LightningElement, registerDecorators } from 'lwc';
 import { load } from '@custom/loader';
+import { registerTemplate, registerComponent, LightningElement, registerDecorators } from 'lwc';
 
 function tmpl($api, $cmp, $slotset, $ctx) {
     const {dc: api_dynamic_component, f: api_flatten} = $api;
