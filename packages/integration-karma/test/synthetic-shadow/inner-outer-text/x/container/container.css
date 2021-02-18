@@ -28,3 +28,10 @@
     z-index: 1;
     background-color: red;
 }
+
+.non-selectable-text {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
