@@ -1,6 +1,5 @@
 import _xFoo from "x/foo";
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, c: api_custom_element } = $api;
   return [
@@ -111,6 +110,5 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

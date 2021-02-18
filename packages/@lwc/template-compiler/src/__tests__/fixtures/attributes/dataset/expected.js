@@ -1,12 +1,11 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
     api_element(
       "section",
       {
-        key: 0
+        key: 0,
       },
       [
         api_element(
@@ -14,16 +13,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           {
             attrs: {
               "data-foo": "1",
-              "data-bar-baz": "xyz"
+              "data-bar-baz": "xyz",
             },
-            key: 1
+            key: 1,
           },
           []
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

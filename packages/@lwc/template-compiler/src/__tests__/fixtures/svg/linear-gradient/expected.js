@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, h: api_element } = $api;
   return [
@@ -8,15 +7,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         attrs: {
           height: "150",
-          width: "400"
+          width: "400",
         },
-        key: 0
+        key: 0,
       },
       [
         api_element(
           "defs",
           {
-            key: 1
+            key: 1,
           },
           [
             api_element(
@@ -27,9 +26,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   x1: "0%",
                   y1: "0%",
                   x2: "100%",
-                  y2: "0%"
+                  y2: "0%",
                 },
-                key: 2
+                key: 2,
               },
               [
                 api_element(
@@ -37,12 +36,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   {
                     styleMap: {
                       "stop-color": "rgb(255,255,0)",
-                      "stop-opacity": "1"
+                      "stop-opacity": "1",
                     },
                     attrs: {
-                      offset: "0%"
+                      offset: "0%",
                     },
-                    key: 3
+                    key: 3,
                   },
                   []
                 ),
@@ -51,17 +50,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   {
                     styleMap: {
                       "stop-color": "rgb(255,0,0)",
-                      "stop-opacity": "1"
+                      "stop-opacity": "1",
                     },
                     attrs: {
-                      offset: "100%"
+                      offset: "100%",
                     },
-                    key: 4
+                    key: 4,
                   },
                   []
-                )
+                ),
               ]
-            )
+            ),
           ]
         ),
         api_element(
@@ -72,16 +71,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               cy: "70",
               rx: "85",
               ry: "55",
-              fill: "url(#grad1)"
+              fill: "url(#grad1)",
             },
-            key: 5
+            key: 5,
           },
           []
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

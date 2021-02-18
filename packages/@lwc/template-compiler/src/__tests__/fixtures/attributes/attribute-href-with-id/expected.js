@@ -1,36 +1,35 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     fid: api_scoped_frag_id,
     t: api_text,
     h: api_element,
-    gid: api_scoped_id
+    gid: api_scoped_id,
   } = $api;
   return [
     api_element(
       "a",
       {
         attrs: {
-          href: api_scoped_frag_id("#kansai-airport")
+          href: api_scoped_frag_id("#kansai-airport"),
         },
-        key: 0
+        key: 0,
       },
       [api_text("KIX")]
     ),
     api_element(
       "map",
       {
-        key: 1
+        key: 1,
       },
       [
         api_element(
           "area",
           {
             attrs: {
-              href: api_scoped_frag_id("#eneos-gas")
+              href: api_scoped_frag_id("#eneos-gas"),
             },
-            key: 2
+            key: 2,
           },
           []
         ),
@@ -38,26 +37,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "area",
           {
             attrs: {
-              href: api_scoped_frag_id("#kawaramachi")
+              href: api_scoped_frag_id("#kawaramachi"),
             },
-            key: 3
+            key: 3,
           },
           []
-        )
+        ),
       ]
     ),
     api_element(
       "h1",
       {
         attrs: {
-          id: api_scoped_id("kansai-airport")
+          id: api_scoped_id("kansai-airport"),
         },
-        key: 4
+        key: 4,
       },
       [api_text("Don't forget your passport!")]
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
@@ -7,12 +6,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       {
         style: $cmp.customStyle,
-        key: 0
+        key: 0,
       },
       []
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

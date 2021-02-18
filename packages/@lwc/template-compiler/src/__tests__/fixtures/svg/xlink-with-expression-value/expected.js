@@ -1,5 +1,4 @@
 import { registerTemplate, sanitizeAttribute } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { fid: api_scoped_frag_id, h: api_element } = $api;
   return [
@@ -7,13 +6,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "svg",
       {
         classMap: {
-          "slds-icon": true
+          "slds-icon": true,
         },
         attrs: {
           "aria-hidden": "true",
-          title: "when needed"
+          title: "when needed",
         },
-        key: 0
+        key: 0,
       },
       [
         api_element(
@@ -25,16 +24,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "http://www.w3.org/2000/svg",
                 "xlink:href",
                 api_scoped_frag_id($cmp.getXLink)
-              )
+              ),
             },
-            key: 1
+            key: 1,
           },
           []
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

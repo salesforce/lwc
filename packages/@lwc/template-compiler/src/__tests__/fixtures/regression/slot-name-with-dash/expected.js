@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, s: api_slot } = $api;
   return [
@@ -7,24 +6,23 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "secret-slot",
       {
         attrs: {
-          name: "secret-slot"
+          name: "secret-slot",
         },
-        key: 0
+        key: 0,
       },
       [
         api_element(
           "p",
           {
-            key: 1
+            key: 1,
           },
           [api_text("Test slot content")]
-        )
+        ),
       ],
       $slotset
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.slots = ["secret-slot"];
 tmpl.stylesheets = [];

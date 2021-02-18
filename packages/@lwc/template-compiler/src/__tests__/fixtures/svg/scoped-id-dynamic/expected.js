@@ -1,5 +1,4 @@
 import { registerTemplate, sanitizeAttribute } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, h: api_element, fid: api_scoped_frag_id } = $api;
   return [
@@ -9,15 +8,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           width: "100px",
           height: "100px",
-          viewport: "0 0 100 100"
+          viewport: "0 0 100 100",
         },
-        key: 0
+        key: 0,
       },
       [
         api_element(
           "defs",
           {
-            key: 1
+            key: 1,
           },
           [
             api_element(
@@ -28,9 +27,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   r: "10",
                   cx: "10",
                   cy: "10",
-                  fill: "black"
+                  fill: "black",
                 },
-                key: 2
+                key: 2,
               },
               []
             ),
@@ -42,12 +41,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   r: "10",
                   cx: "14",
                   cy: "14",
-                  fill: "red"
+                  fill: "red",
                 },
-                key: 3
+                key: 3,
               },
               []
-            )
+            ),
           ]
         ),
         api_element(
@@ -59,9 +58,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "http://www.w3.org/2000/svg",
                 "href",
                 api_scoped_frag_id($cmp.blackUrl)
-              )
+              ),
             },
-            key: 4
+            key: 4,
           },
           []
         ),
@@ -74,16 +73,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "http://www.w3.org/2000/svg",
                 "xlink:href",
                 api_scoped_frag_id($cmp.redUrl)
-              )
+              ),
             },
-            key: 5
+            key: 5,
           },
           []
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

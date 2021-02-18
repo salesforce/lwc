@@ -1,7 +1,6 @@
 import _nsFoo from "ns/foo";
 import _nsBar from "ns/bar";
 import { registerTemplate, sanitizeAttribute } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, c: api_custom_element, h: api_element } = $api;
   return [
@@ -11,9 +10,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         props: {
           d: $cmp.p.foo,
-          id: api_scoped_id("ns-foo")
+          id: api_scoped_id("ns-foo"),
         },
-        key: 0
+        key: 0,
       },
       []
     ),
@@ -21,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "a",
       {
         classMap: {
-          test: true
+          test: true,
         },
         attrs: {
           "data-foo": "datafoo",
@@ -29,9 +28,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           role: "presentation",
           href: "/foo",
           title: "test",
-          tabindex: "-1"
+          tabindex: "-1",
         },
-        key: 1
+        key: 1,
       },
       []
     ),
@@ -40,10 +39,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _nsBar,
       {
         classMap: {
-          r: true
+          r: true,
         },
         attrs: {
-          "data-xx": "foo"
+          "data-xx": "foo",
         },
         props: {
           ariaDescribedBy: `${api_scoped_id("ns-foo")}`,
@@ -52,9 +51,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           foo: "bar",
           role: "xx",
           tabIndex: "0",
-          bgColor: "blue"
+          bgColor: "blue",
         },
-        key: 2
+        key: 2,
       },
       []
     ),
@@ -62,12 +61,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "svg",
       {
         classMap: {
-          cubano: true
+          cubano: true,
         },
         attrs: {
-          focusable: "true"
+          focusable: "true",
         },
-        key: 3
+        key: 3,
       },
       [
         api_element(
@@ -79,21 +78,21 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "http://www.w3.org/2000/svg",
                 "xlink:href",
                 "xx"
-              )
+              ),
             },
-            key: 4
+            key: 4,
           },
           []
-        )
+        ),
       ]
     ),
     api_element(
       "table",
       {
         attrs: {
-          bgcolor: "x"
+          bgcolor: "x",
         },
-        key: 5
+        key: 5,
       },
       []
     ),
@@ -102,14 +101,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         className: $cmp.foo,
         attrs: {
-          "aria-hidden": "hidden"
+          "aria-hidden": "hidden",
         },
-        key: 6
+        key: 6,
       },
       []
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

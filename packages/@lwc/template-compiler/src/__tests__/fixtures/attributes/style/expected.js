@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
@@ -7,9 +6,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          color: "blue"
+          color: "blue",
         },
-        key: 0
+        key: 0,
       },
       []
     ),
@@ -17,9 +16,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          color: "blue"
+          color: "blue",
         },
-        key: 1
+        key: 1,
       },
       []
     ),
@@ -27,9 +26,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          color: "blue"
+          color: "blue",
         },
-        key: 2
+        key: 2,
       },
       []
     ),
@@ -37,21 +36,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          "box-shadow": "10px 5px 5px black"
+          "box-shadow": "10px 5px 5px black",
         },
-        key: 3
-      },
-      []
-    ),
-    api_element(
-      "div",
-      {
-        styleMap: {
-          "font-size": "12px",
-          background: "blue",
-          color: "red"
-        },
-        key: 4
+        key: 3,
       },
       []
     ),
@@ -61,9 +48,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         styleMap: {
           "font-size": "12px",
           background: "blue",
-          color: "red"
+          color: "red",
         },
-        key: 5
+        key: 4,
       },
       []
     ),
@@ -71,14 +58,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          "background-color": "rgba(255,0,0,0.3)"
+          "font-size": "12px",
+          background: "blue",
+          color: "red",
         },
-        key: 6
+        key: 5,
       },
       []
-    )
+    ),
+    api_element(
+      "div",
+      {
+        styleMap: {
+          "background-color": "rgba(255,0,0,0.3)",
+        },
+        key: 6,
+      },
+      []
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

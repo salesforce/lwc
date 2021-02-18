@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, t: api_text } = $api;
   return [
@@ -11,9 +10,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           baseProfile: "full",
           width: "300",
           height: "200",
-          xmlns: "http://www.w3.org/2000/svg"
+          xmlns: "http://www.w3.org/2000/svg",
         },
-        key: 0
+        key: 0,
       },
       [
         api_element(
@@ -22,9 +21,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               width: "100%",
               height: "100%",
-              fill: "red"
+              fill: "red",
             },
-            key: 1
+            key: 1,
           },
           []
         ),
@@ -35,9 +34,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               cx: "150",
               cy: "100",
               r: "80",
-              fill: "green"
+              fill: "green",
             },
-            key: 2
+            key: 2,
           },
           []
         ),
@@ -49,16 +48,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               y: "125",
               "font-size": "60",
               "text-anchor": "middle",
-              fill: "white"
+              fill: "white",
             },
-            key: 3
+            key: 3,
           },
           [api_text("SVG")]
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

@@ -4,9 +4,21 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { BaseNode, Identifier, MemberExpression, Expression } from 'estree';
+import type * as t from 'estree';
 
-export function createIdentifier(name: string, config?: Partial<Identifier>): Identifier {
+export function isIdentifier(node: t.BaseNode): node is t.Identifier {
+    return node.type === 'Identifier';
+}
+
+export function isMemberExpression(node: t.BaseNode): node is t.MemberExpression {
+    return node.type === 'MemberExpression';
+}
+
+export function isArrayExpression(node: t.BaseNode): node is t.ArrayExpression {
+    return node.type === 'ArrayExpression';
+}
+
+export function identifier(name: string, config?: Partial<t.Identifier>): t.Identifier {
     return {
         type: 'Identifier',
         name,
@@ -14,15 +26,11 @@ export function createIdentifier(name: string, config?: Partial<Identifier>): Id
     };
 }
 
-export function isIdentifier(node: BaseNode): node is Identifier {
-    return node.type === 'Identifier';
-}
-
-export function createMemberExpression(
-    object: Expression,
-    property: Expression,
-    config?: Partial<MemberExpression>
-): MemberExpression {
+export function memberExpression(
+    object: t.MemberExpression['object'],
+    property: t.MemberExpression['property'],
+    config?: Partial<t.MemberExpression>
+): t.MemberExpression {
     return {
         type: 'MemberExpression',
         object,
@@ -33,6 +41,371 @@ export function createMemberExpression(
     };
 }
 
-export function isMemberExpression(node: BaseNode): node is MemberExpression {
-    return node.type === 'MemberExpression';
+export function callExpression(
+    callee: t.CallExpression['callee'],
+    args: t.CallExpression['arguments'],
+    config?: Partial<t.CallExpression>
+): t.CallExpression {
+    return {
+        type: 'CallExpression',
+        callee,
+        arguments: args,
+        optional: false,
+        ...config,
+    };
 }
+
+export function literal(
+    value: t.SimpleLiteral['value'],
+    config?: Partial<t.SimpleLiteral>
+): t.SimpleLiteral {
+    return {
+        type: 'Literal',
+        value,
+        ...config,
+    };
+}
+
+export function conditionalExpression(
+    test: t.ConditionalExpression['test'],
+    consequent: t.ConditionalExpression['consequent'],
+    alternate: t.ConditionalExpression['alternate'],
+    config?: Partial<t.ConditionalExpression>
+): t.ConditionalExpression {
+    return {
+        type: 'ConditionalExpression',
+        test,
+        consequent,
+        alternate,
+        ...config,
+    };
+}
+
+export function unaryExpression(
+    operator: t.UnaryExpression['operator'],
+    argument: t.UnaryExpression['argument'],
+    config?: Partial<t.UnaryExpression>
+): t.UnaryExpression {
+    return {
+        type: 'UnaryExpression',
+        argument,
+        operator,
+        prefix: true,
+        ...config,
+    };
+}
+
+export function binaryExpression(
+    operator: t.BinaryExpression['operator'],
+    left: t.BinaryExpression['left'],
+    right: t.BinaryExpression['right'],
+    config?: Partial<t.BinaryExpression>
+): t.BinaryExpression {
+    return {
+        type: 'BinaryExpression',
+        left,
+        operator,
+        right,
+        ...config,
+    };
+}
+
+export function logicalExpression(
+    operator: t.LogicalExpression['operator'],
+    left: t.LogicalExpression['left'],
+    right: t.LogicalExpression['right'],
+    config?: Partial<t.LogicalExpression>
+): t.LogicalExpression {
+    return {
+        type: 'LogicalExpression',
+        operator,
+        left,
+        right,
+        ...config,
+    };
+}
+
+export function assignmentExpression(
+    operator: t.AssignmentExpression['operator'],
+    left: t.AssignmentExpression['left'],
+    right: t.AssignmentExpression['right'],
+    config?: Partial<t.AssignmentExpression>
+): t.AssignmentExpression {
+    return {
+        type: 'AssignmentExpression',
+        operator,
+        left,
+        right,
+        ...config,
+    };
+}
+
+export function property(
+    key: t.Property['key'],
+    value: t.Property['value'],
+    config?: Partial<t.Property>
+): t.Property {
+    return {
+        type: 'Property',
+        key,
+        value,
+        kind: 'init',
+        computed: false,
+        method: false,
+        shorthand: false,
+        ...config,
+    };
+}
+
+export function assignmentProperty(
+    key: t.AssignmentProperty['key'],
+    value: t.AssignmentProperty['value'],
+    config?: Partial<t.AssignmentProperty>
+): t.AssignmentProperty {
+    return {
+        type: 'Property',
+        key,
+        value,
+        kind: 'init',
+        computed: false,
+        method: false,
+        shorthand: false,
+        ...config,
+    };
+}
+
+export function objectExpression(
+    properties: t.ObjectExpression['properties'],
+    config?: Partial<t.ObjectExpression>
+): t.ObjectExpression {
+    return {
+        type: 'ObjectExpression',
+        properties,
+        ...config,
+    };
+}
+
+export function objectPattern(
+    properties: t.ObjectPattern['properties'],
+    config?: Partial<t.ObjectPattern>
+): t.ObjectPattern {
+    return {
+        type: 'ObjectPattern',
+        properties,
+        ...config,
+    };
+}
+
+export function arrayExpression(
+    elements: t.ArrayExpression['elements'],
+    config?: Partial<t.ArrayExpression>
+): t.ArrayExpression {
+    return {
+        type: 'ArrayExpression',
+        elements,
+        ...config,
+    };
+}
+
+export function expressionStatement(
+    expression: t.ExpressionStatement['expression'],
+    config?: Partial<t.ExpressionStatement>
+): t.ExpressionStatement {
+    return {
+        type: 'ExpressionStatement',
+        expression,
+        ...config,
+    };
+}
+
+export function functionExpression(
+    id: null | t.Identifier,
+    params: t.FunctionExpression['params'],
+    body: t.FunctionExpression['body'],
+    config?: Partial<t.FunctionExpression>
+): t.FunctionExpression {
+    return {
+        type: 'FunctionExpression',
+        id,
+        params,
+        body,
+        ...config,
+    };
+}
+
+export function functionDeclaration(
+    id: null | t.Identifier,
+    params: t.FunctionDeclaration['params'],
+    body: t.FunctionDeclaration['body'],
+    config?: Partial<t.FunctionDeclaration>
+): t.FunctionDeclaration {
+    return {
+        type: 'FunctionDeclaration',
+        id,
+        params,
+        body,
+        ...config,
+    };
+}
+
+export function blockStatement(
+    body: t.BlockStatement['body'],
+    config?: Partial<t.BlockStatement>
+): t.BlockStatement {
+    return {
+        type: 'BlockStatement',
+        body,
+        ...config,
+    };
+}
+
+export function returnStatement(
+    argument: t.ReturnStatement['argument'],
+    config?: Partial<t.ReturnStatement>
+): t.ReturnStatement {
+    return {
+        type: 'ReturnStatement',
+        argument,
+        ...config,
+    };
+}
+
+export function variableDeclarator(
+    id: t.VariableDeclarator['id'],
+    init: t.VariableDeclarator['init'],
+    config?: Partial<t.VariableDeclarator>
+): t.VariableDeclarator {
+    return {
+        type: 'VariableDeclarator',
+        id,
+        init,
+        ...config,
+    };
+}
+
+export function variableDeclaration(
+    kind: t.VariableDeclaration['kind'],
+    declarations: t.VariableDeclaration['declarations'],
+    config?: Partial<t.VariableDeclaration>
+): t.VariableDeclaration {
+    return {
+        type: 'VariableDeclaration',
+        kind,
+        declarations,
+        ...config,
+    };
+}
+
+export function templateLiteral(
+    quasis: t.TemplateLiteral['quasis'],
+    expressions: t.TemplateLiteral['expressions'],
+    config?: Partial<t.TemplateLiteral>
+): t.TemplateLiteral {
+    return {
+        type: 'TemplateLiteral',
+        quasis,
+        expressions,
+        ...config,
+    };
+}
+
+export function templateElement(
+    tail: t.TemplateElement['tail'],
+    value: t.TemplateElement['value'],
+    config?: Partial<t.TemplateElement>
+): t.TemplateElement {
+    return {
+        type: 'TemplateElement',
+        tail,
+        value,
+        ...config,
+    };
+}
+
+export function importDeclaration(
+    specifiers: t.ImportDeclaration['specifiers'],
+    source: t.ImportDeclaration['source'],
+    config?: Partial<t.ImportDeclaration>
+): t.ImportDeclaration {
+    return {
+        type: 'ImportDeclaration',
+        specifiers,
+        source,
+        ...config,
+    };
+}
+
+export function importDefaultSpecifier(
+    local: t.ImportDefaultSpecifier['local'],
+    config?: Partial<t.ImportDefaultSpecifier>
+): t.ImportDefaultSpecifier {
+    return {
+        type: 'ImportDefaultSpecifier',
+        local,
+        ...config,
+    };
+}
+
+export function importSpecifier(
+    imported: t.ImportSpecifier['imported'],
+    local: t.ImportSpecifier['local'],
+    config?: Partial<t.ImportSpecifier>
+): t.ImportSpecifier {
+    return {
+        type: 'ImportSpecifier',
+        imported,
+        local,
+        ...config,
+    };
+}
+export function exportDefaultDeclaration(
+    declaration: t.ExportDefaultDeclaration['declaration'],
+    config?: Partial<t.ExportDefaultDeclaration>
+): t.ExportDefaultDeclaration {
+    return {
+        type: 'ExportDefaultDeclaration',
+        declaration,
+        ...config,
+    };
+}
+
+export function program(body: t.Program['body'], config?: Partial<t.Program>): t.Program {
+    return {
+        type: 'Program',
+        sourceType: 'module',
+        body,
+        ...config,
+    };
+}
+
+export type BaseNode = t.BaseNode;
+export type Identifier = t.Identifier;
+export type MemberExpression = t.MemberExpression;
+export type CallExpression = t.CallExpression;
+export type SimpleLiteral = t.SimpleLiteral;
+export type ConditionalExpression = t.ConditionalExpression;
+export type UnaryExpression = t.UnaryExpression;
+export type BinaryExpression = t.BinaryExpression;
+export type LogicalExpression = t.LogicalExpression;
+export type AssignmentExpression = t.AssignmentExpression;
+export type AssignmentProperty = t.AssignmentProperty;
+export type Property = t.Property;
+export type ObjectExpression = t.ObjectExpression;
+export type ObjectPattern = t.ObjectPattern;
+export type ArrayExpression = t.ArrayExpression;
+export type ExpressionStatement = t.ExpressionStatement;
+export type FunctionExpression = t.FunctionExpression;
+export type Expression = t.Expression;
+export type FunctionDeclaration = t.FunctionDeclaration;
+export type BlockStatement = t.BlockStatement;
+export type ReturnStatement = t.ReturnStatement;
+export type VariableDeclarator = t.VariableDeclarator;
+export type VariableDeclaration = t.VariableDeclaration;
+export type TemplateLiteral = t.TemplateLiteral;
+export type TemplateElement = t.TemplateElement;
+export type ImportDeclaration = t.ImportDeclaration;
+export type ImportDefaultSpecifier = t.ImportDefaultSpecifier;
+export type ImportSpecifier = t.ImportSpecifier;
+export type ExportDefaultDeclaration = t.ExportDefaultDeclaration;
+export type Statement = t.Statement;
+export type Program = t.Program;

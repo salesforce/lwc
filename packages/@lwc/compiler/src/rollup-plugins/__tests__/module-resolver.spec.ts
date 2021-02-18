@@ -43,16 +43,12 @@ describe('module resolver', () => {
         expect(pretify(result.code)).toBe(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
                 function tmpl($api, $cmp, $slotset, $ctx) {
-                    const {
-                        t: api_text,
-                        h: api_element
-                    } = $api;
+                    const {t: api_text, h: api_element} = $api;
 
                     return [api_element("p", {
                         key: 0
                     }, [api_text("Manually Imported Template")])];
                 }
-
                 var mytemplate = lwc.registerTemplate(tmpl);
                 tmpl.stylesheets = [];
                 tmpl.stylesheetTokens = {
@@ -92,16 +88,12 @@ describe('module resolver', () => {
         expect(pretify(result.code)).toBe(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
                 function tmpl($api, $cmp, $slotset, $ctx) {
-                    const {
-                        t: api_text,
-                        h: api_element
-                    } = $api;
+                    const {t: api_text, h: api_element} = $api;
 
                     return [api_element("p", {
                         key: 0
                     }, [api_text("Another Template")])];
                 }
-
                 var mytemplate = lwc.registerTemplate(tmpl);
                 tmpl.stylesheets = [];
                 tmpl.stylesheetTokens = {

@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import generate from '@babel/generator';
-import * as t from '@babel/types';
-import template from '@babel/template';
+import * as astring from 'astring';
 import * as parse5 from 'parse5-with-errors';
 
 import { isBooleanAttribute } from '@lwc/shared';
@@ -16,14 +14,7 @@ import State from '../state';
 
 import { isCustomElement, isElement } from '../shared/ir';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
-import {
-    IRNode,
-    IRElement,
-    IRText,
-    IRAttribute,
-    IRAttributeType,
-    CompilationOutput,
-} from '../shared/types';
+import { IRNode, IRElement, IRText, IRAttribute, IRAttributeType } from '../shared/types';
 
 import CodeGen from './codegen';
 import { bindExpression } from './scope';
@@ -32,7 +23,6 @@ import {
     objectToAST,
     isTemplate,
     shouldFlatten,
-    destructuringAssignmentFromObject,
     isSlot,
     memorizeHandler,
     containsDynamicChildren,
@@ -41,6 +31,7 @@ import {
 import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
 
+import * as t from '../shared/estree';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isAttribute,
@@ -49,40 +40,25 @@ import {
     isSvgUseHref,
 } from '../parser/attribute';
 
-const TEMPLATE_FUNCTION = template(
-    `function ${TEMPLATE_FUNCTION_NAME}(
-        ${TEMPLATE_PARAMS.API},
-        ${TEMPLATE_PARAMS.INSTANCE},
-        ${TEMPLATE_PARAMS.SLOT_SET},
-        ${TEMPLATE_PARAMS.CONTEXT}
-    ) {
-        APIS;
-        SLOTS;
-        CONTEXT;
-        return STATEMENT;
-    }`,
-    { sourceType: 'module' }
-);
-
 const DISALLOWED_LWC_DIRECTIVES = new Set(['dynamic']);
 
-function generateContext(element: IRElement, data: t.ObjectProperty[]) {
+function generateContext(element: IRElement, data: t.Property[]) {
     const { lwc } = element;
-    const contextExpressions: t.ObjectProperty[] = [];
+    const contextExpressions: t.Property[] = [];
 
     // LWC
     if (lwc) {
-        const lwcObject: t.ObjectProperty[] = Object.keys(lwc)
+        const lwcObject = Object.keys(lwc)
             .filter((key) => !DISALLOWED_LWC_DIRECTIVES.has(key))
             .map((key) => {
-                return t.objectProperty(t.identifier(key), t.stringLiteral((lwc as any)[key]));
+                return t.property(t.identifier(key), t.literal((lwc as any)[key]));
             });
 
-        const lwcObj = t.objectProperty(t.identifier('lwc'), t.objectExpression(lwcObject));
+        const lwcObj = t.property(t.identifier('lwc'), t.objectExpression(lwcObject));
         contextExpressions.push(lwcObj);
     }
 
-    data.push(t.objectProperty(t.identifier('context'), t.objectExpression(contextExpressions)));
+    data.push(t.property(t.identifier('context'), t.objectExpression(contextExpressions)));
 }
 
 function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expression {
@@ -120,9 +96,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         return res;
     }
 
-    function transformTemplate(
-        element: IRElement
-    ): t.Expression | Array<null | t.Expression | t.SpreadElement> {
+    function transformTemplate(element: IRElement): t.Expression | t.ArrayExpression['elements'] {
         const children = transformChildren(element.children);
 
         let res = applyTemplateIf(element, children);
@@ -155,7 +129,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                 expr = transformText(child);
             }
 
-            return acc.concat(expr as t.Expression[]);
+            return acc.concat(expr as t.Expression);
         }, []);
 
         if (shouldFlatten(children)) {
@@ -171,12 +145,12 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
 
     function applyInlineIf(
         element: IRElement,
-        babelNode: t.Expression,
+        node: t.Expression,
         testExpression?: t.Expression,
-        falseValue: t.Expression = t.nullLiteral()
+        falseValue?: t.Expression
     ): t.Expression {
         if (!element.if) {
-            return babelNode;
+            return node;
         }
 
         if (!testExpression) {
@@ -190,19 +164,19 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         } else if (modifier === 'false') {
             leftExpression = t.unaryExpression('!', testExpression);
         } else if (modifier === 'strict-true') {
-            leftExpression = t.binaryExpression('===', testExpression, t.booleanLiteral(true));
+            leftExpression = t.binaryExpression('===', testExpression, t.literal(true));
         } else {
             throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, {
                 messageArgs: [modifier],
             });
         }
 
-        return t.conditionalExpression(leftExpression, babelNode, falseValue);
+        return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
     }
 
-    function applyInlineFor(element: IRElement, babelNode: t.Expression) {
+    function applyInlineFor(element: IRElement, node: t.Expression) {
         if (!element.forEach) {
-            return babelNode;
+            return node;
         }
 
         const { expression, item, index } = element.forEach;
@@ -213,17 +187,17 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
 
         const iterable = bindExpression(expression, element);
         const iterationFunction = t.functionExpression(
-            undefined,
+            null,
             params,
-            t.blockStatement([t.returnStatement(babelNode)])
+            t.blockStatement([t.returnStatement(node)])
         );
 
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function applyInlineForOf(element: IRElement, babelNode: t.Expression) {
+    function applyInlineForOf(element: IRElement, node: t.Expression) {
         if (!element.forOf) {
-            return babelNode;
+            return node;
         }
 
         const { expression, iterator } = element.forOf;
@@ -239,19 +213,19 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         const iteratorArgs = Object.values(argsMapping).map((arg) => t.identifier(arg));
         const iteratorObjet = t.objectExpression(
             Object.entries(argsMapping).map(([prop, arg]) =>
-                t.objectProperty(t.identifier(prop), t.identifier(arg))
+                t.property(t.identifier(prop), t.identifier(arg))
             )
         );
 
         const iterable = bindExpression(expression, element);
         const iterationFunction = t.functionExpression(
-            undefined,
+            null,
             iteratorArgs,
             t.blockStatement([
                 t.variableDeclaration('const', [
                     t.variableDeclarator(t.identifier(iteratorName), iteratorObjet),
                 ]),
-                t.returnStatement(babelNode),
+                t.returnStatement(node),
             ])
         );
 
@@ -287,7 +261,9 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
 
             return t.arrayExpression(
                 fragmentNodes.elements.map((child) =>
-                    child !== null ? applyInlineIf(element, child as any, testExpression) : null
+                    child !== null
+                        ? applyInlineIf(element, child as t.Expression, testExpression)
+                        : null
                 )
             );
         } else {
@@ -296,19 +272,17 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         }
     }
 
-    function generateScopedIdFunctionForIdRefAttr(
-        idRef: string
-    ): t.CallExpression | t.TemplateLiteral {
+    function generateScopedIdFunctionForIdRefAttr(idRef: string): t.TemplateLiteral {
         const expressions: t.CallExpression[] = idRef
             .split(/\s+/) // handle space-delimited idrefs (e.g., aria-labelledby="foo bar")
-            .map(codeGen.genScopedId.bind(codeGen));
+            .map((ref) => codeGen.genScopedId(ref));
 
         // Embed call expressions into a template literal:
         // [api_scoped_id()] => `${api_scoped_id()}`
         // [api_scoped_id(), api_scoped_id()] => `${api_scoped_id()} ${api_scoped_id()}`
         const spacesBetweenIdRefs = ' '.repeat(expressions.length - 1).split('');
         const quasis = ['', ...spacesBetweenIdRefs, ''].map((str) =>
-            t.templateElement({ raw: str })
+            t.templateElement(false, { raw: str })
         );
         return t.templateLiteral(quasis, expressions);
     }
@@ -341,9 +315,9 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                 }
                 if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
-                        t.stringLiteral(tagName),
-                        t.stringLiteral(namespaceURI),
-                        t.stringLiteral(attr.name),
+                        t.literal(tagName),
+                        t.literal(namespaceURI),
+                        t.literal(attr.name),
                         codeGen.genScopedFragId(expression),
                     ]);
                 }
@@ -356,13 +330,13 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                     return codeGen.genScopedId(attr.value);
                 }
                 if (attr.name === 'spellcheck') {
-                    return t.booleanLiteral(attr.value.toLowerCase() !== 'false');
+                    return t.literal(attr.value.toLowerCase() !== 'false');
                 }
 
                 if (!isUsedAsAttribute && isBooleanAttribute(attr.name, tagName)) {
                     // We are in presence of a string value, for a recognized boolean attribute, which is used as
                     // property. for these cases, always set the property to true.
-                    return t.booleanLiteral(true);
+                    return t.literal(true);
                 }
 
                 if (isIdReferencingAttribute(attr.name)) {
@@ -377,72 +351,63 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                 }
                 if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
-                        t.stringLiteral(tagName),
-                        t.stringLiteral(namespaceURI),
-                        t.stringLiteral(attr.name),
+                        t.literal(tagName),
+                        t.literal(namespaceURI),
+                        t.literal(attr.name),
                         isFragmentOnlyUrl(attr.value)
                             ? codeGen.genScopedFragId(attr.value)
-                            : t.stringLiteral(attr.value),
+                            : t.literal(attr.value),
                     ]);
                 }
-                return t.stringLiteral(attr.value);
+                return t.literal(attr.value);
             }
 
             case IRAttributeType.Boolean: {
                 // A boolean value used in an attribute should always generate .setAttribute(attr.name, ''),
                 // regardless if is a boolean attribute or not.
-                return isUsedAsAttribute ? t.stringLiteral('') : t.booleanLiteral(attr.value);
+                return isUsedAsAttribute ? t.literal('') : t.literal(attr.value);
             }
         }
     }
 
     function elementDataBag(element: IRElement): t.ObjectExpression {
-        const data: t.ObjectProperty[] = [];
+        const data: t.Property[] = [];
         const { classMap, className, style, styleMap, attrs, props, on, forKey, lwc } = element;
 
         // Class attibute defined via string
         if (className) {
             const classExpression = bindExpression(className, element);
-            data.push(t.objectProperty(t.identifier('className'), classExpression));
+            data.push(t.property(t.identifier('className'), classExpression));
         }
 
         // Class attribute defined via object
         if (classMap) {
-            const classMapObj = objectToAST(classMap, () => t.booleanLiteral(true));
-            data.push(t.objectProperty(t.identifier('classMap'), classMapObj));
+            const classMapObj = objectToAST(classMap, () => t.literal(true));
+            data.push(t.property(t.identifier('classMap'), classMapObj));
         }
 
         // Style attribute defined via object
         if (styleMap) {
-            const styleObj = objectToAST(styleMap, (key) =>
-                typeof styleMap[key] === 'number'
-                    ? t.numericLiteral(styleMap[key] as number)
-                    : t.stringLiteral(styleMap[key] as string)
-            );
-
-            data.push(t.objectProperty(t.identifier('styleMap'), styleObj));
+            const styleObj = objectToAST(styleMap, (key) => t.literal(styleMap[key]));
+            data.push(t.property(t.identifier('styleMap'), styleObj));
         }
 
         // Style attribute defined via string
         if (style) {
             const styleExpression = bindExpression(style, element);
-            data.push(t.objectProperty(t.identifier('style'), styleExpression));
+            data.push(t.property(t.identifier('style'), styleExpression));
         }
 
         // Attributes
         if (attrs) {
-            const attrsObj = objectToAST(attrs, (key) => {
-                return computeAttrValue(attrs[key], element);
-            });
-            data.push(t.objectProperty(t.identifier('attrs'), attrsObj));
+            const attrsObj = objectToAST(attrs, (key) => computeAttrValue(attrs[key], element));
+            data.push(t.property(t.identifier('attrs'), attrsObj));
         }
 
         // Properties
         if (props) {
-            const propsObj = objectToAST(props, (key) => {
-                return computeAttrValue(props[key], element);
-            });
-            data.push(t.objectProperty(t.identifier('props'), propsObj));
+            const propsObj = objectToAST(props, (key) => computeAttrValue(props[key], element));
+            data.push(t.property(t.identifier('props'), propsObj));
         }
 
         if (lwc) {
@@ -453,30 +418,23 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
             const forKeyExpression = bindExpression(forKey, element);
-            const generatedKey = codeGen.genKey(
-                t.numericLiteral(codeGen.generateKey()),
-                forKeyExpression
-            );
-            data.push(t.objectProperty(t.identifier('key'), generatedKey));
+            const generatedKey = codeGen.genKey(t.literal(codeGen.generateKey()), forKeyExpression);
+            data.push(t.property(t.identifier('key'), generatedKey));
         } else {
             // If stand alone element with no user-defined key
             // member expression id
-            data.push(
-                t.objectProperty(t.identifier('key'), t.numericLiteral(codeGen.generateKey()))
-            );
+            data.push(t.property(t.identifier('key'), t.literal(codeGen.generateKey())));
         }
 
         // Event handler
         if (on) {
             const onObj = objectToAST(on, (key) => {
                 const componentHandler = bindExpression(on[key], element);
-                let handler: t.Expression = codeGen.genBind(componentHandler);
+                const handler = codeGen.genBind(componentHandler);
 
-                handler = memorizeHandler(codeGen, element, componentHandler, handler);
-
-                return handler;
+                return memorizeHandler(codeGen, element, componentHandler, handler);
             });
-            data.push(t.objectProperty(t.identifier('on'), onObj));
+            data.push(t.property(t.identifier('on'), onObj));
         }
 
         return t.objectExpression(data);
@@ -487,39 +445,68 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
 
 function generateTemplateFunction(templateRoot: IRElement, state: State): t.FunctionDeclaration {
     const codeGen = new CodeGen();
-    const statement = transform(templateRoot, codeGen, state);
 
-    const apis = destructuringAssignmentFromObject(
-        t.identifier(TEMPLATE_PARAMS.API),
-        Object.keys(codeGen.usedApis).map((name) =>
-            t.objectProperty(t.identifier(name), codeGen.usedApis[name], false, true)
-        )
-    );
+    const returnedValue = transform(templateRoot, codeGen, state);
 
-    let slots: t.Node | null = null;
+    const args = [
+        TEMPLATE_PARAMS.API,
+        TEMPLATE_PARAMS.INSTANCE,
+        TEMPLATE_PARAMS.SLOT_SET,
+        TEMPLATE_PARAMS.CONTEXT,
+    ].map((id) => t.identifier(id));
+
+    const body: t.Statement[] = [
+        t.variableDeclaration('const', [
+            t.variableDeclarator(
+                t.objectPattern(
+                    Object.keys(codeGen.usedApis).map((name) =>
+                        t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
+                    )
+                ),
+                t.identifier(TEMPLATE_PARAMS.API)
+            ),
+        ]),
+    ];
+
     if (Object.keys(codeGen.usedSlots).length) {
-        slots = destructuringAssignmentFromObject(
-            t.identifier(TEMPLATE_PARAMS.SLOT_SET),
-            Object.keys(codeGen.usedSlots).map((name) =>
-                t.objectProperty(t.stringLiteral(name), codeGen.usedSlots[name], false, true)
-            )
+        body.push(
+            t.variableDeclaration('const', [
+                t.variableDeclarator(
+                    t.objectPattern(
+                        Object.keys(codeGen.usedApis).map((name) =>
+                            t.assignmentProperty(t.literal(name), codeGen.usedSlots[name], {
+                                computed: true,
+                            })
+                        )
+                    ),
+                    t.identifier(TEMPLATE_PARAMS.SLOT_SET)
+                ),
+            ])
         );
     }
 
-    let context: t.Node | null = null;
     if (codeGen.memorizedIds.length) {
-        context = destructuringAssignmentFromObject(
-            t.identifier(TEMPLATE_PARAMS.CONTEXT),
-            codeGen.memorizedIds.map((id) => t.objectProperty(id, id, false, true))
+        body.push(
+            t.variableDeclaration('const', [
+                t.variableDeclarator(
+                    t.objectPattern(
+                        codeGen.memorizedIds.map((id) =>
+                            t.assignmentProperty(id, id, { shorthand: true })
+                        )
+                    ),
+                    t.identifier(TEMPLATE_PARAMS.CONTEXT)
+                ),
+            ])
         );
     }
 
-    return TEMPLATE_FUNCTION({
-        APIS: apis,
-        SLOTS: slots,
-        CONTEXT: context,
-        STATEMENT: statement,
-    }) as t.FunctionDeclaration;
+    body.push(t.returnStatement(returnedValue));
+
+    return t.functionDeclaration(
+        t.identifier(TEMPLATE_FUNCTION_NAME),
+        args,
+        t.blockStatement(body)
+    );
 }
 
 function format({ config }: State) {
@@ -532,14 +519,10 @@ function format({ config }: State) {
     }
 }
 
-export default function (templateRoot: IRElement, state: State): CompilationOutput {
+export default function (templateRoot: IRElement, state: State): string {
     const templateFunction = generateTemplateFunction(templateRoot, state);
     const formatter = format(state);
     const program = formatter(templateFunction, state);
 
-    const { code } = generate(program);
-    return {
-        ast: program,
-        code,
-    };
+    return astring.generate(program);
 }

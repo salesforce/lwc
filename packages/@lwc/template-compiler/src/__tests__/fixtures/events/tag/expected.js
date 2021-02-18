@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { b: api_bind, t: api_text, h: api_element } = $api;
   const { _m0, _m1 } = $ctx;
@@ -7,7 +6,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 0
+        key: 0,
       },
       [
         api_element(
@@ -15,8 +14,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           {
             key: 1,
             on: {
-              click: _m0 || ($ctx._m0 = api_bind($cmp.handleClick))
-            }
+              click: _m0 || ($ctx._m0 = api_bind($cmp.handleClick)),
+            },
           },
           [api_text("x")]
         ),
@@ -25,15 +24,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           {
             key: 2,
             on: {
-              press: _m1 || ($ctx._m1 = api_bind($cmp.handlePress))
-            }
+              press: _m1 || ($ctx._m1 = api_bind($cmp.handlePress)),
+            },
           },
           [api_text("x")]
-        )
+        ),
       ]
-    )
+    ),
   ];
 }
-
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
