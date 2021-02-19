@@ -111,7 +111,11 @@ function getTextNodeInnerText(textNode: Text): string {
     selection.removeAllRanges();
     selection.addRange(range);
 
-    return selection.toString();
+    const selectionText = selection.toString();
+
+    // The textNode is visible, but it may not be selectable. When the text is not selectable,
+    // textContent is the nearest approximation to innerText.
+    return selectionText ? selectionText : textNode.textContent || '';
 }
 
 const nodeIsElement = (node: Node): node is Element => node.nodeType === ELEMENT_NODE;

@@ -23,6 +23,12 @@ if (!process.env.NATIVE_SHADOW) {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
+        it('should return textContent when text within element is not selectable', () => {
+            const testCase = elm.shadowRoot.querySelector('.non-selectable-text');
+
+            expect(testCase.innerText).toBe('non selectable text');
+        });
+
         it('should remove consecutive LF in between from partial results', () => {
             const testCase = elm.shadowRoot.querySelector('.consecutive-LF');
 
