@@ -16,7 +16,13 @@ const {
     REGISTER_DECORATORS_ID,
     TEMPLATE_KEY,
 } = require('./constants');
-const { generateError, getEngineImportSpecifiers, isLWCNode } = require('./utils');
+const {
+    collectDecoratorPaths,
+    generateInvalidDecoratorError,
+    getDecoratorMetadata,
+    getMetadataObjectPropertyList,
+} = require('./decorators');
+const { generateError, getEngineImportSpecifiers } = require('./utils');
 
 function getBaseName(classPath) {
     const ext = extname(classPath);
@@ -69,6 +75,7 @@ module.exports = function ({ types: t }) {
         ]);
     }
 
+    /*
     function collectDecoratedProperties(body) {
         const metaPropertyList = [];
         for (const classProps of body.get('body')) {
@@ -116,17 +123,7 @@ module.exports = function ({ types: t }) {
             ? t.objectProperty(t.identifier('fields'), t.valueToNode(nonDecoratedFields))
             : null;
     }
-
-    function collectMetaPropertyList(klassBody) {
-        const metaPropertyList = collectDecoratedProperties(klassBody);
-        const observedFields = collectObservedFields(klassBody, metaPropertyList);
-
-        if (observedFields) {
-            metaPropertyList.push(observedFields);
-        }
-
-        return metaPropertyList;
-    }
+    */
 
     function createRegisterDecoratorsCall(path, klass, props) {
         const id = moduleImports.addNamed(path, REGISTER_DECORATORS_ID, 'lwc');
@@ -137,11 +134,14 @@ module.exports = function ({ types: t }) {
     // Babel reinvokes visitors for node reinsertion so we use this to avoid an infinite loop.
     const visitedClasses = new WeakSet();
 
+    function isImportedFromLwcSource(decoratorBinding) {
+        const bindingPath = decoratorBinding.path;
+        return bindingPath.isImportSpecifier() && bindingPath.parent.source.value === 'lwc';
+    }
+
     return {
         Program(path) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
-
-            // validate internal api imports
             engineImportSpecifiers.forEach(({ name }) => {
                 if (!LWC_SUPPORTED_APIS.has(name)) {
                     throw generateError(path, {
@@ -159,17 +159,23 @@ module.exports = function ({ types: t }) {
             }
             visitedClasses.add(node);
 
-            const metaPropertyList = collectMetaPropertyList(path.get('body'));
-            if (metaPropertyList.length === 0) {
-                return;
+            const decoratorPaths = collectDecoratorPaths(path.get('body.body'));
+            const decoratorMetas = decoratorPaths.map(getDecoratorMetadata);
+            const metaPropertyList = getMetadataObjectPropertyList(t, decoratorMetas);
+
+            for (const { binding, path } of decoratorMetas) {
+                if (!isImportedFromLwcSource(binding)) {
+                    throw generateInvalidDecoratorError(path);
+                }
+                path.remove();
             }
 
             const isAnonymousClassDeclaration =
                 path.isClassDeclaration() && !t.isIdentifier(node.id);
-            const transformAsClassExpression =
+            const shouldTransformAsClassExpression =
                 path.isClassExpression() || isAnonymousClassDeclaration;
 
-            if (transformAsClassExpression) {
+            if (shouldTransformAsClassExpression) {
                 const classExpression = t.toExpression(node);
                 path.replaceWith(
                     createRegisterDecoratorsCall(path, classExpression, metaPropertyList)
