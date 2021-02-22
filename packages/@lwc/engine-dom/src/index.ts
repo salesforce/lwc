@@ -23,6 +23,7 @@ export {
     registerComponent,
     registerDecorators,
     sanitizeAttribute,
+    sanitizeHtmlContent,
     getComponentDef,
     isComponentConstructor,
     swapComponent,

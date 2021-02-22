@@ -29,17 +29,27 @@ export function registerTemplate(tpl: Template): Template {
 }
 
 /**
- * EXPERIMENTAL: This function acts like a hook for Lightning Locker
- * Service and other similar libraries to sanitize vulnerable attributes.
- * This API is subject to change or being removed.
+ * EXPERIMENTAL: This function acts like a hook for Lightning Locker Service and other similar
+ * libraries to sanitize vulnerable attributes.
  */
 export function sanitizeAttribute(
     tagName: string,
     namespaceUri: string,
     attrName: string,
     attrValue: any
-) {
-    // locker-service patches this function during runtime to sanitize vulnerable attributes.
-    // when ran off-core this function becomes a noop and returns the user authored value.
+): string {
+    // locker-service patches this function during runtime to sanitize vulnerable attributes. When
+    // ran off-core this function becomes a noop and returns the user authored value.
     return attrValue;
+}
+
+/**
+ * EXPERIMENTAL: This function acts like a hook for Lightning Locker Service and other similar
+ * libraries to sanitize HTML content. This hook process the content passed via the template to
+ * lwc:inner-html directive.
+ */
+export function sanitizeHtmlContent(content: string): string {
+    // locker-service patches this function during runtime to sanitize HTML content. When ran
+    // off-core this function becomes a noop and returns the user authored value.
+    return content;
 }

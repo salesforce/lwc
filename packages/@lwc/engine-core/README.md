@@ -103,7 +103,11 @@ component life-cycle.
 
 ### sanitizeAttribute()
 
-This experimental API enables the sanitization of attribute values by external services.
+This experimental API enables the sanitization of HTML attribute values by external services.
+
+### sanitizeHtmlContent()
+
+This experimental API enables the sanitization of HTML content by external services.
 
 ### unwrap()
 

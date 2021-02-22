@@ -10,6 +10,7 @@ import { ResolvedConfig } from '../config';
 import * as t from '../shared/estree';
 import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
 import { toPropertyName } from '../shared/utils';
+import { TEMPLATE_PARAMS } from '../shared/constants';
 
 type RenderPrimitive =
     | 'iterator'
@@ -70,6 +71,7 @@ export default class CodeGen {
 
     currentId = 0;
     currentKey = 0;
+    innerHtmlInstances = 0;
 
     usedApis: { [name: string]: t.Identifier } = {};
     usedSlots: { [name: string]: t.Identifier } = {};
@@ -205,6 +207,80 @@ export default class CodeGen {
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
         return t.conditionalExpression(bindExpr, t.literal(''), t.literal(null));
+    }
+
+    /**
+     * This routine generates an expression that avoids
+     * computing the sanitized html of a raw html if it does not change
+     * between renders.
+     *
+     * @param expr
+     * @returns sanitizedHtmlExpr
+     */
+    genSanitizedHtmlExpr(expr: t.Expression) {
+        const instance = this.innerHtmlInstances++;
+
+        this.usedLwcApis.add('sanitizeHtmlContent');
+
+        // Optimization for static html.
+        // Example input: <div lwc:inner-html="foo">
+        // Output: $ctx._sanitizedHtml$0 || ($ctx._sanitizedHtml$0 = sanitizeHtmlContent("foo"))
+        if (t.isLiteral(expr)) {
+            return t.logicalExpression(
+                '||',
+                t.memberExpression(
+                    t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                    t.identifier(`_sanitizedHtml$${instance}`)
+                ),
+                t.assignmentExpression(
+                    '=',
+                    t.memberExpression(
+                        t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                        t.identifier(`_sanitizedHtml$${instance}`)
+                    ),
+                    t.callExpression(t.identifier('sanitizeHtmlContent'), [expr])
+                )
+            );
+        }
+
+        // Example input: <div lwc:inner-html={foo}>
+        // Output: $ctx._rawHtml$0 !== ($ctx._rawHtml$0 = $cmp.foo)
+        //             ? ($ctx._sanitizedHtml$0 = sanitizeHtmlContent($cmp.foo))
+        //             : $ctx._sanitizedHtml$0
+        //
+        // Note: In the case of iterations, when the lwc:inner-html bound value depends on the
+        //       iteration item, the generated expression won't be enough, and `sanitizeHtmlContent`
+        //       will be called every time because this expression is based on the specific template
+        //       usage of the lwc:inner-html, and in an iteration, usages are dynamically generated.
+        return t.conditionalExpression(
+            t.binaryExpression(
+                '!==',
+                t.memberExpression(
+                    t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                    t.identifier(`_rawHtml$${instance}`)
+                ),
+                t.assignmentExpression(
+                    '=',
+                    t.memberExpression(
+                        t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                        t.identifier(`_rawHtml$${instance}`)
+                    ),
+                    expr
+                )
+            ),
+            t.assignmentExpression(
+                '=',
+                t.memberExpression(
+                    t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                    t.identifier(`_sanitizedHtml$${instance}`)
+                ),
+                t.callExpression(t.identifier('sanitizeHtmlContent'), [expr])
+            ),
+            t.memberExpression(
+                t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                t.identifier(`_sanitizedHtml$${instance}`)
+            )
+        );
     }
 
     private _genUniqueIdentifier(name: string) {

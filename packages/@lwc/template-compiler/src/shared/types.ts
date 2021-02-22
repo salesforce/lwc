@@ -40,9 +40,7 @@ export interface ForIterator {
     iterator: TemplateIdentifier;
 }
 
-export enum LWCDirectiveDomMode {
-    manual = 'manual',
-}
+export type LWCDirectiveDomMode = 'manual';
 
 export enum LWCDirectiveRenderMode {
     shadow = 'shadow',
@@ -58,6 +56,7 @@ export interface LWCDirectives {
     dynamic?: TemplateExpression;
     renderMode?: LWCDirectiveRenderMode;
     preserveComments?: IRBooleanAttribute;
+    innerHTML?: TemplateExpression | string;
 }
 
 export interface IRBaseNode<N extends parse5.Node> {

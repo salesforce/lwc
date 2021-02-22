@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-import { hasOwnProperty } from '@lwc/shared';
 
 import { ParserDiagnostics } from '@lwc/errors';
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
@@ -46,7 +45,6 @@ import {
     IRExpressionAttribute,
     IRNode,
     IRText,
-    LWCDirectiveDomMode,
     LWCDirectiveRenderMode,
     LWCDirectives,
     TemplateExpression,
@@ -318,6 +316,7 @@ function applyLwcDirectives(ctx: ParserCtx, element: IRElement, parsedAttr: Pars
     applyLwcDomDirective(ctx, element, parsedAttr, lwcOpts);
     applyLwcRenderModeDirective(ctx, element, parsedAttr, lwcOpts);
     applyLwcPreserveCommentsDirective(ctx, element, parsedAttr, lwcOpts);
+    applyLwcInnerHtmlDirective(element, lwcOpts);
 
     element.lwc = lwcOpts;
 }
@@ -371,6 +370,36 @@ function applyLwcPreserveCommentsDirective(
     lwcOpts.preserveComments = lwcPreserveCommentAttribute;
 }
 
+function applyLwcInnerHtmlDirective(element: IRElement, lwcOpts: LWCDirectives) {
+    const lwcInnerHtmlDirective = getTemplateAttribute(element, LWC_DIRECTIVES.INNER_HTML);
+
+    if (!lwcInnerHtmlDirective) {
+        return;
+    }
+
+    removeAttribute(element, LWC_DIRECTIVES.INNER_HTML);
+
+    if (isCustomElement(element)) {
+        return warnOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_CUSTOM_ELEMENT, element, [
+            `<${element.tag}>`,
+        ]);
+    }
+
+    if (element.tag === 'slot' || element.tag === 'template') {
+        return warnOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT, element, [
+            `<${element.tag}>`,
+        ]);
+    }
+
+    if (lwcInnerHtmlDirective.type === IRAttributeType.Boolean) {
+        return warnOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_VALUE, element, [
+            `<${element.tag}>`,
+        ]);
+    }
+
+    lwcOpts.innerHTML = lwcInnerHtmlDirective.value;
+}
+
 function applyLwcDynamicDirective(
     ctx: ParserCtx,
     element: IRElement,
@@ -386,6 +415,11 @@ function applyLwcDynamicDirective(
 
     if (!ctx.config.experimentalDynamicDirective) {
         ctx.throwOnIRNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element, [`<${tag}>`]);
+        if (lwcDomAttribute.type !== IRAttributeType.String || lwcDomAttribute.value !== 'manual') {
+            return warnOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, ['"manual"']);
+        }
+
+        lwcOpts.dom = lwcDomAttribute.value;
     }
 
     if (!isCustomElement(element)) {
@@ -677,6 +711,13 @@ function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedA
         // Prevent usage of the slot attribute with expression.
         if (name === 'slot' && isIRExpressionAttribute(attr)) {
             ctx.throwOnIRNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, attr);
+        }
+
+        // prevents lwc:inner-html to be used in an element with content
+        if (element.lwc?.innerHTML && effectiveChildren.length > 0) {
+            return warnOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_CONTENTS, element, [
+                `<${element.tag}>`,
+            ]);
         }
 
         // the if branch handles
