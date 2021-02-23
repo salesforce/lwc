@@ -264,11 +264,10 @@ function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
             ({ type }) => type !== DECORATOR_TYPES.METHOD
         );
         if (publicPropertyMetas.length) {
-            const publicPropsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems);
-            list.push(
-                t.objectProperty(t.identifier('publicProps'), t.valueToNode(publicPropsConfig))
-            );
+            const propsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems);
+            list.push(t.objectProperty(t.identifier('publicProps'), t.valueToNode(propsConfig)));
         }
+
         const publicMethodMetas = apiDecoratorMetas.filter(
             ({ type }) => type === DECORATOR_TYPES.METHOD
         );
