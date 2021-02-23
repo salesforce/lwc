@@ -275,6 +275,14 @@ function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
             const methodNames = publicMethodMetas.map(({ propertyName }) => propertyName);
             list.push(t.objectProperty(t.identifier('publicMethods'), t.valueToNode(methodNames)));
         }
+
+        const fieldNames = classBodyItems
+            .filter((field) => field.isClassProperty({ computed: false, static: false }))
+            .filter((field) => !field.node.decorators)
+            .map((field) => field.node.key.name);
+        if (fieldNames.length) {
+            list.push(t.objectProperty(t.identifier('fields'), t.valueToNode(fieldNames)));
+        }
     }
 
     return list;
