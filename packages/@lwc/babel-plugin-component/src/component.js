@@ -18,7 +18,6 @@ const {
 } = require('./constants');
 const {
     collectDecoratorPaths,
-    generateInvalidDecoratorError,
     getDecoratorMetadata,
     getMetadataObjectPropertyList,
     validate,
@@ -134,11 +133,6 @@ module.exports = function ({ types: t }) {
     // Babel reinvokes visitors for node reinsertion so we use this to avoid an infinite loop.
     const visitedClasses = new WeakSet();
 
-    function isImportedFromLwcSource(decoratorBinding) {
-        const bindingPath = decoratorBinding.path;
-        return bindingPath.isImportSpecifier() && bindingPath.parent.source.value === 'lwc';
-    }
-
     return {
         Program(path) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
@@ -175,10 +169,7 @@ module.exports = function ({ types: t }) {
                 classBodyItems
             );
 
-            for (const { binding, path } of decoratorMetas) {
-                if (!isImportedFromLwcSource(binding)) {
-                    throw generateInvalidDecoratorError(path);
-                }
+            for (const { path } of decoratorMetas) {
                 path.remove();
             }
 
