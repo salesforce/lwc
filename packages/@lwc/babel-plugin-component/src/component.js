@@ -41,7 +41,6 @@ function importDefaultTemplate(path, state) {
 function needsComponentRegistration(path) {
     return (
         (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
-        // path.isMemberExpression() || // this will probably yield more false positives than anything else
         path.isCallExpression() ||
         path.isClassDeclaration() ||
         path.isConditionalExpression()
@@ -166,10 +165,10 @@ module.exports = function ({ types: t }) {
             }
 
             const decoratorPaths = collectDecoratorPaths(classBodyItems);
-
-            validate(decoratorPaths);
-
             const decoratorMetas = decoratorPaths.map(getDecoratorMetadata);
+
+            validate(decoratorMetas);
+
             const metaPropertyList = getMetadataObjectPropertyList(
                 t,
                 decoratorMetas,

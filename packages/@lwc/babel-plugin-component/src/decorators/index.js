@@ -151,7 +151,7 @@ function collectDecoratorPaths(bodyItems) {
     return bodyItems.reduce((acc, bodyItem) => {
         const decorators = bodyItem.get('decorators');
         if (decorators && decorators.length) {
-            acc.push(decorators[0]);
+            acc.push(...decorators);
         }
         return acc;
     }, []);
@@ -159,11 +159,11 @@ function collectDecoratorPaths(bodyItems) {
 
 function getDecoratorMetadata(decoratorPath) {
     const expressionPath = decoratorPath.get('expression');
-    const decoratorName = expressionPath.isIdentifier()
+    const name = expressionPath.isIdentifier()
         ? expressionPath.node.name
         : expressionPath.node.callee.name;
     const propertyName = decoratorPath.parent.key.name;
-    const binding = decoratorPath.scope.getBinding(decoratorName);
+    const binding = decoratorPath.scope.getBinding(name);
     const kind = decoratorPath.parent.kind || 'property';
 
     let type = kind;
@@ -174,7 +174,7 @@ function getDecoratorMetadata(decoratorPath) {
     }
 
     return {
-        decoratorName,
+        name,
         propertyName,
         binding,
         path: decoratorPath,
@@ -183,36 +183,12 @@ function getDecoratorMetadata(decoratorPath) {
 }
 
 function isTrackDecorator(decoratorMeta) {
-    return decoratorMeta.decoratorName === 'track';
+    return decoratorMeta.name === 'track';
 }
 
 function isApiDecorator(decoratorMeta) {
-    return decoratorMeta.decoratorName === 'api';
+    return decoratorMeta.name === 'api';
 }
-
-/*
-function computePublicPropsConfig(decorators) {
-    return decorators.reduce((acc, { path, type }) => {
-        const property = path.parentPath;
-        const propertyName = property.get('key.name').node;
-
-        if (!(propertyName in acc)) {
-            acc[propertyName] = {};
-        }
-
-        acc[propertyName].config |= getPropertyBitmask(type);
-
-        // With the latest decorator spec a decorator only need to be in one of the getter/setter pair
-        // We need to add the proper bitmask for the sibling getter/setter if exists
-        const siblingPair = getSiblingGetSetPair(property, propertyName, type);
-        if (siblingPair) {
-            acc[propertyName].config |= getPropertyBitmask(siblingPair.type);
-        }
-
-        return acc;
-    }, {});
-}
-*/
 
 function getSiblingGetSetPairType(propertyName, type, classBodyItems) {
     const siblingKind = type === DECORATOR_TYPES.GETTER ? 'set' : 'get';

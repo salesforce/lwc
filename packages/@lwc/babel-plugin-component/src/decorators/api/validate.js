@@ -109,7 +109,6 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
 
 function validateUniqueness(decorators) {
     const apiDecorators = decorators.filter(isApiDecorator);
-
     for (let i = 0; i < apiDecorators.length; i++) {
         const { path: currentPath, type: currentType } = apiDecorators[i];
         const currentPropertyName = currentPath.parentPath.get('key.name').node;
@@ -138,7 +137,12 @@ function validateUniqueness(decorators) {
 }
 
 module.exports = function validate(decorators) {
-    decorators.filter(isApiDecorator).forEach(({ path, type }) => {
+    const apiDecorators = decorators.filter(isApiDecorator);
+    if (apiDecorators.length === 0) {
+        return;
+    }
+
+    apiDecorators.forEach(({ path, type }) => {
         validateConflict(path, decorators);
 
         if (type !== DECORATOR_TYPES.METHOD) {
