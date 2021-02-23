@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { isWireDecorator } = require('./shared');
-const { staticClassProperty, markAsLWCNode } = require('../../utils');
 const { LWC_COMPONENT_PROPERTIES } = require('../../constants');
 
 const WIRE_PARAM_PREFIX = '$';
@@ -211,8 +209,8 @@ const scopedReferenceLookup = (scope) => (name) => {
     };
 };
 
-module.exports = function transform(t, klass, decorators) {
-    const wiredValues = decorators.filter(isWireDecorator).map(({ path }) => {
+module.exports = function transform(t, wireDecorators) {
+    const wiredValues = wireDecorators.map(({ path }) => {
         const [id, config] = path.get('expression.arguments');
 
         const propertyName = path.parentPath.get('key.name').node;
@@ -247,15 +245,8 @@ module.exports = function transform(t, klass, decorators) {
         return wiredValue;
     });
 
-    if (wiredValues.length) {
-        const staticProp = staticClassProperty(
-            t,
-            LWC_COMPONENT_PROPERTIES.WIRE,
-            buildWireConfigValue(t, wiredValues)
-        );
-
-        markAsLWCNode(staticProp);
-
-        klass.get('body').pushContainer('body', staticProp);
-    }
+    return t.objectProperty(
+        t.identifier(LWC_COMPONENT_PROPERTIES.WIRE),
+        buildWireConfigValue(t, wiredValues)
+    );
 };

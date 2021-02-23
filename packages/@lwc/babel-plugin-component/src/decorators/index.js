@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const { DecoratorErrors } = require('@lwc/errors');
+
 const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
@@ -16,7 +18,7 @@ const {
     isSetterClassMethod,
     isGetterClassMethod,
 } = require('../utils');
-const { DecoratorErrors } = require('@lwc/errors');
+const { isWireDecorator } = require('./wire/shared');
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
@@ -261,14 +263,19 @@ function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
             const methodNames = publicMethodMetas.map(({ propertyName }) => propertyName);
             list.push(t.objectProperty(t.identifier('publicMethods'), t.valueToNode(methodNames)));
         }
+    }
 
-        const fieldNames = classBodyItems
-            .filter((field) => field.isClassProperty({ computed: false, static: false }))
-            .filter((field) => !field.node.decorators)
-            .map((field) => field.node.key.name);
-        if (fieldNames.length) {
-            list.push(t.objectProperty(t.identifier('fields'), t.valueToNode(fieldNames)));
-        }
+    const wireDecoratorMetas = decoratorMetas.filter(isWireDecorator);
+    if (wireDecoratorMetas.length) {
+        list.push(wire.transform(t, wireDecoratorMetas));
+    }
+
+    const fieldNames = classBodyItems
+        .filter((field) => field.isClassProperty({ computed: false, static: false }))
+        .filter((field) => !field.node.decorators)
+        .map((field) => field.node.key.name);
+    if (fieldNames.length) {
+        list.push(t.objectProperty(t.identifier('fields'), t.valueToNode(fieldNames)));
     }
 
     return list;

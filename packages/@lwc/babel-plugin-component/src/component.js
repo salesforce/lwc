@@ -74,59 +74,8 @@ module.exports = function ({ types: t }) {
         ]);
     }
 
-    /*
-    function collectDecoratedProperties(body) {
-        const metaPropertyList = [];
-        for (const classProps of body.get('body')) {
-            if (classProps.isClassProperty({ static: true })) {
-                const propertyNode = classProps.node;
-                if (isLWCNode(propertyNode)) {
-                    metaPropertyList.push(t.objectProperty(propertyNode.key, propertyNode.value));
-                    classProps.remove();
-                }
-            }
-        }
-        return metaPropertyList;
-    }
-
-    function collectObservedFields(body, decoratedProperties) {
-        const mappers = {
-            ObjectExpression: ({ properties }) =>
-                properties.map(({ key }) => {
-                    if (t.isIdentifier(key)) {
-                        return key.name;
-                    } else if (t.isStringLiteral(key)) {
-                        return key.value;
-                    }
-                }),
-            ArrayExpression: ({ elements }) => elements.map(({ value }) => value),
-        };
-
-        const decoratedIdentifiers = decoratedProperties
-            .map(({ value }) => mappers[value.type](value))
-            .reduce((acc, identifiers) => acc.concat(identifiers), []);
-
-        const nonDecoratedFields = body
-            .get('body')
-            .filter(
-                (path) =>
-                    t.isClassProperty(path.node) &&
-                    !isLWCNode(path.node) &&
-                    !path.node.static &&
-                    t.isIdentifier(path.node.key) &&
-                    !(decoratedIdentifiers.indexOf(path.node.key.name) >= 0)
-            )
-            .map((path) => path.node.key.name);
-
-        return nonDecoratedFields.length
-            ? t.objectProperty(t.identifier('fields'), t.valueToNode(nonDecoratedFields))
-            : null;
-    }
-    */
-
     function createRegisterDecoratorsCall(path, klass, props) {
         const id = moduleImports.addNamed(path, REGISTER_DECORATORS_ID, 'lwc');
-
         return t.callExpression(id, [klass, t.objectExpression(props)]);
     }
 
@@ -168,6 +117,10 @@ module.exports = function ({ types: t }) {
                 decoratorMetas,
                 classBodyItems
             );
+
+            if (metaPropertyList.length === 0) {
+                return;
+            }
 
             for (const { path } of decoratorMetas) {
                 path.remove();
