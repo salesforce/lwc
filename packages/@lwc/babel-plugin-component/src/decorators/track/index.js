@@ -17,13 +17,14 @@ function isTrackDecorator(decorator) {
     return decorator.name === TRACK_DECORATOR;
 }
 
-function validate(decoratorMeta) {
-    const { path } = decoratorMeta;
-    if (!path.parentPath.isClassProperty()) {
-        throw generateError(path, {
-            errorInfo: DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES,
-        });
-    }
+function validate(decorators) {
+    decorators.filter(isTrackDecorator).forEach(({ path }) => {
+        if (!path.parentPath.isClassProperty()) {
+            throw generateError(path, {
+                errorInfo: DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES,
+            });
+        }
+    });
 }
 
 function transform(t, klass, decorators) {

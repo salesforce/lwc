@@ -21,6 +21,7 @@ const {
     generateInvalidDecoratorError,
     getDecoratorMetadata,
     getMetadataObjectPropertyList,
+    validate,
 } = require('./decorators');
 const { generateError, getEngineImportSpecifiers } = require('./utils');
 
@@ -159,9 +160,21 @@ module.exports = function ({ types: t }) {
             }
             visitedClasses.add(node);
 
-            const decoratorPaths = collectDecoratorPaths(path.get('body.body'));
+            const classBodyItems = path.get('body.body');
+            if (classBodyItems.length === 0) {
+                return;
+            }
+
+            const decoratorPaths = collectDecoratorPaths(classBodyItems);
+
+            validate(decoratorPaths);
+
             const decoratorMetas = decoratorPaths.map(getDecoratorMetadata);
-            const metaPropertyList = getMetadataObjectPropertyList(t, decoratorMetas);
+            const metaPropertyList = getMetadataObjectPropertyList(
+                t,
+                decoratorMetas,
+                classBodyItems
+            );
 
             for (const { binding, path } of decoratorMetas) {
                 if (!isImportedFromLwcSource(binding)) {
@@ -171,7 +184,7 @@ module.exports = function ({ types: t }) {
             }
 
             const isAnonymousClassDeclaration =
-                path.isClassDeclaration() && !t.isIdentifier(node.id);
+                path.isClassDeclaration() && !path.get('id').isIdentifier();
             const shouldTransformAsClassExpression =
                 path.isClassExpression() || isAnonymousClassDeclaration;
 
