@@ -34,7 +34,7 @@ it('should apply transformation for stylesheet file', async () => {
 
     const expected = `
         function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-            return ["\\n", (nativeShadow ? ":host {color: red;}" : [hostSelector, " {color: red;}"].join('')), "\\ndiv", shadowSelector, " {background-color: red;}\\n"].join('');
+            return [(nativeShadow ? ":host {color: red;}" : [hostSelector, " {color: red;}"].join('')), "div", shadowSelector, " {background-color: red;}"].join('');
         }
         export default [stylesheet];
     `;
@@ -48,7 +48,7 @@ describe('custom properties', () => {
         const actual = `div { color: var(--bg-color); }`;
         const expected = `
             function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-                return ["div", shadowSelector, " {color: var(--bg-color);}\\n"].join('');
+                return ["div", shadowSelector, " {color: var(--bg-color);}"].join('');
             }
 
             export default [stylesheet];
@@ -75,7 +75,7 @@ describe('custom properties', () => {
         const expected = `
         import varResolver from "@customProperties";
         function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-            return ["div", shadowSelector, " {color: ", varResolver("--bg-color"), ";font-size: ", varResolver("--font-size","16px"), ";margin: ", varResolver("--margin-small",varResolver("--margin-medium","20px")), ";border-bottom: 1px solid ", varResolver("--lwc-border"), ";}\\n"].join('');
+            return ["div", shadowSelector, " {color: ", varResolver("--bg-color"), ";font-size: ", varResolver("--font-size","16px"), ";margin: ", varResolver("--margin-small",varResolver("--margin-medium","20px")), ";border-bottom: 1px solid ", varResolver("--lwc-border"), ";}"].join('');
         }
         export default [stylesheet];
         `;
@@ -137,7 +137,7 @@ describe('regressions', () => {
         const actual = `.foo { content: "x\\x"; }`;
         const expected = `
             function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-                return [".foo", shadowSelector, " {content: \\"x\\\\x\\";}\\n"].join('');
+                return [".foo", shadowSelector, " {content: \\"x\\\\x\\";}"].join('');
             }
 
             export default [stylesheet];

@@ -1,4 +1,4 @@
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return ["[turkey='val']", shadowSelector, " {}\n[keyboard='val']", shadowSelector, " {}\n[notif\\:true='val']", shadowSelector, " {}\n[notfor\\:item='val']", shadowSelector, " {}\n[notfor\\:each='val']", shadowSelector, " {}\n[notiterator\\:name='val']", shadowSelector, " {}\n"].join('');
+  return ["[turkey='val']", shadowSelector, " {}[keyboard='val']", shadowSelector, " {}[notif\\:true='val']", shadowSelector, " {}[notfor\\:item='val']", shadowSelector, " {}[notfor\\:each='val']", shadowSelector, " {}[notiterator\\:name='val']", shadowSelector, " {}"].join('');
 }
 export default [stylesheet];

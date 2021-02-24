@@ -1,7 +1,7 @@
 import stylesheet0 from '@salesforce/designSystem/index.css';
 import { registerTemplate, registerComponent, LightningElement } from 'lwc';
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-return ["h1", shadowSelector, " {}\n"].join('');
+return ["h1", shadowSelector, " {}"].join('');
 }
 var _implicitStylesheets = [stylesheet0, stylesheet];
 function tmpl($api, $cmp, $slotset, $ctx) {

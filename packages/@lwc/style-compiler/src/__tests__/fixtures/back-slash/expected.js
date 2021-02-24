@@ -1,4 +1,4 @@
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return [".foo", shadowSelector, " {content: \"\\\\\";}\n"].join('');
+  return [".foo", shadowSelector, " {content: \"\\\\\";}"].join('');
 }
 export default [stylesheet];

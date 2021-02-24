@@ -1,4 +1,4 @@
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return ["[aria-labelledby]", shadowSelector, " {}\n[aria-labelledby=\"bar\"]", shadowSelector, " {}\n"].join('');
+  return ["[aria-labelledby]", shadowSelector, " {}[aria-labelledby=\"bar\"]", shadowSelector, " {}"].join('');
 }
 export default [stylesheet];

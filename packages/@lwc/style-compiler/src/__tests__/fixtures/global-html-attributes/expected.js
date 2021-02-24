@@ -1,4 +1,4 @@
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return ["[hidden]", shadowSelector, " {}\n[lang=\"fr\"]", shadowSelector, " {}\n"].join('');
+  return ["[hidden]", shadowSelector, " {}[lang=\"fr\"]", shadowSelector, " {}"].join('');
 }
 export default [stylesheet];
