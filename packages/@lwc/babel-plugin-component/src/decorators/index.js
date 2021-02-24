@@ -27,6 +27,11 @@ function isLwcDecoratorName(name) {
     return DECORATOR_TRANSFORMS.some((transform) => transform.name === name);
 }
 
+/** Returns a list of all the references to an identifier */
+function getReferences(identifier) {
+    return identifier.scope.getBinding(identifier.node.name).referencePaths;
+}
+
 const PUBLIC_PROP_BIT_MASK = {
     PROPERTY: 0,
     GETTER: 1,
@@ -61,8 +66,7 @@ function getDecoratorType(propertyOrMethod) {
     }
 }
 
-/** Returns a list of all the LWC decorators usages
-function getLwcDecorators(importSpecifiers) {
+function validateLwcDecorators(importSpecifiers) {
     return importSpecifiers
         .reduce((acc, { name, path }) => {
             // Get a list of all the  local references
@@ -97,15 +101,8 @@ function getLwcDecorators(importSpecifiers) {
                     messageArgs: [name],
                 });
             }
-
-            return {
-                name,
-                path: decorator,
-                type: getDecoratorType(propertyOrMethod),
-            };
         });
 }
-*/
 
 function isImportedFromLwcSource(decoratorBinding) {
     const bindingPath = decoratorBinding.path;
@@ -115,7 +112,7 @@ function isImportedFromLwcSource(decoratorBinding) {
 /** Validate the usage of decorator by calling each validation function */
 function validate(decorators) {
     for (const { binding, path } of decorators) {
-        if (!isImportedFromLwcSource(binding)) {
+        if (binding === undefined || !isImportedFromLwcSource(binding)) {
             throw generateInvalidDecoratorError(path);
         }
     }
@@ -171,9 +168,16 @@ function collectDecoratorPaths(bodyItems) {
 
 function getDecoratorMetadata(decoratorPath) {
     const expressionPath = decoratorPath.get('expression');
-    const name = expressionPath.isIdentifier()
-        ? expressionPath.node.name
-        : expressionPath.node.callee.name;
+
+    let name;
+    if (expressionPath.isIdentifier()) {
+        name = expressionPath.node.name;
+    } else if (expressionPath.isCallExpression()) {
+        name = expressionPath.node.callee.name;
+    } else {
+        throw generateInvalidDecoratorError(decoratorPath);
+    }
+
     const propertyName = decoratorPath.parent.key.name;
     const binding = decoratorPath.scope.getBinding(name);
     const kind = decoratorPath.parent.kind || 'property';
@@ -237,15 +241,6 @@ function computePublicPropsConfig(publicPropertyMetas, classBodyItems) {
 function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
     const list = [];
 
-    const trackDecoratorMetas = decoratorMetas.filter(isTrackDecorator);
-    if (trackDecoratorMetas.length) {
-        const config = trackDecoratorMetas.reduce((acc, meta) => {
-            acc[meta.propertyName] = 1;
-            return acc;
-        }, {});
-        list.push(t.objectProperty(t.identifier('track'), t.valueToNode(config)));
-    }
-
     const apiDecoratorMetas = decoratorMetas.filter(isApiDecorator);
     if (apiDecoratorMetas.length) {
         const publicPropertyMetas = apiDecoratorMetas.filter(
@@ -263,6 +258,15 @@ function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
             const methodNames = publicMethodMetas.map(({ propertyName }) => propertyName);
             list.push(t.objectProperty(t.identifier('publicMethods'), t.valueToNode(methodNames)));
         }
+    }
+
+    const trackDecoratorMetas = decoratorMetas.filter(isTrackDecorator);
+    if (trackDecoratorMetas.length) {
+        const config = trackDecoratorMetas.reduce((acc, meta) => {
+            acc[meta.propertyName] = 1;
+            return acc;
+        }, {});
+        list.push(t.objectProperty(t.identifier('track'), t.valueToNode(config)));
     }
 
     const wireDecoratorMetas = decoratorMetas.filter(isWireDecorator);
@@ -284,12 +288,16 @@ function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
 function decorators() {
     return {
         Program: {
-            exit(path) {
+            enter(path, state) {
                 const engineImportSpecifiers = getEngineImportSpecifiers(path);
-                const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
+                state.decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
                     isLwcDecoratorName(name)
                 );
-                removeImportSpecifiers(decoratorImportSpecifiers);
+                validateLwcDecorators(state.decoratorImportSpecifiers);
+            },
+            exit(path, state) {
+                removeImportSpecifiers(state.decoratorImportSpecifiers);
+                state.decoratorImportSpecifiers = [];
             },
         },
     };

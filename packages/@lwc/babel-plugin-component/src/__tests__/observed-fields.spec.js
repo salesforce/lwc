@@ -55,6 +55,10 @@ describe('observed fields', () => {
                     }
                   },
                   publicMethods: ["someMethod"],
+                  track: {
+                    foo: 1,
+                    bar: 1
+                  },
                   wire: {
                     wiredProp: {
                       adapter: createElement,
@@ -62,10 +66,6 @@ describe('observed fields', () => {
                         return {};
                       }
                     }
-                  },
-                  track: {
-                    foo: 1,
-                    bar: 1
                   },
                   fields: ["state", "record"]
                 });
@@ -108,6 +108,9 @@ describe('observed fields', () => {
                       config: 0
                     }
                   },
+                  track: {
+                    for: 1
+                  },
                   wire: {
                     function: {
                       adapter: createElement,
@@ -115,9 +118,6 @@ describe('observed fields', () => {
                          return {};
                       }
                     }
-                  },
-                  track: {
-                    for: 1
                   },
                   fields: ["interface"]
                 });
@@ -288,6 +288,10 @@ describe('observed fields', () => {
                       }
                     },
                     publicMethods: ["someMethod"],
+                    track: {
+                      foo: 1,
+                      bar: 1
+                    },
                     wire: {
                       wiredProp: {
                         adapter: createElement,
@@ -295,10 +299,6 @@ describe('observed fields', () => {
                           return {};
                         }
                       }
-                    },
-                    track: {
-                      foo: 1,
-                      bar: 1
                     },
                     fields: ["state", "record"]
                   }

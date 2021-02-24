@@ -121,21 +121,11 @@ function generateError(source, { errorInfo, messageArgs } = {}) {
     return error;
 }
 
-function isLWCNode(node) {
-    return node._lwcNode === true;
-}
-
-function markAsLWCNode(node) {
-    node._lwcNode = true;
-}
-
 module.exports = {
-    isLWCNode,
-    markAsLWCNode,
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
-    staticClassProperty,
-    getEngineImportSpecifiers,
     generateError,
+    getEngineImportSpecifiers,
+    staticClassProperty,
 };
