@@ -34,7 +34,6 @@ export default function serialize(result: Result, config: Config): string {
     const collectVarFunctions = Boolean(
         config.customProperties && config.customProperties.resolverModule
     );
-    const minify = Boolean(config.outputConfig && config.outputConfig.minify);
     const useVarResolver = messages.some(isVarFunctionMessage);
     const importedStylesheets = messages.filter(isImportMessage).map((message) => message.id);
 
@@ -54,7 +53,7 @@ export default function serialize(result: Result, config: Config): string {
     }
 
     const stylesheetList = importedStylesheets.map((_str, i) => `${STYLESHEET_IDENTIFIER + i}`);
-    const serializedStyle = serializeCss(result, collectVarFunctions, minify).trim();
+    const serializedStyle = serializeCss(result, collectVarFunctions).trim();
 
     if (serializedStyle) {
         // inline function
@@ -107,7 +106,7 @@ function generateExpressionFromTokens(tokens: Token[]): string {
     }
 }
 
-function serializeCss(result: Result, collectVarFunctions: boolean, minify: boolean): string {
+function serializeCss(result: Result, collectVarFunctions: boolean): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
     let tmpHostExpression: string | null;
@@ -145,11 +144,6 @@ function serializeCss(result: Result, collectVarFunctions: boolean, minify: bool
 
             // Reset rule
             currentRuleTokens = [];
-
-            // Add spacing per rule
-            if (!minify) {
-                tokens.push({ type: TokenType.text, value: '\n' });
-            }
 
             // When inside a declaration, tokenize it and push it to the current token list
         } else if (node && node.type === 'decl') {
