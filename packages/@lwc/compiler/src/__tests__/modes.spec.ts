@@ -88,23 +88,4 @@ describe('test shape of the bundle in different modes and environments', () => {
         } = await compile(config);
         expect(pretify(code)).toBe(pretify(readFixture('expected-prod-mode.js')));
     });
-
-    test('test minified bundles to remove comments', async () => {
-        const minifiedConfig = {
-            name: 'comments',
-            files: {
-                'comments.js': readFixture('./comments/comments.js'),
-                'comments.html': readFixture('./comments/comments.html'),
-                'comments.css': readFixture('./comments/comments.css'),
-            },
-            outputConfig: {
-                minify: true,
-            },
-        };
-        const config = Object.assign({}, BASE_CONFIG, minifiedConfig);
-        const {
-            result: { code },
-        } = await compile(config);
-        expect(pretify(code)).toBe(pretify(readFixture('expected-minify-no-comments.js')));
-    });
 });
