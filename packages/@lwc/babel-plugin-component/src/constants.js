@@ -55,8 +55,6 @@ const LWC_SUPPORTED_APIS = new Set([
 ]);
 
 const LWC_COMPONENT_PROPERTIES = {
-    STYLE: 'style',
-    RENDER: 'render',
     PUBLIC_PROPS: 'publicProps',
     PUBLIC_METHODS: 'publicMethods',
     WIRE: 'wire',

@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const moduleImports = require('@babel/helper-module-imports');
 const { DecoratorErrors } = require('@lwc/errors');
 
 const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
 
-const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
+const { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } = require('../constants');
 const {
     generateError,
     getEngineImportSpecifiers,
@@ -18,7 +19,6 @@ const {
     isSetterClassMethod,
     isGetterClassMethod,
 } = require('../utils');
-const { isWireDecorator } = require('./wire/shared');
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
@@ -30,23 +30,6 @@ function isLwcDecoratorName(name) {
 /** Returns a list of all the references to an identifier */
 function getReferences(identifier) {
     return identifier.scope.getBinding(identifier.node.name).referencePaths;
-}
-
-const PUBLIC_PROP_BIT_MASK = {
-    PROPERTY: 0,
-    GETTER: 1,
-    SETTER: 2,
-};
-
-function getPropertyBitmask(type) {
-    switch (type) {
-        case DECORATOR_TYPES.GETTER:
-            return PUBLIC_PROP_BIT_MASK.GETTER;
-        case DECORATOR_TYPES.SETTER:
-            return PUBLIC_PROP_BIT_MASK.SETTER;
-        default:
-            return PUBLIC_PROP_BIT_MASK.PROPERTY;
-    }
 }
 
 /** Returns the type of decorator depdending on the property or method if get applied to */
@@ -180,14 +163,7 @@ function getDecoratorMetadata(decoratorPath) {
 
     const propertyName = decoratorPath.parent.key.name;
     const binding = decoratorPath.scope.getBinding(name);
-    const kind = decoratorPath.parent.kind || 'property';
-
-    let type = kind;
-    if (kind === 'get') {
-        type = 'getter';
-    } else if (kind === 'set') {
-        type = 'setter';
-    }
+    const type = getDecoratorType(decoratorPath.parentPath);
 
     return {
         name,
@@ -198,81 +174,12 @@ function getDecoratorMetadata(decoratorPath) {
     };
 }
 
-function isTrackDecorator(decoratorMeta) {
-    return decoratorMeta.name === 'track';
-}
-
-function isApiDecorator(decoratorMeta) {
-    return decoratorMeta.name === 'api';
-}
-
-function getSiblingGetSetPairType(propertyName, type, classBodyItems) {
-    const siblingKind = type === DECORATOR_TYPES.GETTER ? 'set' : 'get';
-    const siblingNode = classBodyItems.find((classBodyItem) => {
-        const isClassMethod = classBodyItem.isClassMethod({ kind: siblingKind });
-        const isSamePropertyName = classBodyItem.node.key.name === propertyName;
-        return isClassMethod && isSamePropertyName;
-    });
-    if (siblingNode) {
-        return siblingKind === 'get' ? DECORATOR_TYPES.GETTER : DECORATOR_TYPES.SETTER;
-    }
-}
-
-function computePublicPropsConfig(publicPropertyMetas, classBodyItems) {
-    return publicPropertyMetas.reduce((acc, { propertyName, type }) => {
-        if (!(propertyName in acc)) {
-            acc[propertyName] = {};
-        }
-        acc[propertyName].config |= getPropertyBitmask(type);
-
-        if (type === DECORATOR_TYPES.GETTER || type === DECORATOR_TYPES.SETTER) {
-            // With the latest decorator spec, only one of the getter/setter pair needs a decorator.
-            // We need to add the proper bitmask for the sibling getter/setter if it exists.
-            const pairType = getSiblingGetSetPairType(propertyName, type, classBodyItems);
-            if (pairType) {
-                acc[propertyName].config |= getPropertyBitmask(pairType);
-            }
-        }
-
-        return acc;
-    }, {});
-}
-
 function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
-    const list = [];
-
-    const apiDecoratorMetas = decoratorMetas.filter(isApiDecorator);
-    if (apiDecoratorMetas.length) {
-        const publicPropertyMetas = apiDecoratorMetas.filter(
-            ({ type }) => type !== DECORATOR_TYPES.METHOD
-        );
-        if (publicPropertyMetas.length) {
-            const propsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems);
-            list.push(t.objectProperty(t.identifier('publicProps'), t.valueToNode(propsConfig)));
-        }
-
-        const publicMethodMetas = apiDecoratorMetas.filter(
-            ({ type }) => type === DECORATOR_TYPES.METHOD
-        );
-        if (publicMethodMetas.length) {
-            const methodNames = publicMethodMetas.map(({ propertyName }) => propertyName);
-            list.push(t.objectProperty(t.identifier('publicMethods'), t.valueToNode(methodNames)));
-        }
-    }
-
-    const trackDecoratorMetas = decoratorMetas.filter(isTrackDecorator);
-    if (trackDecoratorMetas.length) {
-        const config = trackDecoratorMetas.reduce((acc, meta) => {
-            acc[meta.propertyName] = 1;
-            return acc;
-        }, {});
-        list.push(t.objectProperty(t.identifier('track'), t.valueToNode(config)));
-    }
-
-    const wireDecoratorMetas = decoratorMetas.filter(isWireDecorator);
-    if (wireDecoratorMetas.length) {
-        list.push(wire.transform(t, wireDecoratorMetas));
-    }
+    const list = [
+        ...api.transform(t, decoratorMetas, classBodyItems),
+        ...track.transform(t, decoratorMetas),
+        ...wire.transform(t, decoratorMetas),
+    ];
 
     const fieldNames = classBodyItems
         .filter((field) => field.isClassProperty({ computed: false, static: false }))
@@ -285,7 +192,15 @@ function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
     return list;
 }
 
-function decorators() {
+function decorators({ types: t }) {
+    function createRegisterDecoratorsCall(path, classExpression, props) {
+        const id = moduleImports.addNamed(path, REGISTER_DECORATORS_ID, 'lwc');
+        return t.callExpression(id, [classExpression, t.objectExpression(props)]);
+    }
+
+    // Babel reinvokes visitors for node reinsertion so we use this to avoid an infinite loop.
+    const visitedClasses = new WeakSet();
+
     return {
         Program: {
             enter(path, state) {
@@ -300,14 +215,54 @@ function decorators() {
                 state.decoratorImportSpecifiers = [];
             },
         },
+        Class(path) {
+            const { node } = path;
+
+            if (visitedClasses.has(node)) {
+                return;
+            }
+            visitedClasses.add(node);
+
+            const classBodyItems = path.get('body.body');
+            if (classBodyItems.length === 0) {
+                return;
+            }
+
+            const decoratorPaths = collectDecoratorPaths(classBodyItems);
+            const decoratorMetas = decoratorPaths.map(getDecoratorMetadata);
+
+            validate(decoratorMetas);
+
+            const metaPropertyList = getMetadataObjectPropertyList(
+                t,
+                decoratorMetas,
+                classBodyItems
+            );
+
+            if (metaPropertyList.length === 0) {
+                return;
+            }
+
+            const isAnonymousClassDeclaration =
+                path.isClassDeclaration() && !path.get('id').isIdentifier();
+            const shouldTransformAsClassExpression =
+                path.isClassExpression() || isAnonymousClassDeclaration;
+
+            if (shouldTransformAsClassExpression) {
+                const classExpression = t.toExpression(node);
+                path.replaceWith(
+                    createRegisterDecoratorsCall(path, classExpression, metaPropertyList)
+                );
+            } else {
+                const statementPath = path.getStatementParent();
+                statementPath.insertAfter(
+                    createRegisterDecoratorsCall(path, node.id, metaPropertyList)
+                );
+            }
+        },
     };
 }
 
 module.exports = {
-    collectDecoratorPaths,
     decorators,
-    getDecoratorMetadata,
-    getDecoratorType,
-    getMetadataObjectPropertyList,
-    validate,
 };

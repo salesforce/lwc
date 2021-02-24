@@ -13,15 +13,8 @@ const {
     LWC_PACKAGE_ALIAS,
     LWC_SUPPORTED_APIS,
     REGISTER_COMPONENT_ID,
-    REGISTER_DECORATORS_ID,
     TEMPLATE_KEY,
 } = require('./constants');
-const {
-    collectDecoratorPaths,
-    getDecoratorMetadata,
-    getMetadataObjectPropertyList,
-    validate,
-} = require('./decorators');
 const { generateError, getEngineImportSpecifiers } = require('./utils');
 
 function getBaseName(classPath) {
@@ -74,14 +67,6 @@ module.exports = function ({ types: t }) {
         ]);
     }
 
-    function createRegisterDecoratorsCall(path, klass, props) {
-        const id = moduleImports.addNamed(path, REGISTER_DECORATORS_ID, 'lwc');
-        return t.callExpression(id, [klass, t.objectExpression(props)]);
-    }
-
-    // Babel reinvokes visitors for node reinsertion so we use this to avoid an infinite loop.
-    const visitedClasses = new WeakSet();
-
     return {
         Program(path) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
@@ -93,55 +78,6 @@ module.exports = function ({ types: t }) {
                     });
                 }
             });
-        },
-        Class(path) {
-            const { node } = path;
-
-            if (visitedClasses.has(node)) {
-                return;
-            }
-            visitedClasses.add(node);
-
-            const classBodyItems = path.get('body.body');
-            if (classBodyItems.length === 0) {
-                return;
-            }
-
-            const decoratorPaths = collectDecoratorPaths(classBodyItems);
-            const decoratorMetas = decoratorPaths.map(getDecoratorMetadata);
-
-            validate(decoratorMetas);
-
-            const metaPropertyList = getMetadataObjectPropertyList(
-                t,
-                decoratorMetas,
-                classBodyItems
-            );
-
-            if (metaPropertyList.length === 0) {
-                return;
-            }
-
-            for (const { path } of decoratorMetas) {
-                path.remove();
-            }
-
-            const isAnonymousClassDeclaration =
-                path.isClassDeclaration() && !path.get('id').isIdentifier();
-            const shouldTransformAsClassExpression =
-                path.isClassExpression() || isAnonymousClassDeclaration;
-
-            if (shouldTransformAsClassExpression) {
-                const classExpression = t.toExpression(node);
-                path.replaceWith(
-                    createRegisterDecoratorsCall(path, classExpression, metaPropertyList)
-                );
-            } else {
-                const statementPath = path.getStatementParent();
-                statementPath.insertAfter(
-                    createRegisterDecoratorsCall(path, node.id, metaPropertyList)
-                );
-            }
         },
         ExportDefaultDeclaration(path, state) {
             const implicitResolution = !state.opts.isExplicitImport;

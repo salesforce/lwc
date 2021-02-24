@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { generateError, staticClassProperty, markAsLWCNode } = require('../../utils');
-const {
-    LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR },
-    LWC_COMPONENT_PROPERTIES,
-} = require('../../constants');
 const { DecoratorErrors } = require('@lwc/errors');
+const {
+    LWC_COMPONENT_PROPERTIES,
+    LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR },
+} = require('../../constants');
+const { generateError } = require('../../utils');
 
 const TRACK_PROPERTY_VALUE = 1;
 
@@ -27,31 +27,20 @@ function validate(decorators) {
     });
 }
 
-function transform(t, klass, decorators) {
-    const trackDecorators = decorators.filter(isTrackDecorator);
-    // Add metadata to class body
-    if (trackDecorators.length) {
-        const trackProperties = trackDecorators.map(
-            ({ path }) =>
-                // Get tracked field names
-                path.parentPath.get('key.name').node
-        );
-
-        const trackConfig = trackProperties.reduce((acc, fieldName) => {
-            // Transform list of fields to an object
-            acc[fieldName] = TRACK_PROPERTY_VALUE;
+function transform(t, decoratorMetas) {
+    const objectProperties = [];
+    const trackDecoratorMetas = decoratorMetas.filter(isTrackDecorator);
+    if (trackDecoratorMetas.length) {
+        const config = trackDecoratorMetas.reduce((acc, meta) => {
+            acc[meta.propertyName] = TRACK_PROPERTY_VALUE;
             return acc;
         }, {});
-
-        const staticProp = staticClassProperty(
-            t,
-            LWC_COMPONENT_PROPERTIES.TRACK,
-            t.valueToNode(trackConfig)
+        objectProperties.push(
+            t.objectProperty(t.identifier(LWC_COMPONENT_PROPERTIES.TRACK), t.valueToNode(config))
         );
-        markAsLWCNode(staticProp);
-
-        klass.get('body').pushContainer('body', staticProp);
+        trackDecoratorMetas.forEach(({ path }) => path.remove());
     }
+    return objectProperties;
 }
 
 module.exports = {
