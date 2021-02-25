@@ -21,7 +21,7 @@ import {
     isNull,
 } from '@lwc/shared';
 
-import { LightningElement } from './base-lightning-element';
+import { BasicLightningElement } from './base-lightning-element';
 import { globalHTMLProperties } from './attributes';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
 import { logError } from '../shared/logger';
@@ -284,7 +284,7 @@ function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
     }
     return {
         tagName: generateAccessorDescriptor({
-            get(this: LightningElement) {
+            get(this: BasicLightningElement) {
                 throw new Error(
                     `Usage of property \`tagName\` is disallowed because the component itself does` +
                         ` not know which tagName will be used to create the element, therefore writing` +
@@ -298,7 +298,7 @@ function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
 }
 
 function getLightningElementPrototypeRestrictionsDescriptors(
-    proto: typeof LightningElement.prototype
+    proto: typeof BasicLightningElement.prototype
 ): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -309,7 +309,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
 
     const descriptors: PropertyDescriptorMap = {
         dispatchEvent: generateDataDescriptor({
-            value(this: LightningElement, event: Event): boolean {
+            value(this: BasicLightningElement, event: Event): boolean {
                 const vm = getAssociatedVM(this);
 
                 if (!isNull(event) && isObject(event)) {
@@ -339,7 +339,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
             return; // no need to redefine something that we are already exposing
         }
         descriptors[propName] = generateAccessorDescriptor({
-            get(this: LightningElement) {
+            get(this: BasicLightningElement) {
                 const { error, attribute } = globalHTMLProperties[propName];
                 const msg: string[] = [];
                 msg.push(`Accessing the global HTML property "${propName}" is disabled.`);
@@ -350,7 +350,7 @@ function getLightningElementPrototypeRestrictionsDescriptors(
                 }
                 logError(msg.join('\n'), getAssociatedVM(this));
             },
-            set(this: LightningElement) {
+            set(this: BasicLightningElement) {
                 const { readOnly } = globalHTMLProperties[propName];
                 if (readOnly) {
                     logError(
@@ -377,12 +377,12 @@ export function patchCustomElementWithRestrictions(elm: HTMLElement) {
     setPrototypeOf(elm, create(elmProto, restrictionsDescriptors));
 }
 
-export function patchComponentWithRestrictions(cmp: LightningElement) {
+export function patchComponentWithRestrictions(cmp: BasicLightningElement) {
     defineProperties(cmp, getComponentRestrictionsDescriptors());
 }
 
 export function patchLightningElementPrototypeWithRestrictions(
-    proto: typeof LightningElement.prototype
+    proto: typeof BasicLightningElement.prototype
 ) {
     defineProperties(proto, getLightningElementPrototypeRestrictionsDescriptors(proto));
 }

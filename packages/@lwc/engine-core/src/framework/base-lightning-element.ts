@@ -72,7 +72,7 @@ function createBridgeToElementDescriptor(
     return {
         enumerable,
         configurable,
-        get(this: LightningElement) {
+        get(this: BasicLightningElement) {
             const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -86,7 +86,7 @@ function createBridgeToElementDescriptor(
             componentValueObserved(vm, propName);
             return get.call(vm.elm);
         },
-        set(this: LightningElement, newValue: any) {
+        set(this: BasicLightningElement, newValue: any) {
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
@@ -120,15 +120,15 @@ function createBridgeToElementDescriptor(
     };
 }
 
-export interface LightningElementConstructor {
-    new (): LightningElement;
-    readonly prototype: LightningElement;
+export interface BasicLightningElementConstructor {
+    new (): BasicLightningElement;
+    readonly prototype: BasicLightningElement;
     readonly CustomElementConstructor: HTMLElementConstructor;
 
     delegatesFocus?: boolean;
 }
 
-export declare let LightningElement: LightningElementConstructor;
+export declare let BasicLightningElement: BasicLightningElementConstructor;
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
     Pick<
@@ -162,8 +162,9 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'title'
     >;
 
-export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
-    template: ShadowRoot;
+export interface BasicLightningElement
+    extends HTMLElementTheGoodParts,
+        AccessibleElementProperties {
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -175,7 +176,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
  * This class is the base class for any LWC element.
  * Some elements directly extends this class, others implement it via inheritance.
  **/
-function BaseLightningElementConstructor(this: LightningElement): LightningElement {
+function BaseLightningElementConstructor(this: BasicLightningElement): BasicLightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
         throw new ReferenceError('Illegal constructor');
@@ -507,11 +508,6 @@ BaseLightningElementConstructor.prototype = {
         return getClassList(elm);
     },
 
-    get template(): ShadowRoot {
-        const vm = getAssociatedVM(this);
-        return vm.cmpRoot;
-    },
-
     get shadowRoot(): null {
         // From within the component instance, the shadowRoot is always reported as "closed".
         // Authors should rely on this.template instead.
@@ -552,4 +548,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // @ts-ignore
-export const BaseLightningElement: LightningElementConstructor = BaseLightningElementConstructor as unknown;
+export const BaseLightningElement: BasicLightningElementConstructor = BaseLightningElementConstructor as unknown;
+
+export class LightningElement extends BaseLightningElement {
+    get template(): ShadowRoot {
+        const vm = getAssociatedVM(this);
+        return vm.cmpRoot;
+    }
+}

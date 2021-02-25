@@ -14,19 +14,19 @@ import {
 import { VM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { ReactiveObserver } from '../libs/mutation-tracker';
-import { LightningElementConstructor } from './base-lightning-element';
+import { BasicLightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 
-const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
+const signedTemplateMap: Map<BasicLightningElementConstructor, Template> = new Map();
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
  * will prevent this function from being imported by userland code.
  */
 export function registerComponent(
-    Ctor: LightningElementConstructor,
+    Ctor: BasicLightningElementConstructor,
     { tmpl }: { tmpl: Template }
-): LightningElementConstructor {
+): BasicLightningElementConstructor {
     signedTemplateMap.set(Ctor, tmpl);
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation
@@ -34,12 +34,12 @@ export function registerComponent(
 }
 
 export function getComponentRegisteredTemplate(
-    Ctor: LightningElementConstructor
+    Ctor: BasicLightningElementConstructor
 ): Template | undefined {
     return signedTemplateMap.get(Ctor);
 }
 
-export function createComponent(vm: VM, Ctor: LightningElementConstructor) {
+export function createComponent(vm: VM, Ctor: BasicLightningElementConstructor) {
     // create the component instance
     invokeComponentConstructor(vm, Ctor);
 

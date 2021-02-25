@@ -4,18 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { LightningElement } from './base-lightning-element';
+import { BasicLightningElement } from './base-lightning-element';
 import { getAssociatedVM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 
 export function createObservedFieldPropertyDescriptor(key: string): PropertyDescriptor {
     return {
-        get(this: LightningElement): any {
+        get(this: BasicLightningElement): any {
             const vm = getAssociatedVM(this);
             componentValueObserved(vm, key);
             return vm.cmpFields[key];
         },
-        set(this: LightningElement, newValue: any) {
+        set(this: BasicLightningElement, newValue: any) {
             const vm = getAssociatedVM(this);
 
             if (newValue !== vm.cmpFields[key]) {

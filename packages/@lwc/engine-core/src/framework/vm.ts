@@ -35,7 +35,7 @@ import { invokeComponentCallback, invokeComponentRenderedCallback } from './invo
 
 import { Template } from './template';
 import { ComponentDef } from './def';
-import { LightningElement } from './base-lightning-element';
+import { BasicLightningElement } from './base-lightning-element';
 import { startGlobalMeasure, endGlobalMeasure, GlobalMeasurementPhase } from './performance-timing';
 import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 import { hasDynamicChildren } from './hooks';
@@ -122,7 +122,7 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The template method returning the VDOM tree. */
     cmpTemplate: Template | null;
     /** The component instance. */
-    component: LightningElement;
+    component: BasicLightningElement;
     /** The custom element shadow root. */
     cmpRoot: ShadowRoot;
     /** The template reactive observer. */
@@ -132,19 +132,23 @@ export interface VM<N = HostNode, E = HostElement> {
     oar: { [name: string]: AccessorReactiveObserver };
     /** Hook invoked whenever a property is accessed on the host element. This hook is used by
      *  Locker only. */
-    setHook: (cmp: LightningElement, prop: PropertyKey, newValue: any) => void;
+    setHook: (cmp: BasicLightningElement, prop: PropertyKey, newValue: any) => void;
     /** Hook invoked whenever a property is set on the host element. This hook is used by Locker
      *  only. */
-    getHook: (cmp: LightningElement, prop: PropertyKey) => any;
+    getHook: (cmp: BasicLightningElement, prop: PropertyKey) => any;
     /** Hook invoked whenever a method is called on the component (life-cycle hooks, public
      *  properties and event handlers). This hook is used by Locker. */
-    callHook: (cmp: LightningElement | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
+    callHook: (
+        cmp: BasicLightningElement | undefined,
+        fn: (...args: any[]) => any,
+        args?: any[]
+    ) => any;
 }
 
 let profilerEnabled = false;
 trackProfilerState((t) => (profilerEnabled = t));
 
-type VMAssociable = HostNode | LightningElement;
+type VMAssociable = HostNode | BasicLightningElement;
 
 let idx: number = 0;
 
@@ -152,18 +156,18 @@ let idx: number = 0;
 const ViewModelReflection = createHiddenField<VM>('ViewModel', 'engine');
 
 function callHook(
-    cmp: LightningElement | undefined,
+    cmp: BasicLightningElement | undefined,
     fn: (...args: any[]) => any,
     args: any[] = []
 ): any {
     return fn.apply(cmp, args);
 }
 
-function setHook(cmp: LightningElement, prop: PropertyKey, newValue: any) {
+function setHook(cmp: BasicLightningElement, prop: PropertyKey, newValue: any) {
     (cmp as any)[prop] = newValue;
 }
 
-function getHook(cmp: LightningElement, prop: PropertyKey): any {
+function getHook(cmp: BasicLightningElement, prop: PropertyKey): any {
     return (cmp as any)[prop];
 }
 

@@ -13,7 +13,7 @@ import {
     componentValueMutated,
     ReactiveObserver,
 } from '../mutation-tracker';
-import { LightningElement } from '../base-lightning-element';
+import { BasicLightningElement } from '../base-lightning-element';
 import { getAssociatedVM, rerenderVM, VM } from '../vm';
 import { addCallbackToNextTick } from '../utils';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
@@ -33,7 +33,7 @@ export default function api() {
 
 export function createPublicPropertyDescriptor(key: string): PropertyDescriptor {
     return {
-        get(this: LightningElement): any {
+        get(this: BasicLightningElement): any {
             const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -49,7 +49,7 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
             componentValueObserved(vm, key);
             return vm.cmpProps[key];
         },
-        set(this: LightningElement, newValue: any) {
+        set(this: BasicLightningElement, newValue: any) {
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
@@ -126,14 +126,14 @@ export function createPublicAccessorDescriptor(
         throw new Error();
     }
     return {
-        get(this: LightningElement): any {
+        get(this: BasicLightningElement): any {
             if (process.env.NODE_ENV !== 'production') {
                 // Assert that the this value is an actual Component with an associated VM.
                 getAssociatedVM(this);
             }
             return get.call(this);
         },
-        set(this: LightningElement, newValue: any) {
+        set(this: BasicLightningElement, newValue: any) {
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();

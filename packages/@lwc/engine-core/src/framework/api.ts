@@ -45,7 +45,7 @@ import {
     Key,
     VCustomElement,
 } from '../3rdparty/snabbdom/types';
-import { LightningElementConstructor } from './base-lightning-element';
+import { BasicLightningElementConstructor } from './base-lightning-element';
 import {
     createViewModelHook,
     fallbackElmHook,
@@ -78,7 +78,7 @@ export interface RenderAPI {
     h(tagName: string, data: ElementCompilerData, children: VNodes): VNode;
     c(
         tagName: string,
-        Ctor: LightningElementConstructor,
+        Ctor: BasicLightningElementConstructor,
         data: CustomElementCompilerData,
         children?: VNodes
     ): VNode;
@@ -369,7 +369,7 @@ export function s(
 // [c]ustom element node
 export function c(
     sel: string,
-    Ctor: LightningElementConstructor,
+    Ctor: BasicLightningElementConstructor,
     data: CustomElementCompilerData,
     children: VNodes = EmptyArray
 ): VCustomElement {
@@ -645,7 +645,7 @@ export function fid(url: string | undefined | null): string | null | undefined {
  * by dc() api. This allows us to generate a unique unique per template per dynamic
  * component reference to avoid diffing algo mismatches.
  */
-const DynamicImportedComponentMap: Map<LightningElementConstructor, number> = new Map();
+const DynamicImportedComponentMap: Map<BasicLightningElementConstructor, number> = new Map();
 let dynamicImportedComponentCounter = 0;
 
 /**
@@ -653,7 +653,7 @@ let dynamicImportedComponentCounter = 0;
  */
 export function dc(
     sel: string,
-    Ctor: LightningElementConstructor | null | undefined,
+    Ctor: BasicLightningElementConstructor | null | undefined,
     data: CustomElementCompilerData,
     children?: VNodes
 ): VCustomElement | null {
