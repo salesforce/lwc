@@ -159,4 +159,54 @@ describe('EventTarget.addEventListener', () => {
             expect(id).toEqual('second-container');
         });
     });
+    // TODO [#2253]: Enable in all modes once bug is fixed
+    if (process.env.NATIVE_SHADOW) {
+        describe('should discard multiple identical listeners on same target', () => {
+            it('listeners on shadow root, non-composed event', () => {
+                const logs = [];
+                const listener = function (event) {
+                    logs.push([this, event.currentTarget]);
+                };
+                const listenerTargets = [
+                    nodes.button,
+                    nodes['container_div'],
+                    nodes['x-container'].shadowRoot,
+                ];
+                listenerTargets.forEach((target) => {
+                    target.addEventListener('dedupe', listener);
+                    target.addEventListener('dedupe', listener); // duplicate listener
+                });
+                nodes.button.dispatchEvent(new CustomEvent('dedupe', { bubbles: true }));
+                expect(logs).toEqual([
+                    [nodes.button, nodes.button],
+                    [nodes['container_div'], nodes['container_div']],
+                    [nodes['x-container'].shadowRoot, nodes['x-container'].shadowRoot],
+                ]);
+            });
+
+            it('listeners on host, composed event', () => {
+                const logs = [];
+                const listener = function (event) {
+                    logs.push([this, event.currentTarget]);
+                };
+                const listenerTargets = [
+                    nodes.button,
+                    nodes['container_div'],
+                    nodes['x-container'],
+                ];
+                listenerTargets.forEach((target) => {
+                    target.addEventListener('dedupe', listener);
+                    target.addEventListener('dedupe', listener); // duplicate listener
+                });
+                nodes.button.dispatchEvent(
+                    new CustomEvent('dedupe', { bubbles: true, composed: true })
+                );
+                expect(logs).toEqual([
+                    [nodes.button, nodes.button],
+                    [nodes['container_div'], nodes['container_div']],
+                    [nodes['x-container'], nodes['x-container']],
+                ]);
+            });
+        });
+    }
 });
