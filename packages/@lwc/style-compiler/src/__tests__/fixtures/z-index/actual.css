@@ -1,3 +1,0 @@
-/* #689 - minification should not transform z-index */
-h1 { z-index: 100; display: block; }
-h2 { z-index: 500; }

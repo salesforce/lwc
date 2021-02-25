@@ -101,18 +101,4 @@ describe('regressions', () => {
         const { code } = await transform(actual, 'foo.css', TRANSFORMATION_OPTIONS);
         expect(pretify(code)).toBe(pretify(expected));
     });
-
-    it('should escape backslash', async () => {
-        const actual = `.foo { content: "x\\x"; }`;
-        const expected = `
-            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-                return [".foo", shadowSelector, " {content: \\"x\\\\x\\";}"].join('');
-            }
-
-            export default [stylesheet];
-        `;
-
-        const { code } = await transform(actual, 'foo.css', TRANSFORMATION_OPTIONS);
-        expect(pretify(code)).toBe(pretify(expected));
-    });
 });

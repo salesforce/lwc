@@ -46,12 +46,12 @@ const { code } = compile(source, 'example.css');
 -   `options` (object, optional)
     -   `customProperties` (object, optional)
         -   `resolverModule` (boolean, optional) - module name for the custom properties resolve
-    -   `outputConfig` (object, optional)
-        -   `minify` (boolean, optional, default: `false`) - compress the generated output
 
 **Return:**
 
 -   `code` - the generated code
+
+Note: The LWC style compiler doesn't preserve the authored format, and always produce compressed code.
 
 ## Selector scoping caveats
 
