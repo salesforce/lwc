@@ -23,7 +23,6 @@
         "dist/"
     ],
     "dependencies": {
-        "cssnano-preset-default": "~4.0.7",
         "postcss": "~8.2.4",
         "postcss-selector-parser": "~6.0.4",
         "postcss-value-parser": "~4.1.0"

@@ -1,4 +1,4 @@
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return [shadowSelector, "::after {}\nh1", shadowSelector, "::before {}\n"].join('');
+  return [shadowSelector, "::after {}h1", shadowSelector, "::before {}"].join('');
 }
 export default [stylesheet];

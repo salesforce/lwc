@@ -1,8 +1,0 @@
-{
-  "outputConfig": {
-    "minify": true
-  },
-  "customProperties": {
-    "resolverModule": "custom-properties-resolver"
-  }
-}

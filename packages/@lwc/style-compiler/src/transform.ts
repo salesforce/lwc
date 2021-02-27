@@ -15,11 +15,6 @@ export interface Config {
         /** Name of the module to resolve custom properties lookup */
         resolverModule?: string;
     };
-
-    outputConfig?: {
-        /** Apply minification to the generated code */
-        minify?: boolean;
-    };
 }
 
 export function transform(src: string, id: string, config: Config = {}): { code: string } {
@@ -27,14 +22,7 @@ export function transform(src: string, id: string, config: Config = {}): { code:
         return { code: 'export default undefined' };
     }
 
-    let plugins = [postcssLwc()];
-
-    if (config.outputConfig?.minify) {
-        const postcssMinify = require('./postcss-minify-plugins').default;
-        // It's important to run the postcss minification plugins before the LWC one because we
-        // need to clone the CSS declarations and they shouldn't be mangled by the minifier.
-        plugins = [...postcssMinify(), ...plugins];
-    }
+    const plugins = [postcssLwc()];
 
     const result = postcss(plugins).process(src, { from: id }).sync();
 
