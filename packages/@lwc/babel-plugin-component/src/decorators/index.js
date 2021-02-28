@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const moduleImports = require('@babel/helper-module-imports');
 const { DecoratorErrors } = require('@lwc/errors');
 
 const api = require('./api');
@@ -13,6 +12,7 @@ const track = require('./track');
 
 const { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } = require('../constants');
 const {
+    addNamedImport,
     generateError,
     getEngineImportSpecifiers,
     isClassMethod,
@@ -194,7 +194,9 @@ function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
 
 function decorators({ types: t }) {
     function createRegisterDecoratorsCall(path, classExpression, props) {
-        const id = moduleImports.addNamed(path, REGISTER_DECORATORS_ID, 'lwc');
+        const opts = path.opts;
+        const id = addNamedImport(path, REGISTER_DECORATORS_ID, 'lwc');
+        path.opts = opts;
         return t.callExpression(id, [classExpression, t.objectExpression(props)]);
     }
 

@@ -15,7 +15,7 @@ const {
     REGISTER_COMPONENT_ID,
     TEMPLATE_KEY,
 } = require('./constants');
-const { generateError, getEngineImportSpecifiers } = require('./utils');
+const { addNamedImport, generateError, getEngineImportSpecifiers } = require('./utils');
 
 function getBaseName(classPath) {
     const ext = extname(classPath);
@@ -41,7 +41,7 @@ function needsComponentRegistration(path) {
 
 module.exports = function ({ types: t }) {
     function createRegisterComponent(declarationPath, state) {
-        const registerComponentId = moduleImports.addNamed(
+        const registerComponentId = addNamedImport(
             declarationPath,
             REGISTER_COMPONENT_ID,
             LWC_PACKAGE_ALIAS

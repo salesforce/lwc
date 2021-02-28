@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const moduleImports = require('@babel/helper-module-imports');
-const { generateError } = require('./utils');
 const { LWCClassErrors } = require('@lwc/errors');
+
+const { addNamedImport, generateError } = require('./utils');
 
 function getImportSource(path) {
     return path.parentPath.get('arguments.0');
@@ -27,7 +27,7 @@ function validateImport(sourcePath) {
 module.exports = function () {
     function getLoaderRef(path, loaderName, state) {
         if (!state.loaderRef) {
-            state.loaderRef = moduleImports.addNamed(path, 'load', loaderName);
+            state.loaderRef = addNamedImport(path, 'load', loaderName);
         }
         return state.loaderRef;
     }

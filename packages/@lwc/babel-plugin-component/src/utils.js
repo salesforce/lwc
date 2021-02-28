@@ -4,9 +4,26 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
+const moduleImports = require('@babel/helper-module-imports');
 const { LWCClassErrors, generateErrorMessage } = require('@lwc/errors');
 const lineColumn = require('line-column');
+
+const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
+
+/**
+ * Helper utility to work around babel regression introduced in
+ * https://github.com/babel/babel/pull/12331 where the opts for the current
+ * traversal is replaced with that of parent traversal. Specifically speaking,
+ * this issue was causing the Class() visitor to be clobbered after the first
+ * injection of registerDecorators(). Should be able to remove when
+ * https://github.com/babel/babel/issues/12570 is fixed.
+ */
+function addNamedImport(path, name, importedSource, opts) {
+    const cachedOpts = path.opts;
+    const specifierName = moduleImports.addNamed(path, name, importedSource, opts);
+    path.opts = cachedOpts;
+    return specifierName;
+}
 
 function isClassMethod(classMethod, properties = {}) {
     const { kind = 'method', name } = properties;
@@ -122,6 +139,7 @@ function generateError(source, { errorInfo, messageArgs } = {}) {
 }
 
 module.exports = {
+    addNamedImport,
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
