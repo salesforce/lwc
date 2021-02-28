@@ -73,7 +73,6 @@ module.exports = function transform(t, decoratorMetas, classBodyItems) {
             objectProperties.push(
                 t.objectProperty(t.identifier(PUBLIC_PROPS), t.valueToNode(propsConfig))
             );
-            publicPropertyMetas.forEach(({ path }) => path.remove());
         }
 
         const publicMethodMetas = apiDecoratorMetas.filter(
@@ -84,7 +83,6 @@ module.exports = function transform(t, decoratorMetas, classBodyItems) {
             objectProperties.push(
                 t.objectProperty(t.identifier(PUBLIC_METHODS), t.valueToNode(methodNames))
             );
-            publicMethodMetas.forEach(({ path }) => path.remove());
         }
     }
     return objectProperties;

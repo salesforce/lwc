@@ -254,7 +254,6 @@ module.exports = function transform(t, decoratorMetas) {
                 buildWireConfigValue(t, wiredValues)
             )
         );
-        wireDecoratorMetas.forEach(({ path }) => path.remove());
     }
 
     return objectProperties;

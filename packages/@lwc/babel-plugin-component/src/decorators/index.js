@@ -240,10 +240,11 @@ function decorators({ types: t }) {
                 decoratorMetas,
                 classBodyItems
             );
-
             if (metaPropertyList.length === 0) {
                 return;
             }
+
+            decoratorPaths.forEach((path) => path.remove());
 
             const isAnonymousClassDeclaration =
                 path.isClassDeclaration() && !path.get('id').isIdentifier();

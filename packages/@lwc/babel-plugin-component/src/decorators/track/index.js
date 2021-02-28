@@ -38,7 +38,6 @@ function transform(t, decoratorMetas) {
         objectProperties.push(
             t.objectProperty(t.identifier(LWC_COMPONENT_PROPERTIES.TRACK), t.valueToNode(config))
         );
-        trackDecoratorMetas.forEach(({ path }) => path.remove());
     }
     return objectProperties;
 }
