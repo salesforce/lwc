@@ -4,10 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const { LWCClassErrors } = require('@lwc/errors');
+
 const component = require('./component');
-const { decorators } = require('./decorators');
+const { LWC_SUPPORTED_APIS } = require('./constants');
+const {
+    decorators,
+    isLwcDecoratorName,
+    removeImportSpecifiers,
+    validateLwcDecorators,
+} = require('./decorators');
 const dedupeImports = require('./dedupe-imports');
 const dynamicImports = require('./dynamic-imports');
+const { generateError, getEngineImportSpecifiers } = require('./utils');
 
 function visitProgram(mergedVisitors, stage, path, state) {
     if (mergedVisitors.Program) {
@@ -40,16 +49,33 @@ module.exports = function LwcClassTransform(api) {
             ]);
         },
         visitor: {
+            // The LWC babel plugin is incompatible with other plugins. To get around this, we run the LWC babel plugin
+            // first by running all its traversals from this Program node.
             Program(path, state) {
-                // The LWC babel plugin doesn't play well when associated along with other plugins. We first
-                // run the LWC babel plugin and then run the rest of the transformation.
-                // We ensure the ordering of the visitors by running all traversals from this Program node.
+                const engineImportSpecifiers = getEngineImportSpecifiers(path);
 
-                // Program.enter; it needs to run here because path.traverse wont visit Program nodes.
-                visitProgram(mergedVisitors, 'enter', path, state);
+                // Validate what is imported from 'lwc'. This validation will eventually be moved out from the compiler
+                // and into a lint rule.
+                engineImportSpecifiers.forEach(({ name }) => {
+                    if (!LWC_SUPPORTED_APIS.has(name)) {
+                        throw generateError(path, {
+                            errorInfo: LWCClassErrors.INVALID_IMPORT_PROHIBITED_API,
+                            messageArgs: [name],
+                        });
+                    }
+                });
+
+                // Validate the usage of LWC decorators.
+                const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
+                    isLwcDecoratorName(name)
+                );
+                validateLwcDecorators(decoratorImportSpecifiers);
 
                 // Traverse Program descendant nodes.
                 path.traverse(mergedVisitors, state);
+
+                // Will eventually be removed to eliminate unnecessary complexity. Rollup already does this for us.
+                removeImportSpecifiers(decoratorImportSpecifiers);
 
                 // Program.exit; it needs to run here (instead of a Program.exit) to ensure other plugins don't modify the ast.
                 visitProgram(mergedVisitors, 'exit', path, state);

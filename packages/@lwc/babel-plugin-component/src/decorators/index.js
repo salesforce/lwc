@@ -14,7 +14,6 @@ const { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } = require('
 const {
     addNamedImport,
     generateError,
-    getEngineImportSpecifiers,
     isClassMethod,
     isSetterClassMethod,
     isGetterClassMethod,
@@ -33,7 +32,8 @@ function getReferences(identifier) {
 }
 
 /** Returns the type of decorator depdending on the property or method if get applied to */
-function getDecoratorType(propertyOrMethod) {
+function getDecoratedNodeType(decoratorPath) {
+    const propertyOrMethod = decoratorPath.parentPath;
     if (isClassMethod(propertyOrMethod)) {
         return DECORATOR_TYPES.METHOD;
     } else if (isGetterClassMethod(propertyOrMethod)) {
@@ -94,7 +94,8 @@ function isImportedFromLwcSource(decoratorBinding) {
 
 /** Validate the usage of decorator by calling each validation function */
 function validate(decorators) {
-    for (const { binding, path } of decorators) {
+    for (const { name, path } of decorators) {
+        const binding = path.scope.getBinding(name);
         if (binding === undefined || !isImportedFromLwcSource(binding)) {
             throw generateInvalidDecoratorError(path);
         }
@@ -162,15 +163,13 @@ function getDecoratorMetadata(decoratorPath) {
     }
 
     const propertyName = decoratorPath.parent.key.name;
-    const binding = decoratorPath.scope.getBinding(name);
-    const type = getDecoratorType(decoratorPath.parentPath);
+    const decoratedNodeType = getDecoratedNodeType(decoratorPath);
 
     return {
         name,
         propertyName,
-        binding,
         path: decoratorPath,
-        type,
+        decoratedNodeType,
     };
 }
 
@@ -204,19 +203,6 @@ function decorators({ types: t }) {
     const visitedClasses = new WeakSet();
 
     return {
-        Program: {
-            enter(path, state) {
-                const engineImportSpecifiers = getEngineImportSpecifiers(path);
-                state.decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
-                    isLwcDecoratorName(name)
-                );
-                validateLwcDecorators(state.decoratorImportSpecifiers);
-            },
-            exit(path, state) {
-                removeImportSpecifiers(state.decoratorImportSpecifiers);
-                state.decoratorImportSpecifiers = [];
-            },
-        },
         Class(path) {
             const { node } = path;
 
@@ -268,4 +254,7 @@ function decorators({ types: t }) {
 
 module.exports = {
     decorators,
+    isLwcDecoratorName,
+    validateLwcDecorators,
+    removeImportSpecifiers,
 };

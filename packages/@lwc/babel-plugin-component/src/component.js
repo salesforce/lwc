@@ -7,15 +7,9 @@
 const { basename, extname } = require('path');
 
 const moduleImports = require('@babel/helper-module-imports');
-const { LWCClassErrors } = require('@lwc/errors');
 
-const {
-    LWC_PACKAGE_ALIAS,
-    LWC_SUPPORTED_APIS,
-    REGISTER_COMPONENT_ID,
-    TEMPLATE_KEY,
-} = require('./constants');
-const { addNamedImport, generateError, getEngineImportSpecifiers } = require('./utils');
+const { LWC_PACKAGE_ALIAS, REGISTER_COMPONENT_ID, TEMPLATE_KEY } = require('./constants');
+const { addNamedImport } = require('./utils');
 
 function getBaseName(classPath) {
     const ext = extname(classPath);
@@ -68,17 +62,6 @@ module.exports = function ({ types: t }) {
     }
 
     return {
-        Program(path) {
-            const engineImportSpecifiers = getEngineImportSpecifiers(path);
-            engineImportSpecifiers.forEach(({ name }) => {
-                if (!LWC_SUPPORTED_APIS.has(name)) {
-                    throw generateError(path, {
-                        errorInfo: LWCClassErrors.INVALID_IMPORT_PROHIBITED_API,
-                        messageArgs: [name],
-                    });
-                }
-            });
-        },
         ExportDefaultDeclaration(path, state) {
             const implicitResolution = !state.opts.isExplicitImport;
             if (implicitResolution) {

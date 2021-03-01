@@ -42,16 +42,23 @@ function getSiblingGetSetPairType(propertyName, type, classBodyItems) {
 }
 
 function computePublicPropsConfig(publicPropertyMetas, classBodyItems) {
-    return publicPropertyMetas.reduce((acc, { propertyName, type }) => {
+    return publicPropertyMetas.reduce((acc, { propertyName, decoratedNodeType }) => {
         if (!(propertyName in acc)) {
             acc[propertyName] = {};
         }
-        acc[propertyName].config |= getPropertyBitmask(type);
+        acc[propertyName].config |= getPropertyBitmask(decoratedNodeType);
 
-        if (type === DECORATOR_TYPES.GETTER || type === DECORATOR_TYPES.SETTER) {
+        if (
+            decoratedNodeType === DECORATOR_TYPES.GETTER ||
+            decoratedNodeType === DECORATOR_TYPES.SETTER
+        ) {
             // With the latest decorator spec, only one of the getter/setter pair needs a decorator.
             // We need to add the proper bitmask for the sibling getter/setter if it exists.
-            const pairType = getSiblingGetSetPairType(propertyName, type, classBodyItems);
+            const pairType = getSiblingGetSetPairType(
+                propertyName,
+                decoratedNodeType,
+                classBodyItems
+            );
             if (pairType) {
                 acc[propertyName].config |= getPropertyBitmask(pairType);
             }
@@ -66,7 +73,7 @@ module.exports = function transform(t, decoratorMetas, classBodyItems) {
     const apiDecoratorMetas = decoratorMetas.filter(isApiDecorator);
     if (apiDecoratorMetas.length) {
         const publicPropertyMetas = apiDecoratorMetas.filter(
-            ({ type }) => type !== DECORATOR_TYPES.METHOD
+            ({ decoratedNodeType }) => decoratedNodeType !== DECORATOR_TYPES.METHOD
         );
         if (publicPropertyMetas.length) {
             const propsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems);
@@ -76,7 +83,7 @@ module.exports = function transform(t, decoratorMetas, classBodyItems) {
         }
 
         const publicMethodMetas = apiDecoratorMetas.filter(
-            ({ type }) => type === DECORATOR_TYPES.METHOD
+            ({ decoratedNodeType }) => decoratedNodeType === DECORATOR_TYPES.METHOD
         );
         if (publicMethodMetas.length) {
             const methodNames = publicMethodMetas.map(({ propertyName }) => propertyName);
