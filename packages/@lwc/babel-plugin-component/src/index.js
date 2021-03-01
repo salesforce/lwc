@@ -18,16 +18,6 @@ const dedupeImports = require('./dedupe-imports');
 const dynamicImports = require('./dynamic-imports');
 const { generateError, getEngineImportSpecifiers } = require('./utils');
 
-function visitProgram(mergedVisitors, stage, path, state) {
-    if (mergedVisitors.Program) {
-        const visitors = mergedVisitors.Program[stage] || [];
-
-        for (let i = 0, n = visitors.length; i < n; i++) {
-            visitors[i](path, state);
-        }
-    }
-}
-
 /**
  * The transform is done in 2 passes:
  *    - First, apply in a single AST traversal the decorators and the component transformation.
@@ -38,7 +28,6 @@ module.exports = function LwcClassTransform(api) {
         decorators(api),
         component(api),
         dynamicImports(api),
-        dedupeImports(api),
     ]);
 
     return {
@@ -50,7 +39,7 @@ module.exports = function LwcClassTransform(api) {
         },
         visitor: {
             // The LWC babel plugin is incompatible with other plugins. To get around this, we run the LWC babel plugin
-            // first by running all its traversals from this Program node.
+            // first by running all its traversals from this Program visitor.
             Program(path, state) {
                 const engineImportSpecifiers = getEngineImportSpecifiers(path);
 
@@ -76,9 +65,7 @@ module.exports = function LwcClassTransform(api) {
 
                 // Will eventually be removed to eliminate unnecessary complexity. Rollup already does this for us.
                 removeImportSpecifiers(decoratorImportSpecifiers);
-
-                // Program.exit; it needs to run here (instead of a Program.exit) to ensure other plugins don't modify the ast.
-                visitProgram(mergedVisitors, 'exit', path, state);
+                dedupeImports(api)(path);
             },
         },
     };
