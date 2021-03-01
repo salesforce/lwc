@@ -10,12 +10,12 @@ import {
     connectRootElement,
     disconnectRootElement,
     getComponentInternalDef,
-    LightningElement,
+    BaseLightningElement,
 } from '@lwc/engine-core';
 
 import { renderer } from '../renderer';
 
-type ComponentConstructor = typeof LightningElement;
+type ComponentConstructor = typeof BaseLightningElement;
 type HTMLElementConstructor = typeof HTMLElement;
 
 /**

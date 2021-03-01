@@ -22,7 +22,7 @@ import {
     createVM,
     connectRootElement,
     disconnectRootElement,
-    LightningElement,
+    BaseLightningElement,
     getUpgradableConstructor,
 } from '@lwc/engine-core';
 
@@ -85,7 +85,7 @@ assign(Node.prototype, {
 export function createElement(
     sel: string,
     options: {
-        is: typeof LightningElement;
+        is: typeof BaseLightningElement;
         mode?: 'open' | 'closed';
     }
 ): HTMLElement {

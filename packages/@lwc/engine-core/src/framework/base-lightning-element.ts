@@ -185,9 +185,8 @@ function BaseLightningElementConstructor(this: BasicLightningElement): BasicLigh
     const vm = vmBeingConstructed;
     const {
         elm,
-        mode,
         renderer,
-        def: { ctor, bridge },
+        def: { bridge },
     } = vm;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -199,14 +198,7 @@ function BaseLightningElementConstructor(this: BasicLightningElement): BasicLigh
 
     const component = this;
     setPrototypeOf(elm, bridge.prototype);
-    const cmpRoot = renderer.attachShadow(elm, {
-        mode,
-        delegatesFocus: !!ctor.delegatesFocus,
-        '$$lwc-synthetic-mode$$': true,
-    } as any);
-
     vm.component = this;
-    vm.cmpRoot = cmpRoot;
 
     // Locker hooks assignment. When the LWC engine run with Locker, Locker intercepts all the new
     // component creation and passes hooks to instrument all the component interactions with the
@@ -224,14 +216,12 @@ function BaseLightningElementConstructor(this: BasicLightningElement): BasicLigh
 
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);
-    associateVM(cmpRoot, vm);
     associateVM(elm, vm);
 
     // Adding extra guard rails in DEV mode.
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
-        patchShadowRootWithRestrictions(cmpRoot);
     }
 
     return this;
@@ -551,8 +541,31 @@ if (process.env.NODE_ENV !== 'production') {
 export const BaseLightningElement: BasicLightningElementConstructor = BaseLightningElementConstructor as unknown;
 
 export class LightningElement extends BaseLightningElement {
+    constructor() {
+        super();
+        const vm = vmBeingConstructed!;
+        const {
+            elm,
+            mode,
+            renderer,
+            def: { ctor },
+        } = vm;
+
+        const cmpRoot = renderer.attachShadow(elm, {
+            mode,
+            delegatesFocus: !!ctor.delegatesFocus,
+            '$$lwc-synthetic-mode$$': true,
+        } as any);
+
+        vm.cmpRoot = cmpRoot;
+
+        // Adding extra guard rails in DEV mode.
+        if (process.env.NODE_ENV !== 'production') {
+            patchShadowRootWithRestrictions(cmpRoot);
+        }
+    }
     get template(): ShadowRoot {
         const vm = getAssociatedVM(this);
-        return vm.cmpRoot;
+        return vm.cmpRoot!;
     }
 }

@@ -8,7 +8,7 @@ import {
     createVM,
     connectRootElement,
     getComponentInternalDef,
-    LightningElement,
+    BaseLightningElement,
 } from '@lwc/engine-core';
 import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
@@ -29,7 +29,7 @@ const FakeRootElement: HostElement = {
 
 export function renderComponent(
     tagName: string,
-    Ctor: typeof LightningElement,
+    Ctor: typeof BaseLightningElement,
     props: { [name: string]: any } = {}
 ): string {
     if (!isString(tagName)) {
