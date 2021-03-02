@@ -392,9 +392,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
             const contextObj = t.objectExpression([
                 t.property(
                     t.identifier('lwc'),
-                    t.objectExpression([
-                        t.property(t.identifier('dom'), t.literal(lwc.dom)),
-                    ])
+                    t.objectExpression([t.property(t.identifier('dom'), t.literal(lwc.dom))])
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));
