@@ -24,12 +24,6 @@ const { generateError, getEngineImportSpecifiers } = require('./utils');
  *    - Then, in a second path transform class properties using the official babel plugin "babel-plugin-transform-class-properties".
  */
 module.exports = function LwcClassTransform(api) {
-    const mergedVisitors = api.traverse.visitors.merge([
-        decorators(api),
-        component(api),
-        dynamicImports(api),
-    ]);
-
     return {
         manipulateOptions(opts, parserOpts) {
             parserOpts.plugins.push('classProperties', [
@@ -38,34 +32,43 @@ module.exports = function LwcClassTransform(api) {
             ]);
         },
         visitor: {
+            ...decorators(api),
+            ...component(api),
+            ...dynamicImports(api),
+
             // The LWC babel plugin is incompatible with other plugins. To get around this, we run the LWC babel plugin
             // first by running all its traversals from this Program visitor.
-            Program(path, state) {
-                const engineImportSpecifiers = getEngineImportSpecifiers(path);
+            Program: {
+                enter(path) {
+                    const engineImportSpecifiers = getEngineImportSpecifiers(path);
 
-                // Validate what is imported from 'lwc'. This validation will eventually be moved out from the compiler
-                // and into a lint rule.
-                engineImportSpecifiers.forEach(({ name }) => {
-                    if (!LWC_SUPPORTED_APIS.has(name)) {
-                        throw generateError(path, {
-                            errorInfo: LWCClassErrors.INVALID_IMPORT_PROHIBITED_API,
-                            messageArgs: [name],
-                        });
-                    }
-                });
+                    // Validate what is imported from 'lwc'. This validation will eventually be moved out from the compiler
+                    // and into a lint rule.
+                    engineImportSpecifiers.forEach(({ name }) => {
+                        if (!LWC_SUPPORTED_APIS.has(name)) {
+                            throw generateError(path, {
+                                errorInfo: LWCClassErrors.INVALID_IMPORT_PROHIBITED_API,
+                                messageArgs: [name],
+                            });
+                        }
+                    });
 
-                // Validate the usage of LWC decorators.
-                const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
-                    isLwcDecoratorName(name)
-                );
-                validateLwcDecorators(decoratorImportSpecifiers);
+                    // Validate the usage of LWC decorators.
+                    const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
+                        isLwcDecoratorName(name)
+                    );
+                    validateLwcDecorators(decoratorImportSpecifiers);
+                },
+                exit(path) {
+                    const engineImportSpecifiers = getEngineImportSpecifiers(path);
+                    const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
+                        isLwcDecoratorName(name)
+                    );
 
-                // Traverse Program descendant nodes.
-                path.traverse(mergedVisitors, state);
-
-                // Will eventually be removed to eliminate unnecessary complexity. Rollup already does this for us.
-                removeImportSpecifiers(decoratorImportSpecifiers);
-                dedupeImports(api)(path);
+                    // Will eventually be removed to eliminate unnecessary complexity. Rollup already does this for us.
+                    removeImportSpecifiers(decoratorImportSpecifiers);
+                    dedupeImports(api)(path);
+                },
             },
         },
     };
