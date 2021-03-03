@@ -9,7 +9,6 @@ const { basename, extname } = require('path');
 const moduleImports = require('@babel/helper-module-imports');
 
 const { LWC_PACKAGE_ALIAS, REGISTER_COMPONENT_ID, TEMPLATE_KEY } = require('./constants');
-const { addNamedImport } = require('./utils');
 
 function getBaseName(classPath) {
     const ext = extname(classPath);
@@ -35,7 +34,7 @@ function needsComponentRegistration(path) {
 
 module.exports = function ({ types: t }) {
     function createRegisterComponent(declarationPath, state) {
-        const registerComponentId = addNamedImport(
+        const registerComponentId = moduleImports.addNamed(
             declarationPath,
             REGISTER_COMPONENT_ID,
             LWC_PACKAGE_ALIAS

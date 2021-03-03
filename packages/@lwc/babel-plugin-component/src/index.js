@@ -64,9 +64,9 @@ module.exports = function LwcClassTransform(api) {
                     const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
                         isLwcDecoratorName(name)
                     );
+                    removeImportSpecifiers(decoratorImportSpecifiers);
 
                     // Will eventually be removed to eliminate unnecessary complexity. Rollup already does this for us.
-                    removeImportSpecifiers(decoratorImportSpecifiers);
                     dedupeImports(api)(path);
                 },
             },
