@@ -63,6 +63,11 @@ interface ListenerMap {
     [key: string]: WrappedListener[];
 }
 
+const elementToListenerAndEventsMap: WeakMap<
+    EventTarget,
+    WeakMap<EventListener, Set<String>>
+> = new WeakMap();
+
 const customElementToWrappedListeners: WeakMap<EventTarget, ListenerMap> = new WeakMap();
 
 function getEventMap(elm: EventTarget): ListenerMap {
@@ -266,6 +271,16 @@ function shouldInvokeShadowRootListener(event: Event): boolean {
     return isCurrentTargetSlotted || targetHost === currentTargetHost;
 }
 
+function isDuplicate(currentTarget: EventTarget, type: String, listener: EventListener) {
+    const listenerToEventsMap = elementToListenerAndEventsMap.get(currentTarget);
+
+    if (!isUndefined(listenerToEventsMap)) {
+        return listenerToEventsMap.get(listener)?.has(type);
+    }
+
+    return false;
+}
+
 export function addCustomElementEventListener(
     this: Element,
     type: string,
@@ -282,9 +297,14 @@ export function addCustomElementEventListener(
         }
     }
     // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
+    if (isFunction(listener) && !isDuplicate(this, type, listener)) {
         const wrappedListener = getWrappedCustomElementListener(listener);
         attachDOMListener(this, type, wrappedListener);
+
+        const listenerToEventsMap = elementToListenerAndEventsMap.get(this) ?? new WeakMap();
+        const eventsList = listenerToEventsMap.get(listener) ?? new Set();
+        eventsList.add(type);
+        elementToListenerAndEventsMap.set(this, listenerToEventsMap.set(listener, eventsList));
     }
 }
 
@@ -317,10 +337,15 @@ export function addShadowRootEventListener(
         }
     }
     // TODO [#1824]: Lift this restriction on the option parameter
-    if (isFunction(listener)) {
+    if (isFunction(listener) && !isDuplicate(sr, type, listener)) {
         const elm = getHost(sr);
         const wrappedListener = getWrappedShadowRootListener(listener);
         attachDOMListener(elm, type, wrappedListener);
+
+        const listenerToEventsMap = elementToListenerAndEventsMap.get(sr) ?? new WeakMap();
+        const eventsList = listenerToEventsMap.get(listener) ?? new Set();
+        eventsList.add(type);
+        elementToListenerAndEventsMap.set(sr, listenerToEventsMap.set(listener, eventsList));
     }
 }
 
