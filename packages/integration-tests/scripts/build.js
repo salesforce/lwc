@@ -111,7 +111,11 @@ function createRollupInputConfig() {
             entryPointResolverPlugin(),
             rollupLwcCompilerPlugin({ exclude: `**/*${testSufix}` }),
             isCompat && rollupCompatPlugin({ polyfills: false }),
-            isProd && rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+            isProd &&
+                rollupReplacePlugin({
+                    'process.env.NODE_ENV': JSON.stringify('production'),
+                    preventAssignment: true,
+                }),
         ].filter(Boolean),
     };
 }

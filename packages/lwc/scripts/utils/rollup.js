@@ -32,7 +32,11 @@ function rollupConfig(config) {
         inputOptions: {
             input,
             plugins: [
-                prod && rollupReplace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+                prod &&
+                    rollupReplace({
+                        'process.env.NODE_ENV': JSON.stringify('production'),
+                        preventAssignment: true,
+                    }),
                 rollupFeaturesPlugin(prod),
                 compatMode && rollupTypescriptPlugin({ target, typescript, include: ['/**/*.js'] }),
                 prod && !debug && rollupTerser(),

@@ -13,7 +13,10 @@ module.exports = {
                 exclude: ['/engine.js$/', '/@best/runtime/'],
             },
         ],
-        ['@rollup/plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }],
+        [
+            '@rollup/plugin-replace',
+            { 'process.env.NODE_ENV': JSON.stringify('production'), preventAssignment: true },
+        ],
     ],
 
     benchmarkOnClient: false,

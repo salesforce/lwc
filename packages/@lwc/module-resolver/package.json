@@ -21,7 +21,7 @@
         "dist/"
     ],
     "dependencies": {
-        "resolve": "~1.19.0"
+        "resolve": "~1.20.0"
     },
     "publishConfig": {
         "access": "public"
