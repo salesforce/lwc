@@ -49,7 +49,7 @@ import {
 import { parseStyleText, parseClassNames } from './style';
 
 import * as t from '../shared/estree';
-import { createElement, isCustomElement, createText } from '../shared/ir';
+import {createElement, isCustomElement, createText, createComment} from '../shared/ir';
 import {
     IRElement,
     IRAttribute,
@@ -234,6 +234,60 @@ export default function parse(source: string, state: State): TemplateParseResult
                     textNode.parent = parent;
                     parent.children.push(textNode);
                 }
+            },
+        },
+
+        Comment: {
+            enter(node: parse5.AST.Default.CommentNode) {
+                const rawComment = node.data;
+                const textNode = createComment(node, decodeTextContent(rawComment));
+
+                // @todo: split the content into an array.
+                // @todo: the comment node should have 2 arrays: one raw values and the other the positions of the values.
+                textNode.parent = parent;
+                parent.children.push(textNode);
+                //
+                //
+                // const rawText = cleanTextNode(source.slice(startOffset, endOffset));
+                //
+                // if (!rawText.trim().length) {
+                //     return;
+                // }
+                //
+                // // Split the text node content arround expression and create node for each
+                // const tokenizedContent = rawText.split(EXPRESSION_RE);
+                //
+                // for (const token of tokenizedContent) {
+                //     // Don't create nodes for emtpy strings
+                //     if (!token.length) {
+                //         continue;
+                //     }
+                //
+                //     let value;
+                //     if (isExpression(token)) {
+                //         try {
+                //             value = parseExpression(token, state);
+                //         } catch (error) {
+                //             addDiagnostic(
+                //                 normalizeToDiagnostic(
+                //                     ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
+                //                     error,
+                //                     {
+                //                         location: normalizeLocation(location),
+                //                     }
+                //                 )
+                //             );
+                //             return;
+                //         }
+                //     } else {
+                //         value = decodeTextContent(token);
+                //     }
+                //
+                //     const textNode = createText(node, value);
+                //
+                //     textNode.parent = parent;
+                //     parent.children.push(textNode);
+                // }
             },
         },
     });

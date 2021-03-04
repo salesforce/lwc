@@ -7,12 +7,19 @@
 
 export enum HostNodeType {
     Text = 'text',
+    Comment = 'comment',
     Element = 'element',
     ShadowRoot = 'shadow-root',
 }
 
 export interface HostText {
     type: HostNodeType.Text;
+    parent: HostElement | null;
+    value: string;
+}
+
+export interface HostComment {
+    type: HostNodeType.Comment;
     parent: HostElement | null;
     value: string;
 }
@@ -41,5 +48,5 @@ export interface HostElement {
     eventListeners: Record<string, Function[]>;
 }
 
-export type HostNode = HostText | HostElement;
-export type HostChildNode = HostElement | HostText;
+export type HostNode = HostText | HostElement | HostComment;
+export type HostChildNode = HostElement | HostText | HostComment;

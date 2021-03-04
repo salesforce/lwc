@@ -22,7 +22,8 @@ type RenderPrimitive =
     | 'key'
     | 'tabindex'
     | 'scopedId'
-    | 'scopedFragId';
+    | 'scopedFragId'
+    | 'comment';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -43,6 +44,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     tabindex: { name: 'ti', alias: 'api_tab_index' },
     scopedId: { name: 'gid', alias: 'api_scoped_id' },
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
+    comment: { name: 'co', alias: 'api_comment' },
 };
 
 export default class CodeGen {
@@ -93,6 +95,14 @@ export default class CodeGen {
             return this._renderApiCall(RENDER_APIS.text, [t.literal(value)]);
         } else {
             return this._renderApiCall(RENDER_APIS.dynamic, [value]);
+        }
+    }
+
+    genComment(value: string | t.Expression): t.Expression {
+        if (typeof value === 'string') {
+            return this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
+        } else {
+            return this._renderApiCall(RENDER_APIS.comment, [value]);
         }
     }
 

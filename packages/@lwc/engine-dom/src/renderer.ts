@@ -107,6 +107,10 @@ export const renderer: Renderer<Node, Element> = {
         return document.createTextNode(content);
     },
 
+    createComment(content: string): Node {
+        return document.createComment(content);
+    },
+
     insert(node: Node, parent: Node, anchor: Node): void {
         parent.insertBefore(node, anchor);
     },

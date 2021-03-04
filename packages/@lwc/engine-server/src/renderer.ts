@@ -95,6 +95,14 @@ export const renderer: Renderer<HostNode, HostElement> = {
         };
     },
 
+    createComment(content: string): HostNode {
+        return {
+            type: HostNodeType.Comment,
+            value: String(content),
+            parent: null,
+        };
+    },
+
     nextSibling(node) {
         const { parent } = node;
 

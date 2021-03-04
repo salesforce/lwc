@@ -29,9 +29,10 @@ export type TemplateParseResult = {
     warnings: CompilerDiagnostic[];
 };
 
+export type HTMLComment = parse5.AST.CommentNode;
 export type HTMLText = parse5.AST.TextNode;
 export type HTMLElement = parse5.AST.Element;
-export type HTMLNode = HTMLElement | HTMLText;
+export type HTMLNode = HTMLElement | HTMLComment | HTMLText;
 
 export interface SlotDefinition {
     [key: string]: IRNode[];
@@ -107,7 +108,16 @@ export interface IRText {
     __original: HTMLText;
 }
 
-export type IRNode = IRElement | IRText;
+export interface IRComment {
+    type: 'comment';
+    value: string;
+
+    parent?: IRElement;
+
+    __original: HTMLComment;
+}
+
+export type IRNode = IRElement | IRComment | IRText;
 
 export enum IRAttributeType {
     Expression,
