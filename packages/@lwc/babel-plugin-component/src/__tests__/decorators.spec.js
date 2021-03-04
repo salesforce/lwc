@@ -193,4 +193,84 @@ describe('decorators', () => {
             },
         }
     );
+
+    pluginTest(
+        'should register decorators for anonymous class declarations',
+        `
+        import { LightningElement, api } from 'lwc';
+        export default class extends LightningElement {
+            @api foo;
+        }
+    `,
+        {
+            output: {
+                code: `
+            import {
+                registerDecorators as _registerDecorators,
+                registerComponent as _registerComponent,
+                LightningElement,
+            } from "lwc";
+            import _tmpl from "./test.html";
+            export default _registerComponent(
+                _registerDecorators(
+                    class extends LightningElement {
+                        foo;
+                    },
+                    {
+                        publicProps: {
+                            foo: {
+                              config: 0,
+                            },
+                        },
+                    }
+                ),
+                {
+                    tmpl: _tmpl,
+                }
+            );
+`,
+            },
+        }
+    );
+
+    pluginTest(
+        'should register decorators for anonymous class expressions',
+        `
+        import { LightningElement, api } from 'lwc';
+        const foo = class extends LightningElement {
+            @api
+            foo;
+        }
+        export default foo;
+    `,
+        {
+            output: {
+                code: `
+            import _tmpl from "./test.html";
+            import {
+                registerComponent as _registerComponent,
+                registerDecorators as _registerDecorators,
+                LightningElement,
+            } from "lwc";
+
+            const foo = _registerDecorators(
+                class extends LightningElement {
+                    foo;
+                },
+                {
+                    publicProps: {
+                        foo: {
+                            config: 0,
+                        },
+                    },
+                }
+            );
+
+            export default _registerComponent(foo, {
+                tmpl: _tmpl,
+            });
+`,
+            },
+        }
+    );
 });
