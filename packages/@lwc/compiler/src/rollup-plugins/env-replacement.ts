@@ -22,5 +22,6 @@ export default function ({ options }: { options: NormalizedCompileOptions }): Pl
 
     return rollupPluginReplace({
         values: patterns,
+        preventAssignment: true,
     });
 }
