@@ -60,12 +60,6 @@
     "typescript": "^4.2.2",
     "worker-farm": "^1.7.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -e $HUSKY_GIT_PARAMS"
-    }
-  },
   "lint-staged": {
     "**/*.{js,ts}": "eslint",
     "{packages,scripts}/**/*.{js,ts,json,md}": "prettier --write"
