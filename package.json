@@ -7,7 +7,7 @@
     "url": "https://github.com/salesforce/lwc.git"
   },
   "scripts": {
-    "prepare": "yarn build",
+    "prepare": "husky install && yarn build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "eslint packages/ scripts/ --ext=js,ts",
     "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json,md}'",
@@ -18,8 +18,7 @@
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
     "test:performance": "lerna exec --scope perf-benchmarks -- best --runner default",
     "release:publish:ci": "./scripts/release/publish.js",
-    "release:version": "./scripts/release/version.js",
-    "postinstall": "husky install"
+    "release:version": "./scripts/release/version.js"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
