@@ -21,14 +21,9 @@ export interface Config {
      * Enable <x-foo lwc:directive={expr}>
      */
     experimentalDynamicDirective?: boolean;
-    secure?: boolean;
 }
 
-export interface ResolvedConfig {
-    experimentalComputedMemberExpression: boolean;
-    experimentalDynamicDirective: boolean;
-    secure: boolean;
-
+export interface ResolvedConfig extends Required<Config> {
     /**
      * Internal configuration for the output format of the template. Accepts:
      *  * "module": generates a ES module, and use import statements to reference component
@@ -39,20 +34,13 @@ export interface ResolvedConfig {
     format: Format;
 }
 
-const DEFAULT_CONFIG: ResolvedConfig = {
-    secure: false,
-    experimentalDynamicDirective: false,
-    experimentalComputedMemberExpression: false,
-    format: 'module',
-};
-
 const AVAILABLE_OPTION_NAMES = new Set([
     'secure',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
 ]);
 
-export function mergeConfig(config: Config): ResolvedConfig {
+export function mergeConfig(config: Config, overrides: { format: Format }): ResolvedConfig {
     invariant(
         config !== undefined && typeof config === 'object',
         TemplateErrors.OPTIONS_MUST_BE_OBJECT
@@ -67,7 +55,9 @@ export function mergeConfig(config: Config): ResolvedConfig {
     }
 
     return {
-        ...DEFAULT_CONFIG,
+        experimentalComputedMemberExpression: false,
+        experimentalDynamicDirective: false,
+        format: overrides.format,
         ...config,
     };
 }

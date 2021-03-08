@@ -38,7 +38,15 @@ export function isElement(node: IRNode): node is IRElement {
 }
 
 export function isCustomElement(node: IRNode): boolean {
-    return !!(node as IRElement).component;
+    return isElement(node) && node.component !== undefined;
+}
+
+export function isTemplate(element: IRElement) {
+    return element.tag === 'template';
+}
+
+export function isSlot(element: IRElement) {
+    return element.tag === 'slot';
 }
 
 export function isComponentProp(identifier: TemplateIdentifier, root: IRNode): boolean {

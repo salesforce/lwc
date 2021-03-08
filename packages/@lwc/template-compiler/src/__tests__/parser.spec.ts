@@ -21,7 +21,7 @@ const EXPECTED_LOCATION = expect.objectContaining({
 });
 
 function parseTemplate(src: string): any {
-    const config = mergeConfig({});
+    const config = mergeConfig({}, { format: 'module' });
     const state = new State(config);
 
     const res = parse(src, state);

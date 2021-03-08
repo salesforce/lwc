@@ -12,7 +12,7 @@ import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 
 import State from '../state';
 
-import { isCustomElement, isElement } from '../shared/ir';
+import { isElement, isCustomElement, isTemplate, isSlot } from '../shared/ir';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import { IRNode, IRElement, IRText, IRAttribute, IRAttributeType } from '../shared/types';
 
@@ -21,9 +21,7 @@ import { bindExpression } from './scope';
 import {
     identifierFromComponentName,
     objectToAST,
-    isTemplate,
     shouldFlatten,
-    isSlot,
     memorizeHandler,
     containsDynamicChildren,
 } from './helpers';
@@ -39,27 +37,6 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-
-const DISALLOWED_LWC_DIRECTIVES = new Set(['dynamic']);
-
-function generateContext(element: IRElement, data: t.Property[]) {
-    const { lwc } = element;
-    const contextExpressions: t.Property[] = [];
-
-    // LWC
-    if (lwc) {
-        const lwcObject = Object.keys(lwc)
-            .filter((key) => !DISALLOWED_LWC_DIRECTIVES.has(key))
-            .map((key) => {
-                return t.property(t.identifier(key), t.literal((lwc as any)[key]));
-            });
-
-        const lwcObj = t.property(t.identifier('lwc'), t.objectExpression(lwcObject));
-        contextExpressions.push(lwcObj);
-    }
-
-    data.push(t.property(t.identifier('context'), t.objectExpression(contextExpressions)));
-}
 
 function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expression {
     function transformElement(element: IRElement): t.Expression {
@@ -410,8 +387,15 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
             data.push(t.property(t.identifier('props'), propsObj));
         }
 
-        if (lwc) {
-            generateContext(element, data);
+        // Context
+        if (lwc?.dom) {
+            const contextObj = t.objectExpression([
+                t.property(
+                    t.identifier('lwc'),
+                    t.objectExpression([t.property(t.identifier('dom'), t.literal(lwc.dom))])
+                ),
+            ]);
+            data.push(t.property(t.identifier('context'), contextObj));
         }
 
         // Key property on VNode

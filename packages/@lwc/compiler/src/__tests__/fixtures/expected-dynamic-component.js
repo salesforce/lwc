@@ -4,9 +4,6 @@ import { load } from '@custom/loader';
 function tmpl($api, $cmp, $slotset, $ctx) {
     const {dc: api_dynamic_component, f: api_flatten} = $api;
     return api_flatten([api_dynamic_component("x-foo", $cmp.customCtor, {
-        context: {
-                lwc: {}
-            },
             key: 0
         }, [])]);
     }
