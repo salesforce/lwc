@@ -14,12 +14,14 @@ import {
     Pseudo,
     Tag,
     attribute,
+    selector as selectorFn,
+    combinator,
 } from 'postcss-selector-parser';
 
 import validateSelectors from './validate';
 
 import { isDirPseudoClass } from '../utils/rtl';
-import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
+import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE, MACRO_ATTRIBUTE } from '../utils/selectors-scoping';
 import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
 
 type ChildNode = Exclude<Node, Selector>;
@@ -88,6 +90,19 @@ function scopeSelector(selector: Selector) {
             }
         }
     }
+
+    const macroSelector = selectorFn({
+        nodes: [
+            attribute({
+                attribute: MACRO_ATTRIBUTE,
+                value: undefined,
+                raws: {},
+            }),
+            combinator({ value: ' ' }),
+        ],
+        value: 'x',
+    });
+    selector.prepend(macroSelector);
 }
 
 /**

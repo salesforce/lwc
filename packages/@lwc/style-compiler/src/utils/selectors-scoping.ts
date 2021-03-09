@@ -7,3 +7,5 @@
 export const HOST_ATTRIBUTE = '__hostAttribute__';
 
 export const SHADOW_ATTRIBUTE = '__shadowAttribute__';
+
+export const MACRO_ATTRIBUTE = '__macroAttribute__';
