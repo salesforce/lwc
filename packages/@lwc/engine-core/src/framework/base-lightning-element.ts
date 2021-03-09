@@ -569,3 +569,5 @@ export class LightningElement extends BaseLightningElement {
         return vm.cmpRoot!;
     }
 }
+
+export class MacroElement extends BaseLightningElement {}

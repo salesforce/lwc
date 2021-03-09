@@ -29,6 +29,7 @@ const LWC_PACKAGE_ALIAS = 'lwc';
 
 const LWC_PACKAGE_EXPORTS = {
     BASE_COMPONENT: 'LightningElement',
+    MACRO_COMPONENT: 'MacroElement',
     API_DECORATOR: 'api',
     TRACK_DECORATOR: 'track',
     WIRE_DECORATOR: 'wire',

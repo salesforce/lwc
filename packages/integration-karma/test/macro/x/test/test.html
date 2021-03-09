@@ -1,0 +1,12 @@
+<template>
+    <div>
+        <template if:false={renderDynamic}>
+            Dynamic: {dynamicValue}
+        </template>
+        {renderCount}
+        <button onclick={increment}>Increment</button>
+        <template if:true={renderDynamic}>
+            Static: 1
+        </template>
+    </div>
+</template>

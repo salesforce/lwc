@@ -1,9 +1,15 @@
 import { createElement } from 'lwc';
 import Container from 'x/container';
+import Test from 'x/test';
 
-describe('Moving elements from inside lwc:dom=manual', () => {
-    it('should return correct parentNode', () => {
+describe('Macro test', () => {
+    fit('simple', () => {
         const elm = createElement('x-container', { is: Container });
+        document.body.appendChild(elm);
+    });
+
+    fit('complex', () => {
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
     });
 });
