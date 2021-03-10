@@ -35,7 +35,6 @@ export interface ResolvedConfig extends Required<Config> {
 }
 
 const AVAILABLE_OPTION_NAMES = new Set([
-    'secure',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
 ]);
