@@ -1,9 +1,14 @@
 <template>
     <div>
-        <x-container><h1>Hello</h1></x-container>
-        <template if:false={renderDynamic}> Dynamic: {dynamicValue} </template>
-        {renderCount}
+        <x-container>
+            <template if:true={even}>
+                Even
+            </template>
+            <template if:false={even}>
+                Odd
+            </template>
+            {renderCount}
+        </x-container>
         <button onclick={increment}>Increment</button>
-        <template if:true={renderDynamic}> Static: 1 </template>
     </div>
 </template>

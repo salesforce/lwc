@@ -63,6 +63,7 @@ import {
     allocateChildrenHook,
     markAsDynamicChildren,
     createFakeSlotChildrenHook,
+    updateFakeSlotChildrenHook,
 } from './hooks';
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -118,7 +119,11 @@ const FakeSlotHook: Hooks<VFakeSlot> = {
         TextHook.create(vnode.start);
         TextHook.create(vnode.end);
     },
-    update: (_oldVnode, _vnode) => {},
+    update: (oldVnode, vnode) => {
+        vnode.start.elm = oldVnode.start.elm;
+        vnode.end.elm = oldVnode.end.elm;
+        updateFakeSlotChildrenHook(oldVnode, vnode);
+    },
     insert: (vnode, parentNode, referenceNode) => {
         insertNodeHook(vnode.start, parentNode, referenceNode);
         insertNodeHook(vnode.end, parentNode, referenceNode);

@@ -206,6 +206,57 @@ export function updateStaticChildren(parentElm: Node, oldCh: VNodes, newCh: VNod
     }
 }
 
+export function updateFakeSlotStaticChildren(
+    startElm: Node,
+    endElm: Node,
+    oldCh: VNodes,
+    newCh: VNodes
+) {
+    const oldChLength = oldCh.length;
+    const newChLength = newCh.length;
+
+    const parentElm = startElm.parentNode!;
+    const startIndex = Array.prototype.indexOf.call(parentElm, startElm);
+    // const endIndex = Array.prototype.indexOf.call(parentElm, endElm);
+
+    if (oldChLength === 0) {
+        // the old list is empty, we can directly insert anything new
+        addVnodes(parentElm, null, newCh, startIndex, newChLength);
+        return;
+    }
+    if (newChLength === 0) {
+        // the old list is nonempty and the new list is empty so we can directly remove all old nodes
+        // this is the case in which the dynamic children of an if-directive should be removed
+        removeVnodes(parentElm, oldCh, startIndex, oldChLength);
+        return;
+    }
+    // if the old list is not empty, the new list MUST have the same
+    // amount of nodes, that's why we call this static children
+    let referenceElm: Node | null = null;
+    for (let i = newChLength - 1; i >= 0; i -= 1) {
+        const vnode = newCh[i];
+        const oldVNode = oldCh[i];
+        if (vnode !== oldVNode) {
+            if (isVNode(oldVNode)) {
+                if (isVNode(vnode)) {
+                    // both vnodes must be equivalent, and se just need to patch them
+                    patchVnode(oldVNode, vnode);
+                    referenceElm = vnode.elm!;
+                } else {
+                    // removing the old vnode since the new one is null
+                    oldVNode.hook.remove(oldVNode, parentElm);
+                }
+            } else if (isVNode(vnode)) {
+                // this condition is unnecessary
+                vnode.hook.create(vnode);
+                // insert the new node one since the old one is null
+                vnode.hook.insert(vnode, parentElm, referenceElm);
+                referenceElm = vnode.elm!;
+            }
+        }
+    }
+}
+
 function patchVnode(oldVnode: VNode, vnode: VNode) {
     if (oldVnode !== vnode) {
         vnode.elm = oldVnode.elm;

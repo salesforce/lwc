@@ -21,7 +21,11 @@ import modComputedClassName from './modules/computed-class-attr';
 import modComputedStyle from './modules/computed-style-attr';
 import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
-import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
+import {
+    updateDynamicChildren,
+    updateFakeSlotStaticChildren,
+    updateStaticChildren,
+} from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
 import { MacroElement } from './base-lightning-element';
@@ -145,6 +149,21 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
         noop,
         () => {
             fn(vnode.elm!, oldVnode.children, children);
+        },
+        noop
+    );
+}
+
+export function updateFakeSlotChildrenHook(oldVnode: VFakeSlot, vnode: VFakeSlot) {
+    const { children, owner } = vnode;
+    // const fn = hasDynamicChildren(children) ? updateDynamicChildren : updateStaticChildren;
+    const fn = updateFakeSlotStaticChildren;
+    runWithBoundaryProtection(
+        owner,
+        owner.owner,
+        noop,
+        () => {
+            fn(vnode.start.elm!, vnode.end.elm!, oldVnode.children, children);
         },
         noop
     );
