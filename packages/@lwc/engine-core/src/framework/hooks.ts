@@ -164,6 +164,8 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     const children = vnode.aChildren || vnode.children;
 
     vm.aChildren = children;
+    // The regular check of MacroElement, !vnode.cmpRoot, doesn't work because cmpRoot is undefined in
+    // other cases as well.
     if (isTrue(vm.renderer.syntheticShadow) || vnode.ctor.prototype instanceof MacroElement) {
         // slow path
         allocateInSlot(vm, children);
