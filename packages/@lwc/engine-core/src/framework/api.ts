@@ -44,6 +44,7 @@ import {
     Hooks,
     Key,
     VCustomElement,
+    VFakeSlot,
 } from '../3rdparty/snabbdom/types';
 import { BasicLightningElementConstructor } from './base-lightning-element';
 import {
@@ -61,6 +62,7 @@ import {
     updateChildrenHook,
     allocateChildrenHook,
     markAsDynamicChildren,
+    createFakeSlotChildrenHook,
 } from './hooks';
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -109,6 +111,21 @@ const TextHook: Hooks<VText> = {
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
+};
+
+const FakeSlotHook: Hooks<VFakeSlot> = {
+    create: (vnode) => {
+        TextHook.create(vnode.start);
+        TextHook.create(vnode.end);
+    },
+    update: (_oldVnode, _vnode) => {},
+    insert: (vnode, parentNode, referenceNode) => {
+        insertNodeHook(vnode.start, parentNode, referenceNode);
+        insertNodeHook(vnode.end, parentNode, referenceNode);
+        createFakeSlotChildrenHook(vnode);
+    },
+    move: (_vnode, _parentNode, _referenceNode) => {}, // same as insert for text nodes
+    remove: (_vnode, _parentNode) => {},
 };
 
 // insert is called after update, which is used somewhere else (via a module)
@@ -363,7 +380,27 @@ export function s(
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
+    if (!vnode.owner.cmpRoot) {
+        return fs(data, children);
+    }
     return vnode;
+}
+
+export function fs(data: ElementCompilerData, children: VNodes): VFakeSlot {
+    const { key } = data;
+    let elm, text;
+    return {
+        sel: '',
+        data,
+        children,
+        text,
+        elm,
+        key,
+        hook: FakeSlotHook,
+        owner: getVMBeingRendered()!,
+        start: t(''),
+        end: t(''),
+    };
 }
 
 // [c]ustom element node

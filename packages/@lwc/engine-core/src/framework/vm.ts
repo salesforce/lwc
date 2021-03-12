@@ -123,7 +123,7 @@ export interface VM<N = HostNode, E = HostElement> {
     cmpTemplate: Template | null;
     /** The component instance. */
     component: BasicLightningElement;
-    /** The custom element shadow root. */
+    /** The custom element shadow root. Null for macro elements */
     cmpRoot: ShadowRoot | null;
     /** The template reactive observer. */
     tro: ReactiveObserver;

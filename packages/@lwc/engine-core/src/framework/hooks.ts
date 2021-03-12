@@ -13,7 +13,7 @@ import {
     getAssociatedVMIfPresent,
     VM,
 } from './vm';
-import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
+import { VNode, VCustomElement, VElement, VNodes, VFakeSlot } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
 import modProps from './modules/props';
@@ -24,6 +24,7 @@ import modStaticStyle from './modules/static-style-attr';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
+import { MacroElement } from './base-lightning-element';
 
 const noop = () => void 0;
 
@@ -163,7 +164,7 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     const children = vnode.aChildren || vnode.children;
 
     vm.aChildren = children;
-    if (isTrue(vm.renderer.syntheticShadow)) {
+    if (isTrue(vm.renderer.syntheticShadow) || vnode.ctor.prototype instanceof MacroElement) {
         // slow path
         allocateInSlot(vm, children);
         // save the allocated children in case this vnode is reused.
@@ -222,6 +223,18 @@ export function createChildrenHook(vnode: VElement) {
         if (ch != null) {
             ch.hook.create(ch);
             ch.hook.insert(ch, elm!, null);
+        }
+    }
+}
+
+export function createFakeSlotChildrenHook(vnode: VFakeSlot) {
+    const { children, end } = vnode;
+    for (let j = 0; j < children.length; ++j) {
+        const ch = children[j];
+        if (ch != null) {
+            ch.hook.create(ch);
+            const parentElm = end.elm!.parentNode!;
+            ch.hook.insert(ch, parentElm, end.elm!);
         }
     }
 }
