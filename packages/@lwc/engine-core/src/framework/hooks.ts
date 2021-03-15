@@ -165,7 +165,7 @@ export function updateFakeSlotChildrenHook(oldVnode: VFakeSlot, vnode: VFakeSlot
         owner.owner,
         noop,
         () => {
-            fn(vnode.start.elm!, oldVnode.children, children);
+            fn(vnode.start.elm!, vnode.end.elm!, oldVnode.children, children);
         },
         noop
     );

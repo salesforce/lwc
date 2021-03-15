@@ -1,6 +1,6 @@
-import { LightningElement } from 'lwc';
+import { MacroElement } from 'lwc';
 
-export default class Test extends LightningElement {
+export default class Test extends MacroElement {
     even = true;
     counter = 0;
     numbers = [];

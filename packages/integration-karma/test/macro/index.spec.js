@@ -8,7 +8,7 @@ describe('Macro test', () => {
         document.body.appendChild(elm);
     });
 
-    it('complex', () => {
+    fit('complex', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
     });
