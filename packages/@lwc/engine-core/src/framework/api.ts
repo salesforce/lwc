@@ -130,7 +130,10 @@ const FakeSlotHook: Hooks<VFakeSlot> = {
         createFakeSlotChildrenHook(vnode);
     },
     move: (_vnode, _parentNode, _referenceNode) => {}, // same as insert for text nodes
-    remove: (_vnode, _parentNode) => {},
+    remove: (vnode, parentNode) => {
+        TextHook.remove(vnode.start, parentNode);
+        TextHook.remove(vnode.end, parentNode);
+    },
 };
 
 // insert is called after update, which is used somewhere else (via a module)

@@ -1,14 +1,17 @@
 <template>
     <div>
         <x-container>
-            <template if:true={even}>
-                Even
+            <template for:each={numbers} for:item="number">
+                <li key={number}>
+                  <template if:true={showEven}>
+                      Even
+                  </template>
+                  {number}
+                </li>
             </template>
-            <template if:false={even}>
-                Odd
-            </template>
-            {renderCount}
         </x-container>
+        <button onclick={decrement}>Decrement</button>
         <button onclick={increment}>Increment</button>
+        <button onclick={toggleEven}>Toggle Even</button>
     </div>
 </template>

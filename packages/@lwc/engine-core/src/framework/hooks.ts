@@ -23,6 +23,7 @@ import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
 import {
     updateDynamicChildren,
+    updateFakeSlotDynamicChildren,
     updateFakeSlotStaticChildren,
     updateStaticChildren,
 } from '../3rdparty/snabbdom/snabbdom';
@@ -156,14 +157,15 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
 
 export function updateFakeSlotChildrenHook(oldVnode: VFakeSlot, vnode: VFakeSlot) {
     const { children, owner } = vnode;
-    // const fn = hasDynamicChildren(children) ? updateDynamicChildren : updateStaticChildren;
-    const fn = updateFakeSlotStaticChildren;
+    const fn = hasDynamicChildren(children)
+        ? updateFakeSlotDynamicChildren
+        : updateFakeSlotStaticChildren;
     runWithBoundaryProtection(
         owner,
         owner.owner,
         noop,
         () => {
-            fn(vnode.start.elm!, vnode.end.elm!, oldVnode.children, children);
+            fn(vnode.start.elm!, oldVnode.children, children);
         },
         noop
     );

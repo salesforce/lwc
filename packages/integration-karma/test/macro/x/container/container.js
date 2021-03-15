@@ -1,3 +1,3 @@
-import { MacroElement } from 'lwc';
+import { LightningElement } from 'lwc';
 
-export default class Container extends MacroElement {}
+export default class Container extends LightningElement {}
