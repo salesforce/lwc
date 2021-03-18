@@ -128,8 +128,6 @@ export interface LightningElementConstructor {
     delegatesFocus?: boolean;
 }
 
-export declare let LightningElement: LightningElementConstructor;
-
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
     Pick<
         HTMLElement,
@@ -552,4 +550,4 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // @ts-ignore
-export const BaseLightningElement: LightningElementConstructor = LightningElementConstructor as unknown;
+export const LightningElement: LightningElementConstructor = LightningElementConstructor as unknown;

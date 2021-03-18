@@ -30,7 +30,7 @@ import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
 import { LightningElement, LightningElementConstructor } from './base-lightning-element';
-import { BaseLightningElement, lightningBasedDescriptors } from './base-lightning-element';
+import { lightningBasedDescriptors } from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
 
@@ -84,7 +84,7 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
         // of our Base class without having to leak it to user-land. If the circular function returns
         // itself, that's the signal that we have hit the end of the proto chain, which must always
         // be base.
-        proto = p === proto ? BaseLightningElement : p;
+        proto = p === proto ? LightningElement : p;
     }
     return proto!;
 }
@@ -120,9 +120,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     } = proto;
     const superProto = getCtorProto(Ctor);
     const superDef =
-        superProto !== BaseLightningElement
-            ? getComponentInternalDef(superProto)
-            : lightingElementDef;
+        superProto !== LightningElement ? getComponentInternalDef(superProto) : lightingElementDef;
     const bridge = HTMLBridgeElementFactory(superDef.bridge, keys(apiFields), keys(apiMethods));
     const props: PropertyDescriptorMap = assign(create(null), superDef.props, apiFields);
     const propsConfig = assign(create(null), superDef.propsConfig, apiFieldsConfig);
@@ -177,7 +175,7 @@ export function isComponentConstructor(ctor: unknown): ctor is LightningElementC
     }
 
     // Fast path: LightningElement is part of the prototype chain of the constructor.
-    if (ctor.prototype instanceof BaseLightningElement) {
+    if (ctor.prototype instanceof LightningElement) {
         return true;
     }
 
@@ -198,7 +196,7 @@ export function isComponentConstructor(ctor: unknown): ctor is LightningElementC
             current = circularResolved;
         }
 
-        if (current === BaseLightningElement) {
+        if (current === LightningElement) {
             return true;
         }
     } while (!isNull(current) && (current = getPrototypeOf(current)));
@@ -237,15 +235,15 @@ export function getComponentInternalDef(Ctor: unknown): ComponentDef {
 }
 
 const lightingElementDef: ComponentDef = {
-    ctor: BaseLightningElement,
-    name: BaseLightningElement.name,
+    ctor: LightningElement,
+    name: LightningElement.name,
     props: lightningBasedDescriptors,
     propsConfig: EmptyObject,
     methods: EmptyObject,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
     template: defaultEmptyTemplate,
-    render: BaseLightningElement.prototype.render,
+    render: LightningElement.prototype.render,
 };
 
 enum PropDefType {
