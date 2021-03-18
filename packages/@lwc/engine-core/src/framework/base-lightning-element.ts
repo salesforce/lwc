@@ -175,7 +175,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
  * This class is the base class for any LWC element.
  * Some elements directly extends this class, others implement it via inheritance.
  **/
-function BaseLightningElementConstructor(this: LightningElement): LightningElement {
+function LightningElementConstructor(this: LightningElement): LightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
         throw new ReferenceError('Illegal constructor');
@@ -236,8 +236,8 @@ function BaseLightningElementConstructor(this: LightningElement): LightningEleme
     return this;
 }
 
-BaseLightningElementConstructor.prototype = {
-    constructor: BaseLightningElementConstructor,
+LightningElementConstructor.prototype = {
+    constructor: LightningElementConstructor,
 
     dispatchEvent(event: Event): boolean {
         const {
@@ -537,9 +537,9 @@ for (const propName in HTMLElementOriginalDescriptors) {
     );
 }
 
-defineProperties(BaseLightningElementConstructor.prototype, lightningBasedDescriptors);
+defineProperties(LightningElementConstructor.prototype, lightningBasedDescriptors);
 
-defineProperty(BaseLightningElementConstructor, 'CustomElementConstructor', {
+defineProperty(LightningElementConstructor, 'CustomElementConstructor', {
     get() {
         // If required, a runtime-specific implementation must be defined.
         throw new ReferenceError('The current runtime does not support CustomElementConstructor.');
@@ -548,8 +548,8 @@ defineProperty(BaseLightningElementConstructor, 'CustomElementConstructor', {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-    patchLightningElementPrototypeWithRestrictions(BaseLightningElementConstructor.prototype);
+    patchLightningElementPrototypeWithRestrictions(LightningElementConstructor.prototype);
 }
 
 // @ts-ignore
-export const BaseLightningElement: LightningElementConstructor = BaseLightningElementConstructor as unknown;
+export const BaseLightningElement: LightningElementConstructor = LightningElementConstructor as unknown;
