@@ -550,4 +550,4 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // @ts-ignore
-export const LightningElement: LightningElementConstructor = LightningElementConstructor as unknown;
+export const LightningElement: LightningElementConstructor = LightningElementConstructor;
