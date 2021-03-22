@@ -49,8 +49,9 @@ function getDecoratedNodeType(decoratorPath) {
     }
 }
 
-function validateLwcDecorators(importSpecifiers) {
-    return importSpecifiers
+function validateImportedLwcDecoratorUsage(engineImportSpecifiers) {
+    engineImportSpecifiers
+        .filter(({ name }) => isLwcDecoratorName(name))
         .reduce((acc, { name, path }) => {
             // Get a list of all the  local references
             const local = path.get('imported');
@@ -61,7 +62,7 @@ function validateLwcDecorators(importSpecifiers) {
 
             return [...acc, ...references];
         }, [])
-        .map(({ name, reference }) => {
+        .forEach(({ name, reference }) => {
             // Get the decorator from the identifier
             // If the the decorator is:
             //   - an identifier @track : the decorator is the parent of the identifier
@@ -104,15 +105,16 @@ function validate(decorators) {
 }
 
 /** Remove import specifiers. It also removes the import statement if the specifier list becomes empty */
-function removeImportSpecifiers(specifiers) {
-    for (const { path } of specifiers) {
-        const importStatement = path.parentPath;
-        path.remove();
-
-        if (importStatement.get('specifiers').length === 0) {
-            importStatement.remove();
-        }
-    }
+function removeImportedDecoratorSpecifiers(engineImportSpecifiers) {
+    engineImportSpecifiers
+        .filter(({ name }) => isLwcDecoratorName(name))
+        .forEach(({ path }) => {
+            const importStatement = path.parentPath;
+            path.remove();
+            if (importStatement.get('specifiers').length === 0) {
+                importStatement.remove();
+            }
+        });
 }
 
 function generateInvalidDecoratorError(path) {
@@ -252,7 +254,6 @@ function decorators({ types: t }) {
 
 module.exports = {
     decorators,
-    isLwcDecoratorName,
-    validateLwcDecorators,
-    removeImportSpecifiers,
+    removeImportedDecoratorSpecifiers,
+    validateImportedLwcDecoratorUsage,
 };

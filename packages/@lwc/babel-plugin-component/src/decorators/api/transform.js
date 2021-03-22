@@ -71,26 +71,24 @@ function computePublicPropsConfig(publicPropertyMetas, classBodyItems) {
 module.exports = function transform(t, decoratorMetas, classBodyItems) {
     const objectProperties = [];
     const apiDecoratorMetas = decoratorMetas.filter(isApiDecorator);
-    if (apiDecoratorMetas.length) {
-        const publicPropertyMetas = apiDecoratorMetas.filter(
-            ({ decoratedNodeType }) => decoratedNodeType !== DECORATOR_TYPES.METHOD
+    const publicPropertyMetas = apiDecoratorMetas.filter(
+        ({ decoratedNodeType }) => decoratedNodeType !== DECORATOR_TYPES.METHOD
+    );
+    if (publicPropertyMetas.length) {
+        const propsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems);
+        objectProperties.push(
+            t.objectProperty(t.identifier(PUBLIC_PROPS), t.valueToNode(propsConfig))
         );
-        if (publicPropertyMetas.length) {
-            const propsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems);
-            objectProperties.push(
-                t.objectProperty(t.identifier(PUBLIC_PROPS), t.valueToNode(propsConfig))
-            );
-        }
+    }
 
-        const publicMethodMetas = apiDecoratorMetas.filter(
-            ({ decoratedNodeType }) => decoratedNodeType === DECORATOR_TYPES.METHOD
+    const publicMethodMetas = apiDecoratorMetas.filter(
+        ({ decoratedNodeType }) => decoratedNodeType === DECORATOR_TYPES.METHOD
+    );
+    if (publicMethodMetas.length) {
+        const methodNames = publicMethodMetas.map(({ propertyName }) => propertyName);
+        objectProperties.push(
+            t.objectProperty(t.identifier(PUBLIC_METHODS), t.valueToNode(methodNames))
         );
-        if (publicMethodMetas.length) {
-            const methodNames = publicMethodMetas.map(({ propertyName }) => propertyName);
-            objectProperties.push(
-                t.objectProperty(t.identifier(PUBLIC_METHODS), t.valueToNode(methodNames))
-            );
-        }
     }
     return objectProperties;
 };

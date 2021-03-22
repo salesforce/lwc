@@ -212,42 +212,42 @@ const scopedReferenceLookup = (scope) => (name) => {
 
 module.exports = function transform(t, decoratorMetas) {
     const objectProperties = [];
-    const wireDecoratorMetas = decoratorMetas.filter(isWireDecorator);
-    if (wireDecoratorMetas.length) {
-        const wiredValues = wireDecoratorMetas.map(({ path }) => {
-            const [id, config] = path.get('expression.arguments');
+    const wiredValues = decoratorMetas.filter(isWireDecorator).map(({ path }) => {
+        const [id, config] = path.get('expression.arguments');
 
-            const propertyName = path.parentPath.get('key.name').node;
-            const isClassMethod = path.parentPath.isClassMethod({
-                kind: 'method',
-            });
-
-            const wiredValue = {
-                propertyName,
-                isClassMethod,
-            };
-
-            if (config) {
-                wiredValue.static = getWiredStatic(config);
-                wiredValue.params = getWiredParams(t, config);
-            }
-
-            const referenceLookup = scopedReferenceLookup(path.scope);
-            const isMemberExpression = id.isMemberExpression();
-            const isIdentifier = id.isIdentifier();
-
-            if (isIdentifier || isMemberExpression) {
-                const referenceName = isMemberExpression ? id.node.object.name : id.node.name;
-                const reference = referenceLookup(referenceName);
-                wiredValue.adapter = {
-                    name: referenceName,
-                    expression: t.cloneDeep(id.node),
-                    reference: reference.type === 'module' ? reference.value : undefined,
-                };
-            }
-
-            return wiredValue;
+        const propertyName = path.parentPath.get('key.name').node;
+        const isClassMethod = path.parentPath.isClassMethod({
+            kind: 'method',
         });
+
+        const wiredValue = {
+            propertyName,
+            isClassMethod,
+        };
+
+        if (config) {
+            wiredValue.static = getWiredStatic(config);
+            wiredValue.params = getWiredParams(t, config);
+        }
+
+        const referenceLookup = scopedReferenceLookup(path.scope);
+        const isMemberExpression = id.isMemberExpression();
+        const isIdentifier = id.isIdentifier();
+
+        if (isIdentifier || isMemberExpression) {
+            const referenceName = isMemberExpression ? id.node.object.name : id.node.name;
+            const reference = referenceLookup(referenceName);
+            wiredValue.adapter = {
+                name: referenceName,
+                expression: t.cloneDeep(id.node),
+                reference: reference.type === 'module' ? reference.value : undefined,
+            };
+        }
+
+        return wiredValue;
+    });
+
+    if (wiredValues.length) {
         objectProperties.push(
             t.objectProperty(
                 t.identifier(LWC_COMPONENT_PROPERTIES.WIRE),

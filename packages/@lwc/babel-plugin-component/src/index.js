@@ -10,9 +10,8 @@ const component = require('./component');
 const { LWC_SUPPORTED_APIS } = require('./constants');
 const {
     decorators,
-    isLwcDecoratorName,
-    removeImportSpecifiers,
-    validateLwcDecorators,
+    removeImportedDecoratorSpecifiers,
+    validateImportedLwcDecoratorUsage,
 } = require('./decorators');
 const dedupeImports = require('./dedupe-imports');
 const dynamicImports = require('./dynamic-imports');
@@ -24,6 +23,10 @@ const { generateError, getEngineImportSpecifiers } = require('./utils');
  *    - Then, in a second path transform class properties using the official babel plugin "babel-plugin-transform-class-properties".
  */
 module.exports = function LwcClassTransform(api) {
+    const { ExportDefaultDeclaration: transformCreateRegisterComponent } = component(api);
+    const { Class: transformDecorators } = decorators(api);
+    const { Import: transformDynamicImports } = dynamicImports(api);
+
     return {
         manipulateOptions(opts, parserOpts) {
             parserOpts.plugins.push('classProperties', [
@@ -31,11 +34,8 @@ module.exports = function LwcClassTransform(api) {
                 { decoratorsBeforeExport: true },
             ]);
         },
-        visitor: {
-            ...decorators(api),
-            ...component(api),
-            ...dynamicImports(api),
 
+        visitor: {
             // The LWC babel plugin is incompatible with other plugins. To get around this, we run the LWC babel plugin
             // first by running all its traversals from this Program visitor.
             Program: {
@@ -54,21 +54,27 @@ module.exports = function LwcClassTransform(api) {
                     });
 
                     // Validate the usage of LWC decorators.
-                    const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
-                        isLwcDecoratorName(name)
-                    );
-                    validateLwcDecorators(decoratorImportSpecifiers);
+                    validateImportedLwcDecoratorUsage(engineImportSpecifiers);
                 },
                 exit(path) {
                     const engineImportSpecifiers = getEngineImportSpecifiers(path);
-                    const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
-                        isLwcDecoratorName(name)
-                    );
-                    removeImportSpecifiers(decoratorImportSpecifiers);
+                    removeImportedDecoratorSpecifiers(engineImportSpecifiers);
 
                     // Will eventually be removed to eliminate unnecessary complexity. Rollup already does this for us.
                     dedupeImports(api)(path);
                 },
+            },
+
+            Import(path, state) {
+                transformDynamicImports(path, state);
+            },
+
+            Class(path) {
+                transformDecorators(path);
+            },
+
+            ExportDefaultDeclaration(path, state) {
+                transformCreateRegisterComponent(path, state);
             },
         },
     };
