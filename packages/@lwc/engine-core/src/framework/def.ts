@@ -29,8 +29,12 @@ import {
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
-import { LightningElement, LightningElementConstructor } from './base-lightning-element';
-import { lightningBasedDescriptors } from './base-lightning-element';
+import { LightningElement } from './lightning-element';
+import {
+    BaseLightningElement,
+    BaseLightningElementConstructor,
+    lightningBasedDescriptors,
+} from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
 
@@ -52,19 +56,19 @@ export interface ComponentDef {
     propsConfig: Record<string, PropType>;
     methods: PropertyDescriptorMap;
     template: Template;
-    ctor: LightningElementConstructor;
+    ctor: BaseLightningElementConstructor;
     bridge: HTMLElementConstructor;
-    connectedCallback?: LightningElement['connectedCallback'];
-    disconnectedCallback?: LightningElement['disconnectedCallback'];
-    renderedCallback?: LightningElement['renderedCallback'];
-    errorCallback?: LightningElement['errorCallback'];
-    render: LightningElement['render'];
+    connectedCallback?: BaseLightningElement['connectedCallback'];
+    disconnectedCallback?: BaseLightningElement['disconnectedCallback'];
+    renderedCallback?: BaseLightningElement['renderedCallback'];
+    errorCallback?: BaseLightningElement['errorCallback'];
+    render: BaseLightningElement['render'];
 }
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
-function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstructor {
-    let proto: LightningElementConstructor | null = getPrototypeOf(Ctor);
+function getCtorProto(Ctor: BaseLightningElementConstructor): BaseLightningElementConstructor {
+    let proto: BaseLightningElementConstructor | null = getPrototypeOf(Ctor);
     if (isNull(proto)) {
         throw new ReferenceError(
             `Invalid prototype chain for ${Ctor.name}, you must extend LightningElement.`
@@ -89,7 +93,7 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
     return proto!;
 }
 
-function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
+function createComponentDef(Ctor: BaseLightningElementConstructor): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
         const ctorName = Ctor.name;
         // Removing the following assert until https://bugs.webkit.org/show_bug.cgi?id=190140 is fixed.
@@ -169,13 +173,13 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
  * EXPERIMENTAL: This function allows for the identification of LWC constructors. This API is
  * subject to change or being removed.
  */
-export function isComponentConstructor(ctor: unknown): ctor is LightningElementConstructor {
+export function isComponentConstructor(ctor: unknown): ctor is BaseLightningElementConstructor {
     if (!isFunction(ctor)) {
         return false;
     }
 
     // Fast path: LightningElement is part of the prototype chain of the constructor.
-    if (ctor.prototype instanceof LightningElement) {
+    if (ctor.prototype instanceof BaseLightningElement) {
         return true;
     }
 
@@ -196,7 +200,7 @@ export function isComponentConstructor(ctor: unknown): ctor is LightningElementC
             current = circularResolved;
         }
 
-        if (current === LightningElement) {
+        if (current === BaseLightningElement) {
             return true;
         }
     } while (!isNull(current) && (current = getPrototypeOf(current)));
@@ -207,7 +211,7 @@ export function isComponentConstructor(ctor: unknown): ctor is LightningElementC
 
 export function getComponentInternalDef(Ctor: unknown): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
-        Ctor = getComponentOrSwappedComponent(Ctor as LightningElementConstructor);
+        Ctor = getComponentOrSwappedComponent(Ctor as BaseLightningElementConstructor);
     }
     let def = CtorToDefMap.get(Ctor);
 
@@ -260,7 +264,7 @@ interface PublicComponentDef {
     name: string;
     props: Record<string, PropDef>;
     methods: Record<string, PublicMethod>;
-    ctor: LightningElementConstructor;
+    ctor: BaseLightningElementConstructor;
 }
 
 /**

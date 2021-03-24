@@ -9,7 +9,7 @@ import { componentValueObserved, componentValueMutated } from '../mutation-track
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
-import { LightningElement } from '../base-lightning-element';
+import { BaseLightningElement } from '../base-lightning-element';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
 /**
@@ -36,12 +36,12 @@ export default function track(target: any): any {
 
 export function internalTrackDecorator(key: string): PropertyDescriptor {
     return {
-        get(this: LightningElement): any {
+        get(this: BaseLightningElement): any {
             const vm = getAssociatedVM(this);
             componentValueObserved(vm, key);
             return vm.cmpFields[key];
         },
-        set(this: LightningElement, newValue: any) {
+        set(this: BaseLightningElement, newValue: any) {
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();

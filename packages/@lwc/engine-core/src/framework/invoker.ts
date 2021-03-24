@@ -8,7 +8,7 @@ import { assert, isFunction, isUndefined } from '@lwc/shared';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
-import { LightningElement, LightningElementConstructor } from './base-lightning-element';
+import { BaseLightningElement, BaseLightningElementConstructor } from './base-lightning-element';
 import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 
 import { VNodes } from '../3rdparty/snabbdom/types';
@@ -47,7 +47,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     return result;
 }
 
-export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstructor) {
+export function invokeComponentConstructor(vm: VM, Ctor: BaseLightningElementConstructor) {
     const vmBeingConstructedInception = vmBeingConstructed;
     let error;
     if (profilerEnabled) {
@@ -160,7 +160,7 @@ export function invokeComponentRenderedCallback(vm: VM): void {
 export function invokeEventListener(
     vm: VM,
     fn: EventListener,
-    thisValue: LightningElement | undefined,
+    thisValue: BaseLightningElement | undefined,
     event: Event
 ) {
     const { callHook, owner } = vm;

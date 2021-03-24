@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isUndefined, ArrayPush, defineProperty, defineProperties } from '@lwc/shared';
-import { LightningElement } from './base-lightning-element';
+import { BaseLightningElement } from './base-lightning-element';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';
 
@@ -74,7 +74,7 @@ function createMethodDataCallback(vm: VM, method: (data: any) => any) {
 }
 
 function createConfigWatcher(
-    component: LightningElement,
+    component: BaseLightningElement,
     configCallback: ConfigCallback,
     callbackWhenConfigIsReady: (newConfig: ConfigValue) => void
 ): { computeConfigAndUpdate: () => void; ro: ReactiveObserver } {
@@ -263,7 +263,7 @@ export function setAdapterToken(adapter: WireAdapterConstructor, token: string) 
 }
 
 export type ContextValue = Record<string, any>;
-export type ConfigCallback = (component: LightningElement) => ConfigValue;
+export type ConfigCallback = (component: BaseLightningElement) => ConfigValue;
 
 export interface WireAdapterConstructor {
     new (callback: DataCallback): WireAdapter;

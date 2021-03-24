@@ -72,7 +72,7 @@ function createBridgeToElementDescriptor(
     return {
         enumerable,
         configurable,
-        get(this: LightningElement) {
+        get(this: BaseLightningElement) {
             const vm = getAssociatedVM(this);
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -86,7 +86,7 @@ function createBridgeToElementDescriptor(
             componentValueObserved(vm, propName);
             return get.call(vm.elm);
         },
-        set(this: LightningElement, newValue: any) {
+        set(this: BaseLightningElement, newValue: any) {
             const vm = getAssociatedVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 const vmBeingRendered = getVMBeingRendered();
@@ -120,9 +120,9 @@ function createBridgeToElementDescriptor(
     };
 }
 
-export interface LightningElementConstructor {
-    new (): LightningElement;
-    readonly prototype: LightningElement;
+export interface BaseLightningElementConstructor {
+    new (): BaseLightningElement;
+    readonly prototype: BaseLightningElement;
     readonly CustomElementConstructor: HTMLElementConstructor;
 
     delegatesFocus?: boolean;
@@ -160,8 +160,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'title'
     >;
 
-export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
-    template: ShadowRoot;
+export interface BaseLightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -174,9 +173,9 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
  * Some elements directly extends this class, others implement it via inheritance.
  **/
 // @ts-ignore
-export const LightningElement: LightningElementConstructor = function (
-    this: LightningElement
-): LightningElement {
+export const BaseLightningElement: BaseLightningElementConstructor = function (
+    this: BaseLightningElement
+): BaseLightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
         throw new ReferenceError('Illegal constructor');
@@ -238,8 +237,8 @@ export const LightningElement: LightningElementConstructor = function (
 };
 
 // @ts-ignore
-LightningElement.prototype = {
-    constructor: LightningElement,
+BaseLightningElement.prototype = {
+    constructor: BaseLightningElement,
 
     dispatchEvent(event: Event): boolean {
         const {
@@ -539,9 +538,9 @@ for (const propName in HTMLElementOriginalDescriptors) {
     );
 }
 
-defineProperties(LightningElement.prototype, lightningBasedDescriptors);
+defineProperties(BaseLightningElement.prototype, lightningBasedDescriptors);
 
-defineProperty(LightningElement, 'CustomElementConstructor', {
+defineProperty(BaseLightningElement, 'CustomElementConstructor', {
     get() {
         // If required, a runtime-specific implementation must be defined.
         throw new ReferenceError('The current runtime does not support CustomElementConstructor.');
@@ -550,5 +549,5 @@ defineProperty(LightningElement, 'CustomElementConstructor', {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-    patchLightningElementPrototypeWithRestrictions(LightningElement.prototype);
+    patchLightningElementPrototypeWithRestrictions(BaseLightningElement.prototype);
 }
