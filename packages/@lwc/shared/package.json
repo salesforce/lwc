@@ -1,6 +1,6 @@
 {
     "name": "@lwc/shared",
-    "version": "1.17.6",
+    "version": "1.18.0",
     "description": "Utilities and methods that are shared across packages",
     "homepage": "https://lwc.dev/",
     "repository": {
