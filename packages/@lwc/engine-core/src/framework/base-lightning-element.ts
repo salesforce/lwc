@@ -173,7 +173,10 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
  * This class is the base class for any LWC element.
  * Some elements directly extends this class, others implement it via inheritance.
  **/
-function LightningElementConstructor(this: LightningElement): LightningElement {
+// @ts-ignore
+export const LightningElement: LightningElementConstructor = function (
+    this: LightningElement
+): LightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
         throw new ReferenceError('Illegal constructor');
@@ -232,10 +235,11 @@ function LightningElementConstructor(this: LightningElement): LightningElement {
     }
 
     return this;
-}
+};
 
-LightningElementConstructor.prototype = {
-    constructor: LightningElementConstructor,
+// @ts-ignore
+LightningElement.prototype = {
+    constructor: LightningElement,
 
     dispatchEvent(event: Event): boolean {
         const {
@@ -535,9 +539,9 @@ for (const propName in HTMLElementOriginalDescriptors) {
     );
 }
 
-defineProperties(LightningElementConstructor.prototype, lightningBasedDescriptors);
+defineProperties(LightningElement.prototype, lightningBasedDescriptors);
 
-defineProperty(LightningElementConstructor, 'CustomElementConstructor', {
+defineProperty(LightningElement, 'CustomElementConstructor', {
     get() {
         // If required, a runtime-specific implementation must be defined.
         throw new ReferenceError('The current runtime does not support CustomElementConstructor.');
@@ -546,8 +550,5 @@ defineProperty(LightningElementConstructor, 'CustomElementConstructor', {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-    patchLightningElementPrototypeWithRestrictions(LightningElementConstructor.prototype);
+    patchLightningElementPrototypeWithRestrictions(LightningElement.prototype);
 }
-
-// @ts-ignore
-export const LightningElement: LightningElementConstructor = LightningElementConstructor;
