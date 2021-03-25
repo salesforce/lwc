@@ -1,7 +1,7 @@
 // Inspired from WPT:
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-inside-shadow-tree.html
 
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import ShadowTree from 'x/shadowTree';
@@ -40,9 +40,7 @@ describe('event propagation in simple shadow tree', () => {
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
         // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-        return new Promise((resolve) => {
-            setTimeout(resolve);
-        }).then(() => {
+        return new Promise(setTimeout).then(() => {
             const logs = dispatchEventWithLog(
                 nodes['span-manual'],
                 new CustomEvent('test', { composed: true, bubbles: true })
@@ -162,9 +160,7 @@ describe('composed and bubbling event propagation in nested shadow tree', () => 
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
         // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-        return new Promise((resolve) => {
-            setTimeout(resolve);
-        }).then(() => {
+        return new Promise(setTimeout).then(() => {
             const logs = dispatchEventWithLog(
                 nodes['span-manual'],
                 new CustomEvent('test', { composed: true, bubbles: true })
@@ -205,14 +201,11 @@ describe('non-composed and bubbling event propagation in nested shadow tree', ()
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
         // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-        return new Promise((resolve) => {
-            setTimeout(resolve);
-        }).then(() => {
+        return new Promise(setTimeout).then(() => {
             const logs = dispatchEventWithLog(
                 nodes['span-manual'],
                 new CustomEvent('test', { composed: false, bubbles: true })
             );
-
             const composedPath = [
                 nodes['span-manual'],
                 nodes['div-manual'],
@@ -223,17 +216,46 @@ describe('non-composed and bubbling event propagation in nested shadow tree', ()
                 [nodes['div-manual'], nodes['span-manual'], composedPath],
                 [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
             ];
-            if (!process.env.NATIVE_SHADOW) {
-                // TODO [#1569]: Listeners on the following targets should not be invoked when the event is non-composed.
-                expectedLogs.push(
-                    [document.body, null, composedPath],
-                    [document.documentElement, null, composedPath],
-                    [document, null, composedPath]
-                );
-            }
+
             expect(logs).toEqual(expectedLogs);
         });
     });
+
+    if (!process.env.NATIVE_SHADOW) {
+        describe('when the ENABLE_NON_COMPOSED_EVENTS_LEAKAGE flag is enabled', () => {
+            beforeEach(() => {
+                setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
+            });
+            afterEach(() => {
+                setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', false);
+            });
+
+            it('propagate event from a child element added via lwc:dom="manual"', () => {
+                // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
+                return new Promise(setTimeout).then(() => {
+                    const logs = dispatchEventWithLog(
+                        nodes['span-manual'],
+                        new CustomEvent('test', { composed: false, bubbles: true })
+                    );
+                    const composedPath = [
+                        nodes['span-manual'],
+                        nodes['div-manual'],
+                        nodes['x-shadow-tree'].shadowRoot,
+                    ];
+                    const expectedLogs = [
+                        [nodes['span-manual'], nodes['span-manual'], composedPath],
+                        [nodes['div-manual'], nodes['span-manual'], composedPath],
+                        [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
+                        [document.body, null, composedPath],
+                        [document.documentElement, null, composedPath],
+                        [document, null, composedPath],
+                    ];
+
+                    expect(logs).toEqual(expectedLogs);
+                });
+            });
+        });
+    }
 });
 
 describe('Event.stopPropagation', () => {

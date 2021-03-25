@@ -1,7 +1,7 @@
 // Inspired from WPT:
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-inside-shadow-tree.html
 
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import Container from 'x/container';
@@ -89,28 +89,11 @@ describe('event propagation', () => {
 
             const composedPath = [nodes.button, nodes.button_div, nodes['x-button'].shadowRoot];
 
-            let expectedLogs;
-            if (process.env.NATIVE_SHADOW) {
-                expectedLogs = [
-                    [nodes.button, nodes.button, composedPath],
-                    [nodes.button_div, nodes.button, composedPath],
-                    [nodes['x-button'].shadowRoot, nodes.button, composedPath],
-                ];
-            } else {
-                expectedLogs = [
-                    [nodes.button, nodes.button, composedPath],
-                    [nodes.button_div, nodes.button, composedPath],
-                    [nodes['x-button'].shadowRoot, nodes.button, composedPath],
-                    [nodes.button_group_slot, null, composedPath],
-                    [nodes.button_group_internal_slot, null, composedPath],
-                    [nodes.button_group_div, null, composedPath],
-                    [nodes.container_div, null, composedPath],
-                    [document.body, null, composedPath],
-                    [document.documentElement, null, composedPath],
-                    [document, null, composedPath],
-                    [window, null, composedPath],
-                ];
-            }
+            const expectedLogs = [
+                [nodes.button, nodes.button, composedPath],
+                [nodes.button_div, nodes.button, composedPath],
+                [nodes['x-button'].shadowRoot, nodes.button, composedPath],
+            ];
 
             expect(actualLogs).toEqual(expectedLogs);
         });
@@ -163,6 +146,43 @@ describe('event propagation', () => {
 
             expect(actualLogs).toEqual(expectedLogs);
         });
+
+        if (!process.env.NATIVE_SHADOW) {
+            describe('when the ENABLE_NON_COMPOSED_EVENTS_LEAKAGE flag is enabled', () => {
+                beforeEach(() => {
+                    setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
+                });
+                afterEach(() => {
+                    setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', false);
+                });
+
+                it('{bubbles: true, composed: false}', () => {
+                    const event = new CustomEvent('test', { bubbles: true, composed: false });
+                    const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
+                    const composedPath = [
+                        nodes.button,
+                        nodes.button_div,
+                        nodes['x-button'].shadowRoot,
+                    ];
+
+                    const expectedLogs = [
+                        [nodes.button, nodes.button, composedPath],
+                        [nodes.button_div, nodes.button, composedPath],
+                        [nodes['x-button'].shadowRoot, nodes.button, composedPath],
+                        [nodes.button_group_slot, null, composedPath],
+                        [nodes.button_group_internal_slot, null, composedPath],
+                        [nodes.button_group_div, null, composedPath],
+                        [nodes.container_div, null, composedPath],
+                        [document.body, null, composedPath],
+                        [document.documentElement, null, composedPath],
+                        [document, null, composedPath],
+                        [window, null, composedPath],
+                    ];
+
+                    expect(actualLogs).toEqual(expectedLogs);
+                });
+            });
+        }
     });
 
     describe('dispatched on host element', () => {
@@ -230,38 +250,18 @@ describe('event propagation', () => {
                 nodes['x-container'].shadowRoot,
             ];
 
-            let expectedLogs;
-            if (process.env.NATIVE_SHADOW) {
-                expectedLogs = [
-                    [nodes['x-button'], nodes['x-button'], composedPath],
-                    [nodes.button_group_slot, nodes['x-button'], composedPath],
-                    [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
-                    [nodes.button_group_div, nodes['x-button'], composedPath],
-                    [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group'], nodes['x-button'], composedPath],
-                    [nodes.container_div, nodes['x-button'], composedPath],
-                    [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
-                ];
-            } else {
-                expectedLogs = [
-                    [nodes['x-button'], nodes['x-button'], composedPath],
-                    [nodes.button_group_slot, nodes['x-button'], composedPath],
-                    [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
-                    [nodes.button_group_div, nodes['x-button'], composedPath],
-                    [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
-                    [nodes['x-button-group'], nodes['x-button'], composedPath],
-                    [nodes.container_div, nodes['x-button'], composedPath],
-                    [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
-                    [document.body, null, composedPath],
-                    [document.documentElement, null, composedPath],
-                    [document, null, composedPath],
-                    [window, null, composedPath],
-                ];
-            }
+            const expectedLogs = [
+                [nodes['x-button'], nodes['x-button'], composedPath],
+                [nodes.button_group_slot, nodes['x-button'], composedPath],
+                [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
+                [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
+                [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
+                [nodes.button_group_div, nodes['x-button'], composedPath],
+                [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
+                [nodes['x-button-group'], nodes['x-button'], composedPath],
+                [nodes.container_div, nodes['x-button'], composedPath],
+                [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
+            ];
 
             expect(actualLogs).toEqual(expectedLogs);
         });
@@ -321,6 +321,58 @@ describe('event propagation', () => {
 
             expect(actualLogs).toEqual(expectedLogs);
         });
+
+        if (!process.env.NATIVE_SHADOW) {
+            describe('when the ENABLE_NON_COMPOSED_EVENTS_LEAKAGE flag is enabled', () => {
+                beforeEach(() => {
+                    setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
+                });
+                afterEach(() => {
+                    setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', false);
+                });
+
+                it('{bubbles: true, composed: false}', () => {
+                    const event = new CustomEvent('test', { bubbles: true, composed: false });
+                    const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
+
+                    const composedPath = [
+                        nodes['x-button'],
+                        nodes.button_group_slot,
+                        nodes.button_group_internal_slot,
+                        nodes['x-button-group-internal'].shadowRoot,
+                        nodes['x-button-group-internal'],
+                        nodes.button_group_div,
+                        nodes['x-button-group'].shadowRoot,
+                        nodes['x-button-group'],
+                        nodes.container_div,
+                        nodes['x-container'].shadowRoot,
+                    ];
+
+                    const expectedLogs = [
+                        [nodes['x-button'], nodes['x-button'], composedPath],
+                        [nodes.button_group_slot, nodes['x-button'], composedPath],
+                        [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
+                        [
+                            nodes['x-button-group-internal'].shadowRoot,
+                            nodes['x-button'],
+                            composedPath,
+                        ],
+                        [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
+                        [nodes.button_group_div, nodes['x-button'], composedPath],
+                        [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
+                        [nodes['x-button-group'], nodes['x-button'], composedPath],
+                        [nodes.container_div, nodes['x-button'], composedPath],
+                        [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
+                        [document.body, null, composedPath],
+                        [document.documentElement, null, composedPath],
+                        [document, null, composedPath],
+                        [window, null, composedPath],
+                    ];
+
+                    expect(actualLogs).toEqual(expectedLogs);
+                });
+            });
+        }
     });
 
     describe('dispatched on shadow root', () => {

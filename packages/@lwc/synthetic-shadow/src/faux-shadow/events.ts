@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import featureFlags from '@lwc/features';
 import {
     ArrayIndexOf,
     ArrayPush,
@@ -28,6 +29,7 @@ import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
+import { shouldInvokeListener } from '../shared/event-target';
 
 export enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,
@@ -74,6 +76,15 @@ function getEventMap(elm: EventTarget): ListenerMap {
     return listenerInfo;
 }
 
+/**
+ * Events dispatched on shadow roots actually end up being dispatched on their hosts. This means that the event.target
+ * property of events dispatched on shadow roots always resolve to their host. This function understands this
+ * abstraction and properly returns a reference to the shadow root when appropriate.
+ */
+export function getActualTarget(event: Event): EventTarget {
+    return eventToShadowRootMap.get(event) ?? eventTargetGetter.call(event);
+}
+
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
 function getWrappedShadowRootListener(listener: EventListener): WrappedListener {
@@ -90,7 +101,16 @@ function getWrappedShadowRootListener(listener: EventListener): WrappedListener 
             if (!isInstanceOfNativeShadowRoot(currentTarget)) {
                 currentTarget = getShadowRoot(currentTarget as Element);
             }
-            if (shouldInvokeShadowRootListener(event)) {
+
+            let shouldInvoke;
+            if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
+                shouldInvoke = shouldInvokeShadowRootListener(event);
+            } else {
+                const actualTarget = getActualTarget(event);
+                shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
+            }
+
+            if (shouldInvoke) {
                 listener.call(currentTarget, event);
             }
         } as WrappedListener;
@@ -111,8 +131,16 @@ function getWrappedCustomElementListener(listener: EventListener): WrappedListen
         customElementWrappedListener = function (event: Event) {
             // currentTarget is always defined inside an event listener
             const currentTarget = eventCurrentTargetGetter.call(event)!;
-            if (shouldInvokeCustomElementListener(event)) {
-                // all handlers on the custom element should be called with undefined 'this'
+
+            let shouldInvoke;
+            if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
+                shouldInvoke = shouldInvokeCustomElementListener(event);
+            } else {
+                const actualTarget = getActualTarget(event);
+                shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
+            }
+
+            if (shouldInvoke) {
                 listener.call(currentTarget, event);
             }
         } as WrappedListener;
