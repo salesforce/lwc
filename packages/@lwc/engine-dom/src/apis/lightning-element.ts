@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperty, freeze, isUndefined, seal } from '@lwc/shared';
-import { LightningElement } from '@lwc/engine-core';
+import { BaseLightningElement, LightningElement, MacroElement } from '@lwc/engine-core';
 
 import { buildCustomElementConstructor } from './build-custom-element-constructor';
 
-type ComponentConstructor = typeof LightningElement;
+type ComponentConstructor = typeof BaseLightningElement;
 type HTMLElementConstructor = typeof HTMLElement;
 
 const ComponentConstructorToCustomElementConstructorMap = new Map<
@@ -40,13 +40,19 @@ function getCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementCon
  *      const elm = document.createElement('x-foo');
  *
  */
-defineProperty(LightningElement, 'CustomElementConstructor', {
+defineProperty(BaseLightningElement, 'CustomElementConstructor', {
     get() {
         return getCustomElementConstructor(this);
     },
 });
 
+freeze(BaseLightningElement);
+seal(BaseLightningElement.prototype);
+
+freeze(MacroElement);
+seal(MacroElement.prototype);
+
 freeze(LightningElement);
 seal(LightningElement.prototype);
 
-export { LightningElement };
+export { BaseLightningElement, LightningElement, MacroElement };

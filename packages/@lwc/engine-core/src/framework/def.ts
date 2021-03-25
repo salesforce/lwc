@@ -29,7 +29,6 @@ import {
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
-import { LightningElement } from './lightning-element';
 import {
     BaseLightningElement,
     BaseLightningElementConstructor,
@@ -88,7 +87,7 @@ function getCtorProto(Ctor: BaseLightningElementConstructor): BaseLightningEleme
         // of our Base class without having to leak it to user-land. If the circular function returns
         // itself, that's the signal that we have hit the end of the proto chain, which must always
         // be base.
-        proto = p === proto ? LightningElement : p;
+        proto = p === proto ? BaseLightningElement : p;
     }
     return proto!;
 }
@@ -124,7 +123,9 @@ function createComponentDef(Ctor: BaseLightningElementConstructor): ComponentDef
     } = proto;
     const superProto = getCtorProto(Ctor);
     const superDef =
-        superProto !== LightningElement ? getComponentInternalDef(superProto) : lightingElementDef;
+        superProto !== BaseLightningElement
+            ? getComponentInternalDef(superProto)
+            : lightingElementDef;
     const bridge = HTMLBridgeElementFactory(superDef.bridge, keys(apiFields), keys(apiMethods));
     const props: PropertyDescriptorMap = assign(create(null), superDef.props, apiFields);
     const propsConfig = assign(create(null), superDef.propsConfig, apiFieldsConfig);
@@ -239,15 +240,15 @@ export function getComponentInternalDef(Ctor: unknown): ComponentDef {
 }
 
 const lightingElementDef: ComponentDef = {
-    ctor: LightningElement,
-    name: LightningElement.name,
+    ctor: BaseLightningElement,
+    name: BaseLightningElement.name,
     props: lightningBasedDescriptors,
     propsConfig: EmptyObject,
     methods: EmptyObject,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
     template: defaultEmptyTemplate,
-    render: LightningElement.prototype.render,
+    render: BaseLightningElement.prototype.render,
 };
 
 enum PropDefType {

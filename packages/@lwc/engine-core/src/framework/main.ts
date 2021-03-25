@@ -8,6 +8,8 @@
 // Public APIs -------------------------------------------------------------------------------------
 export { createContextProvider } from './context-provider';
 export { LightningElement } from './lightning-element';
+export { MacroElement } from './macro-element';
+export { BaseLightningElement } from './base-lightning-element';
 export { register } from './services';
 
 export { default as api } from './decorators/api';

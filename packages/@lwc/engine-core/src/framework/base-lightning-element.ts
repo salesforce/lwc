@@ -30,7 +30,6 @@ import { associateVM, getAssociatedVM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
-    patchShadowRootWithRestrictions,
     patchLightningElementPrototypeWithRestrictions,
     patchCustomElementWithRestrictions,
 } from './restrictions';
@@ -184,9 +183,8 @@ export const BaseLightningElement: BaseLightningElementConstructor = function (
     const vm = vmBeingConstructed;
     const {
         elm,
-        mode,
         renderer,
-        def: { ctor, bridge },
+        def: { bridge },
     } = vm;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -198,14 +196,8 @@ export const BaseLightningElement: BaseLightningElementConstructor = function (
 
     const component = this;
     setPrototypeOf(elm, bridge.prototype);
-    const cmpRoot = renderer.attachShadow(elm, {
-        mode,
-        delegatesFocus: !!ctor.delegatesFocus,
-        '$$lwc-synthetic-mode$$': true,
-    } as any);
 
     vm.component = this;
-    vm.cmpRoot = cmpRoot;
 
     // Locker hooks assignment. When the LWC engine run with Locker, Locker intercepts all the new
     // component creation and passes hooks to instrument all the component interactions with the
@@ -223,14 +215,12 @@ export const BaseLightningElement: BaseLightningElementConstructor = function (
 
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);
-    associateVM(cmpRoot, vm);
     associateVM(elm, vm);
 
     // Adding extra guard rails in DEV mode.
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
-        patchShadowRootWithRestrictions(cmpRoot);
     }
 
     return this;
@@ -506,11 +496,6 @@ BaseLightningElement.prototype = {
         }
 
         return getClassList(elm);
-    },
-
-    get template(): ShadowRoot {
-        const vm = getAssociatedVM(this);
-        return vm.cmpRoot;
     },
 
     get shadowRoot(): null {

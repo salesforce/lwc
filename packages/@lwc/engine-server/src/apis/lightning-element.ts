@@ -5,9 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { freeze, seal } from '@lwc/shared';
-import { LightningElement } from '@lwc/engine-core';
+import { LightningElement, BaseLightningElement, MacroElement } from '@lwc/engine-core';
+
+freeze(BaseLightningElement);
+seal(BaseLightningElement.prototype);
 
 freeze(LightningElement);
 seal(LightningElement.prototype);
 
-export { LightningElement };
+freeze(MacroElement);
+seal(MacroElement.prototype);
+
+export { BaseLightningElement, LightningElement, MacroElement };

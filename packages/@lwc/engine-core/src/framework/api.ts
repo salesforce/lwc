@@ -231,7 +231,7 @@ function linkNodeToShadow(elm: Node, owner: VM) {
     const { renderer, cmpRoot } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (renderer.syntheticShadow) {
+    if (cmpRoot && renderer.syntheticShadow) {
         (elm as any).$shadowResolver$ = (cmpRoot as any).$shadowResolver$;
     }
 }
