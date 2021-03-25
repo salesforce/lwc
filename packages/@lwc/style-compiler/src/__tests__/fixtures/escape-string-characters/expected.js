@@ -1,4 +1,4 @@
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return ["h1", shadowSelector, ":before {content: '$test\"escaping quote(\\')'}h1", shadowSelector, ":after {content: \"$my test'escaping quote(\\\")\"}h2", shadowSelector, ":before {content: \"\\\\\\\\\"}h2", shadowSelector, ":after {content: \"`\"}"].join('');
+function stylesheet(hostSelector, shadowSelector, transformHost, macroSelector) {
+  return [macroSelector, " h1", shadowSelector, ":before {content: '$test\"escaping quote(\\')'}", macroSelector, " h1", shadowSelector, ":after {content: \"$my test'escaping quote(\\\")\"}", macroSelector, " h2", shadowSelector, ":before {content: \"\\\\\\\\\"}", macroSelector, " h2", shadowSelector, ":after {content: \"`\"}"].join('');
 }
 export default [stylesheet];

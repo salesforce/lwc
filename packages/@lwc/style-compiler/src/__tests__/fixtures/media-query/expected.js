@@ -1,4 +1,4 @@
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return ["@media screen and (min-width: 900px) {h1", shadowSelector, " {}}"].join('');
+function stylesheet(hostSelector, shadowSelector, transformHost, macroSelector) {
+  return ["@media screen and (min-width: 900px) {", macroSelector, " h1", shadowSelector, " {}}"].join('');
 }
 export default [stylesheet];

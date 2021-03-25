@@ -33,8 +33,8 @@ it('should apply transformation for stylesheet file', async () => {
     `;
 
     const expected = `
-        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-            return [(nativeShadow ? ":host {color: red;}" : [hostSelector, " {color: red;}"].join('')), "div", shadowSelector, " {background-color: red;}"].join('');
+        function stylesheet(hostSelector, shadowSelector, transformHost, macroSelector) {
+            return [(transformHost ? [hostSelector, " {color: red;}"].join('') : ":host {color: red;}"), macroSelector, " div", shadowSelector, " {background-color: red;}"].join('');
         }
         export default [stylesheet];
     `;
@@ -47,8 +47,8 @@ describe('custom properties', () => {
     it('should not transform var functions if custom properties a resolved natively', async () => {
         const actual = `div { color: var(--bg-color); }`;
         const expected = `
-            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-                return ["div", shadowSelector, " {color: var(--bg-color);}"].join('');
+            function stylesheet(hostSelector, shadowSelector, transformHost, macroSelector) {
+                return [macroSelector, " div", shadowSelector, " {color: var(--bg-color);}"].join('');
             }
 
             export default [stylesheet];
@@ -74,8 +74,8 @@ describe('custom properties', () => {
 
         const expected = `
         import varResolver from "@customProperties";
-        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-            return ["div", shadowSelector, " {color: ", varResolver("--bg-color"), ";font-size: ", varResolver("--font-size","16px"), ";margin: ", varResolver("--margin-small",varResolver("--margin-medium","20px")), ";border-bottom: 1px solid ", varResolver("--lwc-border"), ";}"].join('');
+        function stylesheet(hostSelector, shadowSelector, transformHost, macroSelector) {
+            return [macroSelector, " div", shadowSelector, " {color: ", varResolver("--bg-color"), ";font-size: ", varResolver("--font-size","16px"), ";margin: ", varResolver("--margin-small",varResolver("--margin-medium","20px")), ";border-bottom: 1px solid ", varResolver("--lwc-border"), ";}"].join('');
         }
         export default [stylesheet];
         `;

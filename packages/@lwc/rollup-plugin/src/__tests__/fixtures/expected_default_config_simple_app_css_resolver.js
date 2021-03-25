@@ -7,16 +7,21 @@
   
   var varResolver__default = /*#__PURE__*/ _interopDefaultLegacy(varResolver);
   
-  function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-    return nativeShadow
+  function stylesheet(
+    hostSelector, 
+    shadowSelector, 
+    transformHost,
+    macroSelector
+  ) {
+    return transformHost
         ? [
-          ":host {color: ",
+          hostSelector,
+          " {color: ",
           varResolver__default["default"]("--lwc-my-color"),
           ";}",
         ].join("")
         : [
-          hostSelector,
-          " {color: ",
+          ":host {color: ",
           varResolver__default["default"]("--lwc-my-color"),
           ";}",
         ].join("");

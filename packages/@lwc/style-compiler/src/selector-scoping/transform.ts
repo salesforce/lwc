@@ -14,12 +14,14 @@ import {
     Pseudo,
     Tag,
     attribute,
+    selector as selectorFn,
+    combinator,
 } from 'postcss-selector-parser';
 
 import validateSelectors from './validate';
 
 import { isDirPseudoClass } from '../utils/rtl';
-import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
+import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE, MACRO_ATTRIBUTE } from '../utils/selectors-scoping';
 import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
 
 type ChildNode = Exclude<Node, Selector>;
@@ -52,6 +54,7 @@ function scopeSelector(selector: Selector) {
         }
     });
 
+    let anySelectorContainsHost = false;
     for (const compoundSelector of compoundSelectors) {
         // Compound selectors with only a single :dir pseudo class should be scoped, the dir pseudo
         // class transform will take care of transforming it properly.
@@ -61,6 +64,7 @@ function scopeSelector(selector: Selector) {
         // Compound selectors containing :host have a special treatment and should not be scoped
         // like the rest of the complex selectors.
         const containsHost = compoundSelector.some(isHostPseudoClass);
+        anySelectorContainsHost = anySelectorContainsHost || containsHost;
 
         if (!containsSingleDirSelector && !containsHost) {
             let nodeToScope: ChildNode | undefined;
@@ -87,6 +91,21 @@ function scopeSelector(selector: Selector) {
                 selector.insertBefore(compoundSelector[0], shadowAttribute);
             }
         }
+    }
+
+    if (!anySelectorContainsHost) {
+        const macroSelector = selectorFn({
+            nodes: [
+                attribute({
+                    attribute: MACRO_ATTRIBUTE,
+                    value: undefined,
+                    raws: {},
+                }),
+                combinator({ value: ' ' }),
+            ],
+            value: MACRO_ATTRIBUTE,
+        });
+        selector.prepend(macroSelector);
     }
 }
 

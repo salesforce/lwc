@@ -1,10 +1,15 @@
 (function (lwc) {
     'use strict';
 
-   function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-       return nativeShadow
-           ? ":host {color: var(--lwc-my-color);}"
-           : [hostSelector, " {color: var(--lwc-my-color);}"].join("");
+   function stylesheet(
+     hostSelector, 
+     shadowSelector, 
+     transformHost,
+     macroSelector
+   ) {
+       return transformHost
+           ? [hostSelector, " {color: var(--lwc-my-color);}"].join("")
+           : ":host {color: var(--lwc-my-color);}";
    }
    var _implicitStylesheets = [stylesheet];
 

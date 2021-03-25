@@ -1,7 +1,7 @@
 import _xFoo from 'x/foo';
 import { registerTemplate, registerComponent, LightningElement } from 'lwc';
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-return [(nativeShadow ? ":host {color: blue;}" : [hostSelector, " {color: blue;}"].join('')), "div", shadowSelector, " {color: red;}x-foo", shadowSelector, " {color: green;}"].join('');
+function stylesheet(hostSelector, shadowSelector, transformHost, macroSelector) {
+return [(transformHost ? [hostSelector, " {color: blue;}"].join('') : ":host {color: blue;}"), macroSelector, " div", shadowSelector, " {color: red;}", macroSelector, " x-foo", shadowSelector, " {color: green;}"].join('');
 }
 var _implicitStylesheets = [stylesheet];
 function tmpl($api, $cmp, $slotset, $ctx) {

@@ -1,4 +1,4 @@
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return (nativeShadow ? ":host {}" : [hostSelector, " {}"].join(''));
+function stylesheet(hostSelector, shadowSelector, transformHost, macroSelector) {
+  return (transformHost ? [hostSelector, " {}"].join('') : ":host {}");
 }
 export default [stylesheet];

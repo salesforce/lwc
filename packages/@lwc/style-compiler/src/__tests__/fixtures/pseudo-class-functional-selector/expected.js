@@ -1,4 +1,4 @@
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return [":not(p)", shadowSelector, " {}p:not(.foo, .bar)", shadowSelector, " {}:matches(ol, li, span)", shadowSelector, " {}"].join('');
+function stylesheet(hostSelector, shadowSelector, transformHost, macroSelector) {
+  return [macroSelector, " :not(p)", shadowSelector, " {}", macroSelector, " p:not(.foo, .bar)", shadowSelector, " {}", macroSelector, " :matches(ol, li, span)", shadowSelector, " {}"].join('');
 }
 export default [stylesheet];

@@ -19,7 +19,8 @@ import { getStyleOrSwappedStyle } from './hot-swaps';
 export type StylesheetFactory = (
     hostSelector: string,
     shadowSelector: string,
-    nativeShadow: boolean
+    transformHost: boolean,
+    macroSelector: string
 ) => string;
 
 /**
@@ -77,7 +78,8 @@ function evaluateStylesheetsContent(
     stylesheets: TemplateStylesheetFactories,
     hostSelector: string,
     shadowSelector: string,
-    nativeShadow: boolean
+    transformHost: boolean,
+    macroSelector: string
 ): string[] {
     const content: string[] = [];
 
@@ -87,7 +89,13 @@ function evaluateStylesheetsContent(
         if (isArray(stylesheet)) {
             ArrayPush.apply(
                 content,
-                evaluateStylesheetsContent(stylesheet, hostSelector, shadowSelector, nativeShadow)
+                evaluateStylesheetsContent(
+                    stylesheet,
+                    hostSelector,
+                    shadowSelector,
+                    transformHost,
+                    macroSelector
+                )
             );
         } else {
             if (process.env.NODE_ENV !== 'production') {
@@ -96,7 +104,10 @@ function evaluateStylesheetsContent(
                 // the stylesheet, while internally, we have a replacement for it.
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
-            ArrayPush.call(content, stylesheet(hostSelector, shadowSelector, nativeShadow));
+            ArrayPush.call(
+                content,
+                stylesheet(hostSelector, shadowSelector, transformHost, macroSelector)
+            );
         }
     }
 
@@ -106,18 +117,25 @@ function evaluateStylesheetsContent(
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
     const { stylesheets, stylesheetTokens: tokens } = template;
     const { syntheticShadow } = vm.renderer;
+    const isMacroElement = !vm.cmpRoot;
 
     let content: string[] = [];
 
     if (!isUndefined(stylesheets) && !isUndefined(tokens)) {
-        const hostSelector = syntheticShadow ? `[${tokens.hostAttribute}]` : '';
+        const macroSelector = isMacroElement ? vm.elm.tagName : '';
+        const hostSelector = isMacroElement
+            ? `${macroSelector} `
+            : syntheticShadow
+            ? `[${tokens.hostAttribute}]`
+            : '';
         const shadowSelector = syntheticShadow ? `[${tokens.shadowAttribute}]` : '';
 
         content = evaluateStylesheetsContent(
             stylesheets,
             hostSelector,
             shadowSelector,
-            !syntheticShadow
+            syntheticShadow || isMacroElement,
+            macroSelector
         );
     }
 

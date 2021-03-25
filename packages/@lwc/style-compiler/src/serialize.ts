@@ -9,7 +9,7 @@ import postcssValueParser from 'postcss-value-parser';
 
 import { Config } from './index';
 import { isImportMessage, isVarFunctionMessage } from './utils/message';
-import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
+import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE, MACRO_ATTRIBUTE } from './utils/selectors-scoping';
 
 enum TokenType {
     text = 'text',
@@ -25,7 +25,8 @@ interface Token {
 // Javascript identifiers used for the generation of the style module
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
-const SHADOW_DOM_ENABLED_IDENTIFIER = 'nativeShadow';
+const TRANSFORM_HOST_IDENTIFIER = 'transformHost';
+const MACRO_SELECTOR_IDENTIFIER = 'macroSelector';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
@@ -57,7 +58,7 @@ export default function serialize(result: Result, config: Config): string {
 
     if (serializedStyle) {
         // inline function
-        buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
+        buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${TRANSFORM_HOST_IDENTIFIER}, ${MACRO_SELECTOR_IDENTIFIER}) {\n`;
         buffer += `  return ${serializedStyle};\n`;
         buffer += `}\n`;
 
@@ -131,7 +132,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
 
                 tokens.push({
                     type: TokenType.expression,
-                    value: `(${SHADOW_DOM_ENABLED_IDENTIFIER} ? ${tmpHostExpression} : ${exprToken})`,
+                    value: `(${TRANSFORM_HOST_IDENTIFIER} ? ${exprToken} : ${tmpHostExpression})`,
                 });
 
                 tmpHostExpression = null;
@@ -191,6 +192,10 @@ function tokenizeCssSelector(data: string): Token[] {
             tokens.push({ type: TokenType.identifier, value: SHADOW_SELECTOR_IDENTIFIER });
 
             next += SHADOW_ATTRIBUTE.length + 2;
+        } else if (data.indexOf(`[${MACRO_ATTRIBUTE}]`, pos) === pos) {
+            tokens.push({ type: TokenType.identifier, value: MACRO_SELECTOR_IDENTIFIER });
+
+            next += MACRO_ATTRIBUTE.length + 2;
         } else {
             next += 1;
 
