@@ -31,7 +31,7 @@
         "@lwc/shared": "2.0.0-rc.0",
         "acorn": "~8.1.0",
         "astring": "~1.7.0",
-        "estree-walker": "~2.0.2",
+        "estree-walker": "~3.0.0",
         "esutils": "~2.0.3",
         "he": "~1.2.0",
         "parse5-with-errors": "~4.0.4"
