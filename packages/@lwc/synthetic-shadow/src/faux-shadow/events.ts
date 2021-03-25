@@ -77,7 +77,9 @@ function getEventMap(elm: EventTarget): ListenerMap {
 }
 
 /**
- * This function exists because events dispatched on shadow roots are actually dispatched on their hosts.
+ * Events dispatched on shadow roots actually end up being dispatched on their hosts. This means that the event.target
+ * property of events dispatched on shadow roots always resolve to their host. This function understands this
+ * abstraction and properly returns a reference to the shadow root when appropriate.
  */
 export function getActualTarget(event: Event): EventTarget {
     return eventToShadowRootMap.get(event) ?? eventTargetGetter.call(event);
@@ -99,12 +101,12 @@ function getWrappedShadowRootListener(listener: EventListener): WrappedListener 
             if (!isInstanceOfNativeShadowRoot(currentTarget)) {
                 currentTarget = getShadowRoot(currentTarget as Element);
             }
-            const actualTarget = getActualTarget(event);
-            let shouldInvoke;
 
+            let shouldInvoke;
             if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
                 shouldInvoke = shouldInvokeShadowRootListener(event);
             } else {
+                const actualTarget = getActualTarget(event);
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
             }
 
@@ -129,12 +131,12 @@ function getWrappedCustomElementListener(listener: EventListener): WrappedListen
         customElementWrappedListener = function (event: Event) {
             // currentTarget is always defined inside an event listener
             const currentTarget = eventCurrentTargetGetter.call(event)!;
-            const actualTarget = getActualTarget(event);
-            let shouldInvoke;
 
+            let shouldInvoke;
             if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
                 shouldInvoke = shouldInvokeCustomElementListener(event);
             } else {
+                const actualTarget = getActualTarget(event);
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
             }
 

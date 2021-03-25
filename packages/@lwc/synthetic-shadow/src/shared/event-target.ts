@@ -29,8 +29,9 @@ export function shouldInvokeListener(
     target: EventTarget,
     currentTarget: EventTarget
 ) {
-    // Handle this case early because some events will return an empty array when composedPath() is
-    // invoked (e.g., a disconnected instance of EventTarget, an instance of XMLHttpRequest, etc).
+    // Subsequent logic assumes that `currentTarget` must be contained in the composed path for the listener to be
+    // invoked, but this is not always the case. `composedPath()` will sometimes return an empty array, even when the
+    // listener should be invoked (e.g., a disconnected instance of EventTarget, an instance of XMLHttpRequest, etc).
     if (target === currentTarget) {
         return true;
     }
@@ -52,10 +53,8 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
     let wrapperFn = EventListenerMap.get(fnOrObj);
     if (isUndefined(wrapperFn)) {
         wrapperFn = function (this: EventTarget, event: Event) {
-            // this function is invoked from an event listener and
-            // currentTarget is always defined inside an event listener
+            // This function is invoked from an event listener and currentTarget is always defined.
             const currentTarget = eventCurrentTargetGetter.call(event)!;
-            const actualTarget = getActualTarget(event);
 
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
@@ -70,6 +69,7 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
             if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
                 shouldInvoke = !(eventToShadowRootMap.has(event) && isFalse(composed));
             } else {
+                const actualTarget = getActualTarget(event);
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
             }
 

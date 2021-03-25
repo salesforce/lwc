@@ -40,9 +40,7 @@ describe('event propagation in simple shadow tree', () => {
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
         // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-        return new Promise((resolve) => {
-            setTimeout(resolve);
-        }).then(() => {
+        return new Promise(setTimeout).then(() => {
             const logs = dispatchEventWithLog(
                 nodes['span-manual'],
                 new CustomEvent('test', { composed: true, bubbles: true })
@@ -162,9 +160,7 @@ describe('composed and bubbling event propagation in nested shadow tree', () => 
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
         // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-        return new Promise((resolve) => {
-            setTimeout(resolve);
-        }).then(() => {
+        return new Promise(setTimeout).then(() => {
             const logs = dispatchEventWithLog(
                 nodes['span-manual'],
                 new CustomEvent('test', { composed: true, bubbles: true })
@@ -199,28 +195,23 @@ describe('composed and bubbling event propagation in nested shadow tree', () => 
 
 describe('non-composed and bubbling event propagation in nested shadow tree', () => {
     let nodes;
-    let composedPath;
-    let expectedLogs;
     beforeEach(() => {
         nodes = createNestedShadowTree(document.body);
     });
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
         // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-        return new Promise((resolve) => {
-            setTimeout(resolve);
-        }).then(() => {
+        return new Promise(setTimeout).then(() => {
             const logs = dispatchEventWithLog(
                 nodes['span-manual'],
                 new CustomEvent('test', { composed: false, bubbles: true })
             );
-
-            composedPath = [
+            const composedPath = [
                 nodes['span-manual'],
                 nodes['div-manual'],
                 nodes['x-shadow-tree'].shadowRoot,
             ];
-            expectedLogs = [
+            const expectedLogs = [
                 [nodes['span-manual'], nodes['span-manual'], composedPath],
                 [nodes['div-manual'], nodes['span-manual'], composedPath],
                 [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
@@ -241,20 +232,17 @@ describe('non-composed and bubbling event propagation in nested shadow tree', ()
 
             it('propagate event from a child element added via lwc:dom="manual"', () => {
                 // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
-                return new Promise((resolve) => {
-                    setTimeout(resolve);
-                }).then(() => {
+                return new Promise(setTimeout).then(() => {
                     const logs = dispatchEventWithLog(
                         nodes['span-manual'],
                         new CustomEvent('test', { composed: false, bubbles: true })
                     );
-
-                    composedPath = [
+                    const composedPath = [
                         nodes['span-manual'],
                         nodes['div-manual'],
                         nodes['x-shadow-tree'].shadowRoot,
                     ];
-                    expectedLogs = [
+                    const expectedLogs = [
                         [nodes['span-manual'], nodes['span-manual'], composedPath],
                         [nodes['div-manual'], nodes['span-manual'], composedPath],
                         [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],

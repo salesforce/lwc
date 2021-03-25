@@ -18,7 +18,7 @@ const featureFlagLookup: FeatureFlagLookup = {
     ENABLE_NODE_LIST_PATCH: null,
     ENABLE_HTML_COLLECTIONS_PATCH: null,
     ENABLE_NODE_PATCH: null,
-    // Disables the fix for #2121
+    // Disables the fix for #2121 where non-composed events are visible outside of their shadow root.
     ENABLE_NON_COMPOSED_EVENTS_LEAKAGE: null,
 };
 export default featureFlagLookup;
