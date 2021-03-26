@@ -85,12 +85,13 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
     const visitedMethods = new Set();
 
     decorators.forEach((decorator) => {
-        const { path, type } = decorator;
+        const { path, decoratedNodeType } = decorator;
 
         // since we are validating get/set we only look at @api methods
         if (
             isApiDecorator(decorator) &&
-            (type === DECORATOR_TYPES.GETTER || type === DECORATOR_TYPES.SETTER)
+            (decoratedNodeType === DECORATOR_TYPES.GETTER ||
+                decoratedNodeType === DECORATOR_TYPES.SETTER)
         ) {
             const methodPath = path.parentPath;
             const methodName = methodPath.get('key.name').node;
@@ -109,7 +110,6 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
 
 function validateUniqueness(decorators) {
     const apiDecorators = decorators.filter(isApiDecorator);
-
     for (let i = 0; i < apiDecorators.length; i++) {
         const { path: currentPath, type: currentType } = apiDecorators[i];
         const currentPropertyName = currentPath.parentPath.get('key.name').node;
@@ -137,11 +137,16 @@ function validateUniqueness(decorators) {
     }
 }
 
-module.exports = function validate(klass, decorators) {
-    decorators.filter(isApiDecorator).forEach(({ path, type }) => {
+module.exports = function validate(decorators) {
+    const apiDecorators = decorators.filter(isApiDecorator);
+    if (apiDecorators.length === 0) {
+        return;
+    }
+
+    apiDecorators.forEach(({ path, decoratedNodeType }) => {
         validateConflict(path, decorators);
 
-        if (type !== DECORATOR_TYPES.METHOD) {
+        if (decoratedNodeType !== DECORATOR_TYPES.METHOD) {
             const property = path.parentPath;
 
             validatePropertyName(property);

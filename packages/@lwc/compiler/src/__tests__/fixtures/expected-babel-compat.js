@@ -1,10 +1,10 @@
-import __callKey1 from 'proxy-compat/callKey1';
-import __callKey2 from 'proxy-compat/callKey2';
-import __inKey from 'proxy-compat/inKey';
-import __setKey from 'proxy-compat/setKey';
-import __iterableKey from 'proxy-compat/iterableKey';
 import __callKey0 from 'proxy-compat/callKey0';
+import __callKey2 from 'proxy-compat/callKey2';
+import __callKey1 from 'proxy-compat/callKey1';
+import __setKey from 'proxy-compat/setKey';
 import __callKey3 from 'proxy-compat/callKey3';
+import __inKey from 'proxy-compat/inKey';
+import __iterableKey from 'proxy-compat/iterableKey';
 import _regeneratorRuntime from '@babel/runtime/regenerator';
 import _asyncToGenerator from '@babel/runtime/helpers/asyncToGenerator';
 import _createClass from '@babel/runtime/helpers/createClass';
@@ -14,31 +14,16 @@ import _toConsumableArray from '@babel/runtime/helpers/toConsumableArray';
 import _slicedToArray from '@babel/runtime/helpers/slicedToArray';
 import _defineProperty2 from '@babel/runtime/helpers/defineProperty';
 import _classCallCheck from '@babel/runtime/helpers/classCallCheck';
+import _inherits from '@babel/runtime/helpers/inherits';
 import _possibleConstructorReturn from '@babel/runtime/helpers/possibleConstructorReturn';
 import _getPrototypeOf from '@babel/runtime/helpers/getPrototypeOf';
-import _inherits from '@babel/runtime/helpers/inherits';
 import { registerDecorators } from 'lwc';
-function _templateObject3() {
-var data = _taggedTemplateLiteral(["wow\naB", " ", ""], ["wow\\naB", " ", ""]);
-_templateObject3 = function _templateObject3() {
-return data;
-};
-return data;
-}
-function _templateObject2() {
-var data = _taggedTemplateLiteral(["wow\nab", " ", ""], ["wow\\nab", " ", ""]);
-_templateObject2 = function _templateObject2() {
-return data;
-};
-return data;
-}
-function _templateObject() {
-var data = _taggedTemplateLiteral(["wow\na", "b ", ""], ["wow\\na", "b ", ""]);
-_templateObject = function _templateObject() {
-return data;
-};
-return data;
-}
+var _templateObject, _templateObject2, _templateObject3;
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || (o._ES5ProxyType ? o.get(Symbol.iterator) : o[Symbol.iterator]) == null) { if (Array.compatIsArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof (o._ES5ProxyType ? o.get("length") : o.length) === "number") { if (it) o = it; var i = 0; var F = function () {}; return { s: F, n: function () { var _i2; if (i >= (o._ES5ProxyType ? o.get("length") : o.length)) return { done: true }; return { done: false, value: (_i2 = i++, o._ES5ProxyType ? o.get(_i2) : o[_i2]) }; }, e: function (e) { throw e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function () { it = __callKey0(o, Symbol.iterator); }, n: function () { var step = __callKey0(it, "next"); normalCompletion = step._ES5ProxyType ? step.get("done") : step.done; return step; }, e: function (e) { didErr = true; err = e; }, f: function () { try { if (!normalCompletion && (it._ES5ProxyType ? it.get("return") : it.return) != null) __callKey0(it, "return"); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { var _constructor; if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = __callKey2(__callKey1(Object.prototype._ES5ProxyType ? Object.prototype.get("toString") : Object.prototype.toString, "call", o), "slice", 8, -1); if (n === "Object" && (o._ES5ProxyType ? o.get("constructor") : o.constructor)) n = (_constructor = o._ES5ProxyType ? o.get("constructor") : o.constructor, _constructor._ES5ProxyType ? _constructor.get("name") : _constructor.name); if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || __callKey1(/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/, "test", n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > (arr._ES5ProxyType ? arr.get("length") : arr.length)) len = arr._ES5ProxyType ? arr.get("length") : arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) __setKey(arr2, i, arr._ES5ProxyType ? arr.get(i) : arr[i]); return arr2; }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var _getPrototypeOf2; var NewTarget = (_getPrototypeOf2 = _getPrototypeOf(this), _getPrototypeOf2._ES5ProxyType ? _getPrototypeOf2.get("constructor") : _getPrototypeOf2.constructor); result = __callKey3(Reflect, "construct", Super, arguments, NewTarget); } else { result = __callKey2(Super, "apply", this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct() { var _construct; if (typeof Reflect === "undefined" || !(Reflect._ES5ProxyType ? Reflect.get("construct") : Reflect.construct)) return false; if (_construct = Reflect._ES5ProxyType ? Reflect.get("construct") : Reflect.construct, _construct._ES5ProxyType ? _construct.get("sham") : _construct.sham) return false; if (typeof Proxy === "function") return true; try { __callKey1(Boolean.prototype._ES5ProxyType ? Boolean.prototype.get("valueOf") : Boolean.prototype.valueOf, "call", __callKey3(Reflect, "construct", Boolean, [], function () {})); return true; } catch (e) { return false; } }
 function ownKeys(object, enumerableOnly) {
 var keys = Object.compatKeys(object);
 if (Object.getOwnPropertySymbols) {
@@ -98,9 +83,10 @@ __callKey1(console, "log", foo);
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-classes/test/fixtures/loose/super-class/actual.js
 var Test = /*#__PURE__*/function (_Foo) {
 _inherits(Test, _Foo);
+var _super = _createSuper(Test);
 function Test() {
 _classCallCheck(this, Test);
-return _possibleConstructorReturn(this, __callKey2(_getPrototypeOf(Test), "apply", this, arguments));
+return __callKey2(_super, "apply", this, arguments);
 }
 return Test;
 }(Foo); //babel-plugin-transform-es2015-computed-properties
@@ -112,29 +98,19 @@ var x = coords._ES5ProxyType ? coords.get("x") : coords.x,
 y = coords._ES5ProxyType ? coords.get("y") : coords.y;
 __callKey2(console, "log", x, y); // babel-plugin-transform-es2015-for-of
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-for-of/test/fixtures/loose/let/actual.js
-var _iteratorNormalCompletion = true;
-var _didIteratorError = false;
-var _iteratorError = undefined;
+var _iterator = _createForOfIteratorHelper(arr),
+_step;
 try {
-for (var _iterator = __callKey0(arr, Symbol.iterator), _step; !(_iteratorNormalCompletion = (_step2 = _step = __callKey0(_iterator, "next"), _done = _step2._ES5ProxyType ? _step2.get("done") : _step2.done)); _iteratorNormalCompletion = true) {
+for (__callKey0(_iterator, "s"); !(_step2 = _step = __callKey0(_iterator, "n"), _done = _step2._ES5ProxyType ? _step2.get("done") : _step2.done);) {
 var _step2, _done;
 var _i = _step._ES5ProxyType ? _step.get("value") : _step.value;
 __callKey1(console, "log", _i);
 } // babel-plugin-transform-es2015-parameters
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-parameters/test/fixtures/use-loose-option/default-array-destructuring/actual.js
 } catch (err) {
-_didIteratorError = true;
-_iteratorError = err;
+__callKey1(_iterator, "e", err);
 } finally {
-try {
-if (!_iteratorNormalCompletion && (_iterator._ES5ProxyType ? _iterator.get("return") : _iterator.return) != null) {
-__callKey0(_iterator, "return");
-}
-} finally {
-if (_didIteratorError) {
-throw _iteratorError;
-}
-}
+__callKey0(_iterator, "f");
 }
 function t() {
 var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [1, 2, 3],
@@ -152,9 +128,9 @@ return 5 + 5;
 __callKey1(console, "log", _toConsumableArray(foo)); // babel-plugin-transform-es2015-template-literals
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-template-literals/test/fixtures/loose/tag/actual.js
 function literal() {
-var foo = bar(_templateObject(), 42, __callKey0(_, "foobar"));
-var bar = bar(_templateObject2(), 42, __callKey0(_, "foobar"));
-var baz = bar(_templateObject3(), 42, __callKey0(_, "baz"));
+var foo = bar(_templateObject || (_templateObject = _taggedTemplateLiteral(["wow\na", "b ", ""], ["wow\\na", "b ", ""])), 42, __callKey0(_, "foobar"));
+var bar = bar(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["wow\nab", " ", ""], ["wow\\nab", " ", ""])), 42, __callKey0(_, "foobar"));
+var baz = bar(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["wow\naB", " ", ""], ["wow\\naB", " ", ""])), 42, __callKey0(_, "baz"));
 return [foo, bar, baz];
 } // babel-plugin-transform-es2015-typeof-symbol
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-typeof-symbol/test/fixtures/symbols/typeof/actual.js
@@ -179,7 +155,7 @@ _createClass(Foo, [{
 key: "foo",
 value: function () {
 var _foo = _asyncToGenerator( /*#__PURE__*/__callKey1(_regeneratorRuntime, "mark", function _callee() {
-return __callKey3(_regeneratorRuntime, "wrap", function _callee$(_context) {
+return __callKey2(_regeneratorRuntime, "wrap", function _callee$(_context) {
 while (1) {
 switch (__setKey(_context, "prev", _context._ES5ProxyType ? _context.get("next") : _context.next)) {
 case 0:
@@ -192,7 +168,7 @@ case "end":
 return __callKey0(_context, "stop");
 }
 }
-}, _callee, this);
+}, _callee);
 }));
 function foo() {
 return __callKey2(_foo, "apply", this, arguments);

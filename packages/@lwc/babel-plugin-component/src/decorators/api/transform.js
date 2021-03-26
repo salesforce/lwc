@@ -5,10 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const { isApiDecorator } = require('./shared');
-const { markAsLWCNode, staticClassProperty } = require('../../utils');
 const {
-    LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS },
     DECORATOR_TYPES,
+    LWC_COMPONENT_PROPERTIES: { PUBLIC_METHODS, PUBLIC_PROPS },
 } = require('../../constants');
 
 const PUBLIC_PROP_BIT_MASK = {
@@ -30,84 +29,66 @@ function getPropertyBitmask(type) {
     }
 }
 
-function getSiblingGetSetPair(propertyPath, propertyName, type) {
-    const siblingType = type === 'getter' ? 'set' : 'get';
-    const klassBody = propertyPath.parentPath.get('body');
-    const siblingNode = klassBody.find(
-        (classMethodPath) =>
-            classMethodPath !== propertyPath &&
-            classMethodPath.isClassMethod({ kind: siblingType }) &&
-            classMethodPath.node.key.name === propertyName
-    );
-
+function getSiblingGetSetPairType(propertyName, type, classBodyItems) {
+    const siblingKind = type === DECORATOR_TYPES.GETTER ? 'set' : 'get';
+    const siblingNode = classBodyItems.find((classBodyItem) => {
+        const isClassMethod = classBodyItem.isClassMethod({ kind: siblingKind });
+        const isSamePropertyName = classBodyItem.node.key.name === propertyName;
+        return isClassMethod && isSamePropertyName;
+    });
     if (siblingNode) {
-        const decoratorType =
-            siblingType === 'get' ? DECORATOR_TYPES.GETTER : DECORATOR_TYPES.SETTER;
-        return { type: decoratorType, path: siblingNode };
+        return siblingKind === 'get' ? DECORATOR_TYPES.GETTER : DECORATOR_TYPES.SETTER;
     }
 }
 
-/** Returns the public props configuration of a class based on a list decorators. */
-function computePublicPropsConfig(decorators) {
-    return decorators.reduce((acc, { path, type }) => {
-        const property = path.parentPath;
-        const propertyName = property.get('key.name').node;
-
+function computePublicPropsConfig(publicPropertyMetas, classBodyItems) {
+    return publicPropertyMetas.reduce((acc, { propertyName, decoratedNodeType }) => {
         if (!(propertyName in acc)) {
             acc[propertyName] = {};
         }
+        acc[propertyName].config |= getPropertyBitmask(decoratedNodeType);
 
-        acc[propertyName].config |= getPropertyBitmask(type);
-
-        // With the latest decorator spec a decorator only need to be in one of the getter/setter pair
-        // We need to add the proper bitmask for the sibling getter/setter if exists
-        const siblingPair = getSiblingGetSetPair(property, propertyName, type);
-        if (siblingPair) {
-            acc[propertyName].config |= getPropertyBitmask(siblingPair.type);
+        if (
+            decoratedNodeType === DECORATOR_TYPES.GETTER ||
+            decoratedNodeType === DECORATOR_TYPES.SETTER
+        ) {
+            // With the latest decorator spec, only one of the getter/setter pair needs a decorator.
+            // We need to add the proper bitmask for the sibling getter/setter if it exists.
+            const pairType = getSiblingGetSetPairType(
+                propertyName,
+                decoratedNodeType,
+                classBodyItems
+            );
+            if (pairType) {
+                acc[propertyName].config |= getPropertyBitmask(pairType);
+            }
         }
 
         return acc;
     }, {});
 }
 
-/** Returns the public methods configuration of class based on a list of decorators. */
-function computePublicMethodsConfig(decorators) {
-    return decorators.map(({ path }) => path.parentPath.get('key.name').node);
-}
-
-/** Transform class public props and returns the list of public props */
-function transformPublicProps(t, klassBody, apiDecorators) {
-    const publicProps = apiDecorators.filter(({ type }) => type !== DECORATOR_TYPES.METHOD);
-
-    if (publicProps.length) {
-        const publicPropsConfig = computePublicPropsConfig(publicProps);
-        const staticProp = staticClassProperty(t, PUBLIC_PROPS, t.valueToNode(publicPropsConfig));
-
-        markAsLWCNode(staticProp);
-        klassBody.pushContainer('body', staticProp);
-    }
-}
-
-/** Transform class public methods and returns the list of public methods  */
-function transformPublicMethods(t, klassBody, apiDecorators) {
-    const publicMethods = apiDecorators.filter(({ type }) => type === DECORATOR_TYPES.METHOD);
-
-    if (publicMethods.length) {
-        const publicMethodsConfig = computePublicMethodsConfig(publicMethods);
-        const classProp = staticClassProperty(
-            t,
-            PUBLIC_METHODS,
-            t.valueToNode(publicMethodsConfig)
+module.exports = function transform(t, decoratorMetas, classBodyItems) {
+    const objectProperties = [];
+    const apiDecoratorMetas = decoratorMetas.filter(isApiDecorator);
+    const publicPropertyMetas = apiDecoratorMetas.filter(
+        ({ decoratedNodeType }) => decoratedNodeType !== DECORATOR_TYPES.METHOD
+    );
+    if (publicPropertyMetas.length) {
+        const propsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems);
+        objectProperties.push(
+            t.objectProperty(t.identifier(PUBLIC_PROPS), t.valueToNode(propsConfig))
         );
-        markAsLWCNode(classProp);
-        klassBody.pushContainer('body', classProp);
     }
-}
 
-module.exports = function transform(t, klass, decorators) {
-    const klassBody = klass.get('body');
-    const apiDecorators = decorators.filter(isApiDecorator);
-
-    transformPublicProps(t, klassBody, apiDecorators);
-    transformPublicMethods(t, klassBody, apiDecorators);
+    const publicMethodMetas = apiDecoratorMetas.filter(
+        ({ decoratedNodeType }) => decoratedNodeType === DECORATOR_TYPES.METHOD
+    );
+    if (publicMethodMetas.length) {
+        const methodNames = publicMethodMetas.map(({ propertyName }) => propertyName);
+        objectProperties.push(
+            t.objectProperty(t.identifier(PUBLIC_METHODS), t.valueToNode(methodNames))
+        );
+    }
+    return objectProperties;
 };

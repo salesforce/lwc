@@ -7,12 +7,8 @@
 const { basename, extname } = require('path');
 
 const moduleImports = require('@babel/helper-module-imports');
-const { LWCClassErrors } = require('@lwc/errors');
 
-const { LWC_PACKAGE_ALIAS, LWC_SUPPORTED_APIS, REGISTER_COMPONENT_ID } = require('./constants');
-const { generateError, getEngineImportSpecifiers } = require('./utils');
-
-const TEMPLATE_KEY = 'tmpl';
+const { LWC_PACKAGE_ALIAS, REGISTER_COMPONENT_ID, TEMPLATE_KEY } = require('./constants');
 
 function getBaseName(classPath) {
     const ext = extname(classPath);
@@ -30,7 +26,6 @@ function importDefaultTemplate(path, state) {
 function needsComponentRegistration(path) {
     return (
         (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
-        // path.isMemberExpression() || // this will probably yield more false positives than anything else
         path.isCallExpression() ||
         path.isClassDeclaration() ||
         path.isConditionalExpression()
@@ -66,20 +61,6 @@ module.exports = function ({ types: t }) {
     }
 
     return {
-        Program(path) {
-            const engineImportSpecifiers = getEngineImportSpecifiers(path);
-
-            // validate internal api imports
-            engineImportSpecifiers.forEach(({ name }) => {
-                if (!LWC_SUPPORTED_APIS.has(name)) {
-                    throw generateError(path, {
-                        errorInfo: LWCClassErrors.INVALID_IMPORT_PROHIBITED_API,
-                        messageArgs: [name],
-                    });
-                }
-            });
-        },
-
         ExportDefaultDeclaration(path, state) {
             const implicitResolution = !state.opts.isExplicitImport;
             if (implicitResolution) {

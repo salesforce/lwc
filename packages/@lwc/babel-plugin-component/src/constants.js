@@ -55,8 +55,6 @@ const LWC_SUPPORTED_APIS = new Set([
 ]);
 
 const LWC_COMPONENT_PROPERTIES = {
-    STYLE: 'style',
-    RENDER: 'render',
     PUBLIC_PROPS: 'publicProps',
     PUBLIC_METHODS: 'publicMethods',
     WIRE: 'wire',
@@ -72,15 +70,17 @@ const DECORATOR_TYPES = {
 
 const REGISTER_COMPONENT_ID = 'registerComponent';
 const REGISTER_DECORATORS_ID = 'registerDecorators';
+const TEMPLATE_KEY = 'tmpl';
 
 module.exports = {
     AMBIGUOUS_PROP_SET,
+    DECORATOR_TYPES,
     DISALLOWED_PROP_SET,
     LWC_PACKAGE_ALIAS,
     LWC_PACKAGE_EXPORTS,
     LWC_SUPPORTED_APIS,
     LWC_COMPONENT_PROPERTIES,
-    DECORATOR_TYPES,
     REGISTER_COMPONENT_ID,
     REGISTER_DECORATORS_ID,
+    TEMPLATE_KEY,
 };

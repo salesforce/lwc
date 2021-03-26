@@ -91,7 +91,7 @@ function validateUsageWithOtherDecorators(path, decorators) {
     });
 }
 
-module.exports = function validate(klass, decorators) {
+module.exports = function validate(decorators) {
     decorators.filter(isWireDecorator).forEach(({ path }) => {
         validateUsageWithOtherDecorators(path, decorators);
         validateWireParameters(path, decorators);
