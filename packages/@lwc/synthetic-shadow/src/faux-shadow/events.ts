@@ -207,6 +207,11 @@ function attachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
     if (isUndefined(cmpEventHandlers)) {
         cmpEventHandlers = listenerMap[type] = [];
     }
+    // Prevent identical listeners from subscribing to the same event type.
+    // TODO [#1824]: Options will also play a factor when we introduce support for them (#1824).
+    if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
+        return;
+    }
     // only add to DOM if there is no other listener on the same placement yet
     if (cmpEventHandlers.length === 0) {
         // super.addEventListener() - this will not work on
