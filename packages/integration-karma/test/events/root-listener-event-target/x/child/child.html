@@ -1,3 +1,0 @@
-<template>
-    Click me
-</template>
