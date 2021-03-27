@@ -127,3 +127,53 @@ describe('Event.stopImmediatePropagation', () => {
         ]);
     });
 });
+
+describe('Event.composedPath', () => {
+    it('should return an empty array when asynchronously invoked', () => {
+        const nodes = createTestElement();
+        const event = new CustomEvent('test', { bubbles: true, composed: true });
+
+        let _event;
+        nodes['x-container'].addEventListener(event.type, (event) => {
+            _event = event;
+        });
+
+        nodes.child_div.dispatchEvent(event);
+
+        expect(_event.composedPath()).toHaveSize(0);
+    });
+
+    it('should not throw when invoked on an event with a target that is not an instance of Node', (done) => {
+        const req = new XMLHttpRequest();
+        req.addEventListener('test', (event) => {
+            // Not looking at return value because browsers have different implementations.
+            expect(() => {
+                event.composedPath();
+            }).not.toThrowError();
+            done();
+        });
+        req.dispatchEvent(new CustomEvent('test'));
+    });
+
+    // Excluding IE11 from this test involving text nodes since our IE11 shadow root polyfill
+    // injects comments outside of production for debugging purposes.
+    if (!process.env.COMPAT) {
+        it('should return expected composed path when the target is a text node', (done) => {
+            const nodes = createTestElement();
+            const event = new CustomEvent('test', { bubbles: true, composed: false });
+
+            const textNode = nodes.child_div.childNodes[0];
+
+            textNode.addEventListener('test', (event) => {
+                expect(event.composedPath()).toEqual([
+                    textNode,
+                    nodes.child_div,
+                    nodes['x-child.shadowRoot'],
+                ]);
+                done();
+            });
+
+            textNode.dispatchEvent(event);
+        });
+    }
+});
