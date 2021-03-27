@@ -30,7 +30,9 @@ describe('single shadow boundary', () => {
             expect(event.target).toBe(nodes['x-container']);
         });
 
-        it('{ bubbles: true, composed: false }', () => {
+        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
+        // In Safari, the event target is not null.
+        xit('{ bubbles: true, composed: false }', () => {
             const nodes = createComponent();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
             nodes.container_div.dispatchEvent(event);
@@ -53,7 +55,9 @@ describe('single shadow boundary', () => {
             });
         });
 
-        it('{ bubbles: true, composed: false }', () => {
+        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
+        // In Safari, the event target is not null.
+        xit('{ bubbles: true, composed: false }', () => {
             const nodes = createComponent();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
             nodes.container_span_manual.dispatchEvent(event);
