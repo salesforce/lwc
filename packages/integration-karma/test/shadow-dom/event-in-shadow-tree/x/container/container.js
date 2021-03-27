@@ -6,6 +6,15 @@ export default class extends LightningElement {
         this.dispatchEvent(event);
     }
 
+    @api
+    get testEventReceived() {
+        return this._testEventReceived || false;
+    }
+
+    handleTest() {
+        this._testEventReceived = true;
+    }
+
     renderedCallback() {
         const spanManual = document.createElement('span');
         spanManual.setAttribute('data-id', 'container_span_manual');

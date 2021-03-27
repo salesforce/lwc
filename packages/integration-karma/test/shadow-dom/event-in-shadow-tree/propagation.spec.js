@@ -728,3 +728,21 @@ describe('event propagation', () => {
         });
     }
 });
+
+describe('declarative event listener', () => {
+    it('when dispatching instance of Event', () => {
+        const nodes = createTestElement();
+        const event = new Event('test', { bubbles: true, composed: true });
+        nodes.button.dispatchEvent(event);
+
+        expect(nodes['x-container'].testEventReceived).toBeTrue();
+    });
+
+    it('when dispatching instance of CustomEvent', () => {
+        const nodes = createTestElement();
+        const event = new CustomEvent('test', { bubbles: true, composed: true });
+        nodes.button.dispatchEvent(event);
+
+        expect(nodes['x-container'].testEventReceived).toBeTrue();
+    });
+});
