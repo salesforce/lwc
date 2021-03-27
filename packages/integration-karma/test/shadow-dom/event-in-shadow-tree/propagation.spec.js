@@ -28,6 +28,17 @@ function createTestElement() {
     return extractDataIds(elm);
 }
 
+function createDisconnectedTestElement() {
+    const fragment = document.createDocumentFragment();
+    const elm = createElement('x-container', { is: Container });
+    elm.setAttribute('data-id', 'x-container');
+    fragment.appendChild(elm);
+    const nodes = extractDataIds(elm);
+    // Manually added because document fragments can't have attributes.
+    nodes.fragment = fragment;
+    return nodes;
+}
+
 describe('event propagation', () => {
     describe('dispatched on native element', () => {
         let nodes;
@@ -640,4 +651,80 @@ describe('event propagation', () => {
             });
         });
     });
+
+    // IE11 doesn't bubble events to the document fragment
+    if (process.env.COMPAT !== true) {
+        describe('dispatched within a disconnected tree', () => {
+            it('{bubbles: true, composed: true}', () => {
+                const nodes = createDisconnectedTestElement();
+                const event = new CustomEvent('test', { bubbles: true, composed: true });
+
+                const composedPath = [
+                    nodes.container_div,
+                    nodes['x-container'].shadowRoot,
+                    nodes['x-container'],
+                    nodes.fragment,
+                ];
+                const expectedLogs = [
+                    [nodes.container_div, nodes.container_div, composedPath],
+                    [nodes['x-container'].shadowRoot, nodes.container_div, composedPath],
+                    [nodes['x-container'], nodes['x-container'], composedPath],
+                    [nodes.fragment, nodes['x-container'], composedPath],
+                ];
+
+                const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+
+            it('{bubbles: true, composed: false}', () => {
+                const nodes = createDisconnectedTestElement();
+                const event = new CustomEvent('test', { bubbles: true, composed: false });
+
+                const composedPath = [nodes.container_div, nodes['x-container'].shadowRoot];
+                const expectedLogs = [
+                    [nodes.container_div, nodes.container_div, composedPath],
+                    [nodes['x-container'].shadowRoot, nodes.container_div, composedPath],
+                ];
+
+                const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+
+            it('{bubbles: false, composed: true}', () => {
+                const nodes = createDisconnectedTestElement();
+                const event = new CustomEvent('test', { bubbles: false, composed: true });
+
+                const composedPath = [
+                    nodes.container_div,
+                    nodes['x-container'].shadowRoot,
+                    nodes['x-container'],
+                    nodes.fragment,
+                ];
+
+                let expectedLogs;
+                if (process.env.NATIVE_SHADOW) {
+                    expectedLogs = [
+                        [nodes.container_div, nodes.container_div, composedPath],
+                        [nodes['x-container'], nodes['x-container'], composedPath],
+                    ];
+                } else {
+                    expectedLogs = [[nodes.container_div, nodes.container_div, composedPath]];
+                }
+
+                const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+
+            it('{bubbles: false, composed: false}', () => {
+                const nodes = createDisconnectedTestElement();
+                const event = new CustomEvent('test', { bubbles: false, composed: false });
+
+                const composedPath = [nodes.container_div, nodes['x-container'].shadowRoot];
+                const expectedLogs = [[nodes.container_div, nodes.container_div, composedPath]];
+
+                const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+        });
+    }
 });

@@ -2,34 +2,8 @@
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-inside-shadow-tree.html
 
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
 
-import ShadowTree from 'x/shadowTree';
 import XParentWithDeclarativeHandlers from 'x/parentWithDeclarativeHandlers';
-
-function dispatchEventWithLog(target, event) {
-    var log = [];
-
-    for (var node = target; node; node = node.parentNode || node.host) {
-        node.addEventListener(
-            event.type,
-            function (event) {
-                log.push([this, event.target, event.composedPath()]);
-            }.bind(node)
-        );
-    }
-
-    target.dispatchEvent(event);
-    return log;
-}
-
-function createShadowTree(parentNode) {
-    const elm = createElement('x-shadow-tree', { is: ShadowTree });
-    elm.setAttribute('data-id', 'x-shadow-tree');
-    parentNode.appendChild(elm);
-
-    return extractDataIds(elm);
-}
 
 describe('event propagation in simple shadow tree', () => {
     describe('parent with declarative handlers', () => {
@@ -54,56 +28,5 @@ describe('event propagation in simple shadow tree', () => {
             child.dispatchCustomEvent();
             expect(elm.customEventReceived).toBe(true);
         });
-    });
-});
-
-/**
- * Check to detect if, in a disconnected tree, events bubble to the documentFragment
- */
-function doEventsBubbleToDocFrag() {
-    const frag = document.createDocumentFragment();
-    const div = document.createElement('div');
-    frag.appendChild(div);
-    let ret = false;
-    frag.addEventListener('test', () => {
-        ret = true;
-    });
-    div.dispatchEvent(new CustomEvent('test', { composed: true, bubbles: true }));
-    return ret;
-}
-
-describe('event propagation in disconnected tree', () => {
-    it('propagate event from a child element in a document fragment', () => {
-        const fragment = document.createDocumentFragment();
-        const nodes = createShadowTree(fragment);
-        const logs = dispatchEventWithLog(
-            nodes.span,
-            new CustomEvent('test', { composed: true, bubbles: true })
-        );
-
-        const composedPath = [
-            nodes.span,
-            nodes.div,
-            nodes['x-shadow-tree'].shadowRoot,
-            nodes['x-shadow-tree'],
-            fragment,
-        ];
-        if (doEventsBubbleToDocFrag()) {
-            expect(logs).toEqual([
-                [nodes.span, nodes.span, composedPath],
-                [nodes.div, nodes.span, composedPath],
-                [nodes['x-shadow-tree'].shadowRoot, nodes.span, composedPath],
-                [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
-                [fragment, nodes['x-shadow-tree'], composedPath],
-            ]);
-        } else {
-            // IE11
-            expect(logs).toEqual([
-                [nodes.span, nodes.span, composedPath],
-                [nodes.div, nodes.span, composedPath],
-                [nodes['x-shadow-tree'].shadowRoot, nodes.span, composedPath],
-                [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
-            ]);
-        }
     });
 });
