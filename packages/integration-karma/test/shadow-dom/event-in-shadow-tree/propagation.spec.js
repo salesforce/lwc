@@ -490,4 +490,154 @@ describe('event propagation', () => {
             expect(actualLogs).toEqual(expectedLogs);
         });
     });
+
+    describe('dispatched on lwc:dom="manual" node', () => {
+        if (!process.env.NATIVE_SHADOW) {
+            describe('when the ENABLE_NON_COMPOSED_EVENTS_LEAKAGE flag is enabled', () => {
+                beforeEach(() => {
+                    setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
+                });
+                afterEach(() => {
+                    setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', false);
+                });
+
+                it('{bubbles: true, composed: false}', () => {
+                    const nodes = createTestElement();
+                    const event = new CustomEvent('test', { bubbles: true, composed: false });
+
+                    const composedPath = [
+                        nodes.container_span_manual,
+                        nodes.container_span,
+                        nodes['x-container'].shadowRoot,
+                    ];
+                    const expectedLogs = [
+                        [nodes.container_span_manual, nodes.container_span_manual, composedPath],
+                        [nodes.container_span, nodes.container_span_manual, composedPath],
+                        [
+                            nodes['x-container'].shadowRoot,
+                            nodes.container_span_manual,
+                            composedPath,
+                        ],
+                        [document.body, null, composedPath],
+                        [document.documentElement, null, composedPath],
+                        [document, null, composedPath],
+                        [window, null, composedPath],
+                    ];
+
+                    return Promise.resolve().then(() => {
+                        const actualLogs = dispatchEventWithLog(
+                            nodes.container_span_manual,
+                            nodes,
+                            event
+                        );
+                        expect(actualLogs).toEqual(expectedLogs);
+                    });
+                });
+            });
+        }
+
+        it('{bubbles: true, composed: true}', () => {
+            const nodes = createTestElement();
+            const event = new CustomEvent('test', { bubbles: true, composed: true });
+
+            const composedPath = [
+                nodes.container_span_manual,
+                nodes.container_span,
+                nodes['x-container'].shadowRoot,
+                nodes['x-container'],
+                document.body,
+                document.documentElement,
+                document,
+                window,
+            ];
+            const expectedLogs = [
+                [nodes.container_span_manual, nodes.container_span_manual, composedPath],
+                [nodes.container_span, nodes.container_span_manual, composedPath],
+                [nodes['x-container'].shadowRoot, nodes.container_span_manual, composedPath],
+                [nodes['x-container'], nodes['x-container'], composedPath],
+                [document.body, nodes['x-container'], composedPath],
+                [document.documentElement, nodes['x-container'], composedPath],
+                [document, nodes['x-container'], composedPath],
+                [window, nodes['x-container'], composedPath],
+            ];
+
+            return Promise.resolve().then(() => {
+                const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+        });
+
+        it('{bubbles: true, composed: false}', () => {
+            const nodes = createTestElement();
+            const event = new CustomEvent('test', { bubbles: true, composed: false });
+
+            const composedPath = [
+                nodes.container_span_manual,
+                nodes.container_span,
+                nodes['x-container.shadowRoot'],
+            ];
+            const expectedLogs = [
+                [nodes.container_span_manual, nodes.container_span_manual, composedPath],
+                [nodes.container_span, nodes.container_span_manual, composedPath],
+                [nodes['x-container'].shadowRoot, nodes.container_span_manual, composedPath],
+            ];
+
+            return Promise.resolve().then(() => {
+                const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+        });
+
+        it('{bubbles: false, composed: true}', () => {
+            const nodes = createTestElement();
+            const event = new CustomEvent('test', { bubbles: false, composed: true });
+
+            const composedPath = [
+                nodes.container_span_manual,
+                nodes.container_span,
+                nodes['x-container.shadowRoot'],
+                nodes['x-container'],
+                document.body,
+                document.documentElement,
+                document,
+                window,
+            ];
+
+            let expectedLogs;
+            if (process.env.NATIVE_SHADOW) {
+                expectedLogs = [
+                    [nodes.container_span_manual, nodes.container_span_manual, composedPath],
+                    [nodes['x-container'], nodes['x-container'], composedPath],
+                ];
+            } else {
+                expectedLogs = [
+                    [nodes.container_span_manual, nodes.container_span_manual, composedPath],
+                ];
+            }
+
+            return Promise.resolve().then(() => {
+                const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+        });
+
+        it('{bubbles: false, composed: false}', () => {
+            const nodes = createTestElement();
+            const event = new CustomEvent('test', { bubbles: false, composed: false });
+
+            const composedPath = [
+                nodes.container_span_manual,
+                nodes.container_span,
+                nodes['x-container.shadowRoot'],
+            ];
+            const expectedLogs = [
+                [nodes.container_span_manual, nodes.container_span_manual, composedPath],
+            ];
+
+            return Promise.resolve().then(() => {
+                const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+        });
+    });
 });
