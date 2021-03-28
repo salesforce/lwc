@@ -33,14 +33,18 @@ describe('post-dispatch event state', () => {
             expect(event.target).toBe(nodes['x-container']);
         });
 
-        it('{ bubbles: true, composed: false }', () => {
-            const nodes = createComponent();
-            const event = new CustomEvent('test', { bubbles: true, composed: false });
-            nodes.container_div.dispatchEvent(event);
+        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
+        // In Safari, the event target is not null.
+        if (process.env.NATIVE_SHADOW !== true) {
+            it('{ bubbles: true, composed: false }', () => {
+                const nodes = createComponent();
+                const event = new CustomEvent('test', { bubbles: true, composed: false });
+                nodes.container_div.dispatchEvent(event);
 
-            assertEventStateReset(event);
-            expect(event.target).toBe(null);
-        });
+                assertEventStateReset(event);
+                expect(event.target).toBe(null);
+            });
+        }
     });
 
     describe('lwc:dom="manual" element', () => {
@@ -56,17 +60,21 @@ describe('post-dispatch event state', () => {
             });
         });
 
-        it('{ bubbles: true, composed: false }', () => {
-            const nodes = createComponent();
-            const event = new CustomEvent('test', { bubbles: true, composed: false });
-            nodes.container_span_manual.dispatchEvent(event);
+        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
+        // In Safari, the event target is not null.
+        if (process.env.NATIVE_SHADOW !== true) {
+            it('{ bubbles: true, composed: false }', () => {
+                const nodes = createComponent();
+                const event = new CustomEvent('test', { bubbles: true, composed: false });
+                nodes.container_span_manual.dispatchEvent(event);
 
-            // lwc:dom=manual is async due to MutationObserver
-            return new Promise(setTimeout).then(() => {
-                assertEventStateReset(event);
-                expect(event.target).toBe(null);
+                // lwc:dom=manual is async due to MutationObserver
+                return new Promise(setTimeout).then(() => {
+                    assertEventStateReset(event);
+                    expect(event.target).toBe(null);
+                });
             });
-        });
+        }
     });
 
     describe('component', () => {
