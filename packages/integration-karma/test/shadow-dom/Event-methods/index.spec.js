@@ -155,25 +155,21 @@ describe('Event.composedPath', () => {
         req.dispatchEvent(new CustomEvent('test'));
     });
 
-    // Excluding IE11 from this test involving text nodes since our IE11 shadow root polyfill
-    // injects comments outside of production for debugging purposes.
-    if (!process.env.COMPAT) {
-        it('should return expected composed path when the target is a text node', (done) => {
-            const nodes = createTestElement();
-            const event = new CustomEvent('test', { bubbles: true, composed: false });
+    it('should return expected composed path when the target is a text node', (done) => {
+        const nodes = createTestElement();
+        const event = new CustomEvent('test', { bubbles: true, composed: false });
 
-            const textNode = nodes.child_div.childNodes[0];
+        const textNode = nodes.child_div.childNodes[0];
 
-            textNode.addEventListener('test', (event) => {
-                expect(event.composedPath()).toEqual([
-                    textNode,
-                    nodes.child_div,
-                    nodes['x-child.shadowRoot'],
-                ]);
-                done();
-            });
-
-            textNode.dispatchEvent(event);
+        textNode.addEventListener('test', (event) => {
+            expect(event.composedPath()).toEqual([
+                textNode,
+                nodes.child_div,
+                nodes['x-child.shadowRoot'],
+            ]);
+            done();
         });
-    }
+
+        textNode.dispatchEvent(event);
+    });
 });
