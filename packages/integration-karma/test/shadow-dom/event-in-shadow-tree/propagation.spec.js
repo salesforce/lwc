@@ -535,7 +535,7 @@ describe('event propagation', () => {
                         [window, null, composedPath],
                     ];
 
-                    return Promise.resolve().then(() => {
+                    return new Promise(setTimeout).then(() => {
                         const actualLogs = dispatchEventWithLog(
                             nodes.container_span_manual,
                             nodes,
@@ -572,7 +572,7 @@ describe('event propagation', () => {
                 [window, nodes['x-container'], composedPath],
             ];
 
-            return Promise.resolve().then(() => {
+            return new Promise(setTimeout).then(() => {
                 const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
                 expect(actualLogs).toEqual(expectedLogs);
             });

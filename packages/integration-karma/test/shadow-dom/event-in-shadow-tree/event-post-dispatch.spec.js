@@ -6,10 +6,13 @@ import { extractDataIds } from 'test-utils';
 
 import Container from 'x/container';
 
-function assertEventStateReset(event) {
-    expect(event.eventPhase).toBe(0);
-    expect(event.currentTarget).toBe(null);
-    expect(event.composedPath().length).toBe(0);
+function assertEventStateReset(evt) {
+    // TODO [#2283]: IE11 does not return Event.NONE (0) when accessing eventPhase asynchronously
+    if (process.env.COMPAT !== true) {
+        expect(evt.eventPhase).toBe(0);
+    }
+    expect(evt.currentTarget).toBe(null);
+    expect(evt.composedPath().length).toBe(0);
 }
 
 function createComponent() {
@@ -19,7 +22,7 @@ function createComponent() {
     return extractDataIds(element);
 }
 
-describe('single shadow boundary', () => {
+describe('post-dispatch event state', () => {
     describe('native element', () => {
         it('{ bubbles: true, composed: true }', () => {
             const nodes = createComponent();
@@ -30,9 +33,7 @@ describe('single shadow boundary', () => {
             expect(event.target).toBe(nodes['x-container']);
         });
 
-        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
-        // In Safari, the event target is not null.
-        xit('{ bubbles: true, composed: false }', () => {
+        it('{ bubbles: true, composed: false }', () => {
             const nodes = createComponent();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
             nodes.container_div.dispatchEvent(event);
@@ -49,21 +50,19 @@ describe('single shadow boundary', () => {
             nodes.container_span_manual.dispatchEvent(event);
 
             // lwc:dom=manual is async due to MutationObserver
-            return Promise.resolve().then(() => {
+            return new Promise(setTimeout).then(() => {
                 assertEventStateReset(event);
                 expect(event.target).toBe(nodes['x-container']);
             });
         });
 
-        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
-        // In Safari, the event target is not null.
-        xit('{ bubbles: true, composed: false }', () => {
+        it('{ bubbles: true, composed: false }', () => {
             const nodes = createComponent();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
             nodes.container_span_manual.dispatchEvent(event);
 
             // lwc:dom=manual is async due to MutationObserver
-            return Promise.resolve().then(() => {
+            return new Promise(setTimeout).then(() => {
                 assertEventStateReset(event);
                 expect(event.target).toBe(null);
             });
