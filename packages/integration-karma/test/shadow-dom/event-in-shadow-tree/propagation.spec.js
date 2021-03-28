@@ -41,12 +41,8 @@ function createDisconnectedTestElement() {
 
 describe('event propagation', () => {
     describe('dispatched on native element', () => {
-        let nodes;
-        beforeEach(() => {
-            nodes = createTestElement();
-        });
-
         it('{bubbles: true, composed: true}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: true, composed: true });
             const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
 
@@ -95,6 +91,7 @@ describe('event propagation', () => {
         });
 
         it('{bubbles: true, composed: false}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
             const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
 
@@ -110,6 +107,7 @@ describe('event propagation', () => {
         });
 
         it('{bubbles: false, composed: true}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: false, composed: true });
             const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
 
@@ -150,6 +148,7 @@ describe('event propagation', () => {
         });
 
         it('{bubbles: false, composed: false}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: false, composed: false });
             const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
 
@@ -169,6 +168,7 @@ describe('event propagation', () => {
                 });
 
                 it('{bubbles: true, composed: false}', () => {
+                    const nodes = createTestElement();
                     const event = new CustomEvent('test', { bubbles: true, composed: false });
                     const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
                     const composedPath = [
@@ -198,12 +198,8 @@ describe('event propagation', () => {
     });
 
     describe('dispatched on host element', () => {
-        let nodes;
-        beforeEach(() => {
-            nodes = createTestElement();
-        });
-
         it('{bubbles: true, composed: true}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: true, composed: true });
             const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
 
@@ -246,6 +242,7 @@ describe('event propagation', () => {
         });
 
         it('{bubbles: true, composed: false}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
             const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
 
@@ -279,6 +276,7 @@ describe('event propagation', () => {
         });
 
         it('{bubbles: false, composed: true}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: false, composed: true });
             const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
 
@@ -314,6 +312,7 @@ describe('event propagation', () => {
         });
 
         it('{bubbles: false, composed: false}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: false, composed: false });
             const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
 
@@ -344,6 +343,7 @@ describe('event propagation', () => {
                 });
 
                 it('{bubbles: true, composed: false}', () => {
+                    const nodes = createTestElement();
                     const event = new CustomEvent('test', { bubbles: true, composed: false });
                     const actualLogs = dispatchEventWithLog(nodes['x-button'], nodes, event);
 
@@ -388,12 +388,8 @@ describe('event propagation', () => {
     });
 
     describe('dispatched on shadow root', () => {
-        let nodes;
-        beforeEach(() => {
-            nodes = createTestElement();
-        });
-
         it('{bubbles: true, composed: true}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: true, composed: true });
             const actualLogs = dispatchEventWithLog(nodes['x-button'].shadowRoot, nodes, event);
 
@@ -438,6 +434,7 @@ describe('event propagation', () => {
         });
 
         it('{bubbles: true, composed: false}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
             const actualLogs = dispatchEventWithLog(nodes['x-button'].shadowRoot, nodes, event);
 
@@ -450,6 +447,7 @@ describe('event propagation', () => {
         });
 
         it('{bubbles: false, composed: true}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: false, composed: true });
             const actualLogs = dispatchEventWithLog(nodes['x-button'].shadowRoot, nodes, event);
 
@@ -490,6 +488,7 @@ describe('event propagation', () => {
         });
 
         it('{bubbles: false, composed: false}', () => {
+            const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: false, composed: false });
             const actualLogs = dispatchEventWithLog(nodes['x-button'].shadowRoot, nodes, event);
 
