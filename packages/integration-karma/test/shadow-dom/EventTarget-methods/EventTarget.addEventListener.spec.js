@@ -119,7 +119,7 @@ describe('EventTarget.addEventListener', () => {
     }
 
     describe('identical event listeners', () => {
-        function test({ description, node, options, expectedCount }) {
+        function test({ description, node, expectedCount }) {
             it(description, () => {
                 let count = 0;
                 function listener() {
@@ -127,6 +127,16 @@ describe('EventTarget.addEventListener', () => {
                 }
                 node.addEventListener('test', listener);
                 node.addEventListener('test', listener);
+                node.dispatchEvent(new CustomEvent('test'));
+                expect(count).toBe(expectedCount);
+            });
+        }
+        function testWithOptions({ description, node, options, expectedCount }) {
+            it(description, () => {
+                let count = 0;
+                function listener() {
+                    count += 1;
+                }
                 if (options) {
                     options.forEach((option) => {
                         node.addEventListener('test', listener, option);
@@ -162,12 +172,13 @@ describe('EventTarget.addEventListener', () => {
             const container = createElement('x-container', { is: Container });
             document.body.appendChild(container);
 
+            // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
-            test({
+            testWithOptions({
                 description: 'should be discarded on host elements',
                 node: container,
                 options: [true, { capture: true }],
-                expectedCount: 2,
+                expectedCount: 1,
             });
             */
             it('should log error on host elements', () => {
@@ -178,12 +189,13 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
+            // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
-            test({
+            testWithOptions({
                 description: 'should be discarded on shadow roots',
                 node: container.shadowRoot,
                 options: [true, { capture: true }],
-                expectedCount: 2,
+                expectedCount: 1,
             });
             */
             it('should log error on shadow roots', () => {
@@ -194,11 +206,11 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
-            test({
+            testWithOptions({
                 description: 'should be discarded on native elements',
                 node: container.shadowRoot.querySelector('button'),
                 options: [true, { capture: true }],
-                expectedCount: 2,
+                expectedCount: 1,
             });
         });
 
@@ -206,8 +218,9 @@ describe('EventTarget.addEventListener', () => {
             const container = createElement('x-container', { is: Container });
             document.body.appendChild(container);
 
+            // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
-            test({
+            testWithOptions({
                 description: 'should not be discarded on host elements',
                 node: container,
                 options: [true, {capture: true}, false, {capture: false}],
@@ -222,8 +235,9 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
+            // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
-            test({
+            testWithOptions({
                 description: 'should not be discarded on shadow roots',
                 node: container.shadowRoot,
                 options: [true, {capture: true}, false, {capture: false}],
@@ -238,7 +252,7 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
-            test({
+            testWithOptions({
                 description: 'should not be discarded on native elements',
                 node: container.shadowRoot.querySelector('button'),
                 options: [true, { capture: true }, false, { capture: false }],
