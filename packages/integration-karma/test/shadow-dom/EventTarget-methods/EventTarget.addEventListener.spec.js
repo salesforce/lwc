@@ -119,52 +119,51 @@ describe('EventTarget.addEventListener', () => {
     }
 
     describe('identical event listeners', () => {
-        function test({ description, node, expectedCount }) {
-            it(description, () => {
-                let count = 0;
-                function listener() {
-                    count += 1;
-                }
-                node.addEventListener('test', listener);
-                node.addEventListener('test', listener);
-                node.dispatchEvent(new CustomEvent('test'));
-                expect(count).toBe(expectedCount);
-            });
+        function test({ node, expectedCount }) {
+            let count = 0;
+            function listener() {
+                count += 1;
+            }
+            node.addEventListener('test', listener);
+            node.addEventListener('test', listener);
+            node.dispatchEvent(new CustomEvent('test'));
+            expect(count).toBe(expectedCount);
         }
-        function testWithOptions({ description, node, options, expectedCount }) {
-            it(description, () => {
-                let count = 0;
-                function listener() {
-                    count += 1;
-                }
-                if (options) {
-                    options.forEach((option) => {
-                        node.addEventListener('test', listener, option);
-                    });
-                }
-                node.dispatchEvent(new CustomEvent('test'));
-                expect(count).toBe(expectedCount);
-            });
+        function testWithOptions({ node, options, expectedCount }) {
+            let count = 0;
+            function listener() {
+                count += 1;
+            }
+            if (options) {
+                options.forEach((option) => {
+                    node.addEventListener('test', listener, option);
+                });
+            }
+            node.dispatchEvent(new CustomEvent('test'));
+            expect(count).toBe(expectedCount);
         }
 
         describe('without options', () => {
             const container = createElement('x-container', { is: Container });
             document.body.appendChild(container);
 
-            test({
-                description: 'should be discarded on host elements',
-                node: container,
-                expectedCount: 1,
+            it('should be discarded on host elements', () => {
+                test({
+                    node: container,
+                    expectedCount: 1,
+                });
             });
-            test({
-                description: 'should be discarded on shadow roots',
-                node: container.shadowRoot,
-                expectedCount: 1,
+            it('should be discarded on shadow roots', () => {
+                test({
+                    node: container.shadowRoot,
+                    expectedCount: 1,
+                });
             });
-            test({
-                description: 'should be discarded on native elements',
-                node: container.shadowRoot.querySelector('button'),
-                expectedCount: 1,
+            it('should be discarded on native elements', () => {
+                test({
+                    node: container.shadowRoot.querySelector('button'),
+                    expectedCount: 1,
+                });
             });
         });
 
@@ -174,11 +173,12 @@ describe('EventTarget.addEventListener', () => {
 
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
-            testWithOptions({
-                description: 'should be discarded on host elements',
-                node: container,
-                options: [true, { capture: true }],
-                expectedCount: 1,
+            it('should be discarded on host elements', () => {
+                testWithOptions({
+                    node: container,
+                    options: [true, { capture: true }],
+                    expectedCount: 1,
+                });
             });
             */
             it('should log error on host elements', () => {
@@ -191,11 +191,12 @@ describe('EventTarget.addEventListener', () => {
 
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
-            testWithOptions({
-                description: 'should be discarded on shadow roots',
-                node: container.shadowRoot,
-                options: [true, { capture: true }],
-                expectedCount: 1,
+            it('should be discarded on shadow roots', () => {
+                testWithOptions({
+                    node: container.shadowRoot,
+                    options: [true, { capture: true }],
+                    expectedCount: 1,
+                });
             });
             */
             it('should log error on shadow roots', () => {
@@ -206,11 +207,12 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
-            testWithOptions({
-                description: 'should be discarded on native elements',
-                node: container.shadowRoot.querySelector('button'),
-                options: [true, { capture: true }],
-                expectedCount: 1,
+            it('should be discarded on native elements', () => {
+                testWithOptions({
+                    node: container.shadowRoot.querySelector('button'),
+                    options: [true, { capture: true }],
+                    expectedCount: 1,
+                });
             });
         });
 
@@ -220,11 +222,12 @@ describe('EventTarget.addEventListener', () => {
 
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
-            testWithOptions({
-                description: 'should not be discarded on host elements',
-                node: container,
-                options: [true, {capture: true}, false, {capture: false}],
-                expectedCount: 2,
+            it('should not be discarded on host elements', () => {
+                testWithOptions({
+                    node: container,
+                    options: [true, {capture: true}, false, {capture: false}],
+                    expectedCount: 2,
+                });
             });
             */
             it('should log error on host elements', () => {
@@ -237,11 +240,12 @@ describe('EventTarget.addEventListener', () => {
 
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
-            testWithOptions({
-                description: 'should not be discarded on shadow roots',
-                node: container.shadowRoot,
-                options: [true, {capture: true}, false, {capture: false}],
-                expectedCount: 2,
+            it('should not be discarded on shadow roots', () => {
+                testWithOptions({
+                    node: container.shadowRoot,
+                    options: [true, {capture: true}, false, {capture: false}],
+                    expectedCount: 2,
+                });
             });
             */
             it('should log error on shadow roots', () => {
@@ -252,11 +256,12 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
-            testWithOptions({
-                description: 'should not be discarded on native elements',
-                node: container.shadowRoot.querySelector('button'),
-                options: [true, { capture: true }, false, { capture: false }],
-                expectedCount: 2,
+            it('should not be discarded on native elements', () => {
+                testWithOptions({
+                    node: container.shadowRoot.querySelector('button'),
+                    options: [true, { capture: true }, false, { capture: false }],
+                    expectedCount: 2,
+                });
             });
         });
     });
