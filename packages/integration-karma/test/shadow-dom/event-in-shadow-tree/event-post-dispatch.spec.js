@@ -4,151 +4,96 @@
 import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
-import ShadowTree from 'x/shadowTree';
-import NestedShadowTree from 'x/nestedShadowTree';
-
-function createShadowTree(parentNode) {
-    const elm = createElement('x-shadow-tree', { is: ShadowTree });
-    elm.setAttribute('data-id', 'x-shadow-tree');
-    parentNode.appendChild(elm);
-
-    return extractDataIds(elm);
-}
+import Container from 'x/container';
 
 function assertEventStateReset(evt) {
-    expect(evt.eventPhase).toBe(0);
+    // TODO [#2283]: IE11 does not return Event.NONE (0) when accessing eventPhase asynchronously
+    if (process.env.COMPAT !== true) {
+        expect(evt.eventPhase).toBe(0);
+    }
     expect(evt.currentTarget).toBe(null);
     expect(evt.composedPath().length).toBe(0);
 }
 
-function createNestedShadowTree(parentNode) {
-    const elm = createElement('x-nested-shadow-tree', { is: NestedShadowTree });
-    elm.setAttribute('data-id', 'x-nested-shadow-tree');
-    parentNode.appendChild(elm);
-
-    return extractDataIds(elm);
+function createComponent() {
+    const element = createElement('x-container', { is: Container });
+    element.setAttribute('data-id', 'x-container');
+    document.body.appendChild(element);
+    return extractDataIds(element);
 }
 
-// TODO [#1129]: Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
-if (process.env.NATIVE_SHADOW) {
-    describe('Event properties post dispatch on node in a shadow tree', () => {
-        let nodes;
-        beforeAll(() => {
-            nodes = createShadowTree(document.body);
-        });
+describe('post-dispatch event state', () => {
+    describe('native element', () => {
+        it('{ bubbles: true, composed: true }', () => {
+            const nodes = createComponent();
+            const event = new CustomEvent('test', { bubbles: true, composed: true });
+            nodes.container_div.dispatchEvent(event);
 
-        it('element (composed: true)', () => {
-            const evt = new CustomEvent('test', { composed: true, bubbles: true });
-            nodes.span.dispatchEvent(evt);
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(nodes['x-shadow-tree']);
+            assertEventStateReset(event);
+            expect(event.target).toBe(nodes['x-container']);
         });
 
         // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
         // In Safari, the event target is not null.
-        xit('element (composed: false)', () => {
-            const evt = new CustomEvent('test', { bubbles: true });
-            nodes.span.dispatchEvent(evt);
+        if (process.env.NATIVE_SHADOW !== true) {
+            it('{ bubbles: true, composed: false }', () => {
+                const nodes = createComponent();
+                const event = new CustomEvent('test', { bubbles: true, composed: false });
+                nodes.container_div.dispatchEvent(event);
 
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(null);
-        });
-
-        it('element added via lwc:dom="manual" (composed: true)', () => {
-            const evt = new CustomEvent('test', { composed: true, bubbles: true });
-            nodes['span-manual'].dispatchEvent(evt);
-
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(nodes['x-shadow-tree']);
-        });
-
-        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
-        // In Safari, the event target is not null.
-        xit('element added via lwc:dom="manual" (composed: false)', () => {
-            const evt = new CustomEvent('test', { bubbles: true });
-            nodes['span-manual'].dispatchEvent(evt);
-
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(null);
-        });
-
-        it('component (composed: true)', () => {
-            const evt = new CustomEvent('test', { composed: true, bubbles: true });
-            nodes['x-shadow-tree'].dispatchEventComponent(evt);
-
-            expect(evt.target).toBe(nodes['x-shadow-tree']);
-            assertEventStateReset(evt);
-        });
-
-        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
-        // In Safari, the event target is not null.
-        xit('component (composed: false)', () => {
-            const evt = new CustomEvent('test', { bubbles: true });
-            nodes['x-shadow-tree'].dispatchEventComponent(evt);
-
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(nodes['x-shadow-tree']);
-        });
+                assertEventStateReset(event);
+                expect(event.target).toBe(null);
+            });
+        }
     });
 
-    describe('Event properties post dispatch on node in a nested shadow tree', () => {
-        let nodes;
-        beforeAll(() => {
-            nodes = createNestedShadowTree(document.body);
-        });
+    describe('lwc:dom="manual" element', () => {
+        it('{ bubbles: true, composed: true }', () => {
+            const nodes = createComponent();
+            const event = new CustomEvent('test', { bubbles: true, composed: true });
+            nodes.container_span_manual.dispatchEvent(event);
 
-        it('element (composed: true)', () => {
-            const evt = new CustomEvent('test', { composed: true, bubbles: true });
-            nodes.span.dispatchEvent(evt);
-
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(nodes['x-nested-shadow-tree']);
-        });
-
-        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
-        // In Safari, the event target is not null.
-        xit('element (composed: false)', () => {
-            const evt = new CustomEvent('test', { bubbles: true });
-            nodes.span.dispatchEvent(evt);
-
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(null);
-        });
-
-        it('element added via lwc:dom="manual" (composed: true)', () => {
-            const evt = new CustomEvent('test', { composed: true, bubbles: true });
-            nodes['span-manual'].dispatchEvent(evt);
-
-            expect(evt.target).toBe(nodes['x-nested-shadow-tree']);
-            assertEventStateReset(evt);
+            // lwc:dom=manual is async due to MutationObserver
+            return new Promise(setTimeout).then(() => {
+                assertEventStateReset(event);
+                expect(event.target).toBe(nodes['x-container']);
+            });
         });
 
         // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
         // In Safari, the event target is not null.
-        xit('element added via lwc:dom="manual" (composed: false)', () => {
-            const evt = new CustomEvent('test', { bubbles: true });
-            nodes['span-manual'].dispatchEvent(evt);
+        if (process.env.NATIVE_SHADOW !== true) {
+            it('{ bubbles: true, composed: false }', () => {
+                const nodes = createComponent();
+                const event = new CustomEvent('test', { bubbles: true, composed: false });
+                nodes.container_span_manual.dispatchEvent(event);
 
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(null);
+                // lwc:dom=manual is async due to MutationObserver
+                return new Promise(setTimeout).then(() => {
+                    assertEventStateReset(event);
+                    expect(event.target).toBe(null);
+                });
+            });
+        }
+    });
+
+    describe('component', () => {
+        it('{ bubbles: true, composed: true }', () => {
+            const nodes = createComponent();
+            const event = new CustomEvent('test', { bubbles: true, composed: true });
+            nodes['x-container'].dispatchEventComponent(event);
+
+            assertEventStateReset(event);
+            expect(event.target).toBe(nodes['x-container']);
         });
 
-        it('component (composed: true)', () => {
-            const evt = new CustomEvent('test', { composed: true, bubbles: true });
-            nodes['x-shadow-tree'].dispatchEventComponent(evt);
+        it('{ bubbles: true, composed: false }', () => {
+            const nodes = createComponent();
+            const event = new CustomEvent('test', { bubbles: true, composed: false });
+            nodes['x-container'].dispatchEventComponent(event);
 
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(nodes['x-nested-shadow-tree']);
-        });
-
-        // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
-        // In Safari, the event target is not null.
-        xit('component (composed: false)', () => {
-            const evt = new CustomEvent('test', { bubbles: true });
-            nodes['x-shadow-tree'].dispatchEventComponent(evt);
-
-            assertEventStateReset(evt);
-            expect(evt.target).toBe(null);
+            assertEventStateReset(event);
+            expect(event.target).toBe(nodes['x-container']);
         });
     });
-}
+});
