@@ -1,6 +1,6 @@
 # integration-karma
 
-Karma integration test for the `@lwc/compiler`, `@lwc/engine` and `@lwc/synthetic-shadow`.
+Karma integration test for `@lwc/compiler`, `@lwc/engine-dom`, and `@lwc/synthetic-shadow`.
 
 ## Getting started
 

@@ -12,7 +12,7 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "main": "index.js",
-    "module": "dist/engine/esm/es2017/engine.js",
+    "module": "dist/engine-dom/esm/es2017/engine-dom.js",
     "typings": "types.d.ts",
     "license": "MIT",
     "scripts": {
@@ -28,7 +28,7 @@
         "modules": [
             {
                 "name": "lwc",
-                "path": "dist/engine/esm/es2017/engine.js"
+                "path": "dist/engine-dom/esm/es2017/engine-dom.js"
             },
             {
                 "name": "@lwc/synthetic-shadow",
@@ -42,7 +42,7 @@
     },
     "dependencies": {
         "@lwc/compiler": "1.18.0",
-        "@lwc/engine": "1.18.0",
+        "@lwc/engine-dom": "1.18.0",
         "@lwc/engine-server": "1.18.0",
         "@lwc/features": "1.18.0",
         "@lwc/synthetic-shadow": "1.18.0",

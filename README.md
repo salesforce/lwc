@@ -7,7 +7,7 @@
   </a>
 
   <a href="https://packagephobia.now.sh/result?p=lwc">
-    <img src="https://packagephobia.now.sh/badge?p=@lwc/engine" alt="install size">
+    <img src="https://packagephobia.now.sh/badge?p=@lwc/engine-dom" alt="install size">
   </a>
 
   <a href="https://github.com/salesforce/lwc/blob/master/LICENSE">
@@ -22,7 +22,7 @@
 
 # Lightning Web Components Repository
 
-This repository contains the source code for the Lightning Web Components Engine and Compiler. Additionally, it contains examples, documentation, meeting notes and discussion notes for developers [contributing][contributing] or using Lightning Web Components. 
+This repository contains the source code for the Lightning Web Components Engine and Compiler. Additionally, it contains examples, documentation, meeting notes and discussion notes for developers [contributing][contributing] or using Lightning Web Components.
 
 ## Getting Started
 

@@ -36,9 +36,9 @@ const COMMON_TARGETS = [
 
 function buildEngineTargets(targets) {
     const name = 'LWC';
-    const targetName = 'engine';
-    const input = getEs6ModuleEntry('@lwc/engine');
-    const dir = path.join(distDirectory, 'engine');
+    const targetName = 'engine-dom';
+    const input = getEs6ModuleEntry('@lwc/engine-dom');
+    const dir = path.join(distDirectory, 'engine-dom');
     const engineConfig = { input, name, targetName, dir };
 
     return targets.map((bundleConfig) => buildBundleConfig(engineConfig, bundleConfig));

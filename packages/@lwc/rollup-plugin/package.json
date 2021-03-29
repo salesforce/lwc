@@ -21,7 +21,7 @@
     ],
     "devDependencies": {
         "@lwc/compiler": "1.18.0",
-        "@lwc/engine": "1.18.0"
+        "@lwc/engine-dom": "1.18.0"
     },
     "dependencies": {
         "@lwc/module-resolver": "1.18.0",

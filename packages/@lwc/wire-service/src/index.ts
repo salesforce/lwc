@@ -10,7 +10,7 @@ import { ValueChangedEvent } from './value-changed-event';
 
 const { freeze, defineProperty, isExtensible } = Object;
 
-// This value needs to be in sync with wiring.ts from @lwc/engine
+// This value needs to be in sync with wiring.ts from @lwc/engine-core
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
 

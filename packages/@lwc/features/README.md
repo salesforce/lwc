@@ -9,7 +9,7 @@
 Runtime flags can be enabled or disabled by setting a boolean value for that
 flag in `globalThis.LWC_config.features`. If the flag is not explicitly
 configured, the feature is disabled by default. This configuration object
-must appear before `@lwc/engine` is initialized and should be defined at the
+must appear before the engine is initialized and should be defined at the
 application layer.
 
 ### Limitations
