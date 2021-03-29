@@ -118,6 +118,154 @@ describe('EventTarget.addEventListener', () => {
         });
     }
 
+    describe('identical event listeners', () => {
+        function test({ node, expectedCount }) {
+            let count = 0;
+            function listener() {
+                count += 1;
+            }
+            node.addEventListener('test', listener);
+            node.addEventListener('test', listener);
+            node.dispatchEvent(new CustomEvent('test'));
+            expect(count).toBe(expectedCount);
+        }
+        function testWithOptions({ node, options, expectedCount }) {
+            let count = 0;
+            function listener() {
+                count += 1;
+            }
+            if (options) {
+                options.forEach((option) => {
+                    node.addEventListener('test', listener, option);
+                });
+            }
+            node.dispatchEvent(new CustomEvent('test'));
+            expect(count).toBe(expectedCount);
+        }
+
+        describe('without options', () => {
+            const container = createElement('x-container', { is: Container });
+            document.body.appendChild(container);
+
+            it('should be discarded on host elements', () => {
+                test({
+                    node: container,
+                    expectedCount: 1,
+                });
+            });
+            it('should be discarded on shadow roots', () => {
+                test({
+                    node: container.shadowRoot,
+                    expectedCount: 1,
+                });
+            });
+            it('should be discarded on native elements', () => {
+                test({
+                    node: container.shadowRoot.querySelector('button'),
+                    expectedCount: 1,
+                });
+            });
+        });
+
+        describe('with options', () => {
+            const container = createElement('x-container', { is: Container });
+            document.body.appendChild(container);
+
+            // TODO [#2253]: Uncomment test once options are supported on host/root.
+            /*
+            it('should be discarded on host elements', () => {
+                testWithOptions({
+                    node: container,
+                    options: [true, { capture: true }],
+                    expectedCount: 1,
+                });
+            });
+            */
+            it('should log error on host elements', () => {
+                expect(() => {
+                    container.addEventListener('test', () => {}, {});
+                }).toLogErrorDev(
+                    /The `addEventListener` method in `LightningElement` does not support any options./
+                );
+            });
+
+            // TODO [#2253]: Uncomment test once options are supported on host/root.
+            /*
+            it('should be discarded on shadow roots', () => {
+                testWithOptions({
+                    node: container.shadowRoot,
+                    options: [true, { capture: true }],
+                    expectedCount: 1,
+                });
+            });
+            */
+            it('should log error on shadow roots', () => {
+                expect(() => {
+                    container.shadowRoot.addEventListener('test', () => {}, {});
+                }).toLogErrorDev(
+                    /The `addEventListener` method in `LightningElement` does not support any options./
+                );
+            });
+
+            it('should be discarded on native elements', () => {
+                testWithOptions({
+                    node: container.shadowRoot.querySelector('button'),
+                    options: [true, { capture: true }],
+                    expectedCount: 1,
+                });
+            });
+        });
+
+        describe('with different options', () => {
+            const container = createElement('x-container', { is: Container });
+            document.body.appendChild(container);
+
+            // TODO [#2253]: Uncomment test once options are supported on host/root.
+            /*
+            it('should not be discarded on host elements', () => {
+                testWithOptions({
+                    node: container,
+                    options: [true, {capture: true}, false, {capture: false}],
+                    expectedCount: 2,
+                });
+            });
+            */
+            it('should log error on host elements', () => {
+                expect(() => {
+                    container.addEventListener('test', () => {}, {});
+                }).toLogErrorDev(
+                    /The `addEventListener` method in `LightningElement` does not support any options./
+                );
+            });
+
+            // TODO [#2253]: Uncomment test once options are supported on host/root.
+            /*
+            it('should not be discarded on shadow roots', () => {
+                testWithOptions({
+                    node: container.shadowRoot,
+                    options: [true, {capture: true}, false, {capture: false}],
+                    expectedCount: 2,
+                });
+            });
+            */
+            it('should log error on shadow roots', () => {
+                expect(() => {
+                    container.shadowRoot.addEventListener('test', () => {}, {});
+                }).toLogErrorDev(
+                    /The `addEventListener` method in `LightningElement` does not support any options./
+                );
+            });
+
+            it('should not be discarded on native elements', () => {
+                testWithOptions({
+                    node: container.shadowRoot.querySelector('button'),
+                    options: [true, { capture: true }, false, { capture: false }],
+                    expectedCount: 2,
+                });
+            });
+        });
+    });
+
     describe('should invoke listener with correct current target', () => {
         it('for host element', () => {
             let id;
@@ -159,77 +307,4 @@ describe('EventTarget.addEventListener', () => {
             expect(id).toEqual('second-container');
         });
     });
-    // TODO [#2253]: Enable in all modes once bug is fixed
-    if (process.env.NATIVE_SHADOW) {
-        describe('identical listeners', () => {
-            describe('should discard multiple identical listeners on same target', () => {
-                function testDiscardingIdenticalListeners(
-                    target,
-                    listenerTargets,
-                    expected,
-                    composed = false
-                ) {
-                    const logs = [];
-                    const listener = function (event) {
-                        logs.push([this, event.currentTarget]);
-                    };
-                    listenerTargets.forEach((target) => {
-                        target.addEventListener('dedupe', listener);
-                        target.addEventListener('dedupe', listener); // identical listener
-                    });
-                    target.dispatchEvent(new CustomEvent('dedupe', { bubbles: true, composed }));
-                    expect(logs).toEqual(expected);
-                }
-                it('listeners on shadow root, non-composed event', () => {
-                    testDiscardingIdenticalListeners(
-                        nodes.button,
-                        [nodes.button, nodes['container_div'], nodes['x-container'].shadowRoot],
-                        [
-                            [nodes.button, nodes.button],
-                            [nodes['container_div'], nodes['container_div']],
-                            [nodes['x-container'].shadowRoot, nodes['x-container'].shadowRoot],
-                        ]
-                    );
-                });
-
-                it('listeners on host, composed event', () => {
-                    testDiscardingIdenticalListeners(
-                        nodes.button,
-                        [nodes.button, nodes['container_div'], nodes['x-container']],
-                        [
-                            [nodes.button, nodes.button],
-                            [nodes['container_div'], nodes['container_div']],
-                            [nodes['x-container'], nodes['x-container']],
-                        ],
-                        true
-                    );
-                });
-            });
-            describe('should invoke identical listeners on same target with different options', () => {
-                // Note: addEventListener() with options are restricted for shadow root and host elements
-                function testIdenticalListeners(target, listenerTargets, expected) {
-                    const logs = [];
-                    const listener = function (event) {
-                        logs.push([this, event.currentTarget]);
-                    };
-                    listenerTargets.forEach((target) => {
-                        target.addEventListener('identical', listener);
-                        target.addEventListener('identical', listener, { passive: true }); // identical listener with different option
-                    });
-                    target.dispatchEvent(new CustomEvent('identical', { bubbles: true }));
-                    expect(logs).toEqual(expected);
-                }
-                it('listeners on standard html elements', () => {
-                    testIdenticalListeners(
-                        nodes.button,
-                        [nodes.button, nodes['container_div']],
-                        [
-                            [nodes.button, nodes.button],
-                            [nodes['container_div'], nodes['container_div']],
-                        ]
-                    );
-                });
-            });
-        });
-    }
 });
