@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperties, isNull, isUndefined } from '@lwc/shared';
+
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { retarget } from '../../3rdparty/polymer/retarget';
 import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
@@ -12,6 +13,17 @@ import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-s
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
 import { getOwnerDocument } from '../../shared/utils';
+
+function patchedCurrentTargetGetter(this: Event): EventTarget | null {
+    const currentTarget = eventCurrentTargetGetter.call(this);
+    if (isNull(currentTarget)) {
+        return null;
+    }
+    if (eventToContextMap.get(this) === EventListenerContext.SHADOW_ROOT_LISTENER) {
+        return getShadowRoot(currentTarget as Element);
+    }
+    return currentTarget;
+}
 
 function patchedTargetGetter(this: Event): EventTarget | null {
     const originalTarget = eventTargetGetter.call(this);
@@ -87,6 +99,11 @@ function patchedComposedPathValue(this: Event): EventTarget[] {
 defineProperties(Event.prototype, {
     target: {
         get: patchedTargetGetter,
+        enumerable: true,
+        configurable: true,
+    },
+    currentTarget: {
+        get: patchedCurrentTargetGetter,
         enumerable: true,
         configurable: true,
     },
