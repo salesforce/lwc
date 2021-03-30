@@ -11,7 +11,9 @@ import {
     IRText,
     IRElement,
     HTMLElement,
-    HTMLText, HTMLComment, IRComment,
+    HTMLText,
+    HTMLComment,
+    IRComment,
 } from './types';
 
 export function createElement(tag: string, original: HTMLElement): IRElement {

@@ -1,0 +1,13 @@
+<x-comments-slot>
+  <template shadowroot="open">
+    <x-child>
+      <template shadowroot="open">
+        shadow content before slot
+        <slot></slot>
+        shadow content after slot
+      </template>
+      <!-- HTML comment inside slot -->
+      <p>slot content</p>
+    </x-child>
+  </template>
+</x-comments-slot>
