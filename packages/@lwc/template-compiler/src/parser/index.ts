@@ -49,7 +49,7 @@ import {
 import { parseStyleText, parseClassNames } from './style';
 
 import * as t from '../shared/estree';
-import {createElement, isCustomElement, createText, createComment} from '../shared/ir';
+import { createElement, isCustomElement, createText, createComment } from '../shared/ir';
 import {
     IRElement,
     IRAttribute,
@@ -84,6 +84,7 @@ import {
     KNOWN_HTML_ELEMENTS,
     LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
+    PRESERVE_COMMENTS_OPTION,
 } from './constants';
 
 function isStyleElement(irElement: IRElement) {
@@ -144,6 +145,9 @@ export default function parse(source: string, state: State): TemplateParseResult
     let root: any;
     let parent: IRElement;
     const stack: IRElement[] = [];
+    const preserveComments = templateRoot.attrs.some(
+        (attr) => attr.name === PRESERVE_COMMENTS_OPTION
+    );
 
     traverseHTML(templateRoot, {
         Element: {
@@ -239,55 +243,13 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         Comment: {
             enter(node: parse5.AST.Default.CommentNode) {
-                const rawComment = node.data;
-                const textNode = createComment(node, decodeTextContent(rawComment));
+                if (preserveComments) {
+                    const rawComment = node.data;
+                    const commentNode = createComment(node, decodeTextContent(rawComment));
 
-                // @todo: split the content into an array.
-                // @todo: the comment node should have 2 arrays: one raw values and the other the positions of the values.
-                textNode.parent = parent;
-                parent.children.push(textNode);
-                //
-                //
-                // const rawText = cleanTextNode(source.slice(startOffset, endOffset));
-                //
-                // if (!rawText.trim().length) {
-                //     return;
-                // }
-                //
-                // // Split the text node content arround expression and create node for each
-                // const tokenizedContent = rawText.split(EXPRESSION_RE);
-                //
-                // for (const token of tokenizedContent) {
-                //     // Don't create nodes for emtpy strings
-                //     if (!token.length) {
-                //         continue;
-                //     }
-                //
-                //     let value;
-                //     if (isExpression(token)) {
-                //         try {
-                //             value = parseExpression(token, state);
-                //         } catch (error) {
-                //             addDiagnostic(
-                //                 normalizeToDiagnostic(
-                //                     ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-                //                     error,
-                //                     {
-                //                         location: normalizeLocation(location),
-                //                     }
-                //                 )
-                //             );
-                //             return;
-                //         }
-                //     } else {
-                //         value = decodeTextContent(token);
-                //     }
-                //
-                //     const textNode = createText(node, value);
-                //
-                //     textNode.parent = parent;
-                //     parent.children.push(textNode);
-                // }
+                    commentNode.parent = parent;
+                    parent.children.push(commentNode);
+                }
             },
         },
     });
@@ -837,7 +799,8 @@ export default function parse(source: string, state: State): TemplateParseResult
                 return warnOnElement(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, node, [tag]);
             }
 
-            const hasAttributes = node.attrs.length !== 0;
+            const hasAttributes =
+                node.attrs.filter((attr) => attr.name !== PRESERVE_COMMENTS_OPTION).length !== 0;
             if (hasAttributes) {
                 return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_CANNOT_HAVE_ATTRIBUTES, node);
             }
