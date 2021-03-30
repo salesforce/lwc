@@ -11,7 +11,7 @@ const DEFAULT_OPTIONS = {
 };
 
 const DEFAULT_MODULES = [
-    { npm: '@lwc/engine' },
+    { npm: '@lwc/engine-dom' },
     { npm: '@lwc/synthetic-shadow' },
     { npm: '@lwc/wire-service' },
 ];

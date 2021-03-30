@@ -28,6 +28,17 @@
         "@lwc/engine-core": "1.18.0",
         "@lwc/shared": "1.18.0"
     },
+    "lwc": {
+        "modules": [
+            {
+                "name": "lwc",
+                "path": "dist/engine-dom.js"
+            }
+        ],
+        "expose": [
+            "lwc"
+        ]
+    },
     "publishConfig": {
         "access": "public"
     }

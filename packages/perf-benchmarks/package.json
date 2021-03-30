@@ -13,7 +13,7 @@
         "@lwc/rollup-plugin": "1.18.0"
     },
     "dependencies": {
-        "@lwc/engine": "1.18.0",
+        "@lwc/engine-dom": "1.18.0",
         "@lwc/synthetic-shadow": "1.18.0"
     }
 }

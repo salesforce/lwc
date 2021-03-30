@@ -19,8 +19,8 @@ const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
 
 const SYNTHETIC_SHADOW = getModulePath('synthetic-shadow', 'iife', 'es2017', 'dev');
 const SYNTHETIC_SHADOW_COMPAT = getModulePath('synthetic-shadow', 'iife', 'es5', 'dev');
-const LWC_ENGINE = getModulePath('engine', 'iife', 'es2017', 'dev');
-const LWC_ENGINE_COMPAT = getModulePath('engine', 'iife', 'es5', 'dev');
+const LWC_ENGINE = getModulePath('engine-dom', 'iife', 'es2017', 'dev');
+const LWC_ENGINE_COMPAT = getModulePath('engine-dom', 'iife', 'es5', 'dev');
 const WIRE_SERVICE = getModulePath('wire-service', 'iife', 'es2017', 'dev');
 const WIRE_SERVICE_COMPAT = getModulePath('wire-service', 'iife', 'es5', 'dev');
 

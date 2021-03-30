@@ -20,7 +20,7 @@ const isCompat = /compat/.test(mode);
 const isProd = /prod/.test(mode);
 
 const engineModeFile = getModulePath(
-    'engine',
+    'engine-dom',
     'iife',
     isCompat ? 'es5' : 'es2017',
     isProd ? 'prod' : 'dev'
