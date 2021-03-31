@@ -5,10 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// Polyfills ---------------------------------------------------------------------------------------
-import './polyfills/proxy-concat/main';
-import './polyfills/aria-properties/main';
-
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
     createContextProvider,

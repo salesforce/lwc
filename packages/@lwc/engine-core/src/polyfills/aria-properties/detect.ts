@@ -5,5 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 export function detect(propName: string): boolean {
-    return Object.getOwnPropertyDescriptor(Element.prototype, propName) === undefined;
+    return (
+        typeof Element !== 'undefined' &&
+        Object.getOwnPropertyDescriptor(Element.prototype, propName) === undefined
+    );
 }
