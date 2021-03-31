@@ -7,7 +7,7 @@
 
 // Public APIs -------------------------------------------------------------------------------------
 export { createContextProvider } from './context-provider';
-export { BaseLightningElement as LightningElement } from './base-lightning-element';
+export { LightningElement } from './base-lightning-element';
 export { register } from './services';
 
 export { default as api } from './decorators/api';
