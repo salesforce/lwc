@@ -8,7 +8,7 @@
   }
   var _implicitStylesheets = [stylesheet];
 
-  function tmpl($api, $cmp, $slotset, $ctx) {
+  function tmpl$1($api, $cmp, $slotset, $ctx) {
     const { d: api_dynamic, h: api_element } = $api;
     return [
       api_element(
@@ -20,13 +20,13 @@
       ),
     ];
   }
-  var _tmpl = lwc.registerTemplate(tmpl);
-  tmpl.stylesheets = [];
+  var _tmpl$1 = lwc.registerTemplate(tmpl$1);
+  tmpl$1.stylesheets = [];
 
   if (_implicitStylesheets) {
-    tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
+    tmpl$1.stylesheets.push.apply(tmpl$1.stylesheets, _implicitStylesheets);
   }
-  tmpl.stylesheetTokens = {
+  tmpl$1.stylesheetTokens = {
     hostAttribute: "x-foo_foo-host",
     shadowAttribute: "x-foo_foo",
   };
@@ -47,10 +47,10 @@
   });
 
   var _xFoo = lwc.registerComponent(Foo, {
-    tmpl: _tmpl,
+    tmpl: _tmpl$1,
   });
 
-  function tmpl$1($api, $cmp, $slotset, $ctx) {
+  function tmpl($api, $cmp, $slotset, $ctx) {
     const { c: api_custom_element, h: api_element } = $api;
     return [
       api_element(
@@ -77,9 +77,9 @@
       ),
     ];
   }
-  var _tmpl$1 = lwc.registerTemplate(tmpl$1);
-  tmpl$1.stylesheets = [];
-  tmpl$1.stylesheetTokens = {
+  var _tmpl = lwc.registerTemplate(tmpl);
+  tmpl.stylesheets = [];
+  tmpl.stylesheetTokens = {
     hostAttribute: "x-app_app-host",
     shadowAttribute: "x-app_app",
   };
@@ -92,7 +92,7 @@
   }
 
   var App$1 = lwc.registerComponent(App, {
-    tmpl: _tmpl$1,
+    tmpl: _tmpl,
   });
 
   const container = document.getElementById("main");
