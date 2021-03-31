@@ -32,9 +32,6 @@
         "@lwc/style-compiler": "2.0.0-rc.0",
         "@lwc/template-compiler": "2.0.0-rc.0"
     },
-    "devDependencies": {
-        "source-map": "^0.7.3"
-    },
     "publishConfig": {
         "access": "public"
     }
