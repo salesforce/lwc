@@ -31,9 +31,9 @@
         "@lwc/shared": "2.0.0-rc.0",
         "@lwc/style-compiler": "2.0.0-rc.0",
         "@lwc/template-compiler": "2.0.0-rc.0",
-        "@rollup/plugin-replace": "~2.4.1",
+        "@rollup/plugin-replace": "~2.4.2",
         "babel-preset-compat": "~0.22.2",
-        "rollup": "~2.42.4",
+        "rollup": "~2.44.0",
         "terser": "~5.6.1"
     },
     "devDependencies": {
