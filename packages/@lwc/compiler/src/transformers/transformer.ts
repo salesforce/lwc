@@ -16,7 +16,7 @@ import scriptTransformer from './javascript';
 
 export interface TransformResult {
     code: string;
-    map: any | null;
+    map: unknown;
 }
 
 /**
