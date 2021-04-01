@@ -8,31 +8,10 @@
 import { TransformOptions } from '../../options';
 import { transform } from '../transformer';
 
-import { pretify } from '../../__tests__/utils';
-
 const TRANSFORMATION_OPTIONS: TransformOptions = {
     namespace: 'x',
     name: 'foo',
 };
-
-it('should apply transformation for valid javascript file', async () => {
-    const actual = `
-        import { LightningElement } from 'lwc';
-        export default class Foo extends LightningElement {}
-    `;
-
-    const expected = `
-        import _tmpl from "./foo.html";
-        import { registerComponent as _registerComponent, LightningElement } from "lwc";
-        class Foo extends LightningElement {}
-        export default _registerComponent(Foo, {
-            tmpl: _tmpl
-        });
-    `;
-
-    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
-    expect(pretify(code)).toBe(pretify(expected));
-});
 
 it('should throw when processing an invalid javascript file', async () => {
     await expect(transform(`const`, 'foo.js', TRANSFORMATION_OPTIONS)).rejects.toMatchObject({
@@ -41,19 +20,34 @@ it('should throw when processing an invalid javascript file', async () => {
     });
 });
 
-it('allows dynamic imports', async () => {
+it('should apply transformation for valid javascript file', async () => {
     const actual = `
-        export function test() {
-            return import('/test');
-        }
+        import { LightningElement } from 'lwc';
+        export default class Foo extends LightningElement {}
     `;
-
-    const expected = `
-        export function test() {
-            return import('/test');
-        }
-    `;
-
     const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
-    expect(pretify(code)).toBe(pretify(expected));
+
+    expect(code).toMatch(/import \w+ from "\.\/foo.html";/);
+    expect(code).toContain('registerComponent');
+});
+
+it('should transform class fields', async () => {
+    const actual = `
+        export class Test {
+            foo;
+        }
+    `;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+
+    expect(code).not.toContain('foo;');
+});
+
+it('should object spread', async () => {
+    const actual = `
+        export const test = { ...a, b: 1 }
+    `;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+
+    expect(code).toContain('b: 1');
+    expect(code).not.toContain('...a');
 });

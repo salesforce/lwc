@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
+
 import {
     CompilerError,
     normalizeToCompilerError,
@@ -12,15 +13,9 @@ import {
     TransformerErrors,
 } from '@lwc/errors';
 import compile from '@lwc/template-compiler';
+
 import { NormalizedTransformOptions } from '../options';
 import { TransformResult } from './transformer';
-
-export interface TemplateTransformResult {
-    code: string;
-    map: {
-        mappings: string;
-    };
-}
 
 /**
  * Transforms a HTML template into module exporting a template function.
