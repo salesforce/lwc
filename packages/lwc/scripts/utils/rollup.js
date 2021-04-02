@@ -12,25 +12,14 @@ const { terser: rollupTerser } = require('rollup-plugin-terser');
 const rollupReplace = require('@rollup/plugin-replace');
 const { default: nodeResolvePlugin } = require('@rollup/plugin-node-resolve');
 
-const babel = require('@babel/core');
-const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
-
 const { generateTargetName } = require('./helpers');
-
-function rollupFeaturesPlugin(prod) {
-    return {
-        name: 'rollup-plugin-lwc-features',
-        transform(source) {
-            return babel.transform(source, {
-                plugins: [[babelFeaturesPlugin, { prod }]],
-            }).code;
-        },
-    };
-}
 
 function rollupConfig(config) {
     const { input, format, name, prod, target, targetDirectory, dir, debug = false } = config;
-    const compatMode = target === 'es5';
+
+    const isCompat = target === 'es5';
+    const file = path.join(targetDirectory, target, generateTargetName(config));
+
     return {
         inputOptions: {
             input,
@@ -41,14 +30,13 @@ function rollupConfig(config) {
                         'process.env.NODE_ENV': JSON.stringify('production'),
                         preventAssignment: true,
                     }),
-                rollupFeaturesPlugin(prod),
-                compatMode && rollupTypescriptPlugin({ target, include: ['/**/*.js'] }),
+                isCompat && rollupTypescriptPlugin({ target, include: ['/**/*.js'] }),
                 prod && !debug && rollupTerser(),
             ],
         },
         outputOptions: {
             name,
-            file: path.join(targetDirectory, target, generateTargetName(config)),
+            file,
             format,
         },
         display: { name, dir, format, target, prod, debug },

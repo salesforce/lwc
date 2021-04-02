@@ -21,6 +21,12 @@
     "files": [
         "dist/"
     ],
+    "dependencies": {
+        "@lwc/shared": "2.0.0-rc.0"
+    },
+    "devDependencies": {
+        "@lwc/features": "2.0.0-rc.0"
+    },
     "lwc": {
         "modules": [
             {
@@ -34,9 +40,5 @@
     },
     "publishConfig": {
         "access": "public"
-    },
-    "devDependencies": {
-        "@lwc/features": "2.0.0-rc.0",
-        "@lwc/shared": "2.0.0-rc.0"
     }
 }
