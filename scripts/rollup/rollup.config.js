@@ -9,7 +9,7 @@
 
 const path = require('path');
 const babel = require('@babel/core');
-const typescriptPlugin = require('@rollup/plugin-typescript');
+const typescriptPlugin = require('rollup-plugin-typescript');
 const { default: nodeResolvePlugin } = require('@rollup/plugin-node-resolve');
 
 function rollupFeaturesPlugin() {

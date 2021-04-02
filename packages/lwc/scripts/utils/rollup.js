@@ -5,14 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
+
 const { rollup } = require('rollup');
-const typescript = require('typescript');
-const rollupTypescriptPlugin = require('@rollup/plugin-typescript');
+const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const { terser: rollupTerser } = require('rollup-plugin-terser');
 const rollupReplace = require('@rollup/plugin-replace');
 const { default: nodeResolvePlugin } = require('@rollup/plugin-node-resolve');
+
 const babel = require('@babel/core');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
+
 const { generateTargetName } = require('./helpers');
 
 function rollupFeaturesPlugin(prod) {
@@ -40,13 +42,7 @@ function rollupConfig(config) {
                         preventAssignment: true,
                     }),
                 rollupFeaturesPlugin(prod),
-                compatMode &&
-                    rollupTypescriptPlugin({
-                        tsconfig: false,
-                        target,
-                        typescript,
-                        include: ['/**/*.js'],
-                    }),
+                compatMode && rollupTypescriptPlugin({ target, include: ['/**/*.js'] }),
                 prod && !debug && rollupTerser(),
             ],
         },
