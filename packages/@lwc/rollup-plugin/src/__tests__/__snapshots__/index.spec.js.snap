@@ -4,10 +4,30 @@ exports[`default configuration simple app 1`] = `
 "(function (lwc) {
   \\"use strict\\";
 
-  function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+  var cachedStylesheet;
+
+  function generateCss(hostSelector, shadowSelector, nativeShadow) {
     return nativeShadow
       ? \\":host {color: var(--lwc-my-color);}\\"
       : [hostSelector, \\" {color: var(--lwc-my-color);}\\"].join(\\"\\");
+  }
+
+  function stylesheet(
+    hostSelector,
+    shadowSelector,
+    nativeShadow,
+    hasAdoptedStyleSheets
+  ) {
+    if (nativeShadow && hasAdoptedStyleSheets) {
+      if (!cachedStylesheet) {
+        cachedStylesheet = new CSSStyleSheet();
+        cachedStylesheet.replaceSync(
+          generateCss(hostSelector, shadowSelector, nativeShadow)
+        );
+      }
+      return cachedStylesheet; // fast path
+    }
+    return generateCss(hostSelector, shadowSelector, nativeShadow);
   }
   var _implicitStylesheets = [stylesheet];
 
@@ -117,7 +137,9 @@ exports[`default configuration simple app with CSS resolver 1`] = `
 
   var varResolver__default = /*#__PURE__*/ _interopDefaultLegacy(varResolver);
 
-  function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+  var cachedStylesheet;
+
+  function generateCss(hostSelector, shadowSelector, nativeShadow) {
     return nativeShadow
       ? [
           \\":host {color: \\",
@@ -130,6 +152,24 @@ exports[`default configuration simple app with CSS resolver 1`] = `
           varResolver__default[\\"default\\"](\\"--lwc-my-color\\"),
           \\";}\\",
         ].join(\\"\\");
+  }
+
+  function stylesheet(
+    hostSelector,
+    shadowSelector,
+    nativeShadow,
+    hasAdoptedStyleSheets
+  ) {
+    if (nativeShadow && hasAdoptedStyleSheets) {
+      if (!cachedStylesheet) {
+        cachedStylesheet = new CSSStyleSheet();
+        cachedStylesheet.replaceSync(
+          generateCss(hostSelector, shadowSelector, nativeShadow)
+        );
+      }
+      return cachedStylesheet; // fast path
+    }
+    return generateCss(hostSelector, shadowSelector, nativeShadow);
   }
   var _implicitStylesheets = [stylesheet];
 
@@ -317,7 +357,9 @@ exports[`rollup in compat mode simple app 1`] = `
 
   var __concat = Proxy.concat;
 
-  function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+  var cachedStylesheet;
+
+  function generateCss(hostSelector, shadowSelector, nativeShadow) {
     return nativeShadow
       ? \\":host {color: var(--lwc-my-color);}\\"
       : __callKey1(
@@ -325,6 +367,29 @@ exports[`rollup in compat mode simple app 1`] = `
           \\"join\\",
           \\"\\"
         );
+  }
+
+  function stylesheet(
+    hostSelector,
+    shadowSelector,
+    nativeShadow,
+    hasAdoptedStyleSheets
+  ) {
+    if (nativeShadow && hasAdoptedStyleSheets) {
+      if (!cachedStylesheet) {
+        cachedStylesheet = new CSSStyleSheet();
+
+        __callKey1(
+          cachedStylesheet,
+          \\"replaceSync\\",
+          generateCss(hostSelector, shadowSelector, nativeShadow)
+        );
+      }
+
+      return cachedStylesheet; // fast path
+    }
+
+    return generateCss(hostSelector, shadowSelector, nativeShadow);
   }
 
   var _implicitStylesheets = [stylesheet];
@@ -582,10 +647,30 @@ exports[`rollup with custom options should normalize rootDir when present and is
 "(function (lwc) {
   \\"use strict\\";
 
-  function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+  var cachedStylesheet;
+
+  function generateCss(hostSelector, shadowSelector, nativeShadow) {
     return nativeShadow
       ? \\":host {color: var(--lwc-my-color);}\\"
       : [hostSelector, \\" {color: var(--lwc-my-color);}\\"].join(\\"\\");
+  }
+
+  function stylesheet(
+    hostSelector,
+    shadowSelector,
+    nativeShadow,
+    hasAdoptedStyleSheets
+  ) {
+    if (nativeShadow && hasAdoptedStyleSheets) {
+      if (!cachedStylesheet) {
+        cachedStylesheet = new CSSStyleSheet();
+        cachedStylesheet.replaceSync(
+          generateCss(hostSelector, shadowSelector, nativeShadow)
+        );
+      }
+      return cachedStylesheet; // fast path
+    }
+    return generateCss(hostSelector, shadowSelector, nativeShadow);
   }
   var _implicitStylesheets = [stylesheet];
 
@@ -689,10 +774,30 @@ exports[`typescript relative import should resolve to .ts file 1`] = `
 "(function (lwc) {
   \\"use strict\\";
 
-  function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+  var cachedStylesheet;
+
+  function generateCss(hostSelector, shadowSelector, nativeShadow) {
     return nativeShadow
       ? \\":host {color: var(--lwc-my-color);}\\"
       : [hostSelector, \\" {color: var(--lwc-my-color);}\\"].join(\\"\\");
+  }
+
+  function stylesheet(
+    hostSelector,
+    shadowSelector,
+    nativeShadow,
+    hasAdoptedStyleSheets
+  ) {
+    if (nativeShadow && hasAdoptedStyleSheets) {
+      if (!cachedStylesheet) {
+        cachedStylesheet = new CSSStyleSheet();
+        cachedStylesheet.replaceSync(
+          generateCss(hostSelector, shadowSelector, nativeShadow)
+        );
+      }
+      return cachedStylesheet; // fast path
+    }
+    return generateCss(hostSelector, shadowSelector, nativeShadow);
   }
   var _implicitStylesheets = [stylesheet];
 

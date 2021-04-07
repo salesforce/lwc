@@ -12,15 +12,22 @@ import { VM } from './vm';
 import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 
+const hasAdoptedStyleSheets =
+    typeof ShadowRoot !== 'undefined' && 'adoptedStyleSheets' in ShadowRoot.prototype;
+
+type StylesheetFactoryResult = string | CSSStyleSheet;
+
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
+ * If adopted style sheets are supported, then a CSSStyleSheet is returned. Otherwise, a string.
  */
 export type StylesheetFactory = (
     hostSelector: string,
     shadowSelector: string,
-    nativeShadow: boolean
-) => string;
+    nativeShadow: boolean,
+    hasAdoptedStyleSheets: boolean
+) => StylesheetFactoryResult;
 
 /**
  * The list of stylesheets associated with a template. Each entry is either a StylesheetFactory or a
@@ -77,9 +84,10 @@ function evaluateStylesheetsContent(
     stylesheets: TemplateStylesheetFactories,
     hostSelector: string,
     shadowSelector: string,
-    nativeShadow: boolean
-): string[] {
-    const content: string[] = [];
+    nativeShadow: boolean,
+    hasAdoptedStyleSheets: boolean
+): StylesheetFactoryResult[] {
+    const content: StylesheetFactoryResult[] = [];
 
     for (let i = 0; i < stylesheets.length; i++) {
         let stylesheet = stylesheets[i];
@@ -87,7 +95,13 @@ function evaluateStylesheetsContent(
         if (isArray(stylesheet)) {
             ArrayPush.apply(
                 content,
-                evaluateStylesheetsContent(stylesheet, hostSelector, shadowSelector, nativeShadow)
+                evaluateStylesheetsContent(
+                    stylesheet,
+                    hostSelector,
+                    shadowSelector,
+                    nativeShadow,
+                    hasAdoptedStyleSheets
+                )
             );
         } else {
             if (process.env.NODE_ENV !== 'production') {
@@ -96,18 +110,21 @@ function evaluateStylesheetsContent(
                 // the stylesheet, while internally, we have a replacement for it.
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
-            ArrayPush.call(content, stylesheet(hostSelector, shadowSelector, nativeShadow));
+            ArrayPush.call(
+                content,
+                stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets)
+            );
         }
     }
 
     return content;
 }
 
-export function getStylesheetsContent(vm: VM, template: Template): string[] {
+export function getStylesheetsContent(vm: VM, template: Template): StylesheetFactoryResult[] {
     const { stylesheets, stylesheetTokens: tokens } = template;
     const { syntheticShadow } = vm.renderer;
 
-    let content: string[] = [];
+    let content: StylesheetFactoryResult[] = [];
 
     if (!isUndefined(stylesheets) && !isUndefined(tokens)) {
         const hostSelector = syntheticShadow ? `[${tokens.hostAttribute}]` : '';
@@ -117,24 +134,30 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
             stylesheets,
             hostSelector,
             shadowSelector,
-            !syntheticShadow
+            !syntheticShadow,
+            hasAdoptedStyleSheets
         );
     }
 
     return content;
 }
 
-export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    const { renderer } = vm;
+export function createStylesheet(vm: VM, stylesheets: StylesheetFactoryResult[]): VNode | null {
+    const { renderer, cmpRoot } = vm;
 
     if (renderer.syntheticShadow) {
         for (let i = 0; i < stylesheets.length; i++) {
-            renderer.insertGlobalStylesheet(stylesheets[i]);
+            renderer.insertGlobalStylesheet(stylesheets[i] as 'string'); // always string if not hasAdoptedStyleSheets
         }
 
         return null;
+    } else if (hasAdoptedStyleSheets) {
+        // adoptedStyleSheets not in TypeScript yet: https://github.com/microsoft/TypeScript/issues/30022
+        // @ts-ignore
+        cmpRoot.adoptedStyleSheets = stylesheets as CSSStyleSheet[];
+        return null;
     } else {
-        const shadowStyleSheetContent = ArrayJoin.call(stylesheets, '\n');
+        const shadowStyleSheetContent = ArrayJoin.call(stylesheets as string[], '\n');
         return createShadowStyleVNode(shadowStyleSheetContent);
     }
 }

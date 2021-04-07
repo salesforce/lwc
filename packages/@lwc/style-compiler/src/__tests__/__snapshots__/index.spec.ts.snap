@@ -1,29 +1,89 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`aria-attributes 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"[aria-labelledby]\\", shadowSelector, \\" {}[aria-labelledby=\\\\\\"bar\\\\\\"]\\", shadowSelector, \\" {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`at-rules 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"@charset \\\\\\"utf-8\\\\\\";@namespace url(http://www.w3.org/1999/xhtml);@keyframes slidein {from {margin-left: 100%;}to {margin-left: 0%;}}@media screen and (min-width: 900px) {article\\", shadowSelector, \\" {padding: 1rem 3rem;}}@supports (display: grid) {div\\", shadowSelector, \\" {display: grid;}}@document url('https://www.example.com/') {h1\\", shadowSelector, \\" {color: green;}}@font-face {font-family: 'Open Sans';src: url('/fonts/OpenSans-Regular-webfont.woff2') format('woff2'),\\\\n        url('/fonts/OpenSans-Regular-webfont.woff') format('woff');}@viewport {width: device-width;}@counter-style thumbs {system: cyclic;symbols: '\\\\\\\\1F44D';suffix: ' ';}@font-feature-values Font One {@styleset {nice-style: 12;}}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`back-slash 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\".foo\\", shadowSelector, \\" {content: \\\\\\"\\\\\\\\\\\\\\\\\\\\\\";}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`complex-selectors 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"h1\\", shadowSelector, \\" > a\\", shadowSelector, \\" {}h1\\", shadowSelector, \\" + a\\", shadowSelector, \\" {}div.active\\", shadowSelector, \\" > p\\", shadowSelector, \\" {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
@@ -68,8 +128,23 @@ Object {
 `;
 
 exports[`data-attributes 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"[data-foo]\\", shadowSelector, \\" {}[data-foo=\\\\\\"bar\\\\\\"]\\", shadowSelector, \\" {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
@@ -93,15 +168,45 @@ Object {
 `;
 
 exports[`dir-attribute 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"[dir=\\\\\\"rtl\\\\\\"]\\", shadowSelector, \\" test\\", shadowSelector, \\" {order: 0;}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`dir-pseudo-class 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"[dir=\\\\\\"ltr\\\\\\"] {order: 0;}[dir=\\\\\\"ltr\\\\\\"] test\\", shadowSelector, \\" {order: 1;}[dir=\\\\\\"ltr\\\\\\"] test\\", shadowSelector, \\" {order: 2;}[dir=\\\\\\"ltr\\\\\\"] test\\", shadowSelector, \\" {order: 3;}[dir=\\\\\\"ltr\\\\\\"] test\\", shadowSelector, \\" test\\", shadowSelector, \\" {order: 4;}[dir=\\\\\\"rtl\\\\\\"] {order: 5;}[dir=\\\\\\"rtl\\\\\\"] test\\", shadowSelector, \\" {order: 6;}[dir=\\\\\\"rtl\\\\\\"] test\\", shadowSelector, \\" {order: 7;}[dir=\\\\\\"rtl\\\\\\"] test\\", shadowSelector, \\" {order: 8;}[dir=\\\\\\"rtl\\\\\\"] test\\", shadowSelector, \\" test\\", shadowSelector, \\" {order: 9;}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
@@ -116,15 +221,45 @@ Object {
 `;
 
 exports[`escape-string-characters 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"h1\\", shadowSelector, \\":before {content: '$test\\\\\\"escaping quote(\\\\\\\\')'}h1\\", shadowSelector, \\":after {content: \\\\\\"$my test'escaping quote(\\\\\\\\\\\\\\")\\\\\\"}h2\\", shadowSelector, \\":before {content: \\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"}h2\\", shadowSelector, \\":after {content: \\\\\\"\`\\\\\\"}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`global-html-attributes 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"[hidden]\\", shadowSelector, \\" {}[lang=\\\\\\"fr\\\\\\"]\\", shadowSelector, \\" {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
@@ -132,15 +267,45 @@ export default [stylesheet];"
 exports[`grave-accents 1`] = `"export default [];"`;
 
 exports[`host 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return (nativeShadow ? \\":host {}\\" : [hostSelector, \\" {}\\"].join(''));
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`host-functional 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [(nativeShadow ? \\":host(.foo) {}\\" : [hostSelector, \\".foo {}\\"].join('')), (nativeShadow ? [\\":host(.foo) span\\", shadowSelector, \\" {}\\"].join('') : [hostSelector, \\".foo span\\", shadowSelector, \\" {}\\"].join('')), (nativeShadow ? \\":host(:hover) {}\\" : [hostSelector, \\":hover {}\\"].join('')), (nativeShadow ? \\":host(.foo, .bar) {}\\" : [hostSelector, \\".foo,\\", hostSelector, \\".bar {}\\"].join(''))].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
@@ -218,86 +383,266 @@ Object {
 `;
 
 exports[`lwc-reserved-similarButAllowed-rule 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"[turkey='val']\\", shadowSelector, \\" {}[keyboard='val']\\", shadowSelector, \\" {}[notif\\\\\\\\:true='val']\\", shadowSelector, \\" {}[notfor\\\\\\\\:item='val']\\", shadowSelector, \\" {}[notfor\\\\\\\\:each='val']\\", shadowSelector, \\" {}[notiterator\\\\\\\\:name='val']\\", shadowSelector, \\" {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`media-query 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"@media screen and (min-width: 900px) {h1\\", shadowSelector, \\" {}}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`media-query-with-host 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"@media screen and (max-width: 768px) {\\", (nativeShadow ? \\":host {width: calc(50% - 1rem);}\\" : [hostSelector, \\" {width: calc(50% - 1rem);}\\"].join('')), \\"}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`multi-line 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [(nativeShadow ? [\\":host(.selected) button\\", shadowSelector, \\" {color: #0070d2;}\\"].join('') : [hostSelector, \\".selected button\\", shadowSelector, \\" {color: #0070d2;}\\"].join('')), (nativeShadow ? [\\":host:not(.selected) button\\", shadowSelector, \\" {color: #6d6d70;transition: all .2s ease-in-out;}\\"].join('') : [hostSelector, \\":not(.selected) button\\", shadowSelector, \\" {color: #6d6d70;transition: all .2s ease-in-out;}\\"].join('')), (nativeShadow ? [\\":host:not(.selected):hover button\\", shadowSelector, \\",:host button:focus\\", shadowSelector, \\" {color: #005fb2;transform: scale(1.2);}\\"].join('') : [hostSelector, \\":not(.selected):hover button\\", shadowSelector, \\",\\", hostSelector, \\" button:focus\\", shadowSelector, \\" {color: #005fb2;transform: scale(1.2);}\\"].join('')), \\"button:focus\\", shadowSelector, \\" {outline: none;box-shadow: none;background-color: #f3f2f2;}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`multi-selectors 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"h1\\", shadowSelector, \\", h2\\", shadowSelector, \\" {}h1\\", shadowSelector, \\",h2\\", shadowSelector, \\"{}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`nester-vars-compounded 1`] = `
 "import varResolver from \\"custom-properties-resolver\\";
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\".a\\", shadowSelector, \\" {box-shadow: \\", varResolver(\\"--lwc-c-active-button-box-shadow\\",\\"0 0 2px \\" + varResolver(\\"--lwc-brand-accessible\\",\\"#0070d2\\")), \\";}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`pseudo-class-functional-selector 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\":not(p)\\", shadowSelector, \\" {}p:not(.foo, .bar)\\", shadowSelector, \\" {}:matches(ol, li, span)\\", shadowSelector, \\" {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`pseudo-class-selector 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\":checked\\", shadowSelector, \\" {}ul\\", shadowSelector, \\" li:first-child\\", shadowSelector, \\" a\\", shadowSelector, \\" {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`pseudo-element 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [shadowSelector, \\"::after {}h1\\", shadowSelector, \\"::before {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`simple-selectors 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"h1\\", shadowSelector, \\" {}.foo\\", shadowSelector, \\" {}[data-foo]\\", shadowSelector, \\" {}[data-foo=\\\\\\"bar\\\\\\"]\\", shadowSelector, \\" {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`support-query 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"@supports (display: flex) {h1\\", shadowSelector, \\" {}}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`universal-selector 1`] = `
-"function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+"
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"*\\", shadowSelector, \\" {}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
@@ -322,32 +667,92 @@ Object {
 
 exports[`var-function 1`] = `
 "import varResolver from \\"custom-properties-resolver\\";
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"div\\", shadowSelector, \\" {color: \\", varResolver(\\"--lwc-color\\"), \\";}div\\", shadowSelector, \\" {color: \\", varResolver(\\"--lwc-color\\",\\"black\\"), \\";}div\\", shadowSelector, \\" {color: \\", varResolver(\\"--lwc-color\\"), \\" important;}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`var-function-multiple 1`] = `
 "import varResolver from \\"custom-properties-resolver\\";
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"div\\", shadowSelector, \\" {color: \\", varResolver(\\"--lwc-color\\"), \\",\\", varResolver(\\"--lwc-other\\"), \\";}div\\", shadowSelector, \\" {border: \\", varResolver(\\"--border\\",\\"1px solid rgba(0,0,0,0.1)\\"), \\";}div\\", shadowSelector, \\" {background: linear-gradient(to top,\\", varResolver(\\"--lwc-color\\"), \\",\\", varResolver(\\"--lwc-other\\"), \\");}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`var-function-nested 1`] = `
 "import varResolver from \\"custom-properties-resolver\\";
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [\\"div\\", shadowSelector, \\" {background: \\", varResolver(\\"--lwc-color\\",varResolver(\\"--lwc-other\\",\\"black\\")), \\";}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
 
 exports[`var-host-combined 1`] = `
 "import varResolver from \\"custom-properties-resolver\\";
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+
+
+var cachedStylesheet
+
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [(nativeShadow ? [\\":host {color: \\", varResolver(\\"--lwc-color\\"), \\";padding: 10px;}\\"].join('') : [hostSelector, \\" {color: \\", varResolver(\\"--lwc-color\\"), \\";padding: 10px;}\\"].join('')), (nativeShadow ? [\\":host(.foo) {background: linear-gradient(to top,\\", varResolver(\\"--lwc-color\\"), \\",\\", varResolver(\\"--lwc-other\\"), \\");}\\"].join('') : [hostSelector, \\".foo {background: linear-gradient(to top,\\", varResolver(\\"--lwc-color\\"), \\",\\", varResolver(\\"--lwc-other\\"), \\");}\\"].join('')), \\"div\\", shadowSelector, \\" {background: \\", varResolver(\\"--lwc-color\\",varResolver(\\"--lwc-other\\",\\"black\\")), \\";display: \\\\\\"block\\\\\\";}\\"].join('');
+}
+
+function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+  if (nativeShadow && hasAdoptedStyleSheets) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(hostSelector, shadowSelector, nativeShadow);
 }
 export default [stylesheet];"
 `;
