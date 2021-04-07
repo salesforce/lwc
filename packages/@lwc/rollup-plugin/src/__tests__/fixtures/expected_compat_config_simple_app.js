@@ -85,7 +85,9 @@
 
   var __concat = Proxy.concat;
 
-  function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+  var cachedStylesheet;
+
+  function generateCss(hostSelector, shadowSelector, nativeShadow) {
     return nativeShadow
       ? ":host {color: var(--lwc-my-color);}"
       : __callKey1(
@@ -93,6 +95,29 @@
           "join",
           ""
         );
+  }
+
+  function stylesheet(
+    hostSelector,
+    shadowSelector,
+    nativeShadow,
+    hasAdoptedStyleSheets
+  ) {
+    if (nativeShadow && hasAdoptedStyleSheets) {
+      if (!cachedStylesheet) {
+        cachedStylesheet = new CSSStyleSheet();
+
+        __callKey1(
+          cachedStylesheet,
+          "replaceSync",
+          generateCss(hostSelector, shadowSelector, nativeShadow)
+        );
+      }
+
+      return cachedStylesheet; // fast path
+    }
+
+    return generateCss(hostSelector, shadowSelector, nativeShadow);
   }
 
   var _implicitStylesheets = [stylesheet];

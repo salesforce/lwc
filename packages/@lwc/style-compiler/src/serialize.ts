@@ -26,6 +26,7 @@ interface Token {
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
 const SHADOW_DOM_ENABLED_IDENTIFIER = 'nativeShadow';
+const HAS_ADOPTED_STYLESHEETS_IDENTIFIER = 'hasAdoptedStyleSheets';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
@@ -56,10 +57,29 @@ export default function serialize(result: Result, config: Config): string {
     const serializedStyle = serializeCss(result, collectVarFunctions).trim();
 
     if (serializedStyle) {
-        // inline function
-        buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
-        buffer += `  return ${serializedStyle};\n`;
-        buffer += `}\n`;
+        // In the case where adopted stylesheets (aka construtable stylesheets) are supported,
+        // we use a fast path where the CSSStyleSheet object is cached. This avoids having to use
+        // some kind of mapping from strings to CSSStyleSheet objects somewhere, since the whole point
+        // of adoptedStyleSheets is to avoid duplication. Also with native shadow, the string never changes,
+        // so there is no point running stylesheet() over and over again to do costly string concatenation,
+        // so that's another benefit of caching the CSSStyleSheet object.
+        buffer += `\n
+var cachedStylesheet
+
+function generateCss(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {
+  return ${serializedStyle};
+}
+
+function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}, ${HAS_ADOPTED_STYLESHEETS_IDENTIFIER}) {
+  if (${SHADOW_DOM_ENABLED_IDENTIFIER} && ${HAS_ADOPTED_STYLESHEETS_IDENTIFIER}) {
+    if (!cachedStylesheet) {
+      cachedStylesheet = new CSSStyleSheet();
+      cachedStylesheet.replaceSync(generateCss(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}));
+    }
+    return cachedStylesheet; // fast path
+  }
+  return generateCss(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER});
+}\n`;
 
         // add import at the end
         stylesheetList.push(STYLESHEET_IDENTIFIER);
