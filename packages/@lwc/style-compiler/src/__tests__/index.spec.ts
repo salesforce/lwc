@@ -26,25 +26,13 @@ fs.readdirSync(FIXTURES_PATH).forEach((fixtureName: string) => {
 
 function testFixture(fixtureDir: string) {
     const actualPath = path.resolve(fixtureDir, 'actual.css');
-    const expectedPath = path.resolve(fixtureDir, 'expected.js');
     const configPath = path.resolve(fixtureDir, 'config.json');
-    const errorPath = path.resolve(fixtureDir, 'error.json');
 
     let actualSource: string;
     if (fs.existsSync(actualPath)) {
         actualSource = fs.readFileSync(actualPath, 'utf8');
     } else {
         throw new Error(`Missing actual file ${actualPath}`);
-    }
-
-    let expectedSource: undefined | string;
-    if (fs.existsSync(expectedPath)) {
-        expectedSource = fs.readFileSync(expectedPath, 'utf8');
-    }
-
-    let expectedError: undefined | any;
-    if (fs.existsSync(errorPath)) {
-        expectedError = require(errorPath);
     }
 
     let config: any = {};
@@ -60,26 +48,15 @@ function testFixture(fixtureDir: string) {
             const { code } = transform(actualSource, actualPath, config);
             result = code;
         } catch (err) {
-            if (expectedSource) {
-                throw err;
-            } else {
-                error = normalizeError(err);
-            }
+            error = normalizeError(err);
         }
 
-        if (expectedSource) {
-            expect(result).toBe(expectedSource);
-
+        if (error) {
+            expect(error).toMatchSnapshot();
+        } else {
+            expect(result).toMatchSnapshot();
             // Assert that the result is valid javascript
             expect(() => parseSync(result, { babelrc: false, configFile: false })).not.toThrow();
-        } else if (expectedError) {
-            expect(error).toMatchObject(expectedError);
-        } else if (result) {
-            // Generate expected file if not present
-            fs.writeFileSync(expectedPath, result, 'utf8');
-        } else if (error) {
-            // Generate expected file if not present
-            fs.writeFileSync(errorPath, JSON.stringify(error, null, 4));
         }
     };
 }

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const fs = require('fs');
 const path = require('path');
 const rollup = require('rollup');
 const prettier = require('prettier');
@@ -15,10 +14,6 @@ function pretty(str) {
     return prettier.format(str, {
         parser: 'babel',
     });
-}
-
-function fsExpected(fileName) {
-    return fs.readFileSync(path.join(fixturesDir, `${fileName}.js`), 'utf-8');
 }
 
 const fixturesDir = path.join(__dirname, 'fixtures');
@@ -32,8 +27,7 @@ describe('default configuration', () => {
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, { compat: false }).then(({ code: actual }) => {
-            const expected = fsExpected('expected_default_config_simple_app');
-            expect(pretty(actual)).toBe(pretty(expected));
+            expect(pretty(actual)).toMatchSnapshot();
         });
     });
 
@@ -50,8 +44,7 @@ describe('default configuration', () => {
             },
         };
         return doRollup(entry, { compat: false }, rollupCompileOptions).then(({ code: actual }) => {
-            const expected = fsExpected('expected_default_config_simple_app_css_resolver');
-            expect(pretty(actual)).toBe(pretty(expected));
+            expect(pretty(actual)).toMatchSnapshot();
         });
     });
 });
@@ -65,8 +58,7 @@ describe('rollup with custom options', () => {
         };
 
         return doRollup(entry, { compat: false }, rollupOptions).then(({ code: actual }) => {
-            const expected = fsExpected('expected_default_config_simple_app');
-            expect(pretty(actual)).toBe(pretty(expected));
+            expect(pretty(actual)).toMatchSnapshot();
         });
     });
 });
@@ -75,8 +67,7 @@ describe('rollup in compat mode', () => {
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, { compat: true }).then(({ code: actual }) => {
-            const expected = fsExpected('expected_compat_config_simple_app');
-            expect(pretty(actual)).toBe(pretty(expected));
+            expect(pretty(actual)).toMatchSnapshot();
         });
     });
 });
@@ -85,8 +76,7 @@ describe('typescript relative import', () => {
     it(`should resolve to .ts file`, () => {
         const entry = path.join(tsAppDir, 'main.ts');
         return doRollup(entry, { compat: false }).then(({ code: actual }) => {
-            const expected = fsExpected('expected_default_config_ts_simple_app');
-            expect(pretty(actual)).toBe(pretty(expected));
+            expect(pretty(actual)).toMatchSnapshot();
         });
     });
 });
