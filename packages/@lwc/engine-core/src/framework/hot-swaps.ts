@@ -12,7 +12,8 @@ import { LightningElementConstructor } from './base-lightning-element';
 import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
-import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { TemplateStylesheetFactories } from './stylesheet';
+import { StylesheetFactory } from '../shared/stylesheet-factory';
 
 const swappedTemplateMap = new WeakMap<Template, Template>();
 const swappedComponentMap = new WeakMap<LightningElementConstructor, LightningElementConstructor>();

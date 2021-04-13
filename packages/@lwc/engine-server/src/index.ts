@@ -24,6 +24,7 @@ export {
     sanitizeAttribute,
     getComponentDef,
     isComponentConstructor,
+    createCachingCssGenerator,
 } from '@lwc/engine-core';
 
 // Engine-server public APIs -----------------------------------------------------------------------

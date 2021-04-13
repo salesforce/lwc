@@ -7,9 +7,12 @@
 
   var varResolver__default = /*#__PURE__*/ _interopDefaultLegacy(varResolver);
 
-  var cachedStylesheet;
-
-  function generateCss(hostSelector, shadowSelector, nativeShadow) {
+  function generateCss(
+    hostSelector,
+    shadowSelector,
+    nativeShadow,
+    hasAdoptedStyleSheets
+  ) {
     return nativeShadow
       ? [
           ":host {color: ",
@@ -24,23 +27,8 @@
         ].join("");
   }
 
-  function stylesheet(
-    hostSelector,
-    shadowSelector,
-    nativeShadow,
-    hasAdoptedStyleSheets
-  ) {
-    if (nativeShadow && hasAdoptedStyleSheets) {
-      if (!cachedStylesheet) {
-        cachedStylesheet = new CSSStyleSheet();
-        cachedStylesheet.replaceSync(
-          generateCss(hostSelector, shadowSelector, nativeShadow)
-        );
-      }
-      return cachedStylesheet; // fast path
-    }
-    return generateCss(hostSelector, shadowSelector, nativeShadow);
-  }
+  var stylesheet = lwc.createCachingCssGenerator(generateCss);
+
   var _implicitStylesheets = [stylesheet];
 
   function tmpl$1($api, $cmp, $slotset, $ctx) {

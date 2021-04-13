@@ -64,22 +64,14 @@ export default function serialize(result: Result, config: Config): string {
         // so there is no point running stylesheet() over and over again to do costly string concatenation,
         // so that's another benefit of caching the CSSStyleSheet object.
         buffer += `\n
-var cachedStylesheet
+import { createCachingCssGenerator } from 'lwc';
 
-function generateCss(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {
+function generateCss(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}, ${HAS_ADOPTED_STYLESHEETS_IDENTIFIER}) {
   return ${serializedStyle};
 }
 
-function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}, ${HAS_ADOPTED_STYLESHEETS_IDENTIFIER}) {
-  if (${SHADOW_DOM_ENABLED_IDENTIFIER} && ${HAS_ADOPTED_STYLESHEETS_IDENTIFIER}) {
-    if (!cachedStylesheet) {
-      cachedStylesheet = new CSSStyleSheet();
-      cachedStylesheet.replaceSync(generateCss(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}));
-    }
-    return cachedStylesheet; // fast path
-  }
-  return generateCss(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER});
-}\n`;
+var stylesheet = createCachingCssGenerator(generateCss);
+\n`;
 
         // add import at the end
         stylesheetList.push(STYLESHEET_IDENTIFIER);

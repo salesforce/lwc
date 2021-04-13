@@ -1,20 +1,12 @@
 import varResolver from "custom-properties-resolver";
 
 
-var cachedStylesheet
+import { createCachingCssGenerator } from 'lwc';
 
-function generateCss(hostSelector, shadowSelector, nativeShadow) {
+function generateCss(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
   return ["div", shadowSelector, " {background: ", varResolver("--lwc-color",varResolver("--lwc-other","black")), ";}"].join('');
 }
 
-function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
-  if (nativeShadow && hasAdoptedStyleSheets) {
-    if (!cachedStylesheet) {
-      cachedStylesheet = new CSSStyleSheet();
-      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
-    }
-    return cachedStylesheet; // fast path
-  }
-  return generateCss(hostSelector, shadowSelector, nativeShadow);
-}
+var stylesheet = createCachingCssGenerator(generateCss);
+
 export default [stylesheet];

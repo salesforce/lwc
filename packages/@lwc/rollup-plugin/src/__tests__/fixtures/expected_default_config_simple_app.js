@@ -1,31 +1,19 @@
 (function (lwc) {
   "use strict";
 
-  var cachedStylesheet;
-
-  function generateCss(hostSelector, shadowSelector, nativeShadow) {
-    return nativeShadow
-      ? ":host {color: var(--lwc-my-color);}"
-      : [hostSelector, " {color: var(--lwc-my-color);}"].join("");
-  }
-
-  function stylesheet(
+  function generateCss(
     hostSelector,
     shadowSelector,
     nativeShadow,
     hasAdoptedStyleSheets
   ) {
-    if (nativeShadow && hasAdoptedStyleSheets) {
-      if (!cachedStylesheet) {
-        cachedStylesheet = new CSSStyleSheet();
-        cachedStylesheet.replaceSync(
-          generateCss(hostSelector, shadowSelector, nativeShadow)
-        );
-      }
-      return cachedStylesheet; // fast path
-    }
-    return generateCss(hostSelector, shadowSelector, nativeShadow);
+    return nativeShadow
+      ? ":host {color: var(--lwc-my-color);}"
+      : [hostSelector, " {color: var(--lwc-my-color);}"].join("");
   }
+
+  var stylesheet = lwc.createCachingCssGenerator(generateCss);
+
   var _implicitStylesheets = [stylesheet];
 
   function tmpl$1($api, $cmp, $slotset, $ctx) {

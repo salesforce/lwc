@@ -1,19 +1,11 @@
 
 
-var cachedStylesheet
+import { createCachingCssGenerator } from 'lwc';
 
-function generateCss(hostSelector, shadowSelector, nativeShadow) {
+function generateCss(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
   return [":not(p)", shadowSelector, " {}p:not(.foo, .bar)", shadowSelector, " {}:matches(ol, li, span)", shadowSelector, " {}"].join('');
 }
 
-function stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
-  if (nativeShadow && hasAdoptedStyleSheets) {
-    if (!cachedStylesheet) {
-      cachedStylesheet = new CSSStyleSheet();
-      cachedStylesheet.replaceSync(generateCss(hostSelector, shadowSelector, nativeShadow));
-    }
-    return cachedStylesheet; // fast path
-  }
-  return generateCss(hostSelector, shadowSelector, nativeShadow);
-}
+var stylesheet = createCachingCssGenerator(generateCss);
+
 export default [stylesheet];

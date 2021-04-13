@@ -29,6 +29,7 @@ export {
     swapComponent,
     swapStyle,
     swapTemplate,
+    createCachingCssGenerator,
     __unstable__ProfilerControl,
 } from '@lwc/engine-core';
 

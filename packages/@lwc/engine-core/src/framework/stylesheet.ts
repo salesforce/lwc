@@ -11,23 +11,10 @@ import { VNode } from '../3rdparty/snabbdom/types';
 import { VM } from './vm';
 import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
+import { StylesheetFactory, StylesheetFactoryResult } from '../shared/stylesheet-factory';
 
 const hasAdoptedStyleSheets =
     typeof ShadowRoot !== 'undefined' && 'adoptedStyleSheets' in ShadowRoot.prototype;
-
-type StylesheetFactoryResult = string | CSSStyleSheet;
-
-/**
- * Function producing style based on a host and a shadow selector. This function is invoked by
- * the engine with different values depending on the mode that the component is running on.
- * If adopted style sheets are supported, then a CSSStyleSheet is returned. Otherwise, a string.
- */
-export type StylesheetFactory = (
-    hostSelector: string,
-    shadowSelector: string,
-    nativeShadow: boolean,
-    hasAdoptedStyleSheets: boolean
-) => StylesheetFactoryResult;
 
 /**
  * The list of stylesheets associated with a template. Each entry is either a StylesheetFactory or a
@@ -112,7 +99,12 @@ function evaluateStylesheetsContent(
             }
             ArrayPush.call(
                 content,
-                stylesheet(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets)
+                (stylesheet as StylesheetFactory)(
+                    hostSelector,
+                    shadowSelector,
+                    nativeShadow,
+                    hasAdoptedStyleSheets
+                )
             );
         }
     }

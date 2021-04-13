@@ -31,7 +31,7 @@ it('should apply transformation for stylesheet file', async () => {
     `;
     const { code } = await transform(actual, 'foo.css', TRANSFORMATION_OPTIONS);
 
-    expect(code).toContain('function stylesheet');
+    expect(code).toContain('var stylesheet');
 });
 
 describe('custom properties', () => {
