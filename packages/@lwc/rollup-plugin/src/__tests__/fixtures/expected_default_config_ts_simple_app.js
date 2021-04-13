@@ -105,6 +105,5 @@
   });
   container.appendChild(element); // testing relative import works
 
-  console.log('>>', doNothing());
-
-}(LWC));
+  console.log(">>", doNothing());
+})(LWC);

@@ -65,6 +65,14 @@ To execute a particular test, use the following command:
 yarn test <path_to_test>
 ```
 
+If you change the way the compiler outputs code, then you may see failed tests due to these changes. In those cases, you can regenerate the test snapshots like so:
+
+```bash
+find . -type f | grep __tests__ | grep expected | xargs rm -f
+```
+
+Then run `yarn test` to regenerate the snapshots.
+
 If you want to debug these tests, you can do as follow:
 
 1. First, insert a new line in your test where you think it might be failing and type `debugger`. This will serve as a break point for the debugger to stop at.
