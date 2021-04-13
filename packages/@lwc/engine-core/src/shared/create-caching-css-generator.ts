@@ -13,10 +13,10 @@ import { StylesheetFactory, StylesheetFactoryResult } from './stylesheet-factory
  * shadow DOM.
  *
  * The reason we do this here is because the input `generateCss` function is generated,
- * and will vary from component to component. But we want to define the CSSStyleSheet in
- * exactly one place, and the best place to do that is in the component itself (to avoid
- * having to keep a Map of strings to CSSStyleSheets). But to avoid duplicating this code
- * over and over into every component, we extract it into this own shared function.
+ * and will vary from component to component. But we want to define the CSSStyleSheet only
+ * once per component, and the best place to do that is in the component itself (to avoid
+ * needing to keep a Map of strings to CSSStyleSheets). But to avoid duplicating this code
+ * over and over in every component, we extract it into its own shared function.
  * @param generateCss
  */
 export function createCachingCssGenerator(generateCss: StylesheetFactory): StylesheetFactory {
