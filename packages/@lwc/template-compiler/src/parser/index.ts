@@ -146,7 +146,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     let parent: IRElement;
     const stack: IRElement[] = [];
     const preserveComments = templateRoot.attrs.some(
-        (attr) => attr.name === PRESERVE_COMMENTS_OPTION
+        ({ name }) => name === PRESERVE_COMMENTS_OPTION
     );
 
     traverseHTML(templateRoot, {
@@ -799,9 +799,10 @@ export default function parse(source: string, state: State): TemplateParseResult
                 return warnOnElement(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, node, [tag]);
             }
 
-            const hasAttributes =
-                node.attrs.filter((attr) => attr.name !== PRESERVE_COMMENTS_OPTION).length !== 0;
-            if (hasAttributes) {
+            const rootHasUnknownAttributes = node.attrs.some(
+                ({ name }) => name !== PRESERVE_COMMENTS_OPTION
+            );
+            if (rootHasUnknownAttributes) {
                 return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_CANNOT_HAVE_ATTRIBUTES, node);
             }
         }

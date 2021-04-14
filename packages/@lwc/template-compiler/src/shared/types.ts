@@ -117,7 +117,7 @@ export interface IRComment {
     __original: HTMLComment;
 }
 
-export type IRNode = IRElement | IRComment | IRText;
+export type IRNode = IRComment | IRElement | IRText;
 
 export enum IRAttributeType {
     Expression,

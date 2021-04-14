@@ -90,7 +90,7 @@ export interface RenderAPI {
     d(value: any): VNode | null;
     b(fn: EventListener): EventListener;
     k(compilerKey: number, iteratorValue: any): string | void;
-    co(comment: string): VComment;
+    co(text: string): VComment;
 }
 
 const CHAR_S = 115;

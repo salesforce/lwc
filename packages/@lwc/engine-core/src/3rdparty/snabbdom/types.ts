@@ -65,7 +65,6 @@ export interface VText extends VNode {
 export interface VComment extends VNode {
     sel: undefined;
     children: undefined;
-    elm: Node | undefined;
     text: string;
     key: undefined;
 }

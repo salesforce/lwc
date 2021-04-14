@@ -25,10 +25,6 @@ function serializeChildNodes(children: HostChildNode[]): string {
                 case HostNodeType.Text:
                     return htmlEscape(child.value);
                 case HostNodeType.Comment:
-                    // @todo: only bound strings ({foo}) should be escaped, the ones from the comment are fine.
-                    // @todo: maybe this can be done in the process before this call?
-                    // Ex: <i>{foo}</i> -> <i>htmlEscape(foo result:<p></p>)</i>
-                    // what about <!--{foo}--> -> foo = [CDATA]?
                     return `<!--${htmlEscape(child.value)}-->`;
                 case HostNodeType.Element:
                     return serializeElement(child);

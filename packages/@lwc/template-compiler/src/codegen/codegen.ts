@@ -98,12 +98,8 @@ export default class CodeGen {
         }
     }
 
-    genComment(value: string | t.Expression): t.Expression {
-        if (typeof value === 'string') {
-            return this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
-        } else {
-            return this._renderApiCall(RENDER_APIS.comment, [value]);
-        }
+    genComment(value: string): t.Expression {
+        return this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
     }
 
     genIterator(iterable: t.Expression, callback: t.FunctionExpression) {

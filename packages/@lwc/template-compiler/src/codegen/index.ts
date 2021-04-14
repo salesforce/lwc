@@ -111,11 +111,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
     }
 
     function transformComment(comment: IRComment): t.Expression {
-        const { value } = comment;
-        // @todo: the comment value should be an array, of string or template expressions (-> bindExpression).
-        return codeGen.genComment(
-            typeof value === 'string' ? value : bindExpression(value, comment)
-        );
+        return codeGen.genComment(comment.value);
     }
 
     function transformChildren(children: IRNode[]): t.Expression {
