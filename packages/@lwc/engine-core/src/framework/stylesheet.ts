@@ -139,7 +139,7 @@ export function createStylesheet(vm: VM, stylesheets: StylesheetFactoryResult[])
 
     if (renderer.syntheticShadow) {
         for (let i = 0; i < stylesheets.length; i++) {
-            renderer.insertGlobalStylesheet(stylesheets[i] as 'string'); // always string if not hasAdoptedStyleSheets
+            renderer.insertGlobalStylesheet(stylesheets[i] as string); // always string if not hasAdoptedStyleSheets
         }
 
         return null;
