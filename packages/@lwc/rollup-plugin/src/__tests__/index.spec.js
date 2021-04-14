@@ -57,6 +57,16 @@ describe('default configuration', () => {
             fsExpected('expected_default_config_simple_app_css_resolver', pretty(actual));
         });
     });
+
+    it(`simple app compiled with preserveHtmlComments option`, () => {
+        const entry = path.join(simpleAppDir, 'main.js');
+        const rollupCompileOptions = {
+            preserveHtmlComments: true,
+        };
+        return doRollup(entry, { compat: false }, rollupCompileOptions).then(({ code: actual }) => {
+            expect(pretty(actual)).toContain('Application container');
+        });
+    });
 });
 
 describe('rollup with custom options', () => {

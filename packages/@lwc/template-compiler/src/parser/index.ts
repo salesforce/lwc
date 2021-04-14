@@ -145,9 +145,10 @@ export default function parse(source: string, state: State): TemplateParseResult
     let root: any;
     let parent: IRElement;
     const stack: IRElement[] = [];
-    const preserveComments = templateRoot.attrs.some(
-        ({ name }) => name === PRESERVE_COMMENTS_OPTION
-    );
+
+    const preserveComments =
+        templateRoot.attrs.some(({ name }) => name === PRESERVE_COMMENTS_OPTION) ||
+        state.config.preserveHtmlComments;
 
     traverseHTML(templateRoot, {
         Element: {

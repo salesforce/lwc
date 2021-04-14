@@ -32,6 +32,7 @@ export default function templateTransform(
     try {
         result = compile(src, {
             experimentalDynamicDirective: !!options.experimentalDynamicComponent,
+            preserveHtmlComments: !!options.preserveHtmlComments,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
