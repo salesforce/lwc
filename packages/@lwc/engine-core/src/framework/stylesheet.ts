@@ -88,10 +88,7 @@ function evaluateStylesheetsContent(
                 // the stylesheet, while internally, we have a replacement for it.
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
-            ArrayPush.call(
-                content,
-                stylesheet(hostSelector, shadowSelector, nativeShadow)
-            );
+            ArrayPush.call(content, stylesheet(hostSelector, shadowSelector, nativeShadow));
         }
     }
 
