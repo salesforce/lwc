@@ -99,7 +99,7 @@ function evaluateStylesheetsContent(
             }
             ArrayPush.call(
                 content,
-                (stylesheet as StylesheetFactory)(
+                stylesheet(
                     hostSelector,
                     shadowSelector,
                     nativeShadow,
