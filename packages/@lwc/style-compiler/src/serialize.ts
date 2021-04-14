@@ -70,7 +70,7 @@ function generateCss(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER},
   return ${serializedStyle};
 }
 
-var stylesheet = createCachingCssGenerator(generateCss);
+const stylesheet = createCachingCssGenerator(generateCss);
 \n`;
 
         // add import at the end
