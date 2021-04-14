@@ -1,0 +1,19 @@
+<template preserve-comments>
+    <template if:true={isOdd}>
+        <!--Comment for odd number-->
+    </template>
+    <template if:false={isOdd}>
+        <!--Comment for even number-->
+    </template>
+
+    <template for:each={comments} for:item="comment">
+        <!--Comment inside for:each-->
+        <span key={comment}>{comment}</span>
+    </template>
+
+    <x-child>
+        <template if:true={isOdd}>
+            <!--slotted:odd comment-->
+        </template>
+    </x-child>
+</template>
