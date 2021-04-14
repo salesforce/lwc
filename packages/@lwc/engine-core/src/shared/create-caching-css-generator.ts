@@ -7,6 +7,7 @@
 
 import { StylesheetFactory, StylesheetFactoryResult } from './stylesheet-factory';
 import { hasAdoptedStyleSheets } from './has-adopted-stylesheets';
+import { isUndefined } from '@lwc/shared';
 
 /**
  * Given a StylesheetFactory, return another StylesheetFactory that properly caches the
@@ -29,7 +30,7 @@ export function createCachingCssGenerator(generateCss: StylesheetFactory): Style
         nativeShadow: boolean
     ): StylesheetFactoryResult {
         if (nativeShadow && hasAdoptedStyleSheets) {
-            if (!isUndefined(cachedStylesheet)) {
+            if (isUndefined(cachedStylesheet)) {
                 cachedStylesheet = new CSSStyleSheet();
                 // adoptedStyleSheets not in TypeScript yet: https://github.com/microsoft/TypeScript/issues/30022
                 // @ts-ignore
@@ -37,7 +38,7 @@ export function createCachingCssGenerator(generateCss: StylesheetFactory): Style
                     generateCss(hostSelector, shadowSelector, nativeShadow)
                 );
             }
-            return cachedStylesheet; // fast path
+            return cachedStylesheet as CSSStyleSheet; // fast path
         }
         return generateCss(hostSelector, shadowSelector, nativeShadow);
     };
