@@ -7,12 +7,7 @@
 
   var varResolver__default = /*#__PURE__*/ _interopDefaultLegacy(varResolver);
 
-  function generateCss(
-    hostSelector,
-    shadowSelector,
-    nativeShadow,
-    hasAdoptedStyleSheets
-  ) {
+  function generateCss(hostSelector, shadowSelector, nativeShadow) {
     return nativeShadow
       ? [
           ":host {color: ",
@@ -27,7 +22,7 @@
         ].join("");
   }
 
-  var stylesheet = lwc.createCachingCssGenerator(generateCss);
+  const stylesheet = lwc.createCachingCssGenerator(generateCss);
 
   var _implicitStylesheets = [stylesheet];
 

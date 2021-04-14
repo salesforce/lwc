@@ -2,10 +2,10 @@
 
 import { createCachingCssGenerator } from 'lwc';
 
-function generateCss(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return ["@supports (display: flex) {h1", shadowSelector, " {}}"].join('');
 }
 
-var stylesheet = createCachingCssGenerator(generateCss);
+const stylesheet = createCachingCssGenerator(generateCss);
 
 export default [stylesheet];

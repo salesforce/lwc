@@ -2,10 +2,10 @@
 
 import { createCachingCssGenerator } from 'lwc';
 
-function generateCss(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets) {
+function generateCss(hostSelector, shadowSelector, nativeShadow) {
   return [":not(p)", shadowSelector, " {}p:not(.foo, .bar)", shadowSelector, " {}:matches(ol, li, span)", shadowSelector, " {}"].join('');
 }
 
-var stylesheet = createCachingCssGenerator(generateCss);
+const stylesheet = createCachingCssGenerator(generateCss);
 
 export default [stylesheet];

@@ -1,18 +1,13 @@
 (function (lwc) {
   "use strict";
 
-  function generateCss(
-    hostSelector,
-    shadowSelector,
-    nativeShadow,
-    hasAdoptedStyleSheets
-  ) {
+  function generateCss(hostSelector, shadowSelector, nativeShadow) {
     return nativeShadow
       ? ":host {color: var(--lwc-my-color);}"
       : [hostSelector, " {color: var(--lwc-my-color);}"].join("");
   }
 
-  var stylesheet = lwc.createCachingCssGenerator(generateCss);
+  const stylesheet = lwc.createCachingCssGenerator(generateCss);
 
   var _implicitStylesheets = [stylesheet];
 

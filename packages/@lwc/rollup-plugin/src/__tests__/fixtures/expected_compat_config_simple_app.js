@@ -85,12 +85,7 @@
 
   var __concat = Proxy.concat;
 
-  function generateCss(
-    hostSelector,
-    shadowSelector,
-    nativeShadow,
-    hasAdoptedStyleSheets
-  ) {
+  function generateCss(hostSelector, shadowSelector, nativeShadow) {
     return nativeShadow
       ? ":host {color: var(--lwc-my-color);}"
       : __callKey1(
