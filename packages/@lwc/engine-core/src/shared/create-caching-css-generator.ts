@@ -20,7 +20,7 @@ import { StylesheetFactory, StylesheetFactoryResult } from './stylesheet-factory
  * @param generateCss
  */
 export function createCachingCssGenerator(generateCss: StylesheetFactory): StylesheetFactory {
-    let cachedStylesheet: CSSStyleSheet;
+    let cachedStylesheet: CSSStyleSheet | undefined;
 
     return function generateCssWithCaching(
         hostSelector: string,
