@@ -29,7 +29,7 @@ export function createCachingCssGenerator(generateCss: StylesheetFactory): Style
         hasAdoptedStyleSheets: boolean
     ): StylesheetFactoryResult {
         if (nativeShadow && hasAdoptedStyleSheets) {
-            if (!cachedStylesheet) {
+            if (!isUndefined(cachedStylesheet)) {
                 cachedStylesheet = new CSSStyleSheet();
                 // adoptedStyleSheets not in TypeScript yet: https://github.com/microsoft/TypeScript/issues/30022
                 // @ts-ignore
