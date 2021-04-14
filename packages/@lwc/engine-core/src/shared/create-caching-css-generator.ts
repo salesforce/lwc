@@ -6,6 +6,7 @@
  */
 
 import { StylesheetFactory, StylesheetFactoryResult } from './stylesheet-factory';
+import { hasAdoptedStyleSheets } from './has-adopted-stylesheets';
 
 /**
  * Given a StylesheetFactory, return another StylesheetFactory that properly caches the
@@ -25,8 +26,7 @@ export function createCachingCssGenerator(generateCss: StylesheetFactory): Style
     return function generateCssWithCaching(
         hostSelector: string,
         shadowSelector: string,
-        nativeShadow: boolean,
-        hasAdoptedStyleSheets: boolean
+        nativeShadow: boolean
     ): StylesheetFactoryResult {
         if (nativeShadow && hasAdoptedStyleSheets) {
             if (!isUndefined(cachedStylesheet)) {
@@ -34,11 +34,11 @@ export function createCachingCssGenerator(generateCss: StylesheetFactory): Style
                 // adoptedStyleSheets not in TypeScript yet: https://github.com/microsoft/TypeScript/issues/30022
                 // @ts-ignore
                 cachedStylesheet.replaceSync(
-                    generateCss(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets)
+                    generateCss(hostSelector, shadowSelector, nativeShadow)
                 );
             }
             return cachedStylesheet; // fast path
         }
-        return generateCss(hostSelector, shadowSelector, nativeShadow, hasAdoptedStyleSheets);
+        return generateCss(hostSelector, shadowSelector, nativeShadow);
     };
 }

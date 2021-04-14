@@ -12,9 +12,7 @@ import { VM } from './vm';
 import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 import { StylesheetFactory, StylesheetFactoryResult } from '../shared/stylesheet-factory';
-
-const hasAdoptedStyleSheets =
-    typeof ShadowRoot !== 'undefined' && 'adoptedStyleSheets' in ShadowRoot.prototype;
+import { hasAdoptedStyleSheets } from '../shared/has-adopted-stylesheets';
 
 /**
  * The list of stylesheets associated with a template. Each entry is either a StylesheetFactory or a
@@ -71,8 +69,7 @@ function evaluateStylesheetsContent(
     stylesheets: TemplateStylesheetFactories,
     hostSelector: string,
     shadowSelector: string,
-    nativeShadow: boolean,
-    hasAdoptedStyleSheets: boolean
+    nativeShadow: boolean
 ): StylesheetFactoryResult[] {
     const content: StylesheetFactoryResult[] = [];
 
@@ -82,13 +79,7 @@ function evaluateStylesheetsContent(
         if (isArray(stylesheet)) {
             ArrayPush.apply(
                 content,
-                evaluateStylesheetsContent(
-                    stylesheet,
-                    hostSelector,
-                    shadowSelector,
-                    nativeShadow,
-                    hasAdoptedStyleSheets
-                )
+                evaluateStylesheetsContent(stylesheet, hostSelector, shadowSelector, nativeShadow)
             );
         } else {
             if (process.env.NODE_ENV !== 'production') {
@@ -99,12 +90,7 @@ function evaluateStylesheetsContent(
             }
             ArrayPush.call(
                 content,
-                stylesheet(
-                    hostSelector,
-                    shadowSelector,
-                    nativeShadow,
-                    hasAdoptedStyleSheets
-                )
+                stylesheet(hostSelector, shadowSelector, nativeShadow)
             );
         }
     }
@@ -126,8 +112,7 @@ export function getStylesheetsContent(vm: VM, template: Template): StylesheetFac
             stylesheets,
             hostSelector,
             shadowSelector,
-            !syntheticShadow,
-            hasAdoptedStyleSheets
+            !syntheticShadow
         );
     }
 

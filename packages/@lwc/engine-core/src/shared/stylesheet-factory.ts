@@ -14,6 +14,5 @@ export type StylesheetFactoryResult = string | CSSStyleSheet;
 export type StylesheetFactory = (
     hostSelector: string,
     shadowSelector: string,
-    nativeShadow: boolean,
-    hasAdoptedStyleSheets: boolean
+    nativeShadow: boolean
 ) => StylesheetFactoryResult;
