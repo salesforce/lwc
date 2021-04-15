@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { isUndefined } from '@lwc/shared';
 import { StylesheetFactory, StylesheetFactoryResult } from './stylesheet-factory';
 import { hasAdoptedStyleSheets } from './has-adopted-stylesheets';
-import { isUndefined } from '@lwc/shared';
 
 /**
  * Given a StylesheetFactory, return another StylesheetFactory that properly caches the
