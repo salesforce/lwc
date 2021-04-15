@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const path = require('path');
 
+/** @type {import("@jest/types").Config.InitialOptions } */
 module.exports = {
     testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
 
@@ -16,4 +18,6 @@ module.exports = {
             lines: 85,
         },
     },
+
+    setupFilesAfterEnv: [path.resolve(__dirname, './setup.js')],
 };
