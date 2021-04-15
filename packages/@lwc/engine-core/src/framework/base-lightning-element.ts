@@ -126,6 +126,7 @@ export interface LightningElementConstructor {
     readonly CustomElementConstructor: HTMLElementConstructor;
 
     delegatesFocus?: boolean;
+    shadow: boolean;
 }
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
@@ -161,7 +162,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
     >;
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
-    template: ShadowRoot;
+    template: ShadowRoot | null;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -199,14 +200,16 @@ export const LightningElement: LightningElementConstructor = function (
 
     const component = this;
     setPrototypeOf(elm, bridge.prototype);
-    const cmpRoot = renderer.attachShadow(elm, {
-        mode,
-        delegatesFocus: !!ctor.delegatesFocus,
-        '$$lwc-synthetic-mode$$': true,
-    } as any);
+    if (ctor.shadow) {
+        const cmpRoot = renderer.attachShadow(elm, {
+            mode,
+            delegatesFocus: !!ctor.delegatesFocus,
+            '$$lwc-synthetic-mode$$': true,
+        } as any);
+        vm.cmpRoot = cmpRoot;
+    }
 
     vm.component = this;
-    vm.cmpRoot = cmpRoot;
 
     // Locker hooks assignment. When the LWC engine run with Locker, Locker intercepts all the new
     // component creation and passes hooks to instrument all the component interactions with the
@@ -224,14 +227,18 @@ export const LightningElement: LightningElementConstructor = function (
 
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);
-    associateVM(cmpRoot, vm);
+    if (ctor.shadow) {
+        associateVM(vm.cmpRoot, vm);
+    }
     associateVM(elm, vm);
 
     // Adding extra guard rails in DEV mode.
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
-        patchShadowRootWithRestrictions(cmpRoot);
+        if (ctor.shadow) {
+            patchShadowRootWithRestrictions(vm.cmpRoot!);
+        }
     }
 
     return this;
@@ -509,7 +516,7 @@ LightningElement.prototype = {
         return getClassList(elm);
     },
 
-    get template(): ShadowRoot {
+    get template(): ShadowRoot | null {
         const vm = getAssociatedVM(this);
         return vm.cmpRoot;
     },
@@ -552,3 +559,17 @@ defineProperty(LightningElement, 'CustomElementConstructor', {
 if (process.env.NODE_ENV !== 'production') {
     patchLightningElementPrototypeWithRestrictions(LightningElement.prototype);
 }
+
+defineProperty(LightningElement, 'shadow', {
+    get() {
+        return true;
+    },
+    set(v) {
+        Object.defineProperty(this, 'shadow', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: v,
+        });
+    },
+});

@@ -124,7 +124,7 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The component instance. */
     component: LightningElement;
     /** The custom element shadow root. */
-    cmpRoot: ShadowRoot;
+    cmpRoot: ShadowRoot | null;
     /** The template reactive observer. */
     tro: ReactiveObserver;
     /** The accessor reactive observers. Is only used when the ENABLE_REACTIVE_SETTER feature flag
@@ -342,7 +342,7 @@ function rehydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { cmpRoot, children: oldCh } = vm;
+    const { cmpRoot, children: oldCh, elm } = vm;
 
     // caching the new children collection
     vm.children = newCh;
@@ -363,7 +363,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    fn(cmpRoot, oldCh, newCh);
+                    fn(cmpRoot || elm, oldCh, newCh);
                 },
                 () => {
                     // post
