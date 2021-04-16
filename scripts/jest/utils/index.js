@@ -17,7 +17,7 @@ function toMatchFile(receivedContent, filename) {
     const fileExists = fs.existsSync(filename);
 
     if (fileExists) {
-        const actualContent = fs.readFileSync(filename, 'utf-8');
+        const expectedContent = fs.readFileSync(filename, 'utf-8');
 
         if (receivedContent === null || receivedContent === undefined) {
             // If the file exists but the expected content is undefined or null. If the Jest is
@@ -30,11 +30,20 @@ function toMatchFile(receivedContent, filename) {
                 return { pass: true, message: () => {} };
             } else {
                 snapshotState.unmatched++;
-                return { pass: false, message: () => `TODO` };
+                return {
+                    pass: false,
+                    message: () =>
+                        `Fixture output for "${filename}" exists but received no output for it. ` +
+                        `The fixture has not been deleted. The update flag has to be explicitly ` +
+                        `passed to write new fixture output.\n` +
+                        `This is likely because this test is run in a continuous integration (CI) ` +
+                        `environment in which fixtures are not written by default.\n\n` +
+                        `Expected: ${this.utils.printExpected(expectedContent)}`,
+                };
             }
         }
 
-        if (actualContent === receivedContent) {
+        if (expectedContent === receivedContent) {
             // If the expected file exists and the expected content is matching with the actual
             // content everything is fine.
             return { pass: true, message: () => {} };
@@ -48,15 +57,21 @@ function toMatchFile(receivedContent, filename) {
                 snapshotState.updated++;
                 return { pass: true, message: () => {} };
             } else {
-                const diffString = diff(actualContent, receivedContent, {
-                    expand,
-                });
-
                 snapshotState.unmatched++;
                 return {
                     pass: false,
-                    message: () =>
-                        `Received content doesn't match expected content for ${filename}.\n\n${diffString}`,
+                    message: () => {
+                        const diffString = diff(expectedContent, receivedContent, {
+                            expand,
+                        });
+                        return (
+                            `Received content for "${filename}" doesn't expected content.\n\n` +
+                            (diffString && diffString.includes('- Expect')
+                                ? `Difference:\n\n${diffString}`
+                                : `Expected: ${this.utils.printExpected(expectedContent)}\n` +
+                                  `Received: ${this.utils.printReceived(receivedContent)}`)
+                        );
+                    },
                 };
             }
         }
@@ -73,13 +88,18 @@ function toMatchFile(receivedContent, filename) {
             fs.writeFileSync(filename, receivedContent);
 
             snapshotState.added++;
-            return { pass: true, message: () => '' };
-        } else if (snapshotState._updateSnapshot === 'none') {
-            snapshotState.unmatched++;
-            return { pass: false, message: () => 'TODO' };
+            return { pass: true, message: () => {} };
         } else {
             snapshotState.unmatched++;
-            return { pass: false, message: () => 'TODO' };
+            return {
+                pass: false,
+                message: () =>
+                    `Fixture output for "${filename}" has not been written. The update flag has to` +
+                    `be explicitly passed to write new fixture output.\n` +
+                    `This is likely because this test is run in a continuous integration (CI) ` +
+                    `environment in which fixtures are not written by default.\n\n` +
+                    `Received: ${this.utils.printReceived(receivedContent)}`,
+            };
         }
     }
 }
