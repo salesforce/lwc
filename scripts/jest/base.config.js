@@ -19,5 +19,7 @@ module.exports = {
         },
     },
 
-    setupFilesAfterEnv: [path.resolve(__dirname, './setup.js')],
+    moduleNameMapper: {
+        '^@lwc/internal-jest-utils$': path.resolve(__dirname, './utils/index.js'),
+    },
 };

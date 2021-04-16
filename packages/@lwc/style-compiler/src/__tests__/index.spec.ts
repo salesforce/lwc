@@ -7,33 +7,9 @@
 import fs from 'fs';
 import path from 'path';
 
+import { testFixtureDir } from '@lwc/internal-jest-utils';
+
 import { transform } from '../index';
-
-testFixtureDir(path.resolve(__dirname, 'fixtures'), (dir) => {
-    const inputPath = path.resolve(dir, 'actual.css');
-    const configPath = path.resolve(dir, 'config.json');
-
-    const src = fs.readFileSync(inputPath, 'utf8');
-
-    let config: any = {};
-    if (fs.existsSync(configPath)) {
-        config = require(configPath);
-    }
-
-    let result;
-    let error;
-
-    try {
-        result = transform(src, inputPath, config);
-    } catch (err) {
-        error = JSON.stringify(normalizeError(error), null, 4);
-    }
-
-    return {
-        'expected.js': result?.code,
-        'error.json': error,
-    };
-});
 
 function normalizeError(err) {
     if (err.name === 'CssSyntaxError') {
@@ -50,3 +26,34 @@ function normalizeError(err) {
         };
     }
 }
+
+describe('fixtures', () => {
+    testFixtureDir(
+        {
+            root: path.resolve(__dirname, 'fixtures'),
+            pattern: '**/actual.css',
+        },
+        ({ src, filename, dirname }) => {
+            const configPath = path.resolve(dirname, 'config.json');
+
+            let config: any = {};
+            if (fs.existsSync(configPath)) {
+                config = require(configPath);
+            }
+
+            let result;
+            let error;
+
+            try {
+                result = transform(src, filename, config);
+            } catch (err) {
+                error = JSON.stringify(normalizeError(err), null, 4);
+            }
+
+            return {
+                'expected.js': result?.code,
+                'error.json': error,
+            };
+        }
+    );
+});
