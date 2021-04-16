@@ -9,7 +9,7 @@ import path from 'path';
 
 import { testFixtureDir } from '@lwc/internal-jest-utils';
 
-import { transform } from '../index';
+import { transform, Config } from '../index';
 
 function normalizeError(err) {
     if (err.name === 'CssSyntaxError') {
@@ -36,7 +36,7 @@ describe('fixtures', () => {
         ({ src, filename, dirname }) => {
             const configPath = path.resolve(dirname, 'config.json');
 
-            let config: any = {};
+            let config: Config = {};
             if (fs.existsSync(configPath)) {
                 config = require(configPath);
             }

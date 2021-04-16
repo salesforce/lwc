@@ -2,179 +2,179 @@
     "warnings": [
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 8,
-                "length": 13,
                 "line": 2,
-                "start": 18
-            },
-            "message": "LWC1037: To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 8,
+                "start": 18,
+                "length": 13
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <ol reversed> instead of <ol reversed=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 9,
-                "length": 15,
                 "line": 4,
-                "start": 47
-            },
-            "message": "LWC1037: To set a boolean attributes, try <ol reversed> instead of <ol reversed=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 9,
+                "start": 47,
+                "length": 15
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <details open> instead of <details open=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 14,
-                "length": 11,
                 "line": 5,
-                "start": 82
-            },
-            "message": "LWC1037: To set a boolean attributes, try <details open> instead of <details open=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 14,
+                "start": 82,
+                "length": 11
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <form novalidate> instead of <form novalidate=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 11,
-                "length": 17,
                 "line": 6,
-                "start": 115
-            },
-            "message": "LWC1037: To set a boolean attributes, try <form novalidate> instead of <form novalidate=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 11,
+                "start": 115,
+                "length": 17
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <video autoplay> instead of <video autoplay=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 15,
                 "line": 8,
-                "start": 164
-            },
-            "message": "LWC1037: To set a boolean attributes, try <video autoplay> instead of <video autoplay=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 164,
+                "length": 15
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <video loop> instead of <video loop=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 11,
                 "line": 9,
-                "start": 192
-            },
-            "message": "LWC1037: To set a boolean attributes, try <video loop> instead of <video loop=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 192,
+                "length": 11
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <video muted> instead of <video muted=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 12,
                 "line": 10,
-                "start": 216
-            },
-            "message": "LWC1037: To set a boolean attributes, try <video muted> instead of <video muted=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 216,
+                "length": 12
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <input checked> instead of <input checked=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 14,
                 "line": 13,
-                "start": 266
-            },
-            "message": "LWC1037: To set a boolean attributes, try <input checked> instead of <input checked=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 266,
+                "length": 14
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <input multiple> instead of <input multiple=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 15,
                 "line": 14,
-                "start": 293
-            },
-            "message": "LWC1037: To set a boolean attributes, try <input multiple> instead of <input multiple=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 293,
+                "length": 15
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <input readonly> instead of <input readonly=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 15,
                 "line": 15,
-                "start": 321
-            },
-            "message": "LWC1037: To set a boolean attributes, try <input readonly> instead of <input readonly=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 321,
+                "length": 15
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <input required> instead of <input required=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 15,
                 "line": 16,
-                "start": 349
-            },
-            "message": "LWC1037: To set a boolean attributes, try <input required> instead of <input required=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 349,
+                "length": 15
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <button autofocus> instead of <button autofocus=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 16,
                 "line": 19,
-                "start": 416
-            },
-            "message": "LWC1037: To set a boolean attributes, try <button autofocus> instead of <button autofocus=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 416,
+                "length": 16
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <button disabled> instead of <button disabled=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 15,
                 "line": 20,
-                "start": 445
-            },
-            "message": "LWC1037: To set a boolean attributes, try <button disabled> instead of <button disabled=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 445,
+                "length": 15
+            }
         },
         {
             "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <button formnovalidate> instead of <button formnovalidate=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
             "level": 1,
             "location": {
-                "column": 13,
-                "length": 21,
                 "line": 21,
-                "start": 473
-            },
-            "message": "LWC1037: To set a boolean attributes, try <button formnovalidate> instead of <button formnovalidate=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
-        },
-        {
-            "code": 1037,
-            "level": 1,
-            "location": {
-                "column": 17,
-                "length": 15,
-                "line": 24,
-                "start": 539
-            },
-            "message": "LWC1037: To set a boolean attributes, try <option selected> instead of <option selected=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
-        },
-        {
-            "code": 1037,
-            "level": 1,
-            "location": {
                 "column": 13,
-                "length": 13,
+                "start": 473,
+                "length": 21
+            }
+        },
+        {
+            "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <option selected> instead of <option selected=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
+            "level": 1,
+            "location": {
+                "line": 24,
+                "column": 17,
+                "start": 539,
+                "length": 15
+            }
+        },
+        {
+            "code": 1037,
+            "message": "LWC1037: To set a boolean attributes, try <x-foo hidden> instead of <x-foo hidden=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
+            "level": 1,
+            "location": {
                 "line": 27,
-                "start": 602
-            },
-            "message": "LWC1037: To set a boolean attributes, try <x-foo hidden> instead of <x-foo hidden=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace."
+                "column": 13,
+                "start": 602,
+                "length": 13
+            }
         }
     ]
 }
