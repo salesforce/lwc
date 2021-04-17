@@ -11,4 +11,8 @@ module.exports = {
     displayName: 'lwc-engine-server',
     roots: ['<rootDir>/src'],
     testEnvironment: 'node',
+    moduleNameMapper: {
+        ...BASE_CONFIG.moduleNameMapper,
+        '^lwc$': '<rootDir>/src/index.ts',
+    },
 };

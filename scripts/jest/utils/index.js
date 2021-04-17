@@ -129,12 +129,18 @@ function testFixtureDir(config, testFn) {
 
         const fixtureName = path.relative(root, filename);
 
-        test(fixtureName, () => {
-            const outputs = testFn({
+        test(fixtureName, async () => {
+            const outputs = await testFn({
                 src,
                 filename,
                 dirname,
             });
+
+            if (typeof outputs !== 'object' || outputs === null) {
+                throw new TypeError(
+                    'Expected test function to returns a object with fixtures outputs'
+                );
+            }
 
             for (const [outputName, content] of Object.entries(outputs)) {
                 const outputPath = path.resolve(dirname, outputName);
