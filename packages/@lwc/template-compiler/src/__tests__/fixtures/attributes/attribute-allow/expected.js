@@ -6,7 +6,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "iframe",
       {
         attrs: {
-          allow: "geolocation https://google-developers.appspot.com",
+          allow: "",
         },
         key: 0,
       },
