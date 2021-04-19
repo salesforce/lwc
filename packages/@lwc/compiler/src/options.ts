@@ -54,6 +54,7 @@ export interface TransformOptions {
     experimentalDynamicComponent?: DynamicComponentConfig;
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
+    experimentalLightDOMComponent?: boolean;
 }
 
 export interface NormalizedTransformOptions extends TransformOptions {
@@ -61,6 +62,7 @@ export interface NormalizedTransformOptions extends TransformOptions {
     stylesheetConfig: NormalizedStylesheetConfig;
     experimentalDynamicComponent: NormalizedDynamicComponentConfig;
     isExplicitImport: boolean;
+    experimentalLightDOMComponent?: boolean;
 }
 
 export interface NormalizedStylesheetConfig extends StylesheetConfig {
