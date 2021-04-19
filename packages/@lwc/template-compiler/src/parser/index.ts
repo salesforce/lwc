@@ -371,6 +371,14 @@ export default function parse(source: string, state: State): TemplateParseResult
             return;
         }
 
+        // only root template tag allows lwc:preserve-comments
+        if (
+            element.parent === undefined &&
+            lwcAttribute.name === PRESERVE_COMMENTS_ATTRIBUTE_NAME
+        ) {
+            return;
+        }
+
         if (!LWC_DIRECTIVE_SET.has(lwcAttribute.name)) {
             // unknown lwc directive
             return warnOnElement(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element.__original, [
