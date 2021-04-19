@@ -33,7 +33,10 @@ export default function scriptTransform(
             configFile: false,
             plugins: [
                 [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
-                [babelClassPropertiesPlugin, { loose: true }],
+                // Loose mode is only required for light DOM, due to the static field (`shadow`).
+                // It may introduce some side effects or perf impact to use strict mode, so
+                // we should only use strict mode when light DOM is enabled.
+                [babelClassPropertiesPlugin, { loose: !options.experimentalLightDOMComponent }],
 
                 // This plugin should be removed in a future version. The object-rest-spread is
                 // already a stage 4 feature. The LWC compile should leave this syntax untouched.

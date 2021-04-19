@@ -82,6 +82,17 @@ describe('rollup in compat mode', () => {
     });
 });
 
+describe('rollup in light DOM mode', () => {
+    it(`simple app`, () => {
+        const entry = path.join(simpleAppDir, 'main.js');
+        return doRollup(entry, {}, { experimentalLightDOMComponent: true }).then(
+            ({ code: actual }) => {
+                fsExpected('expected_lightdom_config_simple_app', pretty(actual));
+            }
+        );
+    });
+});
+
 describe('typescript relative import', () => {
     it(`should resolve to .ts file`, () => {
         const entry = path.join(tsAppDir, 'main.ts');
