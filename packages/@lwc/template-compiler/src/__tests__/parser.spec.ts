@@ -306,7 +306,7 @@ describe('root errors', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining(`Root template have unknown attributes`),
+            message: expect.stringContaining(`Root template has unknown attributes`),
             location: EXPECTED_LOCATION,
         });
     });
