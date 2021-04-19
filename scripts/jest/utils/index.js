@@ -104,6 +104,25 @@ function toMatchFile(receivedContent, filename) {
     }
 }
 
+/**
+ * @typedef {Object} TestFixtureConfig
+ * @property {string} src - the fixture content
+ * @property {string} filename - the fixture absolute path
+ * @property {string} dirname - the fixture directory absolute path
+ */
+
+/**
+ * Test a fixture directory against a set of snapshot files. This method generate a test for each
+ * file matching the `config.pattern` glob. The `testFn` fixture is invoked for each test and is
+ * expected to the return an object representing the fixture outputs. The key represent the output
+ * file name and the value its associated content. An `undefined` or `null` value represents a
+ * non existing file.
+ *
+ * @param {Object} config
+ * @param {string} config.pattern - The glob pattern to locate each individual fixture.
+ * @param {string} config.root - The directory from where the pattern is executed.
+ * @param {function(TestFixtureConfig)} testFn - The test function executed for each fixture.
+ */
 function testFixtureDir(config, testFn) {
     if (typeof config !== 'object' || config === null) {
         throw new TypeError(`Expected first argument to be an object`);
