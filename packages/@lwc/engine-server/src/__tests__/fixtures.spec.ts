@@ -11,7 +11,7 @@ import path from 'path';
 import { rollup } from 'rollup';
 import prettier from 'prettier';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { testFixtureDir } from '@lwc/internal-jest-utils';
+import { testFixtureDir } from 'jest-utils-lwc-internals';
 
 jest.setTimeout(10_000 /* 10 seconds */);
 

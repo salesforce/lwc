@@ -7,7 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { testFixtureDir } from '@lwc/internal-jest-utils';
+import { testFixtureDir } from 'jest-utils-lwc-internals';
 
 import { transform, Config } from '../index';
 
