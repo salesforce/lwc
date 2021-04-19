@@ -4,16 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayIndexOf,
-    ArrayUnshift,
-    assert,
-    create,
-    isArray,
-    isFunction,
-    isNull,
-    toString,
-} from '@lwc/shared';
+import { ArrayIndexOf, assert, create, isArray, isFunction, isNull, toString } from '@lwc/shared';
 import { logError } from '../shared/logger';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
@@ -30,6 +21,16 @@ import {
 import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 
+export interface TemplateStylesheetTokens {
+    /** HTML attribute that need to be applied to the host element. This attribute is used for
+     * the `:host` pseudo class CSS selector. */
+    hostAttribute: string;
+    /** HTML attribute that need to the applied to all the element that the template produces.
+     * This attribute is used for style encapsulation when the engine runs with synthetic
+     * shadow. */
+    shadowAttribute: string;
+}
+
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
 
@@ -38,15 +39,7 @@ export interface Template {
     /** The stylesheet associated with the template. */
     stylesheets?: TemplateStylesheetFactories;
     /** The stylesheet tokens used for synthetic shadow style scoping. */
-    stylesheetTokens?: {
-        /** HTML attribute that need to be applied to the host element. This attribute is used for
-         * the `:host` pseudo class CSS selector. */
-        hostAttribute: string;
-        /** HTML attribute that need to the applied to all the element that the template produces.
-         * This attribute is used for style encapsulation when the engine runs with synthetic
-         * shadow. */
-        shadowAttribute: string;
-    };
+    stylesheetTokens?: TemplateStylesheetTokens;
 }
 
 export let isUpdatingTemplate: boolean = false;
@@ -155,10 +148,9 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.
                     const stylesheetsContent = getStylesheetsContent(vm, html);
-                    context.styleVNode =
-                        stylesheetsContent.length === 0
-                            ? null
-                            : createStylesheet(vm, stylesheetsContent);
+                    if (stylesheetsContent.length !== 0) {
+                        createStylesheet(vm, stylesheetsContent);
+                    }
                 }
 
                 if (process.env.NODE_ENV !== 'production') {
@@ -175,10 +167,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                 isUpdatingTemplate = true;
 
                 vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
-                const { styleVNode } = context;
-                if (!isNull(styleVNode)) {
-                    ArrayUnshift.call(vnodes, styleVNode);
-                }
             });
         },
         () => {

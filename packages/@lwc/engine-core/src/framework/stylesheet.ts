@@ -4,12 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isArray, isUndefined, ArrayJoin, ArrayPush } from '@lwc/shared';
-
-import * as api from './api';
-import { VNode } from '../3rdparty/snabbdom/types';
+import { isArray, isUndefined, ArrayPush, isNull } from '@lwc/shared';
 import { VM } from './vm';
-import { Template } from './template';
+import { Template, TemplateStylesheetTokens } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 
 /**
@@ -29,25 +26,12 @@ export type StylesheetFactory = (
  */
 export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
 
-function createShadowStyleVNode(content: string): VNode {
-    return api.h(
-        'style',
-        {
-            key: 'style', // special key
-            attrs: {
-                type: 'text/css',
-            },
-        },
-        [api.t(content)]
-    );
-}
-
 export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
     const { elm, context, renderer } = vm;
     const { stylesheets: newStylesheets, stylesheetTokens: newStylesheetTokens } = template;
+    const isLightElement = isNull(vm.cmpRoot);
 
-    let newHostAttribute: string | undefined;
-    let newShadowAttribute: string | undefined;
+    let newTokens: TemplateStylesheetTokens | undefined;
 
     // Reset the styling token applied to the host element.
     const oldHostAttribute = context.hostAttribute;
@@ -57,20 +41,17 @@ export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
 
     // Apply the new template styling token to the host element, if the new template has any
     // associated stylesheets.
-    if (
-        !isUndefined(newStylesheetTokens) &&
-        !isUndefined(newStylesheets) &&
-        newStylesheets.length !== 0
-    ) {
-        newHostAttribute = newStylesheetTokens.hostAttribute;
-        newShadowAttribute = newStylesheetTokens.shadowAttribute;
+    if (!isLightElement && !isUndefined(newStylesheets) && newStylesheets.length !== 0) {
+        newTokens = newStylesheetTokens;
+    }
 
-        renderer.setAttribute(elm, newHostAttribute, '');
+    if (newTokens) {
+        renderer.setAttribute(elm, newTokens.hostAttribute, '');
     }
 
     // Update the styling tokens present on the context object.
-    context.hostAttribute = newHostAttribute;
-    context.shadowAttribute = newShadowAttribute;
+    context.hostAttribute = newTokens?.hostAttribute;
+    context.shadowAttribute = newTokens?.shadowAttribute;
 }
 
 function evaluateStylesheetsContent(
@@ -104,14 +85,17 @@ function evaluateStylesheetsContent(
 }
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
-    const { stylesheets, stylesheetTokens: tokens } = template;
+    const { stylesheets, stylesheetTokens } = template;
     const { syntheticShadow } = vm.renderer;
+    const isLightElement = isNull(vm.cmpRoot);
 
     let content: string[] = [];
 
-    if (!isUndefined(stylesheets) && !isUndefined(tokens)) {
-        const hostSelector = syntheticShadow ? `[${tokens.hostAttribute}]` : '';
-        const shadowSelector = syntheticShadow ? `[${tokens.shadowAttribute}]` : '';
+    if (!isUndefined(stylesheets) && stylesheets.length !== 0) {
+        const tokens = syntheticShadow && !isLightElement && stylesheetTokens;
+
+        const hostSelector = tokens ? `[${tokens.hostAttribute}]` : '';
+        const shadowSelector = tokens ? `[${tokens.shadowAttribute}]` : '';
 
         content = evaluateStylesheetsContent(
             stylesheets,
@@ -124,17 +108,24 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
     return content;
 }
 
-export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    const { renderer } = vm;
+export function createStylesheet(vm: VM, stylesheets: string[]): void {
+    const { renderer, cmpRoot, elm } = vm;
 
-    if (renderer.syntheticShadow) {
-        for (let i = 0; i < stylesheets.length; i++) {
-            renderer.insertGlobalStylesheet(stylesheets[i]);
+    const isLightElement = isNull(cmpRoot);
+    const lightRoot = isLightElement && elm.getRootNode();
+    const lightHost = lightRoot?.host;
+
+    for (let i = 0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if (lightHost) {
+            // light element hosted within shadow element
+            renderer.insertStylesheet(lightRoot, stylesheet);
+        } else if (!isLightElement && !renderer.syntheticShadow) {
+            // native shadow element
+            renderer.insertStylesheet(cmpRoot, stylesheet);
+        } else {
+            // global light element or synthetic shadow element
+            renderer.insertGlobalStylesheet(stylesheet);
         }
-
-        return null;
-    } else {
-        const shadowStyleSheetContent = ArrayJoin.call(stylesheets, '\n');
-        return createShadowStyleVNode(shadowStyleSheetContent);
     }
 }
