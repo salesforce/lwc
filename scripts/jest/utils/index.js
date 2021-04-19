@@ -65,7 +65,7 @@ function toMatchFile(receivedContent, filename) {
                             expand,
                         });
                         return (
-                            `Received content for "${filename}" doesn't expected content.\n\n` +
+                            `Received content for "${filename}" doesn't match expected content.\n\n` +
                             (diffString && diffString.includes('- Expect')
                                 ? `Difference:\n\n${diffString}`
                                 : `Expected: ${this.utils.printExpected(expectedContent)}\n` +
@@ -112,10 +112,10 @@ function toMatchFile(receivedContent, filename) {
  */
 
 /**
- * Test a fixture directory against a set of snapshot files. This method generate a test for each
+ * Test a fixture directory against a set of snapshot files. This method generates a test for each
  * file matching the `config.pattern` glob. The `testFn` fixture is invoked for each test and is
- * expected to the return an object representing the fixture outputs. The key represent the output
- * file name and the value its associated content. An `undefined` or `null` value represents a
+ * expected to return an object representing the fixture outputs. The key represents the output
+ * file name and the value, its associated content. An `undefined` or `null` value represents a
  * non existing file.
  *
  * @param {Object} config

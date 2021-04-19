@@ -29,7 +29,7 @@ async function compileFixture({ input, dirname }) {
                         dir: modulesDir,
                     },
                 ],
-            }) as any,
+            }),
         ],
     });
 
