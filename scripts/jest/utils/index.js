@@ -9,10 +9,9 @@ const fs = require('fs');
 const path = require('path');
 
 const glob = require('glob');
-const { default: diff } = require('jest-diff');
 
 function toMatchFile(receivedContent, filename) {
-    const { snapshotState, expand } = this;
+    const { snapshotState, expand, utils } = this;
 
     const fileExists = fs.existsSync(filename);
 
@@ -38,7 +37,7 @@ function toMatchFile(receivedContent, filename) {
                         `passed to write new fixture output.\n` +
                         `This is likely because this test is run in a continuous integration (CI) ` +
                         `environment in which fixtures are not written by default.\n\n` +
-                        `Expected: ${this.utils.printExpected(expectedContent)}`,
+                        `Expected: ${utils.printExpected(expectedContent)}`,
                 };
             }
         }
@@ -61,15 +60,15 @@ function toMatchFile(receivedContent, filename) {
                 return {
                     pass: false,
                     message: () => {
-                        const diffString = diff(expectedContent, receivedContent, {
+                        const diffString = utils.diff(expectedContent, receivedContent, {
                             expand,
                         });
                         return (
                             `Received content for "${filename}" doesn't match expected content.\n\n` +
                             (diffString && diffString.includes('- Expect')
                                 ? `Difference:\n\n${diffString}`
-                                : `Expected: ${this.utils.printExpected(expectedContent)}\n` +
-                                  `Received: ${this.utils.printReceived(receivedContent)}`)
+                                : `Expected: ${utils.printExpected(expectedContent)}\n` +
+                                  `Received: ${utils.printReceived(receivedContent)}`)
                         );
                     },
                 };
@@ -98,7 +97,7 @@ function toMatchFile(receivedContent, filename) {
                     `be explicitly passed to write new fixture output.\n` +
                     `This is likely because this test is run in a continuous integration (CI) ` +
                     `environment in which fixtures are not written by default.\n\n` +
-                    `Received: ${this.utils.printReceived(receivedContent)}`,
+                    `Received: ${utils.printReceived(receivedContent)}`,
             };
         }
     }
