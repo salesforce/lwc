@@ -301,12 +301,12 @@ describe('root errors', () => {
         });
     });
 
-    it('template root with attributes error', () => {
+    it('template root with unknown attributes error', () => {
         const { warnings } = parseTemplate(`<template if:true={show}>visible</template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining(`Root template doesn't allow attributes`),
+            message: expect.stringContaining(`Root template have unknown attributes`),
             location: EXPECTED_LOCATION,
         });
     });

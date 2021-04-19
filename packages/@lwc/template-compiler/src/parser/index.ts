@@ -812,7 +812,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 ({ name }) => name !== PRESERVE_COMMENTS_ATTRIBUTE_NAME
             );
             if (rootHasUnknownAttributes) {
-                return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_CANNOT_HAVE_ATTRIBUTES, node);
+                return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_HAVE_UNKNOWN_ATTRIBUTES, node);
             }
         }
 
