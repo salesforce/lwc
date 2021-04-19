@@ -84,7 +84,7 @@ import {
     KNOWN_HTML_ELEMENTS,
     LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
-    PRESERVE_COMMENTS_OPTION,
+    PRESERVE_COMMENTS_ATTRIBUTE_NAME,
 } from './constants';
 
 function isStyleElement(irElement: IRElement) {
@@ -147,7 +147,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     const stack: IRElement[] = [];
 
     const preserveComments =
-        templateRoot.attrs.some(({ name }) => name === PRESERVE_COMMENTS_OPTION) ||
+        templateRoot.attrs.some(({ name }) => name === PRESERVE_COMMENTS_ATTRIBUTE_NAME) ||
         state.config.preserveHtmlComments;
 
     traverseHTML(templateRoot, {
@@ -801,7 +801,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             const rootHasUnknownAttributes = node.attrs.some(
-                ({ name }) => name !== PRESERVE_COMMENTS_OPTION
+                ({ name }) => name !== PRESERVE_COMMENTS_ATTRIBUTE_NAME
             );
             if (rootHasUnknownAttributes) {
                 return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_CANNOT_HAVE_ATTRIBUTES, node);

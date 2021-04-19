@@ -4,8 +4,8 @@ import Test from 'x/test';
 
 const COMMENT_NODE = 8;
 
-function getCommentsWithinShadow(elmOrShadow) {
-    return Array.from(elmOrShadow.childNodes)
+function getChildrenComments(node) {
+    return Array.from(node.childNodes)
         .filter((node) => node.nodeType === COMMENT_NODE)
         .map((node) => node.nodeValue);
 }
@@ -16,14 +16,14 @@ describe('html comments', () => {
         elm.count = 1;
         document.body.appendChild(elm);
 
-        let comments = getCommentsWithinShadow(elm.shadowRoot);
+        let comments = getChildrenComments(elm.shadowRoot);
         expect(comments).toContain('Comment for odd number');
         expect(comments).not.toContain('Comment for even number');
 
         elm.count = 2;
 
         return Promise.resolve().then(() => {
-            comments = getCommentsWithinShadow(elm.shadowRoot);
+            comments = getChildrenComments(elm.shadowRoot);
             expect(comments).toContain('Comment for even number');
             expect(comments).not.toContain('Comment for odd number');
         });
@@ -34,13 +34,13 @@ describe('html comments', () => {
         elm.count = 1;
         document.body.appendChild(elm);
 
-        let comments = getCommentsWithinShadow(elm.shadowRoot);
+        let comments = getChildrenComments(elm.shadowRoot);
         expect(comments.filter((c) => c === 'Comment inside for:each')).toHaveSize(1);
 
         elm.count = 2;
 
         return Promise.resolve().then(() => {
-            comments = getCommentsWithinShadow(elm.shadowRoot);
+            comments = getChildrenComments(elm.shadowRoot);
             expect(comments.filter((c) => c === 'Comment inside for:each')).toHaveSize(2);
         });
     });
@@ -52,13 +52,13 @@ describe('html comments', () => {
 
         const child = elm.shadowRoot.querySelector('x-child');
 
-        let comments = getCommentsWithinShadow(child);
+        let comments = getChildrenComments(child);
         expect(comments).toContain('slotted:odd comment');
 
         elm.count = 2;
 
         return Promise.resolve().then(() => {
-            comments = getCommentsWithinShadow(child);
+            comments = getChildrenComments(child);
             expect(comments).not.toContain('slotted:odd comment');
         });
     });
