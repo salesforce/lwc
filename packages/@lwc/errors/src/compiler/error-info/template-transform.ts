@@ -358,7 +358,7 @@ export const ParserDiagnostics = {
 
     ROOT_TEMPLATE_HAVE_UNKNOWN_ATTRIBUTES: {
         code: 1080,
-        message: 'Root template have unknown attributes',
+        message: 'Root template has unknown attributes',
         level: DiagnosticLevel.Error,
         url: '',
     },
