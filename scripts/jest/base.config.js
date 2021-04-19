@@ -6,7 +6,6 @@
  */
 const path = require('path');
 
-/** @type {import("@jest/types").Config.InitialOptions } */
 module.exports = {
     testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
 
