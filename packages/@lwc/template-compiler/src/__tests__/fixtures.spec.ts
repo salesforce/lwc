@@ -6,91 +6,32 @@
  */
 import fs from 'fs';
 import path from 'path';
-import glob from 'glob';
+
 import prettier from 'prettier';
+import { testFixtureDir } from 'jest-utils-lwc-internals';
 
-import compiler from '../index';
-
-const FIXTURE_DIR = path.join(__dirname, 'fixtures');
-const BASE_CONFIG = {};
-
-const EXPECTED_JS_FILENAME = 'expected.js';
-const EXPECTED_META_FILENAME = 'metadata.json';
-
-const ONLY_FILENAME = '.only';
-const SKIP_FILENAME = '.skip';
+import compiler, { Config } from '../index';
 
 describe('fixtures', () => {
-    const fixtures = glob.sync(path.resolve(FIXTURE_DIR, '**/*.html'));
+    testFixtureDir(
+        {
+            root: path.resolve(__dirname, 'fixtures'),
+            pattern: '**/actual.html',
+        },
+        ({ src, dirname }) => {
+            const configPath = path.resolve(dirname, 'config.json');
 
-    for (const caseEntry of fixtures) {
-        const caseFolder = path.dirname(caseEntry);
-        const caseName = path.relative(FIXTURE_DIR, caseFolder);
+            let config: Config = {};
+            if (fs.existsSync(configPath)) {
+                config = require(configPath);
+            }
 
-        const fixtureFilePath = (fileName): string => {
-            return path.join(caseFolder, fileName);
-        };
+            const { code, warnings } = compiler(src, config);
 
-        const fixtureFileExists = (fileName): boolean => {
-            const filePath = fixtureFilePath(fileName);
-            return fs.existsSync(filePath);
-        };
-
-        const readFixtureFile = (fileName): string => {
-            const filePath = fixtureFilePath(fileName);
-            return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : null;
-        };
-
-        const writeFixtureFile = (fileName, content): void => {
-            const filePath = fixtureFilePath(fileName);
-            fs.writeFileSync(filePath, content, { encoding: 'utf-8' });
-        };
-
-        let testFn = it;
-        if (fixtureFileExists(ONLY_FILENAME)) {
-            testFn = (it as any).only;
-        } else if (fixtureFileExists(SKIP_FILENAME)) {
-            testFn = (it as any).skip;
+            return {
+                'expected.js': prettier.format(code, { parser: 'babel' }),
+                'metadata.json': JSON.stringify({ warnings }, null, 4),
+            };
         }
-
-        testFn(`${caseName}`, () => {
-            const src = readFixtureFile('actual.html');
-
-            const configOverride = JSON.parse(readFixtureFile('config.json'));
-            let expectedCode = readFixtureFile(EXPECTED_JS_FILENAME);
-            let expectedMetaData = JSON.parse(readFixtureFile(EXPECTED_META_FILENAME));
-
-            const actual = compiler(src, {
-                ...BASE_CONFIG,
-                ...configOverride,
-            });
-
-            if (expectedCode === null) {
-                // write compiled js file if doesn't exist (ie new fixture)
-                expectedCode = actual.code;
-                writeFixtureFile(
-                    EXPECTED_JS_FILENAME,
-                    prettier.format(expectedCode, {
-                        parser: 'babel',
-                    })
-                );
-            }
-
-            if (expectedMetaData === null) {
-                // write metadata file if doesn't exist (ie new fixture)
-                const metadata = {
-                    warnings: actual.warnings,
-                };
-                expectedMetaData = metadata;
-                writeFixtureFile(EXPECTED_META_FILENAME, JSON.stringify(expectedMetaData, null, 4));
-            }
-
-            // check warnings
-            expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
-            // check compiled code
-            expect(prettier.format(actual.code, { parser: 'babel' })).toEqual(
-                prettier.format(expectedCode, { parser: 'babel' })
-            );
-        });
-    }
+    );
 });

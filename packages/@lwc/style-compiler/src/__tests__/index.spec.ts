@@ -6,83 +6,10 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { parseSync } from '@babel/core';
 
-import { transform } from '../index';
+import { testFixtureDir } from 'jest-utils-lwc-internals';
 
-const FIXTURES_PATH = path.resolve(__dirname, 'fixtures');
-
-fs.readdirSync(FIXTURES_PATH).forEach((fixtureName: string) => {
-    const fixtureDir = path.resolve(FIXTURES_PATH, fixtureName);
-    const stats = fs.statSync(fixtureDir);
-
-    // Ignore non directory fixtures
-    if (!stats.isDirectory()) {
-        return;
-    }
-
-    test(fixtureName, testFixture(fixtureDir));
-});
-
-function testFixture(fixtureDir: string) {
-    const actualPath = path.resolve(fixtureDir, 'actual.css');
-    const expectedPath = path.resolve(fixtureDir, 'expected.js');
-    const configPath = path.resolve(fixtureDir, 'config.json');
-    const errorPath = path.resolve(fixtureDir, 'error.json');
-
-    let actualSource: string;
-    if (fs.existsSync(actualPath)) {
-        actualSource = fs.readFileSync(actualPath, 'utf8');
-    } else {
-        throw new Error(`Missing actual file ${actualPath}`);
-    }
-
-    let expectedSource: undefined | string;
-    if (fs.existsSync(expectedPath)) {
-        expectedSource = fs.readFileSync(expectedPath, 'utf8');
-    }
-
-    let expectedError: undefined | any;
-    if (fs.existsSync(errorPath)) {
-        expectedError = require(errorPath);
-    }
-
-    let config: any = {};
-    if (fs.existsSync(configPath)) {
-        config = require(configPath);
-    }
-
-    return () => {
-        let result;
-        let error;
-
-        try {
-            const { code } = transform(actualSource, actualPath, config);
-            result = code;
-        } catch (err) {
-            if (expectedSource) {
-                throw err;
-            } else {
-                error = normalizeError(err);
-            }
-        }
-
-        if (expectedSource) {
-            expect(result).toBe(expectedSource);
-
-            // Assert that the result is valid javascript
-            expect(() => parseSync(result, { babelrc: false, configFile: false })).not.toThrow();
-        } else if (expectedError) {
-            expect(error).toMatchObject(expectedError);
-        } else if (result) {
-            // Generate expected file if not present
-            fs.writeFileSync(expectedPath, result, 'utf8');
-        } else if (error) {
-            // Generate expected file if not present
-            fs.writeFileSync(errorPath, JSON.stringify(error, null, 4));
-        }
-    };
-}
+import { transform, Config } from '../index';
 
 function normalizeError(err) {
     if (err.name === 'CssSyntaxError') {
@@ -99,3 +26,34 @@ function normalizeError(err) {
         };
     }
 }
+
+describe('fixtures', () => {
+    testFixtureDir(
+        {
+            root: path.resolve(__dirname, 'fixtures'),
+            pattern: '**/actual.css',
+        },
+        ({ src, filename, dirname }) => {
+            const configPath = path.resolve(dirname, 'config.json');
+
+            let config: Config = {};
+            if (fs.existsSync(configPath)) {
+                config = require(configPath);
+            }
+
+            let result;
+            let error;
+
+            try {
+                result = transform(src, filename, config);
+            } catch (err) {
+                error = JSON.stringify(normalizeError(err), null, 4);
+            }
+
+            return {
+                'expected.js': result?.code,
+                'error.json': error,
+            };
+        }
+    );
+});

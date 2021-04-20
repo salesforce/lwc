@@ -8767,6 +8767,10 @@ jest-util@^26.6.2:
     is-ci "^2.0.0"
     micromatch "^4.0.2"
 
+"jest-utils-lwc-internals@link:./scripts/jest/utils":
+  version "0.0.0"
+  uid ""
+
 jest-validate@^26.6.2:
   version "26.6.2"
   resolved "https://registry.yarnpkg.com/jest-validate/-/jest-validate-26.6.2.tgz#23d380971587150467342911c3d7b4ac57ab20ec"

@@ -68,10 +68,8 @@ yarn test <path_to_test>
 If you change the way the compiler outputs code, then you may see failed tests due to these changes. In those cases, you can regenerate the test snapshots like so:
 
 ```bash
-find . -type f | grep __tests__ | grep expected | xargs rm -f
+yarn test -u
 ```
-
-Then run `yarn test` to regenerate the snapshots.
 
 If you want to debug these tests, you can do as follow:
 
