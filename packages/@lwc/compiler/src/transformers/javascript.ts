@@ -7,7 +7,6 @@
 import * as babel from '@babel/core';
 
 import babelClassPropertiesPlugin from '@babel/plugin-proposal-class-properties';
-import babelObjectRestSpreadPlugin from '@babel/plugin-proposal-object-rest-spread';
 import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
 
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
@@ -34,10 +33,6 @@ export default function scriptTransform(
             plugins: [
                 [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
                 [babelClassPropertiesPlugin, { loose: true }],
-
-                // This plugin should be removed in a future version. The object-rest-spread is
-                // already a stage 4 feature. The LWC compile should leave this syntax untouched.
-                babelObjectRestSpreadPlugin,
             ],
             filename,
             sourceMaps: sourcemap,
