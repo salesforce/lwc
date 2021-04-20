@@ -13,11 +13,15 @@ yarn add --dev @lwc/template-compiler
 ```js
 import compile from '@lwc/template-compiler';
 
-const { code, warnings } = compile(`
+const options = {};
+const { code, warnings } = compile(
+    `
     <template>
         <h1>Hello World!</h1>
     </template>
-`);
+`,
+    options
+);
 
 for (let warning of warnings) {
     console.log(warning.message);
@@ -34,12 +38,19 @@ Compile a LWC template to javascript source code consumable by the engine.
 
 ```js
 import compile from '@lwc/template-compiler';
-const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`);
+const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`, {});
 ```
 
 **Parameters:**
 
 -   `source` (string, required) - the HTML template source to compile.
+-   `options` (object, required) - the options to used to compile the HTML template source.
+
+**Options:**
+
+-   `experimentalComputedMemberExpression` (boolean, optional, `false` by default) - set to `true` to enable computed member expression in the template, eg: `{list[0].name}`.
+-   `experimentalDynamicDirective` (boolean, optional, `false` by default) - set to `true` to allow useges of `lwc:dynamic` directive in the template.
+-   `preserveHtmlComments` (boolean, optional, `false` by default) - set to `true` if you want HTML comments in the template to be preserved in the output.
 
 **Return:**
 The method returns an object with the following fields:
