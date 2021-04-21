@@ -8,8 +8,8 @@ const fs = require('fs');
 const path = require('path');
 const rollup = require('rollup');
 const prettier = require('prettier');
-const rollupCompile = require('../index');
 const rollupCompat = require('rollup-plugin-compat');
+const rollupCompile = require('../index');
 
 function pretty(str) {
     return prettier.format(str, {

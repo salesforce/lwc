@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { ArrayFilter, ArraySlice, isNull, isUndefined } from '@lwc/shared';
 import { isHostElement } from './shadow-root';
 import { getAllMatches, getNodeOwner, getAllSlottedMatches } from './traverse';
-import { ArrayFilter, ArraySlice, isNull, isUndefined } from '@lwc/shared';
 import { getNodeKey, getNodeNearestOwnerKey, getNodeOwnerKey } from '../shared/node-ownership';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 

@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { DiagnosticLevel } from '@lwc/errors';
 import { mergeConfig } from '../config';
 import State from '../state';
 import parse from '../parser';
-
-import { DiagnosticLevel } from '@lwc/errors';
 
 const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
 const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
