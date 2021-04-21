@@ -26,7 +26,7 @@ import {
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM } from './vm';
+import { associateVM, getAssociatedVM, hasShadow } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -200,7 +200,8 @@ export const LightningElement: LightningElementConstructor = function (
 
     const component = this;
     setPrototypeOf(elm, bridge.prototype);
-    if (ctor.shadow) {
+    const shouldAttachShadow = hasShadow(vm);
+    if (shouldAttachShadow) {
         const cmpRoot = renderer.attachShadow(elm, {
             mode,
             delegatesFocus: !!ctor.delegatesFocus,
@@ -227,7 +228,7 @@ export const LightningElement: LightningElementConstructor = function (
 
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);
-    if (ctor.shadow) {
+    if (shouldAttachShadow) {
         associateVM(vm.cmpRoot, vm);
     }
     associateVM(elm, vm);
@@ -236,7 +237,7 @@ export const LightningElement: LightningElementConstructor = function (
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
-        if (ctor.shadow) {
+        if (shouldAttachShadow) {
             patchShadowRootWithRestrictions(vm.cmpRoot!);
         }
     }
