@@ -13,7 +13,9 @@ export default class Child extends LightningElement {
     }
 
     disconnectedCallback() {
-        window.timingBuffer.push('child:disconnectedCallback');
+        if (window.timingBuffer) {
+            window.timingBuffer.push('child:disconnectedCallback');
+        }
     }
 
     renderedCallback() {

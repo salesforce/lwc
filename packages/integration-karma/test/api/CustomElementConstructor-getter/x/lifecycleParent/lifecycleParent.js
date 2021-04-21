@@ -3,15 +3,11 @@ import { LightningElement } from 'lwc';
 export default class LifecycleParent extends LightningElement {
     constructor() {
         super();
-        if (window.timingBuffer) {
-            window.timingBuffer.push('parent:constructor');
-        }
+        window.timingBuffer.push('parent:constructor');
     }
 
     connectedCallback() {
-        if (window.timingBuffer) {
-            window.timingBuffer.push('parent:connectedCallback');
-        }
+        window.timingBuffer.push('parent:connectedCallback');
     }
 
     disconnectedCallback() {
@@ -21,8 +17,6 @@ export default class LifecycleParent extends LightningElement {
     }
 
     renderedCallback() {
-        if (window.timingBuffer) {
-            window.timingBuffer.push('parent:renderedCallback');
-        }
+        window.timingBuffer.push('parent:renderedCallback');
     }
 }

@@ -7,25 +7,31 @@
 
 // Global beforeEach/afterEach/etc logic to run before and after each test
 
-let knownChildren;
+var knownChildren;
 
 // After each test, clean up any DOM elements that were inserted into the document
 // <head> or <body>, plus any global <style>s the engine might think are there.
 
-beforeEach(() => {
-    knownChildren = new Set([...document.head.children, ...document.body.children]);
+function getChildren() {
+    return []
+        .concat(Array.prototype.slice.apply(document.head.children))
+        .concat(Array.prototype.slice.apply(document.body.children));
+}
+
+beforeEach(function () {
+    knownChildren = getChildren();
 });
 
-afterEach(() => {
-    for (const child of [...document.head.children, ...document.body.children]) {
-        if (!knownChildren.has(child)) {
-            child.remove();
+afterEach(function () {
+    getChildren().forEach(function (child) {
+        if (knownChildren.indexOf(child) === -1) {
+            child.parentElement.removeChild(child);
         }
-    }
+    });
     knownChildren = undefined;
     // Need to clear this or else the engine will think there's a <style> in the <head>
     // that already has the style, even though we just removed it
-    for (const key of Object.keys(window.__lwcGlobalStylesheets)) {
+    Object.keys(window.__lwcGlobalStylesheets).forEach(function (key) {
         delete window.__lwcGlobalStylesheets[key];
-    }
+    });
 });
