@@ -17,6 +17,12 @@ import {
 import { Renderer } from '@lwc/engine-core';
 
 const globalStylesheets: { [content: string]: true } = create(null);
+
+if (process.env.NODE_ENV === 'development') {
+    // @ts-ignore
+    window.__lwcGlobalStylesheets = globalStylesheets;
+}
+
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
 
 let getCustomElement, defineCustomElement, HTMLElementConstructor;
