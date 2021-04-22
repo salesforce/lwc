@@ -23,12 +23,17 @@ describe('shadow encapsulation', () => {
         expect(window.getComputedStyle(div).marginLeft).toBe('10px');
         expect(window.getComputedStyle(div).marginRight).toBe('0px');
 
-        elm.toggleTemplate();
-        return Promise.resolve().then(() => {
-            const div = elm.shadowRoot.querySelector('div');
-            expect(window.getComputedStyle(div).marginLeft).toBe('0px');
-            expect(window.getComputedStyle(div).marginRight).toBe('10px');
-        });
+        // Toggle the template and check its style in rAF callback to work
+        // around Firefox flapper: https://github.com/salesforce/lwc/pull/2303#issuecomment-825041996
+        return new Promise((resolve) => requestAnimationFrame(resolve))
+            .then(() => {
+                elm.toggleTemplate();
+            })
+            .then(() => {
+                const div = elm.shadowRoot.querySelector('div');
+                expect(window.getComputedStyle(div).marginLeft).toBe('0px');
+                expect(window.getComputedStyle(div).marginRight).toBe('10px');
+            });
     });
 });
 
