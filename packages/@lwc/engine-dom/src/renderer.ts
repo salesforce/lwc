@@ -20,7 +20,11 @@ const globalStylesheets: { [content: string]: true } = create(null);
 
 if (process.env.NODE_ENV === 'development') {
     // @ts-ignore
-    window.__lwcGlobalStylesheets = globalStylesheets;
+    window.__lwcResetGlobalStylesheets = () => {
+        for (const key of Object.keys(globalStylesheets)) {
+            delete globalStylesheets[key];
+        }
+    };
 }
 
 const globalStylesheetsParentElement: Element = document.head || document.body || document;

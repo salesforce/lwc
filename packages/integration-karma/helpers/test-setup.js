@@ -31,7 +31,5 @@ afterEach(function () {
     knownChildren = undefined;
     // Need to clear this or else the engine will think there's a <style> in the <head>
     // that already has the style, even though we just removed it
-    Object.keys(window.__lwcGlobalStylesheets).forEach(function (key) {
-        delete window.__lwcGlobalStylesheets[key];
-    });
+    window.__lwcResetGlobalStylesheets();
 });
