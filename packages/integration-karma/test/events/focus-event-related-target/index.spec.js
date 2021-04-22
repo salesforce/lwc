@@ -5,7 +5,7 @@ import Container from 'x/container';
 // Test for yourself: https://bl.ocks.org/nolanlawson/raw/d8ddc518041e9bf12498b8b50b39df95/
 // So this test may "flap" during local development if your browser window isn't focused (e.g. you're focused on
 // the DevTools instead).
-it('should retarget relatedTarget (note this test may fail if the browser window is not focused)', function () {
+it('should retarget relatedTarget', function () {
     const elm = createElement('x-container', { is: Container });
     document.body.appendChild(elm);
 
