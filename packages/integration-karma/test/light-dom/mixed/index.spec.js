@@ -9,10 +9,8 @@ function createComponent() {
     return extractDataIds(element);
 }
 describe('Light DOM mixed', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
     it('should render properly', () => {
+        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
         const nodes = createComponent();
         expect(Object.keys(nodes)).toEqual([
             'x-container',
@@ -20,5 +18,6 @@ describe('Light DOM mixed', () => {
             'x-test',
             'text',
         ]);
+        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
 });
