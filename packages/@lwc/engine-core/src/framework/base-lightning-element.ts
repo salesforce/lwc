@@ -26,7 +26,7 @@ import {
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM, VM } from './vm';
+import { associateVM, getAssociatedVM, hasShadow, VM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -536,6 +536,15 @@ LightningElement.prototype = {
 
     get template(): ShadowRoot | null {
         const vm = getAssociatedVM(this);
+
+        if (!hasShadow(vm)) {
+            if (process.env.NODE_ENV !== 'production') {
+                logError(
+                    'Template returns null in components with no shadow. Since there is no shadow, all the operations can be performed on `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
+                );
+            }
+        }
+
         return vm.cmpRoot;
     },
 
