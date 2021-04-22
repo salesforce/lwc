@@ -93,9 +93,9 @@
 
         "lwc-internal/no-invalid-todo": "error",
         "import/order": [
-            "error", { "groups": [[
-                "builtin", "external", "internal"
-            ]] }]
+            "error", 
+            { "groups": [["builtin", "external", "internal"]] }
+        ]
     },
 
     "overrides": [
