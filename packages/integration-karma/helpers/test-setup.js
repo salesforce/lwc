@@ -33,3 +33,29 @@ afterEach(function () {
     // that already has the style, even though we just removed it
     window.__lwcResetGlobalStylesheets();
 });
+
+// Run some logic before all tests have run and after all tests have run to ensure that
+// no test dirtied the DOM with leftover elements
+var originalHeadChildren;
+var originalBodyChildren;
+beforeAll(function () {
+    originalHeadChildren = Array.prototype.slice.call(document.head.children);
+    originalBodyChildren = Array.prototype.slice.call(document.body.children);
+});
+
+afterAll(function () {
+    var headChildren = Array.prototype.slice.call(document.head.children);
+    var bodyChildren = Array.prototype.slice.call(document.body.children);
+
+    headChildren.forEach(function (child, i) {
+        if (originalHeadChildren[i] !== child) {
+            throw new Error('Unexpected element left in the <head> by a test: ' + child.outerHTML);
+        }
+    });
+
+    bodyChildren.forEach(function (child, i) {
+        if (originalBodyChildren[i] !== child) {
+            throw new Error('Unexpected element left in the <body> by a test: ' + child.outerHTML);
+        }
+    });
+});

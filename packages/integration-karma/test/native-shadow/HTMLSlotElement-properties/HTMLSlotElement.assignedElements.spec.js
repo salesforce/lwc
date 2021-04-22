@@ -5,7 +5,7 @@ import NativeSlottedBasic from './x/NativeBasic/NativeBasic';
 function testAssignedElements(testDescription, getContainer) {
     let container;
 
-    beforeAll(() => {
+    beforeEach(() => {
         container = getContainer();
     });
 

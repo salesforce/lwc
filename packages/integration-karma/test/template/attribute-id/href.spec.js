@@ -8,7 +8,7 @@ function testHref(type, create) {
     describe(`${type} href attribute values`, () => {
         let elm;
 
-        beforeAll(() => {
+        beforeEach(() => {
             elm = create();
             document.body.appendChild(elm);
         });
