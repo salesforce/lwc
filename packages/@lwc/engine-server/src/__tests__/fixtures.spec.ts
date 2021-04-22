@@ -78,11 +78,18 @@ describe('fixtures', () => {
                 module = require(compiledFixturePath);
             });
 
+            const features: string[] = module.features || [];
+            features.forEach((flag) => {
+                lwcEngineServer.setFeatureFlagForTest(flag, true);
+            });
             const result = lwcEngineServer.renderComponent(
                 module.tagName,
                 module.default,
                 config.props || {}
             );
+            features.forEach((flag) => {
+                lwcEngineServer.setFeatureFlagForTest(flag, false);
+            });
 
             return {
                 'expected.html': formatHTML(result),
