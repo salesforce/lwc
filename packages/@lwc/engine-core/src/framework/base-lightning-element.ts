@@ -578,16 +578,24 @@ if (process.env.NODE_ENV !== 'production') {
     patchLightningElementPrototypeWithRestrictions(LightningElement.prototype);
 }
 
+// Static property that can be overridden by subclasses of LightningElement
+//
+// Ideally this would have been LightningElement.shadow = true
+// However, since we LWC compiler compiles components with static shadow = false
+// to UserElement.shadow = false which results in assignment to LightningElement
+// rather than static property definition on UserElement, we resort to this
+//
+// TODO [W-9141416]: Compile class properties without loose option
 defineProperty(LightningElement, 'shadow', {
     get() {
         return true;
     },
-    set(v) {
-        Object.defineProperty(this, 'shadow', {
+    set(value: boolean) {
+        defineProperty(this, 'shadow', {
             enumerable: true,
             configurable: true,
             writable: true,
-            value: v,
+            value: value,
         });
     },
 });
