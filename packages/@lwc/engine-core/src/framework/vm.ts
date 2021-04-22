@@ -48,7 +48,6 @@ import { removeActiveVM } from './hot-swaps';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
-import features from '@lwc/features';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -712,10 +711,8 @@ export function forceRehydration(vm: VM) {
     }
 }
 
-export function hasShadow(vm: VM): boolean {
-    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
-        return true;
-    }
-    const { shadow } = vm.def.ctor;
-    return shadow;
+export function hasShadow(vm: VM): vm is VM & { cmpRoot: ShadowRoot } {
+    // We don't refer to vm.def.ctor.shadow because that could be changed by user
+    // after instantiation.
+    return !isNull(vm.cmpRoot);
 }

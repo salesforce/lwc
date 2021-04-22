@@ -26,7 +26,7 @@ import {
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM, hasShadow } from './vm';
+import { associateVM, getAssociatedVM, VM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -41,6 +41,7 @@ import { getComponentTag } from '../shared/format';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { lockerLivePropertyKey } from './membrane';
 import { EmptyObject } from './utils';
+import features from '@lwc/features';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -186,7 +187,6 @@ export const LightningElement: LightningElementConstructor = function (
     const vm = vmBeingConstructed;
     const {
         elm,
-        mode,
         renderer,
         def: { ctor, bridge },
     } = vm;
@@ -200,15 +200,6 @@ export const LightningElement: LightningElementConstructor = function (
 
     const component = this;
     setPrototypeOf(elm, bridge.prototype);
-    const shouldAttachShadow = hasShadow(vm);
-    if (shouldAttachShadow) {
-        const cmpRoot = renderer.attachShadow(elm, {
-            mode,
-            delegatesFocus: !!ctor.delegatesFocus,
-            '$$lwc-synthetic-mode$$': true,
-        } as any);
-        vm.cmpRoot = cmpRoot;
-    }
 
     vm.component = this;
 
@@ -228,22 +219,48 @@ export const LightningElement: LightningElementConstructor = function (
 
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);
-    if (shouldAttachShadow) {
-        associateVM(vm.cmpRoot, vm);
-    }
     associateVM(elm, vm);
 
     // Adding extra guard rails in DEV mode.
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
-        if (shouldAttachShadow) {
-            patchShadowRootWithRestrictions(vm.cmpRoot!);
-        }
+    }
+
+    if (shouldAttachShadow(ctor)) {
+        attachShadow(vm);
     }
 
     return this;
 };
+
+function shouldAttachShadow({ shadow }: LightningElementConstructor): boolean {
+    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
+        return true;
+    }
+    return shadow;
+}
+
+function attachShadow(vm: VM) {
+    const {
+        elm,
+        mode,
+        renderer,
+        def: { ctor },
+    } = vm;
+    const cmpRoot = renderer.attachShadow(elm, {
+        mode,
+        delegatesFocus: !!ctor.delegatesFocus,
+        '$$lwc-synthetic-mode$$': true,
+    } as any) as ShadowRoot;
+
+    vm.cmpRoot = cmpRoot;
+    associateVM(cmpRoot, vm);
+
+    if (process.env.NODE_ENV !== 'production') {
+        patchShadowRootWithRestrictions(cmpRoot);
+    }
+}
 
 // @ts-ignore
 LightningElement.prototype = {
