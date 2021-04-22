@@ -44,3 +44,4 @@ COVERAGE=1 yarn test                                # Run all the test once and 
 -   Some of the test command options are available in the test suite on the global `process.env` object:
     -   `process.env.COMPAT`: is set to `false` by default and `true` if the `--compat` flag is passed
     -   `process.env.NATIVE_SHADOW`: is set to `false` by default and `true` if the `--native-shadow` flag is passed
+-   The test setup file (`test-setup.js`) will automatically clean up the DOM before and after each test. So you don't have to do anything to clean up. However, you should use `beforeEach()` rather than `beforeAll()` to add DOM elements for your test, so that the cleanup code can properly clean up the DOM.
