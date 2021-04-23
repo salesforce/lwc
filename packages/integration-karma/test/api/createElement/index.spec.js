@@ -105,6 +105,7 @@ describe('locker integration', () => {
                 return SecureBaseClass;
             }
         }
+        SecureBaseClass.shadow = true;
         SecureBaseClass.__circular__ = true;
 
         class Component extends SecureBaseClass {}

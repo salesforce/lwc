@@ -7,6 +7,7 @@ function SecureBase() {
         return LightningElement;
     }
 }
+SecureBase.shadow = true;
 SecureBase.__circular__ = true;
 export default class Foo extends SecureBase {
     render() {

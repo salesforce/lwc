@@ -6,15 +6,20 @@
  */
 import { LightningElement } from '../../../src';
 
+Object.freeze(LightningElement); // because we freeze before exporting for users as well
+
 describe('Shadow', () => {
     it('should be true for LightningElement', () => {
         expect(LightningElement.shadow).toBeTruthy();
     });
 
     it('should not override LightningElement.shadow', () => {
-        class Test extends LightningElement {}
-        Test.shadow = false;
+        class Base extends LightningElement {}
+        Base.shadow = false;
+        class Test extends Base {}
+        Test.shadow = true;
         expect(LightningElement.shadow).toBeTruthy();
-        expect(Test.shadow).toBeFalsy();
+        expect(Base.shadow).toBeFalsy();
+        expect(Test.shadow).toBeTruthy();
     });
 });

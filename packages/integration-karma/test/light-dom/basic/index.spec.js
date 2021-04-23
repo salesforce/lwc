@@ -13,9 +13,6 @@ describe('Basic Light DOM', () => {
     });
     it('should render to Shadow DOM when feature is disabled', () => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-        const elm = createElement('x-test', { is: Test });
-        document.body.appendChild(elm);
-
-        expect(elm.shadowRoot).not.toBeNull();
+        expect(() => createElement('x-test', { is: Test })).toThrowError();
     });
 });

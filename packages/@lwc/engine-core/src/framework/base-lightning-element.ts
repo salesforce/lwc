@@ -227,19 +227,19 @@ export const LightningElement: LightningElementConstructor = function (
         patchComponentWithRestrictions(component);
     }
 
-    if (shouldAttachShadow(ctor)) {
+    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
+        assert.isTrue(
+            ctor.shadow,
+            `${ctor.name} is a Light DOM component but Light DOM components are disabled. Either make the component a regular component (by setting \`static shadow = false\`) or set the runtime flag \`ENABLE_LIGHT_DOM_COMPONENTS\`.`
+        );
+    }
+
+    if (ctor.shadow) {
         attachShadow(vm);
     }
 
     return this;
 };
-
-function shouldAttachShadow({ shadow }: LightningElementConstructor): boolean {
-    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
-        return true;
-    }
-    return shadow;
-}
 
 function attachShadow(vm: VM) {
     const {
