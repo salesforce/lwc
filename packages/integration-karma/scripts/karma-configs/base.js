@@ -90,9 +90,6 @@ module.exports = (config) => {
         // The grep flag is consumed at runtime by jasmine to filter what suite to run.
         client: {
             args: [...config.client.args, '--grep', GREP],
-            jasmine: {
-                random: false, // required for clean-dom/index.spec.js to run in consistent order
-            },
         },
     });
 

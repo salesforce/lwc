@@ -43,9 +43,7 @@ beforeAll(function () {
     originalBodyChildren = Array.prototype.slice.call(document.body.children);
 });
 
-// There's no way I'm aware of to run a test after every other test has run, so we just throw
-// an error in the afterAll() here if the test fails. This causes the test process to exit
-// with a non-zero exit code.
+// Throwing an Error in afterAll will cause a non-zero exit code
 afterAll(function () {
     var headChildren = Array.prototype.slice.call(document.head.children);
     var bodyChildren = Array.prototype.slice.call(document.body.children);
