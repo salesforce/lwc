@@ -8,7 +8,7 @@
 const path = require('path');
 const typescript = require('typescript');
 
-const nodeResolvePlugin = require('rollup-plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescriptPlugin = require('rollup-plugin-typescript');
 
 const { version } = require('../package.json');
@@ -34,7 +34,9 @@ module.exports = {
     }),
 
     plugins: [
-        nodeResolvePlugin({ only: [/^@lwc\//] }),
+        nodeResolve({
+            resolveOnly: [/^@lwc\//],
+        }),
         typescriptPlugin({
             target: 'es2017',
             typescript,

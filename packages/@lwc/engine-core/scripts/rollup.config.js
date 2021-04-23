@@ -10,7 +10,7 @@
 const path = require('path');
 const typescript = require('typescript');
 
-const nodeResolvePlugin = require('rollup-plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescriptPlugin = require('rollup-plugin-typescript');
 
 const babel = require('@babel/core');
@@ -50,7 +50,9 @@ module.exports = {
     }),
 
     plugins: [
-        nodeResolvePlugin({ only: [/^@lwc\//, 'observable-membrane'] }),
+        nodeResolve({
+            resolveOnly: [/^@lwc\//, 'observable-membrane'],
+        }),
         typescriptPlugin({
             target: 'es2017',
             typescript,
