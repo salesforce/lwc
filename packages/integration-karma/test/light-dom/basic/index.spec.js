@@ -11,10 +11,7 @@ describe('Basic Light DOM', () => {
         expect(elm.firstChild.innerText).toEqual('Hello, Light DOM');
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
-});
-
-describe('when flag is disabled', () => {
-    it('should render to Shadow DOM', () => {
+    it('should render to Shadow DOM when feature is disabled', () => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
