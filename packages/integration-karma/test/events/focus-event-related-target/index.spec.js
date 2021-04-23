@@ -12,5 +12,9 @@ it('should retarget relatedTarget', function () {
     elm.focusFirstInput();
     elm.focusSecondInput();
 
-    expect(elm.relatedTargetClassName).toBe('first');
+    expect(elm.relatedTargetClassName)
+        .withContext(
+            'This test may "flap" during local development if your browser window isn\'t focused'
+        )
+        .toBe('first');
 });
