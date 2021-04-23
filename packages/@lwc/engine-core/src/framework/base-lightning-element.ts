@@ -23,6 +23,7 @@ import {
     AccessibleElementProperties,
     setPrototypeOf,
 } from '@lwc/shared';
+import features from '@lwc/features';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
@@ -41,7 +42,6 @@ import { getComponentTag } from '../shared/format';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { lockerLivePropertyKey } from './membrane';
 import { EmptyObject } from './utils';
-import features from '@lwc/features';
 
 /**
  * This operation is called with a descriptor of an standard html property
