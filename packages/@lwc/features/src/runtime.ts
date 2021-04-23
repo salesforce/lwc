@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import features, { FeatureFlagLookup, FeatureFlagValue } from './flags';
 import { create, isFalse, isTrue, isUndefined, globalThis } from '@lwc/shared';
+import features, { FeatureFlagLookup, FeatureFlagValue } from './flags';
 
 if (!globalThis.lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });

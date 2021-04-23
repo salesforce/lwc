@@ -38,6 +38,7 @@
     "eslint": "^7.22.0",
     "eslint-plugin-jest": "^24.3.2",
     "eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
+    "eslint-plugin-import": "^2.22.1",
     "execa": "^5.0.0",
     "fs-extra": "^9.1.0",
     "glob": "^7.1.6",

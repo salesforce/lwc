@@ -9,7 +9,8 @@
     "plugins": [
         "jest",
         "lwc-internal",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "import"
     ],
     "extends": [
         "eslint:recommended",
@@ -90,7 +91,11 @@
         "template-curly-spacing": "error",
         "yoda": "error",
 
-        "lwc-internal/no-invalid-todo": "error"
+        "lwc-internal/no-invalid-todo": "error",
+        "import/order": [
+            "error", 
+            { "groups": [["builtin", "external", "internal"]] }
+        ]
     },
 
     "overrides": [

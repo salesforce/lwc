@@ -8,6 +8,13 @@ import * as parse5 from 'parse5-with-errors';
 import { hasOwnProperty } from '@lwc/shared';
 
 import {
+    CompilerDiagnostic,
+    generateCompilerDiagnostic,
+    LWCErrorInfo,
+    normalizeToDiagnostic,
+    ParserDiagnostics,
+} from '@lwc/errors';
+import {
     treeAdapter,
     parseHTML,
     traverseHTML,
@@ -78,13 +85,6 @@ import {
     LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
 } from './constants';
-import {
-    CompilerDiagnostic,
-    generateCompilerDiagnostic,
-    LWCErrorInfo,
-    normalizeToDiagnostic,
-    ParserDiagnostics,
-} from '@lwc/errors';
 
 function isStyleElement(irElement: IRElement) {
     const element = irElement.__original as parse5.AST.Default.Element;
