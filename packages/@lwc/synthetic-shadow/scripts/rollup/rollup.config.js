@@ -7,8 +7,7 @@
 const typescript = require('typescript');
 const path = require('path');
 const rollupTypescript = require('rollup-plugin-typescript');
-const rollupCleanup = require('rollup-plugin-cleanup');
-const rollupNodeResolve = require('rollup-plugin-node-resolve');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const babel = require('@babel/core');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 const { version } = require('../../package.json');
@@ -50,9 +49,13 @@ function rollupConfig({ wrap } = {}) {
         },
         plugins: [
             wrap && wrapModule(),
-            rollupNodeResolve({ only: [/^@lwc\//] }),
-            rollupTypescript({ target: 'es2017', typescript }),
-            rollupCleanup({ comments: 'none', extensions: ['js', 'ts'], sourcemap: false }),
+            nodeResolve({
+                only: [/^@lwc\//],
+            }),
+            rollupTypescript({
+                target: 'es2017',
+                typescript,
+            }),
             rollupFeaturesPlugin(),
         ].filter(Boolean),
     };
