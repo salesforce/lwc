@@ -3,14 +3,18 @@ import { createElement, setFeatureFlagForTest, LightningElement } from 'lwc';
 import Test from 'x/test';
 
 describe('Basic Light DOM', () => {
-    it('should render properly', () => {
+    beforeEach(() => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
+    });
+    afterEach(() => {
+        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
+    });
+    it('should render properly', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot).toBeNull();
         expect(elm.firstChild.innerText).toEqual('Hello, Light DOM');
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
     it('should render to Shadow DOM when feature is disabled', () => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
@@ -18,8 +22,6 @@ describe('Basic Light DOM', () => {
     });
 
     it('should return null for template', () => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-
         const spy = spyOn(console, 'error');
         let template;
         class TemplateTest extends LightningElement {
@@ -35,6 +37,5 @@ describe('Basic Light DOM', () => {
         expect(spy.calls.mostRecent().args[0].message).toEqual(
             '[LWC error]: Template returns null in components with no shadow. Since there is no shadow, all the operations can be performed on `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
         );
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
 });
