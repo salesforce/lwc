@@ -34,6 +34,7 @@ import {
     removeVM,
     rerenderVM,
     appendVM,
+    hasShadow,
 } from './vm';
 import {
     VNode,
@@ -102,7 +103,7 @@ const TextHook: Hooks<VText> = {
         const { renderer } = owner;
 
         const elm = renderer.createText(vnode.text!);
-        linkNodeToShadow(elm, owner);
+        linkNodeToShadowIfRequired(elm, owner);
         vnode.elm = elm;
     },
     update: updateNodeHook,
@@ -126,7 +127,7 @@ const ElementHook: Hooks<VElement> = {
         const { renderer } = owner;
         const elm = renderer.createElement(sel, ns);
 
-        linkNodeToShadow(elm, owner);
+        linkNodeToShadowIfRequired(elm, owner);
         fallbackElmHook(elm, vnode);
         vnode.elm = elm;
 
@@ -165,7 +166,7 @@ const CustomElementHook: Hooks<VCustomElement> = {
             createViewModelHook(elm, vnode);
         });
 
-        linkNodeToShadow(elm, owner);
+        linkNodeToShadowIfRequired(elm, owner);
         vnode.elm = elm;
 
         const vm = getAssociatedVMIfPresent(elm);
@@ -227,11 +228,11 @@ const CustomElementHook: Hooks<VCustomElement> = {
     },
 };
 
-function linkNodeToShadow(elm: Node, owner: VM) {
+function linkNodeToShadowIfRequired(elm: Node, owner: VM) {
     const { renderer, cmpRoot } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (renderer.syntheticShadow) {
+    if (hasShadow(owner) && renderer.syntheticShadow) {
         (elm as any).$shadowResolver$ = (cmpRoot as any).$shadowResolver$;
     }
 }

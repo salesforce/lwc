@@ -22,11 +22,13 @@ import {
     isObject,
     AccessibleElementProperties,
     setPrototypeOf,
+    isFalse,
 } from '@lwc/shared';
+import features from '@lwc/features';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM } from './vm';
+import { associateVM, getAssociatedVM, hasShadow, VM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -126,6 +128,7 @@ export interface LightningElementConstructor {
     readonly CustomElementConstructor: HTMLElementConstructor;
 
     delegatesFocus?: boolean;
+    shadow: boolean;
 }
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
@@ -161,7 +164,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
     >;
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
-    template: ShadowRoot;
+    template: ShadowRoot | null;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -185,7 +188,6 @@ export const LightningElement: LightningElementConstructor = function (
     const vm = vmBeingConstructed;
     const {
         elm,
-        mode,
         renderer,
         def: { ctor, bridge },
     } = vm;
@@ -199,14 +201,8 @@ export const LightningElement: LightningElementConstructor = function (
 
     const component = this;
     setPrototypeOf(elm, bridge.prototype);
-    const cmpRoot = renderer.attachShadow(elm, {
-        mode,
-        delegatesFocus: !!ctor.delegatesFocus,
-        '$$lwc-synthetic-mode$$': true,
-    } as any);
 
     vm.component = this;
-    vm.cmpRoot = cmpRoot;
 
     // Locker hooks assignment. When the LWC engine run with Locker, Locker intercepts all the new
     // component creation and passes hooks to instrument all the component interactions with the
@@ -224,18 +220,52 @@ export const LightningElement: LightningElementConstructor = function (
 
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);
-    associateVM(cmpRoot, vm);
     associateVM(elm, vm);
 
     // Adding extra guard rails in DEV mode.
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
-        patchShadowRootWithRestrictions(cmpRoot);
+    }
+
+    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
+        assert.invariant(
+            !isFalse(ctor.shadow),
+            `${
+                ctor.name || 'Anonymous class'
+            } is an invalid LWC component. Light DOM components are not available in this environment.`
+        );
+    }
+
+    // Attach shadow even if it's falsy but not boolean false. We do this because SecureElement from locker
+    // doesn't yet declare shadow to be true, leaving it undefined.
+    if (!isFalse(ctor.shadow)) {
+        attachShadow(vm);
     }
 
     return this;
 };
+
+function attachShadow(vm: VM) {
+    const {
+        elm,
+        mode,
+        renderer,
+        def: { ctor },
+    } = vm;
+    const cmpRoot = renderer.attachShadow(elm, {
+        mode,
+        delegatesFocus: !!ctor.delegatesFocus,
+        '$$lwc-synthetic-mode$$': true,
+    } as any) as ShadowRoot;
+
+    vm.cmpRoot = cmpRoot;
+    associateVM(cmpRoot, vm);
+
+    if (process.env.NODE_ENV !== 'production') {
+        patchShadowRootWithRestrictions(cmpRoot);
+    }
+}
 
 // @ts-ignore
 LightningElement.prototype = {
@@ -509,8 +539,17 @@ LightningElement.prototype = {
         return getClassList(elm);
     },
 
-    get template(): ShadowRoot {
+    get template(): ShadowRoot | null {
         const vm = getAssociatedVM(this);
+
+        if (process.env.NODE_ENV !== 'production') {
+            if (!hasShadow(vm)) {
+                logError(
+                    '`this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
+                );
+            }
+        }
+
         return vm.cmpRoot;
     },
 
@@ -552,3 +591,25 @@ defineProperty(LightningElement, 'CustomElementConstructor', {
 if (process.env.NODE_ENV !== 'production') {
     patchLightningElementPrototypeWithRestrictions(LightningElement.prototype);
 }
+
+// Static property that can be overridden by subclasses of LightningElement
+//
+// Ideally this would have been LightningElement.shadow = true
+// However, since we LWC compiler compiles components with static shadow = false
+// to UserElement.shadow = false which results in assignment to LightningElement
+// rather than static property definition on UserElement, we resort to this
+//
+// TODO [W-9141416]: Compile class properties without loose option
+defineProperty(LightningElement, 'shadow', {
+    get() {
+        return true;
+    },
+    set(value: boolean) {
+        defineProperty(this, 'shadow', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: value,
+        });
+    },
+});
