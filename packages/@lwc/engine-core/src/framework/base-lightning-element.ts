@@ -231,7 +231,9 @@ export const LightningElement: LightningElementConstructor = function (
     if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
         assert.invariant(
             !isFalse(ctor.shadow),
-            `${ctor.name} is an invalid LWC component. Light DOM components are not available in this environment.`
+            `${
+                ctor.name || 'Anonymous class'
+            } is an invalid LWC component. Light DOM components are not available in this environment.`
         );
     }
 
