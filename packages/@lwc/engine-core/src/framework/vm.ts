@@ -363,7 +363,8 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    fn(cmpRoot || elm, oldCh, newCh);
+                    const elmentToRenderTo = hasShadow(vm) ? cmpRoot : elm;
+                    fn(elmentToRenderTo, oldCh, newCh);
                 },
                 () => {
                     // post
