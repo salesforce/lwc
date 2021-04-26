@@ -16,18 +16,18 @@ describe('light parent with shadow child', () => {
         element.setAttribute('data-id', 'x-light-parent');
         document.body.appendChild(element);
 
-        expect(Object.keys(extractDataIds(element))).toEqual([
+        const nodes = extractDataIds(element);
+        expect(Object.keys(nodes)).toEqual([
             'x-light-parent',
+            'parent-text',
             'x-shadow-child',
             'x-shadow-child.shadowRoot',
-            'text',
+            'child-text',
         ]);
 
         expect(element.shadowRoot).toBeNull();
-        expect(element.querySelector('div').innerText).toEqual('inside parent');
-        expect(element.querySelector('x-shadow-child').shadowRoot).not.toBeNull();
-        expect(
-            element.querySelector('x-shadow-child').shadowRoot.querySelector('div').innerText
-        ).toEqual('inside child');
+        expect(nodes['parent-text'].innerText).toEqual('inside parent');
+        expect(nodes['x-shadow-child'].shadowRoot).not.toBeNull();
+        expect(nodes['child-text'].innerText).toEqual('inside child');
     });
 });
