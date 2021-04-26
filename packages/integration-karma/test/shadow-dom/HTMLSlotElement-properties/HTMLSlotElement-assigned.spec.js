@@ -10,7 +10,7 @@ describe('ignore non direct host children', () => {
     let elm;
     let nodes;
 
-    beforeAll(() => {
+    beforeEach(() => {
         elm = createElement('x-no-direct-child', { is: NoDirectChild });
         document.body.appendChild(elm);
 
@@ -44,7 +44,7 @@ describe('fallback content basic', () => {
     let elm;
     let nodes;
 
-    beforeAll(() => {
+    beforeEach(() => {
         elm = createElement('x-basic', { is: Basic });
         document.body.appendChild(elm);
 
@@ -76,7 +76,7 @@ describe('fallback content slots in slots', () => {
     let elm;
     let nodes;
 
-    beforeAll(() => {
+    beforeEach(() => {
         elm = createElement('x-slots-in-slots', { is: SlotsInSlots });
         document.body.appendChild(elm);
 
@@ -104,7 +104,7 @@ describe('fallback content complex', () => {
     let elm;
     let nodes;
 
-    beforeAll(() => {
+    beforeEach(() => {
         elm = createElement('x-complex', { is: Complex });
         document.body.appendChild(elm);
 

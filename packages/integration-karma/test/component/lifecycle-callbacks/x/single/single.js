@@ -13,7 +13,9 @@ export default class Single extends LightningElement {
     }
 
     disconnectedCallback() {
-        window.timingBuffer.push('single:disconnectedCallback');
+        if (window.timingBuffer) {
+            window.timingBuffer.push('single:disconnectedCallback');
+        }
     }
 
     renderedCallback() {

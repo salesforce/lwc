@@ -11,7 +11,9 @@ export default class LifecycleParent extends LightningElement {
     }
 
     disconnectedCallback() {
-        window.timingBuffer.push('parent:disconnectedCallback');
+        if (window.timingBuffer) {
+            window.timingBuffer.push('parent:disconnectedCallback');
+        }
     }
 
     renderedCallback() {

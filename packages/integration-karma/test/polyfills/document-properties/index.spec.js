@@ -3,7 +3,7 @@ import XTest from 'x/test';
 import XWithLwcDomManual from 'x/withLwcDomManual';
 
 describe('should not provide access to elements inside shadow tree', () => {
-    beforeAll(() => {
+    beforeEach(() => {
         const elm = createElement('x-test-document-properties', { is: XTest });
         document.body.appendChild(elm);
     });
@@ -77,17 +77,12 @@ describe('should provide access to elements outside shadow tree', () => {
     let container;
     // randomize the selectors so that it does not interfere with the test suite above
     const random = Math.floor(Math.random() * 100);
-    beforeAll(() => {
+    beforeEach(() => {
         container = document.createElement('div');
         document.body.appendChild(container);
         container.innerHTML = `<div class='in-the-shadow-${random}' id='in-the-shadow-${random}'></div>
                                <input name='in-the-shadow-${random}'>`;
         container.appendChild(document.createElement(`x-unique-tag-name-${random}`));
-    });
-    afterAll(() => {
-        if (container) {
-            document.body.removeChild(container);
-        }
     });
 
     function testMethodReturnsNode(api, selector) {

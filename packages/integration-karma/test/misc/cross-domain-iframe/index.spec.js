@@ -16,7 +16,7 @@ it('should not throw when unwrapping contentWindow', () => {
 describe('HTMLIFrameElement.contentWindow patching', () => {
     let iframe, sameOriginFrame;
 
-    beforeAll(() => {
+    beforeEach(() => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 

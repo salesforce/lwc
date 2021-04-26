@@ -47,7 +47,7 @@ if (!process.env.NATIVE_SHADOW) {
             elementOutsideLWC,
             rootLwcElement,
             cmpShadow;
-        beforeAll(() => {
+        beforeEach(() => {
             spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
             const elm = createElement('x-container', { is: Container });
 

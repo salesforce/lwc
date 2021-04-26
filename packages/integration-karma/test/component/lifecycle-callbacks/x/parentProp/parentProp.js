@@ -8,7 +8,9 @@ export default class ParentProp extends LightningElement {
     }
 
     disconnectedCallback() {
-        window.timingBuffer.push('parentProp:disconnectedCallback');
+        if (window.timingBuffer) {
+            window.timingBuffer.push('parentProp:disconnectedCallback');
+        }
     }
 
     renderedCallback() {

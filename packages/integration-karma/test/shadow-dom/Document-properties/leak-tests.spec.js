@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import Leak from 'x/leak';
 
 let elm;
-beforeAll(() => {
+beforeEach(() => {
     elm = createElement('x-leak', { is: Leak });
     document.body.appendChild(elm);
 });

@@ -144,8 +144,11 @@ describe('EventTarget.addEventListener', () => {
         }
 
         describe('without options', () => {
-            const container = createElement('x-container', { is: Container });
-            document.body.appendChild(container);
+            let container;
+            beforeEach(() => {
+                container = createElement('x-container', { is: Container });
+                document.body.appendChild(container);
+            });
 
             it('should be discarded on host elements', () => {
                 test({
@@ -168,8 +171,11 @@ describe('EventTarget.addEventListener', () => {
         });
 
         describe('with options', () => {
-            const container = createElement('x-container', { is: Container });
-            document.body.appendChild(container);
+            let container;
+            beforeEach(() => {
+                container = createElement('x-container', { is: Container });
+                document.body.appendChild(container);
+            });
 
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*
@@ -217,8 +223,11 @@ describe('EventTarget.addEventListener', () => {
         });
 
         describe('with different options', () => {
-            const container = createElement('x-container', { is: Container });
-            document.body.appendChild(container);
+            let container;
+            beforeEach(() => {
+                container = createElement('x-container', { is: Container });
+                document.body.appendChild(container);
+            });
 
             // TODO [#2253]: Uncomment test once options are supported on host/root.
             /*

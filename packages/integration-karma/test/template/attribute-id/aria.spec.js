@@ -20,7 +20,7 @@ function testAria(type, create) {
     describe(`${type} aria attribute values`, () => {
         let elm;
 
-        beforeAll(() => {
+        beforeEach(() => {
             elm = create();
             document.body.appendChild(elm);
         });

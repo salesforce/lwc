@@ -27,6 +27,7 @@ const WIRE_SERVICE_COMPAT = getModulePath('wire-service', 'iife', 'es5', 'dev');
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 const TEST_UTILS = require.resolve('../../helpers/test-utils');
 const WIRE_SETUP = require.resolve('../../helpers/wire-setup');
+const TEST_SETUP = require.resolve('../../helpers/test-setup');
 
 function createPattern(location, config = {}) {
     return {
@@ -51,6 +52,7 @@ function getFiles() {
         frameworkFiles.push(createPattern(WIRE_SERVICE));
     }
     frameworkFiles.push(createPattern(WIRE_SETUP));
+    frameworkFiles.push(createPattern(TEST_SETUP));
 
     return [
         ...frameworkFiles,

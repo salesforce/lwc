@@ -3,8 +3,11 @@ import Container from 'x/container';
 
 if (!process.env.NATIVE_SHADOW) {
     describe('DISABLE_INNER_OUTER_TEXT_PATCH flag', () => {
-        const elm = createElement('x-container', { is: Container });
-        document.body.appendChild(elm);
+        let elm;
+        beforeEach(() => {
+            elm = createElement('x-container', { is: Container });
+            document.body.appendChild(elm);
+        });
 
         it('should get innerText of custom element when DISABLE_INNER_OUTER_TEXT_PATCH = true', () => {
             setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', true);
@@ -20,8 +23,11 @@ if (!process.env.NATIVE_SHADOW) {
     });
 
     describe('innerText', () => {
-        const elm = createElement('x-container', { is: Container });
-        document.body.appendChild(elm);
+        let elm;
+        beforeEach(() => {
+            elm = createElement('x-container', { is: Container });
+            document.body.appendChild(elm);
+        });
 
         it('should return textContent when text within element is not selectable', () => {
             const testCase = elm.shadowRoot.querySelector('.non-selectable-text');
@@ -158,8 +164,11 @@ Cat`);
     // Firefox does not have outerText.
     if (outerTextDescriptor) {
         describe('outerText', () => {
-            const elm = createElement('x-container', { is: Container });
-            document.body.appendChild(elm);
+            let elm;
+            beforeEach(() => {
+                elm = createElement('x-container', { is: Container });
+                document.body.appendChild(elm);
+            });
 
             it('should not go inside custom element shadow', () => {
                 const testElement = elm.shadowRoot.querySelector('.without-slotted-content');
