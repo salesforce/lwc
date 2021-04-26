@@ -22,6 +22,7 @@ import {
     isObject,
     AccessibleElementProperties,
     setPrototypeOf,
+    isFalse,
 } from '@lwc/shared';
 import features from '@lwc/features';
 import { HTMLElementOriginalDescriptors } from './html-properties';
@@ -228,13 +229,15 @@ export const LightningElement: LightningElementConstructor = function (
     }
 
     if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
-        assert.isTrue(
-            ctor.shadow,
-            `${ctor.name} is a Light DOM component but Light DOM components are disabled. Either make the component a regular component (by setting \`static shadow = false\`) or set the runtime flag \`ENABLE_LIGHT_DOM_COMPONENTS\`.`
+        assert.invariant(
+            !isFalse(ctor.shadow),
+            `${ctor.name} is an invalid LWC component. Light DOM components are not available in this environment.`
         );
     }
 
-    if (ctor.shadow) {
+    // Attach shadow even if it's falsy but not boolean false. We do this because SecureElement from locker
+    // doesn't yet declare shadow to be true, leaving it undefined.
+    if (!isFalse(ctor.shadow)) {
         attachShadow(vm);
     }
 
@@ -537,10 +540,10 @@ LightningElement.prototype = {
     get template(): ShadowRoot | null {
         const vm = getAssociatedVM(this);
 
-        if (!hasShadow(vm)) {
-            if (process.env.NODE_ENV !== 'production') {
+        if (process.env.NODE_ENV !== 'production') {
+            if (!hasShadow(vm)) {
                 logError(
-                    'Template returns null in components with no shadow. Since there is no shadow, all the operations can be performed on `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
+                    '`this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
                 );
             }
         }

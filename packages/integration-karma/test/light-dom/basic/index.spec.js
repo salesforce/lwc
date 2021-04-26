@@ -1,6 +1,7 @@
 import { createElement, setFeatureFlagForTest, LightningElement } from 'lwc';
 
 import Test from 'x/test';
+import FalsyShadow from 'x/falsy-shadow';
 
 describe('Basic Light DOM', () => {
     beforeEach(() => {
@@ -16,13 +17,15 @@ describe('Basic Light DOM', () => {
         expect(elm.shadowRoot).toBeNull();
         expect(elm.firstChild.innerText).toEqual('Hello, Light DOM');
     });
-    it('should render to Shadow DOM when feature is disabled', () => {
+    it('should throw error when feature is disabled', () => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-        expect(() => createElement('x-test', { is: Test })).toThrowError();
+        expect(() => createElement('x-test', { is: Test })).toThrowErrorDev(
+            Error,
+            'Invariant Violation: Test is an invalid LWC component. Light DOM components are not available in this environment.'
+        );
     });
 
     it('should return null for template', () => {
-        const spy = spyOn(console, 'error');
         let template;
         class TemplateTest extends LightningElement {
             static shadow = false;
@@ -31,11 +34,18 @@ describe('Basic Light DOM', () => {
             }
         }
 
-        const elm = createElement('x-test', { is: TemplateTest });
-        document.body.appendChild(elm);
-        expect(template).toBeNull();
-        expect(spy.calls.mostRecent().args[0].message).toEqual(
-            '[LWC error]: Template returns null in components with no shadow. Since there is no shadow, all the operations can be performed on `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
+        expect(() => {
+            const elm = createElement('x-test', { is: TemplateTest });
+            document.body.appendChild(elm);
+        }).toLogErrorDev(
+            'Error: [LWC error]: `this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
         );
+
+        expect(template).toBeNull();
+    });
+
+    it('should render to Shadow DOM when shadow is falsy non-boolean', () => {
+        const elm = createElement('x-falsy-shadow', { is: FalsyShadow });
+        expect(elm.shadowRoot).not.toBeNull();
     });
 });
