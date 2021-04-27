@@ -41,13 +41,3 @@ it('should transform class fields', async () => {
 
     expect(code).not.toContain('foo;');
 });
-
-it('should object spread', async () => {
-    const actual = `
-        export const test = { ...a, b: 1 }
-    `;
-    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
-
-    expect(code).toContain('b: 1');
-    expect(code).not.toContain('...a');
-});
