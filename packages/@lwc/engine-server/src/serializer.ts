@@ -24,6 +24,8 @@ function serializeChildNodes(children: HostChildNode[]): string {
             switch (child.type) {
                 case HostNodeType.Text:
                     return htmlEscape(child.value);
+                case HostNodeType.Comment:
+                    return `<!--${htmlEscape(child.value)}-->`;
                 case HostNodeType.Element:
                     return serializeElement(child);
             }

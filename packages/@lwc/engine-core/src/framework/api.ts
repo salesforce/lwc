@@ -45,6 +45,7 @@ import {
     Hooks,
     Key,
     VCustomElement,
+    VComment,
 } from '../3rdparty/snabbdom/types';
 import { LightningElementConstructor } from './base-lightning-element';
 import {
@@ -89,6 +90,7 @@ export interface RenderAPI {
     d(value: any): VNode | null;
     b(fn: EventListener): EventListener;
     k(compilerKey: number, iteratorValue: any): string | void;
+    co(text: string): VComment;
 }
 
 const CHAR_S = 115;
@@ -103,6 +105,21 @@ const TextHook: Hooks<VText> = {
         const { renderer } = owner;
 
         const elm = renderer.createText(vnode.text!);
+        linkNodeToShadowIfRequired(elm, owner);
+        vnode.elm = elm;
+    },
+    update: updateNodeHook,
+    insert: insertNodeHook,
+    move: insertNodeHook, // same as insert for text nodes
+    remove: removeNodeHook,
+};
+
+const CommentHook: Hooks<VComment> = {
+    create: (vnode) => {
+        const { owner, text } = vnode;
+        const { renderer } = owner;
+
+        const elm = renderer.createComment(text);
         linkNodeToShadowIfRequired(elm, owner);
         vnode.elm = elm;
     },
@@ -558,6 +575,23 @@ export function t(text: string): VText {
         key,
 
         hook: TextHook,
+        owner: getVMBeingRendered()!,
+    };
+}
+
+// [co]mment node
+export function co(text: string): VComment {
+    const data = EmptyObject;
+    let sel, children, key, elm;
+    return {
+        sel,
+        data,
+        children,
+        text,
+        elm,
+        key,
+
+        hook: CommentHook,
         owner: getVMBeingRendered()!,
     };
 }

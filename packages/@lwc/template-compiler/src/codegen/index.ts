@@ -12,9 +12,23 @@ import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 
 import State from '../state';
 
-import { isElement, isCustomElement, isTemplate, isSlot } from '../shared/ir';
+import {
+    isCommentNode,
+    isElement,
+    isCustomElement,
+    isTemplate,
+    isTextNode,
+    isSlot,
+} from '../shared/ir';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
-import { IRNode, IRElement, IRText, IRAttribute, IRAttributeType } from '../shared/types';
+import {
+    IRNode,
+    IRElement,
+    IRText,
+    IRAttribute,
+    IRAttributeType,
+    IRComment,
+} from '../shared/types';
 
 import CodeGen from './codegen';
 import { bindExpression } from './scope';
@@ -96,14 +110,20 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         return codeGen.genText(typeof value === 'string' ? value : bindExpression(value, text));
     }
 
+    function transformComment(comment: IRComment): t.Expression {
+        return codeGen.genComment(comment.value);
+    }
+
     function transformChildren(children: IRNode[]): t.Expression {
         const res = children.reduce<t.Expression[]>((acc, child) => {
             let expr;
 
             if (isElement(child)) {
                 expr = isTemplate(child) ? transformTemplate(child) : transformElement(child);
-            } else {
+            } else if (isTextNode(child)) {
                 expr = transformText(child);
+            } else if (isCommentNode(child)) {
+                expr = transformComment(child);
             }
 
             return acc.concat(expr as t.Expression);

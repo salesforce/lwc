@@ -49,7 +49,7 @@ import {
 import { parseStyleText, parseClassNames } from './style';
 
 import * as t from '../shared/estree';
-import { createElement, isCustomElement, createText } from '../shared/ir';
+import { createElement, isCustomElement, createText, createComment } from '../shared/ir';
 import {
     IRElement,
     IRAttribute,
@@ -84,6 +84,7 @@ import {
     KNOWN_HTML_ELEMENTS,
     LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
+    PRESERVE_COMMENTS_ATTRIBUTE_NAME,
 } from './constants';
 
 function isStyleElement(irElement: IRElement) {
@@ -144,6 +145,10 @@ export default function parse(source: string, state: State): TemplateParseResult
     let root: any;
     let parent: IRElement;
     const stack: IRElement[] = [];
+
+    const preserveComments =
+        templateRoot.attrs.some(({ name }) => name === PRESERVE_COMMENTS_ATTRIBUTE_NAME) ||
+        state.config.preserveHtmlComments;
 
     traverseHTML(templateRoot, {
         Element: {
@@ -233,6 +238,18 @@ export default function parse(source: string, state: State): TemplateParseResult
 
                     textNode.parent = parent;
                     parent.children.push(textNode);
+                }
+            },
+        },
+
+        Comment: {
+            enter(node: parse5.AST.Default.CommentNode) {
+                if (preserveComments) {
+                    const rawComment = node.data;
+                    const commentNode = createComment(node, decodeTextContent(rawComment));
+
+                    commentNode.parent = parent;
+                    parent.children.push(commentNode);
                 }
             },
         },
@@ -351,6 +368,14 @@ export default function parse(source: string, state: State): TemplateParseResult
     function applyLwcDirectives(element: IRElement) {
         const lwcAttribute = getTemplateAttribute(element, LWC_RE);
         if (!lwcAttribute) {
+            return;
+        }
+
+        // only root template tag allows lwc:preserve-comments
+        if (
+            element.parent === undefined &&
+            lwcAttribute.name === PRESERVE_COMMENTS_ATTRIBUTE_NAME
+        ) {
             return;
         }
 
@@ -783,9 +808,11 @@ export default function parse(source: string, state: State): TemplateParseResult
                 return warnOnElement(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, node, [tag]);
             }
 
-            const hasAttributes = node.attrs.length !== 0;
-            if (hasAttributes) {
-                return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_CANNOT_HAVE_ATTRIBUTES, node);
+            const rootHasUnknownAttributes = node.attrs.some(
+                ({ name }) => name !== PRESERVE_COMMENTS_ATTRIBUTE_NAME
+            );
+            if (rootHasUnknownAttributes) {
+                return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, node);
             }
         }
 

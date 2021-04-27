@@ -62,6 +62,13 @@ export interface VText extends VNode {
     key: undefined;
 }
 
+export interface VComment extends VNode {
+    sel: undefined;
+    children: undefined;
+    text: string;
+    key: undefined;
+}
+
 export type CustomElementContext = Record<string, Record<string, any>>;
 
 export interface VNodeData {

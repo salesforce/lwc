@@ -12,6 +12,8 @@ import {
     IRElement,
     HTMLElement,
     HTMLText,
+    HTMLComment,
+    IRComment,
 } from './types';
 
 export function createElement(tag: string, original: HTMLElement): IRElement {
@@ -33,8 +35,24 @@ export function createText(original: HTMLText, value: string | TemplateExpressio
     };
 }
 
+export function createComment(original: HTMLComment, value: string): IRComment {
+    return {
+        type: 'comment',
+        __original: original,
+        value,
+    };
+}
+
 export function isElement(node: IRNode): node is IRElement {
     return node.type === 'element';
+}
+
+export function isTextNode(node: IRNode): node is IRText {
+    return node.type === 'text';
+}
+
+export function isCommentNode(node: IRNode): node is IRComment {
+    return node.type === 'comment';
 }
 
 export function isCustomElement(node: IRNode): boolean {

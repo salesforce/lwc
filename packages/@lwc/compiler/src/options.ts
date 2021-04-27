@@ -54,6 +54,7 @@ export interface TransformOptions {
     experimentalDynamicComponent?: DynamicComponentConfig;
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
+    preserveHtmlComments?: boolean;
 }
 
 export interface NormalizedTransformOptions extends TransformOptions {

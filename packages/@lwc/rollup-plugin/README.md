@@ -26,3 +26,4 @@ export default {
 -   `sourcemap` (boolean, optional, default: `false`) - make the LWC compiler produce source maps
 -   `modules` Mapping of module specifiers.
 -   `stylesheetConfig` (object, optional, default: `{}`) - the configuration to pass to the `@lwc/style-compiler`
+-   `preserveHtmlComments` (boolean, optional, default: `false`) - the configuration to pass to the `@lwc/template-compiler`

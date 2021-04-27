@@ -21,6 +21,11 @@ export interface Config {
      * Enable <x-foo lwc:directive={expr}>
      */
     experimentalDynamicDirective?: boolean;
+
+    /**
+     * When true, HTML comments in the template will be preserved.
+     */
+    preserveHtmlComments?: boolean;
 }
 
 export interface ResolvedConfig extends Required<Config> {
@@ -37,6 +42,7 @@ export interface ResolvedConfig extends Required<Config> {
 const AVAILABLE_OPTION_NAMES = new Set([
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
+    'preserveHtmlComments',
 ]);
 
 export function mergeConfig(config: Config, overrides: { format: Format }): ResolvedConfig {
@@ -54,6 +60,7 @@ export function mergeConfig(config: Config, overrides: { format: Format }): Reso
     }
 
     return {
+        preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
         format: overrides.format,
