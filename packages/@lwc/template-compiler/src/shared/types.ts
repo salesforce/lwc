@@ -48,9 +48,7 @@ export interface ForIterator {
     iterator: TemplateIdentifier;
 }
 
-export enum LWCDirectiveDomMode {
-    manual = 'manual',
-}
+export type LWCDirectiveDomMode = 'manual';
 
 export interface LWCDirectiveDynamic {
     prop: string;
@@ -59,6 +57,7 @@ export interface LWCDirectiveDynamic {
 export interface LWCDirectives {
     dom?: LWCDirectiveDomMode;
     dynamic?: TemplateExpression;
+    innerHTML?: TemplateExpression | string;
 }
 
 export interface IRElement {

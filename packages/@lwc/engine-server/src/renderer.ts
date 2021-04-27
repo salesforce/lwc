@@ -103,7 +103,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         }
 
         const nodeIndex = parent.children.indexOf(node);
-        return parent.children[nodeIndex + 1] || null;
+        return (parent.children[nodeIndex + 1] as HostNode) || null;
     },
 
     attachShadow(element, config) {
@@ -155,6 +155,17 @@ export const renderer: Renderer<HostNode, HostElement> = {
 
         if (node.type === HostNodeType.Element) {
             const attrName = htmlPropertyToAttribute(key);
+
+            if (key === 'innerHTML') {
+                node.children = [
+                    {
+                        type: HostNodeType.Raw,
+                        parent: node,
+                        value,
+                    },
+                ];
+                return;
+            }
 
             // Handle all the boolean properties.
             if (isBooleanAttribute(attrName, node.name)) {

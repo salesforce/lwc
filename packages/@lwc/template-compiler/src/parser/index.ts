@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5-with-errors';
-import { hasOwnProperty } from '@lwc/shared';
 
 import {
     CompilerDiagnostic,
@@ -60,7 +59,6 @@ import {
     ForEach,
     TemplateExpression,
     TemplateParseResult,
-    LWCDirectiveDomMode,
     LWCDirectives,
 } from '../shared/types';
 
@@ -363,8 +361,10 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
 
         const lwcOpts = {};
+
         applyLwcDynamicDirective(element, lwcOpts);
         applyLwcDomDirective(element, lwcOpts);
+        applyLwcInnerHtmlDirective(element, lwcOpts);
 
         element.lwc = lwcOpts;
     }
@@ -427,15 +427,9 @@ export default function parse(source: string, state: State): TemplateParseResult
             );
         }
 
-        if (
-            lwcDomAttribute.type !== IRAttributeType.String ||
-            hasOwnProperty.call(LWCDirectiveDomMode, lwcDomAttribute.value) === false
-        ) {
-            const possibleValues = Object.keys(LWCDirectiveDomMode)
-                .map((value) => `"${value}"`)
-                .join(', or ');
+        if (lwcDomAttribute.type !== IRAttributeType.String || lwcDomAttribute.value !== 'manual') {
             return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [
-                possibleValues,
+                '"manual"',
             ]);
         }
 
@@ -443,7 +437,52 @@ export default function parse(source: string, state: State): TemplateParseResult
             return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element.__original);
         }
 
-        lwcOpts.dom = lwcDomAttribute.value as LWCDirectiveDomMode;
+        lwcOpts.dom = lwcDomAttribute.value;
+    }
+
+    function applyLwcInnerHtmlDirective(element: IRElement, lwcOpts: LWCDirectives) {
+        const lwcInnerHtmlDirective = getTemplateAttribute(element, LWC_DIRECTIVES.INNER_HTML);
+
+        if (!lwcInnerHtmlDirective) {
+            return;
+        }
+
+        removeAttribute(element, LWC_DIRECTIVES.INNER_HTML);
+
+        if (isCustomElement(element)) {
+            return warnOnElement(
+                ParserDiagnostics.LWC_INNER_HTML_INVALID_CUSTOM_ELEMENT,
+                element.__original,
+                [`<${element.tag}>`]
+            );
+        }
+
+        if (element.tag === 'slot' || element.tag === 'template') {
+            return warnOnElement(
+                ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT,
+                element.__original
+            );
+        }
+
+        if (element.children.length > 0) {
+            return warnOnElement(
+                ParserDiagnostics.LWC_INNER_HTML_INVALID_CONTENTS,
+                element.__original
+            );
+        }
+
+        if (lwcInnerHtmlDirective.type === IRAttributeType.Boolean) {
+            return warnOnElement(
+                ParserDiagnostics.LWC_INNER_HTML_INVALID_VALUE,
+                element.__original
+            );
+        }
+
+        if (!state.secureDependencies.includes('sanitizeHtmlContent')) {
+            state.secureDependencies.push('sanitizeHtmlContent');
+        }
+
+        lwcOpts.innerHTML = lwcInnerHtmlDirective.value;
     }
 
     function validateInlineStyleElement(element: IRElement) {

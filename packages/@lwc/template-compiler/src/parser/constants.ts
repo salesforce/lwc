@@ -23,9 +23,10 @@ export const EVENT_HANDLER_NAME_RE = /^on[a-z][a-z0-9_]*$/;
 export const LWC_DIRECTIVES = {
     DOM: 'lwc:dom',
     DYNAMIC: 'lwc:dynamic',
+    INNER_HTML: 'lwc:inner-html',
 };
 
-export const LWC_DIRECTIVE_SET: Set<string> = new Set([LWC_DIRECTIVES.DOM, LWC_DIRECTIVES.DYNAMIC]);
+export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(LWC_DIRECTIVES));
 
 // These attributes take either an ID or a list of IDs as values.
 export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([

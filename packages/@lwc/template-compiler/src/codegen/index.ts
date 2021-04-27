@@ -382,17 +382,42 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         }
 
         // Properties
+        const propsObj = t.objectExpression([]);
+
+        // Properties: standard props
         if (props) {
-            const propsObj = objectToAST(props, (key) => computeAttrValue(props[key], element));
+            for (const [key, value] of Object.entries(props)) {
+                propsObj.properties.push(
+                    t.property(t.identifier(key), computeAttrValue(value, element))
+                );
+            }
+        }
+
+        // Properties: lwc:inner-html directive
+        if (lwc?.innerHTML) {
+            const expr =
+                typeof lwc.innerHTML === 'string'
+                    ? t.literal(lwc.innerHTML)
+                    : bindExpression(lwc.innerHTML, element);
+
+            propsObj.properties.push(
+                t.property(
+                    t.identifier('innerHTML'),
+                    t.callExpression(t.identifier('sanitizeHtmlContent'), [expr])
+                )
+            );
+        }
+
+        if (propsObj.properties.length) {
             data.push(t.property(t.identifier('props'), propsObj));
         }
 
         // Context
-        if (lwc?.dom) {
+        if (lwc?.dom || lwc?.innerHTML) {
             const contextObj = t.objectExpression([
                 t.property(
                     t.identifier('lwc'),
-                    t.objectExpression([t.property(t.identifier('dom'), t.literal(lwc.dom))])
+                    t.objectExpression([t.property(t.identifier('dom'), t.literal('manual'))])
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));

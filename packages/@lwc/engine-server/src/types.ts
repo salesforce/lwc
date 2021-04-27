@@ -7,12 +7,19 @@
 
 export enum HostNodeType {
     Text = 'text',
+    Raw = 'raw',
     Element = 'element',
     ShadowRoot = 'shadow-root',
 }
 
 export interface HostText {
     type: HostNodeType.Text;
+    parent: HostElement | null;
+    value: string;
+}
+
+export interface HostRaw {
+    type: HostNodeType.Raw;
     parent: HostElement | null;
     value: string;
 }
@@ -42,4 +49,4 @@ export interface HostElement {
 }
 
 export type HostNode = HostText | HostElement;
-export type HostChildNode = HostElement | HostText;
+export type HostChildNode = HostElement | HostText | HostRaw;

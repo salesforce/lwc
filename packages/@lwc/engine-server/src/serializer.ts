@@ -20,10 +20,12 @@ function serializeAttributes(attributes: HostAttribute[]): string {
 
 function serializeChildNodes(children: HostChildNode[]): string {
     return children
-        .map((child) => {
+        .map((child): string => {
             switch (child.type) {
                 case HostNodeType.Text:
                     return htmlEscape(child.value);
+                case HostNodeType.Raw:
+                    return child.value;
                 case HostNodeType.Element:
                     return serializeElement(child);
             }

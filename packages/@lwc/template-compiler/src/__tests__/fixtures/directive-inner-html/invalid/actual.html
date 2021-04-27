@@ -1,0 +1,13 @@
+<template>
+    <!-- Invalid usage on an element with content -->
+    <div lwc:inner-html={content}>With content</div>
+    
+    <!-- Invalid usage on <slot> -->
+    <slot lwc:inner-html={content}></slot>
+    
+    <!-- Invalid usage on custom elements -->
+    <x-foo lwc:inner-html={content}></x-foo>
+    
+    <!-- Invalid usage on <template> -->
+    <template lwc:inner-html={content}></template>
+</template>
