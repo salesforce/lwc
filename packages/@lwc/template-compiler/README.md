@@ -50,7 +50,7 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`,
 
 -   `experimentalComputedMemberExpression` (boolean, optional, `false` by default) - set to `true` to enable computed member expression in the template, eg: `{list[0].name}`.
 -   `experimentalDynamicDirective` (boolean, optional, `false` by default) - set to `true` to allow useges of `lwc:dynamic` directive in the template.
--   `preserveHtmlComments` (boolean, optional, `false` by default) - set to `true` if you want HTML comments in the template to be preserved in the output.
+-   `preserveHtmlComments` (boolean, optional, `false` by default) - set to `true` to disable the default behavior of stripping HTML comments.
 
 **Return:**
 The method returns an object with the following fields:
