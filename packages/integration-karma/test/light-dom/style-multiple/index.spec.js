@@ -34,12 +34,12 @@ describe('Light DOM styling - multiple light DOM components', () => {
         document.body.appendChild(elm);
 
         expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-one .my-awesome-class')).borderColor
-        ).toEqual('rgb(128, 0, 128)'); // purple
+            getComputedStyle(elm.shadowRoot.querySelector('x-one .my-awesome-class')).opacity
+        ).toEqual('0.5');
 
         expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class')).borderColor
-        ).toEqual('rgb(128, 0, 128)'); // purple
+            getComputedStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class')).opacity
+        ).toEqual('0.5');
     });
 
     it('reverse order - the second stylesheet wins', () => {
@@ -48,11 +48,11 @@ describe('Light DOM styling - multiple light DOM components', () => {
         document.body.appendChild(elm);
 
         expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-one .my-awesome-class')).borderColor
-        ).toEqual('rgb(210, 105, 30)'); // chocolate
+            getComputedStyle(elm.shadowRoot.querySelector('x-one .my-awesome-class')).opacity
+        ).toEqual('0.75');
 
         expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class')).borderColor
-        ).toEqual('rgb(210, 105, 30)'); // chocolate
+            getComputedStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class')).opacity
+        ).toEqual('0.75');
     });
 });
