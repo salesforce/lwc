@@ -112,7 +112,7 @@ export function createStylesheet(vm: VM, stylesheets: string[]): void {
     const { renderer, cmpRoot, elm } = vm;
 
     const isLightElement = isNull(cmpRoot);
-    const lightRoot = isLightElement && elm.getRootNode();
+    const lightRoot = isLightElement && elm.getRootNode && elm.getRootNode(); // getRootNode undefined in engine-server
     const lightHost = lightRoot?.host;
 
     for (let i = 0; i < stylesheets.length; i++) {
