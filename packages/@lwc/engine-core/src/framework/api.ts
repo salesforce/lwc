@@ -116,10 +116,10 @@ const TextHook: Hooks<VText> = {
 
 const CommentHook: Hooks<VComment> = {
     create: (vnode) => {
-        const { owner } = vnode;
+        const { owner, text } = vnode;
         const { renderer } = owner;
 
-        const elm = renderer.createComment(vnode.text);
+        const elm = renderer.createComment(text);
         linkNodeToShadow(elm, owner);
         vnode.elm = elm;
     },
