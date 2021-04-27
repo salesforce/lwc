@@ -215,34 +215,6 @@ jobs:
       - stop_sauce_connect
 
 
-  perf_and_compare:
-    executor: node
-    environment:
-      GIT_APP_CERT_PATH: ~/lwc/git_app.pem
-    steps:
-      - load_workspace
-      - run:
-          name: Setup BEST environment
-          command: |
-              echo 'export PULL_REQUEST=${CIRCLE_PULL_REQUEST}' >> $BASH_ENV
-              echo 'export REPO_NAME=${CIRCLE_PROJECT_REPONAME}' >> $BASH_ENV
-              echo 'export TARGET_COMMIT=${CIRCLE_SHA1}' >> $BASH_ENV
-              echo 'export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
-              echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
-      - run:
-          name: Run BEST
-          working_directory: packages/perf-benchmarks
-          no_output_timeout: 40m
-          command: yarn start --externalStorage=@best/store-aws --runner remote --runInBatch --dbAdapter=sql/postgres --dbURI=${BEST_HUB_DATABASE_URL}
-      - run:
-          name: Comparing Benchmarks
-          working_directory: packages/perf-benchmarks
-          command: yarn start --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
-      - store_artifacts:
-          path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
-          destination: benchmarks
-
-
 # Workflows definition
 workflows:
   version: 2
@@ -259,12 +231,6 @@ workflows:
             - build
 
       - test_karma:
-          filters:
-            <<: *ignore_forks
-          requires:
-            - build
-
-      - perf_and_compare:
           filters:
             <<: *ignore_forks
           requires:
@@ -305,14 +271,6 @@ workflows:
             - test_unit
 
       - test_karma:
-          context: lwc-sauce-labs
-          filters:
-            <<: *only_forks
-          requires:
-            - build
-            - hold
-
-      - perf_and_compare:
           context: lwc-sauce-labs
           filters:
             <<: *only_forks
