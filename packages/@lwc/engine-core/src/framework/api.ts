@@ -120,7 +120,7 @@ const CommentHook: Hooks<VComment> = {
         const { renderer } = owner;
 
         const elm = renderer.createComment(text);
-        linkNodeToShadow(elm, owner);
+        linkNodeToShadowIfRequired(elm, owner);
         vnode.elm = elm;
     },
     update: updateNodeHook,
