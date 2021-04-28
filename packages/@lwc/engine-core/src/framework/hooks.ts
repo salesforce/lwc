@@ -171,7 +171,7 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
             hasShadow(vm) || children.length === 0,
             `Invalid usage of ${getComponentTag(
                 vm
-            )}. Light DOM components don't support yet slotting.`
+            )}. Light DOM components don't support slotting yet.`
         );
     }
 

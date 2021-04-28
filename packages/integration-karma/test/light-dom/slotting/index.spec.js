@@ -11,13 +11,13 @@ describe('slotted content', () => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
 
-    it('should throws when attempting to render a slotted content in the light DOM', () => {
+    it('should throw when attempting to render a slotted content in the light DOM', () => {
         const element = createElement('x-slotted', { is: Slotted });
 
         expect(() => {
             document.body.appendChild(element);
         }).toThrowError(
-            /Invalid usage of <x-container>\. Light DOM components don't support yet slotting\./
+            /Invalid usage of <x-container>\. Light DOM components don't support slotting yet\./
         );
     });
 });
