@@ -10,7 +10,7 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "version": "2.0.0-rc.0",
+    "version": "2.0.0-rc.1",
     "main": "src/index.js",
     "typings": "types/index.d.ts",
     "license": "MIT",
@@ -24,7 +24,7 @@
     ],
     "dependencies": {
         "@babel/helper-module-imports": "~7.12.13",
-        "@lwc/errors": "2.0.0-rc.0",
+        "@lwc/errors": "2.0.0-rc.1",
         "line-column": "~1.0.2"
     },
     "devDependencies": {
