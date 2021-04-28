@@ -1,9 +1,9 @@
 <template>
-  <template if:true={reverse}>
+  <template if:false={reverse}>
     <x-one></x-one>
     <x-two></x-two>
   </template>
-  <template if:false={reverse}>
+  <template if:true={reverse}>
     <x-two></x-two>
     <x-one></x-one>
   </template>

@@ -15,7 +15,19 @@ import {
     htmlPropertyToAttribute,
 } from '@lwc/shared';
 import { Renderer } from '@lwc/engine-core';
-import { insertStylesheet, insertGlobalStylesheet } from './stylesheets';
+
+const globalStylesheets: { [content: string]: true } = create(null);
+
+if (process.env.NODE_ENV === 'development') {
+    // @ts-ignore
+    window.__lwcResetGlobalStylesheets = () => {
+        for (const key of Object.keys(globalStylesheets)) {
+            delete globalStylesheets[key];
+        }
+    };
+}
+
+const globalStylesheetsParentElement: Element = document.head || document.body || document;
 
 let getCustomElement, defineCustomElement, HTMLElementConstructor;
 
@@ -216,9 +228,19 @@ export const renderer: Renderer<Node, Element> = {
         return node.isConnected;
     },
 
-    insertGlobalStylesheet,
+    insertGlobalStylesheet(content: string): void {
+        if (!isUndefined(globalStylesheets[content])) {
+            return;
+        }
 
-    insertStylesheet,
+        globalStylesheets[content] = true;
+
+        const elm = document.createElement('style');
+        elm.type = 'text/css';
+        elm.textContent = content;
+
+        globalStylesheetsParentElement.appendChild(elm);
+    },
 
     assertInstanceOfHTMLElement(elm: any, msg: string) {
         assert.invariant(elm instanceof HTMLElement, msg);

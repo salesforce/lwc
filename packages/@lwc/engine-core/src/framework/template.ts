@@ -4,7 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayIndexOf, assert, create, isArray, isFunction, isNull, toString } from '@lwc/shared';
+import {
+    ArrayIndexOf,
+    ArrayUnshift,
+    assert,
+    create,
+    isArray,
+    isFunction,
+    isNull,
+    toString,
+} from '@lwc/shared';
 import { logError } from '../shared/logger';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
@@ -148,9 +157,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.
                     const stylesheetsContent = getStylesheetsContent(vm, html);
-                    if (stylesheetsContent.length !== 0) {
-                        createStylesheet(vm, stylesheetsContent);
-                    }
+                    context.styleVNode =
+                        stylesheetsContent.length === 0
+                            ? null
+                            : createStylesheet(vm, stylesheetsContent);
                 }
 
                 if (process.env.NODE_ENV !== 'production') {
@@ -167,6 +177,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                 isUpdatingTemplate = true;
 
                 vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
+                const { styleVNode } = context;
+                if (!isNull(styleVNode)) {
+                    ArrayUnshift.call(vnodes, styleVNode);
+                }
             });
         },
         () => {
