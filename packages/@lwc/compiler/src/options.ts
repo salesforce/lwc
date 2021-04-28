@@ -7,22 +7,27 @@
 import { CompilerValidationErrors, invariant } from '@lwc/errors';
 import { isUndefined, isBoolean, isObject } from '@lwc/shared';
 
-const DEFAULT_OPTIONS = {
-    isExplicitImport: false,
+type RecursiveRequired<T> = {
+    [P in keyof T]-?: RecursiveRequired<T[P]>;
 };
 
-const DEFAULT_DYNAMIC_CMP_CONFIG: NormalizedDynamicComponentConfig = {
+const DEFAULT_OPTIONS = {
+    isExplicitImport: false,
+    preserveHtmlComments: false,
+};
+
+const DEFAULT_DYNAMIC_CMP_CONFIG: Required<DynamicComponentConfig> = {
     loader: '',
     strictSpecifier: true,
 };
 
-const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
+const DEFAULT_STYLESHEET_CONFIG: RecursiveRequired<StylesheetConfig> = {
     customProperties: {
         resolution: { type: 'native' },
     },
 };
 
-const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
+const DEFAULT_OUTPUT_CONFIG: Required<OutputConfig> = {
     minify: false,
     sourcemap: false,
 };
@@ -40,11 +45,9 @@ export interface OutputConfig {
     sourcemap?: boolean;
 }
 
-export type DynamicComponentConfig = Partial<NormalizedDynamicComponentConfig>;
-
-export interface NormalizedDynamicComponentConfig {
-    loader: string;
-    strictSpecifier: boolean;
+export interface DynamicComponentConfig {
+    loader?: string;
+    strictSpecifier?: boolean;
 }
 
 export interface TransformOptions {
@@ -57,22 +60,10 @@ export interface TransformOptions {
     preserveHtmlComments?: boolean;
 }
 
-export interface NormalizedTransformOptions extends TransformOptions {
-    outputConfig: NormalizedOutputConfig;
-    stylesheetConfig: NormalizedStylesheetConfig;
-    experimentalDynamicComponent: NormalizedDynamicComponentConfig;
-    isExplicitImport: boolean;
-}
-
-export interface NormalizedStylesheetConfig extends StylesheetConfig {
-    customProperties: {
-        resolution: CustomPropertiesResolution;
-    };
-}
-
-export interface NormalizedOutputConfig extends OutputConfig {
-    minify: boolean;
-    sourcemap: boolean;
+type RequiredTransformOptions = Omit<TransformOptions, 'name' | 'namespace'>;
+export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
+    name?: string;
+    namespace?: string;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {
@@ -132,19 +123,19 @@ function validateOutputConfig(config: OutputConfig) {
 }
 
 function normalizeOptions(options: TransformOptions): NormalizedTransformOptions {
-    const outputConfig: NormalizedOutputConfig = {
+    const outputConfig: Required<OutputConfig> = {
         ...DEFAULT_OUTPUT_CONFIG,
         ...options.outputConfig,
     };
 
-    const stylesheetConfig: NormalizedStylesheetConfig = {
+    const stylesheetConfig: RecursiveRequired<StylesheetConfig> = {
         customProperties: {
             ...DEFAULT_STYLESHEET_CONFIG.customProperties,
             ...(options.stylesheetConfig && options.stylesheetConfig.customProperties),
         },
     };
 
-    const experimentalDynamicComponent = {
+    const experimentalDynamicComponent: Required<DynamicComponentConfig> = {
         ...DEFAULT_DYNAMIC_CMP_CONFIG,
         ...options.experimentalDynamicComponent,
     };
