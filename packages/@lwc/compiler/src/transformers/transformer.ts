@@ -60,7 +60,7 @@ function validateArguments(src: string, filename: string) {
     invariant(isString(filename), TransformerErrors.INVALID_ID, [filename]);
 }
 
-export function transformFile(
+function transformFile(
     src: string,
     filename: string,
     options: NormalizedTransformOptions
