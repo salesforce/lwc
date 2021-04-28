@@ -29,7 +29,7 @@ describe('Light DOM styling - multiple light DOM components', () => {
         });
     });
 
-    it('default order - the second stylesheet wins', () => {
+    it('the second stylesheet wins in terms of specificity', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
@@ -40,19 +40,16 @@ describe('Light DOM styling - multiple light DOM components', () => {
         expect(
             getComputedStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class')).opacity
         ).toEqual('0.75');
-    });
 
-    it('reverse order - the first stylesheet wins', () => {
-        const elm = createElement('x-container', { is: Container });
         elm.reverse = true;
-        document.body.appendChild(elm);
+        return Promise.resolve().then(() => {
+            expect(
+                getComputedStyle(elm.shadowRoot.querySelector('x-one .my-awesome-class')).opacity
+            ).toEqual('0.5');
 
-        expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-one .my-awesome-class')).opacity
-        ).toEqual('0.5');
-
-        expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class')).opacity
-        ).toEqual('0.5');
+            expect(
+                getComputedStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class')).opacity
+            ).toEqual('0.5');
+        });
     });
 });
