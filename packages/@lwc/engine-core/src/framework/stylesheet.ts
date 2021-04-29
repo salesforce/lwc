@@ -60,7 +60,7 @@ export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
         newTokens = newStylesheetTokens;
     }
 
-    if (newTokens) {
+    if (!isUndefined(newTokens)) {
         renderer.setAttribute(elm, newTokens.hostAttribute, '');
     }
 
