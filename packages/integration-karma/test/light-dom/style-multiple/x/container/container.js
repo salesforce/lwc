@@ -1,5 +1,3 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement } from 'lwc';
 
-export default class Container extends LightningElement {
-    @api reverse = false;
-}
+export default class Container extends LightningElement {}

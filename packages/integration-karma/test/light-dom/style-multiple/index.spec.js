@@ -15,41 +15,19 @@ describe('Light DOM styling - multiple light DOM components', () => {
         expect(elm.shadowRoot).not.toBeNull();
 
         const getStyle = (elm) => {
-            const { color, backgroundColor } = getComputedStyle(elm);
-            return { color, backgroundColor };
+            const { color, backgroundColor, opacity } = getComputedStyle(elm);
+            return { color, backgroundColor, opacity };
         };
 
         expect(getStyle(elm.shadowRoot.querySelector('x-one .my-awesome-class'))).toEqual({
             color: 'rgb(255, 255, 0)',
             backgroundColor: 'rgb(0, 0, 0)',
+            opacity: '0.75',
         });
         expect(getStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class'))).toEqual({
             color: 'rgb(255, 255, 0)',
             backgroundColor: 'rgb(0, 0, 0)',
-        });
-    });
-
-    it('the second stylesheet wins in terms of specificity', () => {
-        const elm = createElement('x-container', { is: Container });
-        document.body.appendChild(elm);
-
-        expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-one .my-awesome-class')).opacity
-        ).toEqual('0.75');
-
-        expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class')).opacity
-        ).toEqual('0.75');
-
-        elm.reverse = true;
-        return Promise.resolve().then(() => {
-            expect(
-                getComputedStyle(elm.shadowRoot.querySelector('x-one .my-awesome-class')).opacity
-            ).toEqual('0.5');
-
-            expect(
-                getComputedStyle(elm.shadowRoot.querySelector('x-two .my-awesome-class')).opacity
-            ).toEqual('0.5');
+            opacity: '0.75',
         });
     });
 });
