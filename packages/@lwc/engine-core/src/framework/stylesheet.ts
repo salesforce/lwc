@@ -106,10 +106,18 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
     let content: string[] = [];
 
     if (!isUndefined(stylesheets) && stylesheets.length !== 0) {
-        const tokens = syntheticShadow && hasShadow(vm) && stylesheetTokens;
+        let hostSelector;
+        let shadowSelector;
 
-        const hostSelector = tokens ? `[${tokens.hostAttribute}]` : '';
-        const shadowSelector = tokens ? `[${tokens.shadowAttribute}]` : '';
+        // Scoping with the tokens is only necessary for synthetic shadow. For both
+        // light DOM elements and native shadow, we just render the CSS as-is.
+        if (syntheticShadow && hasShadow(vm) && !isUndefined(stylesheetTokens)) {
+            hostSelector = `[${stylesheetTokens.hostAttribute}]`;
+            shadowSelector = `[${stylesheetTokens.shadowAttribute}]`;
+        } else {
+            hostSelector = '';
+            shadowSelector = '';
+        }
 
         content = evaluateStylesheetsContent(
             stylesheets,
