@@ -27,12 +27,14 @@ export default function templateTransform(
     filename: string,
     options: NormalizedTransformOptions
 ): TransformResult {
-    let result;
+    const { experimentalDynamicComponent, preserveHtmlComments } = options;
+    const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
 
+    let result;
     try {
         result = compile(src, {
-            experimentalDynamicDirective: !!options.experimentalDynamicComponent,
-            preserveHtmlComments: !!options.preserveHtmlComments,
+            experimentalDynamicDirective,
+            preserveHtmlComments,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
