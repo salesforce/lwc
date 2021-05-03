@@ -4,26 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const fs = require('fs');
 const path = require('path');
 const rollup = require('rollup');
 const prettier = require('prettier');
 const rollupCompat = require('rollup-plugin-compat');
 const rollupCompile = require('../index');
+require('jest-utils-lwc-internals');
 
 function pretty(str) {
     return prettier.format(str, {
         parser: 'babel',
     });
-}
-
-function fsExpected(fileName, actual) {
-    const fullFileName = path.join(fixturesDir, `${fileName}.js`);
-    if (!fs.existsSync(fullFileName)) {
-        fs.writeFileSync(fullFileName, actual, 'utf8');
-    }
-    const expected = fs.readFileSync(fullFileName, 'utf8');
-    expect(actual).toBe(expected);
 }
 
 const fixturesDir = path.join(__dirname, 'fixtures');
@@ -37,7 +28,9 @@ describe('default configuration', () => {
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, { compat: false }).then(({ code: actual }) => {
-            fsExpected('expected_default_config_simple_app', pretty(actual));
+            expect(pretty(actual)).toMatchFile(
+                path.join(fixturesDir, 'expected_default_config_simple_app.js')
+            );
         });
     });
 
@@ -54,7 +47,9 @@ describe('default configuration', () => {
             },
         };
         return doRollup(entry, { compat: false }, rollupCompileOptions).then(({ code: actual }) => {
-            fsExpected('expected_default_config_simple_app_css_resolver', pretty(actual));
+            expect(pretty(actual)).toMatchFile(
+                path.join(fixturesDir, 'expected_default_config_simple_app_css_resolver.js')
+            );
         });
     });
 
@@ -78,7 +73,9 @@ describe('rollup with custom options', () => {
         };
 
         return doRollup(entry, { compat: false }, rollupOptions).then(({ code: actual }) => {
-            fsExpected('expected_default_config_simple_app', pretty(actual));
+            expect(pretty(actual)).toMatchFile(
+                path.join(fixturesDir, 'expected_default_config_simple_app_relative.js')
+            );
         });
     });
 });
@@ -87,7 +84,9 @@ describe('rollup in compat mode', () => {
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, { compat: true }).then(({ code: actual }) => {
-            fsExpected('expected_compat_config_simple_app', pretty(actual));
+            expect(pretty(actual)).toMatchFile(
+                path.join(fixturesDir, 'expected_compat_config_simple_app.js')
+            );
         });
     });
 });
@@ -96,7 +95,9 @@ describe('typescript relative import', () => {
     it(`should resolve to .ts file`, () => {
         const entry = path.join(tsAppDir, 'main.ts');
         return doRollup(entry, { compat: false }).then(({ code: actual }) => {
-            fsExpected('expected_default_config_ts_simple_app', pretty(actual));
+            expect(pretty(actual)).toMatchFile(
+                path.join(fixturesDir, 'expected_default_config_ts_simple_app.js')
+            );
         });
     });
 });
