@@ -8,8 +8,8 @@ import { isArray, isUndefined, ArrayJoin, ArrayPush } from '@lwc/shared';
 
 import * as api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
-import { VM } from './vm';
-import { Template } from './template';
+import { VM, hasShadow } from './vm';
+import { Template, TemplateStylesheetTokens } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 
 /**
@@ -29,7 +29,7 @@ export type StylesheetFactory = (
  */
 export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
 
-function createShadowStyleVNode(content: string): VNode {
+function createInlineStyleVNode(content: string): VNode {
     return api.h(
         'style',
         {
@@ -46,8 +46,7 @@ export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
     const { elm, context, renderer } = vm;
     const { stylesheets: newStylesheets, stylesheetTokens: newStylesheetTokens } = template;
 
-    let newHostAttribute: string | undefined;
-    let newShadowAttribute: string | undefined;
+    let newTokens: TemplateStylesheetTokens | undefined;
 
     // Reset the styling token applied to the host element.
     const oldHostAttribute = context.hostAttribute;
@@ -57,20 +56,17 @@ export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
 
     // Apply the new template styling token to the host element, if the new template has any
     // associated stylesheets.
-    if (
-        !isUndefined(newStylesheetTokens) &&
-        !isUndefined(newStylesheets) &&
-        newStylesheets.length !== 0
-    ) {
-        newHostAttribute = newStylesheetTokens.hostAttribute;
-        newShadowAttribute = newStylesheetTokens.shadowAttribute;
+    if (!isUndefined(newStylesheets) && newStylesheets.length !== 0 && hasShadow(vm)) {
+        newTokens = newStylesheetTokens;
+    }
 
-        renderer.setAttribute(elm, newHostAttribute, '');
+    if (!isUndefined(newTokens)) {
+        renderer.setAttribute(elm, newTokens.hostAttribute, '');
     }
 
     // Update the styling tokens present on the context object.
-    context.hostAttribute = newHostAttribute;
-    context.shadowAttribute = newShadowAttribute;
+    context.hostAttribute = newTokens?.hostAttribute;
+    context.shadowAttribute = newTokens?.shadowAttribute;
 }
 
 function evaluateStylesheetsContent(
@@ -104,14 +100,24 @@ function evaluateStylesheetsContent(
 }
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
-    const { stylesheets, stylesheetTokens: tokens } = template;
+    const { stylesheets, stylesheetTokens } = template;
     const { syntheticShadow } = vm.renderer;
 
     let content: string[] = [];
 
-    if (!isUndefined(stylesheets) && !isUndefined(tokens)) {
-        const hostSelector = syntheticShadow ? `[${tokens.hostAttribute}]` : '';
-        const shadowSelector = syntheticShadow ? `[${tokens.shadowAttribute}]` : '';
+    if (!isUndefined(stylesheets) && stylesheets.length !== 0) {
+        let hostSelector;
+        let shadowSelector;
+
+        // Scoping with the tokens is only necessary for synthetic shadow. For both
+        // light DOM elements and native shadow, we just render the CSS as-is.
+        if (syntheticShadow && hasShadow(vm) && !isUndefined(stylesheetTokens)) {
+            hostSelector = `[${stylesheetTokens.hostAttribute}]`;
+            shadowSelector = `[${stylesheetTokens.shadowAttribute}]`;
+        } else {
+            hostSelector = '';
+            shadowSelector = '';
+        }
 
         content = evaluateStylesheetsContent(
             stylesheets,
@@ -127,14 +133,14 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
     const { renderer } = vm;
 
-    if (renderer.syntheticShadow) {
+    if (renderer.syntheticShadow && hasShadow(vm)) {
         for (let i = 0; i < stylesheets.length; i++) {
             renderer.insertGlobalStylesheet(stylesheets[i]);
         }
-
         return null;
     } else {
-        const shadowStyleSheetContent = ArrayJoin.call(stylesheets, '\n');
-        return createShadowStyleVNode(shadowStyleSheetContent);
+        // native shadow or light DOM
+        const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
+        return createInlineStyleVNode(combinedStylesheetContent);
     }
 }

@@ -30,6 +30,16 @@ import {
 import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 
+export interface TemplateStylesheetTokens {
+    /** HTML attribute that need to be applied to the host element. This attribute is used for
+     * the `:host` pseudo class CSS selector. */
+    hostAttribute: string;
+    /** HTML attribute that need to the applied to all the element that the template produces.
+     * This attribute is used for style encapsulation when the engine runs with synthetic
+     * shadow. */
+    shadowAttribute: string;
+}
+
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
 
@@ -38,15 +48,7 @@ export interface Template {
     /** The stylesheet associated with the template. */
     stylesheets?: TemplateStylesheetFactories;
     /** The stylesheet tokens used for synthetic shadow style scoping. */
-    stylesheetTokens?: {
-        /** HTML attribute that need to be applied to the host element. This attribute is used for
-         * the `:host` pseudo class CSS selector. */
-        hostAttribute: string;
-        /** HTML attribute that need to the applied to all the element that the template produces.
-         * This attribute is used for style encapsulation when the engine runs with synthetic
-         * shadow. */
-        shadowAttribute: string;
-    };
+    stylesheetTokens?: TemplateStylesheetTokens;
 }
 
 export let isUpdatingTemplate: boolean = false;
