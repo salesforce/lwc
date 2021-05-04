@@ -1,4 +1,4 @@
-# Shared config
+# Shared config 
 ignore_forks: &ignore_forks
   branches:
     # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
