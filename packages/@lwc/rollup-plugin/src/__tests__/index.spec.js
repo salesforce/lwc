@@ -6,16 +6,9 @@
  */
 const path = require('path');
 const rollup = require('rollup');
-const prettier = require('prettier');
 const rollupCompat = require('rollup-plugin-compat');
 const rollupCompile = require('../index');
 require('jest-utils-lwc-internals');
-
-function pretty(str) {
-    return prettier.format(str, {
-        parser: 'babel',
-    });
-}
 
 const fixturesDir = path.join(__dirname, 'fixtures');
 const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
@@ -28,7 +21,7 @@ describe('default configuration', () => {
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, { compat: false }).then(({ code: actual }) => {
-            expect(pretty(actual)).toMatchFile(
+            expect(actual).toMatchFile(
                 path.join(fixturesDir, 'expected_default_config_simple_app.js')
             );
         });
@@ -47,7 +40,7 @@ describe('default configuration', () => {
             },
         };
         return doRollup(entry, { compat: false }, rollupCompileOptions).then(({ code: actual }) => {
-            expect(pretty(actual)).toMatchFile(
+            expect(actual).toMatchFile(
                 path.join(fixturesDir, 'expected_default_config_simple_app_css_resolver.js')
             );
         });
@@ -59,7 +52,7 @@ describe('default configuration', () => {
             preserveHtmlComments: true,
         };
         return doRollup(entry, { compat: false }, rollupCompileOptions).then(({ code: actual }) => {
-            expect(pretty(actual)).toContain('Application container');
+            expect(actual).toContain('Application container');
         });
     });
 });
@@ -73,7 +66,7 @@ describe('rollup with custom options', () => {
         };
 
         return doRollup(entry, { compat: false }, rollupOptions).then(({ code: actual }) => {
-            expect(pretty(actual)).toMatchFile(
+            expect(actual).toMatchFile(
                 path.join(fixturesDir, 'expected_default_config_simple_app_relative.js')
             );
         });
@@ -84,7 +77,7 @@ describe('rollup in compat mode', () => {
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, { compat: true }).then(({ code: actual }) => {
-            expect(pretty(actual)).toMatchFile(
+            expect(actual).toMatchFile(
                 path.join(fixturesDir, 'expected_compat_config_simple_app.js')
             );
         });
@@ -95,7 +88,7 @@ describe('typescript relative import', () => {
     it(`should resolve to .ts file`, () => {
         const entry = path.join(tsAppDir, 'main.ts');
         return doRollup(entry, { compat: false }).then(({ code: actual }) => {
-            expect(pretty(actual)).toMatchFile(
+            expect(actual).toMatchFile(
                 path.join(fixturesDir, 'expected_default_config_ts_simple_app.js')
             );
         });
