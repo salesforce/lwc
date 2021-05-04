@@ -23,7 +23,7 @@ import {
 
 import { LightningElement } from './base-lightning-element';
 import { globalHTMLProperties } from './attributes';
-import { getAssociatedVM, getAssociatedVMIfPresent, hasShadow, VM } from './vm';
+import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
@@ -218,14 +218,6 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
 // Custom Elements Restrictions:
 // -----------------------------
 
-function reportInvalidSlotMutationInLightDOM(vm: VM): never {
-    throw new Error(
-        `Invalid DOM operation on ${getComponentTag(
-            vm
-        )}. Light DOM component don't allow imperative slotted content.`
-    );
-}
-
 function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -237,7 +229,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
     const originalTextContentDescriptor = getPropertyDescriptor(elm, 'textContent')!;
 
-    const descriptors: PropertyDescriptorMap = {
+    return {
         innerHTML: generateAccessorDescriptor({
             get(this: HTMLElement): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
@@ -283,48 +275,6 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
             },
         }),
     };
-
-    const vm = getAssociatedVM(elm);
-    if (!hasShadow(vm)) {
-        const { appendChild, insertBefore, removeChild, replaceChild } = elm;
-
-        assign(descriptors, {
-            insertBefore: generateDataDescriptor({
-                value(this: Node, newNode: Node, referenceNode: Node) {
-                    if (!isDomMutationAllowed) {
-                        reportInvalidSlotMutationInLightDOM(vm);
-                    }
-                    return insertBefore.call(this, newNode, referenceNode);
-                },
-            }),
-            appendChild: generateDataDescriptor({
-                value(this: Node, aChild: Node) {
-                    if (!isDomMutationAllowed) {
-                        reportInvalidSlotMutationInLightDOM(vm);
-                    }
-                    return appendChild.call(this, aChild);
-                },
-            }),
-            removeChild: generateDataDescriptor({
-                value(this: Node, aChild: Node) {
-                    if (!isDomMutationAllowed) {
-                        reportInvalidSlotMutationInLightDOM(vm);
-                    }
-                    return removeChild.call(this, aChild);
-                },
-            }),
-            replaceChild: generateDataDescriptor({
-                value(this: Node, newChild: Node, oldChild: Node) {
-                    if (!isDomMutationAllowed) {
-                        reportInvalidSlotMutationInLightDOM(vm);
-                    }
-                    return replaceChild.call(this, newChild, oldChild);
-                },
-            }),
-        });
-    }
-
-    return descriptors;
 }
 
 function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {

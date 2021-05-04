@@ -604,6 +604,12 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
 // NOTE: we should probably more this routine to the synthetic shadow folder
 // and get the allocation to be cached by in the elm instead of in the VM
 export function allocateInSlot(vm: VM, children: VNodes) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(
+            isObject(vm.cmpSlots),
+            `When doing manual allocation, there must be a cmpSlots object available.`
+        );
+    }
     const { cmpSlots: oldSlots } = vm;
     const cmpSlots = (vm.cmpSlots = create(null));
     for (let i = 0, len = children.length; i < len; i += 1) {
