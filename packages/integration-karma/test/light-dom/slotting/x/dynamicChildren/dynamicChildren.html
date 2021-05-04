@@ -1,0 +1,7 @@
+<template>
+    <x-container data-id="x-container">
+        <template for:each={numbers} for:item="number">
+            <p key={number} data-id={number}>{number}</p>
+        </template>
+    </x-container>
+</template>

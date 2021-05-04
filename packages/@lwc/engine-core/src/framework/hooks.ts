@@ -13,7 +13,7 @@ import {
     getAssociatedVMIfPresent,
     VM,
 } from './vm';
-import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
+import { VNode, VCustomElement, VElement, VNodes, VFakeSlot } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
 import modProps from './modules/props';
@@ -21,7 +21,12 @@ import modComputedClassName from './modules/computed-class-attr';
 import modComputedStyle from './modules/computed-style-attr';
 import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
-import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
+import {
+    updateDynamicChildren,
+    updateFakeSlotDynamicChildren,
+    updateFakeSlotStaticChildren,
+    updateStaticChildren,
+} from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
 
@@ -149,6 +154,22 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
     );
 }
 
+export function updateFakeSlotChildrenHook(oldVnode: VFakeSlot, vnode: VFakeSlot) {
+    const { children, owner } = vnode;
+    const fn = hasDynamicChildren(children)
+        ? updateFakeSlotDynamicChildren
+        : updateFakeSlotStaticChildren;
+    runWithBoundaryProtection(
+        owner,
+        owner.owner,
+        noop,
+        () => {
+            fn(vnode.start.elm!, vnode.end.elm!, oldVnode.children, children);
+        },
+        noop
+    );
+}
+
 export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.
@@ -222,6 +243,18 @@ export function createChildrenHook(vnode: VElement) {
         if (ch != null) {
             ch.hook.create(ch);
             ch.hook.insert(ch, elm!, null);
+        }
+    }
+}
+
+export function createFakeSlotChildrenHook(vnode: VFakeSlot) {
+    const { children, end } = vnode;
+    for (let j = 0; j < children.length; ++j) {
+        const ch = children[j];
+        if (ch != null) {
+            ch.hook.create(ch);
+            const parentElm = end.elm!.parentNode!;
+            ch.hook.insert(ch, parentElm, end.elm!);
         }
     }
 }

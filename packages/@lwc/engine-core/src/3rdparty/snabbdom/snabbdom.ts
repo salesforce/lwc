@@ -73,7 +73,12 @@ function removeVnodes(parentElm: Node, vnodes: VNodes, startIdx: number, endIdx:
     }
 }
 
-export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
+export function updateDynamicChildren(
+    parentElm: Node,
+    oldCh: VNodes,
+    newCh: VNodes,
+    before: Node | null = null
+) {
     let oldStartIdx = 0;
     let newStartIdx = 0;
     let oldEndIdx = oldCh.length - 1;
@@ -86,7 +91,6 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
     let oldKeyToIdx: any;
     let idxInOld: number;
     let elmToMove: VNode | null | undefined;
-    let before: any;
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
         if (!isVNode(oldStartVnode)) {
             oldStartVnode = oldCh[++oldStartIdx]; // Vnode might have been moved left
@@ -156,7 +160,7 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
             do {
                 n = newCh[++i];
             } while (!isVNode(n) && i < newChEnd);
-            before = isVNode(n) ? n.elm : null;
+            before = isVNode(n) ? n.elm! : before;
             addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx);
         } else {
             removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
@@ -164,19 +168,24 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
     }
 }
 
-export function updateStaticChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
+export function updateStaticChildren(
+    parentElm: Node,
+    oldCh: VNodes,
+    newCh: VNodes,
+    startIndex = 0
+) {
     const oldChLength = oldCh.length;
     const newChLength = newCh.length;
 
     if (oldChLength === 0) {
         // the old list is empty, we can directly insert anything new
-        addVnodes(parentElm, null, newCh, 0, newChLength);
+        addVnodes(parentElm, null, newCh, startIndex, newChLength);
         return;
     }
     if (newChLength === 0) {
         // the old list is nonempty and the new list is empty so we can directly remove all old nodes
         // this is the case in which the dynamic children of an if-directive should be removed
-        removeVnodes(parentElm, oldCh, 0, oldChLength);
+        removeVnodes(parentElm, oldCh, startIndex, oldChLength);
         return;
     }
     // if the old list is not empty, the new list MUST have the same
@@ -204,6 +213,27 @@ export function updateStaticChildren(parentElm: Node, oldCh: VNodes, newCh: VNod
             }
         }
     }
+}
+
+export function updateFakeSlotStaticChildren(
+    startElm: Node,
+    endElm: Node,
+    oldCh: VNodes,
+    newCh: VNodes
+) {
+    const parentElm = startElm.parentNode!;
+    const startIndex = Array.prototype.indexOf.call(parentElm, startElm);
+    updateStaticChildren(parentElm, oldCh, newCh, startIndex);
+}
+
+export function updateFakeSlotDynamicChildren(
+    startElm: Node,
+    endElm: Node,
+    oldCh: VNodes,
+    newCh: VNodes
+) {
+    const parentElm = startElm.parentNode!;
+    updateDynamicChildren(parentElm, oldCh, newCh, endElm);
 }
 
 function patchVnode(oldVnode: VNode, vnode: VNode) {

@@ -69,6 +69,11 @@ export interface VComment extends VNode {
     key: undefined;
 }
 
+export interface VFakeSlot extends VElement {
+    start: VText;
+    end: VText;
+}
+
 export type CustomElementContext = Record<string, Record<string, any>>;
 
 export interface VNodeData {

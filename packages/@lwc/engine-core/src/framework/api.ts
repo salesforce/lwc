@@ -46,6 +46,7 @@ import {
     Key,
     VCustomElement,
     VComment,
+    VFakeSlot,
 } from '../3rdparty/snabbdom/types';
 import { LightningElementConstructor } from './base-lightning-element';
 import {
@@ -63,6 +64,8 @@ import {
     updateChildrenHook,
     allocateChildrenHook,
     markAsDynamicChildren,
+    updateFakeSlotChildrenHook,
+    createFakeSlotChildrenHook,
 } from './hooks';
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -129,6 +132,27 @@ const CommentHook: Hooks<VComment> = {
     remove: removeNodeHook,
 };
 
+const FakeSlotHook: Hooks<VFakeSlot> = {
+    create: (vnode) => {
+        TextHook.create(vnode.start);
+        TextHook.create(vnode.end);
+    },
+    update: (oldVnode, vnode) => {
+        vnode.start.elm = oldVnode.start.elm;
+        vnode.end.elm = oldVnode.end.elm;
+        updateFakeSlotChildrenHook(oldVnode, vnode);
+    },
+    insert: (vnode, parentNode, referenceNode) => {
+        insertNodeHook(vnode.start, parentNode, referenceNode);
+        insertNodeHook(vnode.end, parentNode, referenceNode);
+        createFakeSlotChildrenHook(vnode);
+    },
+    move: (_vnode, _parentNode, _referenceNode) => {}, // same as insert for text nodes
+    remove: (vnode, parentNode) => {
+        TextHook.remove(vnode.start, parentNode);
+        TextHook.remove(vnode.end, parentNode);
+    },
+};
 // insert is called after update, which is used somewhere else (via a module)
 // to mark the vm as inserted, that means we cannot use update as the main channel
 // to rehydrate when dirty, because sometimes the element is not inserted just yet,
@@ -377,11 +401,32 @@ export function s(
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    if (vnode.owner.renderer.syntheticShadow) {
+    if (vnode.owner.renderer.syntheticShadow || !vnode.owner.cmpRoot) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
+    if (!vnode.owner.cmpRoot) {
+        return fs(data, children);
+    }
     return vnode;
+}
+
+// [fs] fake slot
+export function fs(data: ElementCompilerData, children: VNodes): VFakeSlot {
+    const { key } = data;
+    let elm, text;
+    return {
+        sel: '',
+        data,
+        children,
+        text,
+        elm,
+        key,
+        hook: FakeSlotHook,
+        owner: getVMBeingRendered()!,
+        start: t(''),
+        end: t(''),
+    };
 }
 
 // [c]ustom element node
