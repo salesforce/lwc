@@ -146,7 +146,7 @@ if (process.env.COMPAT !== true) {
         const listener = (evt) => {
             eventTargetAtBody = evt.target;
         };
-        beforeEach((done) => {
+        beforeEach(() => {
             parent = NativeShadowParent();
             child = NativeShadowChild();
             container = parent.shadowRoot.querySelector('div');
@@ -159,9 +159,7 @@ if (process.env.COMPAT !== true) {
             const domManual = lwcParent.shadowRoot.querySelector('div');
             domManual.appendChild(parent);
             // Allow for portal elements to be adopted
-            return Promise.resolve().then(() => {
-                done();
-            });
+            return Promise.resolve();
         });
         afterEach(() => {
             document.body.removeEventListener('test', listener);
