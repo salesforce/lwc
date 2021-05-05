@@ -647,7 +647,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
     if (isNull(id)) {
         return null;
     }
-    if (isNull(vmBeingRendered) || hasShadow(vmBeingRendered)) {
+    if (hasShadow(vmBeingRendered!)) {
         return `${id}-${vmBeingRendered!.idx}`; // only transform IDs in shadow DOM
     }
     return id;
