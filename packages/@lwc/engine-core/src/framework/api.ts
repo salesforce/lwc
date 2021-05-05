@@ -672,7 +672,7 @@ export function fid(url: string | undefined | null): string | null | undefined {
         return null;
     }
     // Apply transformation only for fragment-only-urls, and only in shadow DOM
-    if (/^#/.test(url) && (isNull(vmBeingRendered) || hasShadow(vmBeingRendered))) {
+    if (/^#/.test(url) && hasShadow(vmBeingRendered!)) {
         return `${url}-${vmBeingRendered!.idx}`;
     }
     return url;
