@@ -15,7 +15,7 @@ function testAssignedElements(testDescription, getContainer) {
             nativeSlottedBasic = NativeSlottedBasic();
             container.appendChild(nativeSlottedBasic);
             // Allow for portal elements to be adopted
-            return Promise.resolve().then(() => {
+            Promise.resolve().then(() => {
                 done();
             });
         });

@@ -11,13 +11,11 @@ function testAssignedNodes(testDescription, getContainer) {
 
     describe(testDescription, () => {
         let nativeSlottedBasic;
-        beforeEach((done) => {
+        beforeEach(() => {
             nativeSlottedBasic = NativeSlottedBasic();
             container.appendChild(nativeSlottedBasic);
             // Allow for portal elements to be adopted
-            return Promise.resolve().then(() => {
-                done();
-            });
+            return Promise.resolve();
         });
         it('assignedNodes of default slot content', () => {
             const defaultSlot = nativeSlottedBasic.shadowRoot.querySelector('slot');

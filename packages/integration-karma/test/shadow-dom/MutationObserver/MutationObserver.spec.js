@@ -90,7 +90,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
 
-        it('should invoke observer on parent when slotted content is altered', (done) => {
+        it('should invoke observer on parent when slotted content is altered', () => {
             const parent = createElement('x-slotted-child', { is: XSlottedChild });
             container.appendChild(parent);
             const slottedDiv = parent.shadowRoot.querySelector('div.manual');
@@ -103,7 +103,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].target).toBe(slottedDiv);
                 expect(actualMutationRecords[0].addedNodes.length).toBe(1);
                 expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('P');
-                done();
             };
             // Start observing the parent and child shadow trees
             const parentHostSpy = jasmine.createSpy();
@@ -125,7 +124,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
 
-        it('should invoke observer on slot content owner', (done) => {
+        it('should invoke observer on slot content owner', () => {
             const parent = createElement('x-nested-slot-container', { is: XNestedSlotContainer });
             container.appendChild(parent);
             const slottedDiv = parent.shadowRoot.querySelector('div.manual');
@@ -138,7 +137,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].target).toBe(slottedDiv);
                 expect(actualMutationRecords[0].addedNodes.length).toBe(1);
                 expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('P');
-                done();
             };
             // Start observing the parent and child shadow trees
             // x-nested-slot-container
@@ -368,7 +366,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             return Promise.all([promise1, promise2]);
         });
 
-        it('should retarget MutationRecord for mutations directly under shadowRoot - added nodes', (done) => {
+        it('should retarget MutationRecord for mutations directly under shadowRoot - added nodes', () => {
             const host = createElement('x-template-mutations', { is: XTemplateMutations });
             container.appendChild(host);
 
@@ -380,7 +378,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('DIV');
                 expect(actualMutationRecords[0].removedNodes.length).toBe(0);
                 expect(actualMutationRecords[0].type).toBe('childList');
-                done();
             };
 
             const globalObserverSpy = jasmine.createSpy();
@@ -399,7 +396,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
 
-        it('should retarget MutationRecord for mutations directly under shadowRoot - removed nodes', (done) => {
+        it('should retarget MutationRecord for mutations directly under shadowRoot - removed nodes', () => {
             const host = createElement('x-template-mutations', { is: XTemplateMutations });
             container.appendChild(host);
 
@@ -410,7 +407,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].addedNodes.length).toBe(0);
                 expect(actualMutationRecords[0].removedNodes.length).toBe(1);
                 expect(actualMutationRecords[0].removedNodes[0].tagName).toBe('DIV');
-                done();
             };
 
             const globalObserverSpy = jasmine.createSpy();
