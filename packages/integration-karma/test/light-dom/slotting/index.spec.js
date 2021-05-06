@@ -2,7 +2,6 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Slotted from 'x/slotted';
 import Container from 'x/container';
-import Shadow from 'x/shadow';
 
 describe('slotted content', () => {
     beforeEach(() => {
@@ -52,16 +51,5 @@ describe('imperative slotted content', () => {
                 /Invalid DOM operation on <x-container>\. Light DOM component don't allow imperative slotted content\./
             );
         });
-    });
-});
-
-describe('in shadow dom', () => {
-    it('appending to host should not throw error', () => {
-        expect(() => {
-            const element = createElement('x-container', { is: Shadow });
-            document.body.appendChild(element);
-        }).not.toThrowError(
-            /Invalid DOM operation on <x-container>\. Light DOM component don't allow imperative slotted content\./
-        );
     });
 });
