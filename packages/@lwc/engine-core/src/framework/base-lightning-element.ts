@@ -222,12 +222,6 @@ export const LightningElement: LightningElementConstructor = function (
     associateVM(component, vm);
     associateVM(elm, vm);
 
-    // Adding extra guard rails in DEV mode.
-    if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(elm);
-        patchComponentWithRestrictions(component);
-    }
-
     if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
         assert.invariant(
             !isFalse(ctor.shadow),
@@ -241,6 +235,12 @@ export const LightningElement: LightningElementConstructor = function (
     // doesn't yet declare shadow to be true, leaving it undefined.
     if (!isFalse(ctor.shadow)) {
         attachShadow(vm);
+    }
+
+    // Adding extra guard rails in DEV mode.
+    if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(elm);
+        patchComponentWithRestrictions(component);
     }
 
     return this;
