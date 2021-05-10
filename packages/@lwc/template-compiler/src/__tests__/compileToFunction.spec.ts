@@ -10,12 +10,14 @@ function mockRenderApi() {
     let id = 0;
     const calls = [];
 
-    const mock = (name) => (...args) => {
-        id++;
+    const mock =
+        (name) =>
+        (...args) => {
+            id++;
 
-        calls.push([`${name}#${id}`, args]);
-        return `#${id}`;
-    };
+            calls.push([`${name}#${id}`, args]);
+            return `#${id}`;
+        };
 
     const apis = {
         t: mock('api_text'),

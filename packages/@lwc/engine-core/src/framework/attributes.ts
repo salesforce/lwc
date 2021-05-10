@@ -41,16 +41,14 @@ export const globalHTMLProperties: {
     },
     className: {
         attribute: 'class',
-        error:
-            'Using the `className` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the `classList` API instead.',
+        error: 'Using the `className` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the `classList` API instead.',
     },
     contentEditable: {
         attribute: 'contenteditable',
     },
     dataset: {
         readOnly: true,
-        error:
-            "Using the `dataset` property is an anti-pattern because it can't be statically analyzed. Expose each property individually using the `@api` decorator instead.",
+        error: "Using the `dataset` property is an anti-pattern because it can't be statically analyzed. Expose each property individually using the `@api` decorator instead.",
     },
     dir: {
         attribute: 'dir',

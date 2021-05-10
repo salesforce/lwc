@@ -124,8 +124,7 @@ pluginTester({
             `,
         },
         'should throw an error if runtimeFlags are imported': {
-            error:
-                'Invalid import of "runtimeFlags" from "@lwc/features". Use the default export from "@lwc/features" instead of the "runtimeFlags" export when implementing your feature behind a flag.',
+            error: 'Invalid import of "runtimeFlags" from "@lwc/features". Use the default export from "@lwc/features" instead of the "runtimeFlags" export when implementing your feature behind a flag.',
             code: `
                 import { runtimeFlags } from '@lwc/features';
 
@@ -145,8 +144,7 @@ pluginTester({
             `,
         },
         'should throw an error if the flag name is formatted incorrectly': {
-            error:
-                'Invalid feature flag "enable_the_beer". Flag name must only be composed of uppercase letters and underscores.',
+            error: 'Invalid feature flag "enable_the_beer". Flag name must only be composed of uppercase letters and underscores.',
             code: `
                 import featureFlags from '@lwc/features';
 

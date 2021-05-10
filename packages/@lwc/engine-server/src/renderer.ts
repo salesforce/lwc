@@ -122,7 +122,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
             delegatesFocus: !!config.delegatesFocus,
         };
 
-        return (element.shadowRoot as any) as HostNode;
+        return element.shadowRoot as any as HostNode;
     },
 
     getProperty(node, key) {
