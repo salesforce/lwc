@@ -647,7 +647,10 @@ export function gid(id: string | undefined | null): string | null | undefined {
     if (isNull(id)) {
         return null;
     }
-    return `${id}-${vmBeingRendered!.idx}`;
+    if (hasShadow(vmBeingRendered!)) {
+        return `${id}-${vmBeingRendered!.idx}`; // only transform IDs in shadow DOM
+    }
+    return id;
 }
 
 // [f]ragment [id] function
@@ -668,8 +671,8 @@ export function fid(url: string | undefined | null): string | null | undefined {
     if (isNull(url)) {
         return null;
     }
-    // Apply transformation only for fragment-only-urls
-    if (/^#/.test(url)) {
+    // Apply transformation only for fragment-only-urls, and only in shadow DOM
+    if (/^#/.test(url) && hasShadow(vmBeingRendered!)) {
         return `${url}-${vmBeingRendered!.idx}`;
     }
     return url;
