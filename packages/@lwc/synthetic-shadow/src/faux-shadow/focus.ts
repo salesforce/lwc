@@ -129,7 +129,7 @@ export function hostElementFocus(this: HTMLElement) {
     }
 
     // If the root node is not the host element then it's either the document or a shadow root.
-    const rootNode = (_rootNode as unknown) as DocumentOrShadowRoot;
+    const rootNode = _rootNode as unknown as DocumentOrShadowRoot;
     if (rootNode.activeElement === this) {
         // The focused element should not change if the focus method is invoked
         // on the shadow-including ancestor of the currently focused element.
@@ -146,7 +146,7 @@ export function hostElementFocus(this: HTMLElement) {
         // @ts-ignore type-mismatch
         focusable.focus.apply(focusable, arguments);
         // Get the root node of the current focusable in case it was slotted.
-        const currentRootNode = (focusable.getRootNode() as unknown) as DocumentOrShadowRoot;
+        const currentRootNode = focusable.getRootNode() as unknown as DocumentOrShadowRoot;
         didFocus = currentRootNode.activeElement === focusable;
     }
 }

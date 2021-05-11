@@ -202,8 +202,7 @@ pluginTester({
             `,
         },
         'should throw an error if the flag name is formatted incorrectly': {
-            error:
-                'Invalid feature flag "enable_the_beer". Flag name must only be composed of uppercase letters and underscores.',
+            error: 'Invalid feature flag "enable_the_beer". Flag name must only be composed of uppercase letters and underscores.',
             code: `
                 import featureFlags from '@lwc/features';
 

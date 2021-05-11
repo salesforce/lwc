@@ -101,23 +101,12 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     }
 
     const decoratorsMeta = getDecoratorsMeta(Ctor);
-    const {
-        apiFields,
-        apiFieldsConfig,
-        apiMethods,
-        wiredFields,
-        wiredMethods,
-        observedFields,
-    } = decoratorsMeta;
+    const { apiFields, apiFieldsConfig, apiMethods, wiredFields, wiredMethods, observedFields } =
+        decoratorsMeta;
     const proto = Ctor.prototype;
 
-    let {
-        connectedCallback,
-        disconnectedCallback,
-        renderedCallback,
-        errorCallback,
-        render,
-    } = proto;
+    let { connectedCallback, disconnectedCallback, renderedCallback, errorCallback, render } =
+        proto;
     const superProto = getCtorProto(Ctor);
     const superDef =
         superProto !== LightningElement ? getComponentInternalDef(superProto) : lightingElementDef;

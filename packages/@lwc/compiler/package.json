@@ -23,7 +23,7 @@
         "dist/"
     ],
     "dependencies": {
-        "@babel/core": "~7.13.8",
+        "@babel/core": "~7.14.0",
         "@babel/plugin-proposal-class-properties": "~7.13.0",
         "@babel/plugin-proposal-object-rest-spread": "~7.13.8",
         "@lwc/babel-plugin-component": "2.0.0-rc.4",

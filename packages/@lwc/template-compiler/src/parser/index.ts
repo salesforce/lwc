@@ -1046,9 +1046,12 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     // TODO [#1286]: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
-    function normalizeLocation(
-        location?: parse5.MarkupData.Location
-    ): { line: number; column: number; start: number; length: number } {
+    function normalizeLocation(location?: parse5.MarkupData.Location): {
+        line: number;
+        column: number;
+        start: number;
+        length: number;
+    } {
         let line = 0;
         let column = 0;
         let start = 0;
