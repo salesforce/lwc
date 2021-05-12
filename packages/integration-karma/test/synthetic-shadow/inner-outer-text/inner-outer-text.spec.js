@@ -2,21 +2,12 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from 'x/container';
 
 if (!process.env.NATIVE_SHADOW) {
-    describe('DISABLE_INNER_OUTER_TEXT_PATCH flag', () => {
-        const elm = createElement('x-container', { is: Container });
-        document.body.appendChild(elm);
+    beforeAll(() => {
+        setFeatureFlagForTest('ENABLE_INNER_OUTER_TEXT_PATCH', true);
+    });
 
-        it('should get innerText of custom element when DISABLE_INNER_OUTER_TEXT_PATCH = true', () => {
-            setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', true);
-            expect(elm.innerText).not.toBe('');
-            setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', false);
-        });
-
-        it('should get outerText of custom element when DISABLE_INNER_OUTER_TEXT_PATCH = true', () => {
-            setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', true);
-            expect(elm.outerText).not.toBe('');
-            setFeatureFlagForTest('DISABLE_INNER_OUTER_TEXT_PATCH', false);
-        });
+    afterAll(() => {
+        setFeatureFlagForTest('ENABLE_INNER_OUTER_TEXT_PATCH', false);
     });
 
     describe('innerText', () => {
