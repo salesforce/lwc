@@ -47,8 +47,9 @@ if (!process.env.NATIVE_SHADOW) {
             child.querySelector('div').appendChild(document.createElement('h1'));
             grandchild.shadowRoot.querySelector('div').appendChild(document.createElement('h1'));
 
-            // wait microtask for mutation observer to take effect
-            return Promise.resolve().then(() => {
+            // Wait for mutation observer to take effect. The reason we do rAF instead of a
+            // microtask is because of an apparent bug in old Firefox/IE/Safari in compat mode.
+            return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
                 expect(getComputedStyle(elm.shadowRoot.querySelector('div > h1')).color).toEqual(
                     'rgb(0, 128, 0)'
                 );
