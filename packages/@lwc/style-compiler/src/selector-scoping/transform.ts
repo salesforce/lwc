@@ -13,7 +13,7 @@ import {
     Node,
     Pseudo,
     Tag,
-    attribute,
+    className,
 } from 'postcss-selector-parser';
 
 import validateSelectors from './validate';
@@ -72,10 +72,8 @@ function scopeSelector(selector: Selector) {
                 }
             }
 
-            const shadowAttribute = attribute({
-                attribute: SHADOW_ATTRIBUTE,
-                value: undefined,
-                raws: {},
+            const shadowAttribute = className({
+                value: SHADOW_ATTRIBUTE,
             });
 
             if (nodeToScope) {
@@ -105,10 +103,8 @@ function transformHost(selector: Selector) {
         const hostIndex = selector.index(hostNode);
 
         // Swap the :host pseudo-class with the host scoping token
-        const hostAttribute = attribute({
-            attribute: HOST_ATTRIBUTE,
-            value: undefined,
-            raws: {},
+        const hostAttribute = className({
+            value: HOST_ATTRIBUTE,
         });
         hostNode.replaceWith(hostAttribute);
 

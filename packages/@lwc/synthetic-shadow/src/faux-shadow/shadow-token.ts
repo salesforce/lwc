@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined, defineProperty } from '@lwc/shared';
-import { setAttribute, removeAttribute } from '../env/element';
 
 const ShadowTokenKey = '$shadowToken$';
 const ShadowTokenPrivateKey = '$$ShadowTokenKey$$';
@@ -29,11 +28,12 @@ export function setShadowToken(node: Node, shadowToken: string | undefined) {
 defineProperty(Element.prototype, ShadowTokenKey, {
     set(this: Element, shadowToken: string | undefined) {
         const oldShadowToken = (this as any)[ShadowTokenPrivateKey];
+        const classes = this.classList;
         if (!isUndefined(oldShadowToken) && oldShadowToken !== shadowToken) {
-            removeAttribute.call(this, oldShadowToken);
+            classes.remove(oldShadowToken);
         }
         if (!isUndefined(shadowToken)) {
-            setAttribute.call(this, shadowToken, '');
+            classes.add(shadowToken);
         }
         (this as any)[ShadowTokenPrivateKey] = shadowToken;
     },

@@ -183,18 +183,18 @@ function tokenizeCssSelector(data: string): Token[] {
     const max = data.length;
 
     while (pos < max) {
-        if (data.indexOf(`[${HOST_ATTRIBUTE}]`, pos) === pos) {
+        if (data.indexOf(`.${HOST_ATTRIBUTE}`, pos) === pos) {
             tokens.push({ type: TokenType.identifier, value: HOST_SELECTOR_IDENTIFIER });
 
-            next += HOST_ATTRIBUTE.length + 2;
-        } else if (data.indexOf(`[${SHADOW_ATTRIBUTE}]`, pos) === pos) {
+            next += HOST_ATTRIBUTE.length + 1;
+        } else if (data.indexOf(`.${SHADOW_ATTRIBUTE}`, pos) === pos) {
             tokens.push({ type: TokenType.identifier, value: SHADOW_SELECTOR_IDENTIFIER });
 
-            next += SHADOW_ATTRIBUTE.length + 2;
+            next += SHADOW_ATTRIBUTE.length + 1;
         } else {
             next += 1;
 
-            while (data.charAt(next) !== '[' && next < max) {
+            while (data.charAt(next) !== '.' && next < max) {
                 next++;
             }
 
