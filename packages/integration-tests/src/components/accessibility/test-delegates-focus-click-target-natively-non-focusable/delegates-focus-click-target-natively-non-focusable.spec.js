@@ -30,7 +30,7 @@ describe('when the click target is natively non-focusable', () => {
 
         // The invalid behavior described in issue #1382 causes focus to land on input.tail
         const activeElement = await browser.activeElementShadowDeep();
-        assert.strictEqual(await activeElement.getAttribute('class'), 'integration-child-button');
+        assert.match(await activeElement.getAttribute('class'), /\bintegration-child-button\b/);
     });
 
     it('should apply focus to natively focusable parent (button) when click target is span element', async () => {
@@ -50,6 +50,6 @@ describe('when the click target is natively non-focusable', () => {
 
         // The invalid behavior described in issue #1382 causes focus to land on input.tail
         const activeElement = await browser.activeElementShadowDeep();
-        assert.strictEqual(await activeElement.getAttribute('class'), 'span-button');
+        assert.match(await activeElement.getAttribute('class'), /\bspan-button\b/);
     });
 });
