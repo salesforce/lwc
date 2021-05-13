@@ -4,6 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-export const HOST_ATTRIBUTE = '__hostAttribute__';
+export const HOST_CLASS = '__hostClass__';
 
-export const SHADOW_ATTRIBUTE = '__shadowAttribute__';
+export const SHADOW_CLASS = '__shadowClass__';

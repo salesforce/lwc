@@ -49,9 +49,9 @@ export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
     let newTokens: TemplateStylesheetTokens | undefined;
 
     // Reset the styling token applied to the host element.
-    const oldHostAttribute = context.hostAttribute;
-    if (!isUndefined(oldHostAttribute)) {
-        renderer.getClassList(elm).remove(oldHostAttribute);
+    const oldHostClass = context.hostClass;
+    if (!isUndefined(oldHostClass)) {
+        renderer.getClassList(elm).remove(oldHostClass);
     }
 
     // Apply the new template styling token to the host element, if the new template has any
@@ -61,12 +61,12 @@ export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
     }
 
     if (!isUndefined(newTokens)) {
-        renderer.getClassList(elm).add(newTokens.hostAttribute);
+        renderer.getClassList(elm).add(newTokens.hostClass);
     }
 
     // Update the styling tokens present on the context object.
-    context.hostAttribute = newTokens?.hostAttribute;
-    context.shadowAttribute = newTokens?.shadowAttribute;
+    context.hostClass = newTokens?.hostClass;
+    context.shadowClass = newTokens?.shadowClass;
 }
 
 function evaluateStylesheetsContent(
@@ -112,8 +112,8 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
         // Scoping with the tokens is only necessary for synthetic shadow. For both
         // light DOM elements and native shadow, we just render the CSS as-is.
         if (syntheticShadow && hasShadow(vm) && !isUndefined(stylesheetTokens)) {
-            hostSelector = `.${stylesheetTokens.hostAttribute}`;
-            shadowSelector = `.${stylesheetTokens.shadowAttribute}`;
+            hostSelector = `.${stylesheetTokens.hostClass}`;
+            shadowSelector = `.${stylesheetTokens.shadowClass}`;
         } else {
             hostSelector = '';
             shadowSelector = '';

@@ -103,7 +103,7 @@ export function fallbackElmHook(elm: Element, vnode: VElement) {
         const {
             data: { context },
         } = vnode;
-        const { shadowAttribute } = owner.context;
+        const { shadowClass } = owner.context;
         if (
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
@@ -114,7 +114,7 @@ export function fallbackElmHook(elm: Element, vnode: VElement) {
         }
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.
-        setElementShadowToken(elm, shadowAttribute);
+        setElementShadowToken(elm, shadowClass);
     }
     if (process.env.NODE_ENV !== 'production') {
         const {
@@ -195,10 +195,10 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     const { sel, mode, ctor, owner } = vnode;
     const def = getComponentInternalDef(ctor);
     if (isTrue(owner.renderer.syntheticShadow)) {
-        const { shadowAttribute } = owner.context;
+        const { shadowClass } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.
-        setElementShadowToken(elm, shadowAttribute);
+        setElementShadowToken(elm, shadowClass);
     }
     createVM(elm, def, {
         mode,

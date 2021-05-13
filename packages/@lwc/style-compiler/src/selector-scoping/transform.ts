@@ -19,7 +19,7 @@ import {
 import validateSelectors from './validate';
 
 import { isDirPseudoClass } from '../utils/rtl';
-import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
+import { SHADOW_CLASS, HOST_CLASS } from '../utils/selectors-scoping';
 import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
 
 type ChildNode = Exclude<Node, Selector>;
@@ -72,17 +72,17 @@ function scopeSelector(selector: Selector) {
                 }
             }
 
-            const shadowAttribute = className({
-                value: SHADOW_ATTRIBUTE,
+            const shadowClass = className({
+                value: SHADOW_CLASS,
             });
 
             if (nodeToScope) {
                 // Add the scoping attribute right after the node scope
-                selector.insertAfter(nodeToScope, shadowAttribute);
+                selector.insertAfter(nodeToScope, shadowClass);
             } else {
                 // Add the scoping token in the first position of the compound selector as a fallback
                 // when there is no node to scope. For example: ::after {}
-                selector.insertBefore(compoundSelector[0], shadowAttribute);
+                selector.insertBefore(compoundSelector[0], shadowClass);
             }
         }
     }
@@ -103,10 +103,10 @@ function transformHost(selector: Selector) {
         const hostIndex = selector.index(hostNode);
 
         // Swap the :host pseudo-class with the host scoping token
-        const hostAttribute = className({
-            value: HOST_ATTRIBUTE,
+        const hostClass = className({
+            value: HOST_CLASS,
         });
-        hostNode.replaceWith(hostAttribute);
+        hostNode.replaceWith(hostClass);
 
         // Generate a unique contextualized version of the selector for each selector pass as argument
         // to the :host

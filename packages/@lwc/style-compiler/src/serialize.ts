@@ -9,7 +9,7 @@ import postcssValueParser from 'postcss-value-parser';
 
 import { Config } from './index';
 import { isImportMessage, isVarFunctionMessage } from './utils/message';
-import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
+import { HOST_CLASS, SHADOW_CLASS } from './utils/selectors-scoping';
 
 enum TokenType {
     text = 'text',
@@ -183,14 +183,14 @@ function tokenizeCssSelector(data: string): Token[] {
     const max = data.length;
 
     while (pos < max) {
-        if (data.indexOf(`.${HOST_ATTRIBUTE}`, pos) === pos) {
+        if (data.indexOf(`.${HOST_CLASS}`, pos) === pos) {
             tokens.push({ type: TokenType.identifier, value: HOST_SELECTOR_IDENTIFIER });
 
-            next += HOST_ATTRIBUTE.length + 1;
-        } else if (data.indexOf(`.${SHADOW_ATTRIBUTE}`, pos) === pos) {
+            next += HOST_CLASS.length + 1;
+        } else if (data.indexOf(`.${SHADOW_CLASS}`, pos) === pos) {
             tokens.push({ type: TokenType.identifier, value: SHADOW_SELECTOR_IDENTIFIER });
 
-            next += SHADOW_ATTRIBUTE.length + 1;
+            next += SHADOW_CLASS.length + 1;
         } else {
             next += 1;
 

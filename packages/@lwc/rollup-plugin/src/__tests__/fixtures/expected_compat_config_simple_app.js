@@ -89,8 +89,8 @@
   }
 
   __setKey(tmpl$1, "stylesheetTokens", {
-    hostAttribute: "x-foo_foo-host",
-    shadowAttribute: "x-foo_foo"
+    hostClass: "x-foo_foo-host",
+    shadowClass: "x-foo_foo"
   });
 
   function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var _getPrototypeOf2; var NewTarget = (_getPrototypeOf2 = _getPrototypeOf(this), _getPrototypeOf2._ES5ProxyType ? _getPrototypeOf2.get("constructor") : _getPrototypeOf2.constructor); result = __callKey3(Reflect, "construct", Super, arguments, NewTarget); } else { result = __callKey2(Super, "apply", this, arguments); } return _possibleConstructorReturn(this, result); }; }
@@ -154,8 +154,8 @@
   __setKey(tmpl, "stylesheets", []);
 
   __setKey(tmpl, "stylesheetTokens", {
-    hostAttribute: "x-app_app-host",
-    shadowAttribute: "x-app_app"
+    hostClass: "x-app_app-host",
+    shadowClass: "x-app_app"
   });
 
   function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var _getPrototypeOf2; var NewTarget = (_getPrototypeOf2 = _getPrototypeOf(this), _getPrototypeOf2._ES5ProxyType ? _getPrototypeOf2.get("constructor") : _getPrototypeOf2.constructor); result = __callKey3(Reflect, "construct", Super, arguments, NewTarget); } else { result = __callKey2(Super, "apply", this, arguments); } return _possibleConstructorReturn(this, result); }; }

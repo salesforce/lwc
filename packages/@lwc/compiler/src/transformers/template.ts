@@ -72,8 +72,8 @@ function serialize(
     buffer += `}\n`;
 
     buffer += `tmpl.stylesheetTokens = {\n`;
-    buffer += `  hostAttribute: "${scopingAttribute}-host",\n`;
-    buffer += `  shadowAttribute: "${scopingAttribute}"\n`;
+    buffer += `  hostClass: "${scopingAttribute}-host",\n`;
+    buffer += `  shadowClass: "${scopingAttribute}"\n`;
     buffer += `};\n`;
 
     return buffer;

@@ -24,8 +24,8 @@
       tmpl$1.stylesheets.push.apply(tmpl$1.stylesheets, _implicitStylesheets);
     }
     tmpl$1.stylesheetTokens = {
-      hostAttribute: "x-foo_foo-host",
-      shadowAttribute: "x-foo_foo"
+      hostClass: "x-foo_foo-host",
+      shadowClass: "x-foo_foo"
     };
 
     class Foo extends lwc.LightningElement {
@@ -65,8 +65,8 @@
     var _tmpl = lwc.registerTemplate(tmpl);
     tmpl.stylesheets = [];
     tmpl.stylesheetTokens = {
-      hostAttribute: "x-app_app-host",
-      shadowAttribute: "x-app_app"
+      hostClass: "x-app_app-host",
+      shadowClass: "x-app_app"
     };
 
     class App extends lwc.LightningElement {

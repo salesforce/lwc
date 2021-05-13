@@ -31,13 +31,13 @@ import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } f
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 
 export interface TemplateStylesheetTokens {
-    /** HTML attribute that need to be applied to the host element. This attribute is used for
+    /** HTML class that need to be applied to the host element. This class is used for
      * the `:host` pseudo class CSS selector. */
-    hostAttribute: string;
-    /** HTML attribute that need to the applied to all the element that the template produces.
-     * This attribute is used for style encapsulation when the engine runs with synthetic
+    hostClass: string;
+    /** HTML class that need to the applied to all the element that the template produces.
+     * This class is used for style encapsulation when the engine runs with synthetic
      * shadow. */
-    shadowAttribute: string;
+    shadowClass: string;
 }
 
 export interface Template {

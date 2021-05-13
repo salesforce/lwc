@@ -67,9 +67,9 @@ export enum VMState {
 
 export interface Context {
     /** The attribute name used on the host element to scope the style. */
-    hostAttribute: string | undefined;
+    hostClass: string | undefined;
     /** The attribute name used on all the elements rendered in the shadow tree to scope the style. */
-    shadowAttribute: string | undefined;
+    shadowClass: string | undefined;
     /** The VNode injected in all the shadow trees to apply the associated component stylesheets. */
     styleVNode: VNode | null;
     /** Object used by the template function to store information that can be reused between
@@ -266,8 +266,8 @@ export function createVM<HostNode, HostElement>(
         cmpTemplate: null,
 
         context: {
-            hostAttribute: undefined,
-            shadowAttribute: undefined,
+            hostClass: undefined,
+            shadowClass: undefined,
             styleVNode: null,
             tplCache: EmptyObject,
             wiredConnecting: EmptyArray,
