@@ -38,9 +38,9 @@ if (!process.env.NATIVE_SHADOW) {
                 'x-grandchild_grandchild'
             );
             expect(grandchild.shadowRoot.querySelector('div').$domManual$).toEqual(true);
-            expect(getComputedStyle(grandchild.shadowRoot.querySelector('h1')).opacity).toEqual(
-                '0.9'
-            );
+            expect(
+                getComputedStyle(grandchild.shadowRoot.querySelector('h1')).outlineColor
+            ).toEqual('rgb(0, 255, 255)');
 
             // append to lwc:dom="manual" containers
             elm.shadowRoot.querySelector('div').appendChild(document.createElement('h1'));
@@ -56,8 +56,8 @@ if (!process.env.NATIVE_SHADOW) {
                     'rgb(255, 0, 0)'
                 );
                 expect(
-                    getComputedStyle(grandchild.shadowRoot.querySelector('div > h1')).opacity
-                ).toEqual('0.9');
+                    getComputedStyle(grandchild.shadowRoot.querySelector('div > h1')).outlineColor
+                ).toEqual('rgb(0, 255, 255)');
             });
         });
     });
