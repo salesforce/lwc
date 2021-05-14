@@ -23,7 +23,7 @@ describe('innerText computations in input click handler', () => {
         await browser.url(URL);
     });
 
-    it('should compute input.innerText in click handler without the input becoming unusable', async () => {
+    it('should allow to type in input when input.innerText is computed in the handler', async () => {
         const target = await browser.shadowDeep$(
             'integration-inner-text',
             'input.handler-computes-inner-text-input'
@@ -36,7 +36,7 @@ describe('innerText computations in input click handler', () => {
         assert.strictEqual(actual, 'test value');
     });
 
-    it('should compute div.innerText in click handler without the input becoming unusable', async () => {
+    it('should allow to type in input when (other element) div.innerText is computed in the handler', async () => {
         const target = await browser.shadowDeep$(
             'integration-inner-text',
             'input.handler-computes-inner-text-div'
