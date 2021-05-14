@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid import statement, imports are not allowed in *.scoped.css files.",
+    "column": 1,
+    "line": 1
+}

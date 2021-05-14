@@ -12,8 +12,10 @@ import {
     isArray,
     isFunction,
     isNull,
+    isTrue,
     isUndefined,
     toString,
+    KEY__SCOPED_CSS
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
@@ -22,7 +24,6 @@ import { RenderAPI } from './api';
 import {
     resetComponentRoot,
     runWithBoundaryProtection,
-    ShadowMode,
     SlotSet,
     TemplateCache,
     VM,
@@ -34,20 +35,10 @@ import {
     TemplateStylesheetFactories,
     createStylesheet,
     getStylesheetsContent,
-    updateSyntheticShadowAttributes,
+    updateStylesheetToken,
 } from './stylesheet';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-
-export interface TemplateStylesheetTokens {
-    /** HTML attribute that need to be applied to the host element. This attribute is used for
-     * the `:host` pseudo class CSS selector. */
-    hostAttribute: string;
-    /** HTML attribute that need to the applied to all the element that the template produces.
-     * This attribute is used for style encapsulation when the engine runs with synthetic
-     * shadow. */
-    shadowAttribute: string;
-}
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -56,8 +47,8 @@ export interface Template {
     slots?: string[];
     /** The stylesheet associated with the template. */
     stylesheets?: TemplateStylesheetFactories;
-    /** The stylesheet tokens used for synthetic shadow style scoping. */
-    stylesheetTokens?: TemplateStylesheetTokens;
+    /** The string used for synthetic shadow style scoping and light DOM style scoping. */
+    stylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
 }
@@ -113,6 +104,10 @@ function validateLightDomTemplate(template: Template, vm: VM) {
             isUndefined(template.renderMode),
             `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive or set it to 'lwc:render-mode="shadow"`
         );
+        assert.isFalse(
+            computeHasScopedStyles(template),
+            `Shadow DOM components template can't use scoped styles (*.scoped.css). Use a regular *.css file.`
+        );
     }
 }
 
@@ -143,7 +138,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         },
         () => {
             // job
-            const { component, context, cmpSlots, cmpTemplate, tro, shadowMode } = vm;
+            const { component, context, cmpSlots, cmpTemplate, tro } = vm;
             tro.observe(() => {
                 // Reset the cache memoizer for template when needed.
                 if (html !== cmpTemplate) {
@@ -174,10 +169,11 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                     // Create a brand new template cache for the swapped templated.
                     context.tplCache = create(null);
 
+                    // Set the computeHasScopedStyles property in the context, to avoid recomputing it repeatedly.
+                    context.hasScopedStyles = computeHasScopedStyles(html);
+
                     // Update the synthetic shadow attributes on the host element if necessary.
-                    if (shadowMode === ShadowMode.Synthetic) {
-                        updateSyntheticShadowAttributes(vm, html);
-                    }
+                    updateStylesheetToken(vm, html);
 
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.
@@ -224,4 +220,16 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         );
     }
     return vnodes;
+}
+
+export function computeHasScopedStyles(template: Template | null): boolean {
+    const stylesheets = template?.stylesheets;
+    if (!isUndefined(stylesheets) && stylesheets.length !== 0) {
+        for (let i = 0; i < stylesheets.length; i++) {
+            if (isTrue((stylesheets[i] as any)[KEY__SCOPED_CSS])) {
+                return true;
+            }
+        }
+    }
+    return false;
 }

@@ -66,6 +66,7 @@ export interface TransformOptions {
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
     preserveHtmlComments?: boolean;
+    cssScopeToken?: string;
 }
 
 type RequiredTransformOptions = Omit<TransformOptions, 'name' | 'namespace'>;
@@ -155,5 +156,5 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         stylesheetConfig,
         outputConfig,
         experimentalDynamicComponent,
-    };
+    } as NormalizedTransformOptions;
 }

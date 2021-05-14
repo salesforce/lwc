@@ -7,6 +7,7 @@
 import postcss, { Result, Declaration } from 'postcss';
 import postcssValueParser from 'postcss-value-parser';
 import matchAll from 'string.prototype.matchall';
+import { KEY__SCOPED_CSS } from '@lwc/shared';
 import { Config } from './index';
 import { isImportMessage, isVarFunctionMessage } from './utils/message';
 import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
@@ -57,9 +58,22 @@ export default function serialize(result: Result, config: Config): string {
 
     if (serializedStyle) {
         // inline function
-        buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
-        buffer += `  return ${serializedStyle};\n`;
-        buffer += `}\n`;
+        if (config.scopeToken) {
+            // light DOM scoped CSS, the string is always exactly the same
+            // TODO [#2368]: this could be made more efficient by just directly putting a string here
+            buffer += `function stylesheet() {\n`;
+            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = ".${config.scopeToken}-host";\n`;
+            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = ".${config.scopeToken}";\n`;
+            buffer += `  var ${SHADOW_DOM_ENABLED_IDENTIFIER} = false;\n`;
+            buffer += `  return ${serializedStyle};\n`;
+            buffer += `}\n`;
+            buffer += `stylesheet.${KEY__SCOPED_CSS} = true;\n`;
+        } else {
+            // shadow DOM or non-scoped light DOM styles
+            buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
+            buffer += `  return ${serializedStyle};\n`;
+            buffer += `}\n`;
+        }
 
         // add import at the end
         stylesheetList.push(STYLESHEET_IDENTIFIER);
