@@ -7,7 +7,7 @@ export default class InnerText extends LightningElement {
         this._innerText = evt.target.innerText;
     }
 
-    computeDivInnerText(evt) {
-        this._innerText = evt.target.innerText;
+    computeDivInnerText() {
+        this._innerText = this.template.querySelector('div').innerText;
     }
 }
