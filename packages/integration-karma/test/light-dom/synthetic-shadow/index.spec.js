@@ -10,56 +10,32 @@ if (!process.env.NATIVE_SHADOW) {
         afterEach(() => {
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         });
-        it('shadowToken and domManual are not set for shadow components', () => {
+        it('shadow scoping tokens are not set for light DOM components', () => {
             // shadow grandparent, light child, shadow grandchild
             const elm = createElement('x-container', { is: Container });
             document.body.appendChild(elm);
 
             // shadow grandparent
-            expect(elm.shadowRoot.querySelector('h1').$shadowToken$).toEqual(
-                'x-container_container'
-            );
-            expect(elm.shadowRoot.querySelector('div').$domManual$).toEqual(true);
+            expect(elm.shadowRoot.querySelector('h1').outerHTML).toContain('x-container_container');
             expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
                 'rgb(0, 128, 0)'
             );
 
             // light child
             const child = elm.shadowRoot.querySelector('x-light');
-            expect(child.querySelector('h1').$shadowToken$).toEqual(undefined);
-            expect(child.querySelector('div').$domManual$).toEqual(undefined);
+            expect(child.querySelector('h1').outerHTML).not.toContain('x-child_child');
             expect(getComputedStyle(child.querySelector('h1')).backgroundColor).toEqual(
                 'rgb(255, 0, 0)'
             );
 
             // shadow grandchild
             const grandchild = child.querySelector('x-grandchild');
-            expect(grandchild.shadowRoot.querySelector('h1').$shadowToken$).toEqual(
+            expect(grandchild.shadowRoot.querySelector('h1').outerHTML).toContain(
                 'x-grandchild_grandchild'
             );
-            expect(grandchild.shadowRoot.querySelector('div').$domManual$).toEqual(true);
             expect(
                 getComputedStyle(grandchild.shadowRoot.querySelector('h1')).outlineColor
             ).toEqual('rgb(0, 255, 255)');
-
-            // append to lwc:dom="manual" containers
-            elm.shadowRoot.querySelector('div').appendChild(document.createElement('h1'));
-            child.querySelector('div').appendChild(document.createElement('h1'));
-            grandchild.shadowRoot.querySelector('div').appendChild(document.createElement('h1'));
-
-            // Wait for mutation observer to take effect. The reason we do rAF instead of a
-            // microtask is because of an apparent bug in old Firefox/IE/Safari in compat mode.
-            return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-                expect(getComputedStyle(elm.shadowRoot.querySelector('div > h1')).color).toEqual(
-                    'rgb(0, 128, 0)'
-                );
-                expect(getComputedStyle(child.querySelector('div > h1')).backgroundColor).toEqual(
-                    'rgb(255, 0, 0)'
-                );
-                expect(
-                    getComputedStyle(grandchild.shadowRoot.querySelector('div > h1')).outlineColor
-                ).toEqual('rgb(0, 255, 255)');
-            });
         });
     });
 }
