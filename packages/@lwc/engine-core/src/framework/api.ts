@@ -401,11 +401,11 @@ export function s(
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    if (vnode.owner.renderer.syntheticShadow || !vnode.owner.cmpRoot) {
+    if (vnode.owner.renderer.syntheticShadow || !hasShadow(vnode.owner)) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
-    if (!vnode.owner.cmpRoot) {
+    if (!hasShadow(vnode.owner)) {
         return fs(data, children);
     }
     return vnode;
