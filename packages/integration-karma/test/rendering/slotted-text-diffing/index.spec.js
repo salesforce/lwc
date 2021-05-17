@@ -1,24 +1,31 @@
 import { createElement } from 'lwc';
 import Container from 'x/container';
+import { itWithLightDOM } from 'test-utils';
 
 describe('Dynamic diffing algo for slotted text', () => {
-    it('should not confuse text vnodes when moving elements', function () {
-        const elm = createElement('x-container', { is: Container });
-        document.body.appendChild(elm);
+    itWithLightDOM(
+        'should not confuse text vnodes when moving elements',
+        Container,
+        (shadow) => () => {
+            const elm = createElement('x-container', { is: Container });
+            document.body.appendChild(elm);
 
-        expect(elm.shadowRoot.textContent).toBe('first textDisplay Boolean Value: truesecond text');
-        elm.toggleVisibility();
+            const template = shadow ? elm.shadowRoot : elm;
 
-        return Promise.resolve()
-            .then(() => {
-                const text = elm.shadowRoot.textContent;
-                expect(text).toBe('Display Boolean Value: false');
+            expect(template.textContent).toBe('first textDisplay Boolean Value: truesecond text');
+            elm.toggleVisibility();
 
-                elm.toggleVisibility();
-            })
-            .then(() => {
-                const text = elm.shadowRoot.textContent;
-                expect(text).toBe('first textDisplay Boolean Value: truesecond text');
-            });
-    });
+            return Promise.resolve()
+                .then(() => {
+                    const text = template.textContent;
+                    expect(text).toBe('Display Boolean Value: false');
+
+                    elm.toggleVisibility();
+                })
+                .then(() => {
+                    const text = template.textContent;
+                    expect(text).toBe('first textDisplay Boolean Value: truesecond text');
+                });
+        }
+    );
 });
