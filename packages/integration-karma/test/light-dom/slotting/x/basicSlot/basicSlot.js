@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
 
-export default class DefaultSlot extends LightningElement {
+export default class BasicSlot extends LightningElement {
     static shadow = false;
 }

@@ -1,5 +1,11 @@
 <template>
+    <p data-id="container-upper-slot-top">Upper slot top</p>
+    <slot name="upper"></slot>
+    <p data-id="container-upper-slot-bottom">Default slot bottom</p>
     <p data-id="container-default-slot-top">Default slot top</p>
     <slot></slot>
     <p data-id="container-default-slot-bottom">Default slot bottom</p>
+    <p data-id="container-lower-slot-top">Lower slot top</p>
+    <slot name="lower"></slot>
+    <p data-id="container-lower-slot-bottom">Lower slot bottom</p>
 </template>
