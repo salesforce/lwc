@@ -21,13 +21,16 @@ describe('multiple templates', () => {
         expect(getComputedStyle(element.querySelector('div')).backgroundColor).toEqual(
             'rgba(0, 0, 0, 0)'
         );
+        element.querySelector('div').setAttribute('foo', '');
         element.next();
-        return Promise.resolve().then(() => {
+        return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
             expect(element.querySelector('div').textContent).toEqual('b');
             expect(getComputedStyle(element.querySelector('div')).color).toEqual('rgb(0, 0, 0)');
             expect(getComputedStyle(element.querySelector('div')).backgroundColor).toEqual(
                 'rgb(255, 160, 122)'
             );
+            // element should not be dirty after template change
+            expect(element.querySelector('div').hasAttribute('foo')).toEqual(false);
         });
     });
 });

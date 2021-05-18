@@ -35,7 +35,6 @@ describe('imperative slotted content', () => {
     [
         ['Node.prototype.insertBefore', (elm) => elm.insertBefore(document.createElement('div'))],
         ['Node.prototype.appendChild', (elm) => elm.appendChild(document.createElement('div'))],
-        ['Node.prototype.removeChild', (elm) => elm.removeChild(elm.firstChild)],
         [
             'Node.prototype.replaceChild',
             (elm) => elm.replaceChild(elm.firstChild, document.createElement('div')),

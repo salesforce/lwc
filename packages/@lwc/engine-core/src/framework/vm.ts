@@ -559,18 +559,15 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // This is a super optimized mechanism to remove the content of the shadowRoot without having to go
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
-export function resetShadowRoot(vm: VM) {
-    if (!hasShadow(vm)) {
-        return;
-    }
-
-    const { children, cmpRoot, renderer } = vm;
+export function resetComponentRoot(vm: VM) {
+    const { children, cmpRoot, renderer, elm } = vm;
+    const rootNode = isNull(cmpRoot) ? elm : cmpRoot;
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
 
         if (!isNull(child) && !isUndefined(child.elm)) {
-            renderer.remove(child.elm, cmpRoot);
+            renderer.remove(child.elm, rootNode);
         }
     }
     vm.children = EmptyArray;
@@ -676,7 +673,7 @@ export function runWithBoundaryProtection(
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }
-            resetShadowRoot(vm); // remove offenders
+            resetComponentRoot(vm); // remove offenders
 
             if (profilerEnabled) {
                 logOperationStart(OperationId.errorCallback, vm);
