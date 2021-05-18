@@ -3,8 +3,16 @@ import { extractDataIds } from 'test-utils';
 
 import BasicSlot from 'x/basicSlot';
 import DynamicChildren from 'x/dynamicChildren';
+import LightConsumer from 'x/lightConsumer';
+import ShadowConsumer from 'x/shadowConsumer';
 
-// eslint-disable-next-line jest/no-focused-tests
+function createTestElement(tag, component) {
+    const elm = createElement(tag, { is: component });
+    elm.setAttribute('data-id', tag);
+    document.body.appendChild(elm);
+    return extractDataIds(elm);
+}
+
 describe('Slotting', () => {
     beforeEach(() => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
@@ -13,9 +21,7 @@ describe('Slotting', () => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
     it('should render properly', () => {
-        const elm = createElement('x-default-slot', { is: BasicSlot });
-        document.body.appendChild(elm);
-        const nodes = extractDataIds(elm);
+        const nodes = createTestElement('x-default-slot', BasicSlot);
 
         expect(Array.from(nodes['x-container'].childNodes)).toEqual([
             nodes['container-upper-slot-top'],
@@ -37,9 +43,7 @@ describe('Slotting', () => {
     });
 
     it('should render dynamic children', () => {
-        const elm = createElement('x-default-slot', { is: DynamicChildren });
-        document.body.appendChild(elm);
-        const nodes = extractDataIds(elm);
+        const nodes = createTestElement('x-dynamic-children', DynamicChildren);
         expect(Array.from(nodes['x-container'].childNodes)).toEqual([
             nodes['container-upper-slot-top'],
             jasmine.any(Text),
@@ -59,5 +63,21 @@ describe('Slotting', () => {
             jasmine.any(Text),
             nodes['container-lower-slot-bottom'],
         ]);
+    });
+
+    it('shadow container, light consumer', () => {
+        const nodes = createTestElement('x-light-consumer', LightConsumer);
+
+        expect(nodes['x-light-consumer'].innerHTML).toEqual(
+            '<x-shadow-container><slot><p data-id="light-consumer-text">Hello from Light DOM</p></slot></x-shadow-container>'
+        );
+    });
+
+    it('light container, shadow consumer', () => {
+        const nodes = createTestElement('x-shadow-consumer', ShadowConsumer);
+
+        expect(nodes['x-shadow-consumer'].shadowRoot.innerHTML).toEqual(
+            '<x-light-container><p data-id="container-upper-slot-top">Upper slot top</p><p data-id="container-upper-slot-bottom">Default slot bottom</p><p data-id="container-default-slot-top">Default slot top</p><p data-id="shadow-consumer-text">Hello from Shadow DOM</p><p data-id="container-default-slot-bottom">Default slot bottom</p><p data-id="container-lower-slot-top">Lower slot top</p><p data-id="container-lower-slot-bottom">Lower slot bottom</p></x-light-container>'
+        );
     });
 });
