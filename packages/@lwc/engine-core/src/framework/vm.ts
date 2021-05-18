@@ -560,11 +560,11 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetShadowRoot(vm: VM) {
-    const { children, cmpRoot, renderer } = vm;
-
     if (!hasShadow(vm)) {
         return;
     }
+
+    const { children, cmpRoot, renderer } = vm;
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
