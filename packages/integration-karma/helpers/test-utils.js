@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-window.TestUtils = (function (lwc, jasmine, { beforeAll, beforeEach, afterEach }) {
+window.TestUtils = (function (lwc, jasmine, beforeAll) {
     function pass() {
         return {
             pass: true,
@@ -344,22 +344,6 @@ window.TestUtils = (function (lwc, jasmine, { beforeAll, beforeEach, afterEach }
             return !(n.nodeType === Node.COMMENT_NODE && n.tagName.startsWith('#shadow-root'));
         });
     }
-
-    function itWithLightDOM(message, component, testFn) {
-        [true, false].forEach((shadow) => {
-            describe(`with shadow ${shadow}`, () => {
-                beforeEach(() => {
-                    lwc.setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-                    component.shadow = shadow;
-                });
-                afterEach(() => {
-                    lwc.setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-                });
-                it(message, testFn(shadow));
-            });
-        });
-    }
-
     return {
         registerForLoad: registerForLoad,
         clearRegister: clearRegister,
@@ -367,6 +351,5 @@ window.TestUtils = (function (lwc, jasmine, { beforeAll, beforeEach, afterEach }
         extractDataIds: extractDataIds,
         extractShadowDataIds: extractShadowDataIds,
         getHostChildNodes: getHostChildNodes,
-        itWithLightDOM: itWithLightDOM,
     };
-})(LWC, jasmine, { beforeAll, beforeEach, afterEach });
+})(LWC, jasmine, beforeAll);

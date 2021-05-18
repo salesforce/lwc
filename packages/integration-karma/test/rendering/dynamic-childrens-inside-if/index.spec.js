@@ -1,25 +1,23 @@
 import { createElement } from 'lwc';
 import ForEachCmp from 'x/forEachCmp';
 import LwcDynamic from 'x/lwcDynamic';
-import { itWithLightDOM } from 'test-utils';
 
 describe('for:each', () => {
-    itWithLightDOM('should remove/add elements when if is toggled', ForEachCmp, (shadow) => () => {
+    it('should remove/add elements when if is toggled', function () {
         const elm = createElement('x-container', { is: ForEachCmp });
         document.body.appendChild(elm);
-        const template = shadow ? elm.shadowRoot : elm;
-        const divWithChildrenWrappedByIf = template.querySelector('div');
+        const divWithChildrenWrappedByIf = elm.shadowRoot.querySelector('div');
 
-        template.querySelector('button').click();
+        elm.shadowRoot.querySelector('button').click();
 
         return Promise.resolve()
             .then(() => {
                 expect(divWithChildrenWrappedByIf.textContent).toBe('item 1item 2');
-                template.querySelector('button').click();
+                elm.shadowRoot.querySelector('button').click();
             })
             .then(() => {
                 expect(divWithChildrenWrappedByIf.textContent).toBe('');
-                template.querySelector('button').click();
+                elm.shadowRoot.querySelector('button').click();
             })
             .then(() => {
                 expect(divWithChildrenWrappedByIf.textContent).toBe('item 1item 2');
@@ -28,23 +26,21 @@ describe('for:each', () => {
 });
 
 describe('lwc:dynamic', () => {
-    itWithLightDOM('should remove/add elements when if is toggled', LwcDynamic, (shadow) => () => {
-        const elm = createElement('x-dynamic', { is: LwcDynamic });
+    it('should remove/add elements when if is toggled', function () {
+        const elm = createElement('x-container', { is: LwcDynamic });
         document.body.appendChild(elm);
 
-        const template = shadow ? elm.shadowRoot : elm;
-
-        const divWithChildrenWrappedByIf = template.querySelector('div');
-        template.querySelector('button').click();
+        const divWithChildrenWrappedByIf = elm.shadowRoot.querySelector('div');
+        elm.shadowRoot.querySelector('button').click();
 
         return Promise.resolve()
             .then(() => {
                 expect(divWithChildrenWrappedByIf.textContent).toBe('item');
-                template.querySelector('button').click();
+                elm.shadowRoot.querySelector('button').click();
             })
             .then(() => {
                 expect(divWithChildrenWrappedByIf.textContent).toBe('');
-                template.querySelector('button').click();
+                elm.shadowRoot.querySelector('button').click();
             })
             .then(() => {
                 expect(divWithChildrenWrappedByIf.textContent).toBe('item');

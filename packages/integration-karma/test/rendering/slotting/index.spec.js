@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { itWithLightDOM } from 'test-utils';
 
 import RenderCountParent from 'x/renderCountParent';
 import FallbackContentReuseParent from 'x/fallbackContentReuseParent';
@@ -24,26 +23,21 @@ xit('should not render if the slotted content changes', () => {
     });
 });
 
-itWithLightDOM(
-    '#663 - should not reuse elements from the fallback slot content',
-    FallbackContentReuseParent,
-    (shadow) => () => {
-        const elm = createElement('x-fallback-content-reuse-parent', {
-            is: FallbackContentReuseParent,
-        });
-        document.body.appendChild(elm);
-        const template = shadow ? elm.shadowRoot : elm;
+it('#663 - should not reuse elements from the fallback slot content', () => {
+    const elm = createElement('x-fallback-content-reuse-parent', {
+        is: FallbackContentReuseParent,
+    });
+    document.body.appendChild(elm);
 
-        expect(template.querySelector('x-fallback-content-reuse-child').innerHTML).toBe('');
-        elm.renderSlotted = true;
+    expect(elm.shadowRoot.querySelector('x-fallback-content-reuse-child').innerHTML).toBe('');
+    elm.renderSlotted = true;
 
-        return Promise.resolve().then(() => {
-            expect(template.querySelector('x-fallback-content-reuse-child').innerHTML).toBe(
-                '<div>Default slotted</div><div slot="foo">Named slotted</div>'
-            );
-        });
-    }
-);
+    return Promise.resolve().then(() => {
+        expect(elm.shadowRoot.querySelector('x-fallback-content-reuse-child').innerHTML).toBe(
+            '<div>Default slotted</div><div slot="foo">Named slotted</div>'
+        );
+    });
+});
 
 it('should not throw error when updating slotted content triggers next tick re-render in component receiving the slotted content', (done) => {
     // Regression introduced in #1617 refactor(engine): improving the diffing algo for slotted elements
