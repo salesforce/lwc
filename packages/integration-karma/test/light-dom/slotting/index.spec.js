@@ -68,9 +68,10 @@ describe('Slotting', () => {
     it('shadow container, light consumer', () => {
         const nodes = createTestElement('x-light-consumer', LightConsumer);
 
-        expect(nodes['x-light-consumer'].innerHTML).toEqual(
-            '<x-shadow-container><slot><p data-id="light-consumer-text">Hello from Light DOM</p></slot></x-shadow-container>'
-        );
+        const expected = process.env.NATIVE_SHADOW // native shadow doesn't output slots in innerHTML
+            ? '<x-shadow-container><p data-id="light-consumer-text">Hello from Light DOM</p></x-shadow-container>'
+            : '<x-shadow-container><slot><p data-id="light-consumer-text">Hello from Light DOM</p></slot></x-shadow-container>';
+        expect(nodes['x-light-consumer'].innerHTML).toEqual(expected);
     });
 
     it('light container, shadow consumer', () => {
