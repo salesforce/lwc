@@ -562,6 +562,10 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 export function resetShadowRoot(vm: VM) {
     const { children, cmpRoot, renderer } = vm;
 
+    if (!hasShadow(vm)) {
+        return;
+    }
+
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
 
