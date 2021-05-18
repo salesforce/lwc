@@ -68,7 +68,7 @@ export enum VMState {
 export interface Context {
     /** The class name used on the host element to scope the style. */
     hostClass: string | undefined;
-    /** The attribute name used on all the elements rendered in the shadow tree to scope the style. */
+    /** The class name used on all the elements rendered in the shadow tree to scope the style. */
     shadowClass: string | undefined;
     /** The VNode injected in all the shadow trees to apply the associated component stylesheets. */
     styleVNode: VNode | null;
