@@ -5,6 +5,7 @@ import BasicSlot from 'x/basicSlot';
 import DynamicChildren from 'x/dynamicChildren';
 import LightConsumer from 'x/lightConsumer';
 import ShadowConsumer from 'x/shadowConsumer';
+import ConditionalSlot from 'x/ConditionalSlot';
 
 function createTestElement(tag, component) {
     const elm = createElement(tag, { is: component });
@@ -80,5 +81,19 @@ describe('Slotting', () => {
         expect(nodes['x-shadow-consumer'].shadowRoot.innerHTML).toEqual(
             '<x-light-container><p data-id="container-upper-slot-top">Upper slot top</p><p data-id="container-upper-slot-bottom">Default slot bottom</p><p data-id="container-default-slot-top">Default slot top</p><p data-id="shadow-consumer-text">Hello from Shadow DOM</p><p data-id="container-default-slot-bottom">Default slot bottom</p><p data-id="container-lower-slot-top">Lower slot top</p><p data-id="container-lower-slot-bottom">Lower slot bottom</p></x-light-container>'
         );
+    });
+
+    it('removes slots properly', async () => {
+        const nodes = createTestElement('x-conditional-slot', ConditionalSlot);
+        const elm = nodes['x-conditional-slot'];
+        expect(Array.from(elm.childNodes)).toEqual([
+            jasmine.any(Text),
+            nodes['default-slotted-text'],
+            jasmine.any(Text),
+            nodes.button,
+        ]);
+        nodes.button.click();
+        await Promise.resolve();
+        expect(Array.from(elm.childNodes)).toEqual([nodes.button]);
     });
 });

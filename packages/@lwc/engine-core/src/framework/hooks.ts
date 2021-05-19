@@ -260,6 +260,18 @@ export function createFakeSlotChildrenHook(vnode: VFakeSlot) {
     }
 }
 
+export function removeFakeSlotChildrenHook(vnode: VFakeSlot) {
+    const { children, end } = vnode;
+    const parentElm = end.elm!.parentNode!;
+
+    for (let j = 0; j < children.length; ++j) {
+        const ch = children[j];
+        if (ch != null) {
+            ch.hook.remove(ch, parentElm);
+        }
+    }
+}
+
 export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value

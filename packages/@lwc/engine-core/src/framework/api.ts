@@ -66,6 +66,7 @@ import {
     markAsDynamicChildren,
     updateFakeSlotChildrenHook,
     createFakeSlotChildrenHook,
+    removeFakeSlotChildrenHook,
 } from './hooks';
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -149,6 +150,7 @@ const FakeSlotHook: Hooks<VFakeSlot> = {
     },
     move: (_vnode, _parentNode, _referenceNode) => {}, // same as insert for text nodes
     remove: (vnode, parentNode) => {
+        removeFakeSlotChildrenHook(vnode);
         TextHook.remove(vnode.start, parentNode);
         TextHook.remove(vnode.end, parentNode);
     },
