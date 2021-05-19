@@ -148,7 +148,9 @@ const FakeSlotHook: Hooks<VFakeSlot> = {
         insertNodeHook(vnode.end, parentNode, referenceNode);
         createFakeSlotChildrenHook(vnode);
     },
-    move: (_vnode, _parentNode, _referenceNode) => {}, // same as insert for text nodes
+    move: (_vnode, _parentNode, _referenceNode) => {
+        throw new Error(`Internal error: <slot> elements can't move`);
+    },
     remove: (vnode, parentNode) => {
         removeFakeSlotChildrenHook(vnode);
         TextHook.remove(vnode.start, parentNode);
