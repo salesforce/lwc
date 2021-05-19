@@ -250,8 +250,8 @@ export function createChildrenHook(vnode: VElement) {
 
 export function createFakeSlotChildrenHook(vnode: VFakeSlot) {
     const { children, end } = vnode;
-    for (let j = 0; j < children.length; ++j) {
-        const ch = children[j];
+    for (let i = 0; i < children.length; ++i) {
+        const ch = children[i];
         if (ch != null) {
             ch.hook.create(ch);
             const parentElm = end.elm!.parentNode!;
@@ -264,8 +264,8 @@ export function removeFakeSlotChildrenHook(vnode: VFakeSlot) {
     const { children, end } = vnode;
     const parentElm = end.elm!.parentNode!;
 
-    for (let j = 0; j < children.length; ++j) {
-        const ch = children[j];
+    for (let i = 0; i < children.length; ++i) {
+        const ch = children[i];
         if (ch != null) {
             ch.hook.remove(ch, parentElm);
         }

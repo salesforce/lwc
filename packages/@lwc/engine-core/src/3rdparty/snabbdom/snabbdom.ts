@@ -13,6 +13,7 @@ Code distributed by Snabbdom as part of the Snabbdom project at
 https://github.com/snabbdom/snabbdom/
 */
 
+import { ArrayIndexOf } from '@lwc/shared';
 import { VNode, VNodes, Key } from './types';
 
 function isUndef(s: any): s is undefined {
@@ -222,7 +223,7 @@ export function updateFakeSlotStaticChildren(
     newCh: VNodes
 ) {
     const parentElm = startElm.parentNode!;
-    const startIndex = Array.prototype.indexOf.call(parentElm, startElm);
+    const startIndex = ArrayIndexOf.call(parentElm, startElm);
     updateStaticChildren(parentElm, oldCh, newCh, startIndex);
 }
 
