@@ -43,9 +43,9 @@ describe('Slotting', () => {
         ]);
     });
 
-    it('should render dynamic children', () => {
+    it('should render dynamic children', async () => {
         const nodes = createTestElement('x-dynamic-children', DynamicChildren);
-        expect(Array.from(nodes['x-container'].childNodes)).toEqual([
+        expect(Array.from(nodes['x-light-container'].childNodes)).toEqual([
             nodes['container-upper-slot-top'],
             jasmine.any(Text),
             jasmine.any(Text),
@@ -57,6 +57,29 @@ describe('Slotting', () => {
             nodes['3'],
             nodes['4'],
             nodes['5'],
+            jasmine.any(Text),
+            nodes['container-default-slot-bottom'],
+            nodes['container-lower-slot-top'],
+            jasmine.any(Text),
+            jasmine.any(Text),
+            nodes['container-lower-slot-bottom'],
+        ]);
+
+        nodes.button.click();
+        await Promise.resolve();
+
+        expect(Array.from(nodes['x-light-container'].childNodes)).toEqual([
+            nodes['container-upper-slot-top'],
+            jasmine.any(Text),
+            jasmine.any(Text),
+            nodes['container-upper-slot-bottom'],
+            nodes['container-default-slot-top'],
+            jasmine.any(Text),
+            nodes['5'],
+            nodes['4'],
+            nodes['3'],
+            nodes['2'],
+            nodes['1'],
             jasmine.any(Text),
             nodes['container-default-slot-bottom'],
             nodes['container-lower-slot-top'],
