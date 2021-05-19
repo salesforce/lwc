@@ -5,7 +5,7 @@ import BasicSlot from 'x/basicSlot';
 import DynamicChildren from 'x/dynamicChildren';
 import LightConsumer from 'x/lightConsumer';
 import ShadowConsumer from 'x/shadowConsumer';
-import ConditionalSlot from 'x/ConditionalSlot';
+import ConditionalSlot from 'x/conditionalSlot';
 
 function createTestElement(tag, component) {
     const elm = createElement(tag, { is: component });
