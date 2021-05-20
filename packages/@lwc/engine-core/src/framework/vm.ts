@@ -556,7 +556,8 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
     }
 }
 
-// This is a super optimized mechanism to remove the content of the shadowRoot without having to go
+// This is a super optimized mechanism to remove the content of the root node (shadow root 
+// for shadow DOM components and the root element itself for light DOM) without having to go
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
