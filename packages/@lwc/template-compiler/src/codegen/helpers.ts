@@ -8,7 +8,7 @@ import State from '../state';
 
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { IRElement, IRNode } from '../shared/types';
+import { IRElement, IRNode, LWCDirectiveRenderMode } from '../shared/types';
 import { isElement, isTemplate, isComponentProp } from '../shared/ir';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
@@ -102,6 +102,15 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
         t.arrayExpression([])
     );
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
+
+    if (state.renderMode === LWCDirectiveRenderMode.light) {
+        const renderModeMetadata = t.assignmentExpression(
+            '=',
+            t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('renderMode')),
+            t.literal('light')
+        );
+        metadataExpressions.push(t.expressionStatement(renderModeMetadata));
+    }
 
     return metadataExpressions;
 }

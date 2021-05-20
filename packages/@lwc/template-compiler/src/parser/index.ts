@@ -62,6 +62,7 @@ import {
     TemplateParseResult,
     LWCDirectiveDomMode,
     LWCDirectives,
+    LWCDirectiveRenderMode,
 } from '../shared/types';
 
 import State from '../state';
@@ -84,7 +85,8 @@ import {
     KNOWN_HTML_ELEMENTS,
     LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
-    PRESERVE_COMMENTS_ATTRIBUTE_NAME,
+    ROOT_TEMPLATE_DIRECTIVES,
+    ROOT_TEMPLATE_DIRECTIVES_SET,
 } from './constants';
 
 function isStyleElement(irElement: IRElement) {
@@ -147,8 +149,9 @@ export default function parse(source: string, state: State): TemplateParseResult
     const stack: IRElement[] = [];
 
     const preserveComments =
-        templateRoot.attrs.some(({ name }) => name === PRESERVE_COMMENTS_ATTRIBUTE_NAME) ||
-        state.config.preserveHtmlComments;
+        templateRoot.attrs.some(
+            ({ name }) => name === ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS
+        ) || state.config.preserveHtmlComments;
 
     traverseHTML(templateRoot, {
         Element: {
@@ -371,11 +374,15 @@ export default function parse(source: string, state: State): TemplateParseResult
             return;
         }
 
-        // only root template tag allows lwc:preserve-comments
-        if (
-            element.parent === undefined &&
-            lwcAttribute.name === PRESERVE_COMMENTS_ATTRIBUTE_NAME
-        ) {
+        if (element.parent === undefined) {
+            if (!ROOT_TEMPLATE_DIRECTIVES_SET.has(lwcAttribute.name)) {
+                // unknown lwc directive
+                return warnOnElement(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element.__original, [
+                    lwcAttribute.name,
+                    `<${element.tag}>`,
+                ]);
+            }
+            applyLwcRenderModeDirective(element);
             return;
         }
 
@@ -392,6 +399,33 @@ export default function parse(source: string, state: State): TemplateParseResult
         applyLwcDomDirective(element, lwcOpts);
 
         element.lwc = lwcOpts;
+    }
+
+    function applyLwcRenderModeDirective(element: IRElement) {
+        const lwcRenderModeAttribute = getTemplateAttribute(
+            element,
+            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE
+        );
+
+        if (!lwcRenderModeAttribute) {
+            return;
+        }
+
+        removeAttribute(element, ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE);
+
+        if (
+            lwcRenderModeAttribute.type === IRAttributeType.String &&
+            hasOwnProperty.call(LWCDirectiveRenderMode, lwcRenderModeAttribute.value) === false
+        ) {
+            const possibleValues = Object.keys(LWCDirectiveRenderMode)
+                .map((value) => `"${value}"`)
+                .join(', or ');
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [
+                possibleValues,
+            ]);
+        }
+
+        state.renderMode = lwcRenderModeAttribute.value as LWCDirectiveRenderMode;
     }
 
     function applyLwcDynamicDirective(element: IRElement, lwcOpts: LWCDirectives) {
@@ -809,7 +843,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             const rootHasUnknownAttributes = node.attrs.some(
-                ({ name }) => name !== PRESERVE_COMMENTS_ATTRIBUTE_NAME
+                ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
             );
             if (rootHasUnknownAttributes) {
                 return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, node);

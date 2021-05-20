@@ -53,6 +53,11 @@ export enum LWCDirectiveDomMode {
     manual = 'manual',
 }
 
+export enum LWCDirectiveRenderMode {
+    shadow = 'shadow',
+    light = 'light',
+}
+
 export interface LWCDirectiveDynamic {
     prop: string;
 }
@@ -60,6 +65,7 @@ export interface LWCDirectiveDynamic {
 export interface LWCDirectives {
     dom?: LWCDirectiveDomMode;
     dynamic?: TemplateExpression;
+    renderMode?: LWCDirectiveRenderMode;
 }
 
 export interface IRElement {
