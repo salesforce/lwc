@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1085,
-            "message": "LWC1085: Invalid value for \"lwc:dom\". 'lwc:dom' can only be set to \"shadow\", or \"light\"",
+            "code": 1131,
+            "message": "LWC1131: Invalid value for \"lwc:render-mode\". 'lwc:render-mode' can only be set to \"shadow\", or \"light\"",
             "level": 1,
             "location": {
                 "line": 1,

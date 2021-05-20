@@ -420,9 +420,11 @@ export default function parse(source: string, state: State): TemplateParseResult
             const possibleValues = Object.keys(LWCDirectiveRenderMode)
                 .map((value) => `"${value}"`)
                 .join(', or ');
-            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [
-                possibleValues,
-            ]);
+            return warnOnElement(
+                ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE,
+                element.__original,
+                [possibleValues]
+            );
         }
 
         state.renderMode = lwcRenderModeAttribute.value as LWCDirectiveRenderMode;
