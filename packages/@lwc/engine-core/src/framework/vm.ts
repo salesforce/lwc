@@ -212,7 +212,7 @@ function resetComponentStateWhenRemoved(vm: VM) {
         }
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
-        runShadowChildNodesDisconnectedCallback(vm);
+        runChildNodesDisconnectedCallback(vm);
         runLightChildNodesDisconnectedCallback(vm);
     }
 
@@ -500,7 +500,7 @@ function runDisconnectedCallback(vm: VM) {
     }
 }
 
-function runShadowChildNodesDisconnectedCallback(vm: VM) {
+function runChildNodesDisconnectedCallback(vm: VM) {
     const { velements: vCustomElementCollection } = vm;
 
     // Reporting disconnection for every child in inverse order since they are
@@ -556,7 +556,7 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
     }
 }
 
-// This is a super optimized mechanism to remove the content of the root node (shadow root 
+// This is a super optimized mechanism to remove the content of the root node (shadow root
 // for shadow DOM components and the root element itself for light DOM) without having to go
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
@@ -573,7 +573,7 @@ export function resetComponentRoot(vm: VM) {
     }
     vm.children = EmptyArray;
 
-    runShadowChildNodesDisconnectedCallback(vm);
+    runChildNodesDisconnectedCallback(vm);
     vm.velements = EmptyArray;
 }
 
