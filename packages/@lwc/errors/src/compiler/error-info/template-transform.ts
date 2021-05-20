@@ -487,7 +487,7 @@ export const ParserDiagnostics = {
     },
 
     LWC_RENDER_MODE_INVALID_VALUE: {
-        code: 1085,
+        code: 1133,
         message: 'Invalid value for "lwc:render-mode". \'lwc:render-mode\' can only be set to {0}',
         level: DiagnosticLevel.Error,
         url: '',
