@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1131,
-            "message": "LWC1131: Invalid value for \"lwc:render-mode\". 'lwc:render-mode' can only be set to \"shadow\", or \"light\"",
+            "code": 1133,
+            "message": "LWC1133: Invalid value for \"lwc:render-mode\". 'lwc:render-mode' can only be set to \"shadow\", or \"light\"",
             "level": 1,
             "location": {
                 "line": 1,
