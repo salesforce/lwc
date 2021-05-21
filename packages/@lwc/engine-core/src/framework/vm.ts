@@ -342,7 +342,7 @@ function rehydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { cmpRoot, children: oldCh, elm } = vm;
+    const { children: oldCh } = vm;
 
     // caching the new children collection
     vm.children = newCh;
@@ -363,8 +363,8 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    const elmentToRenderTo = hasShadow(vm) ? cmpRoot : elm;
-                    fn(elmentToRenderTo, oldCh, newCh);
+                    const elementToRenderTo = getRenderRoot(vm);
+                    fn(elementToRenderTo, oldCh, newCh);
                 },
                 () => {
                     // post
@@ -561,8 +561,8 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const { children, cmpRoot, renderer, elm } = vm;
-    const rootNode = isNull(cmpRoot) ? elm : cmpRoot;
+    const { children, renderer } = vm;
+    const rootNode = getRenderRoot(vm);
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
@@ -712,4 +712,8 @@ export function hasShadow(vm: VM): vm is VM & { cmpRoot: ShadowRoot } {
     // We don't refer to vm.def.ctor.shadow because that could be changed by user
     // after instantiation.
     return !isNull(vm.cmpRoot);
+}
+
+function getRenderRoot(vm: VM) {
+    return hasShadow(vm) ? vm.cmpRoot : vm.elm;
 }
