@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _xSubject,
       {
         props: {
-          htmlFor: `${api_scoped_id("foo")}`,
+          htmlFor: api_scoped_id("foo"),
         },
         key: 0,
       },
@@ -52,7 +52,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         props: {
           id: api_scoped_id("foo"),
-          ariaDescribedBy: `${api_scoped_id("bar")} ${api_scoped_id("baz")}`,
+          ariaDescribedBy: api_scoped_id("bar baz"),
         },
         key: 3,
       },
@@ -62,7 +62,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "label",
       {
         attrs: {
-          for: `${api_scoped_id("boof")}`,
+          for: api_scoped_id("boof"),
         },
         key: 4,
       },
