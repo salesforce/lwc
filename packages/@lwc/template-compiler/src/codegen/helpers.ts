@@ -103,6 +103,7 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
     );
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
+    // ignore when shadow because we don't want to modify template unnecessarily
     if (state.renderMode === LWCDirectiveRenderMode.light) {
         const renderModeMetadata = t.assignmentExpression(
             '=',
