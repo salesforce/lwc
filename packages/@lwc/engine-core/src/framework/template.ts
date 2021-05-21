@@ -12,15 +12,23 @@ import {
     isArray,
     isFunction,
     isNull,
+    isUndefined,
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';
-import { SlotSet, TemplateCache, VM, resetShadowRoot, runWithBoundaryProtection } from './vm';
+import {
+    SlotSet,
+    TemplateCache,
+    VM,
+    resetShadowRoot,
+    runWithBoundaryProtection,
+    hasShadow,
+} from './vm';
 import { EmptyArray } from './utils';
-import { isTemplateRegistered } from './secure-template';
+import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     TemplateStylesheetFactories,
     createStylesheet,
@@ -49,6 +57,8 @@ export interface Template {
     stylesheets?: TemplateStylesheetFactories;
     /** The stylesheet tokens used for synthetic shadow style scoping. */
     stylesheetTokens?: TemplateStylesheetTokens;
+    /** Render mode for the template. Could be light or undefined (which means it's shadow) */
+    renderMode?: 'light';
 }
 
 export let isUpdatingTemplate: boolean = false;
@@ -93,6 +103,21 @@ function validateSlots(vm: VM, html: Template) {
     }
 }
 
+function validateLightDomTemplate(template: Template, vm: VM) {
+    if (template === defaultEmptyTemplate) return;
+    if (!hasShadow(vm)) {
+        assert.isTrue(
+            template.renderMode === 'light',
+            `Templates for light DOM components should have a 'lwc:render-mode="light"' directive on the root template tag.`
+        );
+    } else {
+        assert.isTrue(
+            isUndefined(template.renderMode),
+            `Templates for shadow DOM components should either NOT have the 'lwc:render-mode' directive or set it to 'shadow'.`
+        );
+    }
+}
+
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
@@ -109,6 +134,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     const isUpdatingTemplateInception = isUpdatingTemplate;
     const vmOfTemplateBeingUpdatedInception = vmBeingRendered;
     let vnodes: VNodes = [];
+
+    if (process.env.NODE_ENV !== 'production') {
+        validateLightDomTemplate(html, vm);
+    }
 
     runWithBoundaryProtection(
         vm,
