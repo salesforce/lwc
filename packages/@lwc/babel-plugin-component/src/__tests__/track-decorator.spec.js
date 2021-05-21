@@ -40,7 +40,7 @@ describe('Transform property', () => {
     );
 
     pluginTest(
-        'transform track decorator preserve intial value',
+        'transform track decorator preserve initial value',
         `
         import { track } from 'lwc';
         export default class Test {

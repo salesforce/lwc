@@ -274,3 +274,76 @@ describe('decorators', () => {
         }
     );
 });
+
+describe('transform large input file', () => {
+    beforeEach(() => {
+        // Disable console.error because babel logs warnings if the file size is > 500KB
+        const { error: originalConsoleError } = console;
+        // eslint-disable-next-line no-console
+        console.error = jest.spyOn(console, 'error').mockImplementation((...args) => {
+            if (
+                args.length > 0 &&
+                // To be sure we are not letting any other real problems slip
+                args[0]
+                    .toString()
+                    .includes('[BABEL] Note: The code generator has deoptimised the styling of')
+            ) {
+                return;
+            }
+            originalConsoleError(...args);
+        });
+    });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+    const blob = 'export const Bar = "' + 'x'.repeat(500000) + '";';
+
+    const stubClassDeclaration = `
+        import { LightningElement, api } from 'lwc';
+        export default class Foo extends LightningElement {
+            @api
+            prop;
+        }
+    `;
+
+    const stubClassExpression = `
+        import { LightningElement, api } from 'lwc';
+        const Foo = class extends LightningElement {
+            @api
+            prop;
+        }
+        export default Foo;
+    `;
+
+    pluginTest(
+        'should transform decorators on ClassDeclaration in a large input file',
+        stubClassDeclaration + blob,
+        {
+            output: {
+                code:
+                    'import{registerDecorators as _registerDecorators,registerComponent as _registerComponent,LightningElement}from"lwc";' +
+                    'import _tmpl from"./test.html";' +
+                    'class Foo extends LightningElement{prop;}' +
+                    // _registerDecorators is an ExpressionStatement, ends with a semicolon
+                    '_registerDecorators(Foo,{publicProps:{prop:{config:0}}});' +
+                    'export default _registerComponent(Foo,{tmpl:_tmpl});' +
+                    blob,
+            },
+        }
+    );
+
+    pluginTest(
+        'should transform decorators on ClassExpression in a large input file',
+        stubClassExpression + blob,
+        {
+            output: {
+                code:
+                    'import _tmpl from"./test.html";' +
+                    'import{registerComponent as _registerComponent,registerDecorators as _registerDecorators,LightningElement}from"lwc";' +
+                    'const Foo=_registerDecorators(class extends LightningElement{prop;},{publicProps:{prop:{config:0}}});' +
+                    'export default _registerComponent(Foo,{tmpl:_tmpl});' +
+                    blob,
+            },
+        }
+    );
+});

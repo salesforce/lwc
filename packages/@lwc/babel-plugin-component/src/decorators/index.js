@@ -194,7 +194,7 @@ function getMetadataObjectPropertyList(t, decoratorMetas, classBodyItems) {
 }
 
 function decorators({ types: t }) {
-    function createRegisterDecoratorsCall(path, classExpression, props) {
+    function createRegisterDecoratorsCallExpression(path, classExpression, props) {
         const id = moduleImports.addNamed(path, REGISTER_DECORATORS_ID, LWC_PACKAGE_ALIAS);
         return t.callExpression(id, [classExpression, t.objectExpression(props)]);
     }
@@ -238,14 +238,26 @@ function decorators({ types: t }) {
                 path.isClassExpression() || isAnonymousClassDeclaration;
 
             if (shouldTransformAsClassExpression) {
+                // Example:
+                //      export default class extends LightningElement {}
+                // Output:
+                //      export default registerDecorators(class extends LightningElement {});
+                // if it does not have an id, we can treat it as a ClassExpression
                 const classExpression = t.toExpression(node);
                 path.replaceWith(
-                    createRegisterDecoratorsCall(path, classExpression, metaPropertyList)
+                    createRegisterDecoratorsCallExpression(path, classExpression, metaPropertyList)
                 );
             } else {
+                // Example: export default class NamedClass extends LightningElement {}
+                // Output:
+                //      export default class NamedClass extends LightningElement {}
+                //      registerDecorators(NamedClass);
+                // Note: This will be further transformed
                 const statementPath = path.getStatementParent();
                 statementPath.insertAfter(
-                    createRegisterDecoratorsCall(path, node.id, metaPropertyList)
+                    t.expressionStatement(
+                        createRegisterDecoratorsCallExpression(path, node.id, metaPropertyList)
+                    )
                 );
             }
         },
