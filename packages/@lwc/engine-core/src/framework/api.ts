@@ -19,6 +19,7 @@ import {
     isTrue,
     isUndefined,
     StringCharCodeAt,
+    StringReplace,
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
@@ -648,7 +649,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
         return null;
     }
     if (hasShadow(vmBeingRendered!)) {
-        return `${id}-${vmBeingRendered!.idx}`; // only transform IDs in shadow DOM
+        return StringReplace.call(id, /[^\s]+/g, (id) => `${id}-${vmBeingRendered.idx}`);
     }
     return id;
 }
