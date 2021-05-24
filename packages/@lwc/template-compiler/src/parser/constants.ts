@@ -25,16 +25,15 @@ export const LWC_DIRECTIVES = {
     DYNAMIC: 'lwc:dynamic',
 };
 
-export const LWC_DIRECTIVE_SET: Set<string> = new Set([LWC_DIRECTIVES.DOM, LWC_DIRECTIVES.DYNAMIC]);
+export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(LWC_DIRECTIVES));
 
 export const ROOT_TEMPLATE_DIRECTIVES = {
     PRESERVE_COMMENTS: 'lwc:preserve-comments',
     RENDER_MODE: 'lwc:render-mode',
 };
-export const ROOT_TEMPLATE_DIRECTIVES_SET: Set<string> = new Set([
-    ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS,
-    ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
-]);
+export const ROOT_TEMPLATE_DIRECTIVES_SET: Set<string> = new Set(
+    Object.values(ROOT_TEMPLATE_DIRECTIVES)
+);
 
 // These attributes take either an ID or a list of IDs as values.
 export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([

@@ -57,6 +57,7 @@ import {
     IRAttributeType,
     IRElement,
     IRExpressionAttribute,
+    isLWCDirectiveRenderMode,
     LWCDirectiveDomMode,
     LWCDirectiveRenderMode,
     LWCDirectives,
@@ -152,6 +153,23 @@ export default function parse(source: string, state: State): TemplateParseResult
         templateRoot.attrs.some(
             ({ name }) => name === ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS
         ) || state.config.preserveHtmlComments;
+
+    const renderModeAttribute = templateRoot.attrs.find(
+        ({ name }) => name === ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE
+    );
+    if (renderModeAttribute) {
+        const renderMode = renderModeAttribute.value;
+        if (isLWCDirectiveRenderMode(renderMode)) {
+            state.renderMode = renderMode;
+        } else {
+            const possibleValues = Object.values(LWCDirectiveRenderMode)
+                .map((value) => `"${value}"`)
+                .join(', or ');
+            warnOnElement(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, templateRoot, [
+                possibleValues,
+            ]);
+        }
+    }
 
     traverseHTML(templateRoot, {
         Element: {
@@ -395,7 +413,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function applyLwcRenderModeDirective(element: IRElement) {
-        const { parent, tag, attrsList } = element;
+        const { tag, attrsList } = element;
 
         // Can't handle slots in applySlot because it would be too late for class and style attrs
         if (state.renderMode === LWCDirectiveRenderMode.light && tag === 'slot') {
@@ -410,34 +428,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                 );
             }
         }
-
-        if (parent !== undefined) return;
-
-        const lwcRenderModeAttribute = getTemplateAttribute(
-            element,
-            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE
-        );
-
-        if (!lwcRenderModeAttribute) {
-            return;
-        }
-
-        removeAttribute(element, ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE);
-
-        if (
-            lwcRenderModeAttribute.type === IRAttributeType.String &&
-            !hasOwnProperty.call(LWCDirectiveRenderMode, lwcRenderModeAttribute.value)
-        ) {
-            const possibleValues = Object.keys(LWCDirectiveRenderMode)
-                .map((value) => `"${value}"`)
-                .join(', or ');
-            warnOnElement(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, element.__original, [
-                possibleValues,
-            ]);
-            return;
-        }
-
-        state.renderMode = lwcRenderModeAttribute.value as LWCDirectiveRenderMode;
     }
 
     function applyLwcDynamicDirective(element: IRElement, lwcOpts: LWCDirectives) {

@@ -108,12 +108,12 @@ function validateLightDomTemplate(template: Template, vm: VM) {
     if (!hasShadow(vm)) {
         assert.isTrue(
             template.renderMode === 'light',
-            `Templates for light DOM components should have a 'lwc:render-mode="light"' directive on the root template tag.`
+            `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive on the root template tag.`
         );
     } else {
         assert.isTrue(
             isUndefined(template.renderMode),
-            `Templates for shadow DOM components should either NOT have the 'lwc:render-mode' directive or set it to 'shadow'.`
+            `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive or set it to 'lwc:render-mode="shadow"`
         );
     }
 }
@@ -135,10 +135,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     const vmOfTemplateBeingUpdatedInception = vmBeingRendered;
     let vnodes: VNodes = [];
 
-    if (process.env.NODE_ENV !== 'production') {
-        validateLightDomTemplate(html, vm);
-    }
-
     runWithBoundaryProtection(
         vm,
         vm.owner,
@@ -155,6 +151,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
             tro.observe(() => {
                 // Reset the cache memoizer for template when needed.
                 if (html !== cmpTemplate) {
+                    if (process.env.NODE_ENV !== 'production') {
+                        validateLightDomTemplate(html, vm);
+                    }
+
                     // Perf opt: do not reset the shadow root during the first rendering (there is
                     // nothing to reset).
                     if (!isNull(cmpTemplate)) {
