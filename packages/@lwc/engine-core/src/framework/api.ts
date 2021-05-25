@@ -649,7 +649,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
         return null;
     }
     if (hasShadow(vmBeingRendered!)) {
-        return StringReplace.call(id, /[^\s]+/g, (id) => `${id}-${vmBeingRendered.idx}`);
+        return StringReplace.call(id, /\S+/g, (id) => `${id}-${vmBeingRendered.idx}`);
     }
     return id;
 }
