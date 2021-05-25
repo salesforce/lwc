@@ -1,7 +1,7 @@
 import { createElement, setFeatureFlagForTest, LightningElement } from 'lwc';
 
 import Test from 'x/test';
-import FalsyShadow from 'x/falsy-shadow';
+import InvalidRenderMode from 'x/invalidRenderMode';
 
 describe('Basic Light DOM', () => {
     beforeEach(() => {
@@ -21,14 +21,14 @@ describe('Basic Light DOM', () => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         expect(() => createElement('x-test', { is: Test })).toThrowErrorDev(
             Error,
-            'Invariant Violation: Test is an invalid LWC component. Light DOM components are not available in this environment.'
+            'Assert Violation: Test is an invalid LWC component. Light DOM components are not available in this environment.'
         );
     });
 
     it('should return null for template', () => {
         let template;
         class TemplateTest extends LightningElement {
-            static shadow = false;
+            static renderMode = 'light';
             connectedCallback() {
                 template = this.template;
             }
@@ -44,8 +44,12 @@ describe('Basic Light DOM', () => {
         expect(template).toBeNull();
     });
 
-    it('should render to Shadow DOM when shadow is falsy non-boolean', () => {
-        const elm = createElement('x-falsy-shadow', { is: FalsyShadow });
-        expect(elm.shadowRoot).not.toBeNull();
+    it('should throw error when renderMode is invalid', () => {
+        expect(() => {
+            const elm = createElement('x-invalid-render-mode', { is: InvalidRenderMode });
+            document.body.appendChild(elm);
+        }).toThrowError(
+            `Assert Violation: Invalid value for 'renderMode': sattar. 'renderMode' can either be undefined, 'light', or 'shadow'.`
+        );
     });
 });
