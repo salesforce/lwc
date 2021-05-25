@@ -75,7 +75,7 @@ module.exports = function postProcess({ types: t }) {
         return metaPropertyList;
     }
 
-    function createRegisterDecoratorsCall(path, klass, props) {
+    function createRegisterDecoratorsCallExpression(path, klass, props) {
         const id = moduleImports.addNamed(path, REGISTER_DECORATORS_ID, 'lwc');
 
         return t.callExpression(id, [klass, t.objectExpression(props)]);
@@ -89,7 +89,9 @@ module.exports = function postProcess({ types: t }) {
                 const metaPropertyList = collectMetaPropertyList(path.get('body'));
 
                 if (metaPropertyList.length) {
-                    path.replaceWith(createRegisterDecoratorsCall(path, node, metaPropertyList));
+                    path.replaceWith(
+                        createRegisterDecoratorsCallExpression(path, node, metaPropertyList)
+                    );
                 }
                 node[LWC_POST_PROCCESED] = true;
             }
@@ -104,13 +106,26 @@ module.exports = function postProcess({ types: t }) {
                 const hasIdentifier = t.isIdentifier(node.id);
 
                 if (hasIdentifier) {
+                    // Example: export default class NamedClass extends LightningElement {}
+                    // Output:
+                    //      export default class NamedClass extends LightningElement {}
+                    //      registerDecorators(NamedClass);
+                    // Note: This will be further transformed
                     statementPath.insertAfter(
-                        createRegisterDecoratorsCall(path, node.id, metaPropertyList)
+                        t.expressionStatement(
+                            createRegisterDecoratorsCallExpression(path, node.id, metaPropertyList)
+                        )
                     );
                 } else {
+                    // Example:
+                    //      export default class extends LightningElement {}
+                    // Output:
+                    //      export default registerDecorators(class extends LightningElement {});
                     // if it does not have an id, we can treat it as a ClassExpression
                     node.type = 'ClassExpression';
-                    path.replaceWith(createRegisterDecoratorsCall(path, node, metaPropertyList));
+                    path.replaceWith(
+                        createRegisterDecoratorsCallExpression(path, node, metaPropertyList)
+                    );
                 }
             }
         },
