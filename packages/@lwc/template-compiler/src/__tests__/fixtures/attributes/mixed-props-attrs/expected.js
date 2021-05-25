@@ -45,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "data-xx": "foo",
         },
         props: {
-          ariaDescribedBy: `${api_scoped_id("ns-foo")}`,
+          ariaDescribedBy: api_scoped_id("ns-foo"),
           ariaHidden: "hidden",
           fooBar: "x",
           foo: "bar",

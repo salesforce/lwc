@@ -269,21 +269,6 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         }
     }
 
-    function generateScopedIdFunctionForIdRefAttr(idRef: string): t.TemplateLiteral {
-        const expressions: t.CallExpression[] = idRef
-            .split(/\s+/) // handle space-delimited idrefs (e.g., aria-labelledby="foo bar")
-            .map((ref) => codeGen.genScopedId(ref));
-
-        // Embed call expressions into a template literal:
-        // [api_scoped_id()] => `${api_scoped_id()}`
-        // [api_scoped_id(), api_scoped_id()] => `${api_scoped_id()} ${api_scoped_id()}`
-        const spacesBetweenIdRefs = ' '.repeat(expressions.length - 1).split('');
-        const quasis = ['', ...spacesBetweenIdRefs, ''].map((str) =>
-            t.templateElement(false, { raw: str })
-        );
-        return t.templateLiteral(quasis, expressions);
-    }
-
     function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
         const { namespaceURI, tagName } = element.__original as parse5.AST.Default.Element;
         const isUsedAsAttribute = isAttribute(element, attr.name);
@@ -337,7 +322,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                 }
 
                 if (isIdReferencingAttribute(attr.name)) {
-                    return generateScopedIdFunctionForIdRefAttr(attr.value);
+                    return codeGen.genScopedId(attr.value);
                 }
                 if (
                     state.shouldScopeFragmentId &&
