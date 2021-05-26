@@ -12,6 +12,7 @@ import {
     runWithBoundaryProtection,
     getAssociatedVMIfPresent,
     VM,
+    hasShadow,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -163,7 +164,7 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     const children = vnode.aChildren || vnode.children;
 
     vm.aChildren = children;
-    if (isTrue(vm.renderer.syntheticShadow)) {
+    if (isTrue(vm.renderer.syntheticShadow) || !hasShadow(vm)) {
         // slow path
         allocateInSlot(vm, children);
         // save the allocated children in case this vnode is reused.

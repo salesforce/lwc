@@ -45,14 +45,15 @@ export function containsDynamicChildren(children: IRNode[]): boolean {
     return children.some((child) => isElement(child) && isDynamic(child));
 }
 
-export function shouldFlatten(children: IRNode[]): boolean {
+export function shouldFlatten(children: IRNode[], state: State): boolean {
     return children.some(
         (child) =>
             isElement(child) &&
             (isDynamic(child) ||
                 !!child.forEach ||
                 !!child.forOf ||
-                (isTemplate(child) && shouldFlatten(child.children)))
+                (state.renderMode === 'light' && child.tag === 'slot') ||
+                (isTemplate(child) && shouldFlatten(child.children, state)))
     );
 }
 

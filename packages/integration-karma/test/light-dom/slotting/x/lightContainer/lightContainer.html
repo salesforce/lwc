@@ -1,0 +1,11 @@
+<template lwc:render-mode="light">
+    <p data-id="container-upper-slot-top">Upper slot top</p>
+    <slot name="upper"><p data-id="container-upper-slot-default">Upper slot default</p></slot>
+    <p data-id="container-upper-slot-bottom">Default slot bottom</p>
+    <p data-id="container-default-slot-top">Default slot top</p>
+    <slot><p data-id="container-default-slot-default">Default slot default</p></slot>
+    <p data-id="container-default-slot-bottom">Default slot bottom</p>
+    <p data-id="container-lower-slot-top">Lower slot top</p>
+    <slot name="lower"><p data-id="container-lower-slot-default">Lower slot default</p></slot>
+    <p data-id="container-lower-slot-bottom">Lower slot bottom</p>
+</template>

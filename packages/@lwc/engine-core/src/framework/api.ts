@@ -77,7 +77,12 @@ export interface CustomElementCompilerData extends ElementCompilerData {
 }
 
 export interface RenderAPI {
-    s(slotName: string, data: ElementCompilerData, children: VNodes, slotset: SlotSet): VNode;
+    s(
+        slotName: string,
+        data: ElementCompilerData,
+        children: VNodes,
+        slotset: SlotSet
+    ): VNode | VNodes;
     h(tagName: string, data: ElementCompilerData, children: VNodes): VNode;
     c(
         tagName: string,
@@ -364,7 +369,7 @@ export function s(
     data: ElementCompilerData,
     children: VNodes,
     slotset: SlotSet | undefined
-): VElement {
+): VElement | VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -378,9 +383,12 @@ export function s(
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    if (vnode.owner.renderer.syntheticShadow) {
+    if (vnode.owner.renderer.syntheticShadow || !hasShadow(vnode.owner)) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
+    }
+    if (!hasShadow(vnode.owner)) {
+        return f(children);
     }
     return vnode;
 }
