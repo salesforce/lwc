@@ -212,7 +212,7 @@ function resetComponentStateWhenRemoved(vm: VM) {
         }
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
-        runShadowChildNodesDisconnectedCallback(vm);
+        runChildNodesDisconnectedCallback(vm);
         runLightChildNodesDisconnectedCallback(vm);
     }
 
@@ -342,7 +342,7 @@ function rehydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { cmpRoot, children: oldCh, elm } = vm;
+    const { children: oldCh } = vm;
 
     // caching the new children collection
     vm.children = newCh;
@@ -363,8 +363,8 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    const elmentToRenderTo = hasShadow(vm) ? cmpRoot : elm;
-                    fn(elmentToRenderTo, oldCh, newCh);
+                    const elementToRenderTo = getRenderRoot(vm);
+                    fn(elementToRenderTo, oldCh, newCh);
                 },
                 () => {
                     // post
@@ -500,7 +500,7 @@ function runDisconnectedCallback(vm: VM) {
     }
 }
 
-function runShadowChildNodesDisconnectedCallback(vm: VM) {
+function runChildNodesDisconnectedCallback(vm: VM) {
     const { velements: vCustomElementCollection } = vm;
 
     // Reporting disconnection for every child in inverse order since they are
@@ -556,22 +556,24 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
     }
 }
 
-// This is a super optimized mechanism to remove the content of the shadowRoot without having to go
+// This is a super optimized mechanism to remove the content of the root node (shadow root
+// for shadow DOM components and the root element itself for light DOM) without having to go
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
-export function resetShadowRoot(vm: VM) {
-    const { children, cmpRoot, renderer } = vm;
+export function resetComponentRoot(vm: VM) {
+    const { children, renderer } = vm;
+    const rootNode = getRenderRoot(vm);
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
 
         if (!isNull(child) && !isUndefined(child.elm)) {
-            renderer.remove(child.elm, cmpRoot);
+            renderer.remove(child.elm, rootNode);
         }
     }
     vm.children = EmptyArray;
 
-    runShadowChildNodesDisconnectedCallback(vm);
+    runChildNodesDisconnectedCallback(vm);
     vm.velements = EmptyArray;
 }
 
@@ -672,7 +674,7 @@ export function runWithBoundaryProtection(
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }
-            resetShadowRoot(vm); // remove offenders
+            resetComponentRoot(vm); // remove offenders
 
             if (profilerEnabled) {
                 logOperationStart(OperationId.errorCallback, vm);
@@ -710,4 +712,8 @@ export function hasShadow(vm: VM): vm is VM & { cmpRoot: ShadowRoot } {
     // We don't refer to vm.def.ctor.shadow because that could be changed by user
     // after instantiation.
     return !isNull(vm.cmpRoot);
+}
+
+function getRenderRoot(vm: VM) {
+    return hasShadow(vm) ? vm.cmpRoot : vm.elm;
 }

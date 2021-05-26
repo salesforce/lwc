@@ -286,7 +286,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
 
     const vm = getAssociatedVM(elm);
     if (!hasShadow(vm)) {
-        const { appendChild, insertBefore, removeChild, replaceChild } = elm;
+        const { appendChild, insertBefore, replaceChild } = elm;
 
         assign(descriptors, {
             insertBefore: generateDataDescriptor({
@@ -303,14 +303,6 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                         reportInvalidSlotMutationInLightDOM(vm);
                     }
                     return appendChild.call(this, aChild);
-                },
-            }),
-            removeChild: generateDataDescriptor({
-                value(this: Node, aChild: Node) {
-                    if (!isDomMutationAllowed) {
-                        reportInvalidSlotMutationInLightDOM(vm);
-                    }
-                    return removeChild.call(this, aChild);
                 },
             }),
             replaceChild: generateDataDescriptor({
