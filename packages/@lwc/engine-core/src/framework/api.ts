@@ -388,7 +388,7 @@ export function s(
         sc(children);
     }
     if (!hasShadow(vnode.owner)) {
-        return f(children);
+        return children;
     }
     return vnode;
 }
