@@ -7,6 +7,7 @@
 import { MarkupData } from 'parse5-with-errors';
 
 import { ResolvedConfig } from './config';
+import { LWCDirectiveRenderMode } from './shared/types';
 
 export interface IdAttributeData {
     location: MarkupData.Location;
@@ -29,6 +30,7 @@ export default class State {
      * fashion.
      */
     shouldScopeFragmentId: boolean = false;
+    renderMode: LWCDirectiveRenderMode = LWCDirectiveRenderMode.shadow;
 
     constructor(config: ResolvedConfig) {
         this.config = config;

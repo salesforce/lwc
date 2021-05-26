@@ -53,6 +53,15 @@ export enum LWCDirectiveDomMode {
     manual = 'manual',
 }
 
+export enum LWCDirectiveRenderMode {
+    shadow = 'shadow',
+    light = 'light',
+}
+
+export function isLWCDirectiveRenderMode(str: string): str is LWCDirectiveRenderMode {
+    return str === LWCDirectiveRenderMode.shadow || str === LWCDirectiveRenderMode.light;
+}
+
 export interface LWCDirectiveDynamic {
     prop: string;
 }

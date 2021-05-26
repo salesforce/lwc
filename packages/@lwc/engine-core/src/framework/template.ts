@@ -12,15 +12,23 @@ import {
     isArray,
     isFunction,
     isNull,
+    isUndefined,
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';
-import { SlotSet, TemplateCache, VM, resetShadowRoot, runWithBoundaryProtection } from './vm';
+import {
+    SlotSet,
+    TemplateCache,
+    VM,
+    resetShadowRoot,
+    runWithBoundaryProtection,
+    hasShadow,
+} from './vm';
 import { EmptyArray } from './utils';
-import { isTemplateRegistered } from './secure-template';
+import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     TemplateStylesheetFactories,
     createStylesheet,
@@ -49,6 +57,8 @@ export interface Template {
     stylesheets?: TemplateStylesheetFactories;
     /** The stylesheet tokens used for synthetic shadow style scoping. */
     stylesheetTokens?: TemplateStylesheetTokens;
+    /** Render mode for the template. Could be light or undefined (which means it's shadow) */
+    renderMode?: 'light';
 }
 
 export let isUpdatingTemplate: boolean = false;
@@ -93,6 +103,21 @@ function validateSlots(vm: VM, html: Template) {
     }
 }
 
+function validateLightDomTemplate(template: Template, vm: VM) {
+    if (template === defaultEmptyTemplate) return;
+    if (!hasShadow(vm)) {
+        assert.isTrue(
+            template.renderMode === 'light',
+            `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive on the root template tag.`
+        );
+    } else {
+        assert.isTrue(
+            isUndefined(template.renderMode),
+            `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive or set it to 'lwc:render-mode="shadow"`
+        );
+    }
+}
+
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
@@ -126,6 +151,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
             tro.observe(() => {
                 // Reset the cache memoizer for template when needed.
                 if (html !== cmpTemplate) {
+                    if (process.env.NODE_ENV !== 'production') {
+                        validateLightDomTemplate(html, vm);
+                    }
+
                     // Perf opt: do not reset the shadow root during the first rendering (there is
                     // nothing to reset).
                     if (!isNull(cmpTemplate)) {

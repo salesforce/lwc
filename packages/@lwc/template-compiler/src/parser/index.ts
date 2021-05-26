@@ -15,76 +15,79 @@ import {
     ParserDiagnostics,
 } from '@lwc/errors';
 import {
-    treeAdapter,
-    parseHTML,
-    traverseHTML,
-    getSource,
     cleanTextNode,
     decodeTextContent,
+    getSource,
+    parseHTML,
+    traverseHTML,
+    treeAdapter,
 } from './html';
 
 import {
-    isAttribute,
-    getAttribute,
-    removeAttribute,
     attributeName,
-    normalizeAttributeValue,
-    isValidHTMLAttribute,
     attributeToPropertyName,
+    getAttribute,
+    isAttribute,
     isProhibitedIsAttribute,
     isSvgUseHref,
     isTabIndexAttribute,
+    isValidHTMLAttribute,
     isValidTabIndexAttributeValue,
+    normalizeAttributeValue,
+    removeAttribute,
 } from './attribute';
 
 import {
-    isExpression,
-    parseIdentifier,
-    isIteratorElement,
-    getForOfParent,
     getForEachParent,
+    getForOfParent,
+    isExpression,
+    isIteratorElement,
     parseExpression,
+    parseIdentifier,
 } from './expression';
 
-import { parseStyleText, parseClassNames } from './style';
+import { parseClassNames, parseStyleText } from './style';
 
 import * as t from '../shared/estree';
-import { createElement, isCustomElement, createText, createComment } from '../shared/ir';
+import { createComment, createElement, createText, isCustomElement } from '../shared/ir';
 import {
-    IRElement,
+    ForEach,
+    ForIterator,
     IRAttribute,
     IRAttributeType,
-    TemplateIdentifier,
-    ForIterator,
+    IRElement,
     IRExpressionAttribute,
-    ForEach,
-    TemplateExpression,
-    TemplateParseResult,
+    isLWCDirectiveRenderMode,
     LWCDirectiveDomMode,
+    LWCDirectiveRenderMode,
     LWCDirectives,
+    TemplateExpression,
+    TemplateIdentifier,
+    TemplateParseResult,
 } from '../shared/types';
 
 import State from '../state';
 
 import {
-    EXPRESSION_RE,
-    IF_RE,
-    LWC_RE,
-    VALID_IF_MODIFIER,
-    EVENT_HANDLER_RE,
-    EVENT_HANDLER_NAME_RE,
-    DISALLOWED_HTML_TAGS,
-    ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
+    DISALLOWED_HTML_TAGS,
+    DISALLOWED_MATHML_TAGS,
+    EVENT_HANDLER_NAME_RE,
+    EVENT_HANDLER_RE,
+    EXPRESSION_RE,
+    HTML_NAMESPACE_URI,
+    IF_RE,
+    ITERATOR_RE,
+    KNOWN_HTML_ELEMENTS,
+    LWC_DIRECTIVE_SET,
+    LWC_DIRECTIVES,
+    LWC_RE,
+    MATHML_NAMESPACE_URI,
+    ROOT_TEMPLATE_DIRECTIVES,
+    ROOT_TEMPLATE_DIRECTIVES_SET,
     SUPPORTED_SVG_TAGS,
     SVG_NAMESPACE_URI,
-    HTML_NAMESPACE_URI,
-    DISALLOWED_MATHML_TAGS,
-    MATHML_NAMESPACE_URI,
-    KNOWN_HTML_ELEMENTS,
-    LWC_DIRECTIVES,
-    LWC_DIRECTIVE_SET,
-    PRESERVE_COMMENTS_ATTRIBUTE_NAME,
+    VALID_IF_MODIFIER,
 } from './constants';
 
 function isStyleElement(irElement: IRElement) {
@@ -147,8 +150,26 @@ export default function parse(source: string, state: State): TemplateParseResult
     const stack: IRElement[] = [];
 
     const preserveComments =
-        templateRoot.attrs.some(({ name }) => name === PRESERVE_COMMENTS_ATTRIBUTE_NAME) ||
-        state.config.preserveHtmlComments;
+        templateRoot.attrs.some(
+            ({ name }) => name === ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS
+        ) || state.config.preserveHtmlComments;
+
+    const renderModeAttribute = templateRoot.attrs.find(
+        ({ name }) => name === ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE
+    );
+    if (renderModeAttribute) {
+        const renderMode = renderModeAttribute.value;
+        if (isLWCDirectiveRenderMode(renderMode)) {
+            state.renderMode = renderMode;
+        } else {
+            const possibleValues = Object.values(LWCDirectiveRenderMode)
+                .map((value) => `"${value}"`)
+                .join(', or ');
+            warnOnElement(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, templateRoot, [
+                possibleValues,
+            ]);
+        }
+    }
 
     traverseHTML(templateRoot, {
         Element: {
@@ -165,6 +186,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                     parent.children.push(element);
                 }
 
+                applyLwcRenderModeDirective(element);
                 validateInlineStyleElement(element);
 
                 applyForEach(element);
@@ -371,11 +393,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             return;
         }
 
-        // only root template tag allows lwc:preserve-comments
-        if (
-            element.parent === undefined &&
-            lwcAttribute.name === PRESERVE_COMMENTS_ATTRIBUTE_NAME
-        ) {
+        if (element.parent === undefined && ROOT_TEMPLATE_DIRECTIVES_SET.has(lwcAttribute.name)) {
             return;
         }
 
@@ -392,6 +410,24 @@ export default function parse(source: string, state: State): TemplateParseResult
         applyLwcDomDirective(element, lwcOpts);
 
         element.lwc = lwcOpts;
+    }
+
+    function applyLwcRenderModeDirective(element: IRElement) {
+        const { tag, attrsList } = element;
+
+        // Can't handle slots in applySlot because it would be too late for class and style attrs
+        if (state.renderMode === LWCDirectiveRenderMode.light && tag === 'slot') {
+            const invalidAttrs = attrsList
+                .filter(({ name }) => name !== 'name')
+                .map(({ name }) => name);
+            if (invalidAttrs.length > 0) {
+                return warnOnElement(
+                    ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_ATTRIBUTES,
+                    element.__original,
+                    [invalidAttrs.join(',')]
+                );
+            }
+        }
     }
 
     function applyLwcDynamicDirective(element: IRElement, lwcOpts: LWCDirectives) {
@@ -436,6 +472,14 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
 
         removeAttribute(element, LWC_DIRECTIVES.DOM);
+
+        if (state.renderMode === LWCDirectiveRenderMode.light) {
+            return warnOnElement(
+                ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM,
+                element.__original,
+                [`<${element.tag}>`]
+            );
+        }
 
         if (isCustomElement(element)) {
             return warnOnElement(
@@ -809,7 +853,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             const rootHasUnknownAttributes = node.attrs.some(
-                ({ name }) => name !== PRESERVE_COMMENTS_ATTRIBUTE_NAME
+                ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
             );
             if (rootHasUnknownAttributes) {
                 return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, node);

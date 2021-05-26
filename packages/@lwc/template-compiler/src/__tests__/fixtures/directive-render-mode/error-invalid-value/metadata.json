@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1133,
+            "message": "LWC1133: Invalid value for \"lwc:render-mode\". 'lwc:render-mode' can only be set to \"shadow\", or \"light\"",
+            "level": 1,
+            "location": {
+                "line": 1,
+                "column": 1,
+                "start": 0,
+                "length": 63
+            }
+        }
+    ]
+}

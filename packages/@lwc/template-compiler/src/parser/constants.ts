@@ -25,7 +25,15 @@ export const LWC_DIRECTIVES = {
     DYNAMIC: 'lwc:dynamic',
 };
 
-export const LWC_DIRECTIVE_SET: Set<string> = new Set([LWC_DIRECTIVES.DOM, LWC_DIRECTIVES.DYNAMIC]);
+export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(LWC_DIRECTIVES));
+
+export const ROOT_TEMPLATE_DIRECTIVES = {
+    PRESERVE_COMMENTS: 'lwc:preserve-comments',
+    RENDER_MODE: 'lwc:render-mode',
+};
+export const ROOT_TEMPLATE_DIRECTIVES_SET: Set<string> = new Set(
+    Object.values(ROOT_TEMPLATE_DIRECTIVES)
+);
 
 // These attributes take either an ID or a list of IDs as values.
 export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([
@@ -39,8 +47,6 @@ export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([
     'aria-owns',
     'for',
 ]);
-
-export const PRESERVE_COMMENTS_ATTRIBUTE_NAME = 'lwc:preserve-comments';
 
 const ATTRIBUTE_NAME_CHAR = [
     ':A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-',
