@@ -3,7 +3,7 @@ import A from './a.html';
 import B from './b.html';
 
 export default class Multi extends LightningElement {
-    static shadow = false;
+    static renderMode = 'light';
     current = A;
 
     @api
