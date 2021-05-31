@@ -13,22 +13,27 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 import {
+    AccessibleElementProperties,
     assert,
     create,
     defineProperties,
+    defineProperty,
+    globalThis,
+    isBoolean,
     isFunction,
     isNull,
-    defineProperty,
     isObject,
-    AccessibleElementProperties,
-    setPrototypeOf,
+    isTrue,
     isUndefined,
+    KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
+    KEY__SYNTHETIC_MODE,
+    setPrototypeOf,
 } from '@lwc/shared';
 import features from '@lwc/features';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM, isLightRenderModeVM, VM } from './vm';
+import { associateVM, getAssociatedVM, isLightRenderModeVM, RenderMode, ShadowMode, VM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -43,6 +48,8 @@ import { getComponentTag } from '../shared/format';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { lockerLivePropertyKey } from './membrane';
 import { EmptyObject } from './utils';
+
+const isNativeShadowRootDefined = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -128,6 +135,7 @@ export interface LightningElementConstructor {
     readonly CustomElementConstructor: HTMLElementConstructor;
 
     delegatesFocus?: boolean;
+    preferNativeShadow?: boolean;
     renderMode?: 'shadow' | 'light';
 }
 
@@ -189,7 +197,7 @@ export const LightningElement: LightningElementConstructor = function (
     const {
         elm,
         renderer,
-        def: { ctor, bridge },
+        def: { bridge },
     } = vm;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -222,25 +230,10 @@ export const LightningElement: LightningElementConstructor = function (
     associateVM(component, vm);
     associateVM(elm, vm);
 
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isUndefined(ctor.renderMode) ||
-                ctor.renderMode === 'light' ||
-                ctor.renderMode === 'shadow',
-            `Invalid value for 'renderMode': ${ctor.renderMode}. 'renderMode' can either be undefined, 'light', or 'shadow'.`
-        );
-    }
+    initializeRenderMode(vm);
+    initializeShadowMode(vm);
 
-    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
-        assert.isTrue(
-            ctor.renderMode !== 'light',
-            `${
-                ctor.name || 'Anonymous class'
-            } is an invalid LWC component. Light DOM components are not available in this environment.`
-        );
-    }
-
-    if (ctor.renderMode !== 'light') {
+    if (vm.renderMode === RenderMode.Shadow) {
         attachShadow(vm);
     }
 
@@ -253,18 +246,74 @@ export const LightningElement: LightningElementConstructor = function (
     return this;
 };
 
+function initializeRenderMode(vm: VM) {
+    const {
+        def: { ctor },
+    } = vm;
+    const { renderMode } = ctor;
+
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(renderMode)) {
+            assert.invariant(
+                renderMode === 'light' || renderMode === 'shadow',
+                `Invalid value for static property renderMode: '${renderMode}'. renderMode must be either 'light' or 'shadow'.`
+            );
+        }
+    }
+    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
+        assert.isTrue(
+            renderMode !== 'light',
+            `${
+                ctor.name || 'Anonymous class'
+            } is an invalid LWC component. Light DOM components are not available in this environment.`
+        );
+    }
+
+    vm.renderMode = renderMode === 'light' ? RenderMode.Light : RenderMode.Shadow;
+}
+
+function initializeShadowMode(vm: VM) {
+    const {
+        def: { ctor },
+        renderer,
+    } = vm;
+    const { preferNativeShadow, renderMode } = ctor;
+
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(preferNativeShadow)) {
+            assert.invariant(
+                isBoolean(preferNativeShadow),
+                `Invalid value for static property preferNativeShadow: '${preferNativeShadow}'. preferNativeShadow must be a boolean value.`
+            );
+        }
+    }
+
+    if (renderer.ssr) {
+        vm.shadowMode = ShadowMode.Native;
+    } else if (renderMode === 'light') {
+        vm.shadowMode = ShadowMode.None;
+    } else {
+        vm.shadowMode =
+            isTrue(preferNativeShadow) && isNativeShadowRootDefined
+                ? ShadowMode.Native
+                : ShadowMode.Synthetic;
+    }
+}
+
 function attachShadow(vm: VM) {
     const {
         elm,
         mode,
         renderer,
+        shadowMode,
         def: { ctor },
     } = vm;
+
     const cmpRoot = renderer.attachShadow(elm, {
+        [KEY__SYNTHETIC_MODE]: shadowMode === ShadowMode.Synthetic,
+        delegatesFocus: Boolean(ctor.delegatesFocus),
         mode,
-        delegatesFocus: !!ctor.delegatesFocus,
-        '$$lwc-synthetic-mode$$': true,
-    } as any) as ShadowRoot;
+    } as any);
 
     vm.cmpRoot = cmpRoot;
     associateVM(cmpRoot, vm);

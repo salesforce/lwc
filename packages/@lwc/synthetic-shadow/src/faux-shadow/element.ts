@@ -13,8 +13,8 @@ import {
     getOwnPropertyDescriptor,
     hasOwnProperty,
     isNull,
-    isTrue,
     isUndefined,
+    KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
 import { attachShadow, getShadowRoot, isHostElement } from './shadow-root';
@@ -76,11 +76,10 @@ function outerHTMLGetterPatched(this: Element) {
 
 function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot {
     // To retain native behavior of the API, provide synthetic shadowRoot only when specified
-    if (isTrue((options as any)['$$lwc-synthetic-mode$$'])) {
+    if ((options as any)[KEY__SYNTHETIC_MODE]) {
         return attachShadow(this, options);
-    } else {
-        return originalAttachShadow.call(this, options);
     }
+    return originalAttachShadow.call(this, options);
 }
 
 function shadowRootGetterPatched(this: Element): ShadowRoot | null {

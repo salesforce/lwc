@@ -11,6 +11,8 @@ if (typeof ShadowRoot !== 'undefined') {
     NativeShadowRoot = ShadowRoot;
 }
 
+export const isNativeShadowRootDefined = !isNull(NativeShadowRoot);
+
 export const isInstanceOfNativeShadowRoot: (node: any) => boolean = isNull(NativeShadowRoot)
     ? () => false
     : (node) => node instanceof NativeShadowRoot;
