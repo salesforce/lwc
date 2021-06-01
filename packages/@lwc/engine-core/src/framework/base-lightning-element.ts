@@ -28,7 +28,7 @@ import features from '@lwc/features';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM, hasShadow, VM } from './vm';
+import { associateVM, getAssociatedVM, isLightRenderModeVM, VM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -550,7 +550,7 @@ LightningElement.prototype = {
         const vm = getAssociatedVM(this);
 
         if (process.env.NODE_ENV !== 'production') {
-            if (!hasShadow(vm)) {
+            if (!isLightRenderModeVM(vm)) {
                 logError(
                     '`this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
                 );

@@ -12,7 +12,7 @@ import {
     runWithBoundaryProtection,
     getAssociatedVMIfPresent,
     VM,
-    hasShadow,
+    isLightRenderModeVM,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -97,7 +97,7 @@ enum LWCDOMMode {
 
 export function fallbackElmHook(elm: Element, vnode: VElement) {
     const { owner } = vnode;
-    if (isTrue(owner.renderer.syntheticShadow) && hasShadow(owner)) {
+    if (isTrue(owner.renderer.syntheticShadow) && isLightRenderModeVM(owner)) {
         const {
             data: { context },
         } = vnode;
@@ -164,7 +164,7 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     const children = vnode.aChildren || vnode.children;
 
     vm.aChildren = children;
-    if (isTrue(vm.renderer.syntheticShadow) || !hasShadow(vm)) {
+    if (isTrue(vm.renderer.syntheticShadow) || !isLightRenderModeVM(vm)) {
         // slow path
         allocateInSlot(vm, children);
         // save the allocated children in case this vnode is reused.
@@ -183,7 +183,7 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     }
     const { sel, mode, ctor, owner } = vnode;
     const def = getComponentInternalDef(ctor);
-    if (isTrue(owner.renderer.syntheticShadow) && hasShadow(owner)) {
+    if (isTrue(owner.renderer.syntheticShadow) && isLightRenderModeVM(owner)) {
         const { shadowAttribute } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.
