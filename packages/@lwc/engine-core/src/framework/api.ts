@@ -382,15 +382,17 @@ export function s(
     ) {
         children = slotset[slotName];
     }
-    const vnode = h('slot', data, children);
-    if (vnode.owner.renderer.syntheticShadow || !hasShadow(vnode.owner)) {
+    const vmBeingRendered = getVMBeingRendered()!;
+
+    if (!hasShadow(vmBeingRendered)) {
+        sc(children);
+        return children;
+    }
+    if (vmBeingRendered.renderer.syntheticShadow) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
-    if (!hasShadow(vnode.owner)) {
-        return children;
-    }
-    return vnode;
+    return h('slot', data, children);
 }
 
 // [c]ustom element node
