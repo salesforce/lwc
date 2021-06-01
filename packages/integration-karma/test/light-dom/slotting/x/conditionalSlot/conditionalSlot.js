@@ -1,7 +1,7 @@
 import { LightningElement } from 'lwc';
 
 export default class ConditionalSlot extends LightningElement {
-    static shadow = false;
+    static renderMode = 'light';
     showSlot = true;
 
     toggleSlot() {
