@@ -237,8 +237,7 @@ export const LightningElement: LightningElementConstructor = function (
     associateVM(component, vm);
     associateVM(elm, vm);
 
-    initializeRenderMode(vm);
-    initializeShadowMode(vm);
+    initializeMode(vm);
 
     if (vm.renderMode === RenderMode.Shadow) {
         attachShadow(vm);
@@ -579,11 +578,12 @@ LightningElement.prototype = {
     },
 };
 
-function initializeRenderMode(vm: VM) {
+function initializeMode(vm: VM) {
     const {
         def: { ctor },
+        renderer,
     } = vm;
-    const { renderMode } = ctor;
+    const { preferNativeShadow, renderMode } = ctor;
 
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(renderMode)) {
@@ -592,7 +592,14 @@ function initializeRenderMode(vm: VM) {
                 `Invalid value for static property renderMode: '${renderMode}'. renderMode must be either 'light' or 'shadow'.`
             );
         }
+        if (!isUndefined(preferNativeShadow)) {
+            assert.invariant(
+                isBoolean(preferNativeShadow),
+                `Invalid value for static property preferNativeShadow: '${preferNativeShadow}'. preferNativeShadow must be a boolean value.`
+            );
+        }
     }
+
     if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
         assert.isTrue(
             renderMode !== 'light',
@@ -602,35 +609,23 @@ function initializeRenderMode(vm: VM) {
         );
     }
 
-    vm.renderMode = renderMode === 'light' ? RenderMode.Light : RenderMode.Shadow;
-}
-
-function initializeShadowMode(vm: VM) {
-    const {
-        def: { ctor },
-        renderer,
-    } = vm;
-    const { preferNativeShadow, renderMode } = ctor;
-
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(preferNativeShadow)) {
-            assert.invariant(
-                isBoolean(preferNativeShadow),
-                `Invalid value for static property preferNativeShadow: '${preferNativeShadow}'. preferNativeShadow must be a boolean value.`
-            );
-        }
+    if (renderMode === 'light') {
+        vm.renderMode = RenderMode.Light;
+        vm.shadowMode = ShadowMode.None;
+        return;
     }
 
     if (renderer.ssr) {
+        vm.renderMode = RenderMode.Shadow;
         vm.shadowMode = ShadowMode.Native;
-    } else if (renderMode === 'light') {
-        vm.shadowMode = ShadowMode.None;
-    } else {
-        vm.shadowMode =
-            isTrue(preferNativeShadow) && isNativeShadowRootDefined
-                ? ShadowMode.Native
-                : ShadowMode.Synthetic;
+        return;
     }
+
+    vm.renderMode = RenderMode.Shadow;
+    vm.shadowMode =
+        isTrue(preferNativeShadow) && isNativeShadowRootDefined
+            ? ShadowMode.Native
+            : ShadowMode.Synthetic;
 }
 
 export const lightningBasedDescriptors: PropertyDescriptorMap = create(null);
