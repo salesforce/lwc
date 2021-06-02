@@ -28,15 +28,15 @@ import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
 import {
+    appendVM,
+    getAssociatedVMIfPresent,
+    removeVM,
+    RenderMode,
+    rerenderVM,
     runConnectedCallback,
     SlotSet,
     VM,
     VMState,
-    getAssociatedVMIfPresent,
-    removeVM,
-    rerenderVM,
-    appendVM,
-    isLightRenderModeVM,
 } from './vm';
 import {
     VNode,
@@ -256,7 +256,7 @@ function linkNodeToShadowIfRequired(elm: Node, owner: VM) {
     const { renderer, cmpRoot } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (isLightRenderModeVM(owner) && renderer.syntheticShadow) {
+    if (owner.renderMode === RenderMode.Shadow && renderer.syntheticShadow) {
         (elm as any).$shadowResolver$ = (cmpRoot as any).$shadowResolver$;
         (elm as any)[KEY__SHADOW_RESOLVER] = (cmpRoot as any)[KEY__SHADOW_RESOLVER];
     }
@@ -385,8 +385,9 @@ export function s(
         children = slotset[slotName];
     }
     const vmBeingRendered = getVMBeingRendered()!;
+    const { renderMode } = vmBeingRendered;
 
-    if (!isLightRenderModeVM(vmBeingRendered)) {
+    if (renderMode === RenderMode.Light) {
         sc(children);
         return children;
     }
@@ -646,12 +647,12 @@ export function k(compilerKey: number, obj: any): string | void {
 
 // [g]lobal [id] function
 export function gid(id: string | undefined | null): string | null | undefined {
-    const vmBeingRendered = getVMBeingRendered();
+    const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(id) || id === '') {
         if (process.env.NODE_ENV !== 'production') {
             logError(
                 `Invalid id value "${id}". The id attribute must contain a non-empty string.`,
-                vmBeingRendered!
+                vmBeingRendered
             );
         }
         return id;
@@ -660,21 +661,22 @@ export function gid(id: string | undefined | null): string | null | undefined {
     if (isNull(id)) {
         return null;
     }
-    if (isLightRenderModeVM(vmBeingRendered!)) {
-        return StringReplace.call(id, /\S+/g, (id) => `${id}-${vmBeingRendered.idx}`);
+    const { idx, renderMode } = vmBeingRendered;
+    if (renderMode === RenderMode.Shadow) {
+        return StringReplace.call(id, /\S+/g, (id) => `${id}-${idx}`);
     }
     return id;
 }
 
 // [f]ragment [id] function
 export function fid(url: string | undefined | null): string | null | undefined {
-    const vmBeingRendered = getVMBeingRendered();
+    const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
             if (isUndefined(url)) {
                 logError(
                     `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
-                    vmBeingRendered!
+                    vmBeingRendered
                 );
             }
         }
@@ -684,8 +686,9 @@ export function fid(url: string | undefined | null): string | null | undefined {
     if (isNull(url)) {
         return null;
     }
+    const { renderMode } = vmBeingRendered;
     // Apply transformation only for fragment-only-urls, and only in shadow DOM
-    if (/^#/.test(url) && isLightRenderModeVM(vmBeingRendered!)) {
+    if (/^#/.test(url) && renderMode === RenderMode.Shadow) {
         return `${url}-${vmBeingRendered!.idx}`;
     }
     return url;

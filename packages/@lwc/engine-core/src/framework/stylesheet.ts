@@ -8,7 +8,7 @@ import { isArray, isUndefined, ArrayJoin, ArrayPush } from '@lwc/shared';
 
 import * as api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
-import { VM, isLightRenderModeVM } from './vm';
+import { RenderMode, VM } from './vm';
 import { Template, TemplateStylesheetTokens } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 
@@ -43,7 +43,7 @@ function createInlineStyleVNode(content: string): VNode {
 }
 
 export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
-    const { elm, context, renderer } = vm;
+    const { elm, context, renderer, renderMode } = vm;
     const { stylesheets: newStylesheets, stylesheetTokens: newStylesheetTokens } = template;
 
     let newTokens: TemplateStylesheetTokens | undefined;
@@ -56,7 +56,11 @@ export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
 
     // Apply the new template styling token to the host element, if the new template has any
     // associated stylesheets.
-    if (!isUndefined(newStylesheets) && newStylesheets.length !== 0 && isLightRenderModeVM(vm)) {
+    if (
+        !isUndefined(newStylesheets) &&
+        newStylesheets.length !== 0 &&
+        renderMode === RenderMode.Shadow
+    ) {
         newTokens = newStylesheetTokens;
     }
 
@@ -111,7 +115,11 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
 
         // Scoping with the tokens is only necessary for synthetic shadow. For both
         // light DOM elements and native shadow, we just render the CSS as-is.
-        if (syntheticShadow && isLightRenderModeVM(vm) && !isUndefined(stylesheetTokens)) {
+        if (
+            syntheticShadow &&
+            vm.renderMode === RenderMode.Shadow &&
+            !isUndefined(stylesheetTokens)
+        ) {
             hostSelector = `[${stylesheetTokens.hostAttribute}]`;
             shadowSelector = `[${stylesheetTokens.shadowAttribute}]`;
         } else {
@@ -131,9 +139,9 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
 }
 
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    const { renderer } = vm;
+    const { renderer, renderMode } = vm;
 
-    if (renderer.syntheticShadow && isLightRenderModeVM(vm)) {
+    if (renderer.syntheticShadow && renderMode === RenderMode.Shadow) {
         for (let i = 0; i < stylesheets.length; i++) {
             renderer.insertGlobalStylesheet(stylesheets[i]);
         }
