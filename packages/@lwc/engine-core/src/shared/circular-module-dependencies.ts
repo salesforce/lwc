@@ -7,6 +7,11 @@
 
 import { isFunction, hasOwnProperty } from '@lwc/shared';
 
+interface MaybeModule extends Object {
+    __esModule?: boolean;
+    default?: any;
+}
+
 /**
  * When LWC is used in the context of an Aura application, the compiler produces AMD modules, that
  * doesn't resolve properly circular dependencies between modules. In order to circumvent this
@@ -18,8 +23,12 @@ interface CircularModuleDependency<M extends Object> {
     __circular__: boolean;
 }
 
-export function resolveCircularModuleDependency<M = any>(fn: CircularModuleDependency<M>): M {
-    return fn();
+export function resolveCircularModuleDependency<M extends MaybeModule>(
+    fn: CircularModuleDependency<M>
+): M {
+    const module = fn();
+
+    return module && module.__esModule ? module.default : module;
 }
 
 export function isCircularModuleDependency(obj: unknown): obj is CircularModuleDependency<any> {
