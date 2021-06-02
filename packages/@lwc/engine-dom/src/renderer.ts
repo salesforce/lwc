@@ -7,7 +7,6 @@
 
 import {
     assert,
-    hasOwnProperty,
     isUndefined,
     create,
     StringToLowerCase,
@@ -89,13 +88,8 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
-// TODO [#0]: Evaluate how we can extract the `$shadowToken$` property name in a shared package
-// to avoid having to synchronize it between the different modules.
-export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');
-
 export const renderer: Renderer<Node, Element> = {
     ssr: false,
-    syntheticShadow: useSyntheticShadow,
 
     createElement(tagName: string, namespace: string): Element {
         return isUndefined(namespace)

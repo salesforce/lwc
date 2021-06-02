@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
+import { assert, isArray, isNull, isUndefined } from '@lwc/shared';
 import { EmptyArray } from './utils';
 import {
     createVM,
@@ -13,6 +13,7 @@ import {
     getAssociatedVMIfPresent,
     VM,
     RenderMode,
+    ShadowMode,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -97,8 +98,8 @@ enum LWCDOMMode {
 
 export function fallbackElmHook(elm: Element, vnode: VElement) {
     const { owner } = vnode;
-    const { renderMode } = owner;
-    if (isTrue(owner.renderer.syntheticShadow) && renderMode === RenderMode.Shadow) {
+    const { renderMode, shadowMode } = owner;
+    if (shadowMode === ShadowMode.Synthetic && renderMode === RenderMode.Shadow) {
         const {
             data: { context },
         } = vnode;
@@ -166,8 +167,8 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
 
     vm.aChildren = children;
 
-    const { renderMode } = vm;
-    if (isTrue(vm.renderer.syntheticShadow) || renderMode === RenderMode.Light) {
+    const { renderMode, shadowMode } = vm;
+    if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
         allocateInSlot(vm, children);
         // save the allocated children in case this vnode is reused.
@@ -185,14 +186,14 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
         return;
     }
     const { sel, mode, ctor, owner } = vnode;
-    const def = getComponentInternalDef(ctor);
-    const { renderMode } = owner;
-    if (isTrue(owner.renderer.syntheticShadow) && renderMode === RenderMode.Shadow) {
+    const { renderMode, shadowMode } = owner;
+    if (shadowMode === ShadowMode.Synthetic && renderMode === RenderMode.Shadow) {
         const { shadowAttribute } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.
         setElementShadowToken(elm, shadowAttribute);
     }
+    const def = getComponentInternalDef(ctor);
     createVM(elm, def, {
         mode,
         owner,

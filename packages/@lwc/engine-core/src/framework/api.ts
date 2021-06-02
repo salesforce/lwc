@@ -34,6 +34,7 @@ import {
     RenderMode,
     rerenderVM,
     runConnectedCallback,
+    ShadowMode,
     SlotSet,
     VM,
     VMState,
@@ -253,11 +254,10 @@ const CustomElementHook: Hooks<VCustomElement> = {
 };
 
 function linkNodeToShadowIfRequired(elm: Node, owner: VM) {
-    const { renderer, cmpRoot } = owner;
+    const { cmpRoot, renderMode, shadowMode } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (owner.renderMode === RenderMode.Shadow && renderer.syntheticShadow) {
-        (elm as any).$shadowResolver$ = (cmpRoot as any).$shadowResolver$;
+    if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         (elm as any)[KEY__SHADOW_RESOLVER] = (cmpRoot as any)[KEY__SHADOW_RESOLVER];
     }
 }
@@ -385,13 +385,13 @@ export function s(
         children = slotset[slotName];
     }
     const vmBeingRendered = getVMBeingRendered()!;
-    const { renderMode } = vmBeingRendered;
+    const { renderMode, shadowMode } = vmBeingRendered;
 
     if (renderMode === RenderMode.Light) {
         sc(children);
         return children;
     }
-    if (vmBeingRendered.renderer.syntheticShadow) {
+    if (shadowMode === ShadowMode.Synthetic) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }

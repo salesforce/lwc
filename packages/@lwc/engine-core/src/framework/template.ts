@@ -23,6 +23,7 @@ import {
     RenderMode,
     resetComponentRoot,
     runWithBoundaryProtection,
+    ShadowMode,
     SlotSet,
     TemplateCache,
     VM,
@@ -147,7 +148,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         },
         () => {
             // job
-            const { component, context, cmpSlots, cmpTemplate, tro, renderer } = vm;
+            const { component, context, cmpSlots, cmpTemplate, tro, shadowMode } = vm;
             tro.observe(() => {
                 // Reset the cache memoizer for template when needed.
                 if (html !== cmpTemplate) {
@@ -179,7 +180,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                     context.tplCache = create(null);
 
                     // Update the synthetic shadow attributes on the host element if necessary.
-                    if (renderer.syntheticShadow) {
+                    if (shadowMode === ShadowMode.Synthetic) {
                         updateSyntheticShadowAttributes(vm, html);
                     }
 

@@ -8,7 +8,7 @@ import { isArray, isUndefined, ArrayJoin, ArrayPush } from '@lwc/shared';
 
 import * as api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
-import { RenderMode, VM } from './vm';
+import { RenderMode, ShadowMode, VM } from './vm';
 import { Template, TemplateStylesheetTokens } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 
@@ -105,7 +105,7 @@ function evaluateStylesheetsContent(
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
     const { stylesheets, stylesheetTokens } = template;
-    const { syntheticShadow } = vm.renderer;
+    const { renderMode, shadowMode } = vm;
 
     let content: string[] = [];
 
@@ -116,8 +116,8 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
         // Scoping with the tokens is only necessary for synthetic shadow. For both
         // light DOM elements and native shadow, we just render the CSS as-is.
         if (
-            syntheticShadow &&
-            vm.renderMode === RenderMode.Shadow &&
+            renderMode === RenderMode.Shadow &&
+            shadowMode === ShadowMode.Synthetic &&
             !isUndefined(stylesheetTokens)
         ) {
             hostSelector = `[${stylesheetTokens.hostAttribute}]`;
@@ -131,7 +131,7 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
             stylesheets,
             hostSelector,
             shadowSelector,
-            !syntheticShadow
+            shadowMode === ShadowMode.Native
         );
     }
 
@@ -139,9 +139,8 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
 }
 
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    const { renderer, renderMode } = vm;
-
-    if (renderer.syntheticShadow && renderMode === RenderMode.Shadow) {
+    const { renderer, renderMode, shadowMode } = vm;
+    if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
             renderer.insertGlobalStylesheet(stylesheets[i]);
         }
