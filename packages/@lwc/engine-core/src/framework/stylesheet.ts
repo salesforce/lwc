@@ -8,7 +8,7 @@ import { isArray, isUndefined, ArrayJoin, ArrayPush } from '@lwc/shared';
 
 import * as api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
-import { VM, hasShadow } from './vm';
+import { VM, isLightRenderModeVM } from './vm';
 import { Template, TemplateStylesheetTokens } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 
@@ -56,7 +56,7 @@ export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
 
     // Apply the new template styling token to the host element, if the new template has any
     // associated stylesheets.
-    if (!isUndefined(newStylesheets) && newStylesheets.length !== 0 && hasShadow(vm)) {
+    if (!isUndefined(newStylesheets) && newStylesheets.length !== 0 && isLightRenderModeVM(vm)) {
         newTokens = newStylesheetTokens;
     }
 
@@ -111,7 +111,7 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
 
         // Scoping with the tokens is only necessary for synthetic shadow. For both
         // light DOM elements and native shadow, we just render the CSS as-is.
-        if (syntheticShadow && hasShadow(vm) && !isUndefined(stylesheetTokens)) {
+        if (syntheticShadow && isLightRenderModeVM(vm) && !isUndefined(stylesheetTokens)) {
             hostSelector = `[${stylesheetTokens.hostAttribute}]`;
             shadowSelector = `[${stylesheetTokens.shadowAttribute}]`;
         } else {
@@ -133,7 +133,7 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
     const { renderer } = vm;
 
-    if (renderer.syntheticShadow && hasShadow(vm)) {
+    if (renderer.syntheticShadow && isLightRenderModeVM(vm)) {
         for (let i = 0; i < stylesheets.length; i++) {
             renderer.insertGlobalStylesheet(stylesheets[i]);
         }

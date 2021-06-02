@@ -129,7 +129,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
             return acc.concat(expr as t.Expression);
         }, []);
 
-        if (shouldFlatten(children)) {
+        if (shouldFlatten(children, state)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
                 return res[0];
             } else {

@@ -1,0 +1,8 @@
+<template lwc:render-mode="light">
+    <x-light-container data-id="x-light-container">
+        <template for:each={numbers} for:item="number">
+            <p key={number} data-id={number}>{number}</p>
+        </template>
+    </x-light-container>
+    <button data-id="button" onclick={reverse}>Reverse</button>
+</template>

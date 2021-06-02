@@ -25,7 +25,7 @@ import {
     VM,
     resetComponentRoot,
     runWithBoundaryProtection,
-    hasShadow,
+    isLightRenderModeVM,
 } from './vm';
 import { EmptyArray } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
@@ -105,7 +105,7 @@ function validateSlots(vm: VM, html: Template) {
 
 function validateLightDomTemplate(template: Template, vm: VM) {
     if (template === defaultEmptyTemplate) return;
-    if (!hasShadow(vm)) {
+    if (!isLightRenderModeVM(vm)) {
         assert.isTrue(
             template.renderMode === 'light',
             `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive on the root template tag.`

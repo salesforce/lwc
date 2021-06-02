@@ -35,7 +35,7 @@ import {
     removeVM,
     rerenderVM,
     appendVM,
-    hasShadow,
+    isLightRenderModeVM,
 } from './vm';
 import {
     VNode,
@@ -77,7 +77,12 @@ export interface CustomElementCompilerData extends ElementCompilerData {
 }
 
 export interface RenderAPI {
-    s(slotName: string, data: ElementCompilerData, children: VNodes, slotset: SlotSet): VNode;
+    s(
+        slotName: string,
+        data: ElementCompilerData,
+        children: VNodes,
+        slotset: SlotSet
+    ): VNode | VNodes;
     h(tagName: string, data: ElementCompilerData, children: VNodes): VNode;
     c(
         tagName: string,
@@ -250,7 +255,7 @@ function linkNodeToShadowIfRequired(elm: Node, owner: VM) {
     const { renderer, cmpRoot } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (hasShadow(owner) && renderer.syntheticShadow) {
+    if (isLightRenderModeVM(owner) && renderer.syntheticShadow) {
         (elm as any).$shadowResolver$ = (cmpRoot as any).$shadowResolver$;
     }
 }
@@ -364,7 +369,7 @@ export function s(
     data: ElementCompilerData,
     children: VNodes,
     slotset: SlotSet | undefined
-): VElement {
+): VElement | VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -377,12 +382,17 @@ export function s(
     ) {
         children = slotset[slotName];
     }
-    const vnode = h('slot', data, children);
-    if (vnode.owner.renderer.syntheticShadow) {
+    const vmBeingRendered = getVMBeingRendered()!;
+
+    if (!isLightRenderModeVM(vmBeingRendered)) {
+        sc(children);
+        return children;
+    }
+    if (vmBeingRendered.renderer.syntheticShadow) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
-    return vnode;
+    return h('slot', data, children);
 }
 
 // [c]ustom element node
@@ -648,7 +658,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
     if (isNull(id)) {
         return null;
     }
-    if (hasShadow(vmBeingRendered!)) {
+    if (isLightRenderModeVM(vmBeingRendered!)) {
         return StringReplace.call(id, /\S+/g, (id) => `${id}-${vmBeingRendered.idx}`);
     }
     return id;
@@ -673,7 +683,7 @@ export function fid(url: string | undefined | null): string | null | undefined {
         return null;
     }
     // Apply transformation only for fragment-only-urls, and only in shadow DOM
-    if (/^#/.test(url) && hasShadow(vmBeingRendered!)) {
+    if (/^#/.test(url) && isLightRenderModeVM(vmBeingRendered!)) {
         return `${url}-${vmBeingRendered!.idx}`;
     }
     return url;
