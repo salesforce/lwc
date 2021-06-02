@@ -10,9 +10,13 @@ import {
     create,
     defineProperties,
     defineProperty,
+    globalThis,
     isNull,
     isTrue,
     isUndefined,
+    KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
+    KEY__SHADOW_RESOLVER,
+    KEY__SHADOW_RESOLVER_PRIVATE,
     setPrototypeOf,
     createHiddenField,
     getHiddenField,
@@ -42,6 +46,7 @@ import {
     appendChild,
     COMMENT_NODE,
 } from '../env/node';
+import { isNativeShadowRootDefined } from '../env/shadow-root';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { retarget } from '../3rdparty/polymer/retarget';
@@ -69,20 +74,21 @@ function getInternalSlot(root: SyntheticShadowRootInterface | Element): ShadowRo
     return record;
 }
 
-const ShadowRootResolverKey = '$shadowResolver$';
-const ShadowResolverPrivateKey = '$$ShadowResolverKey$$';
-
-defineProperty(Node.prototype, ShadowRootResolverKey, {
+defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
     set(this: Node, fn: ShadowRootResolver) {
-        (this as any)[ShadowResolverPrivateKey] = fn;
+        (this as any)[KEY__SHADOW_RESOLVER_PRIVATE] = fn;
         // TODO [#1164]: temporary propagation of the key
         setNodeOwnerKey(this, (fn as any).nodeKey);
     },
     get(this: Node): string | undefined {
-        return (this as any)[ShadowResolverPrivateKey];
+        return (this as any)[KEY__SHADOW_RESOLVER_PRIVATE];
     },
     configurable: true,
     enumerable: true,
+});
+
+defineProperty(globalThis, KEY__IS_NATIVE_SHADOW_ROOT_DEFINED, {
+    value: isNativeShadowRootDefined,
 });
 
 // Function created per shadowRoot instance, it returns the shadowRoot, and is attached
@@ -91,11 +97,11 @@ defineProperty(Node.prototype, ShadowRootResolverKey, {
 export type ShadowRootResolver = () => ShadowRoot;
 
 export function getShadowRootResolver(node: Node): undefined | ShadowRootResolver {
-    return (node as any)[ShadowRootResolverKey];
+    return (node as any)[KEY__SHADOW_RESOLVER];
 }
 
 export function setShadowRootResolver(node: Node, fn: ShadowRootResolver) {
-    (node as any)[ShadowRootResolverKey] = fn;
+    (node as any)[KEY__SHADOW_RESOLVER] = fn;
 }
 
 export function isDelegatingFocus(host: HTMLElement): boolean {

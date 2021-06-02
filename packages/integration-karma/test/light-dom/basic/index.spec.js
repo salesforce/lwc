@@ -49,7 +49,7 @@ describe('Basic Light DOM', () => {
             const elm = createElement('x-invalid-render-mode', { is: InvalidRenderMode });
             document.body.appendChild(elm);
         }).toThrowError(
-            `Assert Violation: Invalid value for 'renderMode': sattar. 'renderMode' can either be undefined, 'light', or 'shadow'.`
+            `Invariant Violation: Invalid value for static property renderMode: 'sattar'. renderMode must be either 'light' or 'shadow'.`
         );
     });
 });

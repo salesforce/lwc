@@ -65,6 +65,17 @@ export enum VMState {
     disconnected,
 }
 
+export enum RenderMode {
+    Light,
+    Shadow,
+}
+
+export enum ShadowMode {
+    Native,
+    None,
+    Synthetic,
+}
+
 export interface Context {
     /** The attribute name used on the host element to scope the style. */
     hostAttribute: string | undefined;
@@ -94,6 +105,8 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly owner: VM<N, E> | null;
     /** Rendering operations associated with the VM */
     readonly renderer: Renderer<N, E>;
+    renderMode: RenderMode;
+    shadowMode: ShadowMode;
     /** The component creation index. */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -277,6 +290,8 @@ export function createVM<HostNode, HostElement>(
         tro: null!, // Set synchronously after the VM creation.
         component: null!, // Set synchronously by the LightningElement constructor.
         cmpRoot: null!, // Set synchronously by the LightningElement constructor.
+        renderMode: null!, // Set synchronously by the LightningElement constructor.
+        shadowMode: null!, // Set synchronously by the LightningElement constructor.
 
         callHook,
         setHook,

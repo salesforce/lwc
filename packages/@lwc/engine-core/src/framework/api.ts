@@ -18,6 +18,7 @@ import {
     isString,
     isTrue,
     isUndefined,
+    KEY__SHADOW_RESOLVER,
     StringCharCodeAt,
     StringReplace,
     toString,
@@ -257,6 +258,7 @@ function linkNodeToShadowIfRequired(elm: Node, owner: VM) {
     // TODO [#1164]: this should eventually be done by the polyfill directly
     if (isLightRenderModeVM(owner) && renderer.syntheticShadow) {
         (elm as any).$shadowResolver$ = (cmpRoot as any).$shadowResolver$;
+        (elm as any)[KEY__SHADOW_RESOLVER] = (cmpRoot as any)[KEY__SHADOW_RESOLVER];
     }
 }
 

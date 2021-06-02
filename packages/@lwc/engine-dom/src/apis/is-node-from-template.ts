@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFalse, isUndefined } from '@lwc/shared';
+import { isFalse, isUndefined, KEY__SHADOW_RESOLVER } from '@lwc/shared';
 
 import { useSyntheticShadow } from '../renderer';
 
@@ -26,7 +26,7 @@ export function isNodeFromTemplate(node: Node): boolean {
         // TODO [#1252]: old behavior that is still used by some pieces of the platform,
         // specifically, nodes inserted manually on places where `lwc:dom="manual"` directive is not
         // used, will be considered global elements.
-        if (isUndefined((node as any).$shadowResolver$)) {
+        if (isUndefined((node as any)[KEY__SHADOW_RESOLVER])) {
             return false;
         }
     }
