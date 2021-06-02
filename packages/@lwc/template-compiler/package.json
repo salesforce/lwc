@@ -1,6 +1,6 @@
 {
     "name": "@lwc/template-compiler",
-    "version": "2.1.2",
+    "version": "2.2.0",
     "description": "Template compiler package",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -27,8 +27,8 @@
         "dist/"
     ],
     "dependencies": {
-        "@lwc/errors": "2.1.2",
-        "@lwc/shared": "2.1.2",
+        "@lwc/errors": "2.2.0",
+        "@lwc/shared": "2.2.0",
         "acorn": "~8.2.4",
         "astring": "~1.7.0",
         "estree-walker": "~2.0.2",
