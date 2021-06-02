@@ -7,11 +7,13 @@
 
 import {
     assert,
-    isUndefined,
     create,
-    StringToLowerCase,
-    setPrototypeOf,
+    hasOwnProperty,
     htmlPropertyToAttribute,
+    isUndefined,
+    KEY__SHADOW_TOKEN,
+    setPrototypeOf,
+    StringToLowerCase,
 } from '@lwc/shared';
 import { Renderer } from '@lwc/engine-core';
 
@@ -90,6 +92,8 @@ if (isCustomElementRegistryAvailable()) {
 
 export const renderer: Renderer<Node, Element> = {
     ssr: false,
+
+    syntheticShadow: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
 
     createElement(tagName: string, namespace: string): Element {
         return isUndefined(namespace)

@@ -10,6 +10,7 @@ export type HostElement = any;
 
 export interface Renderer<N = HostNode, E = HostElement> {
     ssr: boolean;
+    syntheticShadow: boolean;
     insert(node: N, parent: E, anchor: N | null): void;
     remove(node: N, parent: E): void;
     createElement(tagName: string, namespace?: string): E;

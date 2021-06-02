@@ -63,6 +63,8 @@ class HTMLElement {
 export const renderer: Renderer<HostNode, HostElement> = {
     ssr: true,
 
+    syntheticShadow: false,
+
     insert(node, parent, anchor) {
         if (node.parent !== null && node.parent !== parent) {
             const nodeIndex = node.parent.children.indexOf(node);

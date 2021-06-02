@@ -602,6 +602,10 @@ function initializeMode(vm: VM) {
         );
     }
 
+    // Default modes.
+    vm.renderMode = RenderMode.Shadow;
+    vm.shadowMode = ShadowMode.Native;
+
     if (renderMode === 'light') {
         vm.renderMode = RenderMode.Light;
         vm.shadowMode = ShadowMode.None;
@@ -614,11 +618,12 @@ function initializeMode(vm: VM) {
         return;
     }
 
-    vm.renderMode = RenderMode.Shadow;
-    vm.shadowMode =
-        isTrue(preferNativeShadow) && isNativeShadowRootDefined
-            ? ShadowMode.Native
-            : ShadowMode.Synthetic;
+    if (renderer.syntheticShadow) {
+        vm.shadowMode =
+            isTrue(preferNativeShadow) && isNativeShadowRootDefined
+                ? ShadowMode.Native
+                : ShadowMode.Synthetic;
+    }
 }
 
 export const lightningBasedDescriptors: PropertyDescriptorMap = create(null);
