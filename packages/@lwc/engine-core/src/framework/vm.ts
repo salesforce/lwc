@@ -72,7 +72,6 @@ export enum RenderMode {
 
 export enum ShadowMode {
     Native,
-    None,
     Synthetic,
 }
 

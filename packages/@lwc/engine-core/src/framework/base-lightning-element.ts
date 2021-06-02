@@ -608,17 +608,13 @@ function initializeMode(vm: VM) {
 
     if (renderMode === 'light') {
         vm.renderMode = RenderMode.Light;
-        vm.shadowMode = ShadowMode.None;
-        return;
+    } else if (renderer.ssr) {
+        vm.renderMode = RenderMode.Shadow;
     }
 
     if (renderer.ssr) {
-        vm.renderMode = RenderMode.Shadow;
         vm.shadowMode = ShadowMode.Native;
-        return;
-    }
-
-    if (renderer.syntheticShadow) {
+    } else if (renderer.syntheticShadow) {
         vm.shadowMode =
             isTrue(preferNativeShadow) && isNativeShadowRootDefined
                 ? ShadowMode.Native
