@@ -7,7 +7,7 @@
 
 import { isFunction, hasOwnProperty } from '@lwc/shared';
 
-interface MaybeModule extends Object {
+interface MaybeModule {
     __esModule?: boolean;
     default?: any;
 }
