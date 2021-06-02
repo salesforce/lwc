@@ -723,5 +723,5 @@ export function forceRehydration(vm: VM) {
 }
 
 function getRenderRoot(vm: VM) {
-    return vm.cmpRoot ?? vm.elm;
+    return vm.renderMode === RenderMode.Shadow ? vm.cmpRoot : vm.elm;
 }
