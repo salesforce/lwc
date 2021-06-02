@@ -28,7 +28,7 @@ export function resolveCircularModuleDependency<M extends MaybeModule>(
 ): M {
     const module = fn();
 
-    return module && module.__esModule ? module.default : module;
+    return module?.__esModule ? module.default : module;
 }
 
 export function isCircularModuleDependency(obj: unknown): obj is CircularModuleDependency<any> {
