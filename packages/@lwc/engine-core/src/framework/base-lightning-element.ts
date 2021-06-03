@@ -602,13 +602,9 @@ function initializeMode(vm: VM) {
         );
     }
 
-    // Default modes.
-    vm.renderMode = RenderMode.Shadow;
-    vm.shadowMode = ShadowMode.Native;
-
     if (renderMode === 'light') {
         vm.renderMode = RenderMode.Light;
-    } else if (renderer.ssr) {
+    } else {
         vm.renderMode = RenderMode.Shadow;
     }
 
@@ -619,6 +615,8 @@ function initializeMode(vm: VM) {
             isTrue(preferNativeShadow) && isNativeShadowRootDefined
                 ? ShadowMode.Native
                 : ShadowMode.Synthetic;
+    } else {
+        vm.shadowMode = ShadowMode.Native;
     }
 }
 
