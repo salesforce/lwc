@@ -688,7 +688,7 @@ export function fid(url: string | undefined | null): string | null | undefined {
     }
     const { idx, renderMode, shadowMode } = vmBeingRendered;
     // Apply transformation only for fragment-only-urls, and only in shadow DOM
-    if (/^#/.test(url) && renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
+    if (shadowMode === ShadowMode.Synthetic && renderMode === RenderMode.Shadow && /^#/.test(url)) {
         return `${url}-${idx}`;
     }
     return url;
