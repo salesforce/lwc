@@ -33,14 +33,7 @@ import features from '@lwc/features';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import {
-    associateVM,
-    getAssociatedVM,
-    isLightRenderModeVM,
-    RenderMode,
-    ShadowMode,
-    VM,
-} from './vm';
+import { associateVM, getAssociatedVM, RenderMode, ShadowMode, VM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -551,7 +544,7 @@ LightningElement.prototype = {
         const vm = getAssociatedVM(this);
 
         if (process.env.NODE_ENV !== 'production') {
-            if (!isLightRenderModeVM(vm)) {
+            if (vm.renderMode === RenderMode.Light) {
                 logError(
                     '`this.template` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.template.querySelector`, use `this.querySelector`.'
                 );
@@ -611,21 +604,20 @@ function initializeMode(vm: VM) {
 
     if (renderMode === 'light') {
         vm.renderMode = RenderMode.Light;
-        vm.shadowMode = ShadowMode.None;
-        return;
+    } else {
+        vm.renderMode = RenderMode.Shadow;
     }
 
     if (renderer.ssr) {
-        vm.renderMode = RenderMode.Shadow;
         vm.shadowMode = ShadowMode.Native;
-        return;
+    } else if (renderer.syntheticShadow) {
+        vm.shadowMode =
+            isTrue(preferNativeShadow) && isNativeShadowRootDefined
+                ? ShadowMode.Native
+                : ShadowMode.Synthetic;
+    } else {
+        vm.shadowMode = ShadowMode.Native;
     }
-
-    vm.renderMode = RenderMode.Shadow;
-    vm.shadowMode =
-        isTrue(preferNativeShadow) && isNativeShadowRootDefined
-            ? ShadowMode.Native
-            : ShadowMode.Synthetic;
 }
 
 export const lightningBasedDescriptors: PropertyDescriptorMap = create(null);

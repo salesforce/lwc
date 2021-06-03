@@ -72,7 +72,6 @@ export enum RenderMode {
 
 export enum ShadowMode {
     Native,
-    None,
     Synthetic,
 }
 
@@ -723,12 +722,6 @@ export function forceRehydration(vm: VM) {
     }
 }
 
-export function isLightRenderModeVM(vm: VM): vm is VM & { cmpRoot: ShadowRoot } {
-    // We don't refer to vm.def.ctor.shadow because that could be changed by user
-    // after instantiation.
-    return !isNull(vm.cmpRoot);
-}
-
 function getRenderRoot(vm: VM) {
-    return isLightRenderModeVM(vm) ? vm.cmpRoot : vm.elm;
+    return vm.renderMode === RenderMode.Shadow ? vm.cmpRoot : vm.elm;
 }

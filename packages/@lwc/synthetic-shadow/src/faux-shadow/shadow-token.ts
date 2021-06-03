@@ -4,17 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, defineProperty } from '@lwc/shared';
+import {
+    defineProperty,
+    isUndefined,
+    KEY__SHADOW_TOKEN,
+    KEY__SHADOW_TOKEN_PRIVATE,
+} from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
 
-const ShadowTokenKey = '$shadowToken$';
-const ShadowTokenPrivateKey = '$$ShadowTokenKey$$';
-
 export function getShadowToken(node: Node): string | undefined {
-    return (node as any)[ShadowTokenKey];
+    return (node as any)[KEY__SHADOW_TOKEN];
 }
 export function setShadowToken(node: Node, shadowToken: string | undefined) {
-    (node as any)[ShadowTokenKey] = shadowToken;
+    (node as any)[KEY__SHADOW_TOKEN] = shadowToken;
 }
 
 /**
@@ -26,19 +28,19 @@ export function setShadowToken(node: Node, shadowToken: string | undefined) {
  *  - this custom attribute must be unique.
  *
  **/
-defineProperty(Element.prototype, ShadowTokenKey, {
+defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
     set(this: Element, shadowToken: string | undefined) {
-        const oldShadowToken = (this as any)[ShadowTokenPrivateKey];
+        const oldShadowToken = (this as any)[KEY__SHADOW_TOKEN_PRIVATE];
         if (!isUndefined(oldShadowToken) && oldShadowToken !== shadowToken) {
             removeAttribute.call(this, oldShadowToken);
         }
         if (!isUndefined(shadowToken)) {
             setAttribute.call(this, shadowToken, '');
         }
-        (this as any)[ShadowTokenPrivateKey] = shadowToken;
+        (this as any)[KEY__SHADOW_TOKEN_PRIVATE] = shadowToken;
     },
     get(this: Element): string | undefined {
-        return (this as any)[ShadowTokenPrivateKey];
+        return (this as any)[KEY__SHADOW_TOKEN_PRIVATE];
     },
     configurable: true,
 });

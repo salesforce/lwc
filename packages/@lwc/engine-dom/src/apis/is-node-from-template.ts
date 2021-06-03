@@ -7,7 +7,7 @@
 
 import { isFalse, isUndefined, KEY__SHADOW_RESOLVER } from '@lwc/shared';
 
-import { useSyntheticShadow } from '../renderer';
+import { renderer } from '../renderer';
 
 /**
  * EXPERIMENTAL: This function detects whether or not a Node is controlled by a LWC template. This
@@ -22,13 +22,11 @@ export function isNodeFromTemplate(node: Node): boolean {
     if (node instanceof ShadowRoot) {
         return false;
     }
-    if (useSyntheticShadow) {
+    if (renderer.syntheticShadow) {
         // TODO [#1252]: old behavior that is still used by some pieces of the platform,
         // specifically, nodes inserted manually on places where `lwc:dom="manual"` directive is not
         // used, will be considered global elements.
-        if (isUndefined((node as any)[KEY__SHADOW_RESOLVER])) {
-            return false;
-        }
+        return !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
     }
     const root = node.getRootNode();
     return root instanceof ShadowRoot;

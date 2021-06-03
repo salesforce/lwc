@@ -62,6 +62,7 @@ class HTMLElement {
 
 export const renderer: Renderer<HostNode, HostElement> = {
     ssr: true,
+
     syntheticShadow: false,
 
     insert(node, parent, anchor) {
