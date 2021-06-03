@@ -172,6 +172,7 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
     >;
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
+    shadowRoot: ShadowRoot | null;
     template: ShadowRoot | null;
     render(): Template;
     connectedCallback?(): void;
@@ -554,9 +555,26 @@ LightningElement.prototype = {
         return vm.cmpRoot;
     },
 
-    get shadowRoot(): null {
-        // From within the component instance, the shadowRoot is always reported as "closed".
-        // Authors should rely on this.template instead.
+    get shadowRoot(): ShadowRoot | null {
+        const vm = getAssociatedVM(this);
+        const {
+            def: { ctor },
+        } = vm;
+        const { preferNativeShadow } = ctor;
+
+        if (process.env.NODE_ENV !== 'production') {
+            if (vm.renderMode === RenderMode.Light) {
+                logError(
+                    '`this.shadowRoot` returns null for light DOM components. Since there is no shadow, the rendered content can be accessed via `this` itself. e.g. instead of `this.shadowRoot.querySelector`, use `this.querySelector`.'
+                );
+            }
+        }
+
+        if (vm.renderMode !== RenderMode.Light && preferNativeShadow) {
+            return vm.cmpRoot;
+        }
+
+        // For the legacy (non-preferNativeShadow) behavior, this.shadowRoot returns null
         return null;
     },
 
