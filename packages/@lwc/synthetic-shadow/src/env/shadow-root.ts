@@ -6,7 +6,10 @@
  */
 import { isNull } from '@lwc/shared';
 
-export const NativeShadowRoot: any = typeof ShadowRoot !== 'undefined' ? ShadowRoot : null;
+let NativeShadowRoot: any = null;
+if (typeof ShadowRoot !== 'undefined') {
+    NativeShadowRoot = ShadowRoot;
+}
 
 export const isNativeShadowRootDefined = !isNull(NativeShadowRoot);
 
