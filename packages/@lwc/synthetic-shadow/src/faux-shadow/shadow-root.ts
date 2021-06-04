@@ -47,7 +47,7 @@ import {
     appendChild,
     COMMENT_NODE,
 } from '../env/node';
-import { isInstanceOfNativeShadowRoot, isNativeShadowRootDefined } from '../env/shadow-root';
+import { isNativeShadowRootDefined, NativeShadowRoot } from '../env/shadow-root';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { retarget } from '../3rdparty/polymer/retarget';
@@ -634,7 +634,7 @@ defineProperty(SyntheticShadowRoot, Symbol.hasInstance, {
         return (
             !isUndefined(object) &&
             !isNull(object) &&
-            (isInstanceOfNativeShadowRoot(object) ||
+            (object instanceof NativeShadowRoot ||
                 getPrototypeOf(object) === SyntheticShadowRoot.prototype)
         );
     },
