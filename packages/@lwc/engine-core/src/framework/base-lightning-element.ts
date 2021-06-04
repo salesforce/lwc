@@ -570,7 +570,7 @@ LightningElement.prototype = {
             }
         }
 
-        if (vm.renderMode !== RenderMode.Light && preferNativeShadow) {
+        if (vm.renderMode === RenderMode.Shadow && preferNativeShadow) {
             return vm.cmpRoot;
         }
 
