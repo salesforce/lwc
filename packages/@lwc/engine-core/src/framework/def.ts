@@ -13,6 +13,7 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
+import features from '@lwc/features';
 import {
     assert,
     assign,
@@ -20,11 +21,12 @@ import {
     defineProperties,
     freeze,
     getPrototypeOf,
+    htmlPropertyToAttribute,
+    isBoolean,
     isFunction,
     isNull,
     isUndefined,
     keys,
-    htmlPropertyToAttribute,
 } from '@lwc/shared';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
@@ -52,6 +54,8 @@ export interface ComponentDef {
     propsConfig: Record<string, PropType>;
     methods: PropertyDescriptorMap;
     template: Template;
+    preferNativeShadow: boolean;
+    renderMode: 'light' | 'shadow';
     ctor: LightningElementConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: LightningElement['connectedCallback'];
@@ -90,6 +94,8 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
 }
 
 function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
+    const { preferNativeShadow: ctorPreferNativeShadow, renderMode: ctorRenderMode } = Ctor;
+
     if (process.env.NODE_ENV !== 'production') {
         const ctorName = Ctor.name;
         // Removing the following assert until https://bugs.webkit.org/show_bug.cgi?id=190140 is fixed.
@@ -97,6 +103,29 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         assert.isTrue(
             Ctor.constructor,
             `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
+        );
+
+        if (!isUndefined(ctorPreferNativeShadow)) {
+            assert.invariant(
+                isBoolean(ctorPreferNativeShadow),
+                `Invalid value for static property preferNativeShadow: '${ctorPreferNativeShadow}'. preferNativeShadow must be a boolean value.`
+            );
+        }
+
+        if (!isUndefined(ctorRenderMode)) {
+            assert.invariant(
+                ctorRenderMode === 'light' || ctorRenderMode === 'shadow',
+                `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`
+            );
+        }
+    }
+
+    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
+        assert.isTrue(
+            ctorRenderMode !== 'light',
+            `${
+                Ctor.name || 'Anonymous class'
+            } is an invalid LWC component. Light DOM components are not available in this environment.`
         );
     }
 
@@ -126,6 +155,20 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     errorCallback = errorCallback || superDef.errorCallback;
     render = render || superDef.render;
 
+    let preferNativeShadow: boolean;
+    if (!isUndefined(ctorPreferNativeShadow)) {
+        preferNativeShadow = Boolean(ctorPreferNativeShadow);
+    } else {
+        preferNativeShadow = superDef.preferNativeShadow;
+    }
+
+    let renderMode: 'light' | 'shadow';
+    if (!isUndefined(ctorRenderMode)) {
+        renderMode = ctorRenderMode === 'light' ? 'light' : 'shadow';
+    } else {
+        renderMode = superDef.renderMode;
+    }
+
     const template = getComponentRegisteredTemplate(Ctor) || superDef.template;
     const name = Ctor.name || superDef.name;
 
@@ -141,6 +184,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         methods,
         bridge,
         template,
+        preferNativeShadow,
+        renderMode,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
@@ -229,6 +274,8 @@ const lightingElementDef: ComponentDef = {
     props: lightningBasedDescriptors,
     propsConfig: EmptyObject,
     methods: EmptyObject,
+    preferNativeShadow: false,
+    renderMode: 'shadow',
     wire: EmptyObject,
     bridge: BaseBridgeElement,
     template: defaultEmptyTemplate,

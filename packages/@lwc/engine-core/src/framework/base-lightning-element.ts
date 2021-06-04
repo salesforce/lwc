@@ -18,18 +18,12 @@ import {
     create,
     defineProperties,
     defineProperty,
-    globalThis,
-    isBoolean,
     isFunction,
     isNull,
     isObject,
-    isTrue,
-    isUndefined,
-    KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SYNTHETIC_MODE,
     setPrototypeOf,
 } from '@lwc/shared';
-import features from '@lwc/features';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
@@ -48,8 +42,6 @@ import { getComponentTag } from '../shared/format';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { lockerLivePropertyKey } from './membrane';
 import { EmptyObject } from './utils';
-
-const isNativeShadowRootDefined = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -229,8 +221,6 @@ export const LightningElement: LightningElementConstructor = function (
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);
     associateVM(elm, vm);
-
-    initializeMode(vm);
 
     if (vm.renderMode === RenderMode.Shadow) {
         attachShadow(vm);
@@ -570,55 +560,6 @@ LightningElement.prototype = {
         return `[object ${vm.def.name}]`;
     },
 };
-
-function initializeMode(vm: VM) {
-    const {
-        def: { ctor },
-        renderer,
-    } = vm;
-    const { preferNativeShadow, renderMode } = ctor;
-
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(renderMode)) {
-            assert.invariant(
-                renderMode === 'light' || renderMode === 'shadow',
-                `Invalid value for static property renderMode: '${renderMode}'. renderMode must be either 'light' or 'shadow'.`
-            );
-        }
-        if (!isUndefined(preferNativeShadow)) {
-            assert.invariant(
-                isBoolean(preferNativeShadow),
-                `Invalid value for static property preferNativeShadow: '${preferNativeShadow}'. preferNativeShadow must be a boolean value.`
-            );
-        }
-    }
-
-    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
-        assert.isTrue(
-            renderMode !== 'light',
-            `${
-                ctor.name || 'Anonymous class'
-            } is an invalid LWC component. Light DOM components are not available in this environment.`
-        );
-    }
-
-    if (renderMode === 'light') {
-        vm.renderMode = RenderMode.Light;
-    } else {
-        vm.renderMode = RenderMode.Shadow;
-    }
-
-    if (renderer.ssr) {
-        vm.shadowMode = ShadowMode.Native;
-    } else if (renderer.syntheticShadow) {
-        vm.shadowMode =
-            isTrue(preferNativeShadow) && isNativeShadowRootDefined
-                ? ShadowMode.Native
-                : ShadowMode.Synthetic;
-    } else {
-        vm.shadowMode = ShadowMode.Native;
-    }
-}
 
 export const lightningBasedDescriptors: PropertyDescriptorMap = create(null);
 for (const propName in HTMLElementOriginalDescriptors) {
