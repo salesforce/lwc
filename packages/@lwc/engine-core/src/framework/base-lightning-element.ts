@@ -24,6 +24,7 @@ import {
     KEY__SYNTHETIC_MODE,
     setPrototypeOf,
 } from '@lwc/shared';
+import features from '@lwc/features';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
@@ -186,11 +187,8 @@ export const LightningElement: LightningElementConstructor = function (
     }
 
     const vm = vmBeingConstructed;
-    const {
-        elm,
-        renderer,
-        def: { bridge },
-    } = vm;
+    const { elm, renderer, def } = vm;
+    const { bridge } = def;
 
     if (process.env.NODE_ENV !== 'production') {
         renderer.assertInstanceOfHTMLElement?.(
@@ -221,6 +219,16 @@ export const LightningElement: LightningElementConstructor = function (
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);
     associateVM(elm, vm);
+
+    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
+        const { ctor, renderMode } = def;
+        assert.isTrue(
+            renderMode !== 'light',
+            `${
+                ctor.name || 'Anonymous class'
+            } is an invalid LWC component. Light DOM components are not available in this environment.`
+        );
+    }
 
     if (vm.renderMode === RenderMode.Shadow) {
         attachShadow(vm);

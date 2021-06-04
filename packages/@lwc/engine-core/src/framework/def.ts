@@ -13,7 +13,6 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import features from '@lwc/features';
 import {
     assert,
     assign,
@@ -118,15 +117,6 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
                 `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`
             );
         }
-    }
-
-    if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
-        assert.isTrue(
-            ctorRenderMode !== 'light',
-            `${
-                Ctor.name || 'Anonymous class'
-            } is an invalid LWC component. Light DOM components are not available in this environment.`
-        );
     }
 
     const decoratorsMeta = getDecoratorsMeta(Ctor);
