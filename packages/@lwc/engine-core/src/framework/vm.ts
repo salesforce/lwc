@@ -249,6 +249,26 @@ export function removeVM(vm: VM) {
     resetComponentStateWhenRemoved(vm);
 }
 
+function assertNotSyntheticComposedWithinNative(vm: VM) {
+    const isSynthetic =
+        vm.renderMode === RenderMode.Shadow && vm.shadowMode === ShadowMode.Synthetic;
+    if (!isSynthetic) {
+        return;
+    }
+    let ancestor = vm.owner;
+    // Walk the ancestor chain to look for any native shadow components. Any native shadow component
+    // being an ancestor of a synthetic shadow component is disallowed.
+    while (!isNull(ancestor)) {
+        assert.isFalse(
+            ancestor.renderMode === RenderMode.Shadow && ancestor.shadowMode === ShadowMode.Native,
+            `<${vm.tagName}> (preferNativeShadow=false) cannot be composed inside of <${
+                getAssociatedVM(ancestor.elm).tagName
+            }> (preferNativeShadow=true)`
+        );
+        ancestor = ancestor.owner;
+    }
+}
+
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
     def: ComponentDef,
@@ -318,6 +338,7 @@ export function createVM<HostNode, HostElement>(
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
+        assertNotSyntheticComposedWithinNative(vm);
     }
 
     // Create component instance associated to the vm and the element.
