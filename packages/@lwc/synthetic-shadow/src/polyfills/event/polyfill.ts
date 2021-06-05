@@ -12,6 +12,7 @@ import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
 import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
+import { isRetargetable } from '../../shared/retargetable';
 import { getOwnerDocument } from '../../shared/utils';
 
 function patchedCurrentTargetGetter(this: Event): EventTarget | null {
@@ -27,6 +28,12 @@ function patchedCurrentTargetGetter(this: Event): EventTarget | null {
 
 function patchedTargetGetter(this: Event): EventTarget | null {
     const originalTarget = eventTargetGetter.call(this);
+
+    // Only retarget events handled by @lwc/synthetic-shadow patched listeners.
+    if (!isRetargetable(this)) {
+        return originalTarget;
+    }
+
     if (!(originalTarget instanceof Node)) {
         return originalTarget;
     }
