@@ -63,23 +63,19 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
                 );
             }
 
-            const { composed } = event;
             let shouldInvoke;
-
             if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
+                const { composed } = event;
                 shouldInvoke = !(eventToShadowRootMap.has(event) && isFalse(composed));
             } else {
                 const actualTarget = getActualTarget(event);
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
             }
-
-            if (!shouldInvoke) {
-                return;
+            if (shouldInvoke) {
+                isFunction(fnOrObj)
+                    ? fnOrObj.call(this, event)
+                    : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
             }
-
-            return isFunction(fnOrObj)
-                ? fnOrObj.call(this, event)
-                : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
         };
         EventListenerMap.set(fnOrObj, wrapperFn);
     }
