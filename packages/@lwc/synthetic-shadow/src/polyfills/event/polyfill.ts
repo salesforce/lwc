@@ -12,7 +12,7 @@ import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
 import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
-import { isRetargetable } from '../../shared/retargetable';
+import { isBeingHandledByWrappedListener } from '../../shared/handled-events';
 import { getOwnerDocument } from '../../shared/utils';
 
 function patchedCurrentTargetGetter(this: Event): EventTarget | null {
@@ -31,11 +31,12 @@ function patchedTargetGetter(this: Event): EventTarget | null {
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
     const isSyncAccess = originalCurrentTarget instanceof Node;
 
-    // Only retarget events handled by @lwc/synthetic-shadow patched listeners. We do this to allow
-    // continued access to the original target for listeners added before our retargeting polyfills
-    // are applied (see #2139). This does not address async access because it's impossible to know
-    // which listener received the event after the event lifecycle ends.
-    if (!isRetargetable(this) && isSyncAccess) {
+    // An attempt to only retarget events handled by @lwc/synthetic-shadow patched listeners. We do
+    // this to allow continued backcompat access to the original target for listeners added before
+    // our synthetic polyfill is applied (see #2139 and W-9352509). This does not cover async access
+    // by non-wrapped listeners because it's impossible to know which listener received the event
+    // after the event lifecycle ends.
+    if (!isBeingHandledByWrappedListener(this) && isSyncAccess) {
         return originalTarget;
     }
 

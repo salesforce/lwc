@@ -6,7 +6,7 @@
  */
 import featureFlags from '@lwc/features';
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
-import { disableRetargeting, enableRetargeting } from './retargetable';
+import { endHandledByWrappedListener, startHandledByWrappedListener } from './handled-events';
 import { eventCurrentTargetGetter } from '../env/dom';
 import { getActualTarget } from '../faux-shadow/events';
 import { eventToShadowRootMap, isHostElement } from '../faux-shadow/shadow-root';
@@ -54,8 +54,7 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
     let wrapperFn = EventListenerMap.get(fnOrObj);
     if (isUndefined(wrapperFn)) {
         wrapperFn = function (this: EventTarget, event: Event) {
-            // Enable retargeting for this event instance (see Event.prototype.target polyfill).
-            enableRetargeting(event);
+            startHandledByWrappedListener(event);
 
             // This function is invoked from an event listener and currentTarget is always defined.
             const currentTarget = eventCurrentTargetGetter.call(event)!;
@@ -75,14 +74,16 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
                 const actualTarget = getActualTarget(event);
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
             }
-            if (shouldInvoke) {
-                isFunction(fnOrObj)
-                    ? fnOrObj.call(this, event)
-                    : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
-            }
 
-            // Disable retargeting for this event instance (see Event.prototype.target polyfill).
-            disableRetargeting(event);
+            try {
+                if (shouldInvoke) {
+                    isFunction(fnOrObj)
+                        ? fnOrObj.call(this, event)
+                        : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
+                }
+            } finally {
+                endHandledByWrappedListener(event);
+            }
         };
         EventListenerMap.set(fnOrObj, wrapperFn);
     }
