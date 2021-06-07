@@ -2,7 +2,8 @@ import { createElement } from 'lwc';
 import Component from 'x/component';
 
 describe('shadowRoot instanceof', () => {
-    if (process.env.NATIVE_SHADOW) {
+    if (!process.env.COMPAT) {
+        // Can't test in compat because `attachShadow()` isn't supported on generic elements
         it('div.attachShadow() should have instanceof ShadowRoot === true', () => {
             const el = document.createElement('div');
             const shadowRoot = el.attachShadow({ mode: 'open' });
