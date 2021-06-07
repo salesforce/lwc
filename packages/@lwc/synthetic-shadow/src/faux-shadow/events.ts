@@ -30,10 +30,7 @@ import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import { shouldInvokeListener } from '../shared/event-target';
-import {
-    endHandledByWrappedListener,
-    startHandledByWrappedListener,
-} from '../shared/handled-events';
+import { invokeWrappedListener } from '../shared/handled-events';
 
 export enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,
@@ -98,8 +95,6 @@ function getWrappedShadowRootListener(listener: EventListener): WrappedListener 
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
         shadowRootWrappedListener = function (event: Event) {
-            startHandledByWrappedListener(event);
-
             // currentTarget is always defined inside an event listener
             let currentTarget = eventCurrentTargetGetter.call(event)!;
 
@@ -117,12 +112,8 @@ function getWrappedShadowRootListener(listener: EventListener): WrappedListener 
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
             }
 
-            try {
-                if (shouldInvoke) {
-                    listener.call(currentTarget, event);
-                }
-            } finally {
-                endHandledByWrappedListener(event);
+            if (shouldInvoke) {
+                invokeWrappedListener(listener.bind(currentTarget), event);
             }
         } as WrappedListener;
         shadowRootWrappedListener.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
@@ -140,8 +131,6 @@ function getWrappedCustomElementListener(listener: EventListener): WrappedListen
     let customElementWrappedListener = customElementEventListenerMap.get(listener);
     if (isUndefined(customElementWrappedListener)) {
         customElementWrappedListener = function (event: Event) {
-            startHandledByWrappedListener(event);
-
             // currentTarget is always defined inside an event listener
             const currentTarget = eventCurrentTargetGetter.call(event)!;
 
@@ -153,12 +142,8 @@ function getWrappedCustomElementListener(listener: EventListener): WrappedListen
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
             }
 
-            try {
-                if (shouldInvoke) {
-                    listener.call(currentTarget, event);
-                }
-            } finally {
-                endHandledByWrappedListener(event);
+            if (shouldInvoke) {
+                invokeWrappedListener(listener.bind(currentTarget), event);
             }
         } as WrappedListener;
         customElementWrappedListener.placement = EventListenerContext.CUSTOM_ELEMENT_LISTENER;
