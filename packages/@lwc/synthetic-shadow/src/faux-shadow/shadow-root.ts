@@ -22,6 +22,7 @@ import {
     getHiddenField,
     setHiddenField,
     getPrototypeOf,
+    isObject,
 } from '@lwc/shared';
 import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
 import { dispatchEvent } from '../env/event-target';
@@ -631,8 +632,10 @@ SyntheticShadowRoot.prototype = create(DocumentFragment.prototype, SyntheticShad
 // `this.shadowRoot instanceof ShadowRoot` should evaluate to true even for synthetic shadow
 defineProperty(SyntheticShadowRoot, Symbol.hasInstance, {
     value: function (object: any): boolean {
+        // Technically we should walk up the entire prototype chain, but with SyntheticShadowRoot
+        // it's reasonable to assume that no one is doing any deep subclasses here.
         return (
-            !isUndefined(object) &&
+            isObject(object) &&
             !isNull(object) &&
             (isInstanceOfNativeShadowRoot(object) ||
                 getPrototypeOf(object) === SyntheticShadowRoot.prototype)
