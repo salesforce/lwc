@@ -81,7 +81,7 @@ defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
         // TODO [#1164]: temporary propagation of the key
         setNodeOwnerKey(this, (fn as any).nodeKey);
     },
-    get(this: Node): string | undefined {
+    get(this: Node): ShadowRootResolver | undefined {
         return (this as any)[KEY__SHADOW_RESOLVER_PRIVATE];
     },
     configurable: true,
