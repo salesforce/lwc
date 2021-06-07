@@ -75,9 +75,9 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
 
             if (shouldInvoke) {
                 if (isFunction(fnOrObj)) {
-                    invokeWrappedListener(fnOrObj.bind(this), event);
-                } else if (fnOrObj.handleEvent) {
-                    invokeWrappedListener(fnOrObj.handleEvent, event);
+                    invokeWrappedListener(fnOrObj, this, event);
+                } else if (isFunction(fnOrObj.handleEvent)) {
+                    invokeWrappedListener(fnOrObj.handleEvent, fnOrObj, event);
                 }
             }
         };

@@ -7,14 +7,18 @@
 
 const currentlyHandledEvents: Set<Event> = new Set();
 
-export function isBeingHandledByWrappedListener(event: Event) {
+export function isBeingHandledByWrappedListener(event: Event): boolean {
     return currentlyHandledEvents.has(event);
 }
 
-export function invokeWrappedListener(listener: EventListener, event: Event) {
+export function invokeWrappedListener(
+    listener: EventListener,
+    target: EventTarget | EventListenerObject,
+    event: Event
+): void {
     currentlyHandledEvents.add(event);
     try {
-        listener(event);
+        listener.call(target, event);
     } finally {
         currentlyHandledEvents.delete(event);
     }

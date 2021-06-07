@@ -33,9 +33,9 @@ function patchedTargetGetter(this: Event): EventTarget | null {
 
     // An attempt to only retarget events handled by @lwc/synthetic-shadow patched listeners. We do
     // this to allow continued backcompat access to the original target for listeners added before
-    // our synthetic polyfill is applied (see #2139 and W-9352509). This does not cover async access
-    // by non-wrapped listeners because it's impossible to know which listener received the event
-    // after the event lifecycle ends.
+    // our synthetic polyfill is applied (see #2139 and W-9352509). Accessing the event target
+    // asynchronously always returns the retargeted target as it is impossible to know which event
+    // handler the event originates from.
     if (!isBeingHandledByWrappedListener(this) && isSyncAccess) {
         return originalTarget;
     }
