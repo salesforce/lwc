@@ -38,6 +38,7 @@ import {
     SlotSet,
     VM,
     VMState,
+    getRenderRoot,
 } from './vm';
 import {
     VNode,
@@ -113,7 +114,7 @@ const TextHook: Hooks<VText> = {
         const { renderer } = owner;
 
         const elm = renderer.createText(vnode.text!);
-        linkNodeToShadowIfRequired(elm, owner);
+        linkNodeToShadow(elm, owner);
         vnode.elm = elm;
     },
     update: updateNodeHook,
@@ -128,7 +129,7 @@ const CommentHook: Hooks<VComment> = {
         const { renderer } = owner;
 
         const elm = renderer.createComment(text);
-        linkNodeToShadowIfRequired(elm, owner);
+        linkNodeToShadow(elm, owner);
         vnode.elm = elm;
     },
     update: updateNodeHook,
@@ -152,7 +153,7 @@ const ElementHook: Hooks<VElement> = {
         const { renderer } = owner;
         const elm = renderer.createElement(sel, ns);
 
-        linkNodeToShadowIfRequired(elm, owner);
+        linkNodeToShadow(elm, owner);
         fallbackElmHook(elm, vnode);
         vnode.elm = elm;
 
@@ -191,7 +192,7 @@ const CustomElementHook: Hooks<VCustomElement> = {
             createViewModelHook(elm, vnode);
         });
 
-        linkNodeToShadowIfRequired(elm, owner);
+        linkNodeToShadow(elm, owner);
         vnode.elm = elm;
 
         const vm = getAssociatedVMIfPresent(elm);
@@ -253,12 +254,12 @@ const CustomElementHook: Hooks<VCustomElement> = {
     },
 };
 
-function linkNodeToShadowIfRequired(elm: Node, owner: VM) {
-    const { cmpRoot, renderMode, shadowMode } = owner;
+function linkNodeToShadow(elm: Node, owner: VM) {
+    const { shadowMode } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
-        (elm as any)[KEY__SHADOW_RESOLVER] = (cmpRoot as any)[KEY__SHADOW_RESOLVER];
+    if (shadowMode === ShadowMode.Synthetic) {
+        (elm as any)[KEY__SHADOW_RESOLVER] = getRenderRoot(owner)[KEY__SHADOW_RESOLVER];
     }
 }
 

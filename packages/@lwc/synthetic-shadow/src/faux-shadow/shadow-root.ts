@@ -75,12 +75,13 @@ function getInternalSlot(root: SyntheticShadowRootInterface | Element): ShadowRo
 }
 
 defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
-    set(this: Node, fn: ShadowRootResolver) {
+    set(this: Node, fn: ShadowRootResolver | undefined) {
+        if (isUndefined(fn)) return;
         (this as any)[KEY__SHADOW_RESOLVER_PRIVATE] = fn;
         // TODO [#1164]: temporary propagation of the key
         setNodeOwnerKey(this, (fn as any).nodeKey);
     },
-    get(this: Node): string | undefined {
+    get(this: Node): ShadowRootResolver | undefined {
         return (this as any)[KEY__SHADOW_RESOLVER_PRIVATE];
     },
     configurable: true,
@@ -100,7 +101,7 @@ export function getShadowRootResolver(node: Node): undefined | ShadowRootResolve
     return (node as any)[KEY__SHADOW_RESOLVER];
 }
 
-export function setShadowRootResolver(node: Node, fn: ShadowRootResolver) {
+export function setShadowRootResolver(node: Node, fn: ShadowRootResolver | undefined) {
     (node as any)[KEY__SHADOW_RESOLVER] = fn;
 }
 
