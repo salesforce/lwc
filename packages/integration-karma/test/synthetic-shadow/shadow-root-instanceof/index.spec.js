@@ -20,6 +20,7 @@ describe('shadowRoot instanceof', () => {
     it('non-shadow roots should have instanceof ShadowRoot === false', () => {
         expect(document.createElement('div') instanceof ShadowRoot).toEqual(false);
         expect(document.createDocumentFragment() instanceof ShadowRoot).toEqual(false);
+        expect({} instanceof ShadowRoot).toEqual(false);
         expect(undefined instanceof ShadowRoot).toEqual(false);
         expect(null instanceof ShadowRoot).toEqual(false);
     });
