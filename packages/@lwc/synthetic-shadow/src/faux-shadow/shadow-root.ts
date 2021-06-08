@@ -21,6 +21,8 @@ import {
     createHiddenField,
     getHiddenField,
     setHiddenField,
+    getPrototypeOf,
+    isObject,
 } from '@lwc/shared';
 import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
 import { dispatchEvent } from '../env/event-target';
@@ -46,7 +48,7 @@ import {
     appendChild,
     COMMENT_NODE,
 } from '../env/node';
-import { isNativeShadowRootDefined } from '../env/shadow-root';
+import { isInstanceOfNativeShadowRoot, isNativeShadowRootDefined } from '../env/shadow-root';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { retarget } from '../3rdparty/polymer/retarget';
@@ -627,6 +629,20 @@ export function SyntheticShadowRoot() {
     throw new TypeError('Illegal constructor');
 }
 SyntheticShadowRoot.prototype = create(DocumentFragment.prototype, SyntheticShadowRootDescriptors);
+
+// `this.shadowRoot instanceof ShadowRoot` should evaluate to true even for synthetic shadow
+defineProperty(SyntheticShadowRoot, Symbol.hasInstance, {
+    value: function (object: any): boolean {
+        // Technically we should walk up the entire prototype chain, but with SyntheticShadowRoot
+        // it's reasonable to assume that no one is doing any deep subclasses here.
+        return (
+            isObject(object) &&
+            !isNull(object) &&
+            (isInstanceOfNativeShadowRoot(object) ||
+                getPrototypeOf(object) === SyntheticShadowRoot.prototype)
+        );
+    },
+});
 
 /**
  * This method is only intended to be used in non-production mode in IE11
