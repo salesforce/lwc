@@ -20,7 +20,7 @@
         "test": "jest"
     },
     "devDependencies": {
-        "@types/estree": "0.0.47",
+        "@types/estree": "0.0.48",
         "@types/he": "^1.1.1"
     },
     "files": [
