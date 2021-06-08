@@ -29,14 +29,14 @@ function patchedCurrentTargetGetter(this: Event): EventTarget | null {
 function patchedTargetGetter(this: Event): EventTarget | null {
     const originalTarget = eventTargetGetter.call(this);
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
-    const isSyncAccess = originalCurrentTarget instanceof Node;
+    const isCurrentTargetInstanceOfNode = originalCurrentTarget instanceof Node;
 
     // An attempt to only retarget events handled by @lwc/synthetic-shadow patched listeners. We do
     // this to allow continued backcompat access to the original target for listeners added before
     // our synthetic polyfill is applied (see #2139 and W-9352509). Accessing the event target
     // asynchronously always returns the retargeted target as it is impossible to know which event
     // handler the event originates from.
-    if (!isBeingHandledByWrappedListener(this) && isSyncAccess) {
+    if (!isBeingHandledByWrappedListener(this) && isCurrentTargetInstanceOfNode) {
         return originalTarget;
     }
 
@@ -49,7 +49,7 @@ function patchedTargetGetter(this: Event): EventTarget | null {
 
     // Handle cases where the currentTarget is null (for async events), and when an event has been
     // added to Window
-    if (!isSyncAccess) {
+    if (!isCurrentTargetInstanceOfNode) {
         // TODO [#1511]: Special escape hatch to support legacy behavior. Should be fixed.
         // If the event's target is being accessed async and originalTarget is not a keyed element, do not retarget
         if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget))) {
