@@ -24,6 +24,7 @@ import {
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
+import { RenderMode } from './def';
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
@@ -31,7 +32,6 @@ import {
     appendVM,
     getAssociatedVMIfPresent,
     removeVM,
-    RenderMode,
     rerenderVM,
     runConnectedCallback,
     ShadowMode,

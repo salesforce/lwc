@@ -261,8 +261,6 @@ export function createVM<HostNode, HostElement>(
 ): VM {
     const { mode, owner, renderer, tagName } = options;
 
-    const renderMode = def.renderMode === 'light' ? RenderMode.Light : RenderMode.Shadow;
-
     let shadowMode;
     if (renderer.syntheticShadow) {
         shadowMode =
@@ -293,7 +291,7 @@ export function createVM<HostNode, HostElement>(
         oar: create(null),
         cmpTemplate: null,
 
-        renderMode,
+        renderMode: def.renderMode,
         shadowMode,
 
         context: {

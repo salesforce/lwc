@@ -46,6 +46,11 @@ import {
 } from '../shared/circular-module-dependencies';
 import { getComponentOrSwappedComponent } from './hot-swaps';
 
+export enum RenderMode {
+    Light,
+    Shadow,
+}
+
 export interface ComponentDef {
     name: string;
     wire: PropertyDescriptorMap | undefined;
@@ -54,7 +59,7 @@ export interface ComponentDef {
     methods: PropertyDescriptorMap;
     template: Template;
     preferNativeShadow: boolean;
-    renderMode: 'light' | 'shadow';
+    renderMode: RenderMode;
     ctor: LightningElementConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: LightningElement['connectedCallback'];
@@ -152,9 +157,9 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         preferNativeShadow = superDef.preferNativeShadow;
     }
 
-    let renderMode: 'light' | 'shadow';
+    let renderMode: RenderMode;
     if (!isUndefined(ctorRenderMode)) {
-        renderMode = ctorRenderMode === 'light' ? 'light' : 'shadow';
+        renderMode = ctorRenderMode === 'light' ? RenderMode.Light : RenderMode.Shadow;
     } else {
         renderMode = superDef.renderMode;
     }
@@ -265,7 +270,7 @@ const lightingElementDef: ComponentDef = {
     propsConfig: EmptyObject,
     methods: EmptyObject,
     preferNativeShadow: false,
-    renderMode: 'shadow',
+    renderMode: RenderMode.Shadow,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
     template: defaultEmptyTemplate,

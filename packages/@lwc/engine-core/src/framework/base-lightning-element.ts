@@ -25,10 +25,11 @@ import {
     setPrototypeOf,
 } from '@lwc/shared';
 import features from '@lwc/features';
+import { RenderMode } from './def';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM, RenderMode, ShadowMode, VM } from './vm';
+import { associateVM, getAssociatedVM, ShadowMode, VM } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -129,7 +130,7 @@ export interface LightningElementConstructor {
 
     delegatesFocus?: boolean;
     preferNativeShadow?: boolean;
-    renderMode?: 'shadow' | 'light';
+    renderMode?: 'light' | 'shadow';
 }
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
@@ -223,7 +224,7 @@ export const LightningElement: LightningElementConstructor = function (
     if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
         const { ctor, renderMode } = def;
         assert.isTrue(
-            renderMode !== 'light',
+            renderMode !== RenderMode.Light,
             `${
                 ctor.name || 'Anonymous class'
             } is an invalid LWC component. Light DOM components are not available in this environment.`

@@ -12,7 +12,6 @@ import {
     runWithBoundaryProtection,
     getAssociatedVMIfPresent,
     VM,
-    RenderMode,
     ShadowMode,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
@@ -25,7 +24,7 @@ import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
-import { getComponentInternalDef } from './def';
+import { getComponentInternalDef, RenderMode } from './def';
 
 const noop = () => void 0;
 
