@@ -12,8 +12,8 @@ export function isBeingHandledByWrappedListener(event: Event): boolean {
 }
 
 export function invokeWrappedListener(
-    listener: EventListener,
     target: EventTarget | EventListenerObject,
+    listener: EventListener,
     event: Event
 ): void {
     currentlyHandledEvents.add(event);

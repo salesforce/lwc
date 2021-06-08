@@ -113,7 +113,7 @@ function getWrappedShadowRootListener(listener: EventListener): WrappedListener 
             }
 
             if (shouldInvoke) {
-                invokeWrappedListener(listener, currentTarget, event);
+                invokeWrappedListener(currentTarget, listener, event);
             }
         } as WrappedListener;
         shadowRootWrappedListener.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
@@ -143,7 +143,7 @@ function getWrappedCustomElementListener(listener: EventListener): WrappedListen
             }
 
             if (shouldInvoke) {
-                invokeWrappedListener(listener, currentTarget, event);
+                invokeWrappedListener(currentTarget, listener, event);
             }
         } as WrappedListener;
         customElementWrappedListener.placement = EventListenerContext.CUSTOM_ELEMENT_LISTENER;
