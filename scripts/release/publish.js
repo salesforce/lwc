@@ -50,7 +50,7 @@ try {
     }
 
     const [, releaseBranch] = result;
-    const distTag = releaseBranch === 'master' ? 'next' : releaseBranch;
+    const distTag = releaseBranch === 'master' ? 'latest' : releaseBranch;
     ARGS.push('--dist-tag', distTag);
 
     console.log(
