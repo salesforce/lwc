@@ -143,8 +143,8 @@ export function HTMLBridgeElementFactory(
             throw new TypeError('Illegal constructor');
         };
         // prototype inheritance dance
-        setPrototypeOf(HTMLBridgeElement, SuperClass);
-        setPrototypeOf(HTMLBridgeElement.prototype, SuperClass!.prototype);
+        setPrototypeOf(HTMLBridgeElement, SuperClass as any);
+        setPrototypeOf(HTMLBridgeElement.prototype, (SuperClass as any).prototype);
         defineProperty(HTMLBridgeElement.prototype, 'constructor', {
             writable: true,
             configurable: true,

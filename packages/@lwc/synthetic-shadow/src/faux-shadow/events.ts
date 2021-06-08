@@ -51,11 +51,11 @@ function isChildNode(root: Element, node: Node): boolean {
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 function getRootNodeHost(node: Node, options: GetRootNodeOptions): Node {
-    let rootNode = node.getRootNode(options);
+    let rootNode: Node = node.getRootNode(options);
 
     // is SyntheticShadowRootInterface
     if ('mode' in rootNode && 'delegatesFocus' in rootNode) {
-        rootNode = getHost(rootNode);
+        rootNode = getHost(rootNode as SyntheticShadowRootInterface);
     }
 
     return rootNode;
