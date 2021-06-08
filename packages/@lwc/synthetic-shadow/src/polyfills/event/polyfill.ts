@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import features from '@lwc/features';
 import { defineProperties, isNull, isUndefined } from '@lwc/shared';
 
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
@@ -31,13 +32,15 @@ function patchedTargetGetter(this: Event): EventTarget | null {
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
     const isCurrentTargetInstanceOfNode = originalCurrentTarget instanceof Node;
 
-    // An attempt to only retarget events handled by @lwc/synthetic-shadow patched listeners. We do
-    // this to allow continued backcompat access to the original target for listeners added before
-    // our synthetic polyfill is applied (see #2139 and W-9352509). Accessing the event target
-    // asynchronously always returns the retargeted target as it is impossible to know which event
-    // handler the event originates from.
-    if (!isBeingHandledByWrappedListener(this) && isCurrentTargetInstanceOfNode) {
-        return originalTarget;
+    if (!features.ENABLE_RETARGETING_FOR_UNPATCHED_LISTENERS) {
+        // An attempt to only retarget events handled by @lwc/synthetic-shadow patched listeners. We
+        // do this to allow continued backcompat access to the original target for listeners added
+        // before our synthetic polyfill is applied (see #2139 and W-9352509). Accessing the event
+        // target asynchronously always returns the retargeted target as it is impossible to know
+        // which event handler the event originates from.
+        if (!isBeingHandledByWrappedListener(this) && isCurrentTargetInstanceOfNode) {
+            return originalTarget;
+        }
     }
 
     if (!(originalTarget instanceof Node)) {
