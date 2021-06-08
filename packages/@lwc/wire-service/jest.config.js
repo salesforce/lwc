@@ -10,4 +10,5 @@ module.exports = {
     ...BASE_CONFIG,
     displayName: 'lwc-wire-service',
     roots: ['<rootDir>/src'],
+    testEnvironment: 'jsdom',
 };
