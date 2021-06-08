@@ -10,4 +10,5 @@ module.exports = {
     ...BASE_CONFIG,
     displayName: 'lwc-engine-core',
     roots: ['<rootDir>/src'],
+    testEnvironment: 'jsdom',
 };

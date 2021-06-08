@@ -29,9 +29,9 @@
         "@wdio/spec-reporter": "^7.7.3",
         "@wdio/static-server-service": "^7.7.3",
         "deepmerge": "^4.2.2",
-        "dotenv": "^9.0.1",
+        "dotenv": "^10.0.0",
         "lwc": "2.2.1",
         "minimist": "^1.2.5",
-        "webdriverio": "^7.5.7"
+        "webdriverio": "^7.7.3"
     }
 }
