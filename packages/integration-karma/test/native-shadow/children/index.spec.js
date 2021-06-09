@@ -13,15 +13,18 @@ describe('children', () => {
         expect(slot.childNodes.length).toEqual(1);
     }
 
-    it('should have correct HTMLSlotElement.prototype.children behavior for slots created outside LWC', () => {
-        const el = document.createElement('div');
-        document.body.appendChild(el);
+    // attachShadow() is not supported on arbitrary elements in compat mode
+    if (!process.env.COMPAT) {
+        it('should have correct HTMLSlotElement.prototype.children behavior for slots created outside LWC', () => {
+            const el = document.createElement('div');
+            document.body.appendChild(el);
 
-        el.attachShadow({ mode: 'open' }).innerHTML = '<slot><span>fallback</span></slot>';
+            el.attachShadow({ mode: 'open' }).innerHTML = '<slot><span>fallback</span></slot>';
 
-        const slot = el.shadowRoot.querySelector('slot');
-        expectOneSpanChild(slot);
-    });
+            const slot = el.shadowRoot.querySelector('slot');
+            expectOneSpanChild(slot);
+        });
+    }
 
     it('should have correct HTMLSlotElement.prototype.children behavior for LWC-created slots', () => {
         const el = createElement('x-slottable', { is: Slottable });
