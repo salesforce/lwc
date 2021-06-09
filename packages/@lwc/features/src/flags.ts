@@ -21,6 +21,7 @@ const featureFlagLookup: FeatureFlagLookup = {
     // Disables the fix for #2121 where non-composed events are visible outside of their shadow root.
     ENABLE_NON_COMPOSED_EVENTS_LEAKAGE: null,
     ENABLE_LIGHT_DOM_COMPONENTS: null,
+    ENABLE_RETARGETING_FOR_UNPATCHED_LISTENERS: null,
 };
 export default featureFlagLookup;
 

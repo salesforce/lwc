@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import features from '@lwc/features';
 import { defineProperties, isNull, isUndefined } from '@lwc/shared';
 
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
@@ -12,6 +13,7 @@ import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
 import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
+import { isBeingHandledByWrappedListener } from '../../shared/handled-events';
 import { getOwnerDocument } from '../../shared/utils';
 
 function patchedCurrentTargetGetter(this: Event): EventTarget | null {
@@ -27,17 +29,30 @@ function patchedCurrentTargetGetter(this: Event): EventTarget | null {
 
 function patchedTargetGetter(this: Event): EventTarget | null {
     const originalTarget = eventTargetGetter.call(this);
+    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
+    const isCurrentTargetInstanceOfNode = originalCurrentTarget instanceof Node;
+
+    if (!features.ENABLE_RETARGETING_FOR_UNPATCHED_LISTENERS) {
+        // An attempt to only retarget events handled by @lwc/synthetic-shadow patched listeners. We
+        // do this to allow continued backcompat access to the original target for listeners added
+        // before our synthetic polyfill is applied (see #2139 and W-9352509). Accessing the event
+        // target asynchronously always returns the retargeted target as it is impossible to know
+        // which event handler the event originates from.
+        if (!isBeingHandledByWrappedListener(this) && isCurrentTargetInstanceOfNode) {
+            return originalTarget;
+        }
+    }
+
     if (!(originalTarget instanceof Node)) {
         return originalTarget;
     }
 
     const doc = getOwnerDocument(originalTarget);
     const composedPath = pathComposer(originalTarget, this.composed);
-    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
     // Handle cases where the currentTarget is null (for async events), and when an event has been
     // added to Window
-    if (!(originalCurrentTarget instanceof Node)) {
+    if (!isCurrentTargetInstanceOfNode) {
         // TODO [#1511]: Special escape hatch to support legacy behavior. Should be fixed.
         // If the event's target is being accessed async and originalTarget is not a keyed element, do not retarget
         if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget))) {
