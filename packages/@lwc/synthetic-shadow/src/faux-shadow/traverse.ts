@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayReduce, ArrayPush, assert, isNull, isUndefined } from '@lwc/shared';
+import {
+    ArrayReduce,
+    ArrayPush,
+    assert,
+    isNull,
+    isUndefined,
+    KEY__SHADOW_TOKEN_PRIVATE,
+} from '@lwc/shared';
 import {
     getHost,
     SyntheticShadowRootInterface,
@@ -120,6 +127,10 @@ export function getNodeOwner(node: Node): HTMLElement | null {
         return null;
     }
     return nodeOwner as HTMLElement;
+}
+
+export function isSyntheticSlotElement(node: Node): node is HTMLSlotElement {
+    return isSlotElement(node) && KEY__SHADOW_TOKEN_PRIVATE in node;
 }
 
 export function isSlotElement(node: Node): node is HTMLSlotElement {
