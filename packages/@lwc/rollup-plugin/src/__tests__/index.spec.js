@@ -13,8 +13,6 @@ require('jest-utils-lwc-internals');
 const fixturesDir = path.join(__dirname, 'fixtures');
 const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
 const tsAppDir = path.join(fixturesDir, 'ts_simple_app/src');
-const tsImportsJsDir = path.join(fixturesDir, 'ts_imports_js/src');
-const jsImportsTsDir = path.join(fixturesDir, 'js_imports_ts/src');
 const jsMultiVersion = path.join(fixturesDir, 'multi_version');
 
 describe('default configuration', () => {
@@ -91,26 +89,6 @@ describe('typescript relative import', () => {
             expect(actual).toMatchFile(
                 path.join(fixturesDir, 'expected_default_config_ts_simple_app.js')
             );
-        });
-    });
-});
-
-describe('typescript relative import', () => {
-    it(`should throw when .ts imports .js file`, () => {
-        const entry = path.join(tsImportsJsDir, 'main.ts');
-        expect.assertions(1);
-        return doRollup(entry, { compat: false }).catch((error) => {
-            expect(error).toEqual(new Error('Importing a .js file into a .ts is not supported'));
-        });
-    });
-});
-
-describe('javascript relative import', () => {
-    it(`should throw when .js imports .ts file`, () => {
-        const entry = path.join(jsImportsTsDir, 'main.js');
-        expect.assertions(1);
-        return doRollup(entry, { compat: false }).catch((error) => {
-            expect(error).toEqual(new Error('Importing a .ts file into a .js is not supported'));
         });
     });
 });
