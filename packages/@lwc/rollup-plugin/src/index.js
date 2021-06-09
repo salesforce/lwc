@@ -93,9 +93,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             }
 
             // Extract module name and namespace from file path
-            const idParts = path.dirname(id).split(path.sep);
-            const name = idParts.pop();
-            const namespace = idParts.pop();
+            const [namespace, name] = path.dirname(id).split(path.sep).slice(-2);
 
             const { code, map } = compiler.transformSync(src, id, {
                 name,
