@@ -5,10 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { SetAdd, SetDelete, SetHas } from '@lwc/shared';
 const currentlyHandledEvents: Set<Event> = new Set();
 
 export function isBeingHandledByWrappedListener(event: Event): boolean {
-    return currentlyHandledEvents.has(event);
+    return SetHas.call(currentlyHandledEvents, event);
 }
 
 export function invokeWrappedListener(
@@ -16,10 +17,10 @@ export function invokeWrappedListener(
     listener: EventListener,
     event: Event
 ): void {
-    currentlyHandledEvents.add(event);
+    SetAdd.call(currentlyHandledEvents, event);
     try {
         listener.call(target, event);
     } finally {
-        currentlyHandledEvents.delete(event);
+        SetDelete.call(currentlyHandledEvents, event);
     }
 }

@@ -46,6 +46,8 @@ const {
     toLowerCase: StringToLowerCase,
 } = String.prototype;
 
+const { add: SetAdd, delete: SetDelete, has: SetHas } = Set.prototype;
+
 export {
     ArrayFilter,
     ArrayFind,
@@ -72,12 +74,15 @@ export {
     isFrozen,
     keys,
     seal,
+    SetAdd,
+    SetDelete,
+    SetHas,
     setPrototypeOf,
     StringCharCodeAt,
+    StringFromCharCode,
     StringReplace,
     StringSlice,
     StringToLowerCase,
-    StringFromCharCode,
 };
 
 export function isUndefined(obj: any): obj is undefined {
