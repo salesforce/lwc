@@ -188,7 +188,7 @@ export const LightningElement: LightningElementConstructor = function (
     }
 
     const vm = vmBeingConstructed;
-    const { elm, renderer, def } = vm;
+    const { def, elm, renderer } = vm;
     const { bridge } = def;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -222,11 +222,10 @@ export const LightningElement: LightningElementConstructor = function (
     associateVM(elm, vm);
 
     if (!features.ENABLE_LIGHT_DOM_COMPONENTS) {
-        const { ctor, renderMode } = def;
         assert.isTrue(
-            renderMode !== RenderMode.Light,
+            def.renderMode !== RenderMode.Light,
             `${
-                ctor.name || 'Anonymous class'
+                def.name || 'Anonymous class'
             } is an invalid LWC component. Light DOM components are not available in this environment.`
         );
     }
