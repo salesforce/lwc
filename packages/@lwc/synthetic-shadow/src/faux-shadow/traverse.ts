@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayReduce,
-    ArrayPush,
-    assert,
-    isNull,
-    isUndefined,
-    KEY__SHADOW_TOKEN_PRIVATE,
-} from '@lwc/shared';
+import { ArrayReduce, ArrayPush, assert, isNull, isUndefined } from '@lwc/shared';
 import {
     getHost,
     SyntheticShadowRootInterface,
@@ -27,7 +20,7 @@ import {
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
 } from '../env/node';
-import { getNodeKey, getNodeNearestOwnerKey } from '../shared/node-ownership';
+import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { arrayFromCollection } from '../shared/utils';
 
 // when finding a slot in the DOM, we can fold it if it is contained
@@ -130,7 +123,7 @@ export function getNodeOwner(node: Node): HTMLElement | null {
 }
 
 export function isSyntheticSlotElement(node: Node): node is HTMLSlotElement {
-    return isSlotElement(node) && KEY__SHADOW_TOKEN_PRIVATE in node;
+    return isSlotElement(node) && isNodeShadowed(node);
 }
 
 export function isSlotElement(node: Node): node is HTMLSlotElement {
