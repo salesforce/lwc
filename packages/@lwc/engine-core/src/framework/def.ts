@@ -150,18 +150,14 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     errorCallback = errorCallback || superDef.errorCallback;
     render = render || superDef.render;
 
-    let preferNativeShadow: boolean;
+    let preferNativeShadow = superDef.preferNativeShadow;
     if (!isUndefined(ctorPreferNativeShadow)) {
         preferNativeShadow = Boolean(ctorPreferNativeShadow);
-    } else {
-        preferNativeShadow = superDef.preferNativeShadow;
     }
 
-    let renderMode: RenderMode;
+    let renderMode = superDef.renderMode;
     if (!isUndefined(ctorRenderMode)) {
         renderMode = ctorRenderMode === 'light' ? RenderMode.Light : RenderMode.Shadow;
-    } else {
-        renderMode = superDef.renderMode;
     }
 
     const template = getComponentRegisteredTemplate(Ctor) || superDef.template;
