@@ -10,17 +10,19 @@ import {
     ArrayUnshift,
     assert,
     create,
+    createHiddenField,
+    getHiddenField,
+    getOwnPropertyNames,
+    globalThis,
     isArray,
     isFalse,
     isNull,
     isObject,
     isTrue,
     isUndefined,
+    KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     keys,
-    createHiddenField,
-    getHiddenField,
     setHiddenField,
-    getOwnPropertyNames,
 } from '@lwc/shared';
 
 import {
@@ -50,6 +52,8 @@ import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
 type ShadowRootMode = 'open' | 'closed';
+
+const isNativeShadowRootDefined = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 
 export interface TemplateCache {
     [key: string]: any;
@@ -257,6 +261,16 @@ export function createVM<HostNode, HostElement>(
 ): VM {
     const { mode, owner, renderer, tagName } = options;
 
+    let shadowMode;
+    if (renderer.syntheticShadow) {
+        shadowMode =
+            def.preferNativeShadow && isNativeShadowRootDefined
+                ? ShadowMode.Native
+                : ShadowMode.Synthetic;
+    } else {
+        shadowMode = ShadowMode.Native;
+    }
+
     const vm: VM = {
         elm,
         def,
@@ -277,6 +291,9 @@ export function createVM<HostNode, HostElement>(
         oar: create(null),
         cmpTemplate: null,
 
+        renderMode: def.renderMode,
+        shadowMode,
+
         context: {
             hostAttribute: undefined,
             shadowAttribute: undefined,
@@ -289,8 +306,6 @@ export function createVM<HostNode, HostElement>(
         tro: null!, // Set synchronously after the VM creation.
         component: null!, // Set synchronously by the LightningElement constructor.
         cmpRoot: null!, // Set synchronously by the LightningElement constructor.
-        renderMode: null!, // Set synchronously by the LightningElement constructor.
-        shadowMode: null!, // Set synchronously by the LightningElement constructor.
 
         callHook,
         setHook,

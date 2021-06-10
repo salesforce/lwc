@@ -20,11 +20,12 @@ import {
     defineProperties,
     freeze,
     getPrototypeOf,
+    htmlPropertyToAttribute,
+    isBoolean,
     isFunction,
     isNull,
     isUndefined,
     keys,
-    htmlPropertyToAttribute,
 } from '@lwc/shared';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
@@ -45,6 +46,11 @@ import {
 } from '../shared/circular-module-dependencies';
 import { getComponentOrSwappedComponent } from './hot-swaps';
 
+export enum RenderMode {
+    Light,
+    Shadow,
+}
+
 export interface ComponentDef {
     name: string;
     wire: PropertyDescriptorMap | undefined;
@@ -52,6 +58,8 @@ export interface ComponentDef {
     propsConfig: Record<string, PropType>;
     methods: PropertyDescriptorMap;
     template: Template;
+    preferNativeShadow: boolean;
+    renderMode: RenderMode;
     ctor: LightningElementConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: LightningElement['connectedCallback'];
@@ -90,6 +98,8 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
 }
 
 function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
+    const { preferNativeShadow: ctorPreferNativeShadow, renderMode: ctorRenderMode } = Ctor;
+
     if (process.env.NODE_ENV !== 'production') {
         const ctorName = Ctor.name;
         // Removing the following assert until https://bugs.webkit.org/show_bug.cgi?id=190140 is fixed.
@@ -98,6 +108,20 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             Ctor.constructor,
             `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
         );
+
+        if (!isUndefined(ctorPreferNativeShadow)) {
+            assert.invariant(
+                isBoolean(ctorPreferNativeShadow),
+                `Invalid value for static property preferNativeShadow: '${ctorPreferNativeShadow}'. preferNativeShadow must be a boolean value.`
+            );
+        }
+
+        if (!isUndefined(ctorRenderMode)) {
+            assert.invariant(
+                ctorRenderMode === 'light' || ctorRenderMode === 'shadow',
+                `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`
+            );
+        }
     }
 
     const decoratorsMeta = getDecoratorsMeta(Ctor);
@@ -126,6 +150,16 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     errorCallback = errorCallback || superDef.errorCallback;
     render = render || superDef.render;
 
+    let preferNativeShadow = superDef.preferNativeShadow;
+    if (!isUndefined(ctorPreferNativeShadow)) {
+        preferNativeShadow = Boolean(ctorPreferNativeShadow);
+    }
+
+    let renderMode = superDef.renderMode;
+    if (!isUndefined(ctorRenderMode)) {
+        renderMode = ctorRenderMode === 'light' ? RenderMode.Light : RenderMode.Shadow;
+    }
+
     const template = getComponentRegisteredTemplate(Ctor) || superDef.template;
     const name = Ctor.name || superDef.name;
 
@@ -141,6 +175,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         methods,
         bridge,
         template,
+        preferNativeShadow,
+        renderMode,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
@@ -229,6 +265,8 @@ const lightingElementDef: ComponentDef = {
     props: lightningBasedDescriptors,
     propsConfig: EmptyObject,
     methods: EmptyObject,
+    preferNativeShadow: false,
+    renderMode: RenderMode.Shadow,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
     template: defaultEmptyTemplate,
