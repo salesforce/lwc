@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isArray, isUndefined, ArrayJoin, ArrayPush } from '@lwc/shared';
+import { isArray, isUndefined, ArrayJoin, ArrayPush, isNull } from '@lwc/shared';
 
 import * as api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
@@ -138,16 +138,39 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
     return content;
 }
 
+function getNearestNativeShadowComponent(vm: VM): VM | null {
+    let owner: VM | null = vm;
+    while (!isNull(owner)) {
+        if (owner.renderMode === RenderMode.Shadow && owner.shadowMode === ShadowMode.Native) {
+            return owner;
+        }
+        owner = owner.owner;
+    }
+    return owner;
+}
+
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
     const { renderer, renderMode, shadowMode } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
             renderer.insertGlobalStylesheet(stylesheets[i]);
         }
-        return null;
-    } else {
-        // native shadow or light DOM
+    } else if (renderer.ssr) {
+        // native shadow or light DOM, SSR
         const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
         return createInlineStyleVNode(combinedStylesheetContent);
+    } else {
+        // native shadow or light DOM, DOM renderer
+        const root = getNearestNativeShadowComponent(vm);
+        const isGlobal = isNull(root);
+        for (let i = 0; i < stylesheets.length; i++) {
+            if (isGlobal) {
+                renderer.insertGlobalStylesheet(stylesheets[i]);
+            } else {
+                // local level
+                renderer.insertStylesheet(stylesheets[i], root!.cmpRoot);
+            }
+        }
     }
+    return null;
 }

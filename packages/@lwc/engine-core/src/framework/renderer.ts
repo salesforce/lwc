@@ -46,6 +46,7 @@ export interface Renderer<N = HostNode, E = HostElement> {
     getElementsByClassName(element: E, names: string): HTMLCollection;
     isConnected(node: N): boolean;
     insertGlobalStylesheet(content: string): void;
+    insertStylesheet(content: string, target: N): void;
     assertInstanceOfHTMLElement?(elm: any, msg: string): void;
     defineCustomElement(
         name: string,

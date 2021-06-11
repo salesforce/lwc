@@ -10,6 +10,7 @@ import {
     create,
     hasOwnProperty,
     htmlPropertyToAttribute,
+    isFunction,
     isUndefined,
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
@@ -29,6 +30,10 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
+const supportsConstructableStyleSheets = isFunction((CSSStyleSheet.prototype as any).replaceSync);
+const styleElements: { [content: string]: HTMLStyleElement } = create(null);
+const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
+const nodesToStyleSheets = new WeakMap<Node, { [content: string]: true }>();
 
 let getCustomElement, defineCustomElement, HTMLElementConstructor;
 
@@ -52,6 +57,46 @@ function isCustomElementRegistryAvailable() {
     } catch {
         return false;
     }
+}
+
+function insertConstructableStyleSheet(content: string, target: Node) {
+    // It's important for CSSStyleSheets to be unique based on their content, so that
+    // `shadowRoot.adoptedStyleSheets.includes(sheet)` works.
+    let styleSheet = styleSheets[content];
+    if (isUndefined(styleSheet)) {
+        styleSheet = new CSSStyleSheet();
+        (styleSheet as any).replaceSync(content);
+        styleSheets[content] = styleSheet;
+    }
+    if (!(target as any).adoptedStyleSheets.includes(styleSheet)) {
+        (target as any).adoptedStyleSheets = [...(target as any).adoptedStyleSheets, styleSheet];
+    }
+}
+
+function insertStyleElement(content: string, target: Node) {
+    // Avoid inserting duplicate `<style>`s
+    let sheets = nodesToStyleSheets.get(target);
+    if (isUndefined(sheets)) {
+        sheets = create(null);
+        nodesToStyleSheets.set(target, sheets!);
+    }
+    if (sheets![content]) {
+        return;
+    }
+    sheets![content] = true;
+
+    // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
+    // faster to call `cloneNode()` on an existing node than to recreate it every time.
+    let elm = styleElements[content];
+    if (isUndefined(elm)) {
+        elm = document.createElement('style');
+        elm.type = 'text/css';
+        elm.textContent = content;
+        styleElements[content] = elm;
+    } else {
+        elm = elm.cloneNode(true) as HTMLStyleElement;
+    }
+    target.appendChild(elm);
 }
 
 if (isCustomElementRegistryAvailable()) {
@@ -242,6 +287,15 @@ export const renderer: Renderer<Node, Element> = {
         elm.textContent = content;
 
         globalStylesheetsParentElement.appendChild(elm);
+    },
+
+    insertStylesheet(content: string, target: Node): void {
+        if (supportsConstructableStyleSheets) {
+            insertConstructableStyleSheet(content, target);
+        } else {
+            // Fall back to <style> element
+            insertStyleElement(content, target);
+        }
     },
 
     assertInstanceOfHTMLElement(elm: any, msg: string) {

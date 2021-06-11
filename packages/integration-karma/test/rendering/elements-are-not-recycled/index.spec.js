@@ -101,8 +101,14 @@ if (process.env.NATIVE_SHADOW) {
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
-            const styles = Array.from(elm.shadowRoot.querySelectorAll('x-simple')).map((xSimple) =>
-                xSimple.shadowRoot.querySelector('style')
+            const styles = Array.from(elm.shadowRoot.querySelectorAll('x-simple')).map(
+                (xSimple) => {
+                    // if constructable stylesheets are supported, return that rather than <style> tags
+                    return (
+                        xSimple.shadowRoot.adoptedStyleSheets ||
+                        xSimple.shadowRoot.querySelector('style')
+                    );
+                }
             );
 
             expect(styles[0]).toBeTruthy();
