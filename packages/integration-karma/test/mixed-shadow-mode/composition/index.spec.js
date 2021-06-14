@@ -21,19 +21,12 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                 const elm = createElement('x-native-render-func', { is: NativeRenderFunc });
                 document.body.appendChild(elm);
                 expect(elm.shadowRoot.querySelector('div').textContent).toEqual('hello');
-                // The code we want to test calls `Promise.resolve().then(flushCallbackQueue)`, which would result
-                // in an unhandled promise rejection. To actually capture that promise, we mock `Promise.resolve`.
-                let promise = Promise.resolve();
-                spyOn(Promise, 'resolve').and.returnValue({
-                    then: function (callback) {
-                        promise = promise.then(callback);
-                        return promise;
-                    },
-                });
                 elm.tryToRenderSynthetic = true;
-                return expectAsync(promise).toBeRejectedWithError(
-                    'Assert Violation: <x-synthetic> (synthetic shadow DOM) cannot be composed inside of <x-native-render-func> (native shadow DOM), because synthetic-within-native composition is disallowed'
-                );
+                return Promise.resolve().then(() => {
+                    expect(elm.error).toEqual(
+                        'Assert Violation: <x-synthetic> (synthetic shadow DOM) cannot be composed inside of <x-native-render-func> (native shadow DOM), because synthetic-within-native composition is disallowed'
+                    );
+                });
             });
 
             it('synthetic containing slottable native component with synthetic slotted inside should not throw', () => {
