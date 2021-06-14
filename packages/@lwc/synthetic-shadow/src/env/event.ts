@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+import { getOwnPropertyDescriptor } from '@lwc/shared';
+
+const eventCurrentTargetGetter: (this: Event) => EventTarget | null = getOwnPropertyDescriptor(
+    Event.prototype,
+    'currentTarget'
+)!.get!;
+
+const eventPhaseGetter: (this: Event) => number = getOwnPropertyDescriptor(
+    Event.prototype,
+    'eventPhase'
+)!.get!;
+
+const eventTargetGetter: (this: Event) => EventTarget = getOwnPropertyDescriptor(
+    Event.prototype,
+    'target'
+)!.get!;
+
+const focusEventRelatedTargetGetter: (this: FocusEvent) => EventTarget | null =
+    getOwnPropertyDescriptor(FocusEvent.prototype, 'relatedTarget')!.get!;
+
+export {
+    eventCurrentTargetGetter,
+    eventPhaseGetter,
+    eventTargetGetter,
+    focusEventRelatedTargetGetter,
+};
