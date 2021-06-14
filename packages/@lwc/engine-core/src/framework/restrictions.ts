@@ -203,7 +203,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 // programmatically into its Component's shadow root
                 if (!isUndefined(options)) {
                     logError(
-                        'The `addEventListener` method in `LightningElement` does not support any options.',
+                        'The `addEventListener` method on ShadowRoot does not support any options.',
                         getAssociatedVMIfPresent(this)
                     );
                 }
