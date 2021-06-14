@@ -13,7 +13,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     const elm = createElement('x-native', { is: Native });
                     document.body.appendChild(elm);
                 }).toThrowError(
-                    'Assert Violation: <x-synthetic> (preferNativeShadow=false) cannot be composed inside of <x-native> (preferNativeShadow=true)'
+                    'Assert Violation: <x-synthetic> (synthetic shadow DOM) cannot be composed inside of <x-native> (native shadow DOM), because synthetic-within-native composition is disallowed'
                 );
             });
 
@@ -32,7 +32,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                 });
                 elm.tryToRenderSynthetic = true;
                 return expectAsync(promise).toBeRejectedWithError(
-                    'Assert Violation: <x-synthetic> (preferNativeShadow=false) cannot be composed inside of <x-native-render-func> (preferNativeShadow=true)'
+                    'Assert Violation: <x-synthetic> (synthetic shadow DOM) cannot be composed inside of <x-native-render-func> (native shadow DOM), because synthetic-within-native composition is disallowed'
                 );
             });
 
@@ -50,7 +50,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     const elm = createElement('x-native-container', { is: NativeContainer });
                     document.body.appendChild(elm);
                 }).toThrowError(
-                    'Assert Violation: <x-synthetic> (preferNativeShadow=false) cannot be composed inside of <x-native-container> (preferNativeShadow=true)'
+                    'Assert Violation: <x-synthetic> (synthetic shadow DOM) cannot be composed inside of <x-native-container> (native shadow DOM), because synthetic-within-native composition is disallowed'
                 );
             });
 
@@ -68,7 +68,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                         });
                         document.body.appendChild(elm);
                     }).toThrowError(
-                        'Assert Violation: <x-synthetic> (preferNativeShadow=false) cannot be composed inside of <x-native-light-synthetic> (preferNativeShadow=true)'
+                        'Assert Violation: <x-synthetic> (synthetic shadow DOM) cannot be composed inside of <x-native-light-synthetic> (native shadow DOM), because synthetic-within-native composition is disallowed'
                     );
                 });
             });

@@ -268,9 +268,9 @@ function assertNotSyntheticComposedWithinNative(vm: VM) {
         // Any native shadow component being an ancestor of a synthetic shadow component is disallowed.
         assert.isFalse(
             ancestor.renderMode === RenderMode.Shadow && ancestor.shadowMode === ShadowMode.Native,
-            `<${vm.tagName}> (preferNativeShadow=false) cannot be composed inside of <${
+            `<${vm.tagName}> (synthetic shadow DOM) cannot be composed inside of <${
                 getAssociatedVM(ancestor.elm).tagName
-            }> (preferNativeShadow=true)`
+            }> (native shadow DOM), because synthetic-within-native composition is disallowed`
         );
     }
 }
