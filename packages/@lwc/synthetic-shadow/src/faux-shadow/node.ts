@@ -40,6 +40,7 @@ import {
     isNodeOwnedBy,
     getAllMatches,
     getFilteredChildNodes,
+    isSyntheticSlotElement,
 } from './traverse';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from './shadow-root';
@@ -49,11 +50,12 @@ import { isGlobalPatchingSkipped } from '../shared/utils';
 
 /**
  * This method checks whether or not the content of the node is computed
- * based on the light-dom slotting mechanism. This applies to slot elements
- * and elements with shadow dom attached to them.
+ * based on the light-dom slotting mechanism. This applies to synthetic slot elements
+ * and elements with shadow dom attached to them. It doesn't apply to native slot elements
+ * because we don't want to patch the children getters for those elements.
  */
 export function hasMountedChildren(node: Node): boolean {
-    return isSlotElement(node) || isHostElement(node);
+    return isSyntheticSlotElement(node) || isHostElement(node);
 }
 
 function getShadowParent(node: Node, value: ParentNode & Node): (Node & ParentNode) | null {

@@ -20,7 +20,7 @@ import {
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
 } from '../env/node';
-import { getNodeKey, getNodeNearestOwnerKey } from '../shared/node-ownership';
+import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { arrayFromCollection } from '../shared/utils';
 
 // when finding a slot in the DOM, we can fold it if it is contained
@@ -120,6 +120,10 @@ export function getNodeOwner(node: Node): HTMLElement | null {
         return null;
     }
     return nodeOwner as HTMLElement;
+}
+
+export function isSyntheticSlotElement(node: Node): node is HTMLSlotElement {
+    return isSlotElement(node) && isNodeShadowed(node);
 }
 
 export function isSlotElement(node: Node): node is HTMLSlotElement {
