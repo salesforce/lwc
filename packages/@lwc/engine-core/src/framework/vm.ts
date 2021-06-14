@@ -249,23 +249,29 @@ export function removeVM(vm: VM) {
     resetComponentStateWhenRemoved(vm);
 }
 
+function getNearestShadowAncestor(vm: VM): VM | null {
+    let ancestor = vm.owner;
+    while (!isNull(ancestor) && ancestor.renderMode === RenderMode.Light) {
+        ancestor = ancestor.owner;
+    }
+    return ancestor;
+}
+
 function assertNotSyntheticComposedWithinNative(vm: VM) {
     const isSynthetic =
         vm.renderMode === RenderMode.Shadow && vm.shadowMode === ShadowMode.Synthetic;
     if (!isSynthetic) {
         return;
     }
-    let ancestor = vm.owner;
-    // Walk the ancestor chain to look for any native shadow components. Any native shadow component
-    // being an ancestor of a synthetic shadow component is disallowed.
-    while (!isNull(ancestor)) {
+    const ancestor = getNearestShadowAncestor(vm);
+    if (!isNull(ancestor)) {
+        // Any native shadow component being an ancestor of a synthetic shadow component is disallowed.
         assert.isFalse(
             ancestor.renderMode === RenderMode.Shadow && ancestor.shadowMode === ShadowMode.Native,
             `<${vm.tagName}> (preferNativeShadow=false) cannot be composed inside of <${
                 getAssociatedVM(ancestor.elm).tagName
             }> (preferNativeShadow=true)`
         );
-        ancestor = ancestor.owner;
     }
 }
 
