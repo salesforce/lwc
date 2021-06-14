@@ -19,13 +19,6 @@ describe('restrictions', () => {
                 elm.setTextContentOnShadowRoot();
             }).toThrowError(TypeError, 'Invalid attempt to set textContent on ShadowRoot.');
         });
-        it('addEventListener', () => {
-            expect(() => {
-                elm.addEventListenerWithOptions();
-            }).toLogErrorDev(
-                'Error: [LWC error]: The `addEventListener` method on ShadowRoot does not support any options.\n'
-            );
-        });
     });
 
     describe('custom element', () => {
