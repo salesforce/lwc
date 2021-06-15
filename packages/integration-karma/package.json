@@ -15,7 +15,7 @@
         "@lwc/engine-dom": "2.2.3",
         "@lwc/rollup-plugin": "2.2.3",
         "@lwc/synthetic-shadow": "2.2.3",
-        "chokidar": "^3.5.1",
+        "chokidar": "^3.5.2",
         "istanbul-lib-coverage": "^3.0.0",
         "istanbul-lib-report": "^3.0.0",
         "istanbul-reports": "^3.0.2",
