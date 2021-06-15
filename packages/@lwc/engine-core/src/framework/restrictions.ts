@@ -72,7 +72,10 @@ function logMissingPortalError(name: string, type: string) {
     );
 }
 
-export function patchElementWithRestrictions(elm: Element, options: { isPortal: boolean }): void {
+export function patchElementWithRestrictions(
+    elm: Element,
+    options: { isPortal: boolean; isSyntheticShadow: boolean }
+): void {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -91,7 +94,7 @@ export function patchElementWithRestrictions(elm: Element, options: { isPortal: 
     };
 
     // Apply extra restriction related to DOM manipulation if the element is not a portal.
-    if (isFalse(options.isPortal)) {
+    if (options.isSyntheticShadow && isFalse(options.isPortal)) {
         const { appendChild, insertBefore, removeChild, replaceChild } = elm;
 
         const originalNodeValueDescriptor = getPropertyDescriptor(elm, 'nodeValue')!;

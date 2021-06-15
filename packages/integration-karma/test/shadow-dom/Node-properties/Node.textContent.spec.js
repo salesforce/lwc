@@ -37,16 +37,18 @@ describe('Node.textContent - setter', () => {
         }).toThrowError();
     });
 
-    it('should log an error when invoking setter for an element in the shadow', () => {
-        const elm = createElement('x-test', { is: Slotted });
-        document.body.appendChild(elm);
+    if (!process.env.NATIVE_SHADOW) {
+        it('should log an error when invoking setter for an element in the shadow', () => {
+            const elm = createElement('x-test', { is: Slotted });
+            document.body.appendChild(elm);
 
-        const div = elm.shadowRoot.querySelector('div');
+            const div = elm.shadowRoot.querySelector('div');
 
-        expect(() => {
-            div.textContent = '<span>Hello World!</span>';
-        }).toLogErrorDev(
-            /\[LWC error\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./
-        );
-    });
+            expect(() => {
+                div.textContent = '<span>Hello World!</span>';
+            }).toLogErrorDev(
+                /\[LWC error\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./
+            );
+        });
+    }
 });
