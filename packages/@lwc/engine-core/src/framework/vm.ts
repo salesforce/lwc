@@ -24,7 +24,7 @@ import {
     keys,
     setHiddenField,
 } from '@lwc/shared';
-
+import { getComponentTag } from '../shared/format';
 import {
     createComponent,
     renderComponent,
@@ -249,6 +249,34 @@ export function removeVM(vm: VM) {
     resetComponentStateWhenRemoved(vm);
 }
 
+function getNearestShadowAncestor(vm: VM): VM | null {
+    let ancestor = vm.owner;
+    while (!isNull(ancestor) && ancestor.renderMode === RenderMode.Light) {
+        ancestor = ancestor.owner;
+    }
+    return ancestor;
+}
+
+function assertNotSyntheticComposedWithinNative(vm: VM) {
+    const isSynthetic =
+        vm.renderMode === RenderMode.Shadow && vm.shadowMode === ShadowMode.Synthetic;
+    if (!isSynthetic) {
+        return;
+    }
+    const ancestor = getNearestShadowAncestor(vm);
+    if (!isNull(ancestor)) {
+        // Any native shadow component being an ancestor of a synthetic shadow component is disallowed.
+        assert.isFalse(
+            ancestor.renderMode === RenderMode.Shadow && ancestor.shadowMode === ShadowMode.Native,
+            `${getComponentTag(
+                vm
+            )} (synthetic shadow DOM) cannot be composed inside of ${getComponentTag(
+                ancestor
+            )} (native shadow DOM), because synthetic-within-native composition is disallowed`
+        );
+    }
+}
+
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
     def: ComponentDef,
@@ -318,6 +346,7 @@ export function createVM<HostNode, HostElement>(
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
+        assertNotSyntheticComposedWithinNative(vm);
     }
 
     // Create component instance associated to the vm and the element.
