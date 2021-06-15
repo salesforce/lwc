@@ -24,7 +24,7 @@ import {
     keys,
     setHiddenField,
 } from '@lwc/shared';
-
+import { getComponentTag } from '../shared/format';
 import {
     createComponent,
     renderComponent,
@@ -268,9 +268,11 @@ function assertNotSyntheticComposedWithinNative(vm: VM) {
         // Any native shadow component being an ancestor of a synthetic shadow component is disallowed.
         assert.isFalse(
             ancestor.renderMode === RenderMode.Shadow && ancestor.shadowMode === ShadowMode.Native,
-            `${getComponentTag(vm)} (synthetic shadow DOM) cannot be composed inside of ${
-                getComponentTag(ancestor)
-            } (native shadow DOM), because synthetic-within-native composition is disallowed`
+            `${getComponentTag(
+                vm
+            )} (synthetic shadow DOM) cannot be composed inside of ${getComponentTag(
+                ancestor
+            )} (native shadow DOM), because synthetic-within-native composition is disallowed`
         );
     }
 }
