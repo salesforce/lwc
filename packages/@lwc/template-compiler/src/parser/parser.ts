@@ -41,6 +41,7 @@ export default class ParserCtx {
 
     readonly warnings: CompilerDiagnostic[] = [];
     readonly seenIds: Set<string> = new Set();
+    readonly seenSlots: Set<string> = new Set();
 
     readonly parentStack: IRElement[] = [];
 
