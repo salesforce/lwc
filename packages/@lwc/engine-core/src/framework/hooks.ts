@@ -122,9 +122,8 @@ export function fallbackElmHook(elm: Element, vnode: VElement) {
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
             context.lwc.dom === LWCDOMMode.manual;
-        const isSyntheticShadow =
-            owner.renderMode === RenderMode.Shadow && owner.shadowMode === ShadowMode.Synthetic;
-        patchElementWithRestrictions(elm, { isPortal, isSyntheticShadow });
+        const isLight = owner.renderMode === RenderMode.Light;
+        patchElementWithRestrictions(elm, { isPortal, isLight });
     }
 }
 
