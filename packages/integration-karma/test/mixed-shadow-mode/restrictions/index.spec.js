@@ -72,4 +72,12 @@ describe('restrictions', () => {
             );
         });
     });
+
+    describe('Element', () => {
+        it('should throw on setting outerHTML', () => {
+            expect(() => {
+                elm.shadowRoot.querySelector('div').outerHTML = '';
+            }).toThrowError(TypeError, 'Invalid attempt to set outerHTML on Element.');
+        });
+    });
 });
