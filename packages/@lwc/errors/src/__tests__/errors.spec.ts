@@ -79,15 +79,15 @@ describe('error validation', () => {
     });
 
     it('Next error code is updated in src/compiler/error-info/index.ts', () => {
-        const errorCodes: number[] = [];
+        let lastErrorCode = 1001;
         traverseErrorInfo(
             CompilerErrors,
             (error) => {
-                errorCodes.push(error.code);
+                lastErrorCode = Math.max(lastErrorCode, error.code);
             },
             'compiler'
         );
-        const expectedNextErrorCode = 1 + Math.max(...errorCodes);
+        const expectedNextErrorCode = 1 + lastErrorCode;
         const errorInfo = fs.readFileSync(
             path.join(__dirname, '../compiler/error-info/index.ts'),
             'utf-8'
