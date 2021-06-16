@@ -13,45 +13,43 @@ function waitForStyleToBeApplied() {
     });
 }
 
-if (!process.env.NATIVE_SHADOW) {
-    describe('dom mutation without the lwc:dom="manual" directive', () => {
-        function testErrorOnDomMutation(method, fn) {
-            it(`should log an error when calling ${method} on an element without the lwc:dom="manual" directive`, () => {
-                const root = createElement('x-without-lwc-dom-manual', { is: withoutLwcDomManual });
-                document.body.appendChild(root);
-                const elm = root.shadowRoot.querySelector('div');
+describe('dom mutation without the lwc:dom="manual" directive', () => {
+    function testErrorOnDomMutation(method, fn) {
+        it(`should log an error when calling ${method} on an element without the lwc:dom="manual" directive`, () => {
+            const root = createElement('x-without-lwc-dom-manual', { is: withoutLwcDomManual });
+            document.body.appendChild(root);
+            const elm = root.shadowRoot.querySelector('div');
 
-                expect(() => fn(elm)).toLogErrorDev(
-                    new RegExp(
-                        `\\[LWC error\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`
-                    )
-                );
-            });
-        }
-
-        testErrorOnDomMutation('appendChild', (elm) => {
-            const child = document.createElement('div');
-            elm.appendChild(child);
+            expect(() => fn(elm)).toLogErrorDev(
+                new RegExp(
+                    `\\[LWC error\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`
+                )
+            );
         });
+    }
 
-        testErrorOnDomMutation('insertBefore', (elm) => {
-            const child = document.createElement('div');
-            const span = elm.firstElementChild;
-            elm.insertBefore(child, span);
-        });
-
-        testErrorOnDomMutation('removeChild', (elm) => {
-            const span = elm.firstElementChild;
-            elm.removeChild(span);
-        });
-
-        testErrorOnDomMutation('replaceChild', (elm) => {
-            const child = document.createElement('div');
-            const span = elm.firstElementChild;
-            elm.replaceChild(child, span);
-        });
+    testErrorOnDomMutation('appendChild', (elm) => {
+        const child = document.createElement('div');
+        elm.appendChild(child);
     });
-}
+
+    testErrorOnDomMutation('insertBefore', (elm) => {
+        const child = document.createElement('div');
+        const span = elm.firstElementChild;
+        elm.insertBefore(child, span);
+    });
+
+    testErrorOnDomMutation('removeChild', (elm) => {
+        const span = elm.firstElementChild;
+        elm.removeChild(span);
+    });
+
+    testErrorOnDomMutation('replaceChild', (elm) => {
+        const child = document.createElement('div');
+        const span = elm.firstElementChild;
+        elm.replaceChild(child, span);
+    });
+});
 
 describe('dom mutation with the lwc:dom="manual" directive', () => {
     function testAllowDomMutationWithLwcDomDirective(method, fn) {
