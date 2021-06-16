@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import path from 'path';
+import fs from 'fs';
 import { hasOwnProperty } from '@lwc/shared';
 import * as CompilerErrors from '../compiler/error-info';
 import { LWCErrorInfo } from '../shared/types';
@@ -74,5 +76,23 @@ describe('error validation', () => {
         }
 
         traverseErrorInfo(CompilerErrors, checkUniqueness, 'compiler');
+    });
+
+    it('Next error code is updated', () => {
+        const errorCodes: number[] = [];
+        traverseErrorInfo(
+            CompilerErrors,
+            (error) => {
+                errorCodes.push(error.code);
+            },
+            'compiler'
+        );
+        const expectedNextErrorCode = 1 + Math.max(...errorCodes);
+        const errorInfo = fs.readFileSync(
+            path.join(__dirname, '../compiler/error-info/index.ts'),
+            'utf-8'
+        );
+        const actualNextErrorCode = parseInt(errorInfo.match(/Next error code: (\d+)/)![1], 10);
+        expect(actualNextErrorCode).toEqual(expectedNextErrorCode);
     });
 });
