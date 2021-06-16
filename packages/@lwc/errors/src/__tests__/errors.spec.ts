@@ -78,7 +78,7 @@ describe('error validation', () => {
         traverseErrorInfo(CompilerErrors, checkUniqueness, 'compiler');
     });
 
-    it('Next error code is updated', () => {
+    it('Next error code is updated in src/compiler/error-info/index.ts', () => {
         const errorCodes: number[] = [];
         traverseErrorInfo(
             CompilerErrors,
