@@ -209,7 +209,7 @@ describe('EventTarget.addEventListener', () => {
                 expect(() => {
                     container.shadowRoot.addEventListener('test', () => {}, {});
                 }).toLogErrorDev(
-                    /The `addEventListener` method in `LightningElement` does not support any options./
+                    /The `addEventListener` method on ShadowRoot does not support any options./
                 );
             });
 
@@ -261,7 +261,7 @@ describe('EventTarget.addEventListener', () => {
                 expect(() => {
                     container.shadowRoot.addEventListener('test', () => {}, {});
                 }).toLogErrorDev(
-                    /The `addEventListener` method in `LightningElement` does not support any options./
+                    /The `addEventListener` method on ShadowRoot does not support any options./
                 );
             });
 
