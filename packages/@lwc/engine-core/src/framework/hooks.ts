@@ -122,7 +122,8 @@ export function fallbackElmHook(elm: Element, vnode: VElement) {
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
             context.lwc.dom === LWCDOMMode.manual;
-        patchElementWithRestrictions(elm, { isPortal });
+        const isLight = owner.renderMode === RenderMode.Light;
+        patchElementWithRestrictions(elm, { isPortal, isLight });
     }
 }
 
