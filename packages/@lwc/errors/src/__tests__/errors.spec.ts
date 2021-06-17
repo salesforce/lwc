@@ -78,7 +78,7 @@ describe('error validation', () => {
         traverseErrorInfo(CompilerErrors, checkUniqueness, 'compiler');
     });
 
-    it('Next error code is updated in src/compiler/error-info/index.ts', () => {
+    it('"Next error code: XXXX" comment is updated in src/compiler/error-info/index.ts', () => {
         let lastErrorCode = 1001;
         traverseErrorInfo(
             CompilerErrors,
