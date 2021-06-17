@@ -7,11 +7,13 @@
 const path = require('path');
 const rollup = require('rollup');
 const rollupCompat = require('rollup-plugin-compat');
+const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const rollupCompile = require('../index');
 require('jest-utils-lwc-internals');
 
 const fixturesDir = path.join(__dirname, 'fixtures');
 const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
+const simpleAppWithThirdPartyDir = path.join(fixturesDir, 'simple_app_third_party_import/src');
 const tsAppDir = path.join(fixturesDir, 'ts_simple_app/src');
 const jsMultiVersion = path.join(fixturesDir, 'multi_version');
 
@@ -51,6 +53,15 @@ describe('default configuration', () => {
         };
         return doRollup(entry, { compat: false }, rollupCompileOptions).then(({ code: actual }) => {
             expect(actual).toContain('Application container');
+        });
+    });
+
+    it('simple app with @rollup/plugin-node-resolve and third-party package', () => {
+        const entry = path.join(simpleAppWithThirdPartyDir, 'main.js');
+        return doRollup(entry, { compat: false, resolve: true }).then(({ code: actual }) => {
+            expect(actual).toMatchFile(
+                path.join(fixturesDir, 'expected_default_config_simple_app_third_party.js')
+            );
         });
     });
 });
@@ -106,11 +117,12 @@ describe('multi-package-version', () => {
 
 const globalModules = { lwc: 'LWC', myCssResolver: 'resolveCss' };
 
-async function doRollup(input, { compat } = {}, rollupCompileOptions) {
+async function doRollup(input, { compat, resolve } = {}, rollupCompileOptions) {
     const bundle = await rollup.rollup({
         input,
         external: (id) => id in globalModules,
         plugins: [
+            resolve && nodeResolve(),
             rollupCompile(rollupCompileOptions),
             compat && rollupCompat({ polyfills: false }),
         ],

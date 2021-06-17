@@ -44,6 +44,7 @@
     "glob": "^7.1.7",
     "husky": "^6.0.0",
     "is-ci": "^3.0.0",
+    "is-regexp": "^3.0.0",
     "isbinaryfile": "^4.0.8",
     "jest": "^27.0.4",
     "jest-utils-lwc-internals": "link:./scripts/jest/utils",
