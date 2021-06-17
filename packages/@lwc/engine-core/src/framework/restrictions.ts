@@ -14,7 +14,6 @@ import {
     getOwnPropertyNames,
     getPropertyDescriptor,
     getPrototypeOf,
-    isFalse,
     isUndefined,
     setPrototypeOf,
     isObject,
@@ -94,7 +93,7 @@ export function patchElementWithRestrictions(
     };
 
     // Apply extra restriction related to DOM manipulation if the element is not a portal.
-    if (isFalse(options.isLight) && isFalse(options.isPortal)) {
+    if (!options.isLight && !options.isPortal) {
         const { appendChild, insertBefore, removeChild, replaceChild } = elm;
 
         const originalNodeValueDescriptor = getPropertyDescriptor(elm, 'nodeValue')!;
