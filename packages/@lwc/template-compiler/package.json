@@ -29,7 +29,7 @@
     "dependencies": {
         "@lwc/errors": "2.2.3",
         "@lwc/shared": "2.2.3",
-        "acorn": "~8.3.0",
+        "acorn": "~8.4.0",
         "astring": "~1.7.0",
         "estree-walker": "~2.0.2",
         "esutils": "~2.0.3",
