@@ -19,4 +19,4 @@ packages/integration-tests/.env
 
 # custom node_modules for testing
 !packages/@lwc/module-resolver/src/__tests__/**/node_modules/
-!packages/@lwc/rollup-plugin/src/__tests__/fixtures/simple_app_third_party_import/node_modules/
+!packages/@lwc/rollup-plugin/src/__tests__/**/node_modules/
