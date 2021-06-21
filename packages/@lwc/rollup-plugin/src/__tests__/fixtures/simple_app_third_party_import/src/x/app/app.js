@@ -1,6 +1,6 @@
 import { LightningElement } from "lwc";
-import isRegexp from 'is-regexp'
+import fake from 'fake-third-party-package'
 
 export default class App extends LightningElement {
-    isRegex = isRegexp(/foo/)
+    hello = fake()
 }

@@ -5,7 +5,7 @@
     const {d: api_dynamic, h: api_element} = $api;
     return [api_element("pre", {
       key: 0
-    }, [api_dynamic($cmp.isRegex)])];
+    }, [api_dynamic($cmp.hello)])];
   }
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];
@@ -14,20 +14,20 @@
     shadowAttribute: "x-app_app"
   };
 
-  function isRegexp(value) {
-    return Object.prototype.toString.call(value) === '[object RegExp]';
+  function fake() {
+    return 'woo hoo';
   }
 
   class App extends lwc.LightningElement {
     constructor(...args) {
       super(...args);
-      this.isRegex = isRegexp(/foo/);
+      this.hello = fake();
     }
 
   }
 
   lwc.registerDecorators(App, {
-    fields: ["isRegex"]
+    fields: ["hello"]
   });
 
   var App$1 = lwc.registerComponent(App, {
