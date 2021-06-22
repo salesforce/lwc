@@ -122,6 +122,13 @@ function validateOutputConfig(config: OutputConfig) {
         CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY,
         [config.sourcemap]
     );
+
+    if (!isUndefined(config.minify)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+            `"OutputConfig.minify" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
+        );
+    }
 }
 
 function normalizeOptions(options: TransformOptions): NormalizedTransformOptions {
