@@ -15,7 +15,6 @@ export default function styleTransform(
     filename: string,
     config: NormalizedTransformOptions
 ): TransformResult {
-    const { minify } = config.outputConfig;
     const { customProperties } = config.stylesheetConfig;
 
     const styleCompilerConfig = {
@@ -24,9 +23,6 @@ export default function styleTransform(
                 customProperties.resolution.type === 'module'
                     ? customProperties.resolution.name
                     : undefined,
-        },
-        outputConfig: {
-            minify,
         },
     };
 

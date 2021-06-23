@@ -41,8 +41,16 @@ export interface StylesheetConfig {
 }
 
 export interface OutputConfig {
-    minify?: boolean;
+    /**
+     * If `true` a source map is generated for the transformed file.
+     * @default false
+     */
     sourcemap?: boolean;
+
+    /**
+     * @deprecated The minify property has no effect on the generated output.
+     */
+    minify?: boolean;
 }
 
 export interface DynamicComponentConfig {
@@ -110,16 +118,17 @@ function isUndefinedOrBoolean(property: any): boolean {
 
 function validateOutputConfig(config: OutputConfig) {
     invariant(
-        isUndefinedOrBoolean(config.minify),
-        CompilerValidationErrors.INVALID_MINIFY_PROPERTY,
-        [config.minify]
-    );
-
-    invariant(
         isUndefinedOrBoolean(config.sourcemap),
         CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY,
         [config.sourcemap]
     );
+
+    if (!isUndefined(config.minify)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+            `"OutputConfig.minify" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
+        );
+    }
 }
 
 function normalizeOptions(options: TransformOptions): NormalizedTransformOptions {

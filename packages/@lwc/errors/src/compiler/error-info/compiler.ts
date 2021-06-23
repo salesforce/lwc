@@ -46,13 +46,6 @@ export const CompilerValidationErrors = {
         url: '',
     },
 
-    INVALID_MINIFY_PROPERTY: {
-        code: 1017,
-        message: 'Expected a boolean for outputConfig.minify, received "{0}".',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     INVALID_NAME_PROPERTY: {
         code: 1018,
         message: 'Expected a string for name, received "{0}".',
