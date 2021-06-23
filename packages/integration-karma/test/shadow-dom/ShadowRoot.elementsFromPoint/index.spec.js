@@ -3,9 +3,10 @@ import Container from 'x/container';
 
 describe('ShadowRoot.elementsFromPoint', () => {
     // The browsers disagree on whether elements _above_ the shadow root should also be included
-    // when calling shadowRoot.elementsFromPoint(). Firefox only returns elements inside of that
-    // exact shadow root, whereas Chrome and Safari return elements above (outside) of that root.
-    let onlyIncludesElementsWithinExactShadowRoot = false;
+    // when calling shadowRoot.elementsFromPoint(). Firefox only returns elements inside of the
+    // immediate shadow root, whereas Chrome and Safari return elements above (outside) of that root.
+    // https://crbug.com/1207863#c4
+    let onlyIncludesElementsInImmediateShadowRoot = false;
     beforeAll(() => {
         if (process.env.NATIVE_SHADOW && !process.env.COMPAT) {
             // detect the Firefox behavior
@@ -15,7 +16,7 @@ describe('ShadowRoot.elementsFromPoint', () => {
             const { left, top } = div.shadowRoot.querySelector('div').getBoundingClientRect();
             const elements = div.shadowRoot.elementsFromPoint(left, top);
             document.body.removeChild(div);
-            onlyIncludesElementsWithinExactShadowRoot = elements.length === 1;
+            onlyIncludesElementsInImmediateShadowRoot = elements.length === 1;
         }
     });
 
@@ -24,7 +25,7 @@ describe('ShadowRoot.elementsFromPoint', () => {
         const rootNode = element.getRootNode();
         const elementsFromPoint = rootNode.elementsFromPoint(left + width / 2, top + height / 2);
 
-        if (onlyIncludesElementsWithinExactShadowRoot) {
+        if (onlyIncludesElementsInImmediateShadowRoot) {
             expectedElements = expectedElements.filter(
                 (el) => el.getRootNode() === element.getRootNode()
             );
@@ -33,7 +34,7 @@ describe('ShadowRoot.elementsFromPoint', () => {
         expect(elementsFromPoint).toEqual(expectedElements);
     }
 
-    it('has correct elementsFromPoint and elementFromPoint', () => {
+    it('returns correct elements for elementsFromPoint', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
@@ -55,10 +56,10 @@ describe('ShadowRoot.elementsFromPoint', () => {
         test(inContainer, [slotted, slottable, inContainer, elm, body, html]);
         test(slottable, [slotted, slottable, inContainer, elm, body, html]);
         test(slotted, [slotted, slottable, inContainer, elm, body, html]);
-        test(component, [component, slottable, inContainer, elm, body, html]);
         const isSafari = /Safari/.test(navigator.userAgent) && !/Chrom/.test(navigator.userAgent);
         if (!isSafari) {
             // Safari has unpredictable behavior for these tests
+            test(component, [component, slottable, inContainer, elm, body, html]);
             test(inComponent, [
                 inComponentInner,
                 inComponent,
