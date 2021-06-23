@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import Container from 'x/container';
 
-describe('ShadowRoot.elementsFromPoint', () => {
+describe('elementsFromPoint', () => {
     // The browsers disagree on whether elements _above_ the shadow root should also be included
     // when calling shadowRoot.elementsFromPoint(). Firefox only returns elements inside of the
     // immediate shadow root, whereas Chrome and Safari return elements above (outside) of that root.
@@ -33,31 +33,61 @@ describe('ShadowRoot.elementsFromPoint', () => {
         expect(elementsFromPoint).toEqual(expectedElements);
     }
 
-    it('returns correct elements for elementsFromPoint', () => {
-        const elm = createElement('x-container', { is: Container });
-        document.body.appendChild(elm);
+    it('non-shadow example', () => {
+        const div = document.createElement('div');
+        div.textContent = 'foo';
+        document.body.appendChild(div);
 
-        const { body } = document;
-        const html = body.parentElement;
-        const h1 = elm.shadowRoot.querySelector('h1');
-        const inContainer = elm.shadowRoot.querySelector('.in-container');
-        const slottable = elm.shadowRoot.querySelector('x-slottable');
-        const slotted = elm.shadowRoot.querySelector('.slotted');
-        const component = elm.shadowRoot.querySelector('x-component');
-        const inComponent = component.shadowRoot.querySelector('.in-component');
-        const inComponentInner = component.shadowRoot.querySelector('.in-component-inner');
-        const slotWrapper = slottable.shadowRoot.querySelector('.slot-wrapper');
-        const inSlottable = slottable.shadowRoot.querySelector('.in-slottable');
-        const inSlottableInner = slottable.shadowRoot.querySelector('.in-slottable-inner');
+        const { left, top, width, height } = div.getBoundingClientRect();
+        const elementsFromPoint = document.elementsFromPoint(left + width / 2, top + height / 2);
 
-        test(elm, [elm, body, html]);
-        test(h1, [h1, elm, body, html]);
-        test(inContainer, [slotted, slottable, inContainer, elm, body, html]);
-        test(slottable, [slotted, slottable, inContainer, elm, body, html]);
-        test(slotted, [slotted, slottable, inContainer, elm, body, html]);
-        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrom/.test(navigator.userAgent);
-        if (!isSafari) {
-            // Safari has unpredictable behavior for these tests
+        expect(elementsFromPoint).toEqual([div, document.body, document.documentElement]);
+    });
+
+    // Some browsers have unpredictable behavior for some of these tests
+    const isIE = /MSIE/.test(navigator.userAgent);
+    const isSafari = /Safari/.test(navigator.userAgent) && !/Chrom/.test(navigator.userAgent);
+    const isOldChrome = /Chrom/.test(navigator.userAgent) && process.env.COMPAT;
+    const isOldSafari = isSafari && process.env.COMPAT;
+
+    if (!isIE && !isOldSafari) {
+        // IE is unpredictable, Safari <v11 doesn't even support elementsFromPoint
+        it('basic shadow example', () => {
+            const elm = createElement('x-container', { is: Container });
+            document.body.appendChild(elm);
+
+            const { body } = document;
+            const html = document.documentElement;
+            const h1 = elm.shadowRoot.querySelector('h1');
+            const inContainer = elm.shadowRoot.querySelector('.in-container');
+            const slottable = elm.shadowRoot.querySelector('x-slottable');
+            const slotted = elm.shadowRoot.querySelector('.slotted');
+
+            test(elm, [elm, body, html]);
+            test(h1, [h1, elm, body, html]);
+            test(inContainer, [slotted, slottable, inContainer, elm, body, html]);
+            test(slottable, [slotted, slottable, inContainer, elm, body, html]);
+            test(slotted, [slotted, slottable, inContainer, elm, body, html]);
+        });
+    }
+
+    if (!isIE && !isSafari && !isOldChrome) {
+        // old Chrome returns unpredictable results
+        it('advanced shadow example', () => {
+            const elm = createElement('x-container', { is: Container });
+            document.body.appendChild(elm);
+
+            const { body } = document;
+            const html = document.documentElement;
+            const inContainer = elm.shadowRoot.querySelector('.in-container');
+            const slottable = elm.shadowRoot.querySelector('x-slottable');
+            const component = elm.shadowRoot.querySelector('x-component');
+            const inComponent = component.shadowRoot.querySelector('.in-component');
+            const inComponentInner = component.shadowRoot.querySelector('.in-component-inner');
+            const slotWrapper = slottable.shadowRoot.querySelector('.slot-wrapper');
+            const inSlottable = slottable.shadowRoot.querySelector('.in-slottable');
+            const inSlottableInner = slottable.shadowRoot.querySelector('.in-slottable-inner');
+
             test(component, [component, slottable, inContainer, elm, body, html]);
             test(inComponent, [
                 inComponentInner,
@@ -90,6 +120,6 @@ describe('ShadowRoot.elementsFromPoint', () => {
                 body,
                 html,
             ]);
-        }
-    });
+        });
+    }
 });
