@@ -8,7 +8,7 @@ describe('elementsFromPoint', () => {
     // https://crbug.com/1207863#c4
     let onlyIncludesElementsInImmediateShadowRoot = false;
     beforeAll(() => {
-        if (process.env.NATIVE_SHADOW && !process.env.COMPAT) {
+        if (process.env.NATIVE_SHADOW) {
             // detect the Firefox behavior
             const div = document.createElement('div');
             div.attachShadow({ mode: 'open' }).innerHTML = '<div>foo</div>';
@@ -57,7 +57,7 @@ describe('elementsFromPoint', () => {
     }
 
     if (!isIE && !isOldSafari) {
-        // IE is unpredictable
+        // IE returns unpredictable results
         it('basic shadow example', () => {
             const elm = createElement('x-container', { is: Container });
             document.body.appendChild(elm);
@@ -78,7 +78,7 @@ describe('elementsFromPoint', () => {
     }
 
     if (!isIE && !isSafari && !isOldChrome) {
-        // old Chrome returns unpredictable results
+        // Safari and old Chrome return unpredictable results
         it('advanced shadow example', () => {
             const elm = createElement('x-container', { is: Container });
             document.body.appendChild(elm);
