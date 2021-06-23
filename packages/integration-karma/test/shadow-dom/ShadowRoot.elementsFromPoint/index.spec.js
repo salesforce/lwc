@@ -26,9 +26,8 @@ describe('ShadowRoot.elementsFromPoint', () => {
         const elementsFromPoint = rootNode.elementsFromPoint(left + width / 2, top + height / 2);
 
         if (onlyIncludesElementsInImmediateShadowRoot) {
-            expectedElements = expectedElements.filter(
-                (el) => el.getRootNode() === element.getRootNode()
-            );
+            const mainRootNode = element.getRootNode();
+            expectedElements = expectedElements.filter((el) => el.getRootNode() === mainRootNode);
         }
 
         expect(elementsFromPoint).toEqual(expectedElements);
