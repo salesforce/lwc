@@ -33,25 +33,31 @@ describe('elementsFromPoint', () => {
         expect(elementsFromPoint).toEqual(expectedElements);
     }
 
-    it('non-shadow example', () => {
-        const div = document.createElement('div');
-        div.textContent = 'foo';
-        document.body.appendChild(div);
-
-        const { left, top, width, height } = div.getBoundingClientRect();
-        const elementsFromPoint = document.elementsFromPoint(left + width / 2, top + height / 2);
-
-        expect(elementsFromPoint).toEqual([div, document.body, document.documentElement]);
-    });
-
     // Some browsers have unpredictable behavior for some of these tests
-    const isIE = /MSIE/.test(navigator.userAgent);
+    const isIE = /(MSIE|Trident)/.test(navigator.userAgent);
     const isSafari = /Safari/.test(navigator.userAgent) && !/Chrom/.test(navigator.userAgent);
     const isOldChrome = /Chrom/.test(navigator.userAgent) && process.env.COMPAT;
     const isOldSafari = isSafari && process.env.COMPAT;
 
+    if (!isOldSafari) {
+        // Safari <v11 doesn't support elementsFromPoint
+        it('non-shadow example', () => {
+            const div = document.createElement('div');
+            div.textContent = 'foo';
+            document.body.appendChild(div);
+
+            const { left, top, width, height } = div.getBoundingClientRect();
+            const elementsFromPoint = document.elementsFromPoint(
+                left + width / 2,
+                top + height / 2
+            );
+
+            expect(elementsFromPoint).toEqual([div, document.body, document.documentElement]);
+        });
+    }
+
     if (!isIE && !isOldSafari) {
-        // IE is unpredictable, Safari <v11 doesn't even support elementsFromPoint
+        // IE is unpredictable
         it('basic shadow example', () => {
             const elm = createElement('x-container', { is: Container });
             document.body.appendChild(elm);
