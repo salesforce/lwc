@@ -1,6 +1,17 @@
 {
     "warnings": [
         {
+            "code": 1042,
+            "message": "LWC1042: Duplicate id value \"foo\" detected. Id values must be unique within a template.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 12,
+                "start": 43,
+                "length": 8
+            }
+        },
+        {
             "code": 1040,
             "message": "LWC1040: Invalid id value \"bar baz\". Id values must not contain any whitespace.",
             "level": 1,
@@ -31,17 +42,6 @@
                 "column": 16,
                 "start": 165,
                 "length": 9
-            }
-        },
-        {
-            "code": 1042,
-            "message": "LWC1042: Duplicate id value \"foo\" detected. Id values must be unique within a template.",
-            "level": 1,
-            "location": {
-                "line": 3,
-                "column": 12,
-                "start": 43,
-                "length": 8
             }
         }
     ]

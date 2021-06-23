@@ -55,9 +55,8 @@ export default class CodeGen {
     usedSlots: { [name: string]: t.Identifier } = {};
     usedLwcApis: Set<string> = new Set();
 
-    memorizedIds: t.Identifier[] = [];
-
     slotNames: Set<string> = new Set();
+    memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
 
     generateKey() {

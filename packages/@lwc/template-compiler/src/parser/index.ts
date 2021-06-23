@@ -148,6 +148,8 @@ export default function parse(source: string, state: State): TemplateParseResult
     let parent: IRElement;
     const stack: IRElement[] = [];
 
+    const seenIds: Set<string> = new Set();
+
     const preserveComments =
         templateRoot.attrs.some(
             ({ name }) => name === ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS
@@ -275,7 +277,6 @@ export default function parse(source: string, state: State): TemplateParseResult
             },
         },
     });
-    validateState(state);
 
     function getTemplateRoot(
         documentFragment: parse5.AST.Default.DocumentFragment
@@ -784,20 +785,21 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             if (attr.type === IRAttributeType.String) {
                 if (name === 'id') {
-                    if (/\s+/.test(attr.value)) {
-                        warnAt(ParserDiagnostics.INVALID_ID_ATTRIBUTE, [attr.value], location);
+                    const { value } = attr;
+
+                    if (/\s+/.test(value)) {
+                        warnAt(ParserDiagnostics.INVALID_ID_ATTRIBUTE, [value], location);
                     }
+
                     if (isInIteration(element)) {
-                        warnAt(
-                            ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION,
-                            [attr.value],
-                            location
-                        );
+                        warnAt(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, [value], location);
                     }
-                    state.idAttrData.push({
-                        location,
-                        value: attr.value,
-                    });
+
+                    if (seenIds.has(value)) {
+                        warnAt(ParserDiagnostics.DUPLICATE_ID_FOUND, [value], location);
+                    } else {
+                        seenIds.add(value);
+                    }
                 }
             }
 
@@ -935,17 +937,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                         warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, node);
                     }
                 }
-            }
-        }
-    }
-
-    function validateState(parseState: State) {
-        const seenIds = new Set();
-        for (const { location, value } of parseState.idAttrData) {
-            if (seenIds.has(value)) {
-                warnAt(ParserDiagnostics.DUPLICATE_ID_FOUND, [value], location);
-            } else {
-                seenIds.add(value);
             }
         }
     }
