@@ -21,7 +21,8 @@
     },
     "devDependencies": {
         "@types/estree": "0.0.48",
-        "@types/he": "^1.1.1"
+        "@types/he": "^1.1.1",
+        "@types/source-map": "0.5.2"
     },
     "files": [
         "dist/"
