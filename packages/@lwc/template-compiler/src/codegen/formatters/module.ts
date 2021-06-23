@@ -44,7 +44,7 @@ export function format(
 
     const imports = [...generateComponentImports(codeGen), generateLwcApisImport(codeGen)];
 
-    const metadata = generateTemplateMetadata(state);
+    const metadata = generateTemplateMetadata(state, codeGen);
 
     const templateBody = [
         templateFn,

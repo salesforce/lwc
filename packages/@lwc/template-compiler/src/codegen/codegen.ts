@@ -57,6 +57,7 @@ export default class CodeGen {
 
     memorizedIds: t.Identifier[] = [];
 
+    slotNames: Set<string> = new Set();
     referencedComponents: Set<string> = new Set();
 
     generateKey() {
@@ -139,6 +140,8 @@ export default class CodeGen {
     }
 
     getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
+        this.slotNames.add(slotName);
+
         return this._renderApiCall(RENDER_APIS.slot, [
             t.literal(slotName),
             data,

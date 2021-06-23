@@ -29,7 +29,7 @@ export function format(
             ),
         ]);
     });
-    const metadata = generateTemplateMetadata(state);
+    const metadata = generateTemplateMetadata(state, codeGen);
 
     return t.program([
         ...lookups,

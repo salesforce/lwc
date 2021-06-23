@@ -724,10 +724,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
 
         element.slotName = name;
-
-        if (!state.slots.includes(name)) {
-            state.slots.push(name);
-        }
     }
 
     function isInIteration(element: IRElement): boolean {

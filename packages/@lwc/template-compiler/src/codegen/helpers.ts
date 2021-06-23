@@ -82,16 +82,18 @@ export function memorizeHandler(
     return handler;
 }
 
-export function generateTemplateMetadata(state: State): t.Statement[] {
+export function generateTemplateMetadata(state: State, codeGen: CodeGen): t.Statement[] {
     const metadataExpressions: t.Statement[] = [];
 
-    if (state.slots.length) {
+    if (codeGen.slotNames.size) {
         const slotsProperty = t.memberExpression(
             t.identifier(TEMPLATE_FUNCTION_NAME),
             t.identifier('slots')
         );
 
-        const slotsArray = t.arrayExpression(state.slots.map((slot) => t.literal(slot)));
+        const slotsArray = t.arrayExpression(
+            Array.from(codeGen.slotNames).map((slot) => t.literal(slot))
+        );
 
         const slotsMetadata = t.assignmentExpression('=', slotsProperty, slotsArray);
         metadataExpressions.push(t.expressionStatement(slotsMetadata));

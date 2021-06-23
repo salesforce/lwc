@@ -17,7 +17,6 @@ export interface IdAttributeData {
 export default class State {
     config: ResolvedConfig;
 
-    slots: string[] = [];
     idAttrData: IdAttributeData[] = [];
 
     /**
