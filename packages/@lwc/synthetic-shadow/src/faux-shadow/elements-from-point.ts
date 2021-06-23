@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 import { isNull, isUndefined } from '@lwc/shared';
 import { elementsFromPoint as nativeElementsFromPoint } from '../env/document';
 import { isSyntheticSlotElement } from '../faux-shadow/traverse';
@@ -18,6 +24,15 @@ export function elementsFromPoint(
     left: number,
     top: number
 ): Element[] {
+    if (process.env.NODE_ENV !== 'production') {
+        /* eslint-disable-next-line no-console */
+        console.warn(
+            'elementsFromPoint() may return unpredictable results in different browsers, and is not recommended. ' +
+                "Only use this API if you know what you're doing (or this is ChromeDriver using it, in which case " +
+                'cross-browser compatibility is not a concern).'
+        );
+    }
+
     const elements: Element[] | null = nativeElementsFromPoint.call(doc, left, top);
     const result = [];
 
