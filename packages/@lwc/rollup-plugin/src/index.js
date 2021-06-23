@@ -47,7 +47,9 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
         resolveId(importee, importer) {
             // Normalize relative import to absolute import
-            if (importee.startsWith('.') && importer) {
+            // Note that in @rollup/plugin-node-resolve v13, relative imports will sometimes
+            // be in absolute format (e.g. "/path/to/module.js") so we have to check that as well.
+            if ((importee.startsWith('.') || importee.startsWith('/')) && importer) {
                 const importerExt = path.extname(importer);
                 const ext = path.extname(importee) || importerExt;
 
@@ -60,6 +62,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
                 return pluginUtils.addExtension(normalizedPath, ext);
             } else if (importer) {
+                // Could be an import like `import component from 'x/component'`
                 try {
                     return resolveModule(importee, importer, {
                         modules: customResolvedModules,
