@@ -48,7 +48,7 @@ export interface OutputConfig {
     sourcemap?: boolean;
 
     /**
-     * @deprecated The minify property has not effect of the generated output.
+     * @deprecated The minify property has no effect on the generated output.
      */
     minify?: boolean;
 }
