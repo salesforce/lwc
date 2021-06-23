@@ -53,7 +53,11 @@ export default class CodeGen {
 
     usedApis: { [name: string]: t.Identifier } = {};
     usedSlots: { [name: string]: t.Identifier } = {};
+    usedLwcApis: Set<string> = new Set();
+
     memorizedIds: t.Identifier[] = [];
+
+    referencedComponents: Set<string> = new Set();
 
     generateKey() {
         return this.currentKey++;
@@ -69,6 +73,8 @@ export default class CodeGen {
         data: t.ObjectExpression,
         children: t.Expression
     ) {
+        this.referencedComponents.add(tagName);
+
         return this._renderApiCall(RENDER_APIS.customElement, [
             t.literal(tagName),
             componentClass,

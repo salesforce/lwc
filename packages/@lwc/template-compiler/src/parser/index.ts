@@ -29,7 +29,6 @@ import {
     getAttribute,
     isAttribute,
     isProhibitedIsAttribute,
-    isSvgUseHref,
     isTabIndexAttribute,
     isValidHTMLAttribute,
     isValidTabIndexAttributeValue,
@@ -680,14 +679,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
 
         element.component = tag;
-
-        // Do not add the dependency for lazy/dynamic components
-        const lwcDynamicAttribute = getTemplateAttribute(element, LWC_DIRECTIVES.DYNAMIC);
-
-        // Add the component to the list of dependencies if not already present.
-        if (!lwcDynamicAttribute && !state.dependencies.includes(tag)) {
-            state.dependencies.push(tag);
-        }
     }
 
     function applySlot(element: IRElement) {
@@ -819,15 +810,6 @@ export default function parse(source: string, state: State): TemplateParseResult
             // 2. For custom elements, only key, slot and data are handled as attributes, rest as properties
             if (isAttribute(element, name)) {
                 const attrs = element.attrs || (element.attrs = {});
-                const node = element.__original as parse5.AST.Default.Element;
-
-                // record secure import dependency if xlink attr is detected
-                if (isSvgUseHref(tag, name, node.namespaceURI)) {
-                    if (!state.secureDependencies.includes('sanitizeAttribute')) {
-                        state.secureDependencies.push('sanitizeAttribute');
-                    }
-                }
-
                 attrs[name] = attr;
             } else {
                 const props = element.props || (element.props = {});

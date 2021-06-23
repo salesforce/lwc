@@ -7,23 +7,25 @@
 
 import State from '../../state';
 import * as t from '../../shared/estree';
-import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_MODULES_PARAMETER } from '../../shared/constants';
 
-export function format(templateFn: t.FunctionDeclaration, state: State): t.Program {
-    const lookups = state.dependencies.map((cmpClassName) => {
-        const localIdentifier = identifierFromComponentName(cmpClassName);
+import CodeGen from '../codegen';
+import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
+
+export function format(
+    templateFn: t.FunctionDeclaration,
+    state: State,
+    codeGen: CodeGen
+): t.Program {
+    const lookups = Array.from(codeGen.referencedComponents).map((name) => {
+        const localIdentifier = identifierFromComponentName(name);
 
         return t.variableDeclaration('const', [
             t.variableDeclarator(
                 localIdentifier,
-                t.memberExpression(
-                    t.identifier(TEMPLATE_MODULES_PARAMETER),
-                    t.literal(cmpClassName),
-                    {
-                        computed: true,
-                    }
-                )
+                t.memberExpression(t.identifier(TEMPLATE_MODULES_PARAMETER), t.literal(name), {
+                    computed: true,
+                })
             ),
         ]);
     });

@@ -18,8 +18,6 @@ export default class State {
     config: ResolvedConfig;
 
     slots: string[] = [];
-    dependencies: string[] = [];
-    secureDependencies: string[] = [];
     idAttrData: IdAttributeData[] = [];
 
     /**

@@ -1,6 +1,6 @@
 import _nsFoo from "ns/foo";
 import _nsBar from "ns/bar";
-import { registerTemplate, sanitizeAttribute } from "lwc";
+import { sanitizeAttribute, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, c: api_custom_element, h: api_element } = $api;
   return [

@@ -1,4 +1,4 @@
-import { registerTemplate, sanitizeAttribute } from "lwc";
+import { sanitizeAttribute, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [

@@ -296,6 +296,8 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                     return codeGen.genScopedFragId(expression);
                 }
                 if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
+
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
                         t.literal(tagName),
                         t.literal(namespaceURI),
@@ -332,6 +334,8 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                     return codeGen.genScopedFragId(attr.value);
                 }
                 if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
+
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
                         t.literal(tagName),
                         t.literal(namespaceURI),
@@ -432,9 +436,11 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
     return transformChildren(root.children);
 }
 
-function generateTemplateFunction(templateRoot: IRElement, state: State): t.FunctionDeclaration {
-    const codeGen = new CodeGen();
-
+function generateTemplateFunction(
+    templateRoot: IRElement,
+    state: State,
+    codeGen: CodeGen
+): t.FunctionDeclaration {
     const returnedValue = transform(templateRoot, codeGen, state);
 
     const args = [
@@ -509,9 +515,11 @@ function format({ config }: State) {
 }
 
 export default function (templateRoot: IRElement, state: State): string {
-    const templateFunction = generateTemplateFunction(templateRoot, state);
+    const codeGen = new CodeGen();
+
+    const templateFunction = generateTemplateFunction(templateRoot, state, codeGen);
     const formatter = format(state);
-    const program = formatter(templateFunction, state);
+    const program = formatter(templateFunction, state, codeGen);
 
     return astring.generate(program);
 }

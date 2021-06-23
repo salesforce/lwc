@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
-import State from '../../state';
-
 import * as t from '../../shared/estree';
 import { kebabcaseToCamelcase } from '../../shared/naming';
 import {
@@ -15,39 +12,37 @@ import {
     LWC_MODULE_NAME,
 } from '../../shared/constants';
 
+import CodeGen from '../codegen';
 import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
+import State from '../../state';
 
-function moduleNameToImport(name: string): t.ImportDeclaration {
-    const localIdentifier = identifierFromComponentName(name);
+function generateComponentImports(codeGen: CodeGen): t.ImportDeclaration[] {
+    return Array.from(codeGen.referencedComponents).map((name) => {
+        const localIdentifier = identifierFromComponentName(name);
 
-    return t.importDeclaration(
-        [t.importDefaultSpecifier(localIdentifier)],
-        t.literal(kebabcaseToCamelcase(name))
-    );
+        return t.importDeclaration(
+            [t.importDefaultSpecifier(localIdentifier)],
+            t.literal(kebabcaseToCamelcase(name))
+        );
+    });
 }
 
-function generateSecureImports(additionalImports: string[]): t.ImportDeclaration {
-    const imports = additionalImports.map((additionalImport) => {
-        return t.importSpecifier(t.identifier(additionalImport), t.identifier(additionalImport));
+function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
+    const imports = Array.from(codeGen.usedLwcApis).map((name) => {
+        return t.importSpecifier(t.identifier(name), t.identifier(name));
     });
 
-    return t.importDeclaration(
-        [
-            t.importSpecifier(
-                t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME),
-                t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME)
-            ),
-            ...imports,
-        ],
-        t.literal(LWC_MODULE_NAME)
-    );
+    return t.importDeclaration(imports, t.literal(LWC_MODULE_NAME));
 }
 
-export function format(templateFn: t.FunctionDeclaration, state: State): t.Program {
-    const imports = [
-        ...state.dependencies.map((cmpClassName) => moduleNameToImport(cmpClassName)),
-        generateSecureImports(state.secureDependencies),
-    ];
+export function format(
+    templateFn: t.FunctionDeclaration,
+    state: State,
+    codeGen: CodeGen
+): t.Program {
+    codeGen.usedLwcApis.add(SECURE_REGISTER_TEMPLATE_METHOD_NAME);
+
+    const imports = [...generateComponentImports(codeGen), generateLwcApisImport(codeGen)];
 
     const metadata = generateTemplateMetadata(state);
 
