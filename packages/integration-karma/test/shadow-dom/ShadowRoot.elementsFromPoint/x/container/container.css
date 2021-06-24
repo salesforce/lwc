@@ -1,0 +1,30 @@
+:host {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    display: block;
+}
+
+.above-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 100px;
+}
+
+.in-container {
+    position: absolute;
+    top: 300px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+x-slottable, .around-slotted, x-slotted {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
