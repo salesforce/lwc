@@ -16,8 +16,7 @@
     "typings": "dist/types/index.d.ts",
     "scripts": {
         "clean": "rm -rf dist/",
-        "build": "tsc",
-        "test": "jest"
+        "build": "tsc"
     },
     "files": [
         "dist/"

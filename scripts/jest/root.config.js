@@ -6,6 +6,13 @@
  */
 module.exports = {
     rootDir: '../..',
-    testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
     projects: ['<rootDir>/packages/@lwc/*'],
+
+    coverageThreshold: {
+        global: {
+            branches: 80,
+            functions: 90,
+            lines: 90,
+        },
+    },
 };
