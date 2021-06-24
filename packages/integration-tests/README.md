@@ -86,7 +86,13 @@ See the Sauce Labs [documentation](https://wiki.saucelabs.com/display/DOCS/Setti
 
 1. Download Sauce Connect and unzip
 2. `cd` into the unzipped directory
-3. Run `bin/sc -u YOUR_USERNAME -k YOUR_ACCESS_KEY` with your username and key from above
+3. Run `bin/sc -u YOUR_USERNAME -k YOUR_ACCESS_KEY -i YOUR_TUNNEL_ID` with your username, key from above, and tunnel ID (see below)
+
+You will also need to set the `SAUCE_TUNNEL_ID` environment variable when running the tests, so that the tests know which tunnel to use:
+
+```
+SAUCE_TUNNEL_ID=my-tunnel-id
+```
 
 ### Modifying Browsers
 
