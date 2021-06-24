@@ -7,7 +7,6 @@
 module.exports = {
     rootDir: '../..',
     projects: ['<rootDir>/packages/@lwc/*'],
-
     coverageThreshold: {
         global: {
             branches: 80,
