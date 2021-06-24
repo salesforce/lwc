@@ -131,9 +131,6 @@ jobs:
           name: Check missing file headers 
           command: node ./scripts/tasks/check-license-headers.js
       - run:
-          name: Check for version misalignment
-          command: node ./scripts/tasks/version-check.js
-      - run:
           name: Check formatting
           command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
       - run:
