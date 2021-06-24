@@ -22,6 +22,7 @@ const featureFlagLookup: FeatureFlagLookup = {
     ENABLE_NON_COMPOSED_EVENTS_LEAKAGE: null,
     ENABLE_LIGHT_DOM_COMPONENTS: null,
     ENABLE_RETARGETING_FOR_UNPATCHED_LISTENERS: null,
+    ENABLE_PREFER_NATIVE_SHADOW: null,
 };
 export default featureFlagLookup;
 

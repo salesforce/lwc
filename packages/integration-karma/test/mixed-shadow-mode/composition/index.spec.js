@@ -7,6 +7,12 @@ import NativeLightSynthetic from 'x/nativeLightSynthetic';
 
 if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
     describe('composition', () => {
+        beforeEach(() => {
+            setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', true);
+        });
+        afterEach(() => {
+            setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', false);
+        });
         describe('disallow composing synthetic within native', () => {
             it('basic case', () => {
                 expect(() => {
