@@ -11,3 +11,4 @@ export const KEY__SHADOW_RESOLVER_PRIVATE = '$$ShadowResolverKey$$';
 export const KEY__SHADOW_TOKEN = '$shadowToken$';
 export const KEY__SHADOW_TOKEN_PRIVATE = '$$ShadowTokenKey$$';
 export const KEY__SYNTHETIC_MODE = '$$lwc-synthetic-mode';
+export const KEY__SCOPED_CSS = '$scoped$';

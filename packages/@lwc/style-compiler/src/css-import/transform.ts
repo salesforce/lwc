@@ -9,8 +9,13 @@ import valueParser from 'postcss-value-parser';
 
 import { importMessage } from '../utils/message';
 
-export default function process(root: Root, result: Result) {
+export default function process(root: Root, result: Result, isScoped: boolean) {
     root.walkAtRules('import', (node) => {
+        if (isScoped) {
+            throw node.error(
+                `Invalid import statement, imports are not allowed in *.scoped.css files.`
+            );
+        }
         // Ensure @import are at the top of the file
         let prev = node.prev();
         while (prev) {

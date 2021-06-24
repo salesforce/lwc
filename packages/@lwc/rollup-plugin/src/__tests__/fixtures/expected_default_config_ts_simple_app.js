@@ -19,10 +19,7 @@
     if (_implicitStylesheets) {
       tmpl$1.stylesheets.push.apply(tmpl$1.stylesheets, _implicitStylesheets);
     }
-    tmpl$1.stylesheetTokens = {
-      hostAttribute: "ts-foo_foo-host",
-      shadowAttribute: "ts-foo_foo"
-    };
+    tmpl$1.stylesheetToken = "ts-foo_foo";
 
     class Foo extends lwc.LightningElement {
       constructor(...args) {
@@ -60,10 +57,7 @@
     }
     var _tmpl = lwc.registerTemplate(tmpl);
     tmpl.stylesheets = [];
-    tmpl.stylesheetTokens = {
-      hostAttribute: "ts-app_app-host",
-      shadowAttribute: "ts-app_app"
-    };
+    tmpl.stylesheetToken = "ts-app_app";
 
     class App extends lwc.LightningElement {
       constructor() {

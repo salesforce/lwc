@@ -9,10 +9,7 @@
   }
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];
-  tmpl.stylesheetTokens = {
-    hostAttribute: "x-app_app-host",
-    shadowAttribute: "x-app_app"
-  };
+  tmpl.stylesheetToken = "x-app_app";
 
   function fake() {
     return 'woo hoo';

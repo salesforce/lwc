@@ -59,22 +59,22 @@ function serialize(
     { namespace, name }: NormalizedTransformOptions
 ): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
-    const scopingAttribute = `${namespace}-${name}_${path.basename(
-        filename,
-        path.extname(filename)
-    )}`;
+    const scopedCssRelPath = `./${path.basename(filename, path.extname(filename))}.scoped.css`;
+    const scopeToken = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
     let buffer = '';
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
+    buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scopeToken=${encodeURIComponent(
+        scopeToken
+    )}";\n\n`;
     buffer += code;
     buffer += '\n\n';
     buffer += 'if (_implicitStylesheets) {\n';
     buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets)\n`;
     buffer += `}\n`;
-
-    buffer += `tmpl.stylesheetTokens = {\n`;
-    buffer += `  hostAttribute: "${scopingAttribute}-host",\n`;
-    buffer += `  shadowAttribute: "${scopingAttribute}"\n`;
-    buffer += `};\n`;
+    buffer += 'if (_implicitScopedStylesheets) {\n';
+    buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets)\n`;
+    buffer += `}\n`;
+    buffer += `tmpl.stylesheetToken = "${scopeToken}"\n`;
 
     return buffer;
 }
