@@ -21,6 +21,9 @@ describe('mouseover', () => {
         if (typeof browser.performActions === 'function') {
             await browser.performActions([
                 {
+                    type: 'pointer',
+                    id: 'finger1',
+                    parameters: { pointerType: 'mouse' },
                     actions: [
                         {
                             duration: 250,
@@ -32,21 +35,6 @@ describe('mouseover', () => {
                             y: 0,
                         },
                     ],
-                    id: 'mouse',
-                    parameters: {
-                        pointerType: 'mouse',
-                    },
-                    type: 'pointer',
-                },
-                {
-                    actions: [
-                        {
-                            duration: 0,
-                            type: 'pause',
-                        },
-                    ],
-                    id: 'key',
-                    type: 'key',
                 },
             ]);
         } else {
