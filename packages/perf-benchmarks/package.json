@@ -3,17 +3,18 @@
     "version": "2.2.9",
     "private": true,
     "scripts": {
-        "start": "best"
+        "build": "rm -fr dist && rollup -c && node scripts/build.js && ./scripts/fix-deps.sh",
+        "test": "for file in $(find dist -name *.tachometer.json); do tach --config $file; done"
     },
-    "devDependencies": {
-        "@best/cli": "4.0.0-beta5",
-        "@best/runner-headless": "4.0.0-beta5",
-        "@best/runner-remote": "4.0.0-beta5",
-        "@best/store-aws": "4.0.0-beta5",
-        "@lwc/rollup-plugin": "2.2.9"
-    },
+    "//": "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies",
     "dependencies": {
         "@lwc/engine-dom": "2.2.9",
-        "@lwc/synthetic-shadow": "2.2.9"
+        "@lwc/engine-server": "2.2.9",
+        "@lwc/synthetic-shadow": "2.2.9",
+        "perf-benchmarks-components": "2.2.9"
+    },
+    "devDependencies": {
+        "glob-hash": "^1.0.5",
+        "tachometer": "^0.5.9"
     }
 }

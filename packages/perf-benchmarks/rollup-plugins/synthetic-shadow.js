@@ -8,7 +8,7 @@
 const SYNTHETIC_IMPORT = 'import "@lwc/synthetic-shadow";';
 
 /** This module make sure all test run with synthetic-shadow enabled */
-module.exports = function () {
+export default function () {
     let input;
     return {
         name: 'synthetic-shadow',
@@ -26,4 +26,4 @@ module.exports = function () {
             return { code: src, map: null };
         },
     };
-};
+}
