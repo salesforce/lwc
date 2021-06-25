@@ -9,17 +9,6 @@ import * as he from 'he';
 
 import { CompilerDiagnostic, generateCompilerDiagnostic, ParserDiagnostics } from '@lwc/errors';
 
-interface NodeVisitor<N extends parse5.AST.Default.Node> {
-    enter?: (node: N) => void;
-    exit?: (node: N) => void;
-}
-
-interface Visitor {
-    Comment?: NodeVisitor<parse5.AST.Default.CommentNode>;
-    Text?: NodeVisitor<parse5.AST.Default.TextNode>;
-    Element?: NodeVisitor<parse5.AST.Default.Element>;
-}
-
 export const treeAdapter = parse5.treeAdapters.default;
 
 export function parseHTML(source: string) {
@@ -52,45 +41,6 @@ export function parseHTML(source: string) {
         fragment,
         errors,
     };
-}
-
-export function traverseHTML(node: parse5.AST.Default.Node, visitor: Visitor): void {
-    let nodeVisitor: NodeVisitor<any> | undefined;
-    switch (node.nodeName) {
-        case '#comment':
-            nodeVisitor = visitor.Comment;
-            break;
-
-        case '#text':
-            nodeVisitor = visitor.Text;
-            break;
-
-        case '#document-fragment':
-            break;
-
-        default:
-            nodeVisitor = visitor.Element;
-    }
-
-    if (nodeVisitor && nodeVisitor.enter) {
-        nodeVisitor.enter(node);
-    }
-
-    // Node children are accessed differently depending on the node type:
-    //  - standard elements have their children associated on the node itself
-    //  - while the template node children are present on the content property.
-    const children = treeAdapter.getChildNodes(treeAdapter.getTemplateContent(node) || node);
-
-    // Traverse the node children if necessary.
-    if (children !== undefined) {
-        for (const child of children) {
-            traverseHTML(child as parse5.AST.Default.Node, visitor);
-        }
-    }
-
-    if (nodeVisitor && nodeVisitor.exit) {
-        nodeVisitor.exit(node);
-    }
 }
 
 export function getSource(source: string, location: parse5.MarkupData.Location): string {
