@@ -13,9 +13,6 @@
     },
     "main": "src/index.js",
     "license": "MIT",
-    "scripts": {
-        "test": "jest"
-    },
     "files": [
         "src/*.js"
     ],

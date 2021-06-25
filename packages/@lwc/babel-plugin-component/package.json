@@ -14,9 +14,6 @@
     "main": "src/index.js",
     "typings": "types/index.d.ts",
     "license": "MIT",
-    "scripts": {
-        "test": "jest"
-    },
     "files": [
         "src/*.js",
         "src/decorators/",
