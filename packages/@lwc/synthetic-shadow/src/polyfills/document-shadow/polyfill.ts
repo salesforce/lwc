@@ -14,7 +14,6 @@ import {
     isUndefined,
 } from '@lwc/shared';
 import {
-    elementFromPoint,
     DocumentPrototypeActiveElement,
     getElementById as documentGetElementById,
     getElementsByClassName as documentGetElementsByClassName,
@@ -24,24 +23,17 @@ import {
     querySelectorAll as documentQuerySelectorAll,
 } from '../../env/document';
 import { parentElementGetter } from '../../env/node';
-import { retarget } from '../../3rdparty/polymer/retarget';
-import { pathComposer } from '../../3rdparty/polymer/path-composer';
+import { fauxElementFromPoint } from '../../shared/faux-element-from-point';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../../shared/utils';
 
 function elemFromPoint(this: Document, left: number, top: number) {
-    const element = elementFromPoint.call(this, left, top);
-    if (isNull(element)) {
-        return element;
-    }
-
-    return retarget(this, pathComposer(element, true)) as Element | null;
+    return fauxElementFromPoint(this, this, left, top);
 }
 
-// https://github.com/Microsoft/TypeScript/issues/14139
-Document.prototype.elementFromPoint = elemFromPoint as (left: number, top: number) => Element;
+Document.prototype.elementFromPoint = elemFromPoint;
 
 // Go until we reach to top of the LWC tree
 defineProperty(Document.prototype, 'activeElement', {
