@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as astring from 'astring';
-import * as parse5 from 'parse5-with-errors';
 
 import { isBooleanAttribute } from '@lwc/shared';
 import { TemplateErrors, generateCompilerError } from '@lwc/errors';
@@ -273,7 +272,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
     }
 
     function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
-        const { namespaceURI, tagName } = element.__original as parse5.AST.Default.Element;
+        const { namespaceURI, tagName } = element.__original;
         const isUsedAsAttribute = isAttribute(element, attr.name);
 
         switch (attr.type) {

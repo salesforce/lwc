@@ -83,11 +83,6 @@ import {
     VOID_ELEMENT_SET,
 } from './constants';
 
-function isStyleElement(irElement: IRElement) {
-    const element = irElement.__original as parse5.AST.Default.Element;
-    return element.tagName === 'style' && element.namespaceURI === HTML_NAMESPACE_URI;
-}
-
 function attributeExpressionReferencesForOfIndex(
     attribute: IRExpressionAttribute,
     forOf: ForIterator
@@ -173,10 +168,9 @@ export default function parse(source: string, state: State): TemplateParseResult
         applyHandlers(element);
         applyComponent(element);
         applySlot(element);
-        applyKey(element, elementNode.__location);
+        applyKey(element);
         applyLwcDirectives(element);
         applyAttributes(element);
-        validateInlineStyleElement(element);
         validateClosingTag(element);
         validateElement(element);
         validateAttributes(element);
@@ -483,13 +477,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         lwcOpts.dom = lwcDomAttribute.value as LWCDirectiveDomMode;
     }
 
-    function validateInlineStyleElement(element: IRElement) {
-        // disallow <style> element
-        if (isStyleElement(element)) {
-            warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element.__original);
-        }
-    }
-
     function applyForEach(element: IRElement) {
         const forEachAttribute = getTemplateAttribute(element, 'for:each');
         const forItemAttribute = getTemplateAttribute(element, 'for:item');
@@ -597,7 +584,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         };
     }
 
-    function applyKey(element: IRElement, location: parse5.MarkupData.ElementLocation | undefined) {
+    function applyKey(element: IRElement) {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
             if (keyAttribute.type !== IRAttributeType.Expression) {
@@ -634,7 +621,11 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             element.forKey = keyAttribute.value;
         } else if (isIteratorElement(element) && element.tag !== 'template') {
-            return warnAt(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, [element.tag], location);
+            return warnAt(
+                ParserDiagnostics.MISSING_KEY_IN_ITERATOR,
+                [element.tag],
+                element.__original.__location!
+            );
         }
     }
 
@@ -711,7 +702,6 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function applyAttributes(element: IRElement) {
         const { tag, attrsList } = element;
-        const node = element.__original;
 
         attrsList.forEach((rawAttr) => {
             const attr = getTemplateAttribute(element, attributeName(rawAttr));
@@ -728,7 +718,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             if (name.match(/[^a-z0-9]$/)) {
                 warnAt(ParserDiagnostics.ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER, [
                     name,
-                    treeAdapter.getTagName(node),
+                    tag,
                 ]);
                 return;
             }
@@ -736,7 +726,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             if (!/^-*[a-z]/.test(name)) {
                 warnAt(
                     ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER,
-                    [name, treeAdapter.getTagName(node)]
+                    [name, tag]
                 );
                 return;
             }
@@ -746,7 +736,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             if (name.match(/_[^a-z0-9]|[^a-z0-9]_/)) {
                 warnAt(
                     ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS,
-                    [name, treeAdapter.getTagName(node)]
+                    [name, tag]
                 );
                 return;
             }
@@ -812,7 +802,29 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
         }
 
-        if (tag === 'template') {
+        const { startTag, endTag } = node.__location!;
+        const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
+        const missingClosingTag = !!startTag && !endTag;
+
+        if (!isVoidElement && missingClosingTag) {
+            addDiagnostic(
+                generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
+                    messageArgs: [element.tag],
+                    origin: {
+                        location: {
+                            line: startTag.startLine || startTag.line,
+                            column: startTag.startCol || startTag.col,
+                            start: startTag.startOffset,
+                            length: startTag.endOffset - startTag.startOffset,
+                        },
+                    },
+                })
+            );
+        }
+
+        if (tag === 'style' && node.namespaceURI === HTML_NAMESPACE_URI) {
+            warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, node);
+        } else if (tag === 'template') {
             // We check if the template element has some modifier applied to it. Directly checking if one of the
             // IRElement property is impossible. For example when an error occurs during the parsing of the if
             // expression, the `element.if` property remains undefined. It would results in 2 warnings instead of 1:
@@ -893,6 +905,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function validateProperties(element: IRElement) {
         const { tag, props, __original: node } = element;
+
 
         if (props !== undefined) {
             for (const propName in props) {
