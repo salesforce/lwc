@@ -9,8 +9,6 @@ import * as he from 'he';
 
 import { CompilerDiagnostic, generateCompilerDiagnostic, ParserDiagnostics } from '@lwc/errors';
 
-import { VOID_ELEMENT_SET } from './constants';
-
 interface NodeVisitor<N extends parse5.AST.Default.Node> {
     enter?: (node: N) => void;
     exit?: (node: N) => void;
@@ -25,12 +23,12 @@ interface Visitor {
 export const treeAdapter = parse5.treeAdapters.default;
 
 export function parseHTML(source: string) {
-    const parsingErrors: CompilerDiagnostic[] = [];
+    const errors: CompilerDiagnostic[] = [];
 
     const onParseError = (err: parse5.Errors.ParsingError) => {
         const { code, startLine, startCol, startOffset, endOffset } = err;
 
-        parsingErrors.push(
+        errors.push(
             generateCompilerDiagnostic(ParserDiagnostics.INVALID_HTML_SYNTAX, {
                 messageArgs: [code],
                 origin: {
@@ -45,48 +43,14 @@ export function parseHTML(source: string) {
         );
     };
 
-    const validateClosingTag = (node: parse5.AST.Default.Element) => {
-        if (!node.__location) {
-            return;
-        }
-
-        const { startTag, endTag } = node.__location;
-        const isVoidElement = VOID_ELEMENT_SET.has(node.tagName);
-        const missingClosingTag = !!startTag && !endTag;
-
-        if (!isVoidElement && missingClosingTag) {
-            parsingErrors.push(
-                generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
-                    messageArgs: [node.tagName],
-                    origin: {
-                        location: {
-                            line: startTag.startLine || startTag.line,
-                            column: startTag.startCol || startTag.col,
-                            start: startTag.startOffset,
-                            length: startTag.endOffset - startTag.startOffset,
-                        },
-                    },
-                })
-            );
-        }
-    };
-
     const fragment = parse5.parseFragment(source, {
         locationInfo: true,
         onParseError,
     }) as parse5.AST.Default.DocumentFragment;
 
-    if (!parsingErrors.length) {
-        traverseHTML(fragment, {
-            Element: {
-                enter: validateClosingTag,
-            },
-        });
-    }
-
     return {
         fragment,
-        errors: parsingErrors,
+        errors,
     };
 }
 
@@ -99,6 +63,9 @@ export function traverseHTML(node: parse5.AST.Default.Node, visitor: Visitor): v
 
         case '#text':
             nodeVisitor = visitor.Text;
+            break;
+
+        case '#document-fragment':
             break;
 
         default:

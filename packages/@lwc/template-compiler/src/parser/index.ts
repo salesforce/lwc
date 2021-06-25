@@ -85,6 +85,7 @@ import {
     SUPPORTED_SVG_TAGS,
     SVG_NAMESPACE_URI,
     VALID_IF_MODIFIER,
+    VOID_ELEMENT_SET,
 } from './constants';
 
 function isStyleElement(irElement: IRElement) {
@@ -186,6 +187,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 }
 
                 validateInlineStyleElement(element);
+                validateClosingTag(element);
 
                 applyForEach(element);
                 applyIterator(element);
