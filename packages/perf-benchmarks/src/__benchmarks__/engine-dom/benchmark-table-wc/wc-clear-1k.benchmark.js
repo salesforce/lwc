@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import Table from 'benchmark/tableComponent';
-import Row from 'benchmark/tableComponentRow';
+import Table from 'perf-benchmarks-components/dist/dom/benchmark/tableComponent/tableComponent.js';
+import Row from 'perf-benchmarks-components/dist/dom/benchmark/tableComponentRow/tableComponentRow.js';
 
-import Store from 'benchmark/store';
-import { insertComponent, destroyComponent } from 'benchmark/utils';
+import Store from 'perf-benchmarks-components/dist/dom/benchmark/store/store.js';
+import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
 customElements.define('benchmark-table-component', Table.CustomElementConstructor);
 // the row can be optionally defined, but this benchmark always do it so we know how costly it is.
