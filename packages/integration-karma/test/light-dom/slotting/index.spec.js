@@ -22,7 +22,6 @@ describe('Slotting', () => {
     afterEach(() => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
-
     it('should render properly', () => {
         const nodes = createTestElement('x-default-slot', BasicSlot);
 
@@ -64,11 +63,8 @@ describe('Slotting', () => {
 
         const expected = process.env.NATIVE_SHADOW // native shadow doesn't output slots in innerHTML
             ? '<x-shadow-container><p data-id="light-consumer-text">Hello from Light DOM</p></x-shadow-container>'
-            : '<x-shadow-container><slot data-id="shadow-slot"><p data-id="light-consumer-text">Hello from Light DOM</p></slot></x-shadow-container>';
+            : '<x-shadow-container><slot><p data-id="light-consumer-text">Hello from Light DOM</p></slot></x-shadow-container>';
         expect(nodes['x-light-consumer'].innerHTML).toEqual(expected);
-
-        expect(nodes['shadow-slot'].assignedNodes()).toEqual([nodes['light-consumer-text']]);
-        expect(nodes['shadow-slot'].assignedElements()).toEqual([nodes['light-consumer-text']]);
     });
 
     it('light container, shadow consumer', () => {
