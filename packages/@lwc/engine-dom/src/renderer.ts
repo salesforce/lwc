@@ -28,6 +28,7 @@ if (process.env.NODE_ENV === 'development') {
     };
 }
 
+const svgNS = 'http://www.w3.org/2000/svg';
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
 
 let getCustomElement, defineCustomElement, HTMLElementConstructor;
@@ -95,10 +96,8 @@ export const renderer: Renderer<Node, Element> = {
 
     syntheticShadow: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
 
-    createElement(tagName: string, namespace: string): Element {
-        return isUndefined(namespace)
-            ? document.createElement(tagName)
-            : document.createElementNS(namespace, tagName);
+    createElement(tagName: string, isSVG: boolean): Element {
+        return isSVG ? document.createElementNS(svgNS, tagName) : document.createElement(tagName);
     },
 
     createText(content: string): Node {

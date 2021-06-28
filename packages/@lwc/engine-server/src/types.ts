@@ -42,7 +42,6 @@ export interface HostElement {
     name: string;
     parent: HostElement | null;
     shadowRoot: HostShadowRoot | null;
-    namespace?: string;
     children: HostChildNode[];
     attributes: HostAttribute[];
     eventListeners: Record<string, Function[]>;

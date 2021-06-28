@@ -80,7 +80,7 @@ export interface VNodeData {
     styleMap?: VNodeStyle;
     context?: CustomElementContext;
     on?: On;
-    ns?: string; // for SVGs
+    svg?: boolean;
 }
 
 export interface Hooks<N extends VNode> {

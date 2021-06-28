@@ -25,11 +25,10 @@ function unsupportedMethod(name: string): () => never {
     };
 }
 
-function createElement(name: string, namespace?: string): HostElement {
+function createElement(name: string): HostElement {
     return {
         type: HostNodeType.Element,
         name,
-        namespace,
         parent: null,
         shadowRoot: null,
         children: [],

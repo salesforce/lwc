@@ -13,7 +13,7 @@ export interface Renderer<N = HostNode, E = HostElement> {
     syntheticShadow: boolean;
     insert(node: N, parent: E, anchor: N | null): void;
     remove(node: N, parent: E): void;
-    createElement(tagName: string, namespace?: string): E;
+    createElement(tagName: string, isSvg?: boolean): E;
     createText(content: string): N;
     createComment(content: string): N;
     nextSibling(node: N): N | null;
