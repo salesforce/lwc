@@ -37,6 +37,25 @@ function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
     return t.importDeclaration(imports, t.literal(LWC_MODULE_NAME));
 }
 
+/**
+ * Generate an ES module AST from a template ESTree AST. The generated module imports the dependent
+ * LWC components via import statements and expose the template function via a default export
+ * statement.
+ *
+ * @example
+ * ```js
+ * import { registerTemplate } from 'lwc';
+ * // Components imports
+ *
+ * function tmpl() {
+ *   // Template generated code
+ * }
+ * // Template metadata
+ *
+ * export default tmpl;
+ * registerTemplate(tmpl);
+ * ```
+ */
 export function format(
     templateFn: t.FunctionDeclaration,
     state: State,

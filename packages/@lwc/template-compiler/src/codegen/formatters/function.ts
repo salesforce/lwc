@@ -12,6 +12,25 @@ import { TEMPLATE_FUNCTION_NAME, TEMPLATE_MODULES_PARAMETER } from '../../shared
 import CodeGen from '../codegen';
 import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
 
+/**
+ * Generate a function body AST from a template ESTree AST. This function can then be instantiated
+ * via `new Function(code, modules)` The generated function retrieves receives the dependent LWC
+ * components as arguments and returns the template function.
+ *
+ * @example
+ * ```js
+ * const {
+ *   // Components names
+ * } = modules;
+ *
+ * function tmpl() {
+ *   // Template generated code
+ * }
+ * // Template metadata
+ *
+ * return tmpl;
+ * ```
+ */
 export function format(
     templateFn: t.FunctionDeclaration,
     state: State,
@@ -31,6 +50,7 @@ export function format(
                 ),
             ]);
         });
+
     const metadata = generateTemplateMetadata(state, codeGen);
 
     return t.program([
