@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayReduce, ArrayPush, assert, isNull, isUndefined } from '@lwc/shared';
+import { ArrayReduce, ArrayPush, assert, isNull, isUndefined, ArrayFilter } from '@lwc/shared';
 import {
     getHost,
     SyntheticShadowRootInterface,
@@ -220,10 +220,9 @@ export function shadowRootQuerySelectorAll(
 }
 
 export function getFilteredChildNodes(node: Node): Element[] {
-    let children;
     if (!isHostElement(node) && !isSlotElement(node)) {
         // regular element - fast path
-        children = childNodesGetter.call(node);
+        const children = childNodesGetter.call(node);
         return arrayFromCollection(children);
     }
     if (isHostElement(node)) {
@@ -245,21 +244,10 @@ export function getFilteredChildNodes(node: Node): Element[] {
         );
     } else {
         // slot element
-        children = arrayFromCollection(childNodesGetter.call(node));
+        const children = arrayFromCollection(childNodesGetter.call(node));
         const resolver = getShadowRootResolver(node);
-        // Typescript is inferring the wrong function type for this particular
-        // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-        // @ts-ignore type-mismatch
-        return ArrayReduce.call(
-            children,
-            (seed, child) => {
-                if (resolver === getShadowRootResolver(child)) {
-                    ArrayPush.call(seed, child);
-                }
-                return seed;
-            },
-            []
-        );
+
+        return ArrayFilter.call(children, (child) => resolver === getShadowRootResolver(child));
     }
 }
 
@@ -268,18 +256,7 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     if (isNull(owner)) {
         return [];
     }
+
     const childNodes = arrayFromCollection(childNodesGetter.call(slot));
-    // Typescript is inferring the wrong function type for this particular
-    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-    // @ts-ignore type-mismatch
-    return ArrayReduce.call(
-        childNodes,
-        (seed, child) => {
-            if (!isNodeOwnedBy(owner, child)) {
-                ArrayPush.call(seed, child);
-            }
-            return seed;
-        },
-        []
-    );
+    return ArrayFilter.call(childNodes, (child) => !isNodeOwnedBy(owner, child));
 }
