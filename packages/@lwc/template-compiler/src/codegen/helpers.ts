@@ -92,7 +92,9 @@ export function generateTemplateMetadata(state: State, codeGen: CodeGen): t.Stat
         );
 
         const slotsArray = t.arrayExpression(
-            Array.from(codeGen.slotNames).map((slot) => t.literal(slot))
+            Array.from(codeGen.slotNames)
+                .sort()
+                .map((slot) => t.literal(slot))
         );
 
         const slotsMetadata = t.assignmentExpression('=', slotsProperty, slotsArray);

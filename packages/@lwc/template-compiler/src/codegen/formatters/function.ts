@@ -17,18 +17,20 @@ export function format(
     state: State,
     codeGen: CodeGen
 ): t.Program {
-    const lookups = Array.from(codeGen.referencedComponents).map((name) => {
-        const localIdentifier = identifierFromComponentName(name);
+    const lookups = Array.from(codeGen.referencedComponents)
+        .sort()
+        .map((name) => {
+            const localIdentifier = identifierFromComponentName(name);
 
-        return t.variableDeclaration('const', [
-            t.variableDeclarator(
-                localIdentifier,
-                t.memberExpression(t.identifier(TEMPLATE_MODULES_PARAMETER), t.literal(name), {
-                    computed: true,
-                })
-            ),
-        ]);
-    });
+            return t.variableDeclaration('const', [
+                t.variableDeclarator(
+                    localIdentifier,
+                    t.memberExpression(t.identifier(TEMPLATE_MODULES_PARAMETER), t.literal(name), {
+                        computed: true,
+                    })
+                ),
+            ]);
+        });
     const metadata = generateTemplateMetadata(state, codeGen);
 
     return t.program([

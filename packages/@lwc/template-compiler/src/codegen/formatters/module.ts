@@ -28,9 +28,11 @@ function generateComponentImports(codeGen: CodeGen): t.ImportDeclaration[] {
 }
 
 function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
-    const imports = Array.from(codeGen.usedLwcApis).map((name) => {
-        return t.importSpecifier(t.identifier(name), t.identifier(name));
-    });
+    const imports = Array.from(codeGen.usedLwcApis)
+        .sort()
+        .map((name) => {
+            return t.importSpecifier(t.identifier(name), t.identifier(name));
+        });
 
     return t.importDeclaration(imports, t.literal(LWC_MODULE_NAME));
 }

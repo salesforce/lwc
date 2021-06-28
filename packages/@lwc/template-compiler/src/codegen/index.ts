@@ -504,22 +504,21 @@ function generateTemplateFunction(
     );
 }
 
-function format({ config }: State) {
-    switch (config.format) {
-        case 'function':
-            return formatFunction;
-
-        default:
-            return formatModule;
-    }
-}
-
 export default function (templateRoot: IRElement, state: State): string {
     const codeGen = new CodeGen();
 
     const templateFunction = generateTemplateFunction(templateRoot, state, codeGen);
-    const formatter = format(state);
-    const program = formatter(templateFunction, state, codeGen);
+
+    let program: t.Program;
+    switch (state.config.format) {
+        case 'function':
+            program = formatFunction(templateFunction, state, codeGen);
+            break;
+
+        case 'module':
+            program = formatModule(templateFunction, state, codeGen);
+            break;
+    }
 
     return astring.generate(program);
 }
