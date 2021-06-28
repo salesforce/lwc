@@ -506,4 +506,16 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+    NO_DUPLICATE_SLOTS: {
+        code: 1136,
+        message: 'Invalid duplicate slot ({0}).',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    NO_SLOTS_IN_ITERATOR: {
+        code: 1137,
+        message: 'Invalid slot ({0}). A slot cannot appear inside of an iterator.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

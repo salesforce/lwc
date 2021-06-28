@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1137,
+            "message": "LWC1137: Invalid slot (default). A slot cannot appear inside of an iterator.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 7,
+                "start": 84,
+                "length": 13
+            }
+        }
+    ]
+}
