@@ -300,7 +300,16 @@ defineProperties(Node.prototype, {
             if (isNodeShadowed(this)) {
                 return parentNodeGetterPatched.call(this);
             }
-            return parentNodeGetter.call(this);
+
+            const parentNode = parentNodeGetter.call(this);
+
+            // Handle the case where a top level light DOM element is slotted into a synthetic
+            // shadow slot.
+            if (!isNull(parentNode) && isSlotElement(parentNode) && isNodeShadowed(parentNode)) {
+                return getNodeOwner(parentNode);
+            }
+
+            return parentNode;
         },
         enumerable: true,
         configurable: true,
@@ -310,7 +319,20 @@ defineProperties(Node.prototype, {
             if (isNodeShadowed(this)) {
                 return parentElementGetterPatched.call(this);
             }
-            return parentElementGetter.call(this);
+
+            const parentElement = parentElementGetter.call(this);
+
+            // Handle the case where a top level light DOM element is slotted into a synthetic
+            // shadow slot.
+            if (
+                !isNull(parentElement) &&
+                isSlotElement(parentElement) &&
+                isNodeShadowed(parentElement)
+            ) {
+                return getNodeOwner(parentElement);
+            }
+
+            return parentElement;
         },
         enumerable: true,
         configurable: true,

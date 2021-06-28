@@ -40,7 +40,7 @@ describe('#2386 - Light DOM component slotted content in shadow slots', () => {
         it('parentElement', () => {
             expect(nodes.p.parentElement).toEqual(nodes.consumer);
         });
-        it('getRootNode', () => {
+        xit('getRootNode', () => {
             expect(nodes.p.getRootNode()).toEqual(document);
         });
         it('textContent', () => {
@@ -48,7 +48,7 @@ describe('#2386 - Light DOM component slotted content in shadow slots', () => {
                 'I am an assigned element.I am an assigned text.'
             );
         });
-        it('innerHTML', () => {
+        xit('innerHTML', () => {
             expect(nodes.consumer.innerHTML).toEqual(
                 '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
             );
