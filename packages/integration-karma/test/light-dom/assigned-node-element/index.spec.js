@@ -1,4 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
+import { extractDataIds } from 'test-utils';
 
 import LightContainer from 'x/lightContainer';
 import ShadowContainer from 'x/shadowContainer';
@@ -11,29 +12,99 @@ describe('#2386 - Light DOM component slotted content in shadow slots', () => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
 
-    it('returns the correct elements for: light -> shadow', () => {
-        const elm = createElement('x-light-container', {
-            is: LightContainer,
+    describe('light -> shadow', () => {
+        let elm, nodes;
+        beforeEach(() => {
+            elm = createElement('x-light-container', {
+                is: LightContainer,
+            });
+            document.body.appendChild(elm);
+            nodes = extractDataIds(elm);
         });
-        document.body.appendChild(elm);
 
-        const p = elm.querySelector('p');
-        const slot = elm.querySelector('x-consumer').shadowRoot.querySelector('slot');
-
-        expect(slot.assignedNodes()).toEqual([p]);
-        expect(slot.assignedElements()).toEqual([p]);
+        it('assignedNodes', () => {
+            expect(nodes.slot.assignedNodes()).toEqual([nodes.p, nodes.p.nextSibling]);
+        });
+        it('assignedElements', () => {
+            expect(nodes.slot.assignedElements()).toEqual([nodes.p]);
+        });
+        it('assignedSlot', () => {
+            expect(nodes.p.assignedSlot).toEqual(nodes.slot);
+        });
+        it('childNodes', () => {
+            expect(Array.from(nodes.slot.childNodes)).toEqual([]);
+        });
+        it('parentNode', () => {
+            expect(nodes.p.parentNode).toEqual(nodes.consumer);
+        });
+        it('parentElement', () => {
+            expect(nodes.p.parentElement).toEqual(nodes.consumer);
+        });
+        it('getRootNode', () => {
+            expect(nodes.p.getRootNode()).toEqual(document);
+        });
+        it('textContent', () => {
+            expect(nodes.consumer.textContent).toEqual(
+                'I am an assigned element.I am an assigned text.'
+            );
+        });
+        it('innerHTML', () => {
+            expect(nodes.consumer.innerHTML).toEqual(
+                '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
+            );
+        });
+        it('outerHTML', () => {
+            expect(nodes.consumer.outerHTML).toEqual(
+                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+            );
+        });
     });
 
-    it('returns the correct elements for: shadow -> light -> shadow', () => {
-        const elm = createElement('x-shadow-container', {
-            is: ShadowContainer,
+    describe('shadow -> light -> shadow', () => {
+        let elm, nodes;
+        beforeEach(() => {
+            elm = createElement('x-shadow-container', {
+                is: ShadowContainer,
+            });
+            document.body.appendChild(elm);
+            nodes = extractDataIds(elm);
         });
-        document.body.appendChild(elm);
 
-        const p = elm.shadowRoot.querySelector('p');
-        const slot = elm.shadowRoot.querySelector('x-consumer').shadowRoot.querySelector('slot');
-
-        expect(slot.assignedNodes()).toEqual([p]);
-        expect(slot.assignedElements()).toEqual([p]);
+        it('assignedNodes', () => {
+            expect(nodes.slot.assignedNodes()).toEqual([nodes.p, nodes.p.nextSibling]);
+        });
+        it('assignedElements', () => {
+            expect(nodes.slot.assignedElements()).toEqual([nodes.p]);
+        });
+        it('assignedSlot', () => {
+            expect(nodes.p.assignedSlot).toEqual(nodes.slot);
+        });
+        it('childNodes', () => {
+            expect(Array.from(nodes.slot.childNodes)).toEqual([]);
+        });
+        it('parentNode', () => {
+            expect(nodes.p.parentNode).toEqual(nodes.consumer);
+        });
+        it('parentElement', () => {
+            expect(nodes.p.parentElement).toEqual(nodes.consumer);
+        });
+        it('getRootNode', () => {
+            expect(nodes.p.getRootNode()).toEqual(elm.shadowRoot);
+        });
+        it('textContent', () => {
+            expect(nodes.consumer.textContent).toEqual(
+                'I am an assigned element.I am an assigned text.'
+            );
+        });
+        it('innerHTML', () => {
+            expect(nodes.consumer.innerHTML).toEqual(
+                '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
+            );
+        });
+        it('outerHTML', () => {
+            expect(nodes.consumer.outerHTML).toEqual(
+                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+            );
+        });
     });
 });
