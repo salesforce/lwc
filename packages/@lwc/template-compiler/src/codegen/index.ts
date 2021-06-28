@@ -51,6 +51,7 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
+import { SVG_NAMESPACE_URI } from '../parser/constants';
 
 function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expression {
     function transformElement(element: IRElement): t.Expression {
@@ -424,6 +425,11 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                 return memorizeHandler(codeGen, element, componentHandler, handler);
             });
             data.push(t.property(t.identifier('on'), onObj));
+        }
+
+        // SVG handling
+        if (element.namespace === SVG_NAMESPACE_URI) {
+            data.push(t.property(t.identifier('svg'), t.literal(true)));
         }
 
         return t.objectExpression(data);

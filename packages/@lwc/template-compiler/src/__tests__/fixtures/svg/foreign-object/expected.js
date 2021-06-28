@@ -16,6 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               height: "180",
             },
             key: 1,
+            svg: true,
           },
           [
             api_element(
@@ -25,6 +26,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   transform: "translate(3,3)",
                 },
                 key: 2,
+                svg: true,
               },
               [
                 api_element(
@@ -34,6 +36,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       transform: "translate(250,0)",
                     },
                     key: 3,
+                    svg: true,
                   },
                   [
                     api_element(
@@ -45,6 +48,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                           "xlink:href": "javascript:alert(1)",
                         },
                         key: 4,
+                        svg: true,
                       },
                       [
                         api_element(

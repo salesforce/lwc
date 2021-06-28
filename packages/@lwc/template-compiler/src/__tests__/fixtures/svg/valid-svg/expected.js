@@ -6,12 +6,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "svg",
       {
         key: 0,
+        svg: true,
       },
       [
         api_element(
           "a",
           {
             key: 1,
+            svg: true,
           },
           []
         ),
@@ -19,6 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "circle",
           {
             key: 2,
+            svg: true,
           },
           []
         ),
@@ -26,6 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "defs",
           {
             key: 3,
+            svg: true,
           },
           []
         ),
@@ -33,6 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "desc",
           {
             key: 4,
+            svg: true,
           },
           []
         ),
@@ -40,6 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "ellipse",
           {
             key: 5,
+            svg: true,
           },
           []
         ),
@@ -47,6 +53,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "filter",
           {
             key: 6,
+            svg: true,
           },
           []
         ),
@@ -54,6 +61,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "g",
           {
             key: 7,
+            svg: true,
           },
           []
         ),
@@ -61,6 +69,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "line",
           {
             key: 8,
+            svg: true,
           },
           []
         ),
@@ -68,6 +77,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "marker",
           {
             key: 9,
+            svg: true,
           },
           []
         ),
@@ -75,6 +85,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "mask",
           {
             key: 10,
+            svg: true,
           },
           []
         ),
@@ -82,6 +93,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "path",
           {
             key: 11,
+            svg: true,
           },
           []
         ),
@@ -89,6 +101,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "pattern",
           {
             key: 12,
+            svg: true,
           },
           []
         ),
@@ -96,6 +109,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "polygon",
           {
             key: 13,
+            svg: true,
           },
           []
         ),
@@ -103,6 +117,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "polyline",
           {
             key: 14,
+            svg: true,
           },
           []
         ),
@@ -110,6 +125,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "rect",
           {
             key: 15,
+            svg: true,
           },
           []
         ),
@@ -117,6 +133,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "stop",
           {
             key: 16,
+            svg: true,
           },
           []
         ),
@@ -124,6 +141,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "symbol",
           {
             key: 17,
+            svg: true,
           },
           []
         ),
@@ -131,6 +149,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "text",
           {
             key: 18,
+            svg: true,
           },
           []
         ),
@@ -138,6 +157,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "title",
           {
             key: 19,
+            svg: true,
           },
           []
         ),
@@ -145,6 +165,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "tspan",
           {
             key: 20,
+            svg: true,
           },
           []
         ),
@@ -152,6 +173,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "use",
           {
             key: 21,
+            svg: true,
           },
           []
         ),

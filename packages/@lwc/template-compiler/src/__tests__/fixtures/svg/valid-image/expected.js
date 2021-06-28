@@ -10,6 +10,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           height: "200",
         },
         key: 0,
+        svg: true,
       },
       [
         api_element(
@@ -23,6 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               width: "200",
             },
             key: 1,
+            svg: true,
           },
           []
         ),

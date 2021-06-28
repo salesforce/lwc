@@ -16,12 +16,13 @@ import {
     IRComment,
 } from './types';
 
-export function createElement(tag: string, original: HTMLElement): IRElement {
+export function createElement(original: HTMLElement): IRElement {
     return {
         type: 'element',
         __original: original,
 
-        tag,
+        tag: original.tagName,
+        namespace: original.namespaceURI,
         attrsList: [],
         children: [],
     };

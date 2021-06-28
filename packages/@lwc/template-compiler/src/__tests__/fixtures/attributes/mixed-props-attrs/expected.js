@@ -67,6 +67,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           focusable: "true",
         },
         key: 3,
+        svg: true,
       },
       [
         api_element(
@@ -81,6 +82,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               ),
             },
             key: 4,
+            svg: true,
           },
           []
         ),

@@ -10,12 +10,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           width: "400",
         },
         key: 0,
+        svg: true,
       },
       [
         api_element(
           "defs",
           {
             key: 1,
+            svg: true,
           },
           [
             api_element(
@@ -29,6 +31,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   y2: "0%",
                 },
                 key: 2,
+                svg: true,
               },
               [
                 api_element(
@@ -42,6 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       offset: "0%",
                     },
                     key: 3,
+                    svg: true,
                   },
                   []
                 ),
@@ -56,6 +60,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       offset: "100%",
                     },
                     key: 4,
+                    svg: true,
                   },
                   []
                 ),
@@ -74,6 +79,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               fill: "url(#grad1)",
             },
             key: 5,
+            svg: true,
           },
           []
         ),

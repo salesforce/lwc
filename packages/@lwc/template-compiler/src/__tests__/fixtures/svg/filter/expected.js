@@ -11,12 +11,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           xmlns: "http://www.w3.org/2000/svg",
         },
         key: 0,
+        svg: true,
       },
       [
         api_element(
           "defs",
           {
             key: 1,
+            svg: true,
           },
           [
             api_element(
@@ -31,6 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   primitiveUnits: "objectBoundingBox",
                 },
                 key: 2,
+                svg: true,
               },
               [
                 api_element(
@@ -45,6 +48,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       "flood-opacity": "0.75",
                     },
                     key: 3,
+                    svg: true,
                   },
                   []
                 ),
@@ -58,6 +62,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   primitiveUnits: "objectBoundingBox",
                 },
                 key: 4,
+                svg: true,
               },
               [
                 api_element(
@@ -72,6 +77,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       mode: "multiply",
                     },
                     key: 5,
+                    svg: true,
                   },
                   []
                 ),
@@ -85,6 +91,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   primitiveUnits: "objectBoundingBox",
                 },
                 key: 6,
+                svg: true,
               },
               [
                 api_element(
@@ -97,6 +104,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       height: "50%",
                     },
                     key: 7,
+                    svg: true,
                   },
                   [
                     api_element(
@@ -106,6 +114,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                           in: "SourceGraphic",
                         },
                         key: 8,
+                        svg: true,
                       },
                       []
                     ),
@@ -116,6 +125,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                           in: "FillPaint",
                         },
                         key: 9,
+                        svg: true,
                       },
                       []
                     ),
@@ -134,6 +144,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "stroke-width": "4",
             },
             key: 10,
+            svg: true,
           },
           [
             api_element(
@@ -144,6 +155,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   height: "200",
                 },
                 key: 11,
+                svg: true,
               },
               []
             ),
@@ -155,6 +167,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   y2: "200",
                 },
                 key: 12,
+                svg: true,
               },
               []
             ),
@@ -166,6 +179,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   y2: "200",
                 },
                 key: 13,
+                svg: true,
               },
               []
             ),
@@ -182,6 +196,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               r: "90",
             },
             key: 14,
+            svg: true,
           },
           []
         ),
@@ -192,6 +207,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               transform: "translate(200 0)",
             },
             key: 15,
+            svg: true,
           },
           [
             api_element(
@@ -203,6 +219,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   "stroke-width": "4",
                 },
                 key: 16,
+                svg: true,
               },
               [
                 api_element(
@@ -213,6 +230,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       height: "200",
                     },
                     key: 17,
+                    svg: true,
                   },
                   []
                 ),
@@ -224,6 +242,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       y2: "200",
                     },
                     key: 18,
+                    svg: true,
                   },
                   []
                 ),
@@ -235,6 +254,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       y2: "200",
                     },
                     key: 19,
+                    svg: true,
                   },
                   []
                 ),
@@ -251,6 +271,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   r: "90",
                 },
                 key: 20,
+                svg: true,
               },
               []
             ),
@@ -263,6 +284,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               transform: "translate(0 200)",
             },
             key: 21,
+            svg: true,
           },
           [
             api_element(
@@ -274,6 +296,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   "stroke-width": "4",
                 },
                 key: 22,
+                svg: true,
               },
               [
                 api_element(
@@ -284,6 +307,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       height: "200",
                     },
                     key: 23,
+                    svg: true,
                   },
                   []
                 ),
@@ -295,6 +319,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       y2: "200",
                     },
                     key: 24,
+                    svg: true,
                   },
                   []
                 ),
@@ -306,6 +331,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       y2: "200",
                     },
                     key: 25,
+                    svg: true,
                   },
                   []
                 ),
@@ -323,6 +349,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   r: "90",
                 },
                 key: 26,
+                svg: true,
               },
               []
             ),
@@ -341,6 +368,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "xmlns:xlink": "http://www.w3.org/1999/xlink",
         },
         key: 27,
+        svg: true,
       },
       [
         api_element(
@@ -355,6 +383,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               height: "248",
             },
             key: 28,
+            svg: true,
           },
           []
         ),
@@ -362,6 +391,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "g",
           {
             key: 29,
+            svg: true,
           },
           [
             api_element(
@@ -375,6 +405,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   filter: "url(#Default)",
                 },
                 key: 30,
+                svg: true,
               },
               []
             ),
@@ -390,6 +421,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   stroke: "green",
                 },
                 key: 31,
+                svg: true,
               },
               []
             ),
@@ -404,6 +436,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   filter: "url(#Fitted)",
                 },
                 key: 32,
+                svg: true,
               },
               []
             ),
@@ -419,6 +452,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   stroke: "green",
                 },
                 key: 33,
+                svg: true,
               },
               []
             ),
@@ -433,6 +467,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   filter: "url(#Shifted)",
                 },
                 key: 34,
+                svg: true,
               },
               []
             ),
@@ -448,6 +483,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   stroke: "green",
                 },
                 key: 35,
+                svg: true,
               },
               []
             ),
@@ -465,12 +501,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               height: "120",
             },
             key: 36,
+            svg: true,
           },
           [
             api_element(
               "desc",
               {
                 key: 37,
+                svg: true,
               },
               [api_text("Produces a 3D lighting effect.")]
             ),
@@ -483,6 +521,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   result: "blur",
                 },
                 key: 38,
+                svg: true,
               },
               []
             ),
@@ -496,6 +535,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   result: "offsetBlur",
                 },
                 key: 39,
+                svg: true,
               },
               []
             ),
@@ -511,6 +551,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   result: "specOut",
                 },
                 key: 40,
+                svg: true,
               },
               [
                 api_element(
@@ -522,6 +563,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       z: "20000",
                     },
                     key: 41,
+                    svg: true,
                   },
                   []
                 ),
@@ -537,6 +579,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   result: "specOut",
                 },
                 key: 42,
+                svg: true,
               },
               []
             ),
@@ -554,6 +597,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   result: "litPaint",
                 },
                 key: 43,
+                svg: true,
               },
               []
             ),
@@ -561,6 +605,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "feMerge",
               {
                 key: 44,
+                svg: true,
               },
               [
                 api_element(
@@ -570,6 +615,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       in: "offsetBlur",
                     },
                     key: 45,
+                    svg: true,
                   },
                   []
                 ),
@@ -580,6 +626,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       in: "litPaint",
                     },
                     key: 46,
+                    svg: true,
                   },
                   []
                 ),
