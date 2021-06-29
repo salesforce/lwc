@@ -38,6 +38,8 @@ import {
     shouldFlatten,
     memorizeHandler,
     containsDynamicChildren,
+    parseClassNames,
+    parseStyleText,
 } from './helpers';
 
 import { format as formatModule } from './formatters/module';
@@ -358,36 +360,53 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
 
     function elementDataBag(element: IRElement): t.ObjectExpression {
         const data: t.Property[] = [];
-        const { classMap, className, style, styleMap, attrs, props, on, forKey, lwc } = element;
 
-        // Class attibute defined via string
-        if (className) {
-            const classExpression = bindExpression(className, element);
-            data.push(t.property(t.identifier('className'), classExpression));
-        }
-
-        // Class attribute defined via object
-        if (classMap) {
-            const classMapObj = objectToAST(classMap, () => t.literal(true));
-            data.push(t.property(t.identifier('classMap'), classMapObj));
-        }
-
-        // Style attribute defined via object
-        if (styleMap) {
-            const styleObj = objectToAST(styleMap, (key) => t.literal(styleMap[key]));
-            data.push(t.property(t.identifier('styleMap'), styleObj));
-        }
-
-        // Style attribute defined via string
-        if (style) {
-            const styleExpression = bindExpression(style, element);
-            data.push(t.property(t.identifier('style'), styleExpression));
-        }
+        const { attrs, props, on, forKey, lwc } = element;
 
         // Attributes
         if (attrs) {
-            const attrsObj = objectToAST(attrs, (key) => computeAttrValue(attrs[key], element));
-            data.push(t.property(t.identifier('attrs'), attrsObj));
+            const rest: { [name: string]: t.Expression } = {};
+
+            for (const [name, value] of Object.entries(attrs)) {
+                if (name === 'class') {
+                    // Handle class attribute:
+                    // - expression values are turned into a `className` property.
+                    // - string values are parsed and turned into a `classMap` object associating
+                    //   each individual class name with a `true` boolean.
+                    if (value.type === IRAttributeType.Expression) {
+                        const classExpression = bindExpression(value.value, element);
+                        data.push(t.property(t.identifier('className'), classExpression));
+                    } else if (value.type === IRAttributeType.String) {
+                        const classNames = parseClassNames(value.value);
+                        const classMap = t.objectExpression(
+                            classNames.map((name) => t.property(t.literal(name), t.literal(true)))
+                        );
+                        data.push(t.property(t.identifier('classMap'), classMap));
+                    }
+                } else if (name === 'style') {
+                    // Handle style attribute:
+                    // - expression values are turned into a `style` property.
+                    // - string values are parsed and turned into a `styleMap` object associating
+                    //   each property name with its value.
+                    if (value.type === IRAttributeType.Expression) {
+                        const styleExpression = bindExpression(value.value, element);
+                        data.push(t.property(t.identifier('style'), styleExpression));
+                    } else if (value.type === IRAttributeType.String) {
+                        const styleMap = parseStyleText(value.value);
+                        const styleObj = objectToAST(styleMap, (key) => t.literal(styleMap[key]));
+                        data.push(t.property(t.identifier('styleMap'), styleObj));
+                    }
+                } else {
+                    rest[name] = computeAttrValue(attrs[name], element);
+                }
+            }
+
+            // Add all the remaining attributes to an `attrs` object where the key is the attribute
+            // name and the value is the computed attribute value.
+            if (Object.keys(rest).length) {
+                const attrsObj = objectToAST(rest, (key) => rest[key]);
+                data.push(t.property(t.identifier('attrs'), attrsObj));
+            }
         }
 
         // Properties

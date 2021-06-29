@@ -202,14 +202,15 @@ function isFmkAttribute(attrName: string): boolean {
     return attrName === 'key' || attrName === 'slot';
 }
 
-function isCustomElementAttribute(attrName: string): boolean {
-    return attrName === 'key' || attrName === 'slot' || !!attrName.match(DATA_RE);
-}
-
 export function isAttribute(element: IRElement, attrName: string): boolean {
-    const isCustomElm = isCustomElement(element);
-    if (isCustomElm) {
-        return isCustomElementAttribute(attrName);
+    if (isCustomElement(element)) {
+        return (
+            attrName === 'style' ||
+            attrName === 'class' ||
+            attrName === 'key' ||
+            attrName === 'slot' ||
+            !!attrName.match(DATA_RE)
+        );
     }
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
