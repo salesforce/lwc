@@ -906,7 +906,6 @@ export default function parse(source: string, state: State): TemplateParseResult
     function validateProperties(element: IRElement) {
         const { tag, props, __original: node } = element;
 
-
         if (props !== undefined) {
             for (const propName in props) {
                 const { name: attrName, type, value } = props[propName];
@@ -1000,7 +999,11 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
-    function warnOnElement(errorInfo: LWCErrorInfo, node: parse5.AST.Default.Node, messageArgs?: any[]) {
+    function warnOnElement(
+        errorInfo: LWCErrorInfo,
+        node: parse5.AST.Default.Node,
+        messageArgs?: any[]
+    ) {
         const getLocation = (
             toLocate?: parse5.AST.Node
         ): { line: number; column: number; start: number; length: number } => {
