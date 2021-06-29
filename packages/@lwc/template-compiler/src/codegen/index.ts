@@ -296,6 +296,8 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                     return codeGen.genScopedFragId(expression);
                 }
                 if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
+
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
                         t.literal(tagName),
                         t.literal(namespaceURI),
@@ -332,6 +334,8 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                     return codeGen.genScopedFragId(attr.value);
                 }
                 if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
+                    codeGen.usedLwcApis.add('sanitizeAttribute');
+
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
                         t.literal(tagName),
                         t.literal(namespaceURI),
@@ -432,9 +436,11 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
     return transformChildren(root.children);
 }
 
-function generateTemplateFunction(templateRoot: IRElement, state: State): t.FunctionDeclaration {
-    const codeGen = new CodeGen();
-
+function generateTemplateFunction(
+    templateRoot: IRElement,
+    state: State,
+    codeGen: CodeGen
+): t.FunctionDeclaration {
     const returnedValue = transform(templateRoot, codeGen, state);
 
     const args = [
@@ -498,20 +504,21 @@ function generateTemplateFunction(templateRoot: IRElement, state: State): t.Func
     );
 }
 
-function format({ config }: State) {
-    switch (config.format) {
-        case 'function':
-            return formatFunction;
-
-        default:
-            return formatModule;
-    }
-}
-
 export default function (templateRoot: IRElement, state: State): string {
-    const templateFunction = generateTemplateFunction(templateRoot, state);
-    const formatter = format(state);
-    const program = formatter(templateFunction, state);
+    const codeGen = new CodeGen();
+
+    const templateFunction = generateTemplateFunction(templateRoot, state, codeGen);
+
+    let program: t.Program;
+    switch (state.config.format) {
+        case 'function':
+            program = formatFunction(templateFunction, state, codeGen);
+            break;
+
+        case 'module':
+            program = formatModule(templateFunction, state, codeGen);
+            break;
+    }
 
     return astring.generate(program);
 }

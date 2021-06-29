@@ -29,7 +29,6 @@ import {
     getAttribute,
     isAttribute,
     isProhibitedIsAttribute,
-    isSvgUseHref,
     isTabIndexAttribute,
     isValidHTMLAttribute,
     isValidTabIndexAttributeValue,
@@ -148,6 +147,8 @@ export default function parse(source: string, state: State): TemplateParseResult
     let root: any;
     let parent: IRElement;
     const stack: IRElement[] = [];
+
+    const seenIds: Set<string> = new Set();
 
     const preserveComments =
         templateRoot.attrs.some(
@@ -276,7 +277,6 @@ export default function parse(source: string, state: State): TemplateParseResult
             },
         },
     });
-    validateState(state);
 
     function getTemplateRoot(
         documentFragment: parse5.AST.Default.DocumentFragment
@@ -680,14 +680,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
 
         element.component = tag;
-
-        // Do not add the dependency for lazy/dynamic components
-        const lwcDynamicAttribute = getTemplateAttribute(element, LWC_DIRECTIVES.DYNAMIC);
-
-        // Add the component to the list of dependencies if not already present.
-        if (!lwcDynamicAttribute && !state.dependencies.includes(tag)) {
-            state.dependencies.push(tag);
-        }
     }
 
     function applySlot(element: IRElement) {
@@ -733,10 +725,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
 
         element.slotName = name;
-
-        if (!state.slots.includes(name)) {
-            state.slots.push(name);
-        }
     }
 
     function isInIteration(element: IRElement): boolean {
@@ -797,20 +785,21 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             if (attr.type === IRAttributeType.String) {
                 if (name === 'id') {
-                    if (/\s+/.test(attr.value)) {
-                        warnAt(ParserDiagnostics.INVALID_ID_ATTRIBUTE, [attr.value], location);
+                    const { value } = attr;
+
+                    if (/\s+/.test(value)) {
+                        warnAt(ParserDiagnostics.INVALID_ID_ATTRIBUTE, [value], location);
                     }
+
                     if (isInIteration(element)) {
-                        warnAt(
-                            ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION,
-                            [attr.value],
-                            location
-                        );
+                        warnAt(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, [value], location);
                     }
-                    state.idAttrData.push({
-                        location,
-                        value: attr.value,
-                    });
+
+                    if (seenIds.has(value)) {
+                        warnAt(ParserDiagnostics.DUPLICATE_ID_FOUND, [value], location);
+                    } else {
+                        seenIds.add(value);
+                    }
                 }
             }
 
@@ -819,15 +808,6 @@ export default function parse(source: string, state: State): TemplateParseResult
             // 2. For custom elements, only key, slot and data are handled as attributes, rest as properties
             if (isAttribute(element, name)) {
                 const attrs = element.attrs || (element.attrs = {});
-                const node = element.__original as parse5.AST.Default.Element;
-
-                // record secure import dependency if xlink attr is detected
-                if (isSvgUseHref(tag, name, node.namespaceURI)) {
-                    if (!state.secureDependencies.includes('sanitizeAttribute')) {
-                        state.secureDependencies.push('sanitizeAttribute');
-                    }
-                }
-
                 attrs[name] = attr;
             } else {
                 const props = element.props || (element.props = {});
@@ -957,17 +937,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                         warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, node);
                     }
                 }
-            }
-        }
-    }
-
-    function validateState(parseState: State) {
-        const seenIds = new Set();
-        for (const { location, value } of parseState.idAttrData) {
-            if (seenIds.has(value)) {
-                warnAt(ParserDiagnostics.DUPLICATE_ID_FOUND, [value], location);
-            } else {
-                seenIds.add(value);
             }
         }
     }

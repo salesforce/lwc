@@ -656,14 +656,3 @@ describe('props and attributes', () => {
         });
     });
 });
-
-describe('metadata', () => {
-    it('slots', () => {
-        const { state } = parseTemplate(`<template>
-            <slot></slot>
-            <slot name="foo"></slot>
-        </template>`);
-
-        expect(Array.from(state.slots)).toEqual(['', 'foo']);
-    });
-});

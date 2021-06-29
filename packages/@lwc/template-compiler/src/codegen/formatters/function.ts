@@ -7,27 +7,51 @@
 
 import State from '../../state';
 import * as t from '../../shared/estree';
-import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_MODULES_PARAMETER } from '../../shared/constants';
 
-export function format(templateFn: t.FunctionDeclaration, state: State): t.Program {
-    const lookups = state.dependencies.map((cmpClassName) => {
-        const localIdentifier = identifierFromComponentName(cmpClassName);
+import CodeGen from '../codegen';
+import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
 
-        return t.variableDeclaration('const', [
-            t.variableDeclarator(
-                localIdentifier,
-                t.memberExpression(
-                    t.identifier(TEMPLATE_MODULES_PARAMETER),
-                    t.literal(cmpClassName),
-                    {
+/**
+ * Generate a function body AST from a template ESTree AST. This function can then be instantiated
+ * via `new Function(code, modules)` The generated function retrieves receives the dependent LWC
+ * components as arguments and returns the template function.
+ *
+ * @example
+ * ```js
+ * const {
+ *   // Components names
+ * } = modules;
+ *
+ * function tmpl() {
+ *   // Template generated code
+ * }
+ * // Template metadata
+ *
+ * return tmpl;
+ * ```
+ */
+export function format(
+    templateFn: t.FunctionDeclaration,
+    state: State,
+    codeGen: CodeGen
+): t.Program {
+    const lookups = Array.from(codeGen.referencedComponents)
+        .sort()
+        .map((name) => {
+            const localIdentifier = identifierFromComponentName(name);
+
+            return t.variableDeclaration('const', [
+                t.variableDeclarator(
+                    localIdentifier,
+                    t.memberExpression(t.identifier(TEMPLATE_MODULES_PARAMETER), t.literal(name), {
                         computed: true,
-                    }
-                )
-            ),
-        ]);
-    });
-    const metadata = generateTemplateMetadata(state);
+                    })
+                ),
+            ]);
+        });
+
+    const metadata = generateTemplateMetadata(state, codeGen);
 
     return t.program([
         ...lookups,
