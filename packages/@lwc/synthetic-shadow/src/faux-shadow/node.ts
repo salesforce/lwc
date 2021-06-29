@@ -305,7 +305,7 @@ defineProperties(Node.prototype, {
 
             // Handle the case where a top level light DOM element is slotted into a synthetic
             // shadow slot.
-            if (!isNull(parentNode) && isSlotElement(parentNode) && isNodeShadowed(parentNode)) {
+            if (!isNull(parentNode) && isSyntheticSlotElement(parentNode)) {
                 return getNodeOwner(parentNode);
             }
 
@@ -324,11 +324,7 @@ defineProperties(Node.prototype, {
 
             // Handle the case where a top level light DOM element is slotted into a synthetic
             // shadow slot.
-            if (
-                !isNull(parentElement) &&
-                isSlotElement(parentElement) &&
-                isNodeShadowed(parentElement)
-            ) {
+            if (!isNull(parentElement) && isSyntheticSlotElement(parentElement)) {
                 return getNodeOwner(parentElement);
             }
 
