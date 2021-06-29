@@ -34,10 +34,6 @@ export type HTMLText = parse5.AST.TextNode;
 export type HTMLElement = parse5.AST.Element;
 export type HTMLNode = HTMLElement | HTMLComment | HTMLText;
 
-export interface SlotDefinition {
-    [key: string]: IRNode[];
-}
-
 export interface ForEach {
     expression: TemplateExpression;
     item: TemplateIdentifier;
@@ -105,7 +101,6 @@ export interface IRElement {
     lwc?: LWCDirectives;
 
     slotName?: string;
-    slotSet?: SlotDefinition;
 }
 
 export interface IRText {

@@ -685,17 +685,6 @@ export default function parse(source: string, state: State): TemplateParseResult
     function applySlot(element: IRElement) {
         const { tag } = element;
 
-        const slotAttribute = getTemplateAttribute(element, 'slot');
-        if (slotAttribute) {
-            if (slotAttribute.type === IRAttributeType.Expression) {
-                return warnAt(
-                    ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION,
-                    [],
-                    slotAttribute.location
-                );
-            }
-        }
-
         // Early exit if the element is not a slot
         if (tag !== 'slot') {
             return;
@@ -801,6 +790,11 @@ export default function parse(source: string, state: State): TemplateParseResult
                         seenIds.add(value);
                     }
                 }
+            }
+
+            // Prevent usage of the slot attribute with expression.
+            if (name === 'slot' && attr.type === IRAttributeType.Expression) {
+                return warnAt(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], location);
             }
 
             // the if branch handles
