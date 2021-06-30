@@ -57,6 +57,7 @@ import { getInternalChildNodes } from './node';
 import { innerHTMLSetter } from '../env/element';
 import { setNodeKey, setNodeOwnerKey } from '../shared/node-ownership';
 import { getOwnerDocument } from '../shared/utils';
+import { fauxElementsFromPoint } from '../shared/faux-elements-from-point';
 
 const InternalSlot = createHiddenField<ShadowRootRecord>('shadowRecord', 'synthetic-shadow');
 const { createDocumentFragment } = document;
@@ -237,8 +238,10 @@ const ShadowRootDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, _left: number, _top: number): Element[] {
-            throw new Error('Disallowed method "elementsFromPoint" on ShadowRoot.');
+        value(this: SyntheticShadowRootInterface, left: number, top: number): Element[] {
+            const host = getHost(this);
+            const doc = getOwnerDocument(host);
+            return fauxElementsFromPoint(this, doc, left, top);
         },
     },
     getSelection: {

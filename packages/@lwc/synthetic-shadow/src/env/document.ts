@@ -18,6 +18,13 @@ const elementFromPoint: (x: number, y: number) => Element | null = hasOwnPropert
     ? Document.prototype.elementFromPoint
     : (Document.prototype as any).msElementFromPoint; // IE11
 
+const elementsFromPoint: (x: number, y: number) => Element[] = hasOwnProperty.call(
+    Document.prototype,
+    'elementsFromPoint'
+)
+    ? Document.prototype.elementsFromPoint
+    : (Document.prototype as any).msElementsFromPoint; // IE11
+
 // defaultView can be null when a document has no browsing context. For example, the owner document
 // of a node in a template doesn't have a default view: https://jsfiddle.net/hv9z0q5a/
 const defaultViewGetter: (this: Document) => Window | null = getOwnPropertyDescriptor(
@@ -40,6 +47,7 @@ const { getElementsByName } = HTMLDocument.prototype;
 
 export {
     elementFromPoint,
+    elementsFromPoint,
     createComment,
     DocumentPrototypeActiveElement,
     querySelectorAll,

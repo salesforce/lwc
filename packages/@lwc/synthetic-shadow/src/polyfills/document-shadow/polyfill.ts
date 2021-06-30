@@ -30,6 +30,7 @@ import { getNodeOwnerKey } from '../../shared/node-ownership';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../../shared/utils';
+import { fauxElementsFromPoint } from '../../shared/faux-elements-from-point';
 
 function elemFromPoint(this: Document, left: number, top: number) {
     const element = elementFromPoint.call(this, left, top);
@@ -42,6 +43,12 @@ function elemFromPoint(this: Document, left: number, top: number) {
 
 // https://github.com/Microsoft/TypeScript/issues/14139
 Document.prototype.elementFromPoint = elemFromPoint as (left: number, top: number) => Element;
+
+function elemsFromPoint(this: Document, left: number, top: number) {
+    return fauxElementsFromPoint(this, this, left, top);
+}
+
+Document.prototype.elementsFromPoint = elemsFromPoint;
 
 // Go until we reach to top of the LWC tree
 defineProperty(Document.prototype, 'activeElement', {
