@@ -101,6 +101,7 @@ export interface RenderAPI {
     co(text: string): VComment;
 }
 
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
 const TextHook: Hooks<VText> = {
@@ -146,7 +147,9 @@ const ElementHook: Hooks<VElement> = {
             data: { svg },
         } = vnode;
         const { renderer } = owner;
-        const elm = renderer.createElement(sel, svg);
+
+        const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
+        const elm = renderer.createElement(sel, namespace);
 
         linkNodeToShadow(elm, owner);
         fallbackElmHook(elm, vnode);
