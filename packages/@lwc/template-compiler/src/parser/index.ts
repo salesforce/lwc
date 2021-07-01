@@ -186,22 +186,19 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         const parsedChildren: IRNode[] = [];
         const children = treeAdapter.getChildNodes(
-            treeAdapter.getTemplateContent(__original) || __original
+            treeAdapter.getTemplateContent(__original) ?? __original
         );
 
         if (children !== undefined) {
             for (const child of children) {
                 if (treeAdapter.isElementNode(child)) {
-                    const elmNode = parseElement(child as parse5.AST.Default.Element, parent);
+                    const elmNode = parseElement(child, parent);
                     parsedChildren.push(elmNode);
                 } else if (treeAdapter.isTextNode(child)) {
-                    const textNodes = parseText(child as parse5.AST.Default.TextNode, parent);
+                    const textNodes = parseText(child, parent);
                     parsedChildren.push(...textNodes);
                 } else if (treeAdapter.isCommentNode(child) && preserveComments) {
-                    const commentNode = parseComment(
-                        child as parse5.AST.Default.CommentNode,
-                        parent
-                    );
+                    const commentNode = parseComment(child, parent);
                     parsedChildren.push(commentNode);
                 }
             }
@@ -268,22 +265,19 @@ export default function parse(source: string, state: State): TemplateParseResult
         const validRoots = documentFragment.childNodes.filter(
             (child) =>
                 treeAdapter.isElementNode(child) ||
-                (treeAdapter.isTextNode(child) &&
-                    treeAdapter.getTextNodeContent(child).trim().length)
+                (treeAdapter.isTextNode(child) && child.value.trim().length)
         );
 
         if (validRoots.length > 1) {
             warnOnElement(ParserDiagnostics.MULTIPLE_ROOTS_FOUND, documentFragment.childNodes[1]);
         }
 
-        const templateTag = documentFragment.childNodes.find((child) =>
-            treeAdapter.isElementNode(child)
-        );
+        const [root] = validRoots;
 
-        if (!templateTag) {
+        if (!root || !treeAdapter.isElementNode(root)) {
             warnAt(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
         } else {
-            return templateTag as parse5.AST.Default.Element;
+            return root;
         }
     }
 
