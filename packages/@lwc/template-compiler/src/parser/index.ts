@@ -171,13 +171,11 @@ export default function parse(source: string, state: State): TemplateParseResult
         applyKey(element);
         applyLwcDirectives(element);
         applyAttributes(element);
-        validateClosingTag(element);
         validateElement(element);
         validateAttributes(element);
         validateProperties(element);
 
         parseChildren(element);
-
         validateChildren(element);
 
         return element;
@@ -286,29 +284,6 @@ export default function parse(source: string, state: State): TemplateParseResult
             warnAt(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
         } else {
             return templateTag as parse5.AST.Default.Element;
-        }
-    }
-
-    function validateClosingTag(element: IRElement) {
-        const { startTag, endTag } = element.__original.__location!;
-
-        const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
-        const missingClosingTag = !!startTag && !endTag;
-
-        if (!isVoidElement && missingClosingTag) {
-            addDiagnostic(
-                generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
-                    messageArgs: [element.tag],
-                    origin: {
-                        location: {
-                            line: startTag.startLine || startTag.line,
-                            column: startTag.startCol || startTag.col,
-                            start: startTag.startOffset,
-                            length: startTag.endOffset - startTag.startOffset,
-                        },
-                    },
-                })
-            );
         }
     }
 
@@ -804,9 +779,9 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         const { startTag, endTag } = node.__location!;
         const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
-        const missingClosingTag = !!startTag && !endTag;
+        const hasClosingTag = !!startTag && endTag;
 
-        if (!isVoidElement && missingClosingTag) {
+        if (!isVoidElement && !hasClosingTag) {
             addDiagnostic(
                 generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
                     messageArgs: [element.tag],
