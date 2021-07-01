@@ -45,8 +45,6 @@ import {
     parseIdentifier,
 } from './expression';
 
-import { parseClassNames, parseStyleText } from './style';
-
 import * as t from '../shared/estree';
 import { createComment, createElement, createText, isCustomElement } from '../shared/ir';
 import {
@@ -193,7 +191,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                 applyForEach(element);
                 applyIterator(element);
                 applyIf(element);
-                applyStyle(element);
                 applyHandlers(element);
                 applyComponent(element);
                 applySlot(element);
@@ -301,30 +298,6 @@ export default function parse(source: string, state: State): TemplateParseResult
             warnAt(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
         } else {
             return templateTag as parse5.AST.Default.Element;
-        }
-    }
-
-    function applyStyle(element: IRElement) {
-        const classAttribute = getTemplateAttribute(element, 'class');
-        if (classAttribute) {
-            removeAttribute(element, 'class');
-
-            if (classAttribute.type === IRAttributeType.String) {
-                element.classMap = parseClassNames(classAttribute.value);
-            } else if (classAttribute.type === IRAttributeType.Expression) {
-                element.className = classAttribute.value;
-            }
-        }
-
-        const styleAttribute = getTemplateAttribute(element, 'style');
-        if (styleAttribute) {
-            removeAttribute(element, 'style');
-
-            if (styleAttribute.type === IRAttributeType.Expression) {
-                element.style = styleAttribute.value;
-            } else if (styleAttribute.type === IRAttributeType.String) {
-                element.styleMap = parseStyleText(styleAttribute.value);
-            }
         }
     }
 
@@ -685,17 +658,6 @@ export default function parse(source: string, state: State): TemplateParseResult
     function applySlot(element: IRElement) {
         const { tag } = element;
 
-        const slotAttribute = getTemplateAttribute(element, 'slot');
-        if (slotAttribute) {
-            if (slotAttribute.type === IRAttributeType.Expression) {
-                return warnAt(
-                    ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION,
-                    [],
-                    slotAttribute.location
-                );
-            }
-        }
-
         // Early exit if the element is not a slot
         if (tag !== 'slot') {
             return;
@@ -801,6 +763,11 @@ export default function parse(source: string, state: State): TemplateParseResult
                         seenIds.add(value);
                     }
                 }
+            }
+
+            // Prevent usage of the slot attribute with expression.
+            if (name === 'slot' && attr.type === IRAttributeType.Expression) {
+                return warnAt(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], location);
             }
 
             // the if branch handles

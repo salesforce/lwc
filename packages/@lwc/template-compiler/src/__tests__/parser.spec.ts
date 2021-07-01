@@ -69,46 +69,6 @@ describe('parsing', () => {
     });
 });
 
-describe('class and style', () => {
-    it('class attribute', () => {
-        const { root } = parseTemplate(
-            `<template><section class="foo bar   baz-fiz"></section></template>`
-        );
-        expect(root.children[0].classMap).toMatchObject({ bar: true, foo: true, 'baz-fiz': true });
-    });
-
-    it('dynamic class attribute', () => {
-        const { root } = parseTemplate(
-            `<template><section class={dynamicClass}></section></template>`
-        );
-        expect(root.children[0].className).toMatchObject({
-            type: 'Identifier',
-            name: 'dynamicClass',
-        });
-    });
-
-    it('style attribute', () => {
-        const { root } = parseTemplate(`<template>
-            <section style="font-size: 12px; color: red; margin: 10px 5px 10px"></section>
-        </template>`);
-        expect(root.children[0].styleMap).toEqual({
-            'font-size': '12px',
-            color: 'red',
-            margin: '10px 5px 10px',
-        });
-    });
-
-    it('dynamic style attribute', () => {
-        const { root } = parseTemplate(
-            `<template><section style={dynamicStyle}></section></template>`
-        );
-        expect(root.children[0].style).toMatchObject({
-            type: 'Identifier',
-            name: 'dynamicStyle',
-        });
-    });
-});
-
 describe('event handlers', () => {
     it('event handler attribute', () => {
         const { root } = parseTemplate(
