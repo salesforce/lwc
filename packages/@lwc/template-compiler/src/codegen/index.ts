@@ -124,14 +124,14 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                 expr = isTemplate(child) ? transformTemplate(child) : transformElement(child);
             } else if (isTextNode(child)) {
                 expr = transformText(child);
-            } else if (isCommentNode(child)) {
+            } else if (isCommentNode(child) && codeGen.preserveComments) {
                 expr = transformComment(child);
             }
 
-            return acc.concat(expr as t.Expression);
+            return expr ? acc.concat(expr as t.Expression) : acc;
         }, []);
 
-        if (shouldFlatten(children, state)) {
+        if (shouldFlatten(children, codeGen)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
                 return res[0];
             } else {
@@ -528,19 +528,22 @@ function generateTemplateFunction(
     );
 }
 
-export default function (templateRoot: IRElement, state: State): string {
-    const codeGen = new CodeGen();
+export default function (root: IRElement, state: State): string {
+    const codeGen = new CodeGen({
+        root,
+        config: state.config,
+    });
 
-    const templateFunction = generateTemplateFunction(templateRoot, state, codeGen);
+    const templateFunction = generateTemplateFunction(root, state, codeGen);
 
     let program: t.Program;
     switch (state.config.format) {
         case 'function':
-            program = formatFunction(templateFunction, state, codeGen);
+            program = formatFunction(templateFunction, codeGen);
             break;
 
         case 'module':
-            program = formatModule(templateFunction, state, codeGen);
+            program = formatModule(templateFunction, codeGen);
             break;
     }
 

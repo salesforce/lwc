@@ -6,7 +6,6 @@
  */
 
 import { ResolvedConfig } from './config';
-import { LWCDirectiveRenderMode } from './shared/types';
 
 export default class State {
     config: ResolvedConfig;
@@ -19,7 +18,6 @@ export default class State {
      * fashion.
      */
     shouldScopeFragmentId: boolean = false;
-    renderMode: LWCDirectiveRenderMode = LWCDirectiveRenderMode.shadow;
 
     constructor(config: ResolvedConfig) {
         this.config = config;

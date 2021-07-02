@@ -14,7 +14,6 @@ import {
 
 import CodeGen from '../codegen';
 import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
-import State from '../../state';
 
 function generateComponentImports(codeGen: CodeGen): t.ImportDeclaration[] {
     return Array.from(codeGen.referencedComponents).map((name) => {
@@ -56,16 +55,12 @@ function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
  * registerTemplate(tmpl);
  * ```
  */
-export function format(
-    templateFn: t.FunctionDeclaration,
-    state: State,
-    codeGen: CodeGen
-): t.Program {
+export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.Program {
     codeGen.usedLwcApis.add(SECURE_REGISTER_TEMPLATE_METHOD_NAME);
 
     const imports = [...generateComponentImports(codeGen), generateLwcApisImport(codeGen)];
 
-    const metadata = generateTemplateMetadata(state, codeGen);
+    const metadata = generateTemplateMetadata(codeGen);
 
     const templateBody = [
         templateFn,

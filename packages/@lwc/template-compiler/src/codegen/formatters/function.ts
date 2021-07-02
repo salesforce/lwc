@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import State from '../../state';
 import * as t from '../../shared/estree';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_MODULES_PARAMETER } from '../../shared/constants';
 
@@ -31,11 +30,7 @@ import { identifierFromComponentName, generateTemplateMetadata } from '../helper
  * return tmpl;
  * ```
  */
-export function format(
-    templateFn: t.FunctionDeclaration,
-    state: State,
-    codeGen: CodeGen
-): t.Program {
+export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.Program {
     const lookups = Array.from(codeGen.referencedComponents)
         .sort()
         .map((name) => {
@@ -51,7 +46,7 @@ export function format(
             ]);
         });
 
-    const metadata = generateTemplateMetadata(state, codeGen);
+    const metadata = generateTemplateMetadata(codeGen);
 
     return t.program([
         ...lookups,

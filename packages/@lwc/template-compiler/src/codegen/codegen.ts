@@ -5,8 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as esutils from 'esutils';
+import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
+import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
 import { toPropertyName } from '../shared/utils';
 
 type RenderPrimitive =
@@ -48,6 +50,9 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
 };
 
 export default class CodeGen {
+    readonly renderMode: LWCDirectiveRenderMode;
+    readonly preserveComments: boolean;
+
     currentId = 0;
     currentKey = 0;
 
@@ -58,6 +63,11 @@ export default class CodeGen {
     slotNames: Set<string> = new Set();
     memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
+
+    constructor({ root, config }: { root: IRElement; config: ResolvedConfig }) {
+        this.renderMode = root.lwc?.renderMode ?? LWCDirectiveRenderMode.shadow;
+        this.preserveComments = root.lwc?.preserveComments ? true : config.preserveHtmlComments;
+    }
 
     generateKey() {
         return this.currentKey++;

@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import State from '../state';
-
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { IRElement, IRNode, LWCDirectiveRenderMode } from '../shared/types';
@@ -45,15 +43,15 @@ export function containsDynamicChildren(children: IRNode[]): boolean {
     return children.some((child) => isElement(child) && isDynamic(child));
 }
 
-export function shouldFlatten(children: IRNode[], state: State): boolean {
+export function shouldFlatten(children: IRNode[], codeGen: CodeGen): boolean {
     return children.some(
         (child) =>
             isElement(child) &&
             (isDynamic(child) ||
                 !!child.forEach ||
                 !!child.forOf ||
-                (state.renderMode === 'light' && child.tag === 'slot') ||
-                (isTemplate(child) && shouldFlatten(child.children, state)))
+                (codeGen.renderMode === LWCDirectiveRenderMode.light && child.tag === 'slot') ||
+                (isTemplate(child) && shouldFlatten(child.children, codeGen)))
     );
 }
 
@@ -82,7 +80,7 @@ export function memorizeHandler(
     return handler;
 }
 
-export function generateTemplateMetadata(state: State, codeGen: CodeGen): t.Statement[] {
+export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     const metadataExpressions: t.Statement[] = [];
 
     if (codeGen.slotNames.size) {
@@ -109,7 +107,7 @@ export function generateTemplateMetadata(state: State, codeGen: CodeGen): t.Stat
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
     // ignore when shadow because we don't want to modify template unnecessarily
-    if (state.renderMode === LWCDirectiveRenderMode.light) {
+    if (codeGen.renderMode === LWCDirectiveRenderMode.light) {
         const renderModeMetadata = t.assignmentExpression(
             '=',
             t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('renderMode')),

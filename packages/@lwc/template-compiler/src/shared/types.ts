@@ -54,10 +54,6 @@ export enum LWCDirectiveRenderMode {
     light = 'light',
 }
 
-export function isLWCDirectiveRenderMode(str: string): str is LWCDirectiveRenderMode {
-    return str === LWCDirectiveRenderMode.shadow || str === LWCDirectiveRenderMode.light;
-}
-
 export interface LWCDirectiveDynamic {
     prop: string;
 }
@@ -65,6 +61,8 @@ export interface LWCDirectiveDynamic {
 export interface LWCDirectives {
     dom?: LWCDirectiveDomMode;
     dynamic?: TemplateExpression;
+    renderMode?: LWCDirectiveRenderMode;
+    preserveComments?: IRBooleanAttribute;
 }
 
 export interface IRElement {
