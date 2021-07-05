@@ -29,9 +29,9 @@ export type TemplateParseResult = {
     warnings: CompilerDiagnostic[];
 };
 
-export type HTMLComment = parse5.AST.CommentNode;
-export type HTMLText = parse5.AST.TextNode;
-export type HTMLElement = parse5.AST.Element;
+export type HTMLComment = parse5.AST.Default.CommentNode;
+export type HTMLText = parse5.AST.Default.TextNode;
+export type HTMLElement = parse5.AST.Default.Element;
 export type HTMLNode = HTMLElement | HTMLComment | HTMLText;
 
 export interface ForEach {
@@ -70,6 +70,7 @@ export interface LWCDirectives {
 export interface IRElement {
     type: 'element';
     tag: string;
+    namespace: string;
 
     attrsList: parse5.AST.Default.Attribute[];
 

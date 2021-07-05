@@ -19,7 +19,6 @@ import {
     isTrue,
     isUndefined,
     KEY__SHADOW_RESOLVER,
-    StringCharCodeAt,
     StringReplace,
     toString,
 } from '@lwc/shared';
@@ -102,10 +101,7 @@ export interface RenderAPI {
     co(text: string): VComment;
 }
 
-const CHAR_S = 115;
-const CHAR_V = 118;
-const CHAR_G = 103;
-const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
 const TextHook: Hooks<VText> = {
@@ -148,10 +144,12 @@ const ElementHook: Hooks<VElement> = {
         const {
             sel,
             owner,
-            data: { ns },
+            data: { svg },
         } = vnode;
         const { renderer } = owner;
-        const elm = renderer.createElement(sel, ns);
+
+        const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
+        const elm = renderer.createElement(sel, namespace);
 
         linkNodeToShadow(elm, owner);
         fallbackElmHook(elm, vnode);
@@ -263,21 +261,6 @@ function linkNodeToShadow(elm: Node, owner: VM) {
     }
 }
 
-// TODO [#1136]: this should be done by the compiler, adding ns to every sub-element
-function addNS(vnode: VElement) {
-    const { data, children, sel } = vnode;
-    data.ns = NamespaceAttributeForSVG;
-    // TODO [#1275]: review why `sel` equal `foreignObject` should get this `ns`
-    if (isArray(children) && sel !== 'foreignObject') {
-        for (let j = 0, n = children.length; j < n; ++j) {
-            const childNode = children[j];
-            if (childNode != null && childNode.hook === ElementHook) {
-                addNS(childNode as VElement);
-            }
-        }
-    }
-}
-
 function addVNodeToChildLWC(vnode: VCustomElement) {
     ArrayPush.call(getVMBeingRendered()!.velements, vnode);
 }
@@ -323,9 +306,11 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
             }
         });
     }
-    const { key } = data;
+
     let text, elm;
-    const vnode: VElement = {
+    const { key } = data;
+
+    return {
         sel,
         data,
         children,
@@ -335,15 +320,6 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         hook: ElementHook,
         owner: vmBeingRendered,
     };
-    if (
-        sel.length === 3 &&
-        StringCharCodeAt.call(sel, 0) === CHAR_S &&
-        StringCharCodeAt.call(sel, 1) === CHAR_V &&
-        StringCharCodeAt.call(sel, 2) === CHAR_G
-    ) {
-        addNS(vnode);
-    }
-    return vnode;
 }
 
 // [t]ab[i]ndex function

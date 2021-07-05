@@ -11,12 +11,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           viewport: "0 0 100 100",
         },
         key: 0,
+        svg: true,
       },
       [
         api_element(
           "defs",
           {
             key: 1,
+            svg: true,
           },
           [
             api_element(
@@ -30,6 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   fill: "black",
                 },
                 key: 2,
+                svg: true,
               },
               []
             ),
@@ -44,6 +47,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   fill: "red",
                 },
                 key: 3,
+                svg: true,
               },
               []
             ),
@@ -61,6 +65,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               ),
             },
             key: 4,
+            svg: true,
           },
           []
         ),
@@ -76,6 +81,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               ),
             },
             key: 5,
+            svg: true,
           },
           []
         ),

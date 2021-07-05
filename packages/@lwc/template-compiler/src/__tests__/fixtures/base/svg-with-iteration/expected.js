@@ -6,6 +6,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "svg",
       {
         key: 0,
+        svg: true,
       },
       api_iterator($cmp.lines, function (line) {
         return api_element(
@@ -18,6 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               y2: line.y2,
             },
             key: api_key(1, line.key),
+            svg: true,
           },
           []
         );

@@ -19,7 +19,6 @@ import { HostElement, HostNodeType } from '../types';
 const FakeRootElement: HostElement = {
     type: HostNodeType.Element,
     name: 'fake-root-element',
-    namespace: 'ssr',
     parent: null,
     shadowRoot: null,
     children: [],

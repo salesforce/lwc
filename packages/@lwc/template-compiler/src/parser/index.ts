@@ -175,7 +175,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             enter(node) {
                 const elementNode = node as parse5.AST.Default.Element;
 
-                const element = createElement(elementNode.tagName, node);
+                const element = createElement(node);
                 element.attrsList = elementNode.attrs;
 
                 if (!root) {

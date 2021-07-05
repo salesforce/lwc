@@ -13,6 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "aria-hidden": "true",
         },
         key: 0,
+        svg: true,
       },
       [
         api_element(
@@ -27,6 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               ),
             },
             key: 1,
+            svg: true,
           },
           []
         ),
