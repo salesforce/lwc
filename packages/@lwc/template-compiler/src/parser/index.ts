@@ -185,7 +185,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                     parent.children.push(element);
                 }
 
-                applyLwcRenderModeDirective(element);
                 validateInlineStyleElement(element);
 
                 applyForEach(element);
@@ -383,24 +382,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         applyLwcDomDirective(element, lwcOpts);
 
         element.lwc = lwcOpts;
-    }
-
-    function applyLwcRenderModeDirective(element: IRElement) {
-        const { tag, attrsList } = element;
-
-        // Can't handle slots in applySlot because it would be too late for class and style attrs
-        if (state.renderMode === LWCDirectiveRenderMode.light && tag === 'slot') {
-            const invalidAttrs = attrsList
-                .filter(({ name }) => name !== 'name')
-                .map(({ name }) => name);
-            if (invalidAttrs.length > 0) {
-                return warnOnElement(
-                    ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_ATTRIBUTES,
-                    element.__original,
-                    [invalidAttrs.join(',')]
-                );
-            }
-        }
     }
 
     function applyLwcDynamicDirective(element: IRElement, lwcOpts: LWCDirectives) {
@@ -656,7 +637,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function applySlot(element: IRElement) {
-        const { tag } = element;
+        const { tag, attrsList } = element;
 
         // Early exit if the element is not a slot
         if (tag !== 'slot') {
@@ -668,6 +649,19 @@ export default function parse(source: string, state: State): TemplateParseResult
                 ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES,
                 element.__original
             );
+        }
+
+        if (state.renderMode === LWCDirectiveRenderMode.light) {
+            const invalidAttrs = attrsList
+                .filter(({ name }) => name !== 'name')
+                .map(({ name }) => name);
+            if (invalidAttrs.length > 0) {
+                return warnOnElement(
+                    ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_ATTRIBUTES,
+                    element.__original,
+                    [invalidAttrs.join(',')]
+                );
+            }
         }
 
         // Default slot have empty string name
