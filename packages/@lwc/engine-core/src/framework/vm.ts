@@ -38,8 +38,15 @@ import { invokeComponentCallback, invokeComponentRenderedCallback } from './invo
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { LightningElement } from './base-lightning-element';
-import { startGlobalMeasure, endGlobalMeasure, GlobalMeasurementPhase } from './performance-timing';
-import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
+import { GlobalMeasurementPhase } from './performance-timing';
+import {
+    logOperationStart,
+    logOperationEnd,
+    OperationId,
+    trackProfilerState,
+    logGlobalOperationEnd,
+    logGlobalOperationStart,
+} from './profiler';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
@@ -190,7 +197,7 @@ export function rerenderVM(vm: VM) {
 export function connectRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
 
-    startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+    logGlobalOperationStart(GlobalMeasurementPhase.HYDRATE, vm);
 
     // Usually means moving the element from one place to another, which is observable via
     // life-cycle hooks.
@@ -201,7 +208,7 @@ export function connectRootElement(elm: any) {
     runConnectedCallback(vm);
     rehydrate(vm);
 
-    endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+    logGlobalOperationEnd(GlobalMeasurementPhase.HYDRATE, vm);
 }
 
 export function disconnectRootElement(elm: any) {
@@ -458,7 +465,7 @@ function runRenderedCallback(vm: VM) {
 let rehydrateQueue: VM[] = [];
 
 function flushRehydrationQueue() {
-    startGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
+    logGlobalOperationStart(GlobalMeasurementPhase.REHYDRATE);
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
@@ -481,7 +488,7 @@ function flushRehydrationQueue() {
                 ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
             }
             // we need to end the measure before throwing.
-            endGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
+            logGlobalOperationEnd(GlobalMeasurementPhase.REHYDRATE);
 
             // re-throwing the original error will break the current tick, but since the next tick is
             // already scheduled, it should continue patching the rest.
@@ -489,7 +496,7 @@ function flushRehydrationQueue() {
         }
     }
 
-    endGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
+    logGlobalOperationEnd(GlobalMeasurementPhase.REHYDRATE);
 }
 
 export function runConnectedCallback(vm: VM) {

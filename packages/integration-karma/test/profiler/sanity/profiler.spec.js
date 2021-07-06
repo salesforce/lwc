@@ -19,6 +19,8 @@ describe('Profiler Sanity Test', () => {
         renderedCallback: 4,
         disconnectedCallback: 5,
         errorCallback: 6,
+        globalHydrate: 7,
+        globalRehydrate: 8,
     };
 
     const Phase = {
@@ -38,7 +40,7 @@ describe('Profiler Sanity Test', () => {
         const events = [];
         profilerControl.enableProfiler();
         profilerControl.attachDispatcher((opId, phase, name) => {
-            name = name.toUpperCase();
+            name = name ? name.toUpperCase() : name;
             events.push({ opId, phase, name });
         });
         return events;
@@ -62,6 +64,7 @@ describe('Profiler Sanity Test', () => {
         matchEventsOfTypeFor(OperationId.patch, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.connectedCallback, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.renderedCallback, X_CONTAINER, profilerEvents);
+        matchEventsOfTypeFor(OperationId.globalHydrate, X_CONTAINER, profilerEvents);
     });
 
     it('activate children in iteration in container', async () => {
@@ -76,6 +79,7 @@ describe('Profiler Sanity Test', () => {
         matchEventsOfTypeFor(OperationId.constructor, X_ITEM, profilerEvents);
         matchEventsOfTypeFor(OperationId.render, X_ITEM, profilerEvents);
         matchEventsOfTypeFor(OperationId.patch, X_ITEM, profilerEvents);
+        matchEventsOfTypeFor(OperationId.globalRehydrate, undefined, profilerEvents);
     });
 
     it('error callback counted properly', async () => {

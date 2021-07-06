@@ -4,10 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { startMeasure, endMeasure, MeasurementPhase } from './performance-timing';
+import {
+    endGlobalMeasure,
+    endMeasure,
+    GlobalMeasurementPhase,
+    MeasurementPhase,
+    startGlobalMeasure,
+    startMeasure,
+} from './performance-timing';
 import { VM } from './vm';
 
-function noop(_opId: number, _phase: number, _cmpName: string, _vm_idx: number) {}
+function noop(_opId: number, _phase: number, _cmpName?: string, _vm_idx?: number) {}
 
 let logOperation = noop;
 
@@ -19,6 +26,8 @@ export enum OperationId {
     renderedCallback = 4,
     disconnectedCallback = 5,
     errorCallback = 6,
+    globalHydrate = 7,
+    globalRehydrate = 8,
 }
 
 enum Phase {
@@ -98,7 +107,7 @@ function notifyProfilerStateChange() {
 }
 
 function attachDispatcher(
-    dispatcher: (_opId: number, _phase: number, _cmpName: string, _vm_idx: number) => void
+    dispatcher: (_opId: number, _phase: number, _cmpName?: string, _vm_idx?: number) => void
 ) {
     logOperation = dispatcher;
     bufferLogging = true;
@@ -118,4 +127,35 @@ const profilerControl = {
     detachDispatcher,
 };
 
-export { logOperationStart, logOperationEnd, trackProfilerState, profilerControl };
+function opIdForGlobalMeasurementPhase(phase: GlobalMeasurementPhase) {
+    return phase === GlobalMeasurementPhase.HYDRATE
+        ? OperationId.globalHydrate
+        : OperationId.globalRehydrate;
+}
+
+function logGlobalOperationStart(phase: GlobalMeasurementPhase, vm?: VM) {
+    if (logMarks) {
+        startGlobalMeasure(phase, vm);
+    }
+    if (bufferLogging) {
+        logOperation(opIdForGlobalMeasurementPhase(phase), Phase.Start, vm?.tagName, vm?.idx);
+    }
+}
+
+function logGlobalOperationEnd(phase: GlobalMeasurementPhase, vm?: VM) {
+    if (logMarks) {
+        endGlobalMeasure(phase, vm);
+    }
+    if (bufferLogging) {
+        logOperation(opIdForGlobalMeasurementPhase(phase), Phase.Stop, vm?.tagName, vm?.idx);
+    }
+}
+
+export {
+    logOperationStart,
+    logOperationEnd,
+    trackProfilerState,
+    profilerControl,
+    logGlobalOperationStart,
+    logGlobalOperationEnd,
+};
