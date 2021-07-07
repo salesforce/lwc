@@ -1,7 +1,13 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import Component from 'x/component';
 
 describe('restrictions', () => {
+    beforeEach(() => {
+        setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', true);
+    });
+    afterEach(() => {
+        setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', false);
+    });
     let elm;
     beforeEach(() => {
         elm = createElement('x-component', { is: Component });

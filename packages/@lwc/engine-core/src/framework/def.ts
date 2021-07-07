@@ -27,6 +27,7 @@ import {
     isUndefined,
     keys,
 } from '@lwc/shared';
+import features from '@lwc/features';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
@@ -108,6 +109,15 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             Ctor.constructor,
             `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
         );
+
+        if (!features.ENABLE_PREFER_NATIVE_SHADOW) {
+            assert.isFalse(
+                'preferNativeShadow' in Ctor,
+                `${
+                    ctorName || 'Anonymous class'
+                } is an invalid LWC component. \`preferNativeShadow\` is not available in this environment.`
+            );
+        }
 
         if (!isUndefined(ctorPreferNativeShadow)) {
             assert.invariant(
