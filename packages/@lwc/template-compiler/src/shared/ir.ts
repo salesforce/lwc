@@ -16,31 +16,37 @@ import {
     IRComment,
 } from './types';
 
-export function createElement(original: HTMLElement): IRElement {
+export function createElement(original: HTMLElement, parent?: IRElement): IRElement {
     return {
         type: 'element',
-        __original: original,
-
         tag: original.tagName,
         namespace: original.namespaceURI,
-        attrsList: [],
+        attrsList: original.attrs,
+        parent,
         children: [],
+        __original: original,
     };
 }
 
-export function createText(original: HTMLText, value: string | TemplateExpression): IRText {
+export function createText(
+    original: HTMLText,
+    parent: IRElement,
+    value: string | TemplateExpression
+): IRText {
     return {
         type: 'text',
-        __original: original,
+        parent,
         value,
+        __original: original,
     };
 }
 
-export function createComment(original: HTMLComment, value: string): IRComment {
+export function createComment(original: HTMLComment, parent: IRElement, value: string): IRComment {
     return {
         type: 'comment',
-        __original: original,
+        parent,
         value,
+        __original: original,
     };
 }
 

@@ -14,14 +14,7 @@ import {
     normalizeToDiagnostic,
     ParserDiagnostics,
 } from '@lwc/errors';
-import {
-    cleanTextNode,
-    decodeTextContent,
-    getSource,
-    parseHTML,
-    traverseHTML,
-    treeAdapter,
-} from './html';
+import { cleanTextNode, decodeTextContent, getSource, parseHTML, treeAdapter } from './html';
 
 import {
     attributeName,
@@ -52,13 +45,15 @@ import {
     ForIterator,
     IRAttribute,
     IRAttributeType,
+    IRComment,
     IRElement,
     IRExpressionAttribute,
+    IRNode,
+    IRText,
     isLWCDirectiveRenderMode,
     LWCDirectiveDomMode,
     LWCDirectiveRenderMode,
     LWCDirectives,
-    TemplateExpression,
     TemplateIdentifier,
     TemplateParseResult,
 } from '../shared/types';
@@ -85,12 +80,8 @@ import {
     SUPPORTED_SVG_TAGS,
     SVG_NAMESPACE_URI,
     VALID_IF_MODIFIER,
+    VOID_ELEMENT_SET,
 } from './constants';
-
-function isStyleElement(irElement: IRElement) {
-    const element = irElement.__original as parse5.AST.Default.Element;
-    return element.tagName === 'style' && element.namespaceURI === HTML_NAMESPACE_URI;
-}
 
 function attributeExpressionReferencesForOfIndex(
     attribute: IRExpressionAttribute,
@@ -131,6 +122,8 @@ function attributeExpressionReferencesForEachIndex(
 
 export default function parse(source: string, state: State): TemplateParseResult {
     const warnings: CompilerDiagnostic[] = [];
+    const seenIds: Set<string> = new Set();
+
     const { fragment, errors: parsingErrors } = parseHTML(source);
 
     if (parsingErrors.length) {
@@ -141,12 +134,6 @@ export default function parse(source: string, state: State): TemplateParseResult
     if (!templateRoot) {
         return { warnings };
     }
-
-    let root: any;
-    let parent: IRElement;
-    const stack: IRElement[] = [];
-
-    const seenIds: Set<string> = new Set();
 
     const preserveComments =
         templateRoot.attrs.some(
@@ -170,109 +157,104 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
-    traverseHTML(templateRoot, {
-        Element: {
-            enter(node) {
-                const elementNode = node as parse5.AST.Default.Element;
+    const root = parseElement(templateRoot);
 
-                const element = createElement(node);
-                element.attrsList = elementNode.attrs;
+    function parseElement(elementNode: parse5.AST.Default.Element, parent?: IRElement): IRElement {
+        const element = createElement(elementNode, parent);
 
-                if (!root) {
-                    root = element;
-                } else {
-                    element.parent = parent;
-                    parent.children.push(element);
+        applyForEach(element);
+        applyIterator(element);
+        applyIf(element);
+        applyHandlers(element);
+        applyComponent(element);
+        applySlot(element);
+        applyKey(element);
+        applyLwcDirectives(element);
+        applyAttributes(element);
+        validateElement(element);
+        validateAttributes(element);
+        validateProperties(element);
+
+        parseChildren(element);
+        validateChildren(element);
+
+        return element;
+    }
+
+    function parseChildren(parent: IRElement): void {
+        const { __original } = parent;
+
+        const parsedChildren: IRNode[] = [];
+        const children = treeAdapter.getChildNodes(
+            treeAdapter.getTemplateContent(__original) ?? __original
+        );
+
+        for (const child of children) {
+            if (treeAdapter.isElementNode(child)) {
+                const elmNode = parseElement(child, parent);
+                parsedChildren.push(elmNode);
+            } else if (treeAdapter.isTextNode(child)) {
+                const textNodes = parseText(child, parent);
+                parsedChildren.push(...textNodes);
+            } else if (treeAdapter.isCommentNode(child) && preserveComments) {
+                const commentNode = parseComment(child, parent);
+                parsedChildren.push(commentNode);
+            }
+        }
+
+        parent.children = parsedChildren;
+    }
+
+    function parseText(node: parse5.AST.Default.TextNode, parent: IRElement): IRText[] {
+        const parsedTextNodes: IRText[] = [];
+
+        // Extract the raw source to avoid HTML entity decoding done by parse5
+        const location = node.__location!;
+        const rawText = cleanTextNode(source.slice(location.startOffset, location.endOffset));
+
+        if (!rawText.trim().length) {
+            return parsedTextNodes;
+        }
+
+        // Split the text node content arround expression and create node for each
+        const tokenizedContent = rawText.split(EXPRESSION_RE);
+
+        for (const token of tokenizedContent) {
+            // Don't create nodes for emtpy strings
+            if (!token.length) {
+                continue;
+            }
+
+            let value;
+            if (isExpression(token)) {
+                try {
+                    value = parseExpression(token, state);
+                } catch (error) {
+                    addDiagnostic(
+                        normalizeToDiagnostic(
+                            ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
+                            error,
+                            {
+                                location: normalizeLocation(location),
+                            }
+                        )
+                    );
+                    return parsedTextNodes;
                 }
+            } else {
+                value = decodeTextContent(token);
+            }
 
-                validateInlineStyleElement(element);
+            parsedTextNodes.push(createText(node, parent, value));
+        }
 
-                applyForEach(element);
-                applyIterator(element);
-                applyIf(element);
-                applyHandlers(element);
-                applyComponent(element);
-                applySlot(element);
-                applyKey(element, elementNode.__location);
+        return parsedTextNodes;
+    }
 
-                parent = element;
-                stack.push(element);
-            },
-            exit() {
-                const element = stack.pop() as IRElement;
-                // Apply lwc directive on way out to ensure the element is empty
-                applyLwcDirectives(element);
-                applyAttributes(element);
-                validateElement(element);
-                validateAttributes(element);
-                validateProperties(element);
-
-                parent = stack[stack.length - 1];
-            },
-        },
-
-        Text: {
-            enter(node: parse5.AST.Default.TextNode) {
-                // Extract the raw source to avoid HTML entity decoding done by parse5
-                // TODO [#1286]: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
-                const location = node.__location as parse5.MarkupData.Location;
-
-                const { startOffset, endOffset } = location;
-                const rawText = cleanTextNode(source.slice(startOffset, endOffset));
-
-                if (!rawText.trim().length) {
-                    return;
-                }
-
-                // Split the text node content arround expression and create node for each
-                const tokenizedContent = rawText.split(EXPRESSION_RE);
-
-                for (const token of tokenizedContent) {
-                    // Don't create nodes for emtpy strings
-                    if (!token.length) {
-                        continue;
-                    }
-
-                    let value;
-                    if (isExpression(token)) {
-                        try {
-                            value = parseExpression(token, state);
-                        } catch (error) {
-                            addDiagnostic(
-                                normalizeToDiagnostic(
-                                    ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-                                    error,
-                                    {
-                                        location: normalizeLocation(location),
-                                    }
-                                )
-                            );
-                            return;
-                        }
-                    } else {
-                        value = decodeTextContent(token);
-                    }
-
-                    const textNode = createText(node, value);
-
-                    textNode.parent = parent;
-                    parent.children.push(textNode);
-                }
-            },
-        },
-
-        Comment: {
-            enter(node: parse5.AST.Default.CommentNode) {
-                if (preserveComments) {
-                    const rawComment = node.data;
-                    const commentNode = createComment(node, decodeTextContent(rawComment));
-
-                    commentNode.parent = parent;
-                    parent.children.push(commentNode);
-                }
-            },
-        },
-    });
+    function parseComment(node: parse5.AST.Default.CommentNode, parent: IRElement): IRComment {
+        const value = decodeTextContent(node.data);
+        return createComment(node, parent, value);
+    }
 
     function getTemplateRoot(
         documentFragment: parse5.AST.Default.DocumentFragment
@@ -281,22 +263,19 @@ export default function parse(source: string, state: State): TemplateParseResult
         const validRoots = documentFragment.childNodes.filter(
             (child) =>
                 treeAdapter.isElementNode(child) ||
-                (treeAdapter.isTextNode(child) &&
-                    treeAdapter.getTextNodeContent(child).trim().length)
+                (treeAdapter.isTextNode(child) && child.value.trim().length)
         );
 
         if (validRoots.length > 1) {
             warnOnElement(ParserDiagnostics.MULTIPLE_ROOTS_FOUND, documentFragment.childNodes[1]);
         }
 
-        const templateTag = documentFragment.childNodes.find((child) =>
-            treeAdapter.isElementNode(child)
-        );
+        const [root] = validRoots;
 
-        if (!templateTag) {
+        if (!root || !treeAdapter.isElementNode(root)) {
             warnAt(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
         } else {
-            return templateTag as parse5.AST.Default.Element;
+            return root;
         }
     }
 
@@ -415,7 +394,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             );
         }
 
-        lwcOpts.dynamic = lwcDynamicAttribute.value as TemplateExpression;
+        lwcOpts.dynamic = lwcDynamicAttribute.value;
     }
 
     function applyLwcDomDirective(element: IRElement, lwcOpts: LWCDirectives) {
@@ -462,18 +441,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             ]);
         }
 
-        if (element.children.length > 0) {
-            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element.__original);
-        }
-
         lwcOpts.dom = lwcDomAttribute.value as LWCDirectiveDomMode;
-    }
-
-    function validateInlineStyleElement(element: IRElement) {
-        // disallow <style> element
-        if (isStyleElement(element)) {
-            warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element.__original);
-        }
     }
 
     function applyForEach(element: IRElement) {
@@ -583,7 +551,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         };
     }
 
-    function applyKey(element: IRElement, location: parse5.MarkupData.ElementLocation | undefined) {
+    function applyKey(element: IRElement) {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
             if (keyAttribute.type !== IRAttributeType.Expression) {
@@ -620,7 +588,11 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             element.forKey = keyAttribute.value;
         } else if (isIteratorElement(element) && element.tag !== 'template') {
-            return warnAt(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, [element.tag], location);
+            return warnAt(
+                ParserDiagnostics.MISSING_KEY_IN_ITERATOR,
+                [element.tag],
+                element.__original.__location!
+            );
         }
     }
 
@@ -711,19 +683,17 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             if (name.match(/[^a-z0-9]$/)) {
-                const node = element.__original as parse5.AST.Default.Element;
                 warnAt(ParserDiagnostics.ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER, [
                     name,
-                    treeAdapter.getTagName(node),
+                    tag,
                 ]);
                 return;
             }
 
             if (!/^-*[a-z]/.test(name)) {
-                const node = element.__original as parse5.AST.Default.Element;
                 warnAt(
                     ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER,
-                    [name, treeAdapter.getTagName(node)]
+                    [name, tag]
                 );
                 return;
             }
@@ -731,10 +701,9 @@ export default function parse(source: string, state: State): TemplateParseResult
             // disallow attr name which combines underscore character with special character.
             // We normalize camel-cased names with underscores caMel -> ca-mel; thus sanitization.
             if (name.match(/_[^a-z0-9]|[^a-z0-9]_/)) {
-                const node = element.__original as parse5.AST.Default.Element;
                 warnAt(
                     ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS,
-                    [name, treeAdapter.getTagName(node)]
+                    [name, tag]
                 );
                 return;
             }
@@ -784,9 +753,8 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateElement(element: IRElement) {
-        const { tag } = element;
-        const node = element.__original as parse5.AST.Default.Element;
-        const isRoot = !element.parent;
+        const { tag, parent, __original: node } = element;
+        const isRoot = !parent;
 
         if (isRoot) {
             if (tag !== 'template') {
@@ -801,7 +769,29 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
         }
 
-        if (tag === 'template') {
+        const { startTag, endTag } = node.__location!;
+        const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
+        const hasClosingTag = !!startTag && endTag;
+
+        if (!isVoidElement && !hasClosingTag) {
+            addDiagnostic(
+                generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
+                    messageArgs: [element.tag],
+                    origin: {
+                        location: {
+                            line: startTag.startLine || startTag.line,
+                            column: startTag.startCol || startTag.col,
+                            start: startTag.startOffset,
+                            length: startTag.endOffset - startTag.startOffset,
+                        },
+                    },
+                })
+            );
+        }
+
+        if (tag === 'style' && node.namespaceURI === HTML_NAMESPACE_URI) {
+            warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, node);
+        } else if (tag === 'template') {
             // We check if the template element has some modifier applied to it. Directly checking if one of the
             // IRElement property is impossible. For example when an error occurs during the parsing of the if
             // expression, the `element.if` property remains undefined. It would results in 2 warnings instead of 1:
@@ -849,9 +839,14 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
+    function validateChildren(element: IRElement) {
+        if (element.lwc?.dom && element.children.length > 0) {
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element.__original);
+        }
+    }
+
     function validateAttributes(element: IRElement) {
-        const { tag, attrsList } = element;
-        const node = element.__original as parse5.AST.Default.Element;
+        const { tag, attrsList, __original: node } = element;
 
         attrsList.forEach((attr) => {
             const attrName = attr.name;
@@ -876,8 +871,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateProperties(element: IRElement) {
-        const { tag, props } = element;
-        const node = element.__original as parse5.AST.Default.Element;
+        const { tag, props, __original: node } = element;
 
         if (props !== undefined) {
             for (const propName in props) {
@@ -906,7 +900,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         el: IRElement,
         pattern: string | RegExp
     ): IRAttribute | undefined {
-        const node = el.__original as parse5.AST.Default.Element;
+        const node = el.__original;
         const nodeLocation = node.__location!;
 
         const matching = getAttribute(el, pattern);
@@ -972,7 +966,11 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
-    function warnOnElement(errorInfo: LWCErrorInfo, node: parse5.AST.Node, messageArgs?: any[]) {
+    function warnOnElement(
+        errorInfo: LWCErrorInfo,
+        node: parse5.AST.Default.Node,
+        messageArgs?: any[]
+    ) {
         const getLocation = (
             toLocate?: parse5.AST.Node
         ): { line: number; column: number; start: number; length: number } => {
