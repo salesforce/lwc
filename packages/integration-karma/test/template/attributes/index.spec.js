@@ -33,10 +33,10 @@ it(`should remove the existing attribute if set to null`, () => {
 
 it(`should remove the existing attribute if set to undefined`, () => {
     const elm = createElement('x-test', { is: Test });
-    elm.attr = 'initial value';
+    elm.attr = undefined;
     document.body.appendChild(elm);
 
-    expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe('initial value');
+    expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe(null);
 
     elm.attr = undefined;
     return Promise.resolve().then(() => {
