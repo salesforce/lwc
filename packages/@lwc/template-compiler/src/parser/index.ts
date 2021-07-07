@@ -189,18 +189,16 @@ export default function parse(source: string, state: State): TemplateParseResult
             treeAdapter.getTemplateContent(__original) ?? __original
         );
 
-        if (children !== undefined) {
-            for (const child of children) {
-                if (treeAdapter.isElementNode(child)) {
-                    const elmNode = parseElement(child, parent);
-                    parsedChildren.push(elmNode);
-                } else if (treeAdapter.isTextNode(child)) {
-                    const textNodes = parseText(child, parent);
-                    parsedChildren.push(...textNodes);
-                } else if (treeAdapter.isCommentNode(child) && preserveComments) {
-                    const commentNode = parseComment(child, parent);
-                    parsedChildren.push(commentNode);
-                }
+        for (const child of children) {
+            if (treeAdapter.isElementNode(child)) {
+                const elmNode = parseElement(child, parent);
+                parsedChildren.push(elmNode);
+            } else if (treeAdapter.isTextNode(child)) {
+                const textNodes = parseText(child, parent);
+                parsedChildren.push(...textNodes);
+            } else if (treeAdapter.isCommentNode(child) && preserveComments) {
+                const commentNode = parseComment(child, parent);
+                parsedChildren.push(commentNode);
             }
         }
 
