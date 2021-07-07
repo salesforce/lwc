@@ -9,7 +9,7 @@ import * as astring from 'astring';
 import { isBooleanAttribute } from '@lwc/shared';
 import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 
-import State from '../state';
+import { ResolvedConfig } from '../config';
 
 import {
     isCommentNode,
@@ -39,6 +39,7 @@ import {
     containsDynamicChildren,
     parseClassNames,
     parseStyleText,
+    hasIdAttribute,
 } from './helpers';
 
 import { format as formatModule } from './formatters/module';
@@ -54,7 +55,7 @@ import {
 } from '../parser/attribute';
 import { SVG_NAMESPACE_URI } from '../parser/constants';
 
-function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expression {
+function transform(codeGen: CodeGen): t.Expression {
     function transformElement(element: IRElement): t.Expression {
         const databag = elementDataBag(element);
         let res: t.Expression;
@@ -292,7 +293,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                     return codeGen.genScopedId(expression);
                 }
                 if (
-                    state.shouldScopeFragmentId &&
+                    codeGen.scopeFragmentId &&
                     isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI)
                 ) {
                     return codeGen.genScopedFragId(expression);
@@ -329,7 +330,7 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
                     return codeGen.genScopedId(attr.value);
                 }
                 if (
-                    state.shouldScopeFragmentId &&
+                    codeGen.scopeFragmentId &&
                     isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI) &&
                     isFragmentOnlyUrl(attr.value)
                 ) {
@@ -457,15 +458,11 @@ function transform(root: IRElement, codeGen: CodeGen, state: State): t.Expressio
         return t.objectExpression(data);
     }
 
-    return transformChildren(root.children);
+    return transformChildren(codeGen.root.children);
 }
 
-function generateTemplateFunction(
-    templateRoot: IRElement,
-    state: State,
-    codeGen: CodeGen
-): t.FunctionDeclaration {
-    const returnedValue = transform(templateRoot, codeGen, state);
+function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
+    const returnedValue = transform(codeGen);
 
     const args = [
         TEMPLATE_PARAMS.API,
@@ -528,16 +525,18 @@ function generateTemplateFunction(
     );
 }
 
-export default function (root: IRElement, state: State): string {
+export default function (root: IRElement, config: ResolvedConfig): string {
+    const scopeFragmentId = hasIdAttribute(root);
     const codeGen = new CodeGen({
         root,
-        config: state.config,
+        config,
+        scopeFragmentId,
     });
 
-    const templateFunction = generateTemplateFunction(root, state, codeGen);
+    const templateFunction = generateTemplateFunction(codeGen);
 
     let program: t.Program;
-    switch (state.config.format) {
+    switch (config.format) {
         case 'function':
             program = formatFunction(templateFunction, codeGen);
             break;

@@ -55,6 +55,23 @@ export function shouldFlatten(children: IRNode[], codeGen: CodeGen): boolean {
     );
 }
 
+/**
+ * Returns true if the AST element or if any of its descendant uses an id attribute.
+ */
+export function hasIdAttribute(element: IRElement): boolean {
+    if (element.attrs?.id || element.props?.id) {
+        return true;
+    }
+
+    for (const child of element.children) {
+        if (child.type === 'element' && hasIdAttribute(child)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 export function memorizeHandler(
     codeGen: CodeGen,
     element: IRElement,

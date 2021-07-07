@@ -10,15 +10,6 @@ import { ResolvedConfig } from './config';
 export default class State {
     config: ResolvedConfig;
 
-    /**
-     * This flag indicates if a the generated code should scope the template fragment id. It is set
-     * to true if the template also contains ids.
-     *
-     * TODO [#1150]: Remove this code once we can figure out how to do this in a deterministic
-     * fashion.
-     */
-    shouldScopeFragmentId: boolean = false;
-
     constructor(config: ResolvedConfig) {
         this.config = config;
     }
