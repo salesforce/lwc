@@ -30,3 +30,17 @@ it(`should remove the existing attribute if set to null`, () => {
         expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe(null);
     });
 });
+
+it(`should remove the existing attribute if set to undefined`, () => {
+    const elm = createElement('x-test', { is: Test });
+    elm.attr = 'initial value';
+    document.body.appendChild(elm);
+
+    expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe('initial value');
+
+    elm.attr = undefined;
+    return Promise.resolve().then(() => {
+        expect(elm.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
+        expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe(null);
+    });
+});

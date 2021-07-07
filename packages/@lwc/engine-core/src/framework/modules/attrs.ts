@@ -56,7 +56,7 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
             } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
                 // Assume xlink namespace
                 setAttribute(elm, key, cur as string, xlinkNS);
-            } else if (isNull(cur)) {
+            } else if (isNull(cur) || isUndefined(cur)) {
                 removeAttribute(elm, key);
             } else {
                 setAttribute(elm, key, cur as string);
