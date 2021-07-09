@@ -50,7 +50,12 @@ export CIRCLE_WORKING_DIRECTORY=/path/to/lwc
 
 ## Testing other branches
 
-By default, the benchmark will compare the local code against the latest `master` branch from the `salesforce/lwc` repo. To test against another branch or commit, change `ref` and/or `repo` in `perf-benchmarks/scripts/build.js` and then re-run
-`yarn build:performance`.
+By default, the benchmark will compare the local code against the latest `master` branch from the `salesforce/lwc` repo. To test against another branch or commit, use the following environment variables when running `yarn build:performance`:
+
+```shell
+BENCHMARK_REPO=https://example.com/repo.git \
+  BENCHMARK_REF=branchOrTagOrCommit \
+  yarn build:performance
+```
 
 If anything gets messed up when comparing to the other branch, add the `--force-clean-npm-install` flag when running `tach`.

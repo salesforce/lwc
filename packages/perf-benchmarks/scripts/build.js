@@ -17,7 +17,11 @@ const globHash = require('glob-hash');
 
 const writeFile = promisify(fs.writeFile);
 
-const { CIRCLE_WORKING_DIRECTORY } = process.env;
+const {
+    CIRCLE_WORKING_DIRECTORY,
+    BENCHMARK_REPO = 'https://github.com/salesforce/lwc.git',
+    BENCHMARK_REF = 'master',
+} = process.env;
 
 // lwc packages that need to be swapped in when comparing the current code to the latest tip-of-tree code.
 const swappablePackages = [
@@ -81,8 +85,8 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
                                     pkg,
                                     {
                                         kind: 'git',
-                                        repo: 'https://github.com/salesforce/lwc.git',
-                                        ref: 'master',
+                                        repo: BENCHMARK_REPO,
+                                        ref: BENCHMARK_REF,
                                         subdir: `packages/${pkg}`,
                                         setupCommands: [
                                             'yarn --immutable',
