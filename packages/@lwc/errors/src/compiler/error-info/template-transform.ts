@@ -506,4 +506,10 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+    INVALID_FOR_EACH_WITH_ITERATOR: {
+        code: 1136,
+        message: "Invalid usage for 'for:each' and '{0}' directives on the same element.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
