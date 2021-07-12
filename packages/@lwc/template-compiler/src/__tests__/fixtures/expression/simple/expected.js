@@ -1,7 +1,7 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { d: api_dynamic } = $api;
-  return [api_dynamic($cmp.text)];
+  const { d: api_dynamic_text, t: api_text } = $api;
+  return [api_text(api_dynamic_text($cmp.text))];
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

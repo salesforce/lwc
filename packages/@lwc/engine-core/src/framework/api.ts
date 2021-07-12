@@ -587,12 +587,9 @@ export function co(text: string): VComment {
     };
 }
 
-// [d]ynamic value to produce a text vnode
-export function d(value: any): VNode | null {
-    if (value == null) {
-        return null;
-    }
-    return t(value);
+// [d]ynamic text
+export function d(value: any): string | any {
+    return value == null ? '' : value;
 }
 
 // [b]ind function

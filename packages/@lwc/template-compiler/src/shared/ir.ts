@@ -14,6 +14,7 @@ import {
     HTMLText,
     HTMLComment,
     IRComment,
+    IRInterpolatedText,
 } from './types';
 
 export function createElement(original: HTMLElement, parent?: IRElement): IRElement {
@@ -41,6 +42,19 @@ export function createText(
     };
 }
 
+export function createInterpolatedText(
+    original: HTMLText,
+    parent: IRElement,
+    value: Array<string | TemplateExpression>
+): IRInterpolatedText {
+    return {
+        type: 'interpolatedText',
+        parent,
+        value,
+        __original: original,
+    };
+}
+
 export function createComment(original: HTMLComment, parent: IRElement, value: string): IRComment {
     return {
         type: 'comment',
@@ -56,6 +70,10 @@ export function isElement(node: IRNode): node is IRElement {
 
 export function isTextNode(node: IRNode): node is IRText {
     return node.type === 'text';
+}
+
+export function isInterpolatedTextNode(node: IRNode): node is IRInterpolatedText {
+    return node.type === 'interpolatedText';
 }
 
 export function isCommentNode(node: IRNode): node is IRComment {

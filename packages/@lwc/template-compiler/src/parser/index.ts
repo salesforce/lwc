@@ -39,7 +39,13 @@ import {
 } from './expression';
 
 import * as t from '../shared/estree';
-import { createComment, createElement, createText, isCustomElement } from '../shared/ir';
+import {
+    createComment,
+    createElement,
+    createInterpolatedText,
+    createText,
+    isCustomElement,
+} from '../shared/ir';
 import {
     ForEach,
     ForIterator,
@@ -48,12 +54,14 @@ import {
     IRComment,
     IRElement,
     IRExpressionAttribute,
+    IRInterpolatedText,
     IRNode,
     IRText,
     isLWCDirectiveRenderMode,
     LWCDirectiveDomMode,
     LWCDirectiveRenderMode,
     LWCDirectives,
+    TemplateExpression,
     TemplateIdentifier,
     TemplateParseResult,
 } from '../shared/types';
@@ -194,8 +202,10 @@ export default function parse(source: string, state: State): TemplateParseResult
                 const elmNode = parseElement(child, parent);
                 parsedChildren.push(elmNode);
             } else if (treeAdapter.isTextNode(child)) {
-                const textNodes = parseText(child, parent);
-                parsedChildren.push(...textNodes);
+                const textNode = parseText(child, parent);
+                if (textNode !== undefined) {
+                    parsedChildren.push(textNode);
+                }
             } else if (treeAdapter.isCommentNode(child) && preserveComments) {
                 const commentNode = parseComment(child, parent);
                 parsedChildren.push(commentNode);
@@ -205,22 +215,25 @@ export default function parse(source: string, state: State): TemplateParseResult
         parent.children = parsedChildren;
     }
 
-    function parseText(node: parse5.AST.Default.TextNode, parent: IRElement): IRText[] {
-        const parsedTextNodes: IRText[] = [];
+    function parseText(
+        node: parse5.AST.Default.TextNode,
+        parent: IRElement
+    ): IRText | IRInterpolatedText | undefined {
+        const parsedTextParts: Array<string | TemplateExpression> = [];
 
         // Extract the raw source to avoid HTML entity decoding done by parse5
         const location = node.__location!;
         const rawText = cleanTextNode(source.slice(location.startOffset, location.endOffset));
 
         if (!rawText.trim().length) {
-            return parsedTextNodes;
+            return;
         }
 
-        // Split the text node content arround expression and create node for each
+        // Split the text node content around expressions and create node for each
         const tokenizedContent = rawText.split(EXPRESSION_RE);
 
         for (const token of tokenizedContent) {
-            // Don't create nodes for emtpy strings
+            // Don't create nodes for empty strings
             if (!token.length) {
                 continue;
             }
@@ -239,16 +252,20 @@ export default function parse(source: string, state: State): TemplateParseResult
                             }
                         )
                     );
-                    return parsedTextNodes;
+                    return parsedTextParts.length
+                        ? createInterpolatedText(node, parent, parsedTextParts)
+                        : undefined;
                 }
             } else {
                 value = decodeTextContent(token);
             }
 
-            parsedTextNodes.push(createText(node, parent, value));
+            parsedTextParts.push(value);
         }
 
-        return parsedTextNodes;
+        return parsedTextParts.length === 1
+            ? createText(node, parent, parsedTextParts[0])
+            : createInterpolatedText(node, parent, parsedTextParts);
     }
 
     function parseComment(node: parse5.AST.Default.CommentNode, parent: IRElement): IRComment {

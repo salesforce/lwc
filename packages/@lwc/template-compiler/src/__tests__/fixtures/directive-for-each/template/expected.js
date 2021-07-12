@@ -2,8 +2,8 @@ import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
+    d: api_dynamic_text,
     t: api_text,
-    d: api_dynamic,
     h: api_element,
     i: api_iterator,
   } = $api;
@@ -19,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           {
             key: api_key(1, item.id),
           },
-          [api_text("1"), api_dynamic(item)]
+          [api_text("1" + api_dynamic_text(item))]
         );
       })
     ),

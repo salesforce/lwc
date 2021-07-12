@@ -106,6 +106,15 @@ export interface IRText {
     __original: HTMLText;
 }
 
+export interface IRInterpolatedText {
+    type: 'interpolatedText';
+    value: Array<string | TemplateExpression>;
+
+    parent?: IRElement;
+
+    __original: HTMLText;
+}
+
 export interface IRComment {
     type: 'comment';
     value: string;
@@ -115,7 +124,7 @@ export interface IRComment {
     __original: HTMLComment;
 }
 
-export type IRNode = IRComment | IRElement | IRText;
+export type IRNode = IRComment | IRElement | IRText | IRInterpolatedText;
 
 export enum IRAttributeType {
     Expression,

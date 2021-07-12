@@ -73,11 +73,12 @@
   var _implicitStylesheets = [stylesheet];
 
   function tmpl$1($api, $cmp, $slotset, $ctx) {
-    var api_dynamic = $api._ES5ProxyType ? $api.get("d") : $api.d,
+    var api_dynamic_text = $api._ES5ProxyType ? $api.get("d") : $api.d,
+        api_text = $api._ES5ProxyType ? $api.get("t") : $api.t,
         api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
     return [api_element("div", {
       key: 0
-    }, [api_dynamic($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x)])];
+    }, [api_text(api_dynamic_text($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x))])];
   }
 
   var _tmpl$1 = lwc.registerTemplate(tmpl$1);

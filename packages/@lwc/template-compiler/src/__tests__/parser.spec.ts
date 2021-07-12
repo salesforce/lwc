@@ -54,10 +54,11 @@ describe('parsing', () => {
 
     it('text identifier in text block', () => {
         const { root } = parseTemplate(`<template>Hello {name}, from {location}</template>`);
-        expect(root.children[0].value).toBe('Hello ');
-        expect(root.children[1].value).toMatchObject(TEMPLATE_IDENTIFIER);
-        expect(root.children[2].value).toBe(', from ');
-        expect(root.children[3].value).toMatchObject(TEMPLATE_IDENTIFIER);
+        const textNode = root.children[0];
+        expect(textNode.value[0]).toBe('Hello ');
+        expect(textNode.value[1]).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(textNode.value[2]).toBe(', from ');
+        expect(textNode.value[3]).toMatchObject(TEMPLATE_IDENTIFIER);
     });
 
     it('child elements', () => {
