@@ -56,7 +56,7 @@ export function shouldFlatten(children: IRNode[], codeGen: CodeGen): boolean {
 }
 
 /**
- * Returns true if the AST element or if any of its descendant uses an id attribute.
+ * Returns true if the AST element or any of its descendants use an id attribute.
  */
 export function hasIdAttribute(element: IRElement): boolean {
     if (element.attrs?.id || element.props?.id) {

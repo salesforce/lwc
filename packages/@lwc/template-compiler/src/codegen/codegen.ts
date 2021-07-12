@@ -56,12 +56,12 @@ export default class CodeGen {
     /** The template render mode. */
     readonly renderMode: LWCDirectiveRenderMode;
 
-    /** Indicates wether the generated code should produce preserve HTML comments or not. */
+    /** Indicates whether the generated code should preserve HTML comments or not. */
     readonly preserveComments: boolean;
 
     /**
-     * This flag indicates if a the generated code should scope the template fragment id. It is set
-     * to true if the template also contains ids.
+     * This flag indicates if the generated code should scope the template fragment id. It is set to
+     * true if the template also contains ids.
      *
      * TODO [#1150]: Remove this code once we can figure out how to do this in a deterministic
      * fashion.
