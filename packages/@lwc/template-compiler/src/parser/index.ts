@@ -50,7 +50,6 @@ import {
     IRExpressionAttribute,
     IRNode,
     IRText,
-    isLWCDirectiveRenderMode,
     LWCDirectiveDomMode,
     LWCDirectiveRenderMode,
     LWCDirectives,
@@ -135,28 +134,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         return { warnings };
     }
 
-    const preserveComments =
-        templateRoot.attrs.some(
-            ({ name }) => name === ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS
-        ) || state.config.preserveHtmlComments;
-
-    const renderModeAttribute = templateRoot.attrs.find(
-        ({ name }) => name === ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE
-    );
-    if (renderModeAttribute) {
-        const renderMode = renderModeAttribute.value;
-        if (isLWCDirectiveRenderMode(renderMode)) {
-            state.renderMode = renderMode;
-        } else {
-            const possibleValues = Object.values(LWCDirectiveRenderMode)
-                .map((value) => `"${value}"`)
-                .join(', or ');
-            warnOnElement(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, templateRoot, [
-                possibleValues,
-            ]);
-        }
-    }
-
     const root = parseElement(templateRoot);
 
     function parseElement(elementNode: parse5.AST.Default.Element, parent?: IRElement): IRElement {
@@ -196,7 +173,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             } else if (treeAdapter.isTextNode(child)) {
                 const textNodes = parseText(child, parent);
                 parsedChildren.push(...textNodes);
-            } else if (treeAdapter.isCommentNode(child) && preserveComments) {
+            } else if (treeAdapter.isCommentNode(child)) {
                 const commentNode = parseComment(child, parent);
                 parsedChildren.push(commentNode);
             }
@@ -344,11 +321,10 @@ export default function parse(source: string, state: State): TemplateParseResult
             return;
         }
 
-        if (element.parent === undefined && ROOT_TEMPLATE_DIRECTIVES_SET.has(lwcAttribute.name)) {
-            return;
-        }
-
-        if (!LWC_DIRECTIVE_SET.has(lwcAttribute.name)) {
+        if (
+            !LWC_DIRECTIVE_SET.has(lwcAttribute.name) &&
+            !ROOT_TEMPLATE_DIRECTIVES_SET.has(lwcAttribute.name)
+        ) {
             // unknown lwc directive
             return warnOnElement(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element.__original, [
                 lwcAttribute.name,
@@ -359,8 +335,60 @@ export default function parse(source: string, state: State): TemplateParseResult
         const lwcOpts = {};
         applyLwcDynamicDirective(element, lwcOpts);
         applyLwcDomDirective(element, lwcOpts);
+        applyLwcRenderModeDirective(element, lwcOpts);
+        applyLwcPreserveCommentsDirective(element, lwcOpts);
 
         element.lwc = lwcOpts;
+    }
+
+    function applyLwcRenderModeDirective(element: IRElement, lwcOpts: LWCDirectives) {
+        const lwcRenderModeAttribute = getTemplateAttribute(
+            element,
+            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE
+        );
+
+        if (!lwcRenderModeAttribute) {
+            return;
+        }
+
+        if (
+            lwcRenderModeAttribute.type !== IRAttributeType.String ||
+            (lwcRenderModeAttribute.value !== 'shadow' && lwcRenderModeAttribute.value !== 'light')
+        ) {
+            return warnOnElement(
+                ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE,
+                element.__original
+            );
+        }
+
+        if (element.parent) {
+            return warnOnElement(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element.__original, [
+                ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+                `<${element.tag}>`,
+            ]);
+        }
+
+        lwcOpts.renderMode = lwcRenderModeAttribute.value as LWCDirectiveRenderMode;
+    }
+
+    function applyLwcPreserveCommentsDirective(element: IRElement, lwcOpts: LWCDirectives) {
+        const lwcPreserveCommentAttribute = getTemplateAttribute(
+            element,
+            ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS
+        );
+
+        if (!lwcPreserveCommentAttribute) {
+            return;
+        }
+
+        if (element.parent || lwcPreserveCommentAttribute.type !== IRAttributeType.Boolean) {
+            return warnOnElement(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element.__original, [
+                ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+                `<${element.tag}>`,
+            ]);
+        }
+
+        lwcOpts.preserveComments = lwcPreserveCommentAttribute;
     }
 
     function applyLwcDynamicDirective(element: IRElement, lwcOpts: LWCDirectives) {
@@ -406,7 +434,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         removeAttribute(element, LWC_DIRECTIVES.DOM);
 
-        if (state.renderMode === LWCDirectiveRenderMode.light) {
+        if (getRenderMode(element) === LWCDirectiveRenderMode.light) {
             return warnOnElement(
                 ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM,
                 element.__original,
@@ -631,10 +659,12 @@ export default function parse(source: string, state: State): TemplateParseResult
             );
         }
 
-        if (state.renderMode === LWCDirectiveRenderMode.light) {
+        // Can't handle slots in applySlot because it would be too late for class and style attrs
+        if (getRenderMode(element) === LWCDirectiveRenderMode.light) {
             const invalidAttrs = attrsList
                 .filter(({ name }) => name !== 'name')
                 .map(({ name }) => name);
+
             if (invalidAttrs.length > 0) {
                 return warnOnElement(
                     ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_ATTRIBUTES,
@@ -754,10 +784,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                 removeAttribute(element, name);
             }
         });
-
-        if (!state.shouldScopeFragmentId && (element.props?.id || element.attrs?.id)) {
-            state.shouldScopeFragmentId = true;
-        }
     }
 
     function validateElement(element: IRElement) {
@@ -972,6 +998,21 @@ export default function parse(source: string, state: State): TemplateParseResult
                 })
             );
         }
+    }
+
+    function getRenderMode(element: IRElement): LWCDirectiveRenderMode {
+        let current: IRElement | undefined = element;
+
+        while (current) {
+            const renderMode = current.lwc?.renderMode;
+            if (renderMode) {
+                return renderMode;
+            }
+
+            current = current.parent;
+        }
+
+        return LWCDirectiveRenderMode.shadow;
     }
 
     function warnOnElement(

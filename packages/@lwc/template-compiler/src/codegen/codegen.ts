@@ -5,8 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as esutils from 'esutils';
+import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
+import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
 import { toPropertyName } from '../shared/utils';
 
 type RenderPrimitive =
@@ -48,6 +50,24 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
 };
 
 export default class CodeGen {
+    /** The AST root. */
+    readonly root: IRElement;
+
+    /** The template render mode. */
+    readonly renderMode: LWCDirectiveRenderMode;
+
+    /** Indicates whether the generated code should preserve HTML comments or not. */
+    readonly preserveComments: boolean;
+
+    /**
+     * This flag indicates if the generated code should scope the template fragment id. It is set to
+     * true if the template also contains ids.
+     *
+     * TODO [#1150]: Remove this code once we can figure out how to do this in a deterministic
+     * fashion.
+     */
+    readonly scopeFragmentId: boolean;
+
     currentId = 0;
     currentKey = 0;
 
@@ -58,6 +78,21 @@ export default class CodeGen {
     slotNames: Set<string> = new Set();
     memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
+
+    constructor({
+        root,
+        config,
+        scopeFragmentId,
+    }: {
+        root: IRElement;
+        config: ResolvedConfig;
+        scopeFragmentId: boolean;
+    }) {
+        this.root = root;
+        this.renderMode = root.lwc?.renderMode ?? LWCDirectiveRenderMode.shadow;
+        this.preserveComments = root.lwc?.preserveComments?.value ?? config.preserveHtmlComments;
+        this.scopeFragmentId = scopeFragmentId;
+    }
 
     generateKey() {
         return this.currentKey++;
