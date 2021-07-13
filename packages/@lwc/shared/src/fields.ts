@@ -4,38 +4,35 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isUndefined } from './language';
+import { isUndefined } from './language';
 import { hasNativeSymbolSupport } from './symbol';
 
-/*
- * The __type property on HiddenField doesn't actually exists at runtime. It is only used to store
- * the type of the associated field value.
- */
-export type HiddenField<T> = { __type: T };
+export type HiddenField<T> = {
+    set: (o: any, value: T) => void;
+    get: (o: any) => T | undefined;
+};
 
-// This method abstracts the creation of symbols, so we can fallback to strings when native symbols
-// are not supported.
+// Typically there are lots of objects we're assigning hidden fields on, but few unique fields.
+// So we create fewer objects and do less work to map from Field -> Object -> Value rather than
+// from Object -> Field -> Value
+const hiddenFieldMaps: Map<any, WeakMap<any, any>> = new Map();
+
 export function createHiddenField<T = unknown>(key: string, namespace: string): HiddenField<T> {
-    return (hasNativeSymbolSupport ? Symbol(key) : `$$lwc-${namespace}-${key}$$`) as any;
-}
+    // Fallback to strings when native symbols are not supported.
+    const field = hasNativeSymbolSupport ? Symbol(key) : `$$lwc-${namespace}-${key}$$`;
+    let valuesByObject = hiddenFieldMaps.get(field);
 
-const hiddenFieldsMap: WeakMap<any, Record<any, any>> = new WeakMap();
-
-export function setHiddenField<T>(o: any, field: HiddenField<T>, value: T): void {
-    let valuesByField = hiddenFieldsMap.get(o);
-
-    if (isUndefined(valuesByField)) {
-        valuesByField = create(null);
-        hiddenFieldsMap.set(o, valuesByField!);
+    if (isUndefined(valuesByObject)) {
+        valuesByObject = new WeakMap();
+        hiddenFieldMaps.set(field, valuesByObject);
     }
 
-    valuesByField![field as any] = value;
-}
-
-export function getHiddenField<T>(o: any, field: HiddenField<T>): T | undefined {
-    const valuesByField = hiddenFieldsMap.get(o);
-
-    if (!isUndefined(valuesByField)) {
-        return valuesByField[field as any];
-    }
+    return {
+        get(o) {
+            return valuesByObject!.get(o);
+        },
+        set(o, value) {
+            valuesByObject!.set(o, value);
+        },
+    };
 }

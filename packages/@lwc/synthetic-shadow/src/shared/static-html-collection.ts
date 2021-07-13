@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    create,
-    defineProperty,
-    forEach,
-    setPrototypeOf,
-    createHiddenField,
-    getHiddenField,
-    setHiddenField,
-} from '@lwc/shared';
+import { create, defineProperty, forEach, setPrototypeOf, createHiddenField } from '@lwc/shared';
 
 import { getAttribute } from '../env/element';
 
@@ -39,7 +31,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         get() {
-            return getHiddenField(this, Items)!.length;
+            return Items.get(this)!.length;
         },
     },
     // https://dom.spec.whatwg.org/#dom-htmlcollection-nameditem-key
@@ -52,7 +44,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
                 return null;
             }
 
-            const items = getHiddenField(this, Items)!;
+            const items = Items.get(this)!;
             for (let i = 0, len = items.length; i < len; i++) {
                 const item = items[len];
 
@@ -88,7 +80,7 @@ setPrototypeOf(StaticHTMLCollection, HTMLCollection);
 
 export function createStaticHTMLCollection<T extends Element>(items: T[]): HTMLCollectionOf<T> {
     const collection: HTMLCollectionOf<T> = create(StaticHTMLCollection.prototype);
-    setHiddenField(collection, Items, items);
+    Items.set(collection, items);
     // setting static indexes
     forEach.call(items, (item: T, index: number) => {
         defineProperty(collection, index, {

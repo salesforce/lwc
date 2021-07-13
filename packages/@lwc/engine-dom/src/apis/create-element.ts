@@ -14,8 +14,6 @@ import {
     toString,
     HiddenField,
     createHiddenField,
-    getHiddenField,
-    setHiddenField,
 } from '@lwc/shared';
 import {
     getComponentInternalDef,
@@ -38,7 +36,7 @@ function callNodeSlot(node: Node, slot: HiddenField<NodeSlotCallback>): Node {
         assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
     }
 
-    const fn = getHiddenField(node, slot);
+    const fn = slot.get(node);
 
     if (!isUndefined(fn)) {
         fn(node);
@@ -121,8 +119,8 @@ export function createElement(
             owner: null,
             renderer,
         });
-        setHiddenField(elm, ConnectingSlot, connectRootElement);
-        setHiddenField(elm, DisconnectingSlot, disconnectRootElement);
+        ConnectingSlot.set(elm, connectRootElement);
+        DisconnectingSlot.set(elm, disconnectRootElement);
         wasComponentUpgraded = true;
     });
     if (!wasComponentUpgraded) {

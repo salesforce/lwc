@@ -11,7 +11,6 @@ import {
     assert,
     create,
     createHiddenField,
-    getHiddenField,
     getOwnPropertyNames,
     globalThis,
     isArray,
@@ -22,7 +21,6 @@ import {
     isUndefined,
     KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     keys,
-    setHiddenField,
 } from '@lwc/shared';
 import { getComponentTag } from '../shared/format';
 import {
@@ -367,11 +365,11 @@ function assertIsVM(obj: any): asserts obj is VM {
 }
 
 export function associateVM(obj: VMAssociable, vm: VM) {
-    setHiddenField(obj, ViewModelReflection, vm);
+    ViewModelReflection.set(obj, vm);
 }
 
 export function getAssociatedVM(obj: VMAssociable): VM {
-    const vm = getHiddenField(obj, ViewModelReflection);
+    const vm = ViewModelReflection.get(obj);
 
     if (process.env.NODE_ENV !== 'production') {
         assertIsVM(vm);
@@ -381,7 +379,7 @@ export function getAssociatedVM(obj: VMAssociable): VM {
 }
 
 export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
-    const maybeVm = getHiddenField(obj, ViewModelReflection);
+    const maybeVm = ViewModelReflection.get(obj);
 
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(maybeVm)) {

@@ -11,8 +11,6 @@ import {
     forEach,
     setPrototypeOf,
     createHiddenField,
-    getHiddenField,
-    setHiddenField,
 } from '@lwc/shared';
 
 const Items = createHiddenField<Node[]>('StaticNodeListItems', 'synthetic-shadow');
@@ -39,7 +37,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         get() {
-            return getHiddenField(this, Items)!.length;
+            return Items.get(this)!.length;
         },
     },
 
@@ -50,7 +48,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value(cb: (value: Node, key: number, parent: Node[]) => void, thisArg?: any) {
-            forEach.call(getHiddenField(this, Items), cb, thisArg);
+            forEach.call(Items.get(this), cb, thisArg);
         },
     },
     entries: {
@@ -58,7 +56,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(getHiddenField(this, Items), (v, i) => [i, v]);
+            return ArrayMap.call(Items.get(this), (v, i) => [i, v]);
         },
     },
     keys: {
@@ -66,7 +64,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(getHiddenField(this, Items), (_v, i) => i);
+            return ArrayMap.call(Items.get(this), (_v, i) => i);
         },
     },
     values: {
@@ -74,7 +72,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return getHiddenField(this, Items);
+            return Items.get(this);
         },
     },
     [Symbol.iterator]: {
@@ -84,7 +82,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
             let nextIndex = 0;
             return {
                 next: () => {
-                    const items = getHiddenField(this, Items)!;
+                    const items = Items.get(this)!;
                     return nextIndex < items.length
                         ? {
                               value: items[nextIndex++],
@@ -118,7 +116,7 @@ setPrototypeOf(StaticNodeList, NodeList);
 
 export function createStaticNodeList<T extends Node>(items: T[]): NodeListOf<T> {
     const nodeList: NodeListOf<T> = create(StaticNodeList.prototype);
-    setHiddenField(nodeList, Items, items);
+    Items.set(nodeList, items);
     // setting static indexes
     forEach.call(items, (item: T, index: number) => {
         defineProperty(nodeList, index, {

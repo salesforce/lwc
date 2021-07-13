@@ -11,8 +11,6 @@ import {
     ArraySlice,
     assert,
     createHiddenField,
-    getHiddenField,
-    setHiddenField,
     isNull,
     isUndefined,
     toString,
@@ -399,8 +397,8 @@ export function ignoreFocus(elm: HTMLElement) {
 function bindDocumentMousedownMouseupHandlers(elm: HTMLElement) {
     const ownerDocument = getOwnerDocument(elm);
 
-    if (!getHiddenField(ownerDocument, DidAddMouseEventListeners)) {
-        setHiddenField(ownerDocument, DidAddMouseEventListeners, true);
+    if (!DidAddMouseEventListeners.get(ownerDocument)) {
+        DidAddMouseEventListeners.set(ownerDocument, true);
         addEventListener.call(
             ownerDocument,
             'mousedown',

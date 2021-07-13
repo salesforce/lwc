@@ -14,11 +14,9 @@ import {
     ArrayReduce,
     ArraySlice,
     forEach,
-    getHiddenField,
     isNull,
     isTrue,
     isUndefined,
-    setHiddenField,
 } from '@lwc/shared';
 import { getAttribute, setAttribute } from '../env/element';
 import { dispatchEvent } from '../env/event-target';
@@ -114,8 +112,8 @@ defineProperties(HTMLSlotElement.prototype, {
         ) {
             // super.addEventListener - but that doesn't work with typescript
             HTMLElement.prototype.addEventListener.call(this, type, listener, options);
-            if (type === 'slotchange' && !getHiddenField(this, SlotChangeKey)) {
-                setHiddenField(this, SlotChangeKey, true);
+            if (type === 'slotchange' && !SlotChangeKey.get(this)) {
+                SlotChangeKey.set(this, true);
                 if (!observer) {
                     observer = initSlotObserver();
                 }
