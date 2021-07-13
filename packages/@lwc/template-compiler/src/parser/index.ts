@@ -805,7 +805,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         // Check if a non-void element has a matching closing tag.
         //
-        // With parse5 automatically recovering from invalid HTML some of AST node might not have
+        // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
         // location information. For example when a <table> element has a <tr> child element, parse5
         // creates a <tbody> element in the middle without location information. In this case, we
         // can safely skip the closing tag validation.
