@@ -522,6 +522,14 @@ export default function parse(source: string, state: State): TemplateParseResult
             return;
         }
 
+        if (element.forEach) {
+            return warnOnElement(
+                ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR,
+                element.__original,
+                [iteratorExpression.name]
+            );
+        }
+
         removeAttribute(element, iteratorExpression.name);
         const iteratorAttributeName = iteratorExpression.name;
         const [, iteratorName] = iteratorAttributeName.split(':');
