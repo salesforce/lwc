@@ -36,6 +36,7 @@ function rollupConfig({ format }) {
                 typescript: require('typescript'),
             }),
         ],
+        external: ['@lwc/shared'],
     };
 }
 

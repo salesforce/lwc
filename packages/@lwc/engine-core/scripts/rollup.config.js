@@ -65,4 +65,6 @@ module.exports = {
             throw new Error(message);
         }
     },
+
+    external: ['@lwc/features', '@lwc/shared'],
 };

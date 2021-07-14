@@ -23,9 +23,11 @@
         "dist/",
         "types/"
     ],
-    "devDependencies": {
+    "dependencies": {
         "@lwc/features": "2.2.8",
-        "@lwc/shared": "2.2.8",
+        "@lwc/shared": "2.2.8"
+    },
+    "devDependencies": {
         "observable-membrane": "1.0.1"
     },
     "publishConfig": {
