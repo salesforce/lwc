@@ -15,7 +15,7 @@ export type HiddenField<T> = {
 // Typically there are lots of objects we're assigning hidden fields on, but few unique fields.
 // So we create fewer objects and do less work to map from Field -> Object -> Value rather than
 // from Object -> Field -> Value
-const hiddenFieldMaps: Map<any, WeakMap<any, any>> = new Map();
+const hiddenFieldMaps: Map<string | symbol, WeakMap<any, any>> = new Map();
 
 export function createHiddenField<T = unknown>(key: string, namespace: string): HiddenField<T> {
     // Fallback to strings when native symbols are not supported.
