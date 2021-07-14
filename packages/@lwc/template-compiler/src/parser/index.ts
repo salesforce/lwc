@@ -803,24 +803,32 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
         }
 
-        const { startTag, endTag } = node.__location!;
-        const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
-        const hasClosingTag = !!startTag && endTag;
+        // Check if a non-void element has a matching closing tag.
+        //
+        // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
+        // location information. For example when a <table> element has a <tr> child element, parse5
+        // creates a <tbody> element in the middle without location information. In this case, we
+        // can safely skip the closing tag validation.
+        if (node.__location) {
+            const { startTag, endTag } = node.__location;
+            const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
+            const hasClosingTag = Boolean(endTag);
 
-        if (!isVoidElement && !hasClosingTag) {
-            addDiagnostic(
-                generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
-                    messageArgs: [element.tag],
-                    origin: {
-                        location: {
-                            line: startTag.startLine || startTag.line,
-                            column: startTag.startCol || startTag.col,
-                            start: startTag.startOffset,
-                            length: startTag.endOffset - startTag.startOffset,
+            if (!isVoidElement && !hasClosingTag) {
+                addDiagnostic(
+                    generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
+                        messageArgs: [element.tag],
+                        origin: {
+                            location: {
+                                line: startTag.startLine || startTag.line,
+                                column: startTag.startCol || startTag.col,
+                                start: startTag.startOffset,
+                                length: startTag.endOffset - startTag.startOffset,
+                            },
                         },
-                    },
-                })
-            );
+                    })
+                );
+            }
         }
 
         if (tag === 'style' && node.namespaceURI === HTML_NAMESPACE_URI) {
