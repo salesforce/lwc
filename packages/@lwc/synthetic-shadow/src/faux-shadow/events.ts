@@ -30,7 +30,6 @@ import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import { shouldInvokeListener } from '../shared/event-target';
-import { invokeWrappedListener } from '../shared/handled-events';
 
 export enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,
@@ -97,7 +96,6 @@ function getWrappedShadowRootListener(listener: EventListener): WrappedListener 
         shadowRootWrappedListener = function (event: Event) {
             // currentTarget is always defined inside an event listener
             let currentTarget = eventCurrentTargetGetter.call(event)!;
-
             // If currentTarget is not an instance of a native shadow root then we're dealing with a
             // host element whose synthetic shadow root must be accessed via getShadowRoot().
             if (!isInstanceOfNativeShadowRoot(currentTarget)) {
@@ -113,7 +111,7 @@ function getWrappedShadowRootListener(listener: EventListener): WrappedListener 
             }
 
             if (shouldInvoke) {
-                invokeWrappedListener(currentTarget, listener, event);
+                listener.call(currentTarget, event);
             }
         } as WrappedListener;
         shadowRootWrappedListener.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
@@ -143,7 +141,7 @@ function getWrappedCustomElementListener(listener: EventListener): WrappedListen
             }
 
             if (shouldInvoke) {
-                invokeWrappedListener(currentTarget, listener, event);
+                listener.call(currentTarget, event);
             }
         } as WrappedListener;
         customElementWrappedListener.placement = EventListenerContext.CUSTOM_ELEMENT_LISTENER;

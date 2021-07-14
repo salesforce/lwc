@@ -6,7 +6,6 @@
  */
 import featureFlags from '@lwc/features';
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
-import { invokeWrappedListener } from './handled-events';
 import { eventCurrentTargetGetter } from '../env/dom';
 import { getActualTarget } from '../faux-shadow/events';
 import { eventToShadowRootMap, isHostElement } from '../faux-shadow/shadow-root';
@@ -64,22 +63,23 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
                 );
             }
 
+            const { composed } = event;
             let shouldInvoke;
+
             if (featureFlags.ENABLE_NON_COMPOSED_EVENTS_LEAKAGE) {
-                const { composed } = event;
                 shouldInvoke = !(eventToShadowRootMap.has(event) && isFalse(composed));
             } else {
                 const actualTarget = getActualTarget(event);
                 shouldInvoke = shouldInvokeListener(event, actualTarget, currentTarget);
             }
 
-            if (shouldInvoke) {
-                if (isFunction(fnOrObj)) {
-                    invokeWrappedListener(this, fnOrObj, event);
-                } else if (isFunction(fnOrObj.handleEvent)) {
-                    invokeWrappedListener(fnOrObj, fnOrObj.handleEvent, event);
-                }
+            if (!shouldInvoke) {
+                return;
             }
+
+            return isFunction(fnOrObj)
+                ? fnOrObj.call(this, event)
+                : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
         };
         EventListenerMap.set(fnOrObj, wrapperFn);
     }
