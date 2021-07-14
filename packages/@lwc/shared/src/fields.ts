@@ -17,7 +17,7 @@ export type HiddenField<T> = {
 // from Object -> Field -> Value
 const hiddenFieldMaps: Map<string | symbol, WeakMap<any, any>> = new Map();
 
-export function createHiddenField<T = unknown>(key: string, namespace: string): HiddenField<T> {
+export function createHiddenField<T>(key: string, namespace: string): HiddenField<T> {
     // Fallback to strings when native symbols are not supported.
     const field = hasNativeSymbolSupport ? Symbol(key) : `$$lwc-${namespace}-${key}$$`;
     let valuesByObject = hiddenFieldMaps.get(field);
