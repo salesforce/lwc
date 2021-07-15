@@ -8,7 +8,7 @@ const path = require('path');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescript = require('rollup-plugin-typescript');
 
-const { version } = require('../../package.json');
+const { version, dependencies, peerDependencies } = require('../../package.json');
 const entry = path.resolve(__dirname, '../../src/flags.ts');
 const targetDirectory = path.resolve(__dirname, '../../dist');
 const banner = `/**\n * Copyright (C) 2018 salesforce.com, inc.\n */`;
@@ -36,7 +36,7 @@ function rollupConfig({ format }) {
                 typescript: require('typescript'),
             }),
         ],
-        external: ['@lwc/shared'],
+        external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
     };
 }
 

@@ -27,7 +27,7 @@ function rollupFeaturesPlugin() {
     };
 }
 
-const { version } = require('../package.json');
+const { version, dependencies, peerDependencies } = require('../package.json');
 
 const banner = `/* proxy-compat-disable */`;
 const footer = `/* version: ${version} */`;
@@ -66,5 +66,5 @@ module.exports = {
         }
     },
 
-    external: ['@lwc/features', '@lwc/shared'],
+    external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
 };
