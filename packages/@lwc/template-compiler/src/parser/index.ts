@@ -882,11 +882,10 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateChildren(element: IRElement) {
-        if (!element.lwc?.dom) return;
-        const children = getPreserveComments(element)
+        const effectiveChildren = getPreserveComments(element)
             ? element.children
             : element.children.filter((child) => child.type !== 'comment');
-        if (children.length > 0) {
+        if (element.lwc?.dom && effectiveChildren.length > 0) {
             return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element.__original);
         }
     }
