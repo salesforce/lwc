@@ -43,7 +43,6 @@ import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { lockerLivePropertyKey } from './membrane';
-import { EmptyObject } from './utils';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -215,7 +214,7 @@ export const LightningElement: LightningElementConstructor = function (
     }
 
     // Making the component instance a live value when using Locker to support expandos.
-    defineProperty(component, lockerLivePropertyKey, EmptyObject);
+    (this as any)[lockerLivePropertyKey] = undefined;
 
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);
