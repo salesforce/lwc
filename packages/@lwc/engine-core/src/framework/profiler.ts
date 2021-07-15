@@ -108,7 +108,7 @@ function notifyProfilerStateChange() {
 }
 
 function attachDispatcher(
-    dispatcher: (_opId: number, _phase: number, _cmpName?: string, _vm_idx?: number) => void
+    dispatcher: LogDispatcher
 ) {
     logOperation = dispatcher;
     bufferLogging = true;
