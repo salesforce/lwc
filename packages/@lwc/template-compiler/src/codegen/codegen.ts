@@ -10,6 +10,7 @@ import { ResolvedConfig } from '../config';
 import * as t from '../shared/estree';
 import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
 import { toPropertyName } from '../shared/utils';
+import { Scope } from './scope';
 
 type RenderPrimitive =
     | 'iterator'
@@ -68,6 +69,9 @@ export default class CodeGen {
      */
     readonly scopeFragmentId: boolean;
 
+    scopesCount = 0;
+    currentScope = new Scope(0);
+
     currentId = 0;
     currentKey = 0;
 
@@ -92,6 +96,23 @@ export default class CodeGen {
         this.renderMode = root.lwc?.renderMode ?? LWCDirectiveRenderMode.shadow;
         this.preserveComments = root.lwc?.preserveComments?.value ?? config.preserveHtmlComments;
         this.scopeFragmentId = scopeFragmentId;
+    }
+
+    createScope() {
+        const newScope = new Scope(++this.scopesCount);
+
+        newScope.parentScope = this.currentScope;
+        this.currentScope.childScopes.push(newScope);
+
+        this.currentScope = newScope;
+    }
+
+    popScope() {
+        if (this.currentScope.parentScope === null) {
+            throw new Error('Trying to pop root scope');
+        }
+
+        this.currentScope = this.currentScope.parentScope;
     }
 
     generateKey() {
@@ -143,7 +164,7 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
     }
 
-    genIterator(iterable: t.Expression, callback: t.FunctionExpression) {
+    genIterator(iterable: t.Expression, callback: t.Identifier) {
         return this._renderApiCall(RENDER_APIS.iterator, [iterable, callback]);
     }
 

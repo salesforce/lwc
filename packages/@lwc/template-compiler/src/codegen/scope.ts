@@ -11,6 +11,40 @@ import { TEMPLATE_PARAMS } from '../shared/constants';
 import { isComponentProp } from '../shared/ir';
 import { IRNode, TemplateExpression } from '../shared/types';
 
+function dumpScope(scope: Scope, body: t.Statement[]) {
+    for (const childScope of scope.childScopes) {
+        body.unshift(childScope.scopeFn!);
+        dumpScope(childScope, childScope.scopeFn?.body!.body!);
+    }
+}
+
+export class Scope {
+    id: number;
+    parentScope: Scope | null = null;
+    childScopes: Scope[] = [];
+    scopeFn: t.FunctionDeclaration | null = null;
+
+    constructor(id: number) {
+        this.id = id;
+    }
+
+    setFn(
+        params: t.FunctionExpression['params'],
+        body: t.FunctionExpression['body'],
+        kind: string
+    ) {
+        const id = t.identifier(`${kind}${this.id}_${this.childScopes.length}`);
+
+        this.scopeFn = t.functionDeclaration(id, params, body);
+
+        return id;
+    }
+
+    serializeInto(body: t.Statement[]) {
+        dumpScope(this, body);
+    }
+}
+
 /**
  * Bind the passed expression to the component instance. It applies the following transformation to the expression:
  * - {value} --> {$cmp.value}
