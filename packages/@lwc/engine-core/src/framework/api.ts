@@ -265,10 +265,33 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
     ArrayPush.call(getVMBeingRendered()!.velements, vnode);
 }
 
+function createVNode(
+    children: VNodes | undefined,
+    data: VNodeData,
+    key: Key | undefined,
+    hook: Hooks<any>
+): VNode {
+    const owner = getVMBeingRendered()!;
+    return {
+        data,
+        children,
+        key,
+        owner,
+        hook,
+        sel: undefined,
+        text: undefined,
+        elm: undefined,
+        aChildren: undefined,
+        ctor: undefined,
+        mode: undefined,
+    } as any;
+}
+
 // [h]tml node
 export function h(sel: string, data: ElementCompilerData, children: VNodes): VElement {
-    const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
+        const vmBeingRendered = getVMBeingRendered()!;
+
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
@@ -307,19 +330,11 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         });
     }
 
-    let text, elm;
     const { key } = data;
 
-    return {
-        sel,
-        data,
-        children,
-        text,
-        elm,
-        key,
-        hook: ElementHook,
-        owner: vmBeingRendered,
-    };
+    const vnode = createVNode(children, data, key, ElementHook) as VElement;
+    vnode.sel = sel;
+    return vnode;
 }
 
 // [t]ab[i]ndex function
@@ -424,20 +439,12 @@ export function c(
         }
     }
     const { key } = data;
-    let text, elm;
-    const vnode: VCustomElement = {
-        sel,
-        data,
-        children,
-        text,
-        elm,
-        key,
+    const vnode = createVNode(children, data, key, CustomElementHook) as VCustomElement;
+    vnode.sel = sel;
+    vnode.ctor = Ctor;
+    vnode.mode = 'open';
+    // vnode.aChildren = EmptyArray;
 
-        hook: CustomElementHook,
-        ctor: Ctor,
-        owner: vmBeingRendered,
-        mode: 'open', // TODO [#1294]: this should be defined in Ctor
-    };
     addVNodeToChildLWC(vnode);
     return vnode;
 }
@@ -555,36 +562,16 @@ export function f(items: any[]): any[] {
 
 // [t]ext node
 export function t(text: string): VText {
-    const data = EmptyObject;
-    let sel, children, key, elm;
-    return {
-        sel,
-        data,
-        children,
-        text,
-        elm,
-        key,
-
-        hook: TextHook,
-        owner: getVMBeingRendered()!,
-    };
+    const vnode = createVNode(undefined, EmptyObject, undefined, TextHook) as VText;
+    vnode.text = text;
+    return vnode;
 }
 
 // [co]mment node
 export function co(text: string): VComment {
-    const data = EmptyObject;
-    let sel, children, key, elm;
-    return {
-        sel,
-        data,
-        children,
-        text,
-        elm,
-        key,
-
-        hook: CommentHook,
-        owner: getVMBeingRendered()!,
-    };
+    const vnode = createVNode(undefined, EmptyObject, undefined, CommentHook) as VComment;
+    vnode.text = text;
+    return vnode;
 }
 
 // [d]ynamic value to produce a text vnode
