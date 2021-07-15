@@ -6,7 +6,6 @@
  */
 import {
     assert,
-    createHiddenField,
     defineProperties,
     ArrayFilter,
     ArrayIndexOf,
@@ -14,11 +13,9 @@ import {
     ArrayReduce,
     ArraySlice,
     forEach,
-    getHiddenField,
     isNull,
     isTrue,
     isUndefined,
-    setHiddenField,
 } from '@lwc/shared';
 import { getAttribute, setAttribute } from '../env/element';
 import { dispatchEvent } from '../env/event-target';
@@ -46,7 +43,7 @@ import { arrayFromCollection } from '../shared/utils';
 let observer: MutationObserver | undefined;
 
 const observerConfig: MutationObserverInit = { childList: true };
-const SlotChangeKey = createHiddenField<boolean>('slotchange', 'synthetic-shadow');
+const SlotChangeKey = new WeakMap<any, boolean>();
 
 function initSlotObserver() {
     return new MutationObserver((mutations) => {
@@ -114,8 +111,8 @@ defineProperties(HTMLSlotElement.prototype, {
         ) {
             // super.addEventListener - but that doesn't work with typescript
             HTMLElement.prototype.addEventListener.call(this, type, listener, options);
-            if (type === 'slotchange' && !getHiddenField(this, SlotChangeKey)) {
-                setHiddenField(this, SlotChangeKey, true);
+            if (type === 'slotchange' && !SlotChangeKey.get(this)) {
+                SlotChangeKey.set(this, true);
                 if (!observer) {
                     observer = initSlotObserver();
                 }

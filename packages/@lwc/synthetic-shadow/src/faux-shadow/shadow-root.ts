@@ -18,9 +18,6 @@ import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_RESOLVER_PRIVATE,
     setPrototypeOf,
-    createHiddenField,
-    getHiddenField,
-    setHiddenField,
     getPrototypeOf,
     isObject,
 } from '@lwc/shared';
@@ -58,7 +55,7 @@ import { setNodeKey, setNodeOwnerKey } from '../shared/node-ownership';
 import { getOwnerDocument } from '../shared/utils';
 import { fauxElementsFromPoint } from '../shared/faux-elements-from-point';
 
-const InternalSlot = createHiddenField<ShadowRootRecord>('shadowRecord', 'synthetic-shadow');
+const InternalSlot = new WeakMap<any, ShadowRootRecord>();
 const { createDocumentFragment } = document;
 
 interface ShadowRootRecord {
@@ -69,7 +66,7 @@ interface ShadowRootRecord {
 }
 
 function getInternalSlot(root: SyntheticShadowRootInterface | Element): ShadowRootRecord {
-    const record = getHiddenField(root, InternalSlot);
+    const record = InternalSlot.get(root);
     if (isUndefined(record)) {
         throw new TypeError();
     }
@@ -122,13 +119,13 @@ export function getShadowRoot(elm: Element): SyntheticShadowRootInterface {
 // Intentionally adding `Node` here in addition to `Element` since this check is harmless for nodes
 // and we can avoid having to cast the type before calling this method in a few places.
 export function isHostElement(node: unknown): node is HTMLElement {
-    return !isUndefined(getHiddenField(node, InternalSlot));
+    return !isUndefined(InternalSlot.get(node));
 }
 
 let uid = 0;
 
 export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
-    if (!isUndefined(getHiddenField(elm, InternalSlot))) {
+    if (!isUndefined(InternalSlot.get(elm))) {
         throw new Error(
             `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`
         );
@@ -144,8 +141,8 @@ export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticSh
         host: elm,
         shadowRoot: sr,
     };
-    setHiddenField(sr, InternalSlot, record);
-    setHiddenField(elm, InternalSlot, record);
+    InternalSlot.set(sr, record);
+    InternalSlot.set(elm, record);
     const shadowResolver = () => sr;
     const x = (shadowResolver.nodeKey = uid++);
     setNodeKey(elm, x);
