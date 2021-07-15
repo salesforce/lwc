@@ -4,15 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { create } = Object;
-
-const { splice: ArraySplice, indexOf: ArrayIndexOf, push: ArrayPush } = Array.prototype;
+import { create, isUndefined, ArraySplice, ArrayIndexOf, ArrayPush } from '@lwc/shared';
 
 const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
-
-function isUndefined(obj: any): obj is undefined {
-    return obj === undefined;
-}
 
 /**
  * An Observed MemberProperty Record represents the list of all Reactive Observers,
