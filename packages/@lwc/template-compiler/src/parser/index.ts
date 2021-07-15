@@ -882,7 +882,11 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateChildren(element: IRElement) {
-        if (element.lwc?.dom && element.children.length > 0) {
+        if (!element.lwc?.dom) return;
+        const children = getPreserveComments(element)
+            ? element.children
+            : element.children.filter((child) => child.type !== 'comment');
+        if (children.length > 0) {
             return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element.__original);
         }
     }
@@ -1008,19 +1012,16 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
+    function getRoot(element: IRElement): IRElement {
+        return element.parent ? getRoot(element.parent) : element;
+    }
+
     function getRenderMode(element: IRElement): LWCDirectiveRenderMode {
-        let current: IRElement | undefined = element;
+        return getRoot(element).lwc?.renderMode ?? LWCDirectiveRenderMode.shadow;
+    }
 
-        while (current) {
-            const renderMode = current.lwc?.renderMode;
-            if (renderMode) {
-                return renderMode;
-            }
-
-            current = current.parent;
-        }
-
-        return LWCDirectiveRenderMode.shadow;
+    function getPreserveComments(element: IRElement): boolean {
+        return getRoot(element).lwc?.preserveComments?.value ?? state.config.preserveHtmlComments;
     }
 
     function warnOnElement(
