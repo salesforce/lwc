@@ -23,7 +23,7 @@
         "dist/",
         "types/"
     ],
-    "devDependencies": {
+    "dependencies": {
         "@lwc/shared": "2.2.8"
     },
     "publishConfig": {

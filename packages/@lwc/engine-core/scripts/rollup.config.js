@@ -27,7 +27,7 @@ function rollupFeaturesPlugin() {
     };
 }
 
-const { version } = require('../package.json');
+const { version, dependencies, peerDependencies } = require('../package.json');
 
 const banner = `/* proxy-compat-disable */`;
 const footer = `/* version: ${version} */`;
@@ -65,4 +65,6 @@ module.exports = {
             throw new Error(message);
         }
     },
+
+    external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
 };
