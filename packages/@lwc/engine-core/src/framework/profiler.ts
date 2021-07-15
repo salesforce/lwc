@@ -4,20 +4,23 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    endGlobalMeasure,
-    endMeasure,
-    GlobalMeasurementPhase,
-    MeasurementPhase,
-    startGlobalMeasure,
-    startMeasure,
-} from './performance-timing';
+import { isUndefined } from '@lwc/shared';
 import { VM } from './vm';
+import { getComponentTag } from '../shared/format';
 
-interface LogDispatcher = (opId: OperationId, phase: Phase, cmpName?: string, vmIndex?: number) => {};
+type MeasurementPhase =
+    | 'constructor'
+    | 'render'
+    | 'patch'
+    | 'connectedCallback'
+    | 'disconnectedCallback'
+    | 'renderedCallback'
+    | 'errorCallback';
 
-function noop() {}
-let logOperation: LogDispatcher = noop;
+export enum GlobalMeasurementPhase {
+    REHYDRATE = 'lwc-rehydrate',
+    HYDRATE = 'lwc-hydrate',
+}
 
 export enum OperationId {
     constructor = 0,
@@ -35,6 +38,69 @@ enum Phase {
     Start = 0,
     Stop = 1,
 }
+// Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
+// JSDom (used in Jest) for example doesn't implement the UserTiming APIs.
+const isUserTimingSupported: boolean =
+    typeof performance !== 'undefined' &&
+    typeof performance.mark === 'function' &&
+    typeof performance.clearMarks === 'function' &&
+    typeof performance.measure === 'function' &&
+    typeof performance.clearMeasures === 'function';
+
+function getMarkName(phase: string, vm: VM): string {
+    // Adding the VM idx to the mark name creates a unique mark name component instance. This is necessary to produce
+    // the right measures for components that are recursive.
+    return `${getComponentTag(vm)} - ${phase} - ${vm.idx}`;
+}
+
+function getMeasureName(phase: string, vm: VM): string {
+    return `${getComponentTag(vm)} - ${phase}`;
+}
+
+function start(markName: string) {
+    performance.mark(markName);
+}
+
+function end(measureName: string, markName: string) {
+    performance.measure(measureName, markName);
+
+    // Clear the created marks and measure to avoid filling the performance entries buffer.
+    // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
+    performance.clearMarks(markName);
+    performance.clearMarks(measureName);
+}
+
+type LogDispatcher = (opId: OperationId, phase: Phase, cmpName?: string, vmIndex?: number) => void;
+
+function noop() {}
+let logOperation: LogDispatcher = noop;
+
+export const startMeasure = !isUserTimingSupported
+    ? noop
+    : function (phase: MeasurementPhase, vm: VM) {
+          const markName = getMarkName(phase, vm);
+          start(markName);
+      };
+export const endMeasure = !isUserTimingSupported
+    ? noop
+    : function (phase: MeasurementPhase, vm: VM) {
+          const markName = getMarkName(phase, vm);
+          const measureName = getMeasureName(phase, vm);
+          end(measureName, markName);
+      };
+
+export const startGlobalMeasure = !isUserTimingSupported
+    ? noop
+    : function (phase: GlobalMeasurementPhase, vm?: VM) {
+          const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
+          start(markName);
+      };
+export const endGlobalMeasure = !isUserTimingSupported
+    ? noop
+    : function (phase: GlobalMeasurementPhase, vm?: VM) {
+          const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
+          end(phase, markName);
+      };
 
 const opIdToMeasurementPhaseMappingArray: MeasurementPhase[] = [
     'constructor',
@@ -107,9 +173,7 @@ function notifyProfilerStateChange() {
     }
 }
 
-function attachDispatcher(
-    dispatcher: LogDispatcher
-) {
+function attachDispatcher(dispatcher: LogDispatcher) {
     logOperation = dispatcher;
     bufferLogging = true;
 }

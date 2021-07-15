@@ -38,7 +38,6 @@ import { invokeComponentCallback, invokeComponentRenderedCallback } from './invo
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { LightningElement } from './base-lightning-element';
-import { GlobalMeasurementPhase } from './performance-timing';
 import {
     logOperationStart,
     logOperationEnd,
@@ -46,6 +45,7 @@ import {
     trackProfilerState,
     logGlobalOperationEnd,
     logGlobalOperationStart,
+    GlobalMeasurementPhase,
 } from './profiler';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
