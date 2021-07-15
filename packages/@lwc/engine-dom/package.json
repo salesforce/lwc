@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine-dom",
-    "version": "2.2.7",
+    "version": "2.2.8",
     "description": "Renders LWC components in a DOM environment.",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -24,8 +24,8 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/engine-core": "2.2.7",
-        "@lwc/shared": "2.2.7"
+        "@lwc/engine-core": "2.2.8",
+        "@lwc/shared": "2.2.8"
     },
     "lwc": {
         "modules": [
