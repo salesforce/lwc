@@ -14,9 +14,10 @@ import {
 } from './performance-timing';
 import { VM } from './vm';
 
-function noop(_opId: number, _phase: number, _cmpName?: string, _vm_idx?: number) {}
+interface LogDispatcher = (opId: OperationId, phase: Phase, cmpName?: string, vmIndex?: number) => {};
 
-let logOperation = noop;
+function noop() {}
+let logOperation: LogDispatcher = noop;
 
 export enum OperationId {
     constructor = 0,
