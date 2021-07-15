@@ -30,7 +30,6 @@ import {
 } from '../shared/types';
 
 import CodeGen from './codegen';
-import { bindExpression } from './scope';
 import {
     identifierFromComponentName,
     objectToAST,
@@ -64,7 +63,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Check wether it has the special directive lwc:dynamic
         if (element.lwc && element.lwc.dynamic) {
-            const expression = bindExpression(element.lwc.dynamic, element);
+            const expression = codeGen.genBindExpression(element.lwc.dynamic, element);
             res = codeGen.genDynamicElement(element.tag, expression, databag, children);
         } else if (isCustomElement(element)) {
             // Make sure to register the component
@@ -114,7 +113,9 @@ function transform(codeGen: CodeGen): t.Expression {
 
     function transformText(text: IRText): t.Expression {
         const { value } = text;
-        return codeGen.genText(typeof value === 'string' ? value : bindExpression(value, text));
+        return codeGen.genText(
+            typeof value === 'string' ? value : codeGen.genBindExpression(value, text)
+        );
     }
 
     function transformComment(comment: IRComment): t.Expression {
@@ -173,7 +174,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         codeGen.popScope();
 
-        const testExpression = bindExpression(element.if!, element);
+        const testExpression = codeGen.genBindExpression(element.if!, element);
 
         let leftExpression: t.Expression;
         const modifier = element.ifModifier!;
@@ -214,7 +215,7 @@ function transform(codeGen: CodeGen): t.Expression {
         );
         codeGen.popScope();
 
-        const iterable = bindExpression(expression, element);
+        const iterable = codeGen.genBindExpression(expression, element);
 
         return codeGen.genIterator(iterable, iterationFunction);
     }
@@ -254,7 +255,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         codeGen.popScope();
 
-        const iterable = bindExpression(expression, element);
+        const iterable = codeGen.genBindExpression(expression, element);
 
         return codeGen.genIterator(iterable, iterationFunction);
     }
@@ -311,7 +312,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         switch (attr.type) {
             case IRAttributeType.Expression: {
-                const expression = bindExpression(attr.value, element);
+                const expression = codeGen.genBindExpression(attr.value, element);
 
                 // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
                 if (isUsedAsAttribute && isBooleanAttribute(attr.name, tagName)) {
@@ -408,7 +409,7 @@ function transform(codeGen: CodeGen): t.Expression {
                     // - string values are parsed and turned into a `classMap` object associating
                     //   each individual class name with a `true` boolean.
                     if (value.type === IRAttributeType.Expression) {
-                        const classExpression = bindExpression(value.value, element);
+                        const classExpression = codeGen.genBindExpression(value.value, element);
                         data.push(t.property(t.identifier('className'), classExpression));
                     } else if (value.type === IRAttributeType.String) {
                         const classNames = parseClassNames(value.value);
@@ -423,7 +424,7 @@ function transform(codeGen: CodeGen): t.Expression {
                     // - string values are parsed and turned into a `styleMap` object associating
                     //   each property name with its value.
                     if (value.type === IRAttributeType.Expression) {
-                        const styleExpression = bindExpression(value.value, element);
+                        const styleExpression = codeGen.genBindExpression(value.value, element);
                         data.push(t.property(t.identifier('style'), styleExpression));
                     } else if (value.type === IRAttributeType.String) {
                         const styleMap = parseStyleText(value.value);
@@ -463,7 +464,7 @@ function transform(codeGen: CodeGen): t.Expression {
         // Key property on VNode
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
-            const forKeyExpression = bindExpression(forKey, element);
+            const forKeyExpression = codeGen.genBindExpression(forKey, element);
             const generatedKey = codeGen.genKey(t.literal(codeGen.generateKey()), forKeyExpression);
             data.push(t.property(t.identifier('key'), generatedKey));
         } else {
@@ -475,7 +476,7 @@ function transform(codeGen: CodeGen): t.Expression {
         // Event handler
         if (on) {
             const onObj = objectToAST(on, (key) => {
-                const componentHandler = bindExpression(on[key], element);
+                const componentHandler = codeGen.genBindExpression(on[key], element);
                 const handler = codeGen.genBind(componentHandler);
 
                 return memorizeHandler(codeGen, element, componentHandler, handler);

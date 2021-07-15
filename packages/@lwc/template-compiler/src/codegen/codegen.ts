@@ -8,7 +8,7 @@ import * as esutils from 'esutils';
 import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
-import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
+import { IRElement, IRNode, LWCDirectiveRenderMode, TemplateExpression } from '../shared/types';
 import { toPropertyName } from '../shared/utils';
 import { Scope } from './scope';
 
@@ -117,6 +117,10 @@ export default class CodeGen {
 
     generateKey() {
         return this.currentKey++;
+    }
+
+    genBindExpression(expression: TemplateExpression, irNode: IRNode): t.Expression {
+        return this.currentScope.bindExpression(expression, irNode);
     }
 
     genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {
