@@ -4,16 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayMap,
-    create,
-    defineProperty,
-    forEach,
-    setPrototypeOf,
-    createHiddenField,
-} from '@lwc/shared';
+import { ArrayMap, create, defineProperty, forEach, setPrototypeOf } from '@lwc/shared';
 
-const Items = createHiddenField<Node[]>('StaticNodeListItems', 'synthetic-shadow');
+const Items = new WeakMap<any, Node[]>();
 
 function StaticNodeList() {
     throw new TypeError('Illegal constructor');

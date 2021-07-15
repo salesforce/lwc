@@ -18,7 +18,6 @@ import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_RESOLVER_PRIVATE,
     setPrototypeOf,
-    createHiddenField,
     getPrototypeOf,
     isObject,
 } from '@lwc/shared';
@@ -56,7 +55,7 @@ import { setNodeKey, setNodeOwnerKey } from '../shared/node-ownership';
 import { getOwnerDocument } from '../shared/utils';
 import { fauxElementsFromPoint } from '../shared/faux-elements-from-point';
 
-const InternalSlot = createHiddenField<ShadowRootRecord>('shadowRecord', 'synthetic-shadow');
+const InternalSlot = new WeakMap<any, ShadowRootRecord>();
 const { createDocumentFragment } = document;
 
 interface ShadowRootRecord {

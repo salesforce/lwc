@@ -4,17 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    assert,
-    assign,
-    isFunction,
-    isNull,
-    isObject,
-    isUndefined,
-    toString,
-    HiddenField,
-    createHiddenField,
-} from '@lwc/shared';
+import { assert, assign, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
 import {
     getComponentInternalDef,
     createVM,
@@ -28,10 +18,10 @@ import { renderer } from '../renderer';
 
 type NodeSlotCallback = (element: Node) => void;
 
-const ConnectingSlot = createHiddenField<NodeSlotCallback>('connecting', 'engine');
-const DisconnectingSlot = createHiddenField<NodeSlotCallback>('disconnecting', 'engine');
+const ConnectingSlot = new WeakMap<any, NodeSlotCallback>();
+const DisconnectingSlot = new WeakMap<any, NodeSlotCallback>();
 
-function callNodeSlot(node: Node, slot: HiddenField<NodeSlotCallback>): Node {
+function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
     }

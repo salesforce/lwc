@@ -10,7 +10,6 @@ import {
     ArrayUnshift,
     assert,
     create,
-    createHiddenField,
     getOwnPropertyNames,
     globalThis,
     isArray,
@@ -163,7 +162,7 @@ type VMAssociable = HostNode | LightningElement;
 let idx: number = 0;
 
 /** The internal slot used to associate different objects the engine manipulates with the VM */
-const ViewModelReflection = createHiddenField<VM>('ViewModel', 'engine');
+const ViewModelReflection = new WeakMap<any, VM>();
 
 function callHook(
     cmp: LightningElement | undefined,

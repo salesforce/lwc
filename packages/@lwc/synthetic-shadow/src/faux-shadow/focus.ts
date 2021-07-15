@@ -10,7 +10,6 @@ import {
     ArrayReverse,
     ArraySlice,
     assert,
-    createHiddenField,
     isNull,
     isUndefined,
     toString,
@@ -77,10 +76,7 @@ function filterSequentiallyFocusableElements(elements: Element[]): Element[] {
     });
 }
 
-const DidAddMouseEventListeners = createHiddenField<boolean>(
-    'DidAddMouseEventListeners',
-    'synthetic-shadow'
-);
+const DidAddMouseEventListeners = new WeakMap<any, boolean>();
 
 // Due to browser differences, it is impossible to know what is focusable until
 // we actually try to focus it. We need to refactor our focus delegation logic

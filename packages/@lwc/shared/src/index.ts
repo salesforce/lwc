@@ -9,7 +9,6 @@ import * as assert from './assert';
 export * from './aria';
 export * from './language';
 export * from './global-this';
-export * from './fields';
 export * from './keys';
 export * from './void-elements';
 export * from './html-attributes';

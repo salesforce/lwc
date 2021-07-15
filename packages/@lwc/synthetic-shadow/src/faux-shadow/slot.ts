@@ -6,7 +6,6 @@
  */
 import {
     assert,
-    createHiddenField,
     defineProperties,
     ArrayFilter,
     ArrayIndexOf,
@@ -44,7 +43,7 @@ import { arrayFromCollection } from '../shared/utils';
 let observer: MutationObserver | undefined;
 
 const observerConfig: MutationObserverInit = { childList: true };
-const SlotChangeKey = createHiddenField<boolean>('slotchange', 'synthetic-shadow');
+const SlotChangeKey = new WeakMap<any, boolean>();
 
 function initSlotObserver() {
     return new MutationObserver((mutations) => {

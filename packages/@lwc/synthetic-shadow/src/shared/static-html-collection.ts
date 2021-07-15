@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperty, forEach, setPrototypeOf, createHiddenField } from '@lwc/shared';
+import { create, defineProperty, forEach, setPrototypeOf } from '@lwc/shared';
 
 import { getAttribute } from '../env/element';
 
-const Items = createHiddenField<Element[]>('StaticHTMLCollectionItems', 'synthetic-shadow');
+const Items = new WeakMap<any, Element[]>();
 
 function StaticHTMLCollection() {
     throw new TypeError('Illegal constructor');
