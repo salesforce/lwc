@@ -36,6 +36,12 @@ export function getUpgradableConstructor(
                 upgradeCallback(this); // nothing to do with the result for now
             }
         }
+        connectedCallback() {
+            return 0;
+        }
+        disconnectedCallback() {
+            return 1;
+        }
     };
     renderer.defineCustomElement(tagName, CE);
     return CE;
