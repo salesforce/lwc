@@ -86,6 +86,16 @@ When developing LWC, use integration testing to ensure functionality is correctl
 - integration-karma: Contains all integration tests that can run with javascript only. For information about usage and contribution, refer to this [documentation][integration-karma-readme].
 - integration-tests: Contains all other integration tests that require web driver API support (e.g., focus, keyboard navigation). For information about usage and contribution, refer to this [documentation][integration-test-readme].
 
+### Performance testing LWC
+
+```shell
+yarn build
+yarn build:performance
+yarn test:performance
+```
+
+This will run all performance tests comparing the current code to the latest `master` branch. See the `perf-benchmarks` package's README for more details.
+
 ### Types
 
 LWC relies on type annotations.
