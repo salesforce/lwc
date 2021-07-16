@@ -1,0 +1,10 @@
+<template>
+    <!-- foo prop should be accessed 2 times -->
+    <template if:true={truthyPath}>
+        {foo}{foo}
+    </template>
+    <template if:false={falsyPath}>
+        {foo}{foo}
+    </template>
+</template>
+    

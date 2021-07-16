@@ -1,0 +1,8 @@
+<template>
+    <template if:true={data}>
+        <template if:true={foo}> <!-- skipping this scope intentionally -->
+            <p>{data.content}</p>
+        </template>
+    </template>
+</template>
+    
