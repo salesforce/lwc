@@ -1,6 +1,18 @@
 import _nsCmp from "ns/cmp";
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
+  function if1_0() {
+    return api_element(
+      "p",
+      {
+        attrs: {
+          slot: "",
+        },
+        key: 2,
+      },
+      [api_text("S1")]
+    );
+  }
   const { t: api_text, h: api_element, c: api_custom_element } = $api;
   return [
     api_element(
@@ -16,18 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 1,
           },
           [
-            $cmp.isTrue
-              ? api_element(
-                  "p",
-                  {
-                    attrs: {
-                      slot: "",
-                    },
-                    key: 2,
-                  },
-                  [api_text("S1")]
-                )
-              : null,
+            $cmp.isTrue ? if1_0() : null,
             api_element(
               "p",
               {

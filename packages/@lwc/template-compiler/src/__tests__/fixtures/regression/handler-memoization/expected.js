@@ -1,5 +1,26 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
+  function foreach1_0(task) {
+    return api_element(
+      "li",
+      {
+        key: api_key(2, task.id),
+      },
+      [
+        api_dynamic(task.title),
+        api_element(
+          "button",
+          {
+            key: 3,
+            on: {
+              click: api_bind(task.delete),
+            },
+          },
+          [api_text("[X]")]
+        ),
+      ]
+    );
+  }
   const {
     b: api_bind,
     t: api_text,
@@ -25,27 +46,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: 1,
       },
-      api_iterator($cmp.list, function (task) {
-        return api_element(
-          "li",
-          {
-            key: api_key(2, task.id),
-          },
-          [
-            api_dynamic(task.title),
-            api_element(
-              "button",
-              {
-                key: 3,
-                on: {
-                  click: api_bind(task.delete),
-                },
-              },
-              [api_text("[X]")]
-            ),
-          ]
-        );
-      })
+      api_iterator($cmp.list, foreach1_0)
     ),
   ];
 }

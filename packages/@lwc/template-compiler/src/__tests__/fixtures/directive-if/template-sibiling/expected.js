@@ -1,5 +1,14 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
+  function if1_0() {
+    return api_element(
+      "p",
+      {
+        key: 2,
+      },
+      [api_text("2")]
+    );
+  }
   const { t: api_text, h: api_element } = $api;
   return [
     api_element(
@@ -15,15 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           },
           [api_text("1")]
         ),
-        $cmp.bar
-          ? api_element(
-              "p",
-              {
-                key: 2,
-              },
-              [api_text("2")]
-            )
-          : null,
+        $cmp.bar ? if1_0() : null,
         api_element(
           "p",
           {

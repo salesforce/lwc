@@ -1,5 +1,14 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
+  function foreach1_0(item) {
+    return api_element(
+      "p",
+      {
+        key: api_key(1, item.id),
+      },
+      [api_text("1"), api_dynamic(item)]
+    );
+  }
   const {
     k: api_key,
     t: api_text,
@@ -13,15 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: 0,
       },
-      api_iterator($cmp.items, function (item) {
-        return api_element(
-          "p",
-          {
-            key: api_key(1, item.id),
-          },
-          [api_text("1"), api_dynamic(item)]
-        );
-      })
+      api_iterator($cmp.items, foreach1_0)
     ),
   ];
 }

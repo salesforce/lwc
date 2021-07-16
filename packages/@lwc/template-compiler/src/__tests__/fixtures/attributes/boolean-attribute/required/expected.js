@@ -1,6 +1,7 @@
 import _xFoo from "x/foo";
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
+  const { computed: $cv0_0 } = $cmp;
   const { h: api_element, t: api_text, c: api_custom_element } = $api;
   return [
     api_element(
@@ -46,7 +47,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "input",
       {
         attrs: {
-          required: $cmp.computed ? "" : null,
+          required: $cv0_0 ? "" : null,
         },
         props: {
           value: "computed value",
@@ -106,7 +107,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _xFoo,
       {
         props: {
-          required: $cmp.computed,
+          required: $cv0_0,
         },
         key: 8,
       },

@@ -1,5 +1,17 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
+  function foreach1_0(color) {
+    return [
+      api_comment(" color "),
+      api_element(
+        "li",
+        {
+          key: api_key(1, color),
+        },
+        [api_dynamic(color)]
+      ),
+    ];
+  }
   const {
     co: api_comment,
     k: api_key,
@@ -13,18 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: 0,
       },
-      api_iterator($cmp.colors, function (color) {
-        return [
-          api_comment(" color "),
-          api_element(
-            "li",
-            {
-              key: api_key(1, color),
-            },
-            [api_dynamic(color)]
-          ),
-        ];
-      })
+      api_iterator($cmp.colors, foreach1_0)
     ),
   ];
 }
