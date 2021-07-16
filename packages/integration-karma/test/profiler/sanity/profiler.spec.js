@@ -2,15 +2,18 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Profiler Sanity Test', () => {
+    // Count the number of marks/measures before and after the test to ensure the profiler
+    // doesn't leak any. Note that other tests/libraries may be adding their own marks/measures,
+    // so we can't just check for 0.
     const hasPerfMarksAndMeasures =
         typeof performance !== 'undefined' && performance.getEntriesByType;
-    let numMarks = 0;
-    let numMeasures = 0;
+    let numMarksBeforeTest = 0;
+    let numMeasuresBeforeTest = 0;
 
     beforeEach(() => {
         if (hasPerfMarksAndMeasures) {
-            numMarks = performance.getEntriesByType('mark').length;
-            numMeasures = performance.getEntriesByType('measure').length;
+            numMarksBeforeTest = performance.getEntriesByType('mark').length;
+            numMeasuresBeforeTest = performance.getEntriesByType('measure').length;
         }
     });
 
@@ -20,8 +23,8 @@ describe('Profiler Sanity Test', () => {
 
         // No marks or measures added by the profiler
         if (hasPerfMarksAndMeasures) {
-            expect(performance.getEntriesByType('mark').length).toEqual(numMarks);
-            expect(performance.getEntriesByType('measure').length).toEqual(numMeasures);
+            expect(performance.getEntriesByType('mark').length).toEqual(numMarksBeforeTest);
+            expect(performance.getEntriesByType('measure').length).toEqual(numMeasuresBeforeTest);
         }
     });
 
