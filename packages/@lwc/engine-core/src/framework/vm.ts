@@ -60,18 +60,18 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
-export enum VMState {
+export const enum VMState {
     created,
     connected,
     disconnected,
 }
 
-export enum RenderMode {
+export const enum RenderMode {
     Light,
     Shadow,
 }
 
-export enum ShadowMode {
+export const enum ShadowMode {
     Native,
     Synthetic,
 }

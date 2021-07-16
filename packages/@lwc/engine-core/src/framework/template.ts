@@ -19,7 +19,6 @@ import { logError } from '../shared/logger';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';
-import { RenderMode } from './def';
 import {
     resetComponentRoot,
     runWithBoundaryProtection,
@@ -27,6 +26,7 @@ import {
     SlotSet,
     TemplateCache,
     VM,
+    RenderMode,
 } from './vm';
 import { EmptyArray } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';

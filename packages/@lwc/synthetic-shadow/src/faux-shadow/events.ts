@@ -31,7 +31,7 @@ import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/
 import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import { shouldInvokeListener } from '../shared/event-target';
 
-export enum EventListenerContext {
+export const enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,
     SHADOW_ROOT_LISTENER,
     UNKNOWN_LISTENER,

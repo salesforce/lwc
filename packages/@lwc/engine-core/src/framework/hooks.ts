@@ -13,6 +13,7 @@ import {
     getAssociatedVMIfPresent,
     VM,
     ShadowMode,
+    RenderMode,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -24,7 +25,7 @@ import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
-import { getComponentInternalDef, RenderMode } from './def';
+import { getComponentInternalDef } from './def';
 
 const noop = () => void 0;
 
@@ -91,7 +92,7 @@ export function createElmHook(vnode: VElement) {
     modComputedStyle.create(vnode);
 }
 
-enum LWCDOMMode {
+const enum LWCDOMMode {
     manual = 'manual',
 }
 

@@ -56,7 +56,7 @@ import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import { assignedSlotGetterPatched } from './slot';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 
-enum ShadowDomSemantic {
+const enum ShadowDomSemantic {
     Disabled,
     Enabled,
 }

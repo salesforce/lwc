@@ -115,7 +115,7 @@ export interface IRComment {
 
 export type IRNode = IRComment | IRElement | IRText;
 
-export enum IRAttributeType {
+export const enum IRAttributeType {
     Expression,
     String,
     Boolean,

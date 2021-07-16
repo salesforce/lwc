@@ -32,7 +32,7 @@ type WireCompilerMeta = Record<string, WireCompilerDef>;
 type TrackCompilerMeta = Record<string, 1>;
 type MethodCompilerMeta = string[];
 type PropCompilerMeta = Record<string, PropCompilerDef>;
-export enum PropType {
+export const enum PropType {
     Field = 0,
     Set = 1,
     Get = 2,

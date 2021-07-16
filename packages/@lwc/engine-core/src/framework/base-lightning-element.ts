@@ -25,11 +25,10 @@ import {
     setPrototypeOf,
 } from '@lwc/shared';
 import features from '@lwc/features';
-import { RenderMode } from './def';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM, ShadowMode, VM } from './vm';
+import { associateVM, getAssociatedVM, ShadowMode, VM, RenderMode } from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
