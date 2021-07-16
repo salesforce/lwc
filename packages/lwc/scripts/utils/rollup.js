@@ -38,6 +38,7 @@ function rollupConfig(config) {
                         preventAssignment: true,
                     }),
                 rollupFeaturesPlugin(prod),
+                // TODO [#2422]: remove rollup-plugin-typescript; we're just using it to transpile to ES5
                 compatMode && rollupTypescriptPlugin({ target, typescript, include: ['/**/*.js'] }),
                 prod && !debug && rollupTerser(),
             ],

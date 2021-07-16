@@ -27,6 +27,7 @@
     "@commitlint/cli": "^12.1.4",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/plugin-replace": "^2.4.2",
+    "@rollup/plugin-typescript": "^8.2.3",
     "@types/acorn": "^4.0.6",
     "@types/babel__core": "^7.1.15",
     "@types/jest": "^26.0.24",
