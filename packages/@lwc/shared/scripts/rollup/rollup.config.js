@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const typescript = require('rollup-plugin-typescript');
+const typescript = require('@rollup/plugin-typescript');
 
 const { version } = require('../../package.json');
 const entry = path.resolve(__dirname, '../../src/index.ts');
@@ -26,7 +26,13 @@ function rollupConfig({ format }) {
             banner,
             footer,
         },
-        plugins: [typescript({ target: 'es2017', typescript: require('typescript') })],
+        plugins: [
+            typescript({
+                target: 'es2017',
+                typescript: require('typescript'),
+                tsconfig: path.join(__dirname, '../../tsconfig.json'),
+            }),
+        ],
     };
 }
 

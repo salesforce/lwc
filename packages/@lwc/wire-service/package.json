@@ -17,7 +17,7 @@
     "typings": "types/index.d.ts",
     "scripts": {
         "clean": "rm -rf dist/ types/",
-        "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js"
+        "build": "rollup --config ./scripts/rollup/rollup.config.js && rm -fr types && mv dist/types types"
     },
     "files": [
         "dist/",

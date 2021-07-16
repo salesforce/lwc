@@ -6,7 +6,7 @@
  */
 const path = require('path');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const typescript = require('rollup-plugin-typescript');
+const typescript = require('@rollup/plugin-typescript');
 
 const { version } = require('../../package.json');
 const entry = path.resolve(__dirname, '../../src/index.ts');
@@ -35,6 +35,7 @@ function rollupConfig({ format }) {
             typescript({
                 target: 'es2017',
                 typescript: require('typescript'),
+                tsconfig: path.join(__dirname, '../../tsconfig.json'),
             }),
         ],
     };

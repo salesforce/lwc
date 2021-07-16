@@ -11,7 +11,7 @@ const path = require('path');
 const typescript = require('typescript');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const typescriptPlugin = require('rollup-plugin-typescript');
+const typescriptPlugin = require('@rollup/plugin-typescript');
 
 const { version } = require('../package.json');
 
@@ -42,6 +42,7 @@ module.exports = {
         typescriptPlugin({
             target: 'es2017',
             typescript,
+            tsconfig: path.join(__dirname, '../tsconfig.json'),
         }),
     ],
 
