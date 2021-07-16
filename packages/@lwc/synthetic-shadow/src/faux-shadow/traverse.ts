@@ -258,5 +258,8 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     }
 
     const childNodes = arrayFromCollection(childNodesGetter.call(slot));
-    return ArrayFilter.call(childNodes, (child) => !isNodeOwnedBy(owner, child));
+    return ArrayFilter.call(
+        childNodes,
+        (child) => !isNodeShadowed(child) || !isNodeOwnedBy(owner, child)
+    );
 }

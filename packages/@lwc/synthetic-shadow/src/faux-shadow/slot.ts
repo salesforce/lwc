@@ -32,7 +32,7 @@ import {
     getFilteredChildNodes,
     getFilteredSlotAssignedNodes,
 } from '../faux-shadow/traverse';
-import { getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
+import { getNodeOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { arrayFromCollection } from '../shared/utils';
 
@@ -85,20 +85,26 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
 
 export function assignedSlotGetterPatched(this: Element): HTMLSlotElement | null {
     const parentNode = parentNodeGetter.call(this);
+
     /**
-     * if it doesn't have a parent node,
-     * or the parent is not an slot element
-     * or they both belong to the same template (default content)
-     * we should assume that it is not slotted
+     * The node is assigned to a slot if:
+     *  - it has a parent and it parent its parent is a slot element
+     *  - and if the slot owner key is different than the node owner key.
+     *
+     * When the slot and the slotted node are 2 different shadow trees, the owner keys will be
+     * different. When the slot is in a shadow tree and the slotted content is a light DOM node,
+     * the light DOM node doesn't have an owner key and therefor the slot owner key will be
+     * different than the node owner key (always `undefined`).
      */
     if (
-        isNull(parentNode) ||
-        !isSlotElement(parentNode) ||
-        getNodeNearestOwnerKey(parentNode) === getNodeNearestOwnerKey(this)
+        !isNull(parentNode) &&
+        isSlotElement(parentNode) &&
+        getNodeOwnerKey(parentNode) !== getNodeOwnerKey(this)
     ) {
-        return null;
+        return parentNode;
     }
-    return parentNode;
+
+    return null;
 }
 
 defineProperties(HTMLSlotElement.prototype, {
