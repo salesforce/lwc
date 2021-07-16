@@ -54,8 +54,10 @@ describe('Profiler Sanity Test', () => {
     }
 
     function expectNoMarksOrMeasures() {
-        expect(performance.getEntriesByType('mark').length).toEqual(0);
-        expect(performance.getEntriesByType('measure').length).toEqual(0);
+        if (typeof performance !== 'undefined' && performance.getEntriesByType) {
+            expect(performance.getEntriesByType('mark').length).toEqual(0);
+            expect(performance.getEntriesByType('measure').length).toEqual(0);
+        }
     }
 
     it('container first render without activating list', async () => {
