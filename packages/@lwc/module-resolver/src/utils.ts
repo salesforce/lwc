@@ -68,9 +68,9 @@ export function getModuleEntry(
 
 export function normalizeConfig(
     config: Partial<ModuleResolverConfig>,
-    scope: string
+    scope?: string
 ): ModuleResolverConfig {
-    const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
+    const rootDir = config.rootDir ? path.resolve(config.rootDir) : scope || process.cwd();
     const modules = config.modules || [];
     const normalizedModules = modules.map((m) => {
         if (!isObject(m)) {
@@ -78,7 +78,7 @@ export function normalizeConfig(
                 `Invalid module record. Module record must be an object, instead got ${JSON.stringify(
                     m
                 )}.`,
-                { scope }
+                { scope: scope || 'inline_config' }
             );
         }
         return isDirModuleRecord(m) ? { ...m, dir: path.resolve(rootDir, m.dir) } : m;

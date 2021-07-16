@@ -212,7 +212,7 @@ export function resolveModule(
 
     let modules = lwcConfig.modules || [];
     if (config) {
-        const userConfig = normalizeConfig(config, rootDir);
+        const userConfig = normalizeConfig(config);
         modules = mergeModules(userConfig.modules, modules);
     }
 
