@@ -1,5 +1,39 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
+  const { items: $cv0_0 } = $cmp;
+  function foreach4_0(item) {
+    return api_element(
+      "div",
+      {
+        key: api_key(7, item.id),
+      },
+      []
+    );
+  }
+  function if2_1() {
+    function foreach3_0(item) {
+      return [
+        api_element(
+          "p",
+          {
+            key: api_key(3, item.id),
+          },
+          [api_text("X1")]
+        ),
+        api_element(
+          "p",
+          {
+            key: api_key(4, item.id),
+          },
+          [api_text("X2")]
+        ),
+      ];
+    }
+    return api_iterator($cv0_0, foreach3_0);
+  }
+  function foreach1_0(item) {
+    return api_text("X");
+  }
   const {
     t: api_text,
     i: api_iterator,
@@ -18,9 +52,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       api_flatten([
         api_text("Other Child"),
-        api_iterator($cmp.items, function (item) {
-          return api_text("X");
-        }),
+        api_iterator($cv0_0, foreach1_0),
         api_element(
           "p",
           {
@@ -38,29 +70,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 2,
       },
-      api_flatten([
-        api_text("Other Child"),
-        $cmp.isTrue
-          ? api_iterator($cmp.items, function (item) {
-              return [
-                api_element(
-                  "p",
-                  {
-                    key: api_key(3, item.id),
-                  },
-                  [api_text("X1")]
-                ),
-                api_element(
-                  "p",
-                  {
-                    key: api_key(4, item.id),
-                  },
-                  [api_text("X2")]
-                ),
-              ];
-            })
-          : [],
-      ])
+      api_flatten([api_text("Other Child"), $cmp.isTrue ? if2_1() : []])
     ),
     api_element(
       "section",
@@ -78,15 +88,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           },
           [api_text("Last child")]
         ),
-        api_iterator($cmp.items, function (item) {
-          return api_element(
-            "div",
-            {
-              key: api_key(7, item.id),
-            },
-            []
-          );
-        }),
+        api_iterator($cv0_0, foreach4_0),
       ])
     ),
     api_element(

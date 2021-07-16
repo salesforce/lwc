@@ -18,6 +18,10 @@ export function isArrayExpression(node: t.BaseNode): node is t.ArrayExpression {
     return node.type === 'ArrayExpression';
 }
 
+export function isSpreadElement(node: t.BaseNode): node is t.SpreadElement {
+    return node.type === 'SpreadElement';
+}
+
 export function identifier(name: string, config?: Partial<t.Identifier>): t.Identifier {
     return {
         type: 'Identifier',
@@ -378,6 +382,17 @@ export function program(body: t.Program['body'], config?: Partial<t.Program>): t
     };
 }
 
+export function spreadElement(
+    argument: t.Expression,
+    config?: Partial<t.SpreadElement>
+): t.SpreadElement {
+    return {
+        type: 'SpreadElement',
+        argument,
+        ...config,
+    };
+}
+
 export type BaseNode = t.BaseNode;
 export type Identifier = t.Identifier;
 export type MemberExpression = t.MemberExpression;
@@ -407,5 +422,6 @@ export type ImportDeclaration = t.ImportDeclaration;
 export type ImportDefaultSpecifier = t.ImportDefaultSpecifier;
 export type ImportSpecifier = t.ImportSpecifier;
 export type ExportDefaultDeclaration = t.ExportDefaultDeclaration;
+export type SpreadElement = t.SpreadElement;
 export type Statement = t.Statement;
 export type Program = t.Program;

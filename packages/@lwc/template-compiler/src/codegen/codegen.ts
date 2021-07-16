@@ -8,8 +8,9 @@ import * as esutils from 'esutils';
 import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
-import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
+import { IRElement, IRNode, LWCDirectiveRenderMode, TemplateExpression } from '../shared/types';
 import { toPropertyName } from '../shared/utils';
+import { Scope } from './scope';
 
 type RenderPrimitive =
     | 'iterator'
@@ -68,6 +69,9 @@ export default class CodeGen {
      */
     readonly scopeFragmentId: boolean;
 
+    scopesCount = 0;
+    currentScope = new Scope(0);
+
     currentId = 0;
     currentKey = 0;
 
@@ -94,8 +98,29 @@ export default class CodeGen {
         this.scopeFragmentId = scopeFragmentId;
     }
 
+    createScope() {
+        const newScope = new Scope(++this.scopesCount);
+
+        newScope.parentScope = this.currentScope;
+        this.currentScope.childScopes.push(newScope);
+
+        this.currentScope = newScope;
+    }
+
+    popScope() {
+        if (this.currentScope.parentScope === null) {
+            throw new Error('Trying to pop root scope');
+        }
+
+        this.currentScope = this.currentScope.parentScope;
+    }
+
     generateKey() {
         return this.currentKey++;
+    }
+
+    genBindExpression(expression: TemplateExpression, irNode: IRNode): t.Expression {
+        return this.currentScope.bindExpression(expression, irNode);
     }
 
     genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {
@@ -143,7 +168,7 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
     }
 
-    genIterator(iterable: t.Expression, callback: t.FunctionExpression) {
+    genIterator(iterable: t.Expression, callback: t.Identifier) {
         return this._renderApiCall(RENDER_APIS.iterator, [iterable, callback]);
     }
 

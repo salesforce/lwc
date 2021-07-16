@@ -1,5 +1,6 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
+  const { handleClick: $cv0_0 } = $cmp;
   const { b: api_bind, t: api_text, h: api_element } = $api;
   const { _m0, _m1, _m2, _m3 } = $ctx;
   return [
@@ -8,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: 0,
         on: {
-          a123: _m0 || ($ctx._m0 = api_bind($cmp.handleClick)),
+          a123: _m0 || ($ctx._m0 = api_bind($cv0_0)),
         },
       },
       [api_text("Click")]
@@ -18,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: 1,
         on: {
-          foo_bar: _m1 || ($ctx._m1 = api_bind($cmp.handleClick)),
+          foo_bar: _m1 || ($ctx._m1 = api_bind($cv0_0)),
         },
       },
       [api_text("Click")]
@@ -28,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: 2,
         on: {
-          foo_: _m2 || ($ctx._m2 = api_bind($cmp.handleClick)),
+          foo_: _m2 || ($ctx._m2 = api_bind($cv0_0)),
         },
       },
       [api_text("Click")]
@@ -38,7 +39,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         key: 3,
         on: {
-          a123: _m3 || ($ctx._m3 = api_bind($cmp.handleClick)),
+          a123: _m3 || ($ctx._m3 = api_bind($cv0_0)),
         },
       },
       [api_text("Click")]

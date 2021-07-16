@@ -3,6 +3,30 @@ import _xDescription from "x/description";
 import _xTextarea from "x/textarea";
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
+  function foreach1_0(thing) {
+    return [
+      api_element(
+        "p",
+        {
+          attrs: {
+            id: api_scoped_id(thing.id),
+          },
+          key: api_key(6, thing.key),
+        },
+        [api_text("description text")]
+      ),
+      api_element(
+        "input",
+        {
+          attrs: {
+            "aria-describedby": api_scoped_id(thing.id),
+          },
+          key: api_key(7, thing.key),
+        },
+        []
+      ),
+    ];
+  }
   const {
     gid: api_scoped_id,
     c: api_custom_element,
@@ -78,30 +102,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       []
     ),
-    api_iterator($cmp.things, function (thing) {
-      return [
-        api_element(
-          "p",
-          {
-            attrs: {
-              id: api_scoped_id(thing.id),
-            },
-            key: api_key(6, thing.key),
-          },
-          [api_text("description text")]
-        ),
-        api_element(
-          "input",
-          {
-            attrs: {
-              "aria-describedby": api_scoped_id(thing.id),
-            },
-            key: api_key(7, thing.key),
-          },
-          []
-        ),
-      ];
-    }),
+    api_iterator($cmp.things, foreach1_0),
   ]);
 }
 export default registerTemplate(tmpl);
