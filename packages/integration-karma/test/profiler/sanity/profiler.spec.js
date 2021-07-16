@@ -7,8 +7,8 @@ describe('Profiler Sanity Test', () => {
     // so we can't just check for 0.
     const hasPerfMarksAndMeasures =
         typeof performance !== 'undefined' && performance.getEntriesByType;
-    let numMarksBeforeTest = 0;
-    let numMeasuresBeforeTest = 0;
+    let numMarksBeforeTest;
+    let numMeasuresBeforeTest;
 
     beforeEach(() => {
         if (hasPerfMarksAndMeasures) {
