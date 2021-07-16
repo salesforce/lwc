@@ -53,6 +53,11 @@ describe('Profiler Sanity Test', () => {
         expect(filteredEvents).toEqual(expectedEvents);
     }
 
+    function expectNoMarksOrMeasures() {
+        expect(performance.getEntriesByType('mark').length).toEqual(0);
+        expect(performance.getEntriesByType('measure').length).toEqual(0);
+    }
+
     it('container first render without activating list', async () => {
         const profilerEvents = enableProfilerAndRegisterBuffer();
         await generateContainer();
@@ -62,6 +67,7 @@ describe('Profiler Sanity Test', () => {
         matchEventsOfTypeFor(OperationId.patch, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.connectedCallback, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.renderedCallback, X_CONTAINER, profilerEvents);
+        expectNoMarksOrMeasures();
     });
 
     it('activate children in iteration in container', async () => {
@@ -76,6 +82,7 @@ describe('Profiler Sanity Test', () => {
         matchEventsOfTypeFor(OperationId.constructor, X_ITEM, profilerEvents);
         matchEventsOfTypeFor(OperationId.render, X_ITEM, profilerEvents);
         matchEventsOfTypeFor(OperationId.patch, X_ITEM, profilerEvents);
+        expectNoMarksOrMeasures();
     });
 
     it('error callback counted properly', async () => {
@@ -96,5 +103,6 @@ describe('Profiler Sanity Test', () => {
             { opId: OperationId.errorCallback, phase: Phase.Stop, name: X_ERROR_CHILD },
         ];
         expect(profilerEvents).toEqual(expectedEvents);
+        expectNoMarksOrMeasures();
     });
 });

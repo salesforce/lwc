@@ -52,7 +52,7 @@ function end(measureName: string, markName: string) {
     // Clear the created marks and measure to avoid filling the performance entries buffer.
     // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
     performance.clearMarks(markName);
-    performance.clearMarks(measureName);
+    performance.clearMeasures(measureName);
 }
 
 function noop() {
