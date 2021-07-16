@@ -2,9 +2,27 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Profiler Sanity Test', () => {
+    const hasPerfMarksAndMeasures =
+        typeof performance !== 'undefined' && performance.getEntriesByType;
+    let numMarks = 0;
+    let numMeasures = 0;
+
+    beforeEach(() => {
+        if (hasPerfMarksAndMeasures) {
+            numMarks = performance.getEntriesByType('mark').length;
+            numMeasures = performance.getEntriesByType('measure').length;
+        }
+    });
+
     afterEach(() => {
         LWC.__unstable__ProfilerControl.detachDispatcher();
         LWC.__unstable__ProfilerControl.disableProfiler();
+
+        // No marks or measures added by the profiler
+        if (hasPerfMarksAndMeasures) {
+            expect(performance.getEntriesByType('mark').length).toEqual(numMarks);
+            expect(performance.getEntriesByType('measure').length).toEqual(numMeasures);
+        }
     });
 
     const X_CONTAINER = 'X-CONTAINER';
@@ -53,13 +71,6 @@ describe('Profiler Sanity Test', () => {
         expect(filteredEvents).toEqual(expectedEvents);
     }
 
-    function expectNoMarksOrMeasures() {
-        if (typeof performance !== 'undefined' && performance.getEntriesByType) {
-            expect(performance.getEntriesByType('mark').length).toEqual(0);
-            expect(performance.getEntriesByType('measure').length).toEqual(0);
-        }
-    }
-
     it('container first render without activating list', async () => {
         const profilerEvents = enableProfilerAndRegisterBuffer();
         await generateContainer();
@@ -69,7 +80,6 @@ describe('Profiler Sanity Test', () => {
         matchEventsOfTypeFor(OperationId.patch, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.connectedCallback, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.renderedCallback, X_CONTAINER, profilerEvents);
-        expectNoMarksOrMeasures();
     });
 
     it('activate children in iteration in container', async () => {
@@ -84,7 +94,6 @@ describe('Profiler Sanity Test', () => {
         matchEventsOfTypeFor(OperationId.constructor, X_ITEM, profilerEvents);
         matchEventsOfTypeFor(OperationId.render, X_ITEM, profilerEvents);
         matchEventsOfTypeFor(OperationId.patch, X_ITEM, profilerEvents);
-        expectNoMarksOrMeasures();
     });
 
     it('error callback counted properly', async () => {
@@ -105,6 +114,5 @@ describe('Profiler Sanity Test', () => {
             { opId: OperationId.errorCallback, phase: Phase.Stop, name: X_ERROR_CHILD },
         ];
         expect(profilerEvents).toEqual(expectedEvents);
-        expectNoMarksOrMeasures();
     });
 });
