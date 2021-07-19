@@ -1,41 +1,116 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import Container from 'x/container';
+import { extractDataIds } from 'test-utils';
 
-// This test only matters for synthetic shadow
-if (!process.env.NATIVE_SHADOW) {
-    describe('Light DOM and synthetic shadow', () => {
+import LightContainer from 'x/lightContainer';
+import ShadowContainer from 'x/shadowContainer';
+
+describe('Light DOM + Synthetic Shadow DOM', () => {
+    beforeEach(() => {
+        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
+    });
+    afterEach(() => {
+        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
+    });
+
+    describe('light -> shadow', () => {
+        let elm, nodes;
         beforeEach(() => {
-            setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-        });
-        afterEach(() => {
-            setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-        });
-        it('shadow scoping tokens are not set for light DOM components', () => {
-            // shadow grandparent, light child, shadow grandchild
-            const elm = createElement('x-container', { is: Container });
+            elm = createElement('x-light-container', {
+                is: LightContainer,
+            });
             document.body.appendChild(elm);
+            nodes = extractDataIds(elm);
+        });
 
-            // shadow grandparent
-            expect(elm.shadowRoot.querySelector('h1').outerHTML).toContain('x-container_container');
-            expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                'rgb(0, 128, 0)'
+        it('assignedNodes', () => {
+            expect(nodes.slot.assignedNodes()).toEqual([nodes.p, nodes.p.nextSibling]);
+        });
+        it('assignedElements', () => {
+            expect(nodes.slot.assignedElements()).toEqual([nodes.p]);
+        });
+        it('assignedSlot', () => {
+            expect(nodes.p.assignedSlot).toEqual(nodes.slot);
+        });
+        it('childNodes', () => {
+            expect(Array.from(nodes.slot.childNodes)).toEqual([]);
+        });
+        it('parentNode', () => {
+            expect(nodes.p.parentNode).toEqual(nodes.consumer);
+            expect(nodes.consumer.parentNode).toEqual(elm);
+        });
+        it('parentElement', () => {
+            expect(nodes.p.parentElement).toEqual(nodes.consumer);
+            expect(nodes.consumer.parentElement).toEqual(elm);
+        });
+        xit('getRootNode', () => {
+            expect(nodes.p.getRootNode()).toEqual(document);
+            expect(nodes.consumer.getRootNode()).toEqual(document);
+        });
+        it('textContent', () => {
+            expect(nodes.consumer.textContent).toEqual(
+                'I am an assigned element.I am an assigned text.'
             );
-
-            // light child
-            const child = elm.shadowRoot.querySelector('x-light');
-            expect(child.querySelector('h1').outerHTML).not.toContain('x-child_child');
-            expect(getComputedStyle(child.querySelector('h1')).backgroundColor).toEqual(
-                'rgb(255, 0, 0)'
+        });
+        xit('innerHTML', () => {
+            expect(nodes.consumer.innerHTML).toEqual(
+                '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
             );
-
-            // shadow grandchild
-            const grandchild = child.querySelector('x-grandchild');
-            expect(grandchild.shadowRoot.querySelector('h1').outerHTML).toContain(
-                'x-grandchild_grandchild'
+        });
+        it('outerHTML', () => {
+            expect(nodes.consumer.outerHTML).toEqual(
+                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
             );
-            expect(
-                getComputedStyle(grandchild.shadowRoot.querySelector('h1')).outlineColor
-            ).toEqual('rgb(0, 255, 255)');
         });
     });
-}
+
+    describe('shadow -> light -> shadow', () => {
+        let elm, nodes;
+        beforeEach(() => {
+            elm = createElement('x-shadow-container', {
+                is: ShadowContainer,
+            });
+            document.body.appendChild(elm);
+            nodes = extractDataIds(elm);
+        });
+
+        it('assignedNodes', () => {
+            expect(nodes.slot.assignedNodes()).toEqual([nodes.p, nodes.p.nextSibling]);
+        });
+        it('assignedElements', () => {
+            expect(nodes.slot.assignedElements()).toEqual([nodes.p]);
+        });
+        it('assignedSlot', () => {
+            expect(nodes.p.assignedSlot).toEqual(nodes.slot);
+        });
+        it('childNodes', () => {
+            expect(Array.from(nodes.slot.childNodes)).toEqual([]);
+        });
+        it('parentNode', () => {
+            expect(nodes.p.parentNode).toEqual(nodes.consumer);
+            expect(nodes.consumer.parentNode).toEqual(nodes['light-container']);
+        });
+        it('parentElement', () => {
+            expect(nodes.p.parentElement).toEqual(nodes.consumer);
+            expect(nodes.consumer.parentElement).toEqual(nodes['light-container']);
+        });
+        it('getRootNode', () => {
+            expect(nodes.p.getRootNode()).toEqual(elm.shadowRoot);
+            expect(nodes.consumer.getRootNode()).toEqual(elm.shadowRoot);
+        });
+        it('textContent', () => {
+            expect(nodes.consumer.textContent).toEqual(
+                'I am an assigned element.I am an assigned text.'
+            );
+        });
+        it('innerHTML', () => {
+            expect(nodes.consumer.innerHTML).toEqual(
+                '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
+            );
+        });
+        it('outerHTML', () => {
+            expect(nodes.consumer.outerHTML).toEqual(
+                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+            );
+        });
+    });
+});
