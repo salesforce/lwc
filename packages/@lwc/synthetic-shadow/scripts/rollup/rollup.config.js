@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const typescript = require('typescript');
 const path = require('path');
 const rollupTypescript = require('@rollup/plugin-typescript');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
@@ -54,7 +53,6 @@ function rollupConfig({ wrap } = {}) {
             }),
             rollupTypescript({
                 target: 'es2017',
-                typescript,
                 tsconfig: path.join(__dirname, '../../tsconfig.json'),
             }),
             rollupFeaturesPlugin(),

@@ -8,7 +8,6 @@
 /* eslint-env node */
 
 const path = require('path');
-const typescript = require('typescript');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescriptPlugin = require('@rollup/plugin-typescript');
@@ -55,7 +54,6 @@ module.exports = {
         }),
         typescriptPlugin({
             target: 'es2017',
-            typescript,
             tsconfig: path.join(__dirname, '../tsconfig.json'),
         }),
         rollupFeaturesPlugin(),

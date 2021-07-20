@@ -29,7 +29,6 @@ function rollupConfig({ format }) {
         plugins: [
             typescript({
                 target: 'es2017',
-                typescript: require('typescript'),
                 tsconfig: path.join(__dirname, '../../tsconfig.json'),
             }),
         ],
