@@ -11,7 +11,7 @@ const path = require('path');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescriptPlugin = require('@rollup/plugin-typescript');
-
+const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 const { version } = require('../package.json');
 
 const banner = `/* proxy-compat-disable */`;
@@ -23,11 +23,7 @@ module.exports = {
 
     output: formats.map((format) => {
         return {
-            file: path.resolve(
-                __dirname,
-                '../dist',
-                `engine-dom${format === 'cjs' ? '.cjs' : ''}.js`
-            ),
+            file: `engine-dom${format === 'cjs' ? '.cjs' : ''}.js`,
             format,
             banner: banner,
             footer: footer,
@@ -42,6 +38,7 @@ module.exports = {
             target: 'es2017',
             tsconfig: path.join(__dirname, '../tsconfig.json'),
         }),
+        writeDistAndTypes(),
     ],
 
     onwarn({ code, message }) {

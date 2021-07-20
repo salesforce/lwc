@@ -14,6 +14,7 @@ const typescriptPlugin = require('@rollup/plugin-typescript');
 
 const babel = require('@babel/core');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
+const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 
 function rollupFeaturesPlugin() {
     return {
@@ -37,11 +38,7 @@ module.exports = {
 
     output: formats.map((format) => {
         return {
-            file: path.resolve(
-                __dirname,
-                '../dist',
-                `engine-core${format === 'cjs' ? '.cjs' : ''}.js`
-            ),
+            file: `engine-core${format === 'cjs' ? '.cjs' : ''}.js`,
             format,
             banner: banner,
             footer: footer,
@@ -56,6 +53,7 @@ module.exports = {
             target: 'es2017',
             tsconfig: path.join(__dirname, '../tsconfig.json'),
         }),
+        writeDistAndTypes(),
         rollupFeaturesPlugin(),
     ],
 

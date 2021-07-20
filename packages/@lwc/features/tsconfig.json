@@ -4,8 +4,7 @@
     "compilerOptions": {
         "sourceMap": false,
         "baseUrl": ".",
-        "outDir": "dist",
-        "declarationDir": "types",
+        "outDir": ".",
         "lib": ["dom", "es2018"]
     },
 
