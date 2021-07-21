@@ -5,10 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const diff = require('jest-diff');
+import diff from 'jest-diff';
+import MatcherUtils = jest.MatcherUtils;
 
-function toThrowErrorWithCode(received, code, message) {
-    let error;
+export function toThrowErrorWithType(
+    this: MatcherUtils,
+    received: any,
+    ctor: any,
+    message?: string
+) {
+    let error: Error | undefined;
 
     try {
         received();
@@ -23,24 +29,24 @@ function toThrowErrorWithCode(received, code, message) {
         };
     }
 
-    if (error === null || typeof error !== 'object' || error.code !== code) {
+    if (error === null || typeof error !== 'object' || error.constructor !== ctor) {
         return {
             message: () =>
-                `Expected function to throw an error with code \n\n` +
-                `Expected ${this.utils.printExpected(code)}\n` +
-                `Received ${this.utils.printReceived(error.code)}`,
+                `Expected function to throw an instance of\n\n` +
+                `Expected ${this.utils.printExpected(ctor.name)}\n` +
+                `Received ${this.utils.printReceived(error!.constructor.name)}`,
             pass: false,
         };
     }
 
     if (error.message !== message) {
-        const errorDiff = diff.diffStringsUnified(message, error.message);
+        const errorDiff = diff.diffStringsUnified(message!, error.message);
         return {
             message: () =>
                 `Expected function to throw an error with message\n\n` +
                 `Difference ${errorDiff}\n` +
                 `Expected ${this.utils.printExpected(message)}\n` +
-                `Received ${this.utils.printReceived(error.message)}`,
+                `Received ${this.utils.printReceived(error!.message)}`,
             pass: false,
         };
     }
@@ -50,7 +56,3 @@ function toThrowErrorWithCode(received, code, message) {
         pass: true,
     };
 }
-
-module.exports = {
-    toThrowErrorWithCode,
-};

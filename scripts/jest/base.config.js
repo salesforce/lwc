@@ -6,6 +6,8 @@
  */
 
 module.exports = {
+    preset: 'ts-jest',
+    testEnvironment: 'jsdom',
     testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
     coveragePathIgnorePatterns: ['/node_modules/', '/fixtures/', '/dist/'],
 };

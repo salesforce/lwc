@@ -10,12 +10,13 @@ import path from 'path';
 
 import { rollup } from 'rollup';
 import prettier from 'prettier';
+// @ts-ignore
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir } from 'jest-utils-lwc-internals';
 
 jest.setTimeout(10_000 /* 10 seconds */);
 
-async function compileFixture({ input, dirname }) {
+async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled.js');
 
@@ -35,6 +36,8 @@ async function compileFixture({ input, dirname }) {
 
     await bundle.write({
         file: outputFile,
+        format: 'cjs',
+        exports: 'named',
     });
 
     return outputFile;
@@ -71,8 +74,8 @@ describe('fixtures', () => {
             // On top of this, the engine also checks if the component constructor is an instance of
             // the LightningElement. Therefor the compiled module should also be evaluated in the
             // same sandbox registry as the engine.
-            let lwcEngineServer;
-            let module;
+            let lwcEngineServer: any;
+            let module: any;
             jest.isolateModules(() => {
                 lwcEngineServer = require('../index');
                 module = require(compiledFixturePath);

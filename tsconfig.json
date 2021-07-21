@@ -14,7 +14,7 @@
     "lib": ["es2018"],
 
     // Disable automatic inclusion of @types packages
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
 
   "exclude": [

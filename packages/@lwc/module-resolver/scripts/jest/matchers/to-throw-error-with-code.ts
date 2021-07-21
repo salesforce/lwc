@@ -5,10 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const diff = require('jest-diff');
+import diff from 'jest-diff';
+import MatcherUtils = jest.MatcherUtils;
 
-function toThrowErrorWithType(received, ctor, message) {
-    let error;
+export function toThrowErrorWithCode(
+    this: MatcherUtils,
+    received: any,
+    code: string,
+    message?: string
+) {
+    let error: Error | undefined;
 
     try {
         received();
@@ -23,24 +29,24 @@ function toThrowErrorWithType(received, ctor, message) {
         };
     }
 
-    if (error === null || typeof error !== 'object' || error.constructor !== ctor) {
+    if (error === null || typeof error !== 'object' || (error as any).code !== code) {
         return {
             message: () =>
-                `Expected function to throw an instance of\n\n` +
-                `Expected ${this.utils.printExpected(ctor.name)}\n` +
-                `Received ${this.utils.printReceived(error.constructor.name)}`,
+                `Expected function to throw an error with code \n\n` +
+                `Expected ${this.utils.printExpected(code)}\n` +
+                `Received ${this.utils.printReceived((error as any).code)}`,
             pass: false,
         };
     }
 
     if (error.message !== message) {
-        const errorDiff = diff.diffStringsUnified(message, error.message);
+        const errorDiff = diff.diffStringsUnified(message!, error.message);
         return {
             message: () =>
                 `Expected function to throw an error with message\n\n` +
                 `Difference ${errorDiff}\n` +
                 `Expected ${this.utils.printExpected(message)}\n` +
-                `Received ${this.utils.printReceived(error.message)}`,
+                `Received ${this.utils.printReceived(error!.message)}`,
             pass: false,
         };
     }
@@ -50,7 +56,3 @@ function toThrowErrorWithType(received, ctor, message) {
         pass: true,
     };
 }
-
-module.exports = {
-    toThrowErrorWithType,
-};

@@ -6,18 +6,17 @@
  */
 import fs from 'fs';
 import path from 'path';
-
 import { testFixtureDir } from 'jest-utils-lwc-internals';
-
+import type { CssSyntaxError } from 'postcss';
 import { transform, Config } from '../index';
 
-function normalizeError(err) {
+function normalizeError(err: Error) {
     if (err.name === 'CssSyntaxError') {
         return {
             name: err.name,
-            reason: err.reason,
-            column: err.column,
-            line: err.line,
+            reason: (err as CssSyntaxError).reason,
+            column: (err as CssSyntaxError).column,
+            line: (err as CssSyntaxError).line,
         };
     } else {
         return {

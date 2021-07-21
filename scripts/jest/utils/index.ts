@@ -5,12 +5,23 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import glob from 'glob';
+import MatcherUtils = jest.MatcherUtils;
+import CustomMatcherResult = jest.CustomMatcherResult;
 
-const glob = require('glob');
-
-function toMatchFile(receivedContent, filename) {
+/**
+ * @typedef {Object} TestFixtureConfig
+ * @property {string} src - the fixture content
+ * @property {string} filename - the fixture absolute path
+ * @property {string} dirname - the fixture directory absolute path
+ */
+function toMatchFile(
+    this: MatcherUtils,
+    receivedContent: string,
+    filename: string
+): CustomMatcherResult {
     const { snapshotState, expand, utils } = this;
 
     const fileExists = fs.existsSync(filename);
@@ -26,7 +37,7 @@ function toMatchFile(receivedContent, filename) {
                 fs.unlinkSync(filename);
 
                 snapshotState.updated++;
-                return { pass: true, message: () => {} };
+                return { pass: true, message: () => {} } as CustomMatcherResult;
             } else {
                 snapshotState.unmatched++;
                 return {
@@ -45,7 +56,7 @@ function toMatchFile(receivedContent, filename) {
         if (expectedContent === receivedContent) {
             // If the expected file exists and the expected content is matching with the actual
             // content everything is fine.
-            return { pass: true, message: () => {} };
+            return { pass: true, message: () => {} } as CustomMatcherResult;
         } else {
             // If the expected file is present but the content is not matching. if Jest is running
             // with the update snapshot flag override the expected content. Otherwise fails the
@@ -54,7 +65,7 @@ function toMatchFile(receivedContent, filename) {
                 fs.writeFileSync(filename, receivedContent);
 
                 snapshotState.updated++;
-                return { pass: true, message: () => {} };
+                return { pass: true, message: () => {} } as CustomMatcherResult;
             } else {
                 snapshotState.unmatched++;
                 return {
@@ -78,7 +89,7 @@ function toMatchFile(receivedContent, filename) {
         if (receivedContent === null || receivedContent === undefined) {
             // If expected file doesn't exists and received content is null or undefined everything
             // is fine.
-            return { pass: true, message: () => {} };
+            return { pass: true, message: () => {} } as CustomMatcherResult;
         }
 
         // If expected file doesn't exists but got a received content and if the snapshots
@@ -87,7 +98,7 @@ function toMatchFile(receivedContent, filename) {
             fs.writeFileSync(filename, receivedContent);
 
             snapshotState.added++;
-            return { pass: true, message: () => {} };
+            return { pass: true, message: () => {} } as CustomMatcherResult;
         } else {
             snapshotState.unmatched++;
             return {
@@ -103,12 +114,17 @@ function toMatchFile(receivedContent, filename) {
     }
 }
 
-/**
- * @typedef {Object} TestFixtureConfig
- * @property {string} src - the fixture content
- * @property {string} filename - the fixture absolute path
- * @property {string} dirname - the fixture directory absolute path
- */
+declare global {
+    namespace jest {
+        interface Matchers<R> {
+            __type: R; // unused, but makes TypeScript happy
+            toMatchFile(receivedContent: string, filename?: string): CustomMatcherResult;
+        }
+    }
+}
+
+// Register jest matcher.
+expect.extend({ toMatchFile });
 
 /**
  * Test a fixture directory against a set of snapshot files. This method generates a test for each
@@ -122,7 +138,10 @@ function toMatchFile(receivedContent, filename) {
  * @param {string} config.root - The directory from where the pattern is executed.
  * @param {function(TestFixtureConfig)} testFn - The test function executed for each fixture.
  */
-function testFixtureDir(config, testFn) {
+export function testFixtureDir(
+    config: { pattern: string; root: string },
+    testFn: (options: { src: string; filename: string; dirname: string }) => object
+) {
     if (typeof config !== 'object' || config === null) {
         throw new TypeError(`Expected first argument to be an object`);
     }
@@ -167,11 +186,3 @@ function testFixtureDir(config, testFn) {
         });
     }
 }
-
-// Register jest matcher.
-expect.extend({ toMatchFile });
-
-// Exports helper function for consumption in tests.
-module.exports = {
-    testFixtureDir,
-};
