@@ -1,0 +1,19 @@
+{
+    "files": [
+      {
+        "path": "packages/lwc/dist/engine-dom/esm/es2017/engine-dom.js",
+        "maxSize": "50.98KB",
+        "compression": "gzip"
+      },
+      {
+        "path": "packages/lwc/dist/synthetic-shadow/esm/es2017/synthetic-shadow.js",
+        "maxSize": "36.57KB",
+        "compression": "gzip"
+      },
+      {
+        "path": "packages/lwc/dist/wire-service/esm/es2017/wire-service.js",
+        "maxSize": "1.86KB",
+        "compression": "gzip"
+      }
+    ]
+  }
