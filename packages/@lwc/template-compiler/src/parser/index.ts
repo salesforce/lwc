@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5-with-errors';
+import * as parse5 from 'parse5';
 import { hasOwnProperty } from '@lwc/shared';
 
 import {
@@ -136,7 +136,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     const root = parseElement(templateRoot);
 
-    function parseElement(elementNode: parse5.AST.Default.Element, parent?: IRElement): IRElement {
+    function parseElement(elementNode: parse5.Element, parent?: IRElement): IRElement {
         const element = createElement(elementNode, parent);
 
         applyForEach(element);
@@ -182,11 +182,11 @@ export default function parse(source: string, state: State): TemplateParseResult
         parent.children = parsedChildren;
     }
 
-    function parseText(node: parse5.AST.Default.TextNode, parent: IRElement): IRText[] {
+    function parseText(node: parse5.TextNode, parent: IRElement): IRText[] {
         const parsedTextNodes: IRText[] = [];
 
         // Extract the raw source to avoid HTML entity decoding done by parse5
-        const location = node.__location!;
+        const location = node.sourceCodeLocation!;
         const rawText = cleanTextNode(source.slice(location.startOffset, location.endOffset));
 
         if (!rawText.trim().length) {
@@ -228,14 +228,14 @@ export default function parse(source: string, state: State): TemplateParseResult
         return parsedTextNodes;
     }
 
-    function parseComment(node: parse5.AST.Default.CommentNode, parent: IRElement): IRComment {
+    function parseComment(node: parse5.CommentNode, parent: IRElement): IRComment {
         const value = decodeTextContent(node.data);
         return createComment(node, parent, value);
     }
 
     function getTemplateRoot(
-        documentFragment: parse5.AST.Default.DocumentFragment
-    ): parse5.AST.Default.Element | undefined {
+        documentFragment: parse5.DocumentFragment
+    ): parse5.Element | undefined {
         // Filter all the empty text nodes
         const validRoots = documentFragment.childNodes.filter(
             (child) =>
@@ -627,7 +627,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             return warnAt(
                 ParserDiagnostics.MISSING_KEY_IN_ITERATOR,
                 [element.tag],
-                element.__original.__location!
+                element.location!
             );
         }
     }
@@ -645,7 +645,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function applySlot(element: IRElement) {
-        const { tag, attrsList } = element;
+        const { tag, __attrsList: attrs } = element;
 
         // Early exit if the element is not a slot
         if (tag !== 'slot') {
@@ -661,7 +661,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         // Can't handle slots in applySlot because it would be too late for class and style attrs
         if (getRenderMode(element) === LWCDirectiveRenderMode.light) {
-            const invalidAttrs = attrsList
+            const invalidAttrs = attrs
                 .filter(({ name }) => name !== 'name')
                 .map(({ name }) => name);
 
@@ -706,9 +706,9 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function applyAttributes(element: IRElement) {
-        const { tag, attrsList } = element;
+        const { tag, __attrsList: attrs } = element;
 
-        attrsList.forEach((rawAttr) => {
+        attrs.forEach((rawAttr) => {
             const attr = getTemplateAttribute(element, attributeName(rawAttr));
             if (!attr) {
                 return;
@@ -787,7 +787,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateElement(element: IRElement) {
-        const { tag, parent, __original: node } = element;
+        const { tag, namespace, parent, location, __original: node } = element;
         const isRoot = !parent;
 
         if (isRoot) {
@@ -809,19 +809,20 @@ export default function parse(source: string, state: State): TemplateParseResult
         // location information. For example when a <table> element has a <tr> child element, parse5
         // creates a <tbody> element in the middle without location information. In this case, we
         // can safely skip the closing tag validation.
-        if (node.__location) {
-            const { startTag, endTag } = node.__location;
+        if (location) {
+            const { startTag, endTag } = location;
             const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
             const hasClosingTag = Boolean(endTag);
 
-            if (!isVoidElement && !hasClosingTag) {
+            // TODO [#000]: Understand why endTag is not present on certain SVG elements.
+            if (namespace === HTML_NAMESPACE_URI && !isVoidElement && !hasClosingTag) {
                 addDiagnostic(
                     generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
                         messageArgs: [element.tag],
                         origin: {
                             location: {
-                                line: startTag.startLine || startTag.line,
-                                column: startTag.startCol || startTag.col,
+                                line: startTag.startLine,
+                                column: startTag.startCol,
                                 start: startTag.startOffset,
                                 length: startTag.endOffset - startTag.startOffset,
                             },
@@ -891,9 +892,9 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateAttributes(element: IRElement) {
-        const { tag, attrsList, __original: node } = element;
+        const { tag, __attrsList: attrs, __original: node } = element;
 
-        attrsList.forEach((attr) => {
+        attrs.forEach((attr) => {
             const attrName = attr.name;
 
             if (isProhibitedIsAttribute(attrName)) {
@@ -946,7 +947,6 @@ export default function parse(source: string, state: State): TemplateParseResult
         pattern: string | RegExp
     ): IRAttribute | undefined {
         const node = el.__original;
-        const nodeLocation = node.__location!;
 
         const matching = getAttribute(el, pattern);
         if (!matching) {
@@ -957,7 +957,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
         // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state
-        const location = nodeLocation.attrs[name.toLowerCase()];
+        const location = el.location.attrs[name.toLowerCase()];
         const rawAttribute = getSource(source, location);
 
         // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
@@ -1025,27 +1025,25 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function warnOnElement(
         errorInfo: LWCErrorInfo,
-        node: parse5.AST.Default.Node,
+        node: parse5.Element | parse5.TextNode | parse5.CommentNode,
         messageArgs?: any[]
     ) {
         const getLocation = (
-            toLocate?: parse5.AST.Node
+            node?: parse5.Element | parse5.TextNode | parse5.CommentNode
         ): { line: number; column: number; start: number; length: number } => {
-            if (!toLocate) {
+            if (!node) {
                 return { line: 0, column: 0, start: 0, length: 0 };
             }
 
-            const location = (toLocate as parse5.AST.Default.Element).__location;
+            const location = node.sourceCodeLocation;
 
-            if (!location) {
-                return getLocation(treeAdapter.getParentNode(toLocate));
+            if (location) {
+                return normalizeLocation(location);
+            } else if (treeAdapter.isElementNode(node)) {
+                const parent = treeAdapter.getParentNode(node) as parse5.Element;
+                return getLocation(parent);
             } else {
-                return {
-                    line: location.line || location.startLine,
-                    column: location.col || location.startCol,
-                    start: location.startOffset,
-                    length: location.endOffset - location.startOffset,
-                };
+                throw new Error('Invalid element');
             }
         };
 
@@ -1059,11 +1057,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         );
     }
 
-    function warnAt(
-        errorInfo: LWCErrorInfo,
-        messageArgs?: any[],
-        location?: parse5.MarkupData.Location
-    ) {
+    function warnAt(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location) {
         addDiagnostic(
             generateCompilerDiagnostic(errorInfo, {
                 messageArgs,
@@ -1074,8 +1068,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         );
     }
 
-    // TODO [#1286]: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
-    function normalizeLocation(location?: parse5.MarkupData.Location): {
+    function normalizeLocation(location?: parse5.Location): {
         line: number;
         column: number;
         start: number;
@@ -1089,8 +1082,8 @@ export default function parse(source: string, state: State): TemplateParseResult
         if (location) {
             const { startOffset, endOffset } = location;
 
-            line = location.line || location.startLine;
-            column = location.col || location.startCol;
+            line = location.startLine;
+            column = location.startCol;
             start = startOffset;
             length = endOffset - startOffset;
         }

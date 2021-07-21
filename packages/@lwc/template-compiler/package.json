@@ -20,11 +20,9 @@
     },
     "devDependencies": {
         "@types/estree": "0.0.48",
-        "@types/he": "^1.1.1"
+        "@types/he": "^1.1.1",
+        "@types/parse5": "^6.0.1"
     },
-    "files": [
-        "dist/"
-    ],
     "dependencies": {
         "@lwc/errors": "2.2.9",
         "@lwc/shared": "2.2.9",
@@ -33,8 +31,11 @@
         "estree-walker": "~2.0.2",
         "esutils": "~2.0.3",
         "he": "~1.2.0",
-        "parse5-with-errors": "~4.0.4"
+        "parse5": "~6.0.1"
     },
+    "files": [
+        "dist/"
+    ],
     "publishConfig": {
         "access": "public"
     }

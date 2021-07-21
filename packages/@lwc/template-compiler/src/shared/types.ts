@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5-with-errors';
+import * as parse5 from 'parse5';
 import { CompilerDiagnostic } from '@lwc/errors';
 
 export type TemplateIdentifier = { type: 'Identifier'; name: string };
@@ -28,11 +28,6 @@ export type TemplateParseResult = {
     root?: IRElement | undefined;
     warnings: CompilerDiagnostic[];
 };
-
-export type HTMLComment = parse5.AST.Default.CommentNode;
-export type HTMLText = parse5.AST.Default.TextNode;
-export type HTMLElement = parse5.AST.Default.Element;
-export type HTMLNode = HTMLElement | HTMLComment | HTMLText;
 
 export interface ForEach {
     expression: TemplateExpression;
@@ -65,17 +60,22 @@ export interface LWCDirectives {
     preserveComments?: IRBooleanAttribute;
 }
 
-export interface IRElement {
+export interface IRBaseNode {
+    type: string;
+    parent?: IRElement;
+    location: parse5.Location;
+    __original: parse5.Node;
+}
+
+export interface IRElement extends IRBaseNode {
     type: 'element';
     tag: string;
     namespace: string;
-
-    attrsList: parse5.AST.Default.Attribute[];
-
-    parent?: IRElement;
     children: IRNode[];
 
-    __original: HTMLElement;
+    __original: parse5.Element;
+    __attrsList: parse5.Attribute[];
+    location: parse5.ElementLocation;
 
     component?: string;
 
@@ -95,22 +95,16 @@ export interface IRElement {
     slotName?: string;
 }
 
-export interface IRText {
+export interface IRText extends IRBaseNode {
     type: 'text';
     value: string | TemplateExpression;
-
-    parent?: IRElement;
-
-    __original: HTMLText;
+    __original: parse5.TextNode;
 }
 
-export interface IRComment {
+export interface IRComment extends IRBaseNode {
     type: 'comment';
     value: string;
-
-    parent?: IRElement;
-
-    __original: HTMLComment;
+    __original: parse5.CommentNode;
 }
 
 export type IRNode = IRComment | IRElement | IRText;
@@ -123,7 +117,7 @@ export enum IRAttributeType {
 
 export interface IRBaseAttribute {
     name: string;
-    location: parse5.MarkupData.Location;
+    location: parse5.Location;
     type: IRAttributeType;
 }
 

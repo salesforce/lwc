@@ -4,17 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5-with-errors';
+import * as parse5 from 'parse5';
 import * as he from 'he';
+
+import defaultTreeAdapter from 'parse5/lib/tree-adapters/default';
 
 import { CompilerDiagnostic, generateCompilerDiagnostic, ParserDiagnostics } from '@lwc/errors';
 
-export const treeAdapter = parse5.treeAdapters.default;
+export const treeAdapter = defaultTreeAdapter;
 
 export function parseHTML(source: string) {
     const errors: CompilerDiagnostic[] = [];
 
-    const onParseError = (err: parse5.Errors.ParsingError) => {
+    const onParseError = (err: parse5.ParsingError) => {
         const { code, startLine, startCol, startOffset, endOffset } = err;
 
         errors.push(
@@ -33,9 +35,9 @@ export function parseHTML(source: string) {
     };
 
     const fragment = parse5.parseFragment(source, {
-        locationInfo: true,
+        sourceCodeLocationInfo: true,
         onParseError,
-    }) as parse5.AST.Default.DocumentFragment;
+    });
 
     return {
         fragment,
@@ -43,7 +45,7 @@ export function parseHTML(source: string) {
     };
 }
 
-export function getSource(source: string, location: parse5.MarkupData.Location): string {
+export function getSource(source: string, location: parse5.Location): string {
     const { startOffset, endOffset } = location;
     return source.slice(startOffset, endOffset);
 }
