@@ -4,7 +4,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, c: api_custom_element, t: api_text } = $api;
   return [
     api_element(
-      "unknonwtag",
+      "unknowntag",
       {
         key: 0,
       },

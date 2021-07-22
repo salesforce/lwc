@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       [
         api_element(
-          "unkonwn",
+          "unknown",
           {
             key: 1,
           },

@@ -97,14 +97,14 @@ export function cleanTextNode(value: string): string {
  *
  *  <template>
  *    <tr>
- *      <unkonwn></unkonwn>
+ *      <unknown></unknown>
  *    </tr>
  *  </template>
  *
  * There will be a single child text node of the <tr> tag.  It's value will
  * be a handful of whitespace characters.  The slice of the original source
  * using start and end offsets will include whitespace plus
- * "<unkonwn></unkonwn>" as a raw string.
+ * "<unknown></unknown>" as a raw string.
  *
  * This function strips out the unparsed non-conforming HTML.
  */
