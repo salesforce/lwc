@@ -30,7 +30,6 @@ import {
 } from '../shared/types';
 
 import CodeGen from './codegen';
-import { bindExpression } from './scope';
 import {
     identifierFromComponentName,
     objectToAST,
@@ -64,7 +63,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Check wether it has the special directive lwc:dynamic
         if (element.lwc && element.lwc.dynamic) {
-            const expression = bindExpression(element.lwc.dynamic, element);
+            const expression = codeGen.genBindExpression(element.lwc.dynamic, element);
             res = codeGen.genDynamicElement(element.tag, expression, databag, children);
         } else if (isCustomElement(element)) {
             // Make sure to register the component
@@ -95,6 +94,10 @@ function transform(codeGen: CodeGen): t.Expression {
 
         let res = applyTemplateIf(element, children);
 
+        if (t.isSpreadElement(res)) {
+            res = t.arrayExpression([res]);
+        }
+
         if (element.forEach) {
             res = applyTemplateFor(element, res);
         } else if (element.forOf) {
@@ -110,7 +113,9 @@ function transform(codeGen: CodeGen): t.Expression {
 
     function transformText(text: IRText): t.Expression {
         const { value } = text;
-        return codeGen.genText(typeof value === 'string' ? value : bindExpression(value, text));
+        return codeGen.genText(
+            typeof value === 'string' ? value : codeGen.genBindExpression(value, text)
+        );
     }
 
     function transformComment(comment: IRComment): t.Expression {
@@ -122,6 +127,15 @@ function transform(codeGen: CodeGen): t.Expression {
             let expr;
 
             if (isElement(child)) {
+                // When the same element have if and forEach/forOf directives, we must create two scopes.
+                if (child.if) {
+                    codeGen.createScope();
+                }
+
+                if (child.forEach || child.forOf) {
+                    codeGen.createScope();
+                }
+
                 expr = isTemplate(child) ? transformTemplate(child) : transformElement(child);
             } else if (isTextNode(child)) {
                 expr = transformText(child);
@@ -146,16 +160,21 @@ function transform(codeGen: CodeGen): t.Expression {
     function applyInlineIf(
         element: IRElement,
         node: t.Expression,
-        testExpression?: t.Expression,
         falseValue?: t.Expression
     ): t.Expression {
         if (!element.if) {
             return node;
         }
 
-        if (!testExpression) {
-            testExpression = bindExpression(element.if!, element);
-        }
+        const ifFn = codeGen.currentScope.setFn(
+            [],
+            t.blockStatement([t.returnStatement(node)]),
+            'if'
+        );
+
+        codeGen.popScope();
+
+        const testExpression = codeGen.genBindExpression(element.if!, element);
 
         let leftExpression: t.Expression;
         const modifier = element.ifModifier!;
@@ -171,7 +190,11 @@ function transform(codeGen: CodeGen): t.Expression {
             });
         }
 
-        return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
+        const falsyArray = t.isArrayExpression(node)
+            ? t.arrayExpression(node.elements.map(() => falseValue ?? t.literal(null)))
+            : falseValue ?? t.literal(null);
+
+        return t.conditionalExpression(leftExpression, t.callExpression(ifFn, []), falsyArray);
     }
 
     function applyInlineFor(element: IRElement, node: t.Expression) {
@@ -185,12 +208,14 @@ function transform(codeGen: CodeGen): t.Expression {
             params.push(index);
         }
 
-        const iterable = bindExpression(expression, element);
-        const iterationFunction = t.functionExpression(
-            null,
+        const iterationFunction = codeGen.currentScope.setFn(
             params,
-            t.blockStatement([t.returnStatement(node)])
+            t.blockStatement([t.returnStatement(node)]),
+            'foreach'
         );
+        codeGen.popScope();
+
+        const iterable = codeGen.genBindExpression(expression, element);
 
         return codeGen.genIterator(iterable, iterationFunction);
     }
@@ -217,17 +242,20 @@ function transform(codeGen: CodeGen): t.Expression {
             )
         );
 
-        const iterable = bindExpression(expression, element);
-        const iterationFunction = t.functionExpression(
-            null,
+        const iterationFunction = codeGen.currentScope.setFn(
             iteratorArgs,
             t.blockStatement([
                 t.variableDeclaration('const', [
                     t.variableDeclarator(t.identifier(iteratorName), iteratorObjet),
                 ]),
                 t.returnStatement(node),
-            ])
+            ]),
+            'forof'
         );
+
+        codeGen.popScope();
+
+        const iterable = codeGen.genBindExpression(expression, element);
 
         return codeGen.genIterator(iterable, iterationFunction);
     }
@@ -250,25 +278,31 @@ function transform(codeGen: CodeGen): t.Expression {
         return applyInlineFor(element, expression);
     }
 
-    function applyTemplateIf(element: IRElement, fragmentNodes: t.Expression): t.Expression {
+    function applyTemplateIf(
+        element: IRElement,
+        fragmentNodes: t.Expression
+    ): t.Expression | t.SpreadElement {
         if (!element.if) {
             return fragmentNodes;
         }
 
         if (t.isArrayExpression(fragmentNodes)) {
-            // Bind the expression once for all the template children
-            const testExpression = bindExpression(element.if!, element);
+            // Notice that no optimization can be done when there's only one element and is a spread element.
+            if (
+                fragmentNodes.elements.length === 1 &&
+                fragmentNodes.elements[0]?.type !== 'SpreadElement'
+            ) {
+                return applyInlineIf(element, fragmentNodes.elements[0]!);
+            }
 
-            return t.arrayExpression(
-                fragmentNodes.elements.map((child) =>
-                    child !== null
-                        ? applyInlineIf(element, child as t.Expression, testExpression)
-                        : null
-                )
-            );
+            const ifConditional = applyInlineIf(element, fragmentNodes);
+
+            // This will generate something like ...$cv1_0 ? if2_0() : [null, null]; notice that the
+            // conditional expression has precedence
+            return t.spreadElement(ifConditional);
         } else {
             // If the template has a single children, make sure the ternary expression returns an array
-            return applyInlineIf(element, fragmentNodes, undefined, t.arrayExpression([]));
+            return applyInlineIf(element, fragmentNodes, t.arrayExpression([]));
         }
     }
 
@@ -278,7 +312,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         switch (attr.type) {
             case IRAttributeType.Expression: {
-                const expression = bindExpression(attr.value, element);
+                const expression = codeGen.genBindExpression(attr.value, element);
 
                 // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
                 if (isUsedAsAttribute && isBooleanAttribute(attr.name, tagName)) {
@@ -375,7 +409,7 @@ function transform(codeGen: CodeGen): t.Expression {
                     // - string values are parsed and turned into a `classMap` object associating
                     //   each individual class name with a `true` boolean.
                     if (value.type === IRAttributeType.Expression) {
-                        const classExpression = bindExpression(value.value, element);
+                        const classExpression = codeGen.genBindExpression(value.value, element);
                         data.push(t.property(t.identifier('className'), classExpression));
                     } else if (value.type === IRAttributeType.String) {
                         const classNames = parseClassNames(value.value);
@@ -390,7 +424,7 @@ function transform(codeGen: CodeGen): t.Expression {
                     // - string values are parsed and turned into a `styleMap` object associating
                     //   each property name with its value.
                     if (value.type === IRAttributeType.Expression) {
-                        const styleExpression = bindExpression(value.value, element);
+                        const styleExpression = codeGen.genBindExpression(value.value, element);
                         data.push(t.property(t.identifier('style'), styleExpression));
                     } else if (value.type === IRAttributeType.String) {
                         const styleMap = parseStyleText(value.value);
@@ -430,7 +464,7 @@ function transform(codeGen: CodeGen): t.Expression {
         // Key property on VNode
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
-            const forKeyExpression = bindExpression(forKey, element);
+            const forKeyExpression = codeGen.genBindExpression(forKey, element);
             const generatedKey = codeGen.genKey(t.literal(codeGen.generateKey()), forKeyExpression);
             data.push(t.property(t.identifier('key'), generatedKey));
         } else {
@@ -442,7 +476,7 @@ function transform(codeGen: CodeGen): t.Expression {
         // Event handler
         if (on) {
             const onObj = objectToAST(on, (key) => {
-                const componentHandler = bindExpression(on[key], element);
+                const componentHandler = codeGen.genBindExpression(on[key], element);
                 const handler = codeGen.genBind(componentHandler);
 
                 return memorizeHandler(codeGen, element, componentHandler, handler);
@@ -483,6 +517,8 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
             ),
         ]),
     ];
+
+    codeGen.currentScope.serializeInto(body);
 
     if (Object.keys(codeGen.usedSlots).length) {
         body.push(
