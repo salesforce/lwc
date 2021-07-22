@@ -32,6 +32,7 @@
     "@rollup/plugin-typescript": "^8.2.3",
     "@types/acorn": "^4.0.6",
     "@types/babel__core": "^7.1.15",
+    "@types/glob": "^7.1.4",
     "@types/jest": "^26.0.24",
     "@types/node": "^16.0.1",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
