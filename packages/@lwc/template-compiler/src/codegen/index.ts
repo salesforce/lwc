@@ -108,9 +108,14 @@ function transform(codeGen: CodeGen): t.Expression {
         }
     }
 
-    function transformText(text: IRText): t.Expression {
-        const { value } = text;
-        return codeGen.genText(typeof value === 'string' ? value : bindExpression(value, text));
+    function transformText(consecutiveText: IRText[]): t.Expression {
+        return codeGen.genText(
+            consecutiveText.map((text) => {
+                const { value } = text;
+
+                return typeof value === 'string' ? value : bindExpression(value, text);
+            })
+        );
     }
 
     function transformComment(comment: IRComment): t.Expression {
@@ -118,13 +123,28 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformChildren(children: IRNode[]): t.Expression {
-        const res = children.reduce<t.Expression[]>((acc, child) => {
+        let skipUntilIndex = 0;
+
+        const res = children.reduce<t.Expression[]>((acc, child, currentIndex, arr) => {
+            if (currentIndex < skipUntilIndex) {
+                return acc;
+            }
+
             let expr;
 
             if (isElement(child)) {
                 expr = isTemplate(child) ? transformTemplate(child) : transformElement(child);
             } else if (isTextNode(child)) {
-                expr = transformText(child);
+                const continuousText = [];
+                let nextNode: IRNode = child;
+                skipUntilIndex = currentIndex;
+
+                do {
+                    continuousText.push(nextNode);
+                    nextNode = arr[++skipUntilIndex];
+                } while (nextNode && isTextNode(nextNode));
+
+                expr = transformText(continuousText);
             } else if (isCommentNode(child) && codeGen.preserveComments) {
                 expr = transformComment(child);
             }
