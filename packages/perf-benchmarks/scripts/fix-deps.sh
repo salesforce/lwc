@@ -14,12 +14,12 @@ set -e
 
 mkdir -p ./node_modules/@lwc
 
-rm -fr ./node_modules/@lwc/engine-dom \
-  ./node_modules/@lwc/engine-server \
-  ./node_modules/@lwc/synthetic-shadow \
-  ./node_modules/perf-benchmarks-components
-
-ln -sf ../../../../packages/@lwc/engine-dom ./node_modules/@lwc/engine-dom
-ln -sf ../../../../packages/@lwc/engine-server ./node_modules/@lwc/engine-server
-ln -sf ../../../../packages/@lwc/synthetic-shadow ./node_modules/@lwc/synthetic-shadow
-ln -sf ../../../packages/perf-benchmarks-components ./node_modules/perf-benchmarks-components
+for pkg in @lwc/engine-dom @lwc/engine-server @lwc/synthetic-shadow perf-benchmarks-components; do
+  if [ ! -L "./node_modules/$pkg" ]; then
+    if [[ "$pkg" == *'/'* ]]; then # contains a / character, go one level deeper
+      ln -s "../../../../packages/$pkg" "./node_modules/$pkg"
+    else
+      ln -s "../../../packages/$pkg" "./node_modules/$pkg"
+    fi
+  fi
+done

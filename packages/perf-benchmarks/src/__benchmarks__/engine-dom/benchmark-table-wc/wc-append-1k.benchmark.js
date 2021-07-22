@@ -9,6 +9,7 @@ import Row from 'perf-benchmarks-components/dist/dom/benchmark/tableComponentRow
 
 import Store from 'perf-benchmarks-components/dist/dom/benchmark/store/store.js';
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
+import { benchmark, before, run, after } from '../../../utils/benchmark-framework.js';
 
 customElements.define('benchmark-table-component', Table.CustomElementConstructor);
 // the row can be optionally defined, but this benchmark always do it so we know how costly it is.

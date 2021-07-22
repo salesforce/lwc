@@ -11,8 +11,8 @@
  */
 
 const befores = [];
-const afters = [];
 const runs = [];
+const afters = [];
 
 let error = false;
 
@@ -57,7 +57,4 @@ async function runBenchmark() {
     console.log('Benchmark complete'); // eslint-disable-line no-console
 }
 
-window.before = before;
-window.after = after;
-window.run = run;
-window.benchmark = benchmark;
+export { benchmark, before, after, run };

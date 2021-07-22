@@ -9,7 +9,6 @@ import path from 'path';
 import glob from 'glob';
 import replace from '@rollup/plugin-replace';
 import syntheticShadow from './rollup-plugins/synthetic-shadow';
-import bestTachometerShim from './rollup-plugins/best-tachometer-shim';
 
 // Figure out all the packages we might be importing from perf-benchmarks-components
 // so that we can tell Rollup that those are `external`.
@@ -39,7 +38,6 @@ function createConfig(benchmarkFile) {
         input: benchmarkFile,
         plugins: [
             !isServer && syntheticShadow(),
-            bestTachometerShim(),
             // Replace `import { foo } from 'lwc'` with '@lwc/engine-server' or '@lwc/engine-dom'
             replace({
                 preventAssignment: true,
