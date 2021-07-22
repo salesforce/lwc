@@ -333,8 +333,7 @@ workflows:
             - build
 
       - bundlesize:
-          filters:
-            <<: *deploy_filters
+          <<: *deploy_filters
           requires:
             - build
 
