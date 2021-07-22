@@ -1,36 +1,71 @@
 # Benchmark
 
-## Remote runner
+## Running the benchmarks
 
-If you want to run the benchmark directly from your local machine into the heroku farm, you can execute the following command:
+First, build the benchmarks:
 
-```bash
-yarn build
-cd packages/benchmark
-yarn remote
+```shell
+yarn build:performance
 ```
 
-Note: this is currently skipping the IE11 runner.
+Then run the benchmarks:
 
-## Manual Testing
-
-When the benchmark is not working, the best way to debug it locally is by executing the following command:
-
-```bash
-yarn build
-cd packages/benchmark
-yarn start -- src/__benchmarks__/benchmark-table-component/tablecmp-append-1k.benchmark.js --projects best.headless.config.js
+```shell
+yarn test:performance
 ```
 
-That will build and execute the test for the benchmark specified in the path after `--`. At the same time, it will display the local path information, e.g.:
+To run an individual benchmark, do:
 
-```bash
-Temporary benchmark artifact:
-/var/folders/83/9rs0gwkx1qx0j6z3m8cjfrks0d7341/T/best_hzj62p/lwc-engine-benchmark/tablecmp-append-1k.benchmark/tablecmp-append-1k.benchmark.html
+```shell
+cd packages/perf-benchmarks
+../../node_modules/.bin/tach --config dist/__benchmarks__/path/to/tachometer.json
 ```
 
-If you open that file in your local browser, you should be able to debug the test. Don't forget to open the console and execute the following command to kick off the Best Running in the browser:
+## Manual testing
 
-```js
-BEST.runBenchmark({ iterations: 1 });
+When the benchmark is not working, the best way to debug it locally is to load its HTML file and inspect it in the Chrome DevTools. After building, you can run:
+
+```shell
+cd packages/perf-benchmarks
+../../node_modules/.bin/tach --manual --config dist/__benchmarks__/path/to/tachometer.json
 ```
+
+This will print out the URLs you can use to test manually.
+
+When analyzing with the Chrome DevTools Performance tab, pay special attention to the following performance measures in the "Timing" section:
+
+-   `benchmark-before`
+-   `benchmark-run`
+-   `benchmark-after`
+
+`benchmark-run` is what's actually measured, whereas the `-before` and `-after` measures are just the setup and teardown code.
+
+## Modifying the benchmark components locally
+
+If you're adding new benchmarks with new benchmark components and you want to test those against the tip-of-tree branch, then add this to your `.bashrc` to ensure that the tip-of-tree is overwritten with your local components:
+
+```shell
+export CIRCLE_WORKING_DIRECTORY=/path/to/lwc
+```
+
+## Testing other branches
+
+By default, the benchmark will compare the local code against the latest `master` branch from the `salesforce/lwc` repo. To test against another branch or commit, use the following environment variables when running `yarn build:performance`:
+
+```shell
+BENCHMARK_REPO=https://example.com/repo.git \
+  BENCHMARK_REF=branchOrTagOrCommit \
+  yarn build:performance
+```
+
+You can also use these environment variables to adjust the default benchmark settings:
+
+```shell
+BENCHMARK_SAMPLE_SIZE=50
+BENCHMARK_HORIZON=25%
+BENCHMARK_TIMEOUT=5
+```
+
+See the [Tachometer documentation](https://github.com/Polymer/tachometer) for details on what these mean.
+
+If anything gets messed up when comparing to the other branch, add the `--force-clean-npm-install` flag when running `tach`.

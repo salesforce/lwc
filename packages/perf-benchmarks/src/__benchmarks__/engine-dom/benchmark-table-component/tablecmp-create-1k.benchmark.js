@@ -7,9 +7,10 @@
 
 import { createElement } from 'lwc';
 
-import Table from 'benchmark/tableComponent';
-import Store from 'benchmark/store';
-import { insertComponent, destroyComponent } from 'benchmark/utils';
+import Table from 'perf-benchmarks-components/dist/dom/benchmark/tableComponent/tableComponent.js';
+import Store from 'perf-benchmarks-components/dist/dom/benchmark/store/store.js';
+import { insertComponent, destroyComponent } from '../../../utils/utils.js';
+import { benchmark, before, run, after } from '../../../utils/benchmark-framework.js';
 
 benchmark(`benchmark-table-component/create/1k`, () => {
     let tableElement;

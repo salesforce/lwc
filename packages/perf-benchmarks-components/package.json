@@ -1,0 +1,11 @@
+{
+    "name": "perf-benchmarks-components",
+    "version": "2.2.9",
+    "private": true,
+    "scripts": {
+        "build": "rm -fr dist && rollup -c"
+    },
+    "devDependencies": {
+        "@lwc/rollup-plugin": "2.2.9"
+    }
+}

@@ -7,9 +7,10 @@
 
 import { createElement } from 'lwc';
 
-import SlotUsage from 'benchmark/slotUsageComponent';
-import Store from 'benchmark/store';
-import { insertComponent, destroyComponent } from 'benchmark/utils';
+import SlotUsage from 'perf-benchmarks-components/dist/dom/benchmark/slotUsageComponent/slotUsageComponent.js';
+import Store from 'perf-benchmarks-components/dist/dom/benchmark/store/store.js';
+import { insertComponent, destroyComponent } from '../../../utils/utils.js';
+import { benchmark, before, run, after } from '../../../utils/benchmark-framework.js';
 
 const NUMBER_OF_ROWS = 500;
 

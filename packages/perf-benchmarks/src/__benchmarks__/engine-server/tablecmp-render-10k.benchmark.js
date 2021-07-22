@@ -7,8 +7,9 @@
 
 import { renderComponent } from '@lwc/engine-server';
 
-import Table from 'benchmark/tableComponent';
-import Store from 'benchmark/store';
+import Table from 'perf-benchmarks-components/dist/server/benchmark/tableComponent/tableComponent.js';
+import Store from 'perf-benchmarks-components/dist/server/benchmark/store/store.js';
+import { benchmark, run } from '../../utils/benchmark-framework.js';
 
 benchmark(`benchmark-table-component/render/10k`, () => {
     run(() => {
