@@ -37,7 +37,7 @@ function toMatchFile(
                 fs.unlinkSync(filename);
 
                 snapshotState.updated++;
-                return { pass: true, message: () => {} } as CustomMatcherResult;
+                return { pass: true, message: () => '' };
             } else {
                 snapshotState.unmatched++;
                 return {
@@ -56,7 +56,7 @@ function toMatchFile(
         if (expectedContent === receivedContent) {
             // If the expected file exists and the expected content is matching with the actual
             // content everything is fine.
-            return { pass: true, message: () => {} } as CustomMatcherResult;
+            return { pass: true, message: () => '' };
         } else {
             // If the expected file is present but the content is not matching. if Jest is running
             // with the update snapshot flag override the expected content. Otherwise fails the
@@ -65,7 +65,7 @@ function toMatchFile(
                 fs.writeFileSync(filename, receivedContent);
 
                 snapshotState.updated++;
-                return { pass: true, message: () => {} } as CustomMatcherResult;
+                return { pass: true, message: () => '' };
             } else {
                 snapshotState.unmatched++;
                 return {
@@ -89,7 +89,7 @@ function toMatchFile(
         if (receivedContent === null || receivedContent === undefined) {
             // If expected file doesn't exists and received content is null or undefined everything
             // is fine.
-            return { pass: true, message: () => {} } as CustomMatcherResult;
+            return { pass: true, message: () => '' };
         }
 
         // If expected file doesn't exists but got a received content and if the snapshots
@@ -98,7 +98,7 @@ function toMatchFile(
             fs.writeFileSync(filename, receivedContent);
 
             snapshotState.added++;
-            return { pass: true, message: () => {} } as CustomMatcherResult;
+            return { pass: true, message: () => '' };
         } else {
             snapshotState.unmatched++;
             return {
