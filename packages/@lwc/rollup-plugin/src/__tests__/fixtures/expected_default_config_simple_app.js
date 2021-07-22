@@ -7,10 +7,10 @@
     var _implicitStylesheets = [stylesheet];
 
     function tmpl$1($api, $cmp, $slotset, $ctx) {
-      const {d: api_dynamic, h: api_element} = $api;
+      const {d: api_dynamic_text, t: api_text, h: api_element} = $api;
       return [api_element("div", {
         key: 0
-      }, [api_dynamic($cmp.x)])];
+      }, [api_text(api_dynamic_text($cmp.x))])];
     }
     var _tmpl$1 = lwc.registerTemplate(tmpl$1);
     tmpl$1.stylesheets = [];

@@ -2,10 +2,10 @@
   'use strict';
 
   function tmpl($api, $cmp, $slotset, $ctx) {
-    const {d: api_dynamic, h: api_element} = $api;
+    const {d: api_dynamic_text, t: api_text, h: api_element} = $api;
     return [api_element("pre", {
       key: 0
-    }, [api_dynamic($cmp.hello)])];
+    }, [api_text(api_dynamic_text($cmp.hello))])];
   }
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];
