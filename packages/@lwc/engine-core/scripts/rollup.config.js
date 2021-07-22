@@ -8,13 +8,13 @@
 /* eslint-env node */
 
 const path = require('path');
-const typescript = require('typescript');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const typescriptPlugin = require('rollup-plugin-typescript');
+const typescriptPlugin = require('@rollup/plugin-typescript');
 
 const babel = require('@babel/core');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
+const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 
 function rollupFeaturesPlugin() {
     return {
@@ -38,11 +38,7 @@ module.exports = {
 
     output: formats.map((format) => {
         return {
-            file: path.resolve(
-                __dirname,
-                '../dist',
-                `engine-core${format === 'cjs' ? '.cjs' : ''}.js`
-            ),
+            file: `engine-core${format === 'cjs' ? '.cjs' : ''}.js`,
             format,
             banner: banner,
             footer: footer,
@@ -55,8 +51,9 @@ module.exports = {
         }),
         typescriptPlugin({
             target: 'es2017',
-            typescript,
+            tsconfig: path.join(__dirname, '../tsconfig.json'),
         }),
+        writeDistAndTypes(),
         rollupFeaturesPlugin(),
     ],
 

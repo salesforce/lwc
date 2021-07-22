@@ -2,8 +2,9 @@
     "extends": "../../../tsconfig.json",
 
     "compilerOptions": {
+        "sourceMap": false,
         "baseUrl": ".",
-        "outDir": "types",
+        "outDir": ".",
         "lib": ["dom", "es2018"]
     },
 

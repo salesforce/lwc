@@ -2,7 +2,11 @@
     "extends": "../../../tsconfig.json",
 
     "compilerOptions": {
-        "lib": ["dom", "es2018"]
+        "sourceMap": false,
+        "lib": ["dom", "es2018"],
+        "outDir": "dist",
+        "declaration": false,
+        "declarationDir": null
     },
 
     "include": ["src/"]

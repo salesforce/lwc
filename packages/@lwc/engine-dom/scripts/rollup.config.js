@@ -8,11 +8,10 @@
 /* eslint-env node */
 
 const path = require('path');
-const typescript = require('typescript');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const typescriptPlugin = require('rollup-plugin-typescript');
-
+const typescriptPlugin = require('@rollup/plugin-typescript');
+const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 const { version } = require('../package.json');
 
 const banner = `/* proxy-compat-disable */`;
@@ -24,11 +23,7 @@ module.exports = {
 
     output: formats.map((format) => {
         return {
-            file: path.resolve(
-                __dirname,
-                '../dist',
-                `engine-dom${format === 'cjs' ? '.cjs' : ''}.js`
-            ),
+            file: `engine-dom${format === 'cjs' ? '.cjs' : ''}.js`,
             format,
             banner: banner,
             footer: footer,
@@ -41,8 +36,9 @@ module.exports = {
         }),
         typescriptPlugin({
             target: 'es2017',
-            typescript,
+            tsconfig: path.join(__dirname, '../tsconfig.json'),
         }),
+        writeDistAndTypes(),
     ],
 
     onwarn({ code, message }) {

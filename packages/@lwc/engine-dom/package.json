@@ -17,7 +17,7 @@
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf dist/ types/",
-        "build": "tsc --emitDeclarationOnly && rollup --config scripts/rollup.config.js"
+        "build": "rollup --config scripts/rollup.config.js"
     },
     "files": [
         "dist/",
