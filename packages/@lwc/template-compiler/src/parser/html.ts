@@ -86,6 +86,58 @@ export function cleanTextNode(value: string): string {
 
     return str;
 }
+/**
+ * In order to support property interpolation within text nodes, we ignore
+ * how parse5 parses text nodes and instead grab the raw source string by
+ * looking at the start and end offsets.  However, if a non-comforming HTML
+ * tag is included in the template, that tag and its children will be
+ * contained within the slice of the raw source string.
+ *
+ * For example, given the following template:
+ *
+ *  <template>
+ *    <tr>
+ *      <unkonwn></unkonwn>
+ *    </tr>
+ *  </template>
+ *
+ * There will be a single child text node of the <tr> tag.  It's value will
+ * be a handful of whitespace characters.  The slice of the original source
+ * using start and end offsets will include whitespace plus
+ * "<unkonwn></unkonwn>" as a raw string.
+ *
+ * This function strips out the unparsed non-conforming HTML.
+ */
+export function omitNonconformingTags(node: parse5.AST.Default.TextNode, sourceSubString: string) {
+    const { startOffset, endOffset } = node.__location!;
+
+    const parent = node.parentNode as parse5.AST.Default.Element;
+    const grandparent = parent?.parentNode as parse5.AST.Default.Element;
+    let parentSibs = (grandparent?.childNodes as Array<parse5.AST.Default.Element>) || [];
+    parentSibs = parentSibs.slice().reverse();
+
+    for (const parentSib of parentSibs) {
+        if (!parentSib?.__location) {
+            continue;
+        }
+        if (parentSib === parent) {
+            continue;
+        }
+
+        const relativeStartOffset = parentSib.__location.startOffset - startOffset;
+        const relativeEndOffset = parentSib.__location.endOffset - endOffset;
+        const parentSibLen = parentSib.__location.endOffset - parentSib.__location.startOffset;
+
+        if (relativeStartOffset >= 0 && relativeEndOffset <= 0) {
+            // This text node envelops a non-comforming HTML tag.
+            sourceSubString =
+                sourceSubString.slice(0, relativeStartOffset) +
+                sourceSubString.slice(relativeStartOffset + parentSibLen);
+        }
+    }
+
+    return sourceSubString;
+}
 
 export function decodeTextContent(source: string): string {
     return he.decode(source);

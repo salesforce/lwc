@@ -14,7 +14,14 @@ import {
     normalizeToDiagnostic,
     ParserDiagnostics,
 } from '@lwc/errors';
-import { cleanTextNode, decodeTextContent, getSource, parseHTML, treeAdapter } from './html';
+import {
+    cleanTextNode,
+    decodeTextContent,
+    getSource,
+    omitNonconformingTags,
+    parseHTML,
+    treeAdapter,
+} from './html';
 
 import {
     attributeName,
@@ -187,7 +194,10 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         // Extract the raw source to avoid HTML entity decoding done by parse5
         const location = node.__location!;
-        const rawText = cleanTextNode(source.slice(location.startOffset, location.endOffset));
+
+        let rawText = source.slice(location.startOffset, location.endOffset);
+        rawText = omitNonconformingTags(node, rawText);
+        rawText = cleanTextNode(rawText);
 
         if (!rawText.trim().length) {
             return parsedTextNodes;
