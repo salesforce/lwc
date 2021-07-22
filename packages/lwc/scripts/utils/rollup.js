@@ -6,8 +6,6 @@
  */
 const path = require('path');
 const { rollup } = require('rollup');
-const typescript = require('typescript');
-const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const rollupReplace = require('@rollup/plugin-replace');
 const { terser: rollupTerser } = require('rollup-plugin-terser');
 const babel = require('@babel/core');
@@ -25,6 +23,30 @@ function rollupFeaturesPlugin(prod) {
     };
 }
 
+function babelCompatPlugin() {
+    return {
+        name: 'rollup-plugin-babel-compat',
+        transform(source) {
+            const { code, map } = babel.transformSync(source, {
+                babelrc: false,
+                configFile: false,
+                presets: [
+                    [
+                        '@babel/preset-env',
+                        {
+                            targets: {
+                                ie: '11',
+                            },
+                            modules: false,
+                        },
+                    ],
+                ],
+            });
+            return { code, map };
+        },
+    };
+}
+
 function rollupConfig(config) {
     const { input, format, name, prod, target, targetDirectory, dir, debug = false } = config;
     const compatMode = target === 'es5';
@@ -38,8 +60,7 @@ function rollupConfig(config) {
                         preventAssignment: true,
                     }),
                 rollupFeaturesPlugin(prod),
-                // TODO [#2422]: remove rollup-plugin-typescript; we're just using it to transpile to ES5
-                compatMode && rollupTypescriptPlugin({ target, typescript, include: ['/**/*.js'] }),
+                compatMode && babelCompatPlugin(),
                 prod && !debug && rollupTerser(),
             ],
         },
