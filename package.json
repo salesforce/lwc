@@ -11,7 +11,7 @@
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "eslint packages/ scripts/ --ext=js,ts",
     "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json,md}'",
-    "bundlesize": "bundlesize --config bundlesize.config.json",
+    "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",
     "build": "lerna run build --ignore perf-benchmarks --ignore perf-benchmarks-components --ignore integration-tests",
     "build:performance": "yarn run build:performance:components && yarn run build:performance:benchmarks",
     "build:performance:components": "lerna exec --scope perf-benchmarks-components -- yarn build",
