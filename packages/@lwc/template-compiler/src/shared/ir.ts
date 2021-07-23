@@ -37,8 +37,8 @@ export function createElement(original: parse5.Element, parent?: IRElement): IRE
         parent,
         children: [],
         location,
+        attrsList: original.attrs,
         __original: original,
-        __attrsList: original.attrs,
     };
 }
 

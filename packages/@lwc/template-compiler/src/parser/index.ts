@@ -645,7 +645,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function applySlot(element: IRElement) {
-        const { tag, __attrsList: attrs } = element;
+        const { tag, attrsList: attrs } = element;
 
         // Early exit if the element is not a slot
         if (tag !== 'slot') {
@@ -706,7 +706,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function applyAttributes(element: IRElement) {
-        const { tag, __attrsList: attrs } = element;
+        const { tag, attrsList: attrs } = element;
 
         attrs.forEach((rawAttr) => {
             const attr = getTemplateAttribute(element, attributeName(rawAttr));
@@ -787,7 +787,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateElement(element: IRElement) {
-        const { tag, namespace, parent, location, __original: node } = element;
+        const { tag, parent, location, __original: node } = element;
         const isRoot = !parent;
 
         if (isRoot) {
@@ -809,13 +809,15 @@ export default function parse(source: string, state: State): TemplateParseResult
         // location information. For example when a <table> element has a <tr> child element, parse5
         // creates a <tbody> element in the middle without location information. In this case, we
         // can safely skip the closing tag validation.
-        if (location) {
+        //
+        // Note: Parse5 currently fails to collect end tag location for element with a tag name
+        // containing an upper case character (inikulin/parse5#352).
+        if (location && tag === tag.toLocaleLowerCase()) {
             const { startTag, endTag } = location;
             const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
             const hasClosingTag = Boolean(endTag);
 
-            // TODO [#000]: Understand why endTag is not present on certain SVG elements.
-            if (namespace === HTML_NAMESPACE_URI && !isVoidElement && !hasClosingTag) {
+            if (!isVoidElement && !hasClosingTag) {
                 addDiagnostic(
                     generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
                         messageArgs: [element.tag],
@@ -892,7 +894,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateAttributes(element: IRElement) {
-        const { tag, __attrsList: attrs, __original: node } = element;
+        const { tag, attrsList: attrs, __original: node } = element;
 
         attrs.forEach((attr) => {
             const attrName = attr.name;

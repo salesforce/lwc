@@ -60,22 +60,26 @@ export interface LWCDirectives {
     preserveComments?: IRBooleanAttribute;
 }
 
-export interface IRBaseNode {
+export interface IRBaseNode<Original extends parse5.Node> {
     type: string;
     parent?: IRElement;
     location: parse5.Location;
-    __original: parse5.Node;
+
+    // TODO [#000]: Remove `__original` property on the `IRBaseNode`.
+    __original: Original;
 }
 
-export interface IRElement extends IRBaseNode {
+export interface IRElement extends IRBaseNode<parse5.Element> {
     type: 'element';
     tag: string;
     namespace: string;
     children: IRNode[];
-
-    __original: parse5.Element;
-    __attrsList: parse5.Attribute[];
     location: parse5.ElementLocation;
+
+    // TODO [#000]: Remove `attrsList` property from `IRElement`. Instead of storing the original
+    // list of attributes produced by parse5 the attribute list should be passed around in the
+    // parser.
+    attrsList: parse5.Attribute[];
 
     component?: string;
 
@@ -95,16 +99,14 @@ export interface IRElement extends IRBaseNode {
     slotName?: string;
 }
 
-export interface IRText extends IRBaseNode {
+export interface IRText extends IRBaseNode<parse5.TextNode> {
     type: 'text';
     value: string | TemplateExpression;
-    __original: parse5.TextNode;
 }
 
-export interface IRComment extends IRBaseNode {
+export interface IRComment extends IRBaseNode<parse5.CommentNode> {
     type: 'comment';
     value: string;
-    __original: parse5.CommentNode;
 }
 
 export type IRNode = IRComment | IRElement | IRText;
