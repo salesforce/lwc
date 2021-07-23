@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-import { treeAdapter } from '../parser/html';
+import treeAdapter from 'parse5/lib/tree-adapters/default';
+
 import {
     TemplateIdentifier,
     TemplateExpression,

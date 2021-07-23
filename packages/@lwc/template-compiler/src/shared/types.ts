@@ -65,7 +65,7 @@ export interface IRBaseNode<Parse5Node extends parse5.Node> {
     parent?: IRElement;
     location: parse5.Location;
 
-    // TODO [#000]: Remove `__original` property on the `IRBaseNode`.
+    // TODO [#2432]: Remove `__original` property on the `IRBaseNode`.
     __original: Parse5Node;
 }
 
@@ -76,7 +76,7 @@ export interface IRElement extends IRBaseNode<parse5.Element> {
     children: IRNode[];
     location: parse5.ElementLocation;
 
-    // TODO [#000]: Remove `attrsList` property from `IRElement`. Instead of storing the original
+    // TODO [#2432]: Remove `attrsList` property from `IRElement`. Instead of storing the original
     // list of attributes produced by parse5 the attribute list should be passed around in the
     // parser.
     attrsList: parse5.Attribute[];

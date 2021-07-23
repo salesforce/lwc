@@ -7,11 +7,7 @@
 import * as parse5 from 'parse5';
 import * as he from 'he';
 
-import defaultTreeAdapter from 'parse5/lib/tree-adapters/default';
-
 import { CompilerDiagnostic, generateCompilerDiagnostic, ParserDiagnostics } from '@lwc/errors';
-
-export const treeAdapter = defaultTreeAdapter;
 
 export function parseHTML(source: string) {
     const errors: CompilerDiagnostic[] = [];

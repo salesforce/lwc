@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
+import treeAdapter from 'parse5/lib/tree-adapters/default';
 import { hasOwnProperty } from '@lwc/shared';
 
 import {
@@ -14,7 +15,7 @@ import {
     normalizeToDiagnostic,
     ParserDiagnostics,
 } from '@lwc/errors';
-import { cleanTextNode, decodeTextContent, getSource, parseHTML, treeAdapter } from './html';
+import { cleanTextNode, decodeTextContent, getSource, parseHTML } from './html';
 
 import {
     attributeName,
