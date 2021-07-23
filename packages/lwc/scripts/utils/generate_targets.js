@@ -21,15 +21,21 @@ module.exports = function generateTargets(targets, opts = {}) {
     let jobsCompleted = 0;
 
     return new Promise((resolve, reject) => {
+        let overallError;
         targets.forEach((config) => {
             workers(config, (err) => {
                 if (err) {
-                    return reject(err);
+                    console.error(err);
+                    overallError = err;
                 }
 
                 if (++jobsCompleted === jobs) {
                     workerFarm.end(workers);
-                    resolve();
+                    if (overallError) {
+                        reject(overallError);
+                    } else {
+                        resolve();
+                    }
                 }
             });
         });
