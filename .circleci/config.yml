@@ -136,6 +136,9 @@ jobs:
       - run:
           name: Run linter
           command: yarn lint
+      - run:
+          name: Check the size of the LWC bundle
+          command: yarn bundlesize
       - save_yarn_cache
       - save_workspace
 

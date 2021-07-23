@@ -96,6 +96,15 @@ yarn test:performance
 
 This will run all performance tests comparing the current code to the latest `master` branch. See the `perf-benchmarks` package's README for more details.
 
+### Bundle size monitoring
+
+```shell
+yarn build
+yarn bundlesize
+```
+
+This will check that the minified bundle sizes don't exceed our thresholds. Our goal is to stay consciously aware of the bundle sizes as the repository grows over time.
+
 ### Types
 
 LWC relies on type annotations.
