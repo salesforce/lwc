@@ -19,7 +19,7 @@ type RenderPrimitive =
     | 'customElement'
     | 'bind'
     | 'text'
-    | 'dynamic'
+    | 'dynamicText'
     | 'dynamicCtor'
     | 'key'
     | 'tabindex'
@@ -41,7 +41,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     dynamicCtor: { name: 'dc', alias: 'api_dynamic_component' },
     bind: { name: 'b', alias: 'api_bind' },
     text: { name: 't', alias: 'api_text' },
-    dynamic: { name: 'd', alias: 'api_dynamic' },
+    dynamicText: { name: 'd', alias: 'api_dynamic_text' },
     key: { name: 'k', alias: 'api_key' },
     tabindex: { name: 'ti', alias: 'api_tab_index' },
     scopedId: { name: 'gid', alias: 'api_scoped_id' },
@@ -131,12 +131,20 @@ export default class CodeGen {
         ]);
     }
 
-    genText(value: string | t.Expression): t.Expression {
-        if (typeof value === 'string') {
-            return this._renderApiCall(RENDER_APIS.text, [t.literal(value)]);
-        } else {
-            return this._renderApiCall(RENDER_APIS.dynamic, [value]);
+    genText(value: Array<string | t.Expression>): t.Expression {
+        const mappedValues = value.map((v) => {
+            return typeof v === 'string'
+                ? t.literal(v)
+                : this._renderApiCall(RENDER_APIS.dynamicText, [v]);
+        });
+
+        let textConcatenation: t.Expression = mappedValues[0];
+
+        for (let i = 1, n = mappedValues.length; i < n; i++) {
+            textConcatenation = t.binaryExpression('+', textConcatenation, mappedValues[i]);
         }
+
+        return this._renderApiCall(RENDER_APIS.text, [textConcatenation]);
     }
 
     genComment(value: string): t.Expression {

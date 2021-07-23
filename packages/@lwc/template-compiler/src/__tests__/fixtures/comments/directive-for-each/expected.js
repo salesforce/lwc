@@ -3,7 +3,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     co: api_comment,
     k: api_key,
-    d: api_dynamic,
+    d: api_dynamic_text,
+    t: api_text,
     h: api_element,
     i: api_iterator,
   } = $api;
@@ -21,7 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
               key: api_key(1, color),
             },
-            [api_dynamic(color)]
+            [api_text(api_dynamic_text(color))]
           ),
         ];
       })
