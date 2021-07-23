@@ -18,16 +18,21 @@ import {
 export function createElement(original: parse5.Element, parent?: IRElement): IRElement {
     let location = original.sourceCodeLocation;
 
-    // TODO [#000]: Add warning when not available.
-
+    // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
+    // location information. For example when a <table> element has a <tr> child element, parse5
+    // creates a <tbody> element in the middle without location information. In this case, we
+    // can safely skip the closing tag validation.
+    //
+    // TODO [#248]: Report a warning when location is not available indicating the original HTML
+    // template is not valid.
     let current = original;
-    while (!location && original.parentNode && treeAdapter.isElementNode(original.parentNode)) {
+    while (!location && treeAdapter.isElementNode(original.parentNode)) {
         current = original.parentNode;
         location = current.sourceCodeLocation;
     }
 
     if (!location) {
-        throw new Error('Invalid source location');
+        throw new Error('Invalid element AST node. Missing source code location.');
     }
 
     return {
@@ -48,7 +53,7 @@ export function createText(
     value: string | TemplateExpression
 ): IRText {
     if (!original.sourceCodeLocation) {
-        throw new Error('Invalid source location');
+        throw new Error('Invalid text AST node. Missing source code location.');
     }
 
     return {
@@ -66,7 +71,7 @@ export function createComment(
     value: string
 ): IRComment {
     if (!original.sourceCodeLocation) {
-        throw new Error('Invalid source location');
+        throw new Error('Invalid comment AST node. Missing source code location.');
     }
 
     return {

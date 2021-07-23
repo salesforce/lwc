@@ -783,33 +783,12 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         // Check if a non-void element has a matching closing tag.
         //
-        // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
-        // location information. For example when a <table> element has a <tr> child element, parse5
-        // creates a <tbody> element in the middle without location information. In this case, we
-        // can safely skip the closing tag validation.
-        //
         // Note: Parse5 currently fails to collect end tag location for element with a tag name
         // containing an upper case character (inikulin/parse5#352).
-        if (location && tag === tag.toLocaleLowerCase()) {
-            const { startTag, endTag } = location;
-            const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
-            const hasClosingTag = Boolean(endTag);
-
-            if (!isVoidElement && !hasClosingTag) {
-                addDiagnostic(
-                    generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
-                        messageArgs: [element.tag],
-                        origin: {
-                            location: {
-                                line: startTag.startLine,
-                                column: startTag.startCol,
-                                start: startTag.startOffset,
-                                length: startTag.endOffset - startTag.startOffset,
-                            },
-                        },
-                    })
-                );
-            }
+        const hasClosingTag = Boolean(location.endTag);
+        const isVoidElement = VOID_ELEMENT_SET.has(element.tag);
+        if (!isVoidElement && !hasClosingTag && tag === tag.toLocaleLowerCase()) {
+            warnOnIRNode(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, element, [element.tag]);
         }
 
         if (tag === 'style' && namespace === HTML_NAMESPACE_URI) {
@@ -1045,6 +1024,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             start = startOffset;
             length = endOffset - startOffset;
         }
+
         return { line, column, start, length };
     }
 
