@@ -136,6 +136,9 @@ jobs:
       - run:
           name: Run linter
           command: yarn lint
+      - run:
+          name: Check the size of the LWC bundle
+          command: yarn bundlesize
       - save_yarn_cache
       - save_workspace
 
@@ -212,15 +215,6 @@ jobs:
       - stop_sauce_connect
 
 
-  bundlesize:
-    executor: node
-    steps:
-      - load_workspace
-      - run:
-          name: Check the size of LWC bundle
-          command: yarn bundlesize
-
-
 # Workflows definition
 workflows:
   version: 2
@@ -241,12 +235,6 @@ workflows:
             <<: *ignore_forks
           requires:
             - build
-      
-      - bundlesize:
-          filters:
-            <<: *ignore_forks
-          requires:
-            - build
 
       - test_integration:
           filters:
@@ -254,7 +242,6 @@ workflows:
           requires:
             - test_unit
             - test_karma
-            - bundlesize
 
       - test_integration_compat:
           filters:
@@ -262,7 +249,6 @@ workflows:
           requires:
             - test_unit
             - test_karma
-            - bundlesize
 
   build_and_test_for_forked_repos:
     jobs:
@@ -276,12 +262,6 @@ workflows:
           requires:
             - build
 
-      - bundlesize:
-          filters:
-            <<: *only_forks
-          requires:
-            - build
-
       - hold:
           type: approval # presents manual approval button in the UI
           filters:
@@ -289,7 +269,6 @@ workflows:
           requires:
             - build
             - test_unit
-            - bundlesize
 
       - test_karma:
           context: lwc-sauce-labs
@@ -306,7 +285,6 @@ workflows:
           requires:
             - test_unit
             - test_karma
-            - bundlesize
 
       - test_integration_compat:
           context: lwc-sauce-labs
@@ -315,7 +293,6 @@ workflows:
           requires:
             - test_unit
             - test_karma
-            - bundlesize
 
   build_and_test_and_deploy:
     jobs:
@@ -332,24 +309,17 @@ workflows:
           requires:
             - build
 
-      - bundlesize:
-          <<: *deploy_filters
-          requires:
-            - build
-
       - test_integration:
           <<: *deploy_filters
           requires:
             - test_unit
             - test_karma
-            - bundlesize
 
       - test_integration_compat:
           <<: *deploy_filters
           requires:
             - test_unit
             - test_karma
-            - bundlesize
 
       - deploy:
           <<: *deploy_filters
