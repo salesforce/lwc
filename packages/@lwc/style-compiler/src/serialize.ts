@@ -6,6 +6,7 @@
  */
 import postcss, { Result, Declaration } from 'postcss';
 import postcssValueParser from 'postcss-value-parser';
+import SelectorParser from 'postcss-selector-parser/dist/parser';
 
 import { Config } from './index';
 import { isImportMessage, isVarFunctionMessage } from './utils/message';
@@ -174,34 +175,35 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
     return generateExpressionFromTokens(tokens);
 }
 
-// TODO [#1288]: this code needs refactor, it could be simpler by using a native post-css walker
 function tokenizeCssSelector(data: string): Token[] {
     data = data.replace(/( {2,})/gm, ' '); // remove when there are more than two spaces
+
     const tokens: Token[] = [];
-    let pos = 0;
-    let next = 0;
-    const max = data.length;
 
-    while (pos < max) {
-        if (data.indexOf(`[${HOST_ATTRIBUTE}]`, pos) === pos) {
-            tokens.push({ type: TokenType.identifier, value: HOST_SELECTOR_IDENTIFIER });
+    // Directly use the SelectorParser from postcss-selector-parser because this is the only
+    // way to get the tokens without the full AST. We want the tokens rather than the AST
+    // because we're outputting a flat array, not a tree.
+    const parser = new SelectorParser(data);
 
-            next += HOST_ATTRIBUTE.length + 2;
-        } else if (data.indexOf(`[${SHADOW_ATTRIBUTE}]`, pos) === pos) {
-            tokens.push({ type: TokenType.identifier, value: SHADOW_SELECTOR_IDENTIFIER });
+    for (let i = 0; i < parser.tokens.length; i++) {
+        const token = parser.tokens[i];
+        // token[5] is the start index, token[6] is the end character
+        // See: https://github.com/postcss/postcss-selector-parser/blob/e64151e/src/tokenize.js#L280-L288
+        const stringToken = data.substring(token[5], token[6]);
 
-            next += SHADOW_ATTRIBUTE.length + 2;
+        if (stringToken === HOST_ATTRIBUTE || stringToken === SHADOW_ATTRIBUTE) {
+            // Omit the previous and next tokens since they are the '[' and ']' characters
+            tokens[tokens.length - 1] = {
+                type: TokenType.identifier,
+                value:
+                    stringToken === HOST_ATTRIBUTE
+                        ? HOST_SELECTOR_IDENTIFIER
+                        : SHADOW_SELECTOR_IDENTIFIER,
+            };
+            i++;
         } else {
-            next += 1;
-
-            while (data.charAt(next) !== '[' && next < max) {
-                next++;
-            }
-
-            tokens.push({ type: TokenType.text, value: data.slice(pos, next) });
+            tokens.push({ type: TokenType.text, value: stringToken });
         }
-
-        pos = next;
     }
 
     return tokens;
