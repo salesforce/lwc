@@ -90,7 +90,7 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
-    function transformTemplate(element: IRElement): t.Expression | t.ArrayExpression['elements'] {
+    function transformTemplate(element: IRElement): t.Expression | t.Expression[] {
         const children = transformChildren(element.children);
 
         let res = applyTemplateIf(element, children);
@@ -102,7 +102,9 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         if (t.isArrayExpression(res) && element.if) {
-            return res.elements;
+            // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
+            // typecast it to t.Expression[]
+            return res.elements as t.Expression[];
         } else {
             return res;
         }
@@ -123,34 +125,46 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformChildren(children: IRNode[]): t.Expression {
-        let skipUntilIndex = 0;
+        const res: t.Expression[] = [];
+        const childrenIterator = children[Symbol.iterator]();
+        let current: IteratorResult<IRNode>;
 
-        const res = children.reduce<t.Expression[]>((acc, child, currentIndex, arr) => {
-            if (currentIndex < skipUntilIndex) {
-                return acc;
+        while ((current = childrenIterator.next()) && !current.done) {
+            let child = current.value;
+
+            if (isTextNode(child)) {
+                const continuousText: IRText[] = [];
+
+                // Consume all the contiguous text nodes.
+                do {
+                    continuousText.push(child);
+                    current = childrenIterator.next();
+                    child = current.value;
+                } while (!current.done && isTextNode(child));
+
+                res.push(transformText(continuousText));
+
+                // Early exit if a text node is the last child node.
+                if (current.done) {
+                    break;
+                }
             }
-
-            let expr;
 
             if (isElement(child)) {
-                expr = isTemplate(child) ? transformTemplate(child) : transformElement(child);
-            } else if (isTextNode(child)) {
-                const continuousText = [];
-                let nextNode: IRNode = child;
-                skipUntilIndex = currentIndex;
-
-                do {
-                    continuousText.push(nextNode);
-                    nextNode = arr[++skipUntilIndex];
-                } while (nextNode && isTextNode(nextNode));
-
-                expr = transformText(continuousText);
-            } else if (isCommentNode(child) && codeGen.preserveComments) {
-                expr = transformComment(child);
+                if (isTemplate(child)) {
+                    const templateChildren = transformTemplate(child);
+                    Array.isArray(templateChildren)
+                        ? res.push(...templateChildren)
+                        : res.push(templateChildren);
+                } else {
+                    res.push(transformElement(child));
+                }
             }
 
-            return expr ? acc.concat(expr as t.Expression) : acc;
-        }, []);
+            if (isCommentNode(child) && codeGen.preserveComments) {
+                res.push(transformComment(child));
+            }
+        }
 
         if (shouldFlatten(children, codeGen)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
