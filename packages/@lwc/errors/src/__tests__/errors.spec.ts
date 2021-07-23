@@ -17,9 +17,14 @@ const ERROR_CODE_RANGES = {
     },
 };
 
-interface ExtendedMatcher extends jest.Matchers<void> {
-    toBeUniqueCode: (key: string, seenErrorCodes: Set<number>) => object;
-    toBeInRange: (min: number, max: number, key: string) => object;
+declare global {
+    namespace jest {
+        interface Matchers<R> {
+            __type: R; // unused, but makes TypeScript happy
+            toBeUniqueCode: (key: string, seenErrorCodes: Set<number>) => object;
+            toBeInRange: (min: number, max: number, key: string) => object;
+        }
+    }
 }
 
 expect.extend({
@@ -62,7 +67,7 @@ function traverseErrorInfo(
 describe('error validation', () => {
     it('compiler error codes are in the correct range', () => {
         function validate(errorInfo: LWCErrorInfo, key: string) {
-            (expect(errorInfo.code) as unknown as ExtendedMatcher).toBeInRange(
+            expect(errorInfo.code).toBeInRange(
                 ERROR_CODE_RANGES.compiler.min,
                 ERROR_CODE_RANGES.compiler.max,
                 key
@@ -75,7 +80,7 @@ describe('error validation', () => {
     it('error codes are unique', () => {
         const seenCodes = new Set<number>();
         function checkUniqueness(errorInfo: LWCErrorInfo, key: string) {
-            (expect(errorInfo.code) as unknown as ExtendedMatcher).toBeUniqueCode(key, seenCodes);
+            expect(errorInfo.code).toBeUniqueCode(key, seenCodes);
             seenCodes.add(errorInfo.code);
         }
 
