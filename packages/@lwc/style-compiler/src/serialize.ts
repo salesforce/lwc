@@ -6,7 +6,7 @@
  */
 import postcss, { Result, Declaration } from 'postcss';
 import postcssValueParser from 'postcss-value-parser';
-
+import matchAll from 'string.prototype.matchall';
 import { Config } from './index';
 import { isImportMessage, isVarFunctionMessage } from './utils/message';
 import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
@@ -115,7 +115,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
     postcss.stringify(result.root, (part, node, nodePosition) => {
         // When consuming the beginning of a rule, first we tokenize the selector
         if (node && node.type === 'rule' && nodePosition === 'start') {
-            currentRuleTokens.push(...tokenizeCssSelector(normalizeString(part)));
+            currentRuleTokens.push(...tokenizeCss(normalizeString(part)));
 
             // When consuming the end of a rule we normalize it and produce a new one
         } else if (node && node.type === 'rule' && nodePosition === 'end') {
@@ -152,7 +152,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
                 currentRuleTokens.push(...declTokens);
                 currentRuleTokens.push({ type: TokenType.text, value: ';' });
             } else {
-                currentRuleTokens.push({ type: TokenType.text, value: part });
+                currentRuleTokens.push(...tokenizeCss(part));
             }
         } else if (node && node.type === 'atrule') {
             // Certain atrules have declaration associated with for example @font-face. We need to add the rules tokens
@@ -162,7 +162,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
                 currentRuleTokens = [];
             }
 
-            tokens.push({ type: TokenType.text, value: part });
+            tokens.push(...tokenizeCss(normalizeString(part)));
         } else {
             // When inside anything else but a comment just push it
             if (!node || node.type !== 'comment') {
@@ -174,33 +174,46 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
     return generateExpressionFromTokens(tokens);
 }
 
-function tokenizeCssSelector(data: string): Token[] {
+// Given any CSS string, replace the scope tokens from the CSS with code to properly
+// replace it in the stylesheet function.
+function tokenizeCss(data: string): Token[] {
     data = data.replace(/( {2,})/gm, ' '); // remove when there are more than two spaces
+
     const tokens: Token[] = [];
-    let pos = 0;
-    let next = 0;
-    const max = data.length;
+    const regex = new RegExp(`[[-](${SHADOW_ATTRIBUTE}|${HOST_ATTRIBUTE})]?`, 'g');
 
-    while (pos < max) {
-        if (data.indexOf(`[${HOST_ATTRIBUTE}]`, pos) === pos) {
-            tokens.push({ type: TokenType.identifier, value: HOST_SELECTOR_IDENTIFIER });
+    let lastIndex = 0;
+    for (const match of matchAll(data, regex)) {
+        const index = match.index!;
+        const [matchString, substring] = match;
 
-            next += HOST_ATTRIBUTE.length + 2;
-        } else if (data.indexOf(`[${SHADOW_ATTRIBUTE}]`, pos) === pos) {
-            tokens.push({ type: TokenType.identifier, value: SHADOW_SELECTOR_IDENTIFIER });
-
-            next += SHADOW_ATTRIBUTE.length + 2;
-        } else {
-            next += 1;
-
-            while (data.charAt(next) !== '[' && next < max) {
-                next++;
-            }
-
-            tokens.push({ type: TokenType.text, value: data.slice(pos, next) });
+        if (index > lastIndex) {
+            tokens.push({ type: TokenType.text, value: data.substring(lastIndex, index) });
         }
 
-        pos = next;
+        const identifier =
+            substring === SHADOW_ATTRIBUTE ? SHADOW_SELECTOR_IDENTIFIER : HOST_SELECTOR_IDENTIFIER;
+
+        if (matchString.startsWith('[')) {
+            // attribute in a selector, e.g. `foo[__shadowAttribute__]`
+            tokens.push({
+                type: TokenType.identifier,
+                value: identifier,
+            });
+        } else {
+            // suffix for an at-rule, e.g. `@keyframes spin-__shadowAttribute__`
+            tokens.push({
+                type: TokenType.expression,
+                // remove the '[' and ']' at the beginning and end, add an initial '-'
+                value: `${identifier} ? ('-' + ${identifier}.substring(1, ${identifier}.length - 1)) : ''`,
+            });
+        }
+
+        lastIndex = index + matchString.length;
+    }
+
+    if (lastIndex < data.length) {
+        tokens.push({ type: TokenType.text, value: data.substring(lastIndex, data.length) });
     }
 
     return tokens;
@@ -247,12 +260,11 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
     // If we are inside a var() expression use need to stringify since we are converting it into a function
     if (type === 'word') {
         const convertIdentifier = value.startsWith('--');
-        return [
-            {
-                type: convertIdentifier ? TokenType.identifier : TokenType.text,
-                value: convertIdentifier ? `"${value}"` : value,
-            },
-        ];
+        if (convertIdentifier) {
+            return [{ type: TokenType.identifier, value: `"${value}"` }];
+        }
+        // For animation properties, the shadow/host attributes may be in this text
+        return tokenizeCss(value);
     }
 
     // If we inside a var() function we need to prepend and append to generate an expression

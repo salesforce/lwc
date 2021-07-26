@@ -1,0 +1,26 @@
+@keyframes slidein {
+    from {
+        margin-left: 100%;
+    }
+    to {
+        margin-left: 0%;
+    }
+}
+
+div {
+    color: var(--my-var);
+    animation: 200ms slidein;
+}
+
+span {
+    animation: var(--another-var) slidein;
+}
+
+p {
+    animation-name: slidein;
+    animation-delay: 1s;
+}
+
+input {
+    animation-name: spin;
+}

@@ -1,0 +1,37 @@
+@keyframes slidein {
+    from {
+        margin-left: 100%;
+    }
+    to {
+        margin-left: 0%;
+    }
+}
+
+div {
+    animation: 3s ease-in 1s 2 reverse both paused slidein;
+}
+
+span {
+    animation: slidein 3s;
+}
+
+button {
+    animation: spin 1s;
+}
+
+p {
+    animation-name: slidein;
+    animation-delay: 1s;
+}
+
+input {
+    animation-name: spin;
+}
+
+form {
+    animation: 2s
+      linear
+      1s /* code comment here */
+      reverse
+      slidein
+}

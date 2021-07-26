@@ -13,6 +13,7 @@ import transformImport from './css-import/transform';
 import transformSelectorScoping, { SelectorScopingConfig } from './selector-scoping/transform';
 import transformCustomProperties from './custom-properties/transform';
 import transformDirPseudoClass from './dir-pseudo-class/transform';
+import transformAtRules from './scope-at-rules/transform';
 
 function shouldTransformSelector(rule: Rule) {
     // @keyframe at-rules are special, rules inside are not standard selectors and should not be
@@ -42,6 +43,7 @@ export default function postCssLwcPlugin(): TransformCallback {
     return (root, result) => {
         transformImport(root, result);
         transformCustomProperties(root, result);
+        transformAtRules(root);
 
         root.walkRules((rule) => {
             if (!shouldTransformSelector(rule)) {
