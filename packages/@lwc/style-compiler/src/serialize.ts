@@ -174,7 +174,6 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
     return generateExpressionFromTokens(tokens);
 }
 
-// TODO [#1288]: this code needs refactor, it could be simpler by using a native post-css walker
 function tokenizeCssSelector(data: string): Token[] {
     data = data.replace(/( {2,})/gm, ' '); // remove when there are more than two spaces
     const tokens: Token[] = [];
