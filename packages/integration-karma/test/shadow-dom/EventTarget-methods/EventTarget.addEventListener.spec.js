@@ -98,6 +98,18 @@ describe('EventTarget.addEventListener', () => {
         expect(() => nodes.button.addEventListener('dummy', undefined)).not.toThrowError(TypeError);
     });
 
+    it('should accept null as third parameter', () => {
+        expect(() => nodes.button.addEventListener('dummy', null, null)).not.toThrowError(
+            TypeError
+        );
+    });
+
+    it('should accept undefined as third parameter', () => {
+        expect(() => nodes.button.addEventListener('dummy', undefined, undefined)).not.toThrowError(
+            TypeError
+        );
+    });
+
     if (!process.env.COMPAT) {
         // Safari 10 does not throw these errors even though they are part of the spec
         it('should throw error when second parameter is not passed', () => {
