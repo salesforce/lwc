@@ -24,7 +24,7 @@ import {
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
-import { RenderMode } from './vm';
+import { RenderMode, getComponentInternalDef } from './vm';
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
@@ -39,6 +39,8 @@ import {
     VM,
     VMState,
     getRenderRoot,
+    createVM,
+    hydrateVM,
 } from './vm';
 import {
     VNode,
@@ -66,6 +68,7 @@ import {
     updateChildrenHook,
     allocateChildrenHook,
     markAsDynamicChildren,
+    hydrateElementChildrenHook,
 } from './hooks';
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -86,6 +89,9 @@ const TextHook: Hooks<VText> = {
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
+    hydrate: (vNode, node) => {
+        vNode.elm = node;
+    },
 };
 
 const CommentHook: Hooks<VComment> = {
@@ -101,6 +107,9 @@ const CommentHook: Hooks<VComment> = {
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
+    hydrate: (vNode, node) => {
+        vNode.elm = node;
+    },
 };
 
 // insert is called after update, which is used somewhere else (via a module)
@@ -140,6 +149,14 @@ const ElementHook: Hooks<VElement> = {
     remove: (vnode, parentNode) => {
         removeNodeHook(vnode, parentNode);
         removeElmHook(vnode);
+    },
+    hydrate: (vnode, node) => {
+        vnode.elm = node as Element;
+
+        createElmHook(vnode);
+
+        // hydrate children hook
+        hydrateElementChildrenHook(vnode);
     },
 };
 
@@ -217,6 +234,39 @@ const CustomElementHook: Hooks<VCustomElement> = {
             // for custom elements we don't have to go recursively because the removeVM routine
             // will take care of disconnecting any child VM attached to its shadow as well.
             removeVM(vm);
+        }
+    },
+    hydrate: (vnode, elm) => {
+        // the element is created, but the vm is not
+        const { sel, mode, ctor, owner } = vnode;
+
+        const def = getComponentInternalDef(ctor);
+        createVM(elm, def, {
+            mode,
+            owner,
+            tagName: sel,
+            renderer: owner.renderer,
+        });
+
+        vnode.elm = elm as Element;
+
+        const vm = getAssociatedVMIfPresent(elm);
+        if (vm) {
+            allocateChildrenHook(vnode, vm);
+        }
+
+        createCustomElmHook(vnode);
+
+        // Insert hook section:
+        if (vm) {
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+            }
+            runConnectedCallback(vm);
+        }
+        hydrateElementChildrenHook(vnode);
+        if (vm) {
+            hydrateVM(vm);
         }
     },
 };

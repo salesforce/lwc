@@ -240,6 +240,19 @@ export function createChildrenHook(vnode: VElement) {
     }
 }
 
+export function hydrateElementChildrenHook(vnode: VElement) {
+    const { elm, children } = vnode;
+    const elmChildren = elm!.childNodes;
+    let elmCurrentChildIdx = 0;
+    for (let j = 0, n = children.length; j < n; j++) {
+        const ch = children[j];
+        if (ch != null) {
+            ch.hook.hydrate(ch, elmChildren[elmCurrentChildIdx]);
+            elmCurrentChildIdx++;
+        }
+    }
+}
+
 export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value

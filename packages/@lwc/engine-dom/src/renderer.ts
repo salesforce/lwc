@@ -143,6 +143,12 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
+let isHydrating = false;
+
+export function setIsHydrating(v: boolean) {
+    isHydrating = v;
+}
+
 export const renderer: Renderer<Node, Element> = {
     ssr: false,
 
@@ -176,6 +182,9 @@ export const renderer: Renderer<Node, Element> = {
     },
 
     attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
+        if (isHydrating) {
+            return element.shadowRoot!;
+        }
         return element.attachShadow(options);
     },
 
