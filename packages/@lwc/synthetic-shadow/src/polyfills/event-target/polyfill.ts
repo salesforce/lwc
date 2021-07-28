@@ -39,6 +39,8 @@ function patchedAddEventListener(
         // @ts-ignore type-mismatch
         return nativeAddEventListener.apply(this, args);
     }
+    // Fast path. This function is optimized to avoid ArraySlice because addEventListener is called
+    // very frequently, and it provides a measurable perf boost to avoid so much array cloning.
 
     const wrappedListener = getEventListenerWrapper(listener) as EventListenerOrEventListenerObject;
     // The third argument is optional, so passing in `undefined` for `optionsOrCapture` gives capture=false
