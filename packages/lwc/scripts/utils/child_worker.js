@@ -4,16 +4,26 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const { rollup } = require('rollup');
 const { rollupConfig, generateTarget } = require('./rollup');
 
-module.exports = function (config, callback) {
-    const targetConfig = rollupConfig(config);
+module.exports = async function (targets, callback) {
+    const targetConfigs = targets.map((config) => rollupConfig(config));
 
-    generateTarget(targetConfig)
-        .then(() => {
-            callback(null, { config, pid: `${process.pid}` });
-        })
-        .catch((err) => {
-            callback(err);
-        });
+    try {
+        const bundle = await rollup(targetConfigs[0].inputOptions); // inputOptions are all the same
+        await Promise.all(
+            targetConfigs.map(async ({ outputOptions, display, minify }) => {
+                await generateTarget({
+                    bundle,
+                    outputOptions,
+                    display,
+                    minify,
+                });
+            })
+        );
+        callback();
+    } catch (err) {
+        callback(err);
+    }
 };
