@@ -5,9 +5,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          color: "blue",
-        },
+        styles: [["color", "blue"]],
         key: 0,
       },
       []
@@ -15,9 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          color: "blue",
-        },
+        styles: [["color", "blue"]],
         key: 1,
       },
       []
@@ -25,9 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          color: "blue",
-        },
+        styles: [["color", "blue"]],
         key: 2,
       },
       []
@@ -35,9 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          "box-shadow": "10px 5px 5px black",
-        },
+        styles: [["box-shadow", "10px 5px 5px black"]],
         key: 3,
       },
       []
@@ -45,11 +37,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          "font-size": "12px",
-          background: "blue",
-          color: "red",
-        },
+        styles: [
+          ["font-size", "12px"],
+          ["background", "blue"],
+          ["color", "red"],
+        ],
         key: 4,
       },
       []
@@ -57,11 +49,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          "font-size": "12px",
-          background: "blue",
-          color: "red",
-        },
+        styles: [
+          ["font-size", "12px"],
+          ["background", "blue"],
+          ["color", "red"],
+        ],
         key: 5,
       },
       []
@@ -69,9 +61,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          "background-color": "rgba(255,0,0,0.3)",
-        },
+        styles: [["background-color", "rgba(255,0,0,0.3)"]],
         key: 6,
       },
       []

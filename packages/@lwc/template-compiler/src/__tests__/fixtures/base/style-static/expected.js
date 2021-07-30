@@ -5,11 +5,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        styleMap: {
-          "font-size": "12px",
-          color: "red",
-          margin: "10px 5px 10px",
-        },
+        styles: [
+          ["font-size", "12px"],
+          ["color", "red"],
+          ["margin", "10px 5px 10px"],
+        ],
         key: 0,
       },
       []
@@ -17,10 +17,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        styleMap: {
-          "--my-color": "blue",
-          color: "var(--my-color)",
-        },
+        styles: [
+          ["--my-color", "blue"],
+          ["color", "var(--my-color)"],
+        ],
         key: 1,
       },
       []

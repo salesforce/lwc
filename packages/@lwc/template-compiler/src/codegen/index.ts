@@ -421,15 +421,29 @@ function transform(codeGen: CodeGen): t.Expression {
                 } else if (name === 'style') {
                     // Handle style attribute:
                     // - expression values are turned into a `style` property.
-                    // - string values are parsed and turned into a `styleMap` object associating
-                    //   each property name with its value.
+                    // - string values are parsed and turned into a `styles` array
+                    // containing triples of [name, value, important (optional)]
                     if (value.type === IRAttributeType.Expression) {
                         const styleExpression = bindExpression(value.value, element);
                         data.push(t.property(t.identifier('style'), styleExpression));
                     } else if (value.type === IRAttributeType.String) {
                         const styleMap = parseStyleText(value.value);
-                        const styleObj = objectToAST(styleMap, (key) => t.literal(styleMap[key]));
-                        data.push(t.property(t.identifier('styleMap'), styleObj));
+                        const styles: Array<[string, string] | [string, string, boolean]> =
+                            Object.entries(styleMap).map(([key, value]) => {
+                                if (value.endsWith('!important')) {
+                                    // trim off the trailing "!important" (10 chars)
+                                    return [
+                                        key,
+                                        value.substring(0, value.length - 10).trim(),
+                                        true,
+                                    ];
+                                }
+                                return [key, value];
+                            });
+                        const styleAST = t.arrayExpression(
+                            styles.map((arr) => t.arrayExpression(arr.map((val) => t.literal(val))))
+                        );
+                        data.push(t.property(t.identifier('styles'), styleAST));
                     }
                 } else {
                     rest[name] = computeAttrValue(attrs[name], element);
