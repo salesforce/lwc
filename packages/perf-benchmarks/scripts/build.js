@@ -18,7 +18,6 @@ const globHash = require('glob-hash');
 const writeFile = promisify(fs.writeFile);
 
 const {
-    CIRCLE_WORKING_DIRECTORY,
     BENCHMARK_REPO = 'https://github.com/salesforce/lwc.git',
     BENCHMARK_REF = 'master',
     BENCHMARK_HORIZON = '25%', // how much difference we want to determine between A and B
@@ -32,6 +31,8 @@ const toInt = (num) => (typeof num === 'number' ? num : parseInt(num, 10));
 
 BENCHMARK_SAMPLE_SIZE = toInt(BENCHMARK_SAMPLE_SIZE);
 BENCHMARK_TIMEOUT = toInt(BENCHMARK_TIMEOUT);
+
+const benchmarkComponentsDir = path.join(__dirname, '../../perf-benchmarks-components');
 
 // lwc packages that need to be swapped in when comparing the current code to the latest tip-of-tree code.
 const swappablePackages = [
@@ -63,7 +64,7 @@ function createHtml(benchmarkFile) {
 
 async function createTachometerJson(htmlFilename, benchmarkName) {
     const componentsHash = await globHash({
-        include: [path.join(__dirname, '../../perf-benchmarks-components/dist/**/*')],
+        include: [path.join(benchmarkComponentsDir, 'dist/**/*')],
     });
     return {
         $schema: 'https://raw.githubusercontent.com/Polymer/tachometer/master/config.schema.json',
@@ -105,14 +106,10 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
                                             // We want to recompile whatever benchmarks we've added with the
                                             // compiler code from tip-of-tree, but we also want Tachometer to serve
                                             // `perf-benchmarks-components` itself.
-                                            ...(CIRCLE_WORKING_DIRECTORY
-                                                ? [
-                                                      'rm -fr ./packages/perf-benchmarks-components',
-                                                      `cp -R ${CIRCLE_WORKING_DIRECTORY}/packages/perf-benchmarks-components ./packages/perf-benchmarks-components`,
-                                                      // bust the Tachometer cache in case these files change locally
-                                                      `echo '${componentsHash}'`,
-                                                  ]
-                                                : []),
+                                            'rm -fr ./packages/perf-benchmarks-components',
+                                            `cp -R ${benchmarkComponentsDir} ./packages/perf-benchmarks-components`,
+                                            // bust the Tachometer cache in case these files change locally
+                                            `echo '${componentsHash}'`,
                                             'yarn build:performance:components',
                                         ],
                                     },
