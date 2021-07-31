@@ -14,6 +14,7 @@
  */
 
 import { VM } from '../../framework/vm';
+import { Directive } from '../../framework/directive';
 
 export type VNodeStyle = Record<string, string>;
 export interface On {
@@ -37,6 +38,7 @@ export interface VNode {
     key: Key | undefined;
     hook: Hooks<any>;
     owner: VM;
+    customDirectives?: Directive[];
 }
 
 export interface VElement extends VNode {

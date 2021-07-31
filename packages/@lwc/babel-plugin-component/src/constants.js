@@ -32,6 +32,8 @@ const LWC_PACKAGE_EXPORTS = {
     API_DECORATOR: 'api',
     TRACK_DECORATOR: 'track',
     WIRE_DECORATOR: 'wire',
+    DIRECTIVE: 'Directive',
+    REGISTER_DIRECTIVE: 'registerDirective',
 };
 
 const LWC_SUPPORTED_APIS = new Set([

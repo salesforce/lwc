@@ -37,4 +37,4 @@ export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructo
 export { createElement } from './apis/create-element';
 export { getComponentConstructor } from './apis/get-component-constructor';
 export { isNodeFromTemplate } from './apis/is-node-from-template';
-export { LightningElement } from './apis/lightning-element';
+export { LightningElement, Directive, registerDirective } from './apis/lightning-element';

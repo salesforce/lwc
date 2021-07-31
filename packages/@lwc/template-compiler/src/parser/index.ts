@@ -323,7 +323,8 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         if (
             !LWC_DIRECTIVE_SET.has(lwcAttribute.name) &&
-            !ROOT_TEMPLATE_DIRECTIVES_SET.has(lwcAttribute.name)
+            !ROOT_TEMPLATE_DIRECTIVES_SET.has(lwcAttribute.name) &&
+            !lwcAttribute.name.startsWith('lwc:custom')
         ) {
             // unknown lwc directive
             return warnOnElement(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element.__original, [

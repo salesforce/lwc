@@ -8,6 +8,7 @@ import { assert, isNull, isUndefined, keys, StringCharCodeAt } from '@lwc/shared
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
 import { VElement } from '../../3rdparty/snabbdom/types';
+import { directives } from '../directive';
 
 const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';
@@ -50,7 +51,13 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
         const old = (oldAttrs as any)[key];
         if (old !== cur) {
             unlockAttribute(elm, key);
-            if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
+            if (key.startsWith('lwc:custom')) {
+                const directiveCtor = directives.get(key);
+                // @ts-ignore
+                const directive = new directiveCtor(cur);
+                vnode.customDirectives ||= [];
+                vnode.customDirectives.push(directive);
+            } else if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
                 // Assume xml namespace
                 setAttribute(elm, key, cur as string, xmlNS);
             } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {

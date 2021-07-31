@@ -6,12 +6,12 @@
  */
 import { assert, isFunction, isUndefined } from '@lwc/shared';
 
-import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
-import { VM, runWithBoundaryProtection } from './vm';
+import { evaluateTemplate, getVMBeingRendered, setVMBeingRendered, Template } from './template';
+import { runWithBoundaryProtection, VM } from './vm';
 import { LightningElement, LightningElementConstructor } from './base-lightning-element';
-import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
+import { logOperationEnd, logOperationStart, OperationId, trackProfilerState } from './profiler';
 
-import { VNodes } from '../3rdparty/snabbdom/types';
+import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
 export let isInvokingRender: boolean = false;
@@ -123,6 +123,31 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     return renderInvocationSuccessful ? evaluateTemplate(vm, html!) : [];
 }
 
+function callRenderedCallbackOnDirectives(vm: VM) {
+    const stack: (VNode | null)[] = [];
+    const { children } = vm;
+    if (children) {
+        children.forEach(collectDirectives);
+    }
+    function collectDirectives(vnode: VNode | null) {
+        if (!vnode) return;
+        if (vnode.customDirectives) {
+            stack.push(vnode);
+        }
+        if (vnode.children) {
+            vnode.children.forEach(collectDirectives);
+        }
+    }
+    for (let i = stack.length - 1; i >= 0; i--) {
+        const vnode = stack[i];
+        if (!vnode) continue;
+        vnode.customDirectives?.forEach((d) => {
+            if (!vnode.elm) return;
+            d.renderedCallback(vnode.elm);
+        });
+    }
+}
+
 export function invokeComponentRenderedCallback(vm: VM): void {
     const {
         def: { renderedCallback },
@@ -144,6 +169,7 @@ export function invokeComponentRenderedCallback(vm: VM): void {
             },
             () => {
                 // job
+                callRenderedCallbackOnDirectives(vm);
                 callHook(component, renderedCallback!);
             },
             () => {

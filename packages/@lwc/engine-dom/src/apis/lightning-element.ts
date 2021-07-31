@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperty, freeze, isUndefined, seal } from '@lwc/shared';
-import { LightningElement } from '@lwc/engine-core';
+import { Directive, registerDirective, LightningElement } from '@lwc/engine-core';
 
 import { buildCustomElementConstructor } from './build-custom-element-constructor';
 
@@ -49,4 +49,4 @@ defineProperty(LightningElement, 'CustomElementConstructor', {
 freeze(LightningElement);
 seal(LightningElement.prototype);
 
-export { LightningElement };
+export { LightningElement, Directive, registerDirective };
