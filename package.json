@@ -30,7 +30,7 @@
     "@babel/preset-typescript": "^7.15.0",
     "@commitlint/cli": "^13.1.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
-    "@rollup/plugin-replace": "^2.4.2",
+    "@rollup/plugin-replace": "^3.0.0",
     "@rollup/plugin-typescript": "^8.2.5",
     "@types/acorn": "^4.0.6",
     "@types/babel__core": "^7.1.15",
