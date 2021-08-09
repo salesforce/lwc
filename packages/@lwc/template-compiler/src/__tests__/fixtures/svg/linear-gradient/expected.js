@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                   "stop",
                   {
-                    styles: [
+                    styleDecls: [
                       ["stop-color", "rgb(255,255,0)"],
                       ["stop-opacity", "1"],
                     ],
@@ -52,7 +52,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                   "stop",
                   {
-                    styles: [
+                    styleDecls: [
                       ["stop-color", "rgb(255,0,0)"],
                       ["stop-opacity", "1"],
                     ],

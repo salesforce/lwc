@@ -40,6 +40,7 @@ import {
     parseClassNames,
     parseStyleText,
     hasIdAttribute,
+    styleMapToStyleDeclsAST,
 } from './helpers';
 
 import { format as formatModule } from './formatters/module';
@@ -428,22 +429,8 @@ function transform(codeGen: CodeGen): t.Expression {
                         data.push(t.property(t.identifier('style'), styleExpression));
                     } else if (value.type === IRAttributeType.String) {
                         const styleMap = parseStyleText(value.value);
-                        const styles: Array<[string, string] | [string, string, boolean]> =
-                            Object.entries(styleMap).map(([key, value]) => {
-                                if (value.endsWith('!important')) {
-                                    // trim off the trailing "!important" (10 chars)
-                                    return [
-                                        key,
-                                        value.substring(0, value.length - 10).trim(),
-                                        true,
-                                    ];
-                                }
-                                return [key, value];
-                            });
-                        const styleAST = t.arrayExpression(
-                            styles.map((arr) => t.arrayExpression(arr.map((val) => t.literal(val))))
-                        );
-                        data.push(t.property(t.identifier('styles'), styleAST));
+                        const styleAST = styleMapToStyleDeclsAST(styleMap);
+                        data.push(t.property(t.identifier('styleDecls'), styleAST));
                     }
                 } else {
                     rest[name] = computeAttrValue(attrs[name], element);

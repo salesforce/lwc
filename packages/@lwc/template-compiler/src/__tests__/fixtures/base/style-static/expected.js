@@ -5,7 +5,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        styles: [
+        styleDecls: [
           ["font-size", "12px"],
           ["color", "red"],
           ["margin", "10px 5px 10px"],
@@ -17,7 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        styles: [
+        styleDecls: [
           ["--my-color", "blue"],
           ["color", "var(--my-color)"],
         ],

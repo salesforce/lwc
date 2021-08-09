@@ -5,7 +5,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styles: [["color", "blue"]],
+        styleDecls: [["color", "blue"]],
         key: 0,
       },
       []
@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styles: [["color", "blue"]],
+        styleDecls: [["color", "blue"]],
         key: 1,
       },
       []
@@ -21,7 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styles: [["color", "blue"]],
+        styleDecls: [["color", "blue"]],
         key: 2,
       },
       []
@@ -29,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styles: [["box-shadow", "10px 5px 5px black"]],
+        styleDecls: [["box-shadow", "10px 5px 5px black"]],
         key: 3,
       },
       []
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styles: [
+        styleDecls: [
           ["font-size", "12px"],
           ["background", "blue"],
           ["color", "red"],
@@ -49,7 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styles: [
+        styleDecls: [
           ["font-size", "12px"],
           ["background", "blue"],
           ["color", "red"],
@@ -61,7 +61,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styles: [["background-color", "rgba(255,0,0,0.3)"]],
+        styleDecls: [["background-color", "rgba(255,0,0,0.3)"]],
         key: 6,
       },
       []
