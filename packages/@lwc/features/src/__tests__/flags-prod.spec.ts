@@ -293,3 +293,8 @@ pluginTester({
         },
     },
 });
+
+// Forces TypeScript to treat this file as a module, not a script, which avoids:
+// Error TS2451: Cannot redeclare block-scoped variable 'pluginTester'
+// ...which are due to the same top-level variable names being used here and in flags.spec.ts.
+export {};
