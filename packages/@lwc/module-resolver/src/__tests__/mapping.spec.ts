@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import '../../scripts/jest/types';
 import { resolveModule } from '../index';
 import { fixture, LWC_CONFIG_ERROR_CODE } from './test-utils';
 

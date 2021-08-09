@@ -8,11 +8,11 @@ import { compileToFunction } from '../index';
 
 function mockRenderApi() {
     let id = 0;
-    const calls = [];
+    const calls: any[][] = [];
 
     const mock =
-        (name) =>
-        (...args) => {
+        (name: string) =>
+        (...args: []) => {
             id++;
 
             calls.push([`${name}#${id}`, args]);

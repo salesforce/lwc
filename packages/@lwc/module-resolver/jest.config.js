@@ -10,6 +10,6 @@ module.exports = {
     ...BASE_CONFIG,
     displayName: 'lwc-module-resolver',
 
-    setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup-test.js'],
+    setupFilesAfterEnv: ['<rootDir>/scripts/jest/setup-test.ts'],
     coveragePathIgnorePatterns: ['<rootDir>/scripts/'],
 };

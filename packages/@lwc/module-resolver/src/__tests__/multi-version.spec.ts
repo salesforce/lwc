@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
+import '../../scripts/jest/types';
 import { resolveModule } from '../index';
 import { fixture, NO_LWC_MODULE_FOUND_CODE } from './test-utils';
 

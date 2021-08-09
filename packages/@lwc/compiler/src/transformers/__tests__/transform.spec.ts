@@ -6,7 +6,7 @@
  */
 import { transform, transformSync } from '../../transformers/transformer';
 
-function testValidateOptions(methodName, method) {
+function testValidateOptions(methodName: string, method: any) {
     describe('validate options', () => {
         it(`${methodName} should validate presence of src`, () => {
             expect(() => method()).toThrow(/Expect a string for source. Received undefined/);

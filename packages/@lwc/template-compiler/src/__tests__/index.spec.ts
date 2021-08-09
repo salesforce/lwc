@@ -9,8 +9,8 @@ import compiler from '../index';
 describe('option validation', () => {
     it('validated presence of options', () => {
         expect(() => {
-            // Use call to escape typescript type checking
-            compiler.call(null, `<template></template>`);
+            // @ts-ignore
+            compiler(`<template></template>`);
         }).toThrow(/Compiler options must be an object/);
     });
 
