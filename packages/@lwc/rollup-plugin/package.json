@@ -22,7 +22,7 @@
     },
     "dependencies": {
         "@lwc/module-resolver": "2.3.0",
-        "@rollup/pluginutils": "~4.1.0"
+        "@rollup/pluginutils": "~4.1.1"
     },
     "peerDependencies": {
         "rollup": "^1.2.0||^2.0.0"
