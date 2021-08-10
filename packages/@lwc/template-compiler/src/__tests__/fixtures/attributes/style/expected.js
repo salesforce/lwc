@@ -5,9 +5,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          color: "blue",
-        },
+        styleDecls: [["color", "blue", false]],
         key: 0,
       },
       []
@@ -15,9 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          color: "blue",
-        },
+        styleDecls: [["color", "blue", false]],
         key: 1,
       },
       []
@@ -25,9 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          color: "blue",
-        },
+        styleDecls: [["color", "blue", false]],
         key: 2,
       },
       []
@@ -35,9 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          "box-shadow": "10px 5px 5px black",
-        },
+        styleDecls: [["box-shadow", "10px 5px 5px black", false]],
         key: 3,
       },
       []
@@ -45,11 +37,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          "font-size": "12px",
-          background: "blue",
-          color: "red",
-        },
+        styleDecls: [
+          ["font-size", "12px", false],
+          ["background", "blue", false],
+          ["color", "red", false],
+        ],
         key: 4,
       },
       []
@@ -57,11 +49,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          "font-size": "12px",
-          background: "blue",
-          color: "red",
-        },
+        styleDecls: [
+          ["font-size", "12px", false],
+          ["background", "blue", false],
+          ["color", "red", false],
+        ],
         key: 5,
       },
       []
@@ -69,9 +61,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        styleMap: {
-          "background-color": "rgba(255,0,0,0.3)",
-        },
+        styleDecls: [["background-color", "rgba(255,0,0,0.3)", false]],
         key: 6,
       },
       []

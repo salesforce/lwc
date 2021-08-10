@@ -40,6 +40,7 @@ import {
     parseClassNames,
     parseStyleText,
     hasIdAttribute,
+    styleMapToStyleDeclsAST,
 } from './helpers';
 
 import { format as formatModule } from './formatters/module';
@@ -421,15 +422,15 @@ function transform(codeGen: CodeGen): t.Expression {
                 } else if (name === 'style') {
                     // Handle style attribute:
                     // - expression values are turned into a `style` property.
-                    // - string values are parsed and turned into a `styleMap` object associating
-                    //   each property name with its value.
+                    // - string values are parsed and turned into a `styles` array
+                    // containing triples of [name, value, important (optional)]
                     if (value.type === IRAttributeType.Expression) {
                         const styleExpression = bindExpression(value.value, element);
                         data.push(t.property(t.identifier('style'), styleExpression));
                     } else if (value.type === IRAttributeType.String) {
                         const styleMap = parseStyleText(value.value);
-                        const styleObj = objectToAST(styleMap, (key) => t.literal(styleMap[key]));
-                        data.push(t.property(t.identifier('styleMap'), styleObj));
+                        const styleAST = styleMapToStyleDeclsAST(styleMap);
+                        data.push(t.property(t.identifier('styleDecls'), styleAST));
                     }
                 } else {
                     rest[name] = computeAttrValue(attrs[name], element);

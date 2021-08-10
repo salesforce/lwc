@@ -270,7 +270,7 @@ export const renderer: Renderer<HostNode, HostElement> = {
         } as DOMTokenList;
     },
 
-    setCSSStyleProperty(element, name, value) {
+    setCSSStyleProperty(element, name, value, important) {
         let styleAttribute = element.attributes.find(
             (attr) => attr.name === 'style' && isNull(attr.namespace)
         );
@@ -285,7 +285,9 @@ export const renderer: Renderer<HostNode, HostElement> = {
             element.attributes.push(styleAttribute);
         }
 
-        styleAttribute.value = `${styleAttribute.value}; ${name}: ${value}`;
+        styleAttribute.value = `${styleAttribute.value}; ${name}: ${value}${
+            important ? ' !important' : ''
+        }`;
     },
 
     isConnected(node: HostNode) {

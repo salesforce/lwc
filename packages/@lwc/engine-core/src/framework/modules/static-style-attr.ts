@@ -7,22 +7,23 @@
 import { isUndefined } from '@lwc/shared';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
-// The HTML style property becomes the vnode.data.styleMap object when defined as a string in the template.
+// The HTML style property becomes the vnode.data.styleDecls object when defined as a string in the template.
 // The compiler takes care of transforming the inline style into an object. It's faster to set the
 // different style properties individually instead of via a string.
 function createStyleAttribute(vnode: VNode) {
     const {
         elm,
-        data: { styleMap },
+        data: { styleDecls },
         owner: { renderer },
     } = vnode;
 
-    if (isUndefined(styleMap)) {
+    if (isUndefined(styleDecls)) {
         return;
     }
 
-    for (const name in styleMap) {
-        renderer.setCSSStyleProperty(elm, name, styleMap[name]);
+    for (let i = 0; i < styleDecls.length; i++) {
+        const [prop, value, important] = styleDecls[i];
+        renderer.setCSSStyleProperty(elm, prop, value, important);
     }
 }
 

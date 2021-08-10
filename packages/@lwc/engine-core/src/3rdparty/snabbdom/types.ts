@@ -15,7 +15,7 @@
 
 import { VM } from '../../framework/vm';
 
-export type VNodeStyle = Record<string, string>;
+export type VNodeStyleDecls = Array<[string, string, boolean]>;
 export interface On {
     [event: string]: EventListener;
 }
@@ -77,7 +77,7 @@ export interface VNodeData {
     className?: any;
     style?: any;
     classMap?: Classes;
-    styleMap?: VNodeStyle;
+    styleDecls?: VNodeStyleDecls;
     context?: CustomElementContext;
     on?: On;
     svg?: boolean;

@@ -282,8 +282,8 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
             `vnode.data.className and vnode.data.classMap ambiguous declaration.`
         );
         assert.isFalse(
-            data.styleMap && data.style,
-            `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
+            data.styleDecls && data.style,
+            `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
             logError(
@@ -397,8 +397,8 @@ export function c(
             `vnode.data.className and vnode.data.classMap ambiguous declaration.`
         );
         assert.isFalse(
-            data.styleMap && data.style,
-            `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
+            data.styleDecls && data.style,
+            `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
             logError(
