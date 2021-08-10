@@ -159,17 +159,18 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
 }
 
 // Given a map of CSS property keys to values, return an array AST like:
-// ['color', 'blue']           // { color: 'blue' }
+// ['color', 'blue', false]    // { color: 'blue' }
 // ['background', 'red', true] // { background: 'red !important' }
 export function styleMapToStyleDeclsAST(styleMap: { [name: string]: string }): t.ArrayExpression {
     const styles: Array<[string, string] | [string, string, boolean]> = Object.entries(
         styleMap
     ).map(([key, value]) => {
-        if (value.endsWith('!important')) {
+        const important = value.endsWith('!important');
+        if (important) {
             // trim off the trailing "!important" (10 chars)
-            return [key, value.substring(0, value.length - 10).trim(), true];
+            value = value.substring(0, value.length - 10).trim();
         }
-        return [key, value];
+        return [key, value, important];
     });
     return t.arrayExpression(
         styles.map((arr) => t.arrayExpression(arr.map((val) => t.literal(val))))

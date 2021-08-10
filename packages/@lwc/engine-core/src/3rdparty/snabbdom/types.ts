@@ -15,7 +15,7 @@
 
 import { VM } from '../../framework/vm';
 
-export type VNodeStyleDecls = Array<[string, string] | [string, string, boolean]>;
+export type VNodeStyleDecls = Array<[string, string, boolean]>;
 export interface On {
     [event: string]: EventListener;
 }

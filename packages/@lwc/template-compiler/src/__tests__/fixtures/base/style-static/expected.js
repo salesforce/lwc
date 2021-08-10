@@ -6,9 +6,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       {
         styleDecls: [
-          ["font-size", "12px"],
-          ["color", "red"],
-          ["margin", "10px 5px 10px"],
+          ["font-size", "12px", false],
+          ["color", "red", false],
+          ["margin", "10px 5px 10px", false],
         ],
         key: 0,
       },
@@ -18,8 +18,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       {
         styleDecls: [
-          ["--my-color", "blue"],
-          ["color", "var(--my-color)"],
+          ["--my-color", "blue", false],
+          ["color", "var(--my-color)", false],
         ],
         key: 1,
       },

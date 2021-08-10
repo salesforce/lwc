@@ -23,7 +23,7 @@ function createStyleAttribute(vnode: VNode) {
 
     for (let i = 0; i < styleDecls.length; i++) {
         const [prop, value, important] = styleDecls[i];
-        renderer.setCSSStyleProperty(elm, prop, value, !!important);
+        renderer.setCSSStyleProperty(elm, prop, value, important);
     }
 }
 
