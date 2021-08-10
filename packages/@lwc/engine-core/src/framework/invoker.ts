@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFunction, isUndefined } from '@lwc/shared';
+import { assert, isFunction, isUndefined, noop } from '@lwc/shared';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
@@ -28,8 +28,6 @@ export function isInvokingRenderedCallback(vm: VM): boolean {
 
 let profilerEnabled = false;
 trackProfilerState((t) => (profilerEnabled = t));
-
-const noop = () => void 0;
 
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
     const { component, callHook, owner } = vm;

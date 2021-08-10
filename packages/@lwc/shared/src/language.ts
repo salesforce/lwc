@@ -115,6 +115,10 @@ export function isNumber(obj: any): obj is number {
     return typeof obj === 'number';
 }
 
+export function noop(): void {
+    /* Do nothing */
+}
+
 const OtS = {}.toString;
 export function toString(obj: any): string {
     if (obj && obj.toString) {

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import { isUndefined, noop } from '@lwc/shared';
 
 import { VM } from './vm';
 import { getComponentTag } from '../shared/format';
@@ -53,10 +53,6 @@ function end(measureName: string, markName: string) {
     // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
     performance.clearMarks(markName);
     performance.clearMeasures(measureName);
-}
-
-function noop() {
-    /* do nothing */
 }
 
 export const startMeasure = !isUserTimingSupported

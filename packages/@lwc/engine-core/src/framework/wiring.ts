@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isUndefined, ArrayPush, defineProperty, defineProperties } from '@lwc/shared';
+import {
+    assert,
+    isUndefined,
+    ArrayPush,
+    defineProperty,
+    defineProperties,
+    noop,
+} from '@lwc/shared';
 import { LightningElement } from './base-lightning-element';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';
@@ -13,7 +20,6 @@ const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
 
 const WireMetaMap: Map<PropertyDescriptor, WireDef> = new Map();
-function noop(): void {}
 
 interface WireContextInternalEventPayload {
     setNewContext(newContext: ContextValue): void;
