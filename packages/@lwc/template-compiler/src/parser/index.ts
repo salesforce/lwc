@@ -36,6 +36,7 @@ import {
     isIteratorElement,
     parseExpression,
     parseIdentifier,
+    getParent,
 } from './expression';
 
 import * as t from '../shared/estree';
@@ -124,6 +125,7 @@ function attributeExpressionReferencesForEachIndex(
 export default function parse(source: string, state: State): TemplateParseResult {
     const warnings: CompilerDiagnostic[] = [];
     const seenIds: Set<string> = new Set();
+    const parentStack: IRElement[] = [];
 
     const { fragment, errors: parsingErrors } = parseHTML(source);
 
@@ -138,8 +140,8 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     const root = parseElement(templateRoot);
 
-    function parseElement(elementNode: parse5.Element, parent?: IRElement): IRElement {
-        const element = createElement(elementNode, parent);
+    function parseElement(elementNode: parse5.Element): IRElement {
+        const element = createElement(elementNode);
 
         applyForEach(element);
         applyIterator(element);
@@ -166,23 +168,27 @@ export default function parse(source: string, state: State): TemplateParseResult
         const parsedChildren: IRNode[] = [];
         const children = (parse5Utils.getTemplateContent(__original) ?? __original).childNodes;
 
+        parentStack.push(parent);
+
         for (const child of children) {
             if (parse5Utils.isElementNode(child)) {
-                const elmNode = parseElement(child, parent);
+                const elmNode = parseElement(child);
                 parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
-                const textNodes = parseText(child, parent);
+                const textNodes = parseText(child);
                 parsedChildren.push(...textNodes);
             } else if (parse5Utils.isCommentNode(child)) {
-                const commentNode = parseComment(child, parent);
+                const commentNode = parseComment(child);
                 parsedChildren.push(commentNode);
             }
         }
 
+        parentStack.pop();
+
         parent.children = parsedChildren;
     }
 
-    function parseText(node: parse5.TextNode, parent: IRElement): IRText[] {
+    function parseText(node: parse5.TextNode): IRText[] {
         const parsedTextNodes: IRText[] = [];
 
         // Extract the raw source to avoid HTML entity decoding done by parse5
@@ -222,15 +228,15 @@ export default function parse(source: string, state: State): TemplateParseResult
                 value = decodeTextContent(token);
             }
 
-            parsedTextNodes.push(createText(node, parent, value));
+            parsedTextNodes.push(createText(node, value));
         }
 
         return parsedTextNodes;
     }
 
-    function parseComment(node: parse5.CommentNode, parent: IRElement): IRComment {
+    function parseComment(node: parse5.CommentNode): IRComment {
         const value = decodeTextContent(node.data);
-        return createComment(node, parent, value);
+        return createComment(node, value);
     }
 
     function getTemplateRoot(
@@ -353,7 +359,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             return warnOnIRNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, element);
         }
 
-        if (element.parent) {
+        if (parentStack.length > 0) {
             return warnOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
                 ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
                 `<${element.tag}>`,
@@ -373,7 +379,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             return;
         }
 
-        if (element.parent || lwcPreserveCommentAttribute.type !== IRAttributeType.Boolean) {
+        if (parentStack.length > 0 || lwcPreserveCommentAttribute.type !== IRAttributeType.Boolean) {
             return warnOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
                 ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
                 `<${element.tag}>`,
@@ -572,8 +578,8 @@ export default function parse(source: string, state: State): TemplateParseResult
                 );
             }
 
-            const forOfParent = getForOfParent(element);
-            const forEachParent = getForEachParent(element);
+            const forOfParent = getForOfParent(parentStack);
+            const forEachParent = getForEachParent(element, parentStack);
             if (forOfParent) {
                 if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent.forOf!)) {
                     return warnOnIRNode(
@@ -597,7 +603,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             removeAttribute(element, 'key');
 
             element.forKey = keyAttribute.value;
-        } else if (isIteratorElement(element) && element.tag !== 'template') {
+        } else if (isIteratorElement(element, parentStack) && element.tag !== 'template') {
             return warnOnIRNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [element.tag]);
         }
     }
@@ -659,14 +665,18 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function isInIteration(element: IRElement): boolean {
-        if (element.tag === 'template') {
-            if (element.forEach || element.forOf) {
-                return true;
+        let current: IRElement | undefined = element;
+        let size = parentStack.length;
+
+        while (current) {
+            if (current.tag === 'template') {
+                if (current.forEach || current.forOf) {
+                    return true;
+                }
             }
+            current = getParent(parentStack, --size);
         }
-        if (element.parent) {
-            return isInIteration(element.parent);
-        }
+
         return false;
     }
 
@@ -761,8 +771,8 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateElement(element: IRElement) {
-        const { tag, namespace, parent, location, __original: node } = element;
-        const isRoot = !parent;
+        const { tag, namespace, location, __original: node } = element;
+        const isRoot = !(parentStack.length > 0);
 
         if (isRoot) {
             if (tag !== 'template') {
@@ -970,7 +980,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function getRoot(element: IRElement): IRElement {
-        return element.parent ? getRoot(element.parent) : element;
+        return parentStack.length > 0 ? parentStack[0] : element;
     }
 
     function getRenderMode(element: IRElement): LWCDirectiveRenderMode {

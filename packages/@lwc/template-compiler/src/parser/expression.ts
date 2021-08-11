@@ -115,33 +115,44 @@ export function parseIdentifier(source: string): TemplateIdentifier | never {
 // Returns the immediate iterator parent if it exists.
 // Traverses up until it finds an element with forOf, or
 // a non-template element without a forOf.
-export function getForOfParent(element: IRElement): IRElement | null {
-    const parent = element.parent;
-    if (!parent) {
-        return null;
-    }
+export function getForOfParent(parentStack: IRElement[]): IRElement | null {
+    let size = parentStack.length;
+    let parent: IRElement | undefined = getParent(parentStack, --size);
 
-    if (parent.forOf) {
-        return parent;
-    } else if (parent.tag.toLowerCase() === 'template') {
-        return getForOfParent(parent);
-    }
-    return null;
-}
+    while (parent) {
+        if (parent.forOf) {
+            return parent;
+        }
 
-export function getForEachParent(element: IRElement): IRElement | null {
-    if (element.forEach) {
-        return element;
-    }
-
-    const parent = element.parent;
-    if (parent && parent.tag.toLowerCase() === 'template') {
-        return getForEachParent(parent);
+        parent =
+            parent.tag.toLowerCase() === 'template' ? getParent(parentStack, --size) : undefined;
     }
 
     return null;
 }
 
-export function isIteratorElement(element: IRElement): boolean {
-    return !!(getForOfParent(element) || getForEachParent(element));
+export function getForEachParent(element: IRElement, parentStack: IRElement[]): IRElement | null {
+    let current: IRElement | undefined = element;
+    let size = parentStack.length;
+
+    while (current) {
+        if (current.forEach) {
+            return current;
+        }
+
+        current = getParent(parentStack, --size);
+        if (current?.tag.toLowerCase() !== 'template') {
+            current = undefined;
+        }
+    }
+
+    return null;
+}
+
+export function isIteratorElement(element: IRElement, parentStack: IRElement[]): boolean {
+    return !!(getForOfParent(parentStack) || getForEachParent(element, parentStack));
+}
+
+export function getParent(parentStack: IRElement[], size: number): IRElement | undefined {
+    return size > 0 ? parentStack[size] : undefined;
 }
