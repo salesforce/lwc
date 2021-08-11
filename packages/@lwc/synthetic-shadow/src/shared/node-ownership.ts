@@ -7,6 +7,8 @@
 import { defineProperty, isNull, isUndefined } from '@lwc/shared';
 import { parentNodeGetter } from '../env/node';
 
+import { isSyntheticSlotElement } from '../faux-shadow/traverse';
+
 // Used as a back reference to identify the host element
 const HostElementKey = '$$HostElementKey$$';
 const ShadowedNodeKey = '$$ShadowedNodeKey$$';
@@ -54,6 +56,13 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
             return hostKey;
         }
         host = parentNodeGetter.call(host) as ShadowedNode | null;
+
+        // If we haven't found an owner key by the time we hit a synthetic slot element,
+        // this is the case where a top level light DOM element is slotted into a synthetic
+        // shadow slot and we won't find an owner key.
+        if (!isNull(host) && isSyntheticSlotElement(host)) {
+            return undefined;
+        }
     }
 }
 

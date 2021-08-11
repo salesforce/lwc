@@ -42,8 +42,7 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             expect(nodes.p.parentElement).toEqual(nodes.consumer);
             expect(nodes.consumer.parentElement).toEqual(elm);
         });
-        // TODO [#2424]: Fails because the <p> doesn't have an owner key.
-        xit('getRootNode', () => {
+        it('getRootNode', () => {
             expect(nodes.p.getRootNode()).toEqual(document);
             expect(nodes.consumer.getRootNode()).toEqual(document);
         });
