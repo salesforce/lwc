@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isNull, isUndefined } from '@lwc/shared';
+import { assert, isArray, isNull, isUndefined, noop } from '@lwc/shared';
 import { EmptyArray } from './utils';
 import {
     createVM,
@@ -25,8 +25,6 @@ import modStaticStyle from './modules/static-style-attr';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef, RenderMode } from './def';
-
-const noop = () => void 0;
 
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;

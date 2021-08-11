@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { noop } from '@lwc/shared';
 import { startMeasure, endMeasure, MeasurementPhase } from './performance-timing';
 import { VM } from './vm';
 
-function noop(_opId: number, _phase: number, _cmpName: string, _vm_idx: number) {}
-
-let logOperation = noop;
+type LogOperationFunc = (_opId: number, _phase: number, _cmpName: string, _vm_idx: number) => void;
+let logOperation: LogOperationFunc = noop;
 
 export enum OperationId {
     constructor = 0,
