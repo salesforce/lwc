@@ -16,6 +16,20 @@ describe('static style attribute', () => {
             expect(target.style.getPropertyValue('--custom-property')).toBe('blue');
         }
     });
+
+    it('preserves manually added styles', () => {
+        const elm = createElement('x-static', { is: Static });
+        document.body.appendChild(elm);
+        const target = elm.shadowRoot.querySelector('div');
+
+        target.style.display = 'flex';
+        expect(target.style.display).toBe('flex');
+        expect(target.style.position).toBe('absolute');
+
+        target.style.display = 'inline-block';
+        expect(target.style.display).toBe('inline-block');
+        expect(target.style.position).toBe('absolute');
+    });
 });
 
 describe('dynamic style attribute', () => {
