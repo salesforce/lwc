@@ -89,4 +89,7 @@ function buildWireService(targets) {
     ];
     process.stdout.write('\n# Generating LWC artifacts...\n');
     await generateTargets(allTargets);
-})();
+})().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});
