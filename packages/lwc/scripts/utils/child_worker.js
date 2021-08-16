@@ -13,12 +13,11 @@ module.exports = async function (targets, callback) {
     try {
         const bundle = await rollup(targetConfigs[0].inputOptions); // inputOptions are all the same
         await Promise.all(
-            targetConfigs.map(async ({ outputOptions, display, minify }) => {
+            targetConfigs.map(async ({ outputOptions, display }) => {
                 await generateTarget({
                     bundle,
                     outputOptions,
                     display,
-                    minify,
                 });
             })
         );

@@ -5,15 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const { promisify } = require('util');
-const fs = require('fs');
 const rollupReplace = require('@rollup/plugin-replace');
+const { terser: rollupTerser } = require('rollup-plugin-terser');
 const babel = require('@babel/core');
-const terser = require('terser');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 const { generateTargetName } = require('./helpers');
-
-const writeFile = promisify(fs.writeFile);
 
 function rollupFeaturesPlugin(prod) {
     return {
@@ -70,13 +66,13 @@ function rollupConfig(config) {
             name,
             file: path.join(targetDirectory, target, generateTargetName(config)),
             format,
+            plugins: [prod && !debug && rollupTerser()],
         },
         display: { name, dir, format, target, prod, debug },
-        minify: prod && !debug,
     };
 }
 
-async function generateTarget({ bundle, outputOptions, display, minify }) {
+async function generateTarget({ bundle, outputOptions, display }) {
     const msg = [
         `module: ${path.basename(display.dir)}`.padEnd(25, ' '),
         `format: ${display.format}`.padEnd(12, ' '),
@@ -86,19 +82,7 @@ async function generateTarget({ bundle, outputOptions, display, minify }) {
         `pid: ${process.pid}`.padEnd(10, ' '),
     ].join(' | ');
 
-    if (minify) {
-        // We don't use rollup-plugin-terser because we want to minify the whole file at the end,
-        // which is more efficient than doing it as part of the input pipeline which would require
-        // minifying the same source file multiple times.
-        const { output } = await bundle.generate(outputOptions);
-        const { code } = await terser.minify(output[0].code, {
-            // In CommonJS, none of the toplevel variables matter - just the module.exports
-            toplevel: outputOptions.format === 'commonjs',
-        });
-        await writeFile(outputOptions.file, code, 'utf-8');
-    } else {
-        await bundle.write(outputOptions);
-    }
+    await bundle.write(outputOptions);
 
     process.stdout.write(`${msg} ✓\n`);
 }
