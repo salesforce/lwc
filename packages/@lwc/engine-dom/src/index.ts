@@ -6,7 +6,6 @@
  */
 
 // Polyfills ---------------------------------------------------------------------------------------
-import './polyfills/proxy-concat/main';
 import './polyfills/aria-properties/main';
 
 // Engine-core public APIs -------------------------------------------------------------------------
