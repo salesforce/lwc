@@ -18,7 +18,7 @@ export type MeasurementPhase =
     | 'renderedCallback'
     | 'errorCallback';
 
-export enum GlobalMeasurementPhase {
+export const enum GlobalMeasurementPhase {
     REHYDRATE = 'lwc-rehydrate',
     HYDRATE = 'lwc-hydrate',
 }

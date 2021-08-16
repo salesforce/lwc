@@ -35,6 +35,7 @@ import { LightningElement, LightningElementConstructor } from './base-lightning-
 import { lightningBasedDescriptors } from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
+import { RenderMode } from '../framework/vm';
 
 import {
     BaseBridgeElement,
@@ -46,11 +47,6 @@ import {
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
 import { getComponentOrSwappedComponent } from './hot-swaps';
-
-export enum RenderMode {
-    Light,
-    Shadow,
-}
 
 export interface ComponentDef {
     name: string;
@@ -283,7 +279,7 @@ const lightingElementDef: ComponentDef = {
     render: LightningElement.prototype.render,
 };
 
-enum PropDefType {
+const enum PropDefType {
     any = 'any',
 }
 

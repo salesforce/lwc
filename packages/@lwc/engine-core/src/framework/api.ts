@@ -23,7 +23,7 @@ import {
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
-import { RenderMode } from './def';
+import { RenderMode } from './vm';
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';

@@ -11,7 +11,7 @@ import { VM } from './vm';
 type LogOperationFunc = (_opId: number, _phase: number, _cmpName: string, _vm_idx: number) => void;
 let logOperation: LogOperationFunc = noop;
 
-export enum OperationId {
+export const enum OperationId {
     constructor = 0,
     render = 1,
     patch = 2,
@@ -21,7 +21,7 @@ export enum OperationId {
     errorCallback = 6,
 }
 
-enum Phase {
+const enum Phase {
     Start = 0,
     Stop = 1,
 }
