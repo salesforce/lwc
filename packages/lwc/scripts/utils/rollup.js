@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const { rollup } = require('rollup');
 const rollupReplace = require('@rollup/plugin-replace');
 const { terser: rollupTerser } = require('rollup-plugin-terser');
 const babel = require('@babel/core');
@@ -61,19 +60,19 @@ function rollupConfig(config) {
                     }),
                 rollupFeaturesPlugin(prod),
                 compatMode && babelCompatPlugin(),
-                prod && !debug && rollupTerser(),
             ],
         },
         outputOptions: {
             name,
             file: path.join(targetDirectory, target, generateTargetName(config)),
             format,
+            plugins: [prod && !debug && rollupTerser()],
         },
         display: { name, dir, format, target, prod, debug },
     };
 }
 
-async function generateTarget({ inputOptions, outputOptions, display }) {
+async function generateTarget({ bundle, outputOptions, display }) {
     const msg = [
         `module: ${path.basename(display.dir)}`.padEnd(25, ' '),
         `format: ${display.format}`.padEnd(12, ' '),
@@ -83,8 +82,8 @@ async function generateTarget({ inputOptions, outputOptions, display }) {
         `pid: ${process.pid}`.padEnd(10, ' '),
     ].join(' | ');
 
-    const bundle = await rollup(inputOptions);
     await bundle.write(outputOptions);
+
     process.stdout.write(`${msg} ✓\n`);
 }
 
