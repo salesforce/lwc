@@ -78,29 +78,29 @@ let logOperation: LogDispatcher = noop;
 export const startMeasure = !isUserTimingSupported
     ? noop
     : function (phase: MeasurementPhase, vm: VM) {
-        const markName = getMarkName(phase, vm);
-        start(markName);
-    };
+          const markName = getMarkName(phase, vm);
+          start(markName);
+      };
 export const endMeasure = !isUserTimingSupported
     ? noop
     : function (phase: MeasurementPhase, vm: VM) {
-        const markName = getMarkName(phase, vm);
-        const measureName = getMeasureName(phase, vm);
-        end(measureName, markName);
-    };
+          const markName = getMarkName(phase, vm);
+          const measureName = getMeasureName(phase, vm);
+          end(measureName, markName);
+      };
 
 export const startGlobalMeasure = !isUserTimingSupported
     ? noop
     : function (phase: GlobalMeasurementPhase, vm?: VM) {
-        const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
-        start(markName);
-    };
+          const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
+          start(markName);
+      };
 export const endGlobalMeasure = !isUserTimingSupported
     ? noop
     : function (phase: GlobalMeasurementPhase, vm?: VM) {
-        const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
-        end(phase, markName);
-    };
+          const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
+          end(phase, markName);
+      };
 
 const opIdToMeasurementPhaseMappingArray: MeasurementPhase[] = [
     'constructor',
