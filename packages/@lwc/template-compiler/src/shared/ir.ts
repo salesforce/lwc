@@ -111,11 +111,10 @@ export function isComponentProp(
 ): boolean {
     const { name } = identifier;
     let current: IRNode | undefined = root;
-    let size = parentStack.length;
 
     // Walking up the AST and checking for each node to find if the identifer name is identical to
     // an iteration variable.
-    while (current !== undefined) {
+    for (let i = parentStack.length; i >= 0; i--) {
         if (isElement(current)) {
             const { forEach, forOf } = current;
 
@@ -128,7 +127,7 @@ export function isComponentProp(
             }
         }
 
-        current = size > 0 ? parentStack[--size] : undefined;
+        current = parentStack[i - 1];
     }
 
     // The identifier is bound to a component property if no match is found after reaching to AST

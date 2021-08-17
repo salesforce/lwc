@@ -117,15 +117,14 @@ export function parseIdentifier(source: string): TemplateIdentifier | never {
 // a non-template element without a forOf.
 export function getForOfParent(parentStack: IRElement[]): IRElement | null {
     let size = parentStack.length;
-    let parent: IRElement | undefined = getParent(parentStack, --size);
+    let parent: IRElement | undefined = parentStack[--size];
 
     while (parent) {
         if (parent.forOf) {
             return parent;
         }
 
-        parent =
-            parent.tag.toLowerCase() === 'template' ? getParent(parentStack, --size) : undefined;
+        parent = parent.tag.toLowerCase() === 'template' ? parentStack[--size] : undefined;
     }
 
     return null;
@@ -140,10 +139,8 @@ export function getForEachParent(element: IRElement, parentStack: IRElement[]): 
             return current;
         }
 
-        current = getParent(parentStack, --size);
-        if (current?.tag.toLowerCase() !== 'template') {
-            current = undefined;
-        }
+        const parent = parentStack[--size];
+        current = parent?.tag.toLowerCase() === 'template' ? parent : undefined;
     }
 
     return null;
@@ -151,8 +148,4 @@ export function getForEachParent(element: IRElement, parentStack: IRElement[]): 
 
 export function isIteratorElement(element: IRElement, parentStack: IRElement[]): boolean {
     return !!(getForOfParent(parentStack) || getForEachParent(element, parentStack));
-}
-
-export function getParent(parentStack: IRElement[], size: number): IRElement | undefined {
-    return size > 0 ? parentStack[size] : undefined;
 }

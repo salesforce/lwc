@@ -36,7 +36,6 @@ import {
     isIteratorElement,
     parseExpression,
     parseIdentifier,
-    getParent,
 } from './expression';
 
 import * as t from '../shared/estree';
@@ -666,15 +665,15 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function isInIteration(element: IRElement): boolean {
         let current: IRElement | undefined = element;
-        let size = parentStack.length;
 
-        while (current) {
+        for (let i = parentStack.length; i >= 0; i--) {
             if (current.tag === 'template') {
                 if (current.forEach || current.forOf) {
                     return true;
                 }
             }
-            current = getParent(parentStack, --size);
+
+            current = parentStack[i - 1];
         }
 
         return false;
@@ -772,7 +771,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function validateElement(element: IRElement) {
         const { tag, namespace, location, __original: node } = element;
-        const isRoot = !(parentStack.length > 0);
+        const isRoot = parentStack.length === 0;
 
         if (isRoot) {
             if (tag !== 'template') {
@@ -980,7 +979,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function getRoot(element: IRElement): IRElement {
-        return parentStack.length > 0 ? parentStack[0] : element;
+        return parentStack[0] || element;
     }
 
     function getRenderMode(element: IRElement): LWCDirectiveRenderMode {
