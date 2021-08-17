@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-import treeAdapter from 'parse5/lib/tree-adapters/default';
 import { hasOwnProperty } from '@lwc/shared';
 
 import {
@@ -40,6 +39,7 @@ import {
 } from './expression';
 
 import * as t from '../shared/estree';
+import * as parse5Utils from '../shared/parse5';
 import { createComment, createElement, createText, isCustomElement } from '../shared/ir';
 import {
     ForEach,
@@ -164,18 +164,16 @@ export default function parse(source: string, state: State): TemplateParseResult
         const { __original } = parent;
 
         const parsedChildren: IRNode[] = [];
-        const children = treeAdapter.getChildNodes(
-            treeAdapter.getTemplateContent(__original) ?? __original
-        );
+        const children = (parse5Utils.getTemplateContent(__original) ?? __original).childNodes;
 
         for (const child of children) {
-            if (treeAdapter.isElementNode(child)) {
+            if (parse5Utils.isElementNode(child)) {
                 const elmNode = parseElement(child, parent);
                 parsedChildren.push(elmNode);
-            } else if (treeAdapter.isTextNode(child)) {
+            } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(child, parent);
                 parsedChildren.push(...textNodes);
-            } else if (treeAdapter.isCommentNode(child)) {
+            } else if (parse5Utils.isCommentNode(child)) {
                 const commentNode = parseComment(child, parent);
                 parsedChildren.push(commentNode);
             }
@@ -241,8 +239,8 @@ export default function parse(source: string, state: State): TemplateParseResult
         // Filter all the empty text nodes
         const validRoots = documentFragment.childNodes.filter(
             (child) =>
-                treeAdapter.isElementNode(child) ||
-                (treeAdapter.isTextNode(child) && child.value.trim().length)
+                parse5Utils.isElementNode(child) ||
+                (parse5Utils.isTextNode(child) && child.value.trim().length)
         );
 
         if (validRoots.length > 1) {
@@ -252,7 +250,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         const [root] = validRoots;
 
-        if (!root || !treeAdapter.isElementNode(root)) {
+        if (!root || !parse5Utils.isElementNode(root)) {
             warnAtLocation(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
         } else {
             return root;

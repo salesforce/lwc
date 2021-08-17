@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-import treeAdapter from 'parse5/lib/tree-adapters/default';
+
+import * as parse5Utils from './parse5';
 
 import {
     TemplateIdentifier,
@@ -27,7 +28,7 @@ export function createElement(original: parse5.Element, parent?: IRElement): IRE
     // TODO [#248]: Report a warning when location is not available indicating the original HTML
     // template is not valid.
     let current = original;
-    while (!location && treeAdapter.isElementNode(original.parentNode)) {
+    while (!location && parse5Utils.isElementNode(original.parentNode)) {
         current = original.parentNode;
         location = current.sourceCodeLocation;
     }

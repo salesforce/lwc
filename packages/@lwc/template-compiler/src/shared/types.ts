@@ -60,13 +60,13 @@ export interface LWCDirectives {
     preserveComments?: IRBooleanAttribute;
 }
 
-export interface IRBaseNode<Parse5Node extends parse5.Node> {
+export interface IRBaseNode<N extends parse5.Node> {
     type: string;
     parent?: IRElement;
     location: parse5.Location;
 
     // TODO [#2432]: Remove `__original` property on the `IRBaseNode`.
-    __original: Parse5Node;
+    __original: N;
 }
 
 export interface IRElement extends IRBaseNode<parse5.Element> {
