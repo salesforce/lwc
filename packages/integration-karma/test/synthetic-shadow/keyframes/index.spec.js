@@ -11,12 +11,6 @@ describe('keyframes', () => {
 
         // if the div is actually animating, then its opacity will be between 0 and 0.9
         expect(parseFloat(getComputedStyle(div).opacity)).toBeLessThan(1);
-
-        if (process.env.NATIVE_SHADOW) {
-            expect(getComputedStyle(div).animationName).toEqual('fade');
-        } else {
-            expect(getComputedStyle(div).animationName).toEqual('fade-x-a_a');
-        }
     });
 
     it('animation does not apply to element with keyframes from outside element', () => {
@@ -26,6 +20,5 @@ describe('keyframes', () => {
         const div = el.shadowRoot.querySelector('div');
 
         expect(parseFloat(getComputedStyle(div).opacity)).toEqual(1);
-        expect(getComputedStyle(div).animationName).toEqual('fade');
     });
 });
