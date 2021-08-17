@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import { isUndefined, noop } from '@lwc/shared';
 import { VM } from './vm';
 import { getComponentTag } from '../shared/format';
 
@@ -72,7 +72,6 @@ function end(measureName: string, markName: string) {
 
 type LogDispatcher = (opId: OperationId, phase: Phase, cmpName?: string, vmIndex?: number) => void;
 
-function noop() {}
 let logOperation: LogDispatcher = noop;
 
 export const startMeasure = !isUserTimingSupported
