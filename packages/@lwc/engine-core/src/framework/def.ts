@@ -21,7 +21,6 @@ import {
     freeze,
     getPrototypeOf,
     htmlPropertyToAttribute,
-    isBoolean,
     isFunction,
     isNull,
     isUndefined,
@@ -55,8 +54,8 @@ export interface ComponentDef {
     propsConfig: Record<string, PropType>;
     methods: PropertyDescriptorMap;
     template: Template;
-    preferNativeShadow: boolean;
     renderMode: RenderMode;
+    shadowSupportMode?: 'any';
     ctor: LightningElementConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: LightningElement['connectedCallback'];
@@ -95,7 +94,7 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
 }
 
 function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
-    const { preferNativeShadow: ctorPreferNativeShadow, renderMode: ctorRenderMode } = Ctor;
+    const { shadowMode: ctorShadowMode, renderMode: ctorRenderMode } = Ctor;
 
     if (process.env.NODE_ENV !== 'production') {
         const ctorName = Ctor.name;
@@ -108,17 +107,17 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
 
         if (!features.ENABLE_PREFER_NATIVE_SHADOW) {
             assert.isFalse(
-                'preferNativeShadow' in Ctor,
+                'shadowMode' in Ctor,
                 `${
                     ctorName || 'Anonymous class'
-                } is an invalid LWC component. \`preferNativeShadow\` is not available in this environment.`
+                } is an invalid LWC component. The shadowMode static property is not available in this environment.`
             );
         }
 
-        if (!isUndefined(ctorPreferNativeShadow)) {
+        if (!isUndefined(ctorShadowMode)) {
             assert.invariant(
-                isBoolean(ctorPreferNativeShadow),
-                `Invalid value for static property preferNativeShadow: '${ctorPreferNativeShadow}'. preferNativeShadow must be a boolean value.`
+                ctorShadowMode === 'any',
+                `Invalid value for static property shadowMode: '${ctorShadowMode}'`
             );
         }
 
@@ -156,9 +155,9 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     errorCallback = errorCallback || superDef.errorCallback;
     render = render || superDef.render;
 
-    let preferNativeShadow = superDef.preferNativeShadow;
-    if (!isUndefined(ctorPreferNativeShadow)) {
-        preferNativeShadow = Boolean(ctorPreferNativeShadow);
+    let shadowSupportMode = superDef.shadowSupportMode;
+    if (!isUndefined(ctorShadowMode)) {
+        shadowSupportMode = ctorShadowMode;
     }
 
     let renderMode = superDef.renderMode;
@@ -181,7 +180,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         methods,
         bridge,
         template,
-        preferNativeShadow,
+        shadowSupportMode,
         renderMode,
         connectedCallback,
         disconnectedCallback,
@@ -271,7 +270,6 @@ const lightingElementDef: ComponentDef = {
     props: lightningBasedDescriptors,
     propsConfig: EmptyObject,
     methods: EmptyObject,
-    preferNativeShadow: false,
     renderMode: RenderMode.Shadow,
     wire: EmptyObject,
     bridge: BaseBridgeElement,

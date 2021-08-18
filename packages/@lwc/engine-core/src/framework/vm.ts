@@ -289,7 +289,7 @@ export function createVM<HostNode, HostElement>(
     let shadowMode;
     if (renderer.syntheticShadow) {
         shadowMode =
-            def.preferNativeShadow && isNativeShadowRootDefined
+            def.shadowSupportMode === 'any' && isNativeShadowRootDefined
                 ? ShadowMode.Native
                 : ShadowMode.Synthetic;
     } else {

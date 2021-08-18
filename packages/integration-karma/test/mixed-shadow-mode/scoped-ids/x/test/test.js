@@ -1,7 +1,7 @@
 import { LightningElement } from 'lwc';
 
 export default class extends LightningElement {
-    static preferNativeShadow = true;
+    static shadowMode = 'any';
 
     get yamanashi() {
         return 'yamanashi';

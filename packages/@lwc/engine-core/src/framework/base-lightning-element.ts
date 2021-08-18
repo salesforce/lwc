@@ -127,8 +127,8 @@ export interface LightningElementConstructor {
     readonly CustomElementConstructor: HTMLElementConstructor;
 
     delegatesFocus?: boolean;
-    preferNativeShadow?: boolean;
     renderMode?: 'light' | 'shadow';
+    shadowMode?: 'any';
 }
 
 type HTMLElementTheGoodParts = Pick<Object, 'toString'> &

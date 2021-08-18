@@ -3,17 +3,18 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
 
-describe('preferNativeShadow flag enabled', () => {
+describe('shadowMode flag enabled', () => {
     beforeEach(() => {
         setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', true);
     });
     afterEach(() => {
         setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', false);
     });
+
     it('should throw for invalid values', () => {
         expect(() => {
             createElement('x-invalid', { is: Invalid });
-        }).toThrowError(/Invalid value for static property preferNativeShadow: 'true'/);
+        }).toThrowError(/Invalid value for static property shadowMode: 'true'/);
     });
 
     it('should not throw for valid values', () => {
@@ -23,10 +24,10 @@ describe('preferNativeShadow flag enabled', () => {
     });
 });
 
-describe('preferNativeShadow flag disabled', () => {
-    it('should disallow preferNativeShadow by default', () => {
+describe('shadowMode flag disabled', () => {
+    it('should disallow shadowMode by default', () => {
         expect(() => {
             createElement('x-invalid', { is: Invalid });
-        }).toThrowError(/`preferNativeShadow` is not available in this environment./);
+        }).toThrowError(/The shadowMode static property is not available in this environment./);
     });
 });
