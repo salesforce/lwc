@@ -159,18 +159,18 @@ export function attributeName(attr: parse5.Attribute): string {
 }
 
 export function getAttribute(
-    el: IRElement,
+    el: parse5.Element,
     pattern: string | RegExp
 ): parse5.Attribute | undefined {
-    return el.attrsList.find((attr) =>
+    return el.attrs.find((attr) =>
         typeof pattern === 'string'
             ? attributeName(attr) === pattern
             : !!attributeName(attr).match(pattern)
     );
 }
 
-export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
-    el.attrsList = el.attrsList.filter((attr) =>
+export function removeAttribute(el: parse5.Element, pattern: string | RegExp): void {
+    el.attrs = el.attrs.filter((attr) =>
         typeof pattern === 'string'
             ? attributeName(attr) !== pattern
             : !attributeName(attr).match(pattern)
