@@ -48,10 +48,7 @@ export function createElement(original: parse5.Element): IRElement {
     };
 }
 
-export function createText(
-    original: parse5.TextNode,
-    value: string | TemplateExpression
-): IRText {
+export function createText(original: parse5.TextNode, value: string | TemplateExpression): IRText {
     if (!original.sourceCodeLocation) {
         throw new Error('Invalid text AST node. Missing source code location.');
     }
@@ -64,10 +61,7 @@ export function createText(
     };
 }
 
-export function createComment(
-    original: parse5.CommentNode,
-    value: string
-): IRComment {
+export function createComment(original: parse5.CommentNode, value: string): IRComment {
     if (!original.sourceCodeLocation) {
         throw new Error('Invalid comment AST node. Missing source code location.');
     }

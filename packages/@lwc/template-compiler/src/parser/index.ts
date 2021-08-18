@@ -378,7 +378,10 @@ export default function parse(source: string, state: State): TemplateParseResult
             return;
         }
 
-        if (parentStack.length > 0 || lwcPreserveCommentAttribute.type !== IRAttributeType.Boolean) {
+        if (
+            parentStack.length > 0 ||
+            lwcPreserveCommentAttribute.type !== IRAttributeType.Boolean
+        ) {
             return warnOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
                 ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
                 `<${element.tag}>`,
