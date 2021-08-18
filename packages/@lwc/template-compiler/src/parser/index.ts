@@ -26,7 +26,7 @@ import {
     isValidHTMLAttribute,
     isValidTabIndexAttributeValue,
     normalizeAttributeValue,
-    removeAttribute,
+    filterAttributes,
 } from './attribute';
 
 import {
@@ -82,6 +82,7 @@ import {
     SVG_NAMESPACE_URI,
     VALID_IF_MODIFIER,
     VOID_ELEMENT_SET,
+    FOR_DIRECTIVES,
 } from './constants';
 
 function attributeExpressionReferencesForOfIndex(
@@ -125,6 +126,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     const warnings: CompilerDiagnostic[] = [];
     const seenIds: Set<string> = new Set();
     const parentStack: IRElement[] = [];
+    const removedAttrs: Set<string> = new Set();
 
     const { fragment, errors: parsingErrors } = parseHTML(source);
 
@@ -141,7 +143,6 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function parseElement(elementNode: parse5.Element): IRElement {
         const element = createElement(elementNode);
-        const attrs = elementNode.attrs;
 
         applyForEach(element, elementNode);
         applyIterator(element, elementNode);
@@ -152,9 +153,11 @@ export default function parse(source: string, state: State): TemplateParseResult
         applyKey(element, elementNode);
         applyLwcDirectives(element, elementNode);
         applyAttributes(element, elementNode);
-        validateElement(element, attrs);
+        validateElement(element, elementNode);
         validateAttributes(element, elementNode);
         validateProperties(element);
+
+        removedAttrs.clear();
 
         parseChildren(element, elementNode);
         validateChildren(element);
@@ -262,9 +265,20 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function applyHandlers(element: IRElement, node: parse5.Element) {
-        let eventHandlerAttribute = getTemplateAttribute(element, node, EVENT_HANDLER_RE);
-        while (eventHandlerAttribute) {
-            removeAttribute(node, eventHandlerAttribute.name);
+        const attrs = filterAttributes(node.attrs, EVENT_HANDLER_RE);
+        attrs.forEach((attr) => {
+            const eventHandlerAttribute = getTemplateAttribute(
+                element,
+                node,
+                EVENT_HANDLER_RE,
+                attr
+            );
+
+            if (!eventHandlerAttribute) {
+                return;
+            }
+
+            removedAttrs.add(eventHandlerAttribute.name);
 
             if (eventHandlerAttribute.type !== IRAttributeType.Expression) {
                 return warnOnIRNode(
@@ -285,15 +299,13 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             const on = element.on || (element.on = {});
             on[eventName] = eventHandlerAttribute.value;
-
-            eventHandlerAttribute = getTemplateAttribute(element, node, EVENT_HANDLER_RE);
-        }
+        });
     }
 
     function applyIf(element: IRElement, node: parse5.Element) {
         const ifAttribute = getTemplateAttribute(element, node, IF_RE);
         if (ifAttribute) {
-            removeAttribute(node, IF_RE);
+            removedAttrs.add(ifAttribute.name);
 
             if (ifAttribute.type !== IRAttributeType.Expression) {
                 return warnOnIRNode(
@@ -417,7 +429,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             ]);
         }
 
-        removeAttribute(node, LWC_DIRECTIVES.DYNAMIC);
+        removedAttrs.add(lwcDynamicAttribute.name);
 
         if (!isCustomElement(element)) {
             return warnOnIRNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT, element, [
@@ -445,7 +457,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             return;
         }
 
-        removeAttribute(node, LWC_DIRECTIVES.DOM);
+        removedAttrs.add(lwcDomAttribute.name);
 
         if (getRenderMode(element) === LWCDirectiveRenderMode.light) {
             return warnOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM, element, [
@@ -477,14 +489,14 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function applyForEach(element: IRElement, node: parse5.Element) {
-        const forEachAttribute = getTemplateAttribute(element, node, 'for:each');
-        const forItemAttribute = getTemplateAttribute(element, node, 'for:item');
-        const forIndex = getTemplateAttribute(element, node, 'for:index');
+        const forEachAttribute = getTemplateAttribute(element, node, FOR_DIRECTIVES.FOR_EACH);
+        const forItemAttribute = getTemplateAttribute(element, node, FOR_DIRECTIVES.FOR_ITEM);
+        const forIndex = getTemplateAttribute(element, node, FOR_DIRECTIVES.FOR_INDEX);
 
         if (forEachAttribute && forItemAttribute) {
             // If both directives are defined
-            removeAttribute(node, forEachAttribute.name);
-            removeAttribute(node, forItemAttribute.name);
+            removedAttrs.add(forEachAttribute.name);
+            removedAttrs.add(forItemAttribute.name);
 
             if (forEachAttribute.type !== IRAttributeType.Expression) {
                 return warnOnIRNode(
@@ -511,7 +523,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             let index: TemplateIdentifier | undefined;
             if (forIndex) {
-                removeAttribute(node, forIndex.name);
+                removedAttrs.add(forIndex.name);
                 if (forIndex.type !== IRAttributeType.String) {
                     return warnOnIRNode(
                         ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING,
@@ -557,7 +569,8 @@ export default function parse(source: string, state: State): TemplateParseResult
             ]);
         }
 
-        removeAttribute(node, iteratorExpression.name);
+        removedAttrs.add(iteratorExpression.name);
+
         const iteratorAttributeName = iteratorExpression.name;
         const [, iteratorName] = iteratorAttributeName.split(':');
 
@@ -621,7 +634,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                     );
                 }
             }
-            removeAttribute(node, 'key');
+            removedAttrs.add('key');
 
             element.forKey = keyAttribute.value;
         } else if (isIteratorElement(element, parentStack) && element.tag !== 'template') {
@@ -701,9 +714,9 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function applyAttributes(element: IRElement, node: parse5.Element) {
         const { tag } = element;
-
-        node.attrs.forEach((rawAttr) => {
-            const attr = getTemplateAttribute(element, node, attributeName(rawAttr));
+        const attrs = node.attrs.filter((attr) => !removedAttrs.has(attributeName(attr)));
+        attrs.forEach((rawAttr) => {
+            const attr = getTemplateAttribute(element, node, attributeName(rawAttr), rawAttr);
             if (!attr) {
                 return;
             }
@@ -784,12 +797,12 @@ export default function parse(source: string, state: State): TemplateParseResult
                 const props = element.props || (element.props = {});
                 props[attributeToPropertyName(name)] = attr;
 
-                removeAttribute(node, name);
+                removedAttrs.add(name);
             }
         });
     }
 
-    function validateElement(element: IRElement, attrs: parse5.Attribute[]) {
+    function validateElement(element: IRElement, node: parse5.Element) {
         const { tag, namespace, location } = element;
         const isRoot = parentStack.length === 0;
 
@@ -798,7 +811,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 return warnOnIRNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, element, [tag]);
             }
 
-            const rootHasUnknownAttributes = attrs.some(
+            const rootHasUnknownAttributes = node.attrs.some(
                 ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
             );
             if (rootHasUnknownAttributes) {
@@ -829,7 +842,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             //      - Unexpected template element
             //
             // Checking if the original HTMLElement has some attributes applied is a good enough for now.
-            const hasAttributes = attrs.length !== 0;
+            const hasAttributes = node.attrs.length !== 0;
             if (!isRoot && !hasAttributes) {
                 warnOnIRNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
             }
@@ -879,20 +892,19 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateAttributes(element: IRElement, node: parse5.Element) {
-        const { tag } = element;
-
-        node.attrs.forEach((attr) => {
-            const attrName = attr.name;
+        const attrs = node.attrs.filter((attr) => !removedAttrs.has(attributeName(attr)));
+        attrs.forEach((attr) => {
+            const { name: attrName, value } = attr;
 
             if (isProhibitedIsAttribute(attrName)) {
                 warnOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [
                     attrName,
-                    tag,
+                    element.tag,
                 ]);
             }
 
             if (isTabIndexAttribute(attrName)) {
-                if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
+                if (!isExpression(value) && !isValidTabIndexAttributeValue(value)) {
                     warnOnIRNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
                 }
             }
@@ -900,7 +912,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             // TODO [#1136]: once the template compiler emits the element namespace information to the engine we should
             // restrict the validation of the "srcdoc" attribute on the "iframe" element only if this element is
             // part of the HTML namespace.
-            if (tag === 'iframe' && attrName === 'srcdoc') {
+            if (element.tag === 'iframe' && attrName === 'srcdoc') {
                 warnOnIRNode(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE, element);
             }
         });
@@ -934,14 +946,15 @@ export default function parse(source: string, state: State): TemplateParseResult
     function getTemplateAttribute(
         el: IRElement,
         node: parse5.Element,
-        pattern: string | RegExp
+        pattern: string | RegExp,
+        attribute?: parse5.Attribute
     ): IRAttribute | undefined {
-        const matching = getAttribute(node, pattern);
+        const matching = attribute || getAttribute(node, pattern);
         if (!matching) {
             return;
         }
 
-        const name = matching.prefix ? `${matching.prefix}:${matching.name}` : matching.name;
+        const name = attributeName(matching);
 
         // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
         // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state
@@ -988,7 +1001,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
         } catch (error) {
             // Removes the attribute, if impossible to parse it value.
-            removeAttribute(node, name);
+            removedAttrs.add(name);
             addDiagnostic(
                 normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error, {
                     location: normalizeLocation(location),

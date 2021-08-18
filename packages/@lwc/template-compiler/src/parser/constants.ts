@@ -27,6 +27,12 @@ export const LWC_DIRECTIVES = {
 
 export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(LWC_DIRECTIVES));
 
+export const FOR_DIRECTIVES = {
+    FOR_EACH: 'for:each',
+    FOR_ITEM: 'for:item',
+    FOR_INDEX: 'for:index',
+};
+
 export const ROOT_TEMPLATE_DIRECTIVES = {
     PRESERVE_COMMENTS: 'lwc:preserve-comments',
     RENDER_MODE: 'lwc:render-mode',

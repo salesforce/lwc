@@ -169,11 +169,14 @@ export function getAttribute(
     );
 }
 
-export function removeAttribute(el: parse5.Element, pattern: string | RegExp): void {
-    el.attrs = el.attrs.filter((attr) =>
+export function filterAttributes(
+    attrs: parse5.Attribute[],
+    pattern: string | RegExp
+): parse5.Attribute[] {
+    return attrs.filter((attr) =>
         typeof pattern === 'string'
             ? attributeName(attr) !== pattern
-            : !attributeName(attr).match(pattern)
+            : !!attributeName(attr).match(pattern)
     );
 }
 
