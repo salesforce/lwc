@@ -17,7 +17,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import { IRElement } from '../shared/types';
+import { IRAttribute, IRElement } from '../shared/types';
 
 import {
     ATTR_NAME,
@@ -158,28 +158,6 @@ export function attributeName(attr: parse5.Attribute): string {
     return prefix ? `${prefix}:${name}` : name;
 }
 
-export function getAttribute(
-    el: parse5.Element,
-    pattern: string | RegExp
-): parse5.Attribute | undefined {
-    return el.attrs.find((attr) =>
-        typeof pattern === 'string'
-            ? attributeName(attr) === pattern
-            : !!attributeName(attr).match(pattern)
-    );
-}
-
-export function filterAttributes(
-    attrs: parse5.Attribute[],
-    pattern: string | RegExp
-): parse5.Attribute[] {
-    return attrs.filter((attr) =>
-        typeof pattern === 'string'
-            ? attributeName(attr) !== pattern
-            : !!attributeName(attr).match(pattern)
-    );
-}
-
 export function isProhibitedIsAttribute(attrName: string): boolean {
     return attrName === 'is';
 }
@@ -254,4 +232,41 @@ function isTemplateDirective(attrName: string): boolean {
  */
 export function attributeToPropertyName(attrName: string): string {
     return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);
+}
+
+export class ParsedAttribute {
+    private readonly attributes: Map<string, IRAttribute> = new Map();
+
+    append(attr: IRAttribute): void {
+        this.attributes.set(attr.name, attr);
+    }
+
+    get(pattern: string | RegExp): IRAttribute | undefined {
+        const key = this._getKey(pattern);
+        if (key) {
+            return this.attributes.get(key);
+        }
+    }
+
+    pick(pattern: string | RegExp): IRAttribute | undefined {
+        const attr = this.get(pattern);
+        if (attr) {
+            this.attributes.delete(attr.name);
+        }
+        return attr;
+    }
+
+    private _getKey(pattern: string | RegExp): string | undefined {
+        let match: string | undefined;
+        if (typeof pattern === 'string') {
+            match = pattern;
+        } else {
+            match = Array.from(this.attributes.keys()).find((name) => !!name.match(pattern));
+        }
+        return match;
+    }
+
+    getAttributes(): IRAttribute[] {
+        return Array.from(this.attributes.values());
+    }
 }
