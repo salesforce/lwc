@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5-with-errors';
+import * as parse5 from 'parse5';
 import { ParserDiagnostics, generateCompilerError } from '@lwc/errors';
 import { isAriaAttribute, isBooleanAttribute, isGlobalHtmlAttribute } from '@lwc/shared';
 
@@ -81,7 +81,7 @@ export function isFragmentOnlyUrl(url: string): boolean {
 }
 
 export function normalizeAttributeValue(
-    attr: parse5.AST.Default.Attribute,
+    attr: parse5.Attribute,
     raw: string,
     tag: string
 ): {
@@ -153,7 +153,7 @@ export function normalizeAttributeValue(
     return { value, escapedExpression: false };
 }
 
-export function attributeName(attr: parse5.AST.Default.Attribute): string {
+export function attributeName(attr: parse5.Attribute): string {
     const { prefix, name } = attr;
     return prefix ? `${prefix}:${name}` : name;
 }
@@ -161,7 +161,7 @@ export function attributeName(attr: parse5.AST.Default.Attribute): string {
 export function getAttribute(
     el: IRElement,
     pattern: string | RegExp
-): parse5.AST.Default.Attribute | undefined {
+): parse5.Attribute | undefined {
     return el.attrsList.find((attr) =>
         typeof pattern === 'string'
             ? attributeName(attr) === pattern

@@ -308,7 +308,7 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
-        const { namespaceURI, tagName } = element.__original;
+        const { tag, namespace } = element;
         const isUsedAsAttribute = isAttribute(element, attr.name);
 
         switch (attr.type) {
@@ -316,7 +316,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 const expression = bindExpression(attr.value, element);
 
                 // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
-                if (isUsedAsAttribute && isBooleanAttribute(attr.name, tagName)) {
+                if (isUsedAsAttribute && isBooleanAttribute(attr.name, tag)) {
                     // We need to do some manipulation to allow the diffing algorithm add/remove the attribute
                     // without handling special cases at runtime.
                     return codeGen.genBooleanAttributeExpr(expression);
@@ -329,16 +329,16 @@ function transform(codeGen: CodeGen): t.Expression {
                 }
                 if (
                     codeGen.scopeFragmentId &&
-                    isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI)
+                    isAllowedFragOnlyUrlsXHTML(tag, attr.name, namespace)
                 ) {
                     return codeGen.genScopedFragId(expression);
                 }
-                if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
+                if (isSvgUseHref(tag, attr.name, namespace)) {
                     codeGen.usedLwcApis.add('sanitizeAttribute');
 
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
-                        t.literal(tagName),
-                        t.literal(namespaceURI),
+                        t.literal(tag),
+                        t.literal(namespace),
                         t.literal(attr.name),
                         codeGen.genScopedFragId(expression),
                     ]);
@@ -355,7 +355,7 @@ function transform(codeGen: CodeGen): t.Expression {
                     return t.literal(attr.value.toLowerCase() !== 'false');
                 }
 
-                if (!isUsedAsAttribute && isBooleanAttribute(attr.name, tagName)) {
+                if (!isUsedAsAttribute && isBooleanAttribute(attr.name, tag)) {
                     // We are in presence of a string value, for a recognized boolean attribute, which is used as
                     // property. for these cases, always set the property to true.
                     return t.literal(true);
@@ -366,17 +366,17 @@ function transform(codeGen: CodeGen): t.Expression {
                 }
                 if (
                     codeGen.scopeFragmentId &&
-                    isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI) &&
+                    isAllowedFragOnlyUrlsXHTML(tag, attr.name, namespace) &&
                     isFragmentOnlyUrl(attr.value)
                 ) {
                     return codeGen.genScopedFragId(attr.value);
                 }
-                if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
+                if (isSvgUseHref(tag, attr.name, namespace)) {
                     codeGen.usedLwcApis.add('sanitizeAttribute');
 
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
-                        t.literal(tagName),
-                        t.literal(namespaceURI),
+                        t.literal(tag),
+                        t.literal(namespace),
                         t.literal(attr.name),
                         isFragmentOnlyUrl(attr.value)
                             ? codeGen.genScopedFragId(attr.value)

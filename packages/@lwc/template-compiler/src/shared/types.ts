@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5-with-errors';
+import * as parse5 from 'parse5';
 import { CompilerDiagnostic } from '@lwc/errors';
 
 export type TemplateIdentifier = { type: 'Identifier'; name: string };
@@ -28,11 +28,6 @@ export type TemplateParseResult = {
     root?: IRElement | undefined;
     warnings: CompilerDiagnostic[];
 };
-
-export type HTMLComment = parse5.AST.Default.CommentNode;
-export type HTMLText = parse5.AST.Default.TextNode;
-export type HTMLElement = parse5.AST.Default.Element;
-export type HTMLNode = HTMLElement | HTMLComment | HTMLText;
 
 export interface ForEach {
     expression: TemplateExpression;
@@ -65,17 +60,26 @@ export interface LWCDirectives {
     preserveComments?: IRBooleanAttribute;
 }
 
-export interface IRElement {
+export interface IRBaseNode<N extends parse5.Node> {
+    type: string;
+    parent?: IRElement;
+    location: parse5.Location;
+
+    // TODO [#2432]: Remove `__original` property on the `IRBaseNode`.
+    __original: N;
+}
+
+export interface IRElement extends IRBaseNode<parse5.Element> {
     type: 'element';
     tag: string;
     namespace: string;
-
-    attrsList: parse5.AST.Default.Attribute[];
-
-    parent?: IRElement;
     children: IRNode[];
+    location: parse5.ElementLocation;
 
-    __original: HTMLElement;
+    // TODO [#2432]: Remove `attrsList` property from `IRElement`. Instead of storing the original
+    // list of attributes produced by parse5 the attribute list should be passed around in the
+    // parser.
+    attrsList: parse5.Attribute[];
 
     component?: string;
 
@@ -95,22 +99,14 @@ export interface IRElement {
     slotName?: string;
 }
 
-export interface IRText {
+export interface IRText extends IRBaseNode<parse5.TextNode> {
     type: 'text';
     value: string | TemplateExpression;
-
-    parent?: IRElement;
-
-    __original: HTMLText;
 }
 
-export interface IRComment {
+export interface IRComment extends IRBaseNode<parse5.CommentNode> {
     type: 'comment';
     value: string;
-
-    parent?: IRElement;
-
-    __original: HTMLComment;
 }
 
 export type IRNode = IRComment | IRElement | IRText;
@@ -123,7 +119,7 @@ export const enum IRAttributeType {
 
 export interface IRBaseAttribute {
     name: string;
-    location: parse5.MarkupData.Location;
+    location: parse5.Location;
     type: IRAttributeType;
 }
 
