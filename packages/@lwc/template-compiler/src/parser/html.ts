@@ -7,15 +7,15 @@
 import * as parse5 from 'parse5';
 import * as he from 'he';
 
-import { CompilerDiagnostic, generateCompilerDiagnostic, ParserDiagnostics } from '@lwc/errors';
+import { generateCompilerDiagnostic, ParserDiagnostics } from '@lwc/errors';
 
-export function parseHTML(source: string) {
-    const errors: CompilerDiagnostic[] = [];
+import { ParserCtx } from '.';
 
+export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {
         const { code, startLine, startCol, startOffset, endOffset } = err;
 
-        errors.push(
+        ctx.addDiagnostic(
             generateCompilerDiagnostic(ParserDiagnostics.INVALID_HTML_SYNTAX, {
                 messageArgs: [code],
                 origin: {
@@ -30,20 +30,10 @@ export function parseHTML(source: string) {
         );
     };
 
-    const fragment = parse5.parseFragment(source, {
+    return parse5.parseFragment(source, {
         sourceCodeLocationInfo: true,
         onParseError,
     });
-
-    return {
-        fragment,
-        errors,
-    };
-}
-
-export function getSource(source: string, location: parse5.Location): string {
-    const { startOffset, endOffset } = location;
-    return source.slice(startOffset, endOffset);
 }
 
 // https://github.com/babel/babel/blob/d33d02359474296402b1577ef53f20d94e9085c4/packages/babel-types/src/react.js#L9-L55
