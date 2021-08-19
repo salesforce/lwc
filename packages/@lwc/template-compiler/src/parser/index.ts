@@ -141,8 +141,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function parseElement(elementNode: parse5.Element): IRElement {
         const element = createElement(elementNode);
-        const parsedAttr = new ParsedAttribute();
-        mapTemplateAttribute(element, elementNode, parsedAttr);
+        const parsedAttr = parseAttributes(element, elementNode);
 
         applyForEach(element, parsedAttr);
         applyIterator(element, parsedAttr);
@@ -682,8 +681,9 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function applyAttributes(element: IRElement, parsedAttr: ParsedAttribute) {
         const { tag } = element;
+        const attributes = parsedAttr.getAttributes();
 
-        parsedAttr.getAttributes().forEach((attr) => {
+        for (const attr of attributes) {
             const name = attr.name;
 
             if (!isValidHTMLAttribute(tag, name)) {
@@ -762,7 +762,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
                 parsedAttr.pick(name);
             }
-        });
+        }
     }
 
     function validateElement(element: IRElement, node: parse5.Element) {
@@ -856,8 +856,9 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function validateAttributes(element: IRElement, parsedAttr: ParsedAttribute) {
         const { tag } = element;
+        const attributes = parsedAttr.getAttributes();
 
-        parsedAttr.getAttributes().forEach((attr) => {
+        for (const attr of attributes) {
             const { name: attrName } = attr;
 
             if (isProhibitedIsAttribute(attrName)) {
@@ -882,7 +883,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             if (tag === 'iframe' && attrName === 'srcdoc') {
                 warnOnIRNode(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE, element);
             }
-        });
+        }
     }
 
     function validateProperties(element: IRElement) {
@@ -910,17 +911,18 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
-    function mapTemplateAttribute(
-        element: IRElement,
-        node: parse5.Element,
-        parsedAttrs: ParsedAttribute
-    ) {
-        node.attrs.forEach((rawAttr) => {
-            const irAttr = getTemplateAttribute(element, rawAttr);
+    function parseAttributes(element: IRElement, node: parse5.Element): ParsedAttribute {
+        const parsedAttrs = new ParsedAttribute();
+        const { attrs: attributes } = node;
+
+        for (const attr of attributes) {
+            const irAttr = getTemplateAttribute(element, attr);
             if (irAttr) {
                 parsedAttrs.append(irAttr);
             }
-        });
+        }
+
+        return parsedAttrs;
     }
 
     function getTemplateAttribute(

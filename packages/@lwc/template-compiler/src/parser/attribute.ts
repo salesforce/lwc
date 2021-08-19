@@ -242,7 +242,7 @@ export class ParsedAttribute {
     }
 
     get(pattern: string | RegExp): IRAttribute | undefined {
-        const key = this._getKey(pattern);
+        const key = this.getKey(pattern);
         if (key) {
             return this.attributes.get(key);
         }
@@ -256,7 +256,7 @@ export class ParsedAttribute {
         return attr;
     }
 
-    private _getKey(pattern: string | RegExp): string | undefined {
+    private getKey(pattern: string | RegExp): string | undefined {
         let match: string | undefined;
         if (typeof pattern === 'string') {
             match = pattern;
