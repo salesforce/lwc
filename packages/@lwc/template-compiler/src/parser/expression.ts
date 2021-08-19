@@ -124,7 +124,7 @@ export function getForOfParent(parentStack: IRElement[]): IRElement | null {
             return parent;
         }
 
-        parent = parent.tag.toLowerCase() === 'template' ? parentStack[--size] : undefined;
+        parent = parent.tag === 'template' ? parentStack[--size] : undefined;
     }
 
     return null;
@@ -140,7 +140,7 @@ export function getForEachParent(element: IRElement, parentStack: IRElement[]): 
         }
 
         const parent = parentStack[--size];
-        current = parent?.tag.toLowerCase() === 'template' ? parent : undefined;
+        current = parent?.tag === 'template' ? parent : undefined;
     }
 
     return null;

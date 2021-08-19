@@ -63,9 +63,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const databag = elementDataBag(element);
         let res: t.Expression;
 
-        parentStack.push(element);
-        const children = transformChildren(element.children);
-        parentStack.pop();
+        const children = transformChildren(element);
 
         // Check wether it has the special directive lwc:dynamic
         if (element.lwc && element.lwc.dynamic) {
@@ -96,9 +94,7 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformTemplate(element: IRElement): t.Expression | t.Expression[] {
-        parentStack.push(element);
-        const children = transformChildren(element.children);
-        parentStack.pop();
+        const children = transformChildren(element);
 
         let res = applyTemplateIf(element, children);
 
@@ -131,10 +127,13 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genComment(comment.value);
     }
 
-    function transformChildren(children: IRNode[]): t.Expression {
+    function transformChildren(parent: IRElement): t.Expression {
         const res: t.Expression[] = [];
+        const children = parent.children;
         const childrenIterator = children[Symbol.iterator]();
         let current: IteratorResult<IRNode>;
+
+        parentStack.push(parent);
 
         while ((current = childrenIterator.next()) && !current.done) {
             let child = current.value;
@@ -172,6 +171,8 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformComment(child));
             }
         }
+
+        parentStack.pop();
 
         if (shouldFlatten(children, codeGen)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
@@ -499,8 +500,7 @@ function transform(codeGen: CodeGen): t.Expression {
         return t.objectExpression(data);
     }
 
-    parentStack.push(codeGen.root);
-    return transformChildren(codeGen.root.children);
+    return transformChildren(codeGen.root);
 }
 
 function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
