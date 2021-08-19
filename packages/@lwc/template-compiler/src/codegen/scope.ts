@@ -16,9 +16,13 @@ import { IRNode, TemplateExpression } from '../shared/types';
  * - {value} --> {$cmp.value}
  * - {value[index]} --> {$cmp.value[$cmp.index]}
  */
-export function bindExpression(expression: TemplateExpression, irNode: IRNode): t.Expression {
+export function bindExpression(
+    expression: TemplateExpression,
+    irNode: IRNode,
+    parentStack: IRNode[]
+): t.Expression {
     if (t.isIdentifier(expression)) {
-        if (isComponentProp(expression, irNode)) {
+        if (isComponentProp(expression, irNode, parentStack)) {
             return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
         } else {
             return expression;
@@ -32,7 +36,7 @@ export function bindExpression(expression: TemplateExpression, irNode: IRNode): 
                 t.isIdentifier(node) &&
                 t.isMemberExpression(parent) &&
                 parent.object === node &&
-                isComponentProp(node, irNode)
+                isComponentProp(node, irNode, parentStack)
             ) {
                 this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
             }

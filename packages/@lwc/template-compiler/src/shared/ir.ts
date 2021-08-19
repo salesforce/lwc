@@ -17,7 +17,7 @@ import {
     IRComment,
 } from './types';
 
-export function createElement(original: parse5.Element, parent?: IRElement): IRElement {
+export function createElement(original: parse5.Element): IRElement {
     let location = original.sourceCodeLocation;
 
     // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
@@ -41,7 +41,6 @@ export function createElement(original: parse5.Element, parent?: IRElement): IRE
         type: 'element',
         tag: original.tagName,
         namespace: original.namespaceURI,
-        parent,
         children: [],
         location,
         attrsList: original.attrs,
@@ -49,36 +48,26 @@ export function createElement(original: parse5.Element, parent?: IRElement): IRE
     };
 }
 
-export function createText(
-    original: parse5.TextNode,
-    parent: IRElement,
-    value: string | TemplateExpression
-): IRText {
+export function createText(original: parse5.TextNode, value: string | TemplateExpression): IRText {
     if (!original.sourceCodeLocation) {
         throw new Error('Invalid text AST node. Missing source code location.');
     }
 
     return {
         type: 'text',
-        parent,
         value,
         location: original.sourceCodeLocation,
         __original: original,
     };
 }
 
-export function createComment(
-    original: parse5.CommentNode,
-    parent: IRElement,
-    value: string
-): IRComment {
+export function createComment(original: parse5.CommentNode, value: string): IRComment {
     if (!original.sourceCodeLocation) {
         throw new Error('Invalid comment AST node. Missing source code location.');
     }
 
     return {
         type: 'comment',
-        parent,
         value,
         location: original.sourceCodeLocation,
         __original: original,
@@ -109,13 +98,17 @@ export function isSlot(element: IRElement) {
     return element.tag === 'slot';
 }
 
-export function isComponentProp(identifier: TemplateIdentifier, root: IRNode): boolean {
+export function isComponentProp(
+    identifier: TemplateIdentifier,
+    root: IRNode,
+    parentStack: IRNode[]
+): boolean {
     const { name } = identifier;
     let current: IRNode | undefined = root;
 
     // Walking up the AST and checking for each node to find if the identifer name is identical to
     // an iteration variable.
-    while (current !== undefined) {
+    for (let i = parentStack.length; i >= 0; i--) {
         if (isElement(current)) {
             const { forEach, forOf } = current;
 
@@ -128,7 +121,7 @@ export function isComponentProp(identifier: TemplateIdentifier, root: IRNode): b
             }
         }
 
-        current = current.parent;
+        current = parentStack[i - 1];
     }
 
     // The identifier is bound to a component property if no match is found after reaching to AST

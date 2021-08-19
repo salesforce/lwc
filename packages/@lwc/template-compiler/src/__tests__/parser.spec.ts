@@ -65,7 +65,6 @@ describe('parsing', () => {
         expect(root.children[0].tag).toBe('ul');
         expect(root.children[0].children[0].tag).toBe('li');
         expect(root.children[0].children[0].children[0].value).toBe('hello');
-        expect(root.children[0].parent).toBe(root);
     });
 });
 
