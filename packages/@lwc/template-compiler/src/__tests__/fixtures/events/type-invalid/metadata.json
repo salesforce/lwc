@@ -35,28 +35,6 @@
         },
         {
             "code": 1055,
-            "message": "LWC1055: onZ={handleClick} is not valid attribute for div. All attributes name should be all lowercase.",
-            "level": 1,
-            "location": {
-                "line": 4,
-                "column": 10,
-                "start": 103,
-                "length": 17
-            }
-        },
-        {
-            "code": 1055,
-            "message": "LWC1055: onfooBar={handleClick} is not valid attribute for div. All attributes name should be all lowercase.",
-            "level": 1,
-            "location": {
-                "line": 5,
-                "column": 10,
-                "start": 142,
-                "length": 22
-            }
-        },
-        {
-            "code": 1055,
             "message": "LWC1055: onfooBar={handleClick} is not valid attribute for div. All attributes name should be all lowercase.",
             "level": 1,
             "location": {

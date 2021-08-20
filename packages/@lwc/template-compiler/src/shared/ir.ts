@@ -43,7 +43,6 @@ export function createElement(original: parse5.Element): IRElement {
         namespace: original.namespaceURI,
         children: [],
         location,
-        attrsList: original.attrs,
         __original: original,
     };
 }
@@ -57,7 +56,6 @@ export function createText(original: parse5.TextNode, value: string | TemplateEx
         type: 'text',
         value,
         location: original.sourceCodeLocation,
-        __original: original,
     };
 }
 
@@ -70,7 +68,6 @@ export function createComment(original: parse5.CommentNode, value: string): IRCo
         type: 'comment',
         value,
         location: original.sourceCodeLocation,
-        __original: original,
     };
 }
 
