@@ -23,15 +23,15 @@ export const enum GlobalMeasurementPhase {
 }
 
 export const enum OperationId {
-    constructor = 0,
-    render = 1,
-    patch = 2,
-    connectedCallback = 3,
-    renderedCallback = 4,
-    disconnectedCallback = 5,
-    errorCallback = 6,
-    globalHydrate = 7,
-    globalRehydrate = 8,
+    Constructor = 0,
+    Render = 1,
+    Patch = 2,
+    ConnectedCallback = 3,
+    RenderedCallback = 4,
+    DisconnectedCallback = 5,
+    ErrorCallback = 6,
+    GlobalHydrate = 7,
+    GlobalRehydrate = 8,
 }
 
 const enum Phase {
@@ -193,8 +193,8 @@ const profilerControl = {
 
 function opIdForGlobalMeasurementPhase(phase: GlobalMeasurementPhase) {
     return phase === GlobalMeasurementPhase.HYDRATE
-        ? OperationId.globalHydrate
-        : OperationId.globalRehydrate;
+        ? OperationId.GlobalHydrate
+        : OperationId.GlobalRehydrate;
 }
 
 function logGlobalOperationStart(phase: GlobalMeasurementPhase, vm?: VM) {

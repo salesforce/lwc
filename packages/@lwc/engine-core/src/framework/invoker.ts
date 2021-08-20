@@ -49,7 +49,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
     const vmBeingConstructedInception = vmBeingConstructed;
     let error;
     if (profilerEnabled) {
-        logOperationStart(OperationId.constructor, vm);
+        logOperationStart(OperationId.Constructor, vm);
     }
     vmBeingConstructed = vm;
     /**
@@ -74,7 +74,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         error = Object(e);
     } finally {
         if (profilerEnabled) {
-            logOperationEnd(OperationId.constructor, vm);
+            logOperationEnd(OperationId.Constructor, vm);
         }
         vmBeingConstructed = vmBeingConstructedInception;
         if (!isUndefined(error)) {
@@ -137,7 +137,7 @@ export function invokeComponentRenderedCallback(vm: VM): void {
                 vmInvokingRenderedCallback = vm;
                 // pre
                 if (profilerEnabled) {
-                    logOperationStart(OperationId.renderedCallback, vm);
+                    logOperationStart(OperationId.RenderedCallback, vm);
                 }
             },
             () => {
@@ -147,7 +147,7 @@ export function invokeComponentRenderedCallback(vm: VM): void {
             () => {
                 // post
                 if (profilerEnabled) {
-                    logOperationEnd(OperationId.renderedCallback, vm);
+                    logOperationEnd(OperationId.RenderedCallback, vm);
                 }
                 vmInvokingRenderedCallback = vmInvokingRenderedCallbackInception;
             }

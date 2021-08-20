@@ -424,7 +424,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 () => {
                     // pre
                     if (profilerEnabled) {
-                        logOperationStart(OperationId.patch, vm);
+                        logOperationStart(OperationId.Patch, vm);
                     }
                 },
                 () => {
@@ -435,7 +435,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 () => {
                     // post
                     if (profilerEnabled) {
-                        logOperationEnd(OperationId.patch, vm);
+                        logOperationEnd(OperationId.Patch, vm);
                     }
                 }
             );
@@ -523,13 +523,13 @@ export function runConnectedCallback(vm: VM) {
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         if (profilerEnabled) {
-            logOperationStart(OperationId.connectedCallback, vm);
+            logOperationStart(OperationId.ConnectedCallback, vm);
         }
 
         invokeComponentCallback(vm, connectedCallback);
 
         if (profilerEnabled) {
-            logOperationEnd(OperationId.connectedCallback, vm);
+            logOperationEnd(OperationId.ConnectedCallback, vm);
         }
     }
 }
@@ -561,13 +561,13 @@ function runDisconnectedCallback(vm: VM) {
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
         if (profilerEnabled) {
-            logOperationStart(OperationId.disconnectedCallback, vm);
+            logOperationStart(OperationId.DisconnectedCallback, vm);
         }
 
         invokeComponentCallback(vm, disconnectedCallback);
 
         if (profilerEnabled) {
-            logOperationEnd(OperationId.disconnectedCallback, vm);
+            logOperationEnd(OperationId.DisconnectedCallback, vm);
         }
     }
 }
@@ -749,7 +749,7 @@ export function runWithBoundaryProtection(
             resetComponentRoot(vm); // remove offenders
 
             if (profilerEnabled) {
-                logOperationStart(OperationId.errorCallback, vm);
+                logOperationStart(OperationId.ErrorCallback, vm);
             }
 
             // error boundaries must have an ErrorCallback
@@ -757,7 +757,7 @@ export function runWithBoundaryProtection(
             invokeComponentCallback(errorBoundaryVm, errorCallback, [error, error.wcStack]);
 
             if (profilerEnabled) {
-                logOperationEnd(OperationId.errorCallback, vm);
+                logOperationEnd(OperationId.ErrorCallback, vm);
             }
         }
     }

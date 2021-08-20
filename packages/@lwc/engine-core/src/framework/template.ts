@@ -143,7 +143,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
             // pre
             vmBeingRendered = vm;
             if (profilerEnabled) {
-                logOperationStart(OperationId.render, vm);
+                logOperationStart(OperationId.Render, vm);
             }
         },
         () => {
@@ -218,7 +218,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
             isUpdatingTemplate = isUpdatingTemplateInception;
             vmBeingRendered = vmOfTemplateBeingUpdatedInception;
             if (profilerEnabled) {
-                logOperationEnd(OperationId.render, vm);
+                logOperationEnd(OperationId.Render, vm);
             }
         }
     );
