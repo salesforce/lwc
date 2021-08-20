@@ -9,20 +9,6 @@ import { isUndefined, noop } from '@lwc/shared';
 import { VM } from './vm';
 import { getComponentTag } from '../shared/format';
 
-type MeasurementPhase =
-    | 'constructor'
-    | 'render'
-    | 'patch'
-    | 'connectedCallback'
-    | 'disconnectedCallback'
-    | 'renderedCallback'
-    | 'errorCallback';
-
-export const enum GlobalMeasurementPhase {
-    REHYDRATE = 'lwc-rehydrate',
-    HYDRATE = 'lwc-hydrate',
-}
-
 export const enum OperationId {
     Constructor = 0,
     Render = 1,
@@ -35,10 +21,27 @@ export const enum OperationId {
     GlobalRehydrate = 8,
 }
 
+type GlobalOperationId = OperationId.GlobalHydrate | OperationId.GlobalRehydrate;
+
 const enum Phase {
     Start = 0,
     Stop = 1,
 }
+
+type LogDispatcher = (opId: OperationId, phase: Phase, cmpName?: string, vmIndex?: number) => void;
+
+const operationIdNameMapping = [
+    'constructor',
+    'render',
+    'patch',
+    'connectedCallback',
+    'renderedCallback',
+    'disconnectedCallback',
+    'errorCallback',
+    'lwc-hydrate',
+    'lwc-rehydrate',
+];
+
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
 // JSDom (used in Jest) for example doesn't implement the UserTiming APIs.
 const isUserTimingSupported: boolean =
@@ -48,130 +51,111 @@ const isUserTimingSupported: boolean =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-function getMarkName(phase: string, vm: VM): string {
+const start = !isUserTimingSupported
+    ? noop
+    : (markName: string) => {
+          performance.mark(markName);
+      };
+
+const end = !isUserTimingSupported
+    ? noop
+    : (measureName: string, markName: string) => {
+          performance.measure(measureName, markName);
+
+          // Clear the created marks and measure to avoid filling the performance entries buffer.
+          // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
+          performance.clearMarks(markName);
+          performance.clearMeasures(measureName);
+      };
+
+function getOperationName(opId: OperationId): string {
+    return operationIdNameMapping[opId];
+}
+
+function getMeasureName(opId: OperationId, vm: VM): string {
+    return `${getComponentTag(vm)} - ${getOperationName(opId)}`;
+}
+
+function getMarkName(opId: OperationId, vm: VM): string {
     // Adding the VM idx to the mark name creates a unique mark name component instance. This is necessary to produce
     // the right measures for components that are recursive.
-    return `${getComponentTag(vm)} - ${phase} - ${vm.idx}`;
+    return `${getMeasureName(opId, vm)} - ${vm.idx}`;
 }
 
-function getMeasureName(phase: string, vm: VM): string {
-    return `${getComponentTag(vm)} - ${phase}`;
-}
+/** Indicates if operations should be logged via the User Timing API. */
+const isMeasureEnabled = process.env.NODE_ENV !== 'production';
 
-function start(markName: string) {
-    performance.mark(markName);
-}
+/** Indicates if operations should be logged by the profiler. */
+let isProfilerEnabled = false;
 
-function end(measureName: string, markName: string) {
-    performance.measure(measureName, markName);
-
-    // Clear the created marks and measure to avoid filling the performance entries buffer.
-    // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
-    performance.clearMarks(markName);
-    performance.clearMeasures(measureName);
-}
-
-type LogDispatcher = (opId: OperationId, phase: Phase, cmpName?: string, vmIndex?: number) => void;
-
-let logOperation: LogDispatcher = noop;
-
-const startMeasure = !isUserTimingSupported
-    ? noop
-    : function (phase: MeasurementPhase, vm: VM) {
-          const markName = getMarkName(phase, vm);
-          start(markName);
-      };
-const endMeasure = !isUserTimingSupported
-    ? noop
-    : function (phase: MeasurementPhase, vm: VM) {
-          const markName = getMarkName(phase, vm);
-          const measureName = getMeasureName(phase, vm);
-          end(measureName, markName);
-      };
-
-const startGlobalMeasure = !isUserTimingSupported
-    ? noop
-    : function (phase: GlobalMeasurementPhase, vm?: VM) {
-          const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
-          start(markName);
-      };
-const endGlobalMeasure = !isUserTimingSupported
-    ? noop
-    : function (phase: GlobalMeasurementPhase, vm?: VM) {
-          const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
-          end(phase, markName);
-      };
-
-const opIdToMeasurementPhaseMappingArray: MeasurementPhase[] = [
-    'constructor',
-    'render',
-    'patch',
-    'connectedCallback',
-    'renderedCallback',
-    'disconnectedCallback',
-    'errorCallback',
-];
-
-const logMarks = process.env.NODE_ENV !== 'production';
-let bufferLogging = false;
-
-function opIdForGlobalMeasurementPhase(phase: GlobalMeasurementPhase) {
-    return phase === GlobalMeasurementPhase.HYDRATE
-        ? OperationId.GlobalHydrate
-        : OperationId.GlobalRehydrate;
-}
+/** The currently assigned profiler dispatcher. */
+let currentDispatcher: LogDispatcher = noop;
 
 export const profilerControl = {
     enableProfiler() {
-        bufferLogging = true;
+        isProfilerEnabled = true;
     },
     disableProfiler() {
-        bufferLogging = false;
+        isProfilerEnabled = false;
     },
     attachDispatcher(dispatcher: LogDispatcher) {
-        logOperation = dispatcher;
+        currentDispatcher = dispatcher;
+
         this.enableProfiler();
     },
     detachDispatcher(): LogDispatcher {
-        const currentLogOperation = logOperation;
-        logOperation = noop;
+        const dispatcher = currentDispatcher;
+        currentDispatcher = noop;
+
         this.disableProfiler();
-        return currentLogOperation;
+
+        return dispatcher;
     },
 };
 
 export function logOperationStart(opId: OperationId, vm: VM) {
-    if (logMarks) {
-        startMeasure(opIdToMeasurementPhaseMappingArray[opId], vm);
+    if (isMeasureEnabled) {
+        const markName = getMarkName(opId, vm);
+        start(markName);
     }
-    if (bufferLogging) {
-        logOperation(opId, Phase.Start, vm.tagName, vm.idx);
+
+    if (isProfilerEnabled) {
+        currentDispatcher(opId, Phase.Start, vm.tagName, vm.idx);
     }
 }
 
 export function logOperationEnd(opId: OperationId, vm: VM) {
-    if (logMarks) {
-        endMeasure(opIdToMeasurementPhaseMappingArray[opId], vm);
+    if (isMeasureEnabled) {
+        const markName = getMarkName(opId, vm);
+        const measureName = getMeasureName(opId, vm);
+        end(measureName, markName);
     }
-    if (bufferLogging) {
-        logOperation(opId, Phase.Stop, vm.tagName, vm.idx);
+
+    if (isProfilerEnabled) {
+        currentDispatcher(opId, Phase.Stop, vm.tagName, vm.idx);
     }
 }
 
-export function logGlobalOperationStart(phase: GlobalMeasurementPhase, vm?: VM) {
-    if (logMarks) {
-        startGlobalMeasure(phase, vm);
+export function logGlobalOperationStart(opId: GlobalOperationId, vm?: VM) {
+    if (isMeasureEnabled) {
+        const opName = getOperationName(opId);
+        const markName = isUndefined(vm) ? opName : getMarkName(opId, vm);
+        start(markName);
     }
-    if (bufferLogging) {
-        logOperation(opIdForGlobalMeasurementPhase(phase), Phase.Start, vm?.tagName, vm?.idx);
+
+    if (isProfilerEnabled) {
+        currentDispatcher(opId, Phase.Start, vm?.tagName, vm?.idx);
     }
 }
 
-export function logGlobalOperationEnd(phase: GlobalMeasurementPhase, vm?: VM) {
-    if (logMarks) {
-        endGlobalMeasure(phase, vm);
+export function logGlobalOperationEnd(opId: GlobalOperationId, vm?: VM) {
+    if (isMeasureEnabled) {
+        const opName = getOperationName(opId);
+        const markName = isUndefined(vm) ? opName : getMarkName(opId, vm);
+        end(opName, markName);
     }
-    if (bufferLogging) {
-        logOperation(opIdForGlobalMeasurementPhase(phase), Phase.Stop, vm?.tagName, vm?.idx);
+
+    if (isProfilerEnabled) {
+        currentDispatcher(opId, Phase.Stop, vm?.tagName, vm?.idx);
     }
 }

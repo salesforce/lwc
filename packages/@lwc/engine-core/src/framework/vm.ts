@@ -41,7 +41,6 @@ import {
     OperationId,
     logGlobalOperationEnd,
     logGlobalOperationStart,
-    GlobalMeasurementPhase,
 } from './profiler';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
@@ -190,7 +189,7 @@ export function rerenderVM(vm: VM) {
 export function connectRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
 
-    logGlobalOperationStart(GlobalMeasurementPhase.HYDRATE, vm);
+    logGlobalOperationStart(OperationId.GlobalHydrate, vm);
 
     // Usually means moving the element from one place to another, which is observable via
     // life-cycle hooks.
@@ -201,7 +200,7 @@ export function connectRootElement(elm: any) {
     runConnectedCallback(vm);
     rehydrate(vm);
 
-    logGlobalOperationEnd(GlobalMeasurementPhase.HYDRATE, vm);
+    logGlobalOperationEnd(OperationId.GlobalHydrate, vm);
 }
 
 export function disconnectRootElement(elm: any) {
@@ -454,7 +453,7 @@ function runRenderedCallback(vm: VM) {
 let rehydrateQueue: VM[] = [];
 
 function flushRehydrationQueue() {
-    logGlobalOperationStart(GlobalMeasurementPhase.REHYDRATE);
+    logGlobalOperationStart(OperationId.GlobalRehydrate);
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
@@ -477,7 +476,7 @@ function flushRehydrationQueue() {
                 ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
             }
             // we need to end the measure before throwing.
-            logGlobalOperationEnd(GlobalMeasurementPhase.REHYDRATE);
+            logGlobalOperationEnd(OperationId.GlobalRehydrate);
 
             // re-throwing the original error will break the current tick, but since the next tick is
             // already scheduled, it should continue patching the rest.
@@ -485,7 +484,7 @@ function flushRehydrationQueue() {
         }
     }
 
-    logGlobalOperationEnd(GlobalMeasurementPhase.REHYDRATE);
+    logGlobalOperationEnd(OperationId.GlobalRehydrate);
 }
 
 export function runConnectedCallback(vm: VM) {
