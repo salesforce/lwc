@@ -74,13 +74,13 @@ type LogDispatcher = (opId: OperationId, phase: Phase, cmpName?: string, vmIndex
 
 let logOperation: LogDispatcher = noop;
 
-export const startMeasure = !isUserTimingSupported
+const startMeasure = !isUserTimingSupported
     ? noop
     : function (phase: MeasurementPhase, vm: VM) {
           const markName = getMarkName(phase, vm);
           start(markName);
       };
-export const endMeasure = !isUserTimingSupported
+const endMeasure = !isUserTimingSupported
     ? noop
     : function (phase: MeasurementPhase, vm: VM) {
           const markName = getMarkName(phase, vm);
@@ -88,13 +88,13 @@ export const endMeasure = !isUserTimingSupported
           end(measureName, markName);
       };
 
-export const startGlobalMeasure = !isUserTimingSupported
+const startGlobalMeasure = !isUserTimingSupported
     ? noop
     : function (phase: GlobalMeasurementPhase, vm?: VM) {
           const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
           start(markName);
       };
-export const endGlobalMeasure = !isUserTimingSupported
+const endGlobalMeasure = !isUserTimingSupported
     ? noop
     : function (phase: GlobalMeasurementPhase, vm?: VM) {
           const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
@@ -122,29 +122,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const profilerStateCallbacks: ((arg0: boolean) => void)[] = [];
-
-function trackProfilerState(callback: (arg0: boolean) => void) {
-    callback(profilerEnabled);
-    profilerStateCallbacks.push(callback);
-}
-
-function logOperationStart(opId: OperationId, vm: VM) {
-    if (logMarks) {
-        startMeasure(opIdToMeasurementPhaseMappingArray[opId], vm);
-    }
-    if (bufferLogging) {
-        logOperation(opId, Phase.Start, vm.tagName, vm.idx);
-    }
-}
-
-function logOperationEnd(opId: OperationId, vm: VM) {
-    if (logMarks) {
-        endMeasure(opIdToMeasurementPhaseMappingArray[opId], vm);
-    }
-    if (bufferLogging) {
-        logOperation(opId, Phase.Stop, vm.tagName, vm.idx);
-    }
-}
 
 function enableProfiler() {
     profilerEnabled = true;
@@ -184,20 +161,43 @@ function detachDispatcher() {
     return currentLogOperation;
 }
 
-const profilerControl = {
-    enableProfiler,
-    disableProfiler,
-    attachDispatcher,
-    detachDispatcher,
-};
-
 function opIdForGlobalMeasurementPhase(phase: GlobalMeasurementPhase) {
     return phase === GlobalMeasurementPhase.HYDRATE
         ? OperationId.GlobalHydrate
         : OperationId.GlobalRehydrate;
 }
 
-function logGlobalOperationStart(phase: GlobalMeasurementPhase, vm?: VM) {
+export const profilerControl = {
+    enableProfiler,
+    disableProfiler,
+    attachDispatcher,
+    detachDispatcher,
+};
+
+export function trackProfilerState(callback: (arg0: boolean) => void) {
+    callback(profilerEnabled);
+    profilerStateCallbacks.push(callback);
+}
+
+export function logOperationStart(opId: OperationId, vm: VM) {
+    if (logMarks) {
+        startMeasure(opIdToMeasurementPhaseMappingArray[opId], vm);
+    }
+    if (bufferLogging) {
+        logOperation(opId, Phase.Start, vm.tagName, vm.idx);
+    }
+}
+
+export function logOperationEnd(opId: OperationId, vm: VM) {
+    if (logMarks) {
+        endMeasure(opIdToMeasurementPhaseMappingArray[opId], vm);
+    }
+    if (bufferLogging) {
+        logOperation(opId, Phase.Stop, vm.tagName, vm.idx);
+    }
+}
+
+export function logGlobalOperationStart(phase: GlobalMeasurementPhase, vm?: VM) {
     if (logMarks) {
         startGlobalMeasure(phase, vm);
     }
@@ -206,7 +206,7 @@ function logGlobalOperationStart(phase: GlobalMeasurementPhase, vm?: VM) {
     }
 }
 
-function logGlobalOperationEnd(phase: GlobalMeasurementPhase, vm?: VM) {
+export function logGlobalOperationEnd(phase: GlobalMeasurementPhase, vm?: VM) {
     if (logMarks) {
         endGlobalMeasure(phase, vm);
     }
@@ -214,12 +214,3 @@ function logGlobalOperationEnd(phase: GlobalMeasurementPhase, vm?: VM) {
         logOperation(opIdForGlobalMeasurementPhase(phase), Phase.Stop, vm?.tagName, vm?.idx);
     }
 }
-
-export {
-    logOperationStart,
-    logOperationEnd,
-    trackProfilerState,
-    profilerControl,
-    logGlobalOperationStart,
-    logGlobalOperationEnd,
-};
