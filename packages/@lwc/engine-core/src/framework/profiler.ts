@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined, noop } from '@lwc/shared';
+
 import { VM } from './vm';
 import { getComponentTag } from '../shared/format';
 
@@ -111,55 +112,8 @@ const opIdToMeasurementPhaseMappingArray: MeasurementPhase[] = [
     'errorCallback',
 ];
 
-let profilerEnabled = false;
-let logMarks = false;
+const logMarks = process.env.NODE_ENV !== 'production';
 let bufferLogging = false;
-
-if (process.env.NODE_ENV !== 'production') {
-    profilerEnabled = true;
-    logMarks = true;
-    bufferLogging = false;
-}
-
-const profilerStateCallbacks: ((arg0: boolean) => void)[] = [];
-
-function enableProfiler() {
-    profilerEnabled = true;
-    bufferLogging = true;
-    notifyProfilerStateChange();
-}
-
-function disableProfiler() {
-    if (process.env.NODE_ENV !== 'production') {
-        // in non-prod mode we want to keep logging marks
-        profilerEnabled = true;
-        logMarks = true;
-        bufferLogging = false;
-    } else {
-        profilerEnabled = false;
-        bufferLogging = false;
-        logMarks = false;
-    }
-    notifyProfilerStateChange();
-}
-
-function notifyProfilerStateChange() {
-    for (let i = 0; i < profilerStateCallbacks.length; i++) {
-        profilerStateCallbacks[i](profilerEnabled);
-    }
-}
-
-function attachDispatcher(dispatcher: LogDispatcher) {
-    logOperation = dispatcher;
-    bufferLogging = true;
-}
-
-function detachDispatcher() {
-    const currentLogOperation = logOperation;
-    logOperation = noop;
-    bufferLogging = false;
-    return currentLogOperation;
-}
 
 function opIdForGlobalMeasurementPhase(phase: GlobalMeasurementPhase) {
     return phase === GlobalMeasurementPhase.HYDRATE
@@ -168,16 +122,23 @@ function opIdForGlobalMeasurementPhase(phase: GlobalMeasurementPhase) {
 }
 
 export const profilerControl = {
-    enableProfiler,
-    disableProfiler,
-    attachDispatcher,
-    detachDispatcher,
+    enableProfiler() {
+        bufferLogging = true;
+    },
+    disableProfiler() {
+        bufferLogging = false;
+    },
+    attachDispatcher(dispatcher: LogDispatcher) {
+        logOperation = dispatcher;
+        this.enableProfiler();
+    },
+    detachDispatcher(): LogDispatcher {
+        const currentLogOperation = logOperation;
+        logOperation = noop;
+        this.disableProfiler();
+        return currentLogOperation;
+    },
 };
-
-export function trackProfilerState(callback: (arg0: boolean) => void) {
-    callback(profilerEnabled);
-    profilerStateCallbacks.push(callback);
-}
 
 export function logOperationStart(opId: OperationId, vm: VM) {
     if (logMarks) {
