@@ -7,7 +7,6 @@
 import * as babel from '@babel/core';
 
 import babelClassPropertiesPlugin from '@babel/plugin-proposal-class-properties';
-import babelObjectRestSpreadPlugin from '@babel/plugin-proposal-object-rest-spread';
 import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
 
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
