@@ -9,7 +9,7 @@ import { assert, isFunction, isUndefined, noop } from '@lwc/shared';
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
 import { LightningElement, LightningElementConstructor } from './base-lightning-element';
-import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
+import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
@@ -25,9 +25,6 @@ let vmInvokingRenderedCallback: VM | null = null;
 export function isInvokingRenderedCallback(vm: VM): boolean {
     return vmInvokingRenderedCallback === vm;
 }
-
-let profilerEnabled = false;
-trackProfilerState((t) => (profilerEnabled = t));
 
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
     const { component, callHook, owner } = vm;
@@ -48,9 +45,9 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
 export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstructor) {
     const vmBeingConstructedInception = vmBeingConstructed;
     let error;
-    if (profilerEnabled) {
-        logOperationStart(OperationId.constructor, vm);
-    }
+
+    logOperationStart(OperationId.Constructor, vm);
+
     vmBeingConstructed = vm;
     /**
      * Constructors don't need to be wrapped with a boundary because for root elements
@@ -73,9 +70,8 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
     } catch (e) {
         error = Object(e);
     } finally {
-        if (profilerEnabled) {
-            logOperationEnd(OperationId.constructor, vm);
-        }
+        logOperationEnd(OperationId.Constructor, vm);
+
         vmBeingConstructed = vmBeingConstructedInception;
         if (!isUndefined(error)) {
             addErrorComponentStack(vm, error);
@@ -134,11 +130,9 @@ export function invokeComponentRenderedCallback(vm: VM): void {
             vm,
             owner,
             () => {
-                vmInvokingRenderedCallback = vm;
                 // pre
-                if (profilerEnabled) {
-                    logOperationStart(OperationId.renderedCallback, vm);
-                }
+                vmInvokingRenderedCallback = vm;
+                logOperationStart(OperationId.RenderedCallback, vm);
             },
             () => {
                 // job
@@ -146,9 +140,7 @@ export function invokeComponentRenderedCallback(vm: VM): void {
             },
             () => {
                 // post
-                if (profilerEnabled) {
-                    logOperationEnd(OperationId.renderedCallback, vm);
-                }
+                logOperationEnd(OperationId.RenderedCallback, vm);
                 vmInvokingRenderedCallback = vmInvokingRenderedCallbackInception;
             }
         );

@@ -36,7 +36,7 @@ import {
     getStylesheetsContent,
     updateSyntheticShadowAttributes,
 } from './stylesheet';
-import { logOperationStart, logOperationEnd, OperationId, trackProfilerState } from './profiler';
+import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 
 export interface TemplateStylesheetTokens {
@@ -71,9 +71,6 @@ export function getVMBeingRendered(): VM | null {
 export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
-
-let profilerEnabled = false;
-trackProfilerState((t) => (profilerEnabled = t));
 
 function validateSlots(vm: VM, html: Template) {
     if (process.env.NODE_ENV === 'production') {
@@ -142,9 +139,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         () => {
             // pre
             vmBeingRendered = vm;
-            if (profilerEnabled) {
-                logOperationStart(OperationId.render, vm);
-            }
+            logOperationStart(OperationId.Render, vm);
         },
         () => {
             // job
@@ -217,9 +212,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
             // post
             isUpdatingTemplate = isUpdatingTemplateInception;
             vmBeingRendered = vmOfTemplateBeingUpdatedInception;
-            if (profilerEnabled) {
-                logOperationEnd(OperationId.render, vm);
-            }
+
+            logOperationEnd(OperationId.Render, vm);
         }
     );
 
