@@ -3,7 +3,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
 
-describe('shadowMode flag enabled', () => {
+describe('shadowSupportMode flag enabled', () => {
     beforeEach(() => {
         setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
     });
@@ -14,7 +14,7 @@ describe('shadowMode flag enabled', () => {
     it('should throw for invalid values', () => {
         expect(() => {
             createElement('x-invalid', { is: Invalid });
-        }).toThrowError(/Invalid value for static property shadowMode: 'true'/);
+        }).toThrowError(/Invalid value for static property shadowSupportMode: 'true'/);
     });
 
     it('should not throw for valid values', () => {
@@ -24,10 +24,12 @@ describe('shadowMode flag enabled', () => {
     });
 });
 
-describe('shadowMode flag disabled', () => {
-    it('should disallow shadowMode by default', () => {
+describe('shadowSupportMode flag disabled', () => {
+    it('should disallow shadowSupportMode by default', () => {
         expect(() => {
             createElement('x-invalid', { is: Invalid });
-        }).toThrowError(/The shadowMode static property is not available in this environment./);
+        }).toThrowError(
+            /The shadowSupportMode static property is not available in this environment./
+        );
     });
 });
