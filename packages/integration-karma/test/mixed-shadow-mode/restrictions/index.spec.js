@@ -3,10 +3,10 @@ import Component from 'x/component';
 
 describe('restrictions', () => {
     beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', true);
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
     });
     afterEach(() => {
-        setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', false);
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
     });
     let elm;
     beforeEach(() => {

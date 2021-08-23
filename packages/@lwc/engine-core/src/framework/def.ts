@@ -105,7 +105,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
         );
 
-        if (!features.ENABLE_PREFER_NATIVE_SHADOW) {
+        if (!features.ENABLE_MIXED_SHADOW_MODE) {
             assert.isFalse(
                 'shadowMode' in Ctor,
                 `${

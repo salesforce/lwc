@@ -5,10 +5,10 @@ import Valid from 'x/valid';
 
 describe('shadowMode flag enabled', () => {
     beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', true);
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
     });
     afterEach(() => {
-        setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', false);
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
     });
 
     it('should throw for invalid values', () => {
