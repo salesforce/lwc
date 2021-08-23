@@ -29,8 +29,17 @@ export default function scriptTransform(
     let result;
     try {
         result = babel.transformSync(code, {
+            filename,
+            sourceMaps: sourcemap,
+
+            // Prevent Babel from loading local configuration.
             babelrc: false,
             configFile: false,
+
+            // Force Babel to generate new line and whitespaces. This prevent Babel from generating
+            // an error when the generated code is over 500KB.
+            compact: false,
+
             plugins: [
                 [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
                 [babelClassPropertiesPlugin, { loose: true }],
@@ -39,8 +48,6 @@ export default function scriptTransform(
                 // already a stage 4 feature. The LWC compile should leave this syntax untouched.
                 babelObjectRestSpreadPlugin,
             ],
-            filename,
-            sourceMaps: sourcemap,
         })!;
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
