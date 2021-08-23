@@ -46,8 +46,7 @@ export function generateStyledComponents() {
     const allComponentsFilename = path.join(tmpDir, 'src/benchmark/styledComponents.js');
     const allComponents = `
         ${components.map((mod, i) => `import cmp${i} from ${JSON.stringify(mod)}`).join(';')};
-        const modules = [${components.map((_, i) => `cmp${i}`).join(',')}];
-        export default modules;`;
+        export default [${components.map((_, i) => `cmp${i}`).join(',')}];
     fs.writeFileSync(allComponentsFilename, allComponents, 'utf-8');
 
     return {
