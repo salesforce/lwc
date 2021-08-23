@@ -3,7 +3,7 @@ import one from './one.html';
 import two from './two.html';
 
 export default class extends LightningElement {
-    static preferNativeShadow = true;
+    static shadowSupportMode = 'any';
 
     _error = null;
     @api tryToRenderSynthetic = false;

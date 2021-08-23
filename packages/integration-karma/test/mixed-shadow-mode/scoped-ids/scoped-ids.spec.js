@@ -4,10 +4,10 @@ import Test from 'x/test';
 if (!process.env.COMPAT) {
     describe('scoped-ids', () => {
         beforeEach(() => {
-            setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', true);
+            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
         });
         afterEach(() => {
-            setFeatureFlagForTest('ENABLE_PREFER_NATIVE_SHADOW', false);
+            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
         });
         it('should entrust id scoping to native shadow (static)', () => {
             const elm = createElement('x-test', { is: Test });

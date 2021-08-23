@@ -21,7 +21,6 @@ import {
     freeze,
     getPrototypeOf,
     htmlPropertyToAttribute,
-    isBoolean,
     isFunction,
     isNull,
     isUndefined,
@@ -35,7 +34,7 @@ import { LightningElement, LightningElementConstructor } from './base-lightning-
 import { lightningBasedDescriptors } from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
-import { RenderMode } from '../framework/vm';
+import { RenderMode, ShadowSupportMode } from '../framework/vm';
 
 import {
     BaseBridgeElement,
@@ -55,8 +54,8 @@ export interface ComponentDef {
     propsConfig: Record<string, PropType>;
     methods: PropertyDescriptorMap;
     template: Template;
-    preferNativeShadow: boolean;
     renderMode: RenderMode;
+    shadowSupportMode: ShadowSupportMode;
     ctor: LightningElementConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: LightningElement['connectedCallback'];
@@ -95,7 +94,7 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
 }
 
 function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
-    const { preferNativeShadow: ctorPreferNativeShadow, renderMode: ctorRenderMode } = Ctor;
+    const { shadowSupportMode: ctorShadowSupportMode, renderMode: ctorRenderMode } = Ctor;
 
     if (process.env.NODE_ENV !== 'production') {
         const ctorName = Ctor.name;
@@ -106,19 +105,20 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
         );
 
-        if (!features.ENABLE_PREFER_NATIVE_SHADOW) {
+        if (!features.ENABLE_MIXED_SHADOW_MODE) {
             assert.isFalse(
-                'preferNativeShadow' in Ctor,
+                'shadowSupportMode' in Ctor,
                 `${
                     ctorName || 'Anonymous class'
-                } is an invalid LWC component. \`preferNativeShadow\` is not available in this environment.`
+                } is an invalid LWC component. The shadowSupportMode static property is not available in this environment.`
             );
         }
 
-        if (!isUndefined(ctorPreferNativeShadow)) {
+        if (!isUndefined(ctorShadowSupportMode)) {
             assert.invariant(
-                isBoolean(ctorPreferNativeShadow),
-                `Invalid value for static property preferNativeShadow: '${ctorPreferNativeShadow}'. preferNativeShadow must be a boolean value.`
+                ctorShadowSupportMode === ShadowSupportMode.Any ||
+                    ctorShadowSupportMode === ShadowSupportMode.Default,
+                `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`
             );
         }
 
@@ -156,9 +156,9 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     errorCallback = errorCallback || superDef.errorCallback;
     render = render || superDef.render;
 
-    let preferNativeShadow = superDef.preferNativeShadow;
-    if (!isUndefined(ctorPreferNativeShadow)) {
-        preferNativeShadow = Boolean(ctorPreferNativeShadow);
+    let shadowSupportMode = superDef.shadowSupportMode;
+    if (!isUndefined(ctorShadowSupportMode)) {
+        shadowSupportMode = ctorShadowSupportMode;
     }
 
     let renderMode = superDef.renderMode;
@@ -181,8 +181,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         methods,
         bridge,
         template,
-        preferNativeShadow,
         renderMode,
+        shadowSupportMode,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
@@ -271,8 +271,8 @@ const lightingElementDef: ComponentDef = {
     props: lightningBasedDescriptors,
     propsConfig: EmptyObject,
     methods: EmptyObject,
-    preferNativeShadow: false,
     renderMode: RenderMode.Shadow,
+    shadowSupportMode: ShadowSupportMode.Default,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
     template: defaultEmptyTemplate,
