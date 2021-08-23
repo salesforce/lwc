@@ -34,7 +34,7 @@ import { LightningElement, LightningElementConstructor } from './base-lightning-
 import { lightningBasedDescriptors } from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
-import { RenderMode } from '../framework/vm';
+import { RenderMode, ShadowSupportMode } from '../framework/vm';
 
 import {
     BaseBridgeElement,
@@ -55,7 +55,7 @@ export interface ComponentDef {
     methods: PropertyDescriptorMap;
     template: Template;
     renderMode: RenderMode;
-    shadowSupportMode?: 'any';
+    shadowSupportMode: ShadowSupportMode;
     ctor: LightningElementConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: LightningElement['connectedCallback'];
@@ -94,7 +94,7 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
 }
 
 function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
-    const { shadowMode: ctorShadowMode, renderMode: ctorRenderMode } = Ctor;
+    const { shadowSupportMode: ctorShadowSupportMode, renderMode: ctorRenderMode } = Ctor;
 
     if (process.env.NODE_ENV !== 'production') {
         const ctorName = Ctor.name;
@@ -107,17 +107,18 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
 
         if (!features.ENABLE_MIXED_SHADOW_MODE) {
             assert.isFalse(
-                'shadowMode' in Ctor,
+                'shadowSupportMode' in Ctor,
                 `${
                     ctorName || 'Anonymous class'
-                } is an invalid LWC component. The shadowMode static property is not available in this environment.`
+                } is an invalid LWC component. The shadowSupportMode static property is not available in this environment.`
             );
         }
 
-        if (!isUndefined(ctorShadowMode)) {
+        if (!isUndefined(ctorShadowSupportMode)) {
             assert.invariant(
-                ctorShadowMode === 'any',
-                `Invalid value for static property shadowMode: '${ctorShadowMode}'`
+                ctorShadowSupportMode === ShadowSupportMode.Any ||
+                    ctorShadowSupportMode === ShadowSupportMode.Default,
+                `Invalid value for static property shadowSupportMode: '${ctorShadowSupportMode}'`
             );
         }
 
@@ -156,8 +157,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     render = render || superDef.render;
 
     let shadowSupportMode = superDef.shadowSupportMode;
-    if (!isUndefined(ctorShadowMode)) {
-        shadowSupportMode = ctorShadowMode;
+    if (!isUndefined(ctorShadowSupportMode)) {
+        shadowSupportMode = ctorShadowSupportMode;
     }
 
     let renderMode = superDef.renderMode;
@@ -180,8 +181,8 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         methods,
         bridge,
         template,
-        shadowSupportMode,
         renderMode,
+        shadowSupportMode,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
@@ -271,6 +272,7 @@ const lightingElementDef: ComponentDef = {
     propsConfig: EmptyObject,
     methods: EmptyObject,
     renderMode: RenderMode.Shadow,
+    shadowSupportMode: ShadowSupportMode.Default,
     wire: EmptyObject,
     bridge: BaseBridgeElement,
     template: defaultEmptyTemplate,

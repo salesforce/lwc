@@ -76,6 +76,11 @@ export const enum ShadowMode {
     Synthetic,
 }
 
+export const enum ShadowSupportMode {
+    Any = 'any',
+    Default = 'default',
+}
+
 export interface Context {
     /** The attribute name used on the host element to scope the style. */
     hostAttribute: string | undefined;
@@ -289,7 +294,7 @@ export function createVM<HostNode, HostElement>(
     let shadowMode;
     if (renderer.syntheticShadow) {
         shadowMode =
-            def.shadowSupportMode === 'any' && isNativeShadowRootDefined
+            def.shadowSupportMode === ShadowSupportMode.Any && isNativeShadowRootDefined
                 ? ShadowMode.Native
                 : ShadowMode.Synthetic;
     } else {

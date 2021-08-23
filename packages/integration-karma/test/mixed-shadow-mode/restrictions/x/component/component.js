@@ -1,7 +1,7 @@
 import { LightningElement, api } from 'lwc';
 
 export default class extends LightningElement {
-    static shadowMode = 'any';
+    static shadowSupportMode = 'any';
 
     @api
     setInnerHtmlOnShadowRoot() {
