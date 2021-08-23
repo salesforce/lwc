@@ -8,7 +8,6 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import mkdirp from 'mkdirp';
 
 const NUM_COMPONENTS = 1000;
 
@@ -33,7 +32,7 @@ export function generateStyledComponents() {
         const css = `div { color: ${i.toString(16).padStart(6, '0')}}`;
         const html = '<template><div></div></template>';
 
-        mkdirp.sync(path.dirname(jsFilename));
+        fs.mkdirSync(path.dirname(jsFilename), { recursive: true });
         fs.writeFileSync(jsFilename, js, 'utf-8');
         fs.writeFileSync(cssFilename, css, 'utf-8');
         fs.writeFileSync(htmlFilename, html, 'utf-8');

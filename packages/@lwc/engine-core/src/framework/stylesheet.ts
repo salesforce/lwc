@@ -138,6 +138,9 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
     return content;
 }
 
+// It might be worth caching this to avoid doing the lookup repeatedly, but
+// perf testing has not shown it to be a huge improvement yet:
+// https://github.com/salesforce/lwc/pull/2460#discussion_r691208892
 function getNearestNativeShadowComponent(vm: VM): VM | null {
     let owner: VM | null = vm;
     while (!isNull(owner)) {

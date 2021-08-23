@@ -16,7 +16,7 @@ export function styledComponentBenchmark(name, componentOrComponents) {
 
         const isArray = Array.isArray(componentOrComponents);
 
-        run(() => {
+        run(async () => {
             for (let i = 0; i < 1000; i++) {
                 const elm = createElement(isArray ? `styled-component${i}` : 'styled-component', {
                     is: isArray ? componentOrComponents[i] : componentOrComponents,
@@ -24,7 +24,6 @@ export function styledComponentBenchmark(name, componentOrComponents) {
                 document.body.appendChild(elm);
                 elms.push(elm);
             }
-            return Promise.resolve();
         });
 
         after(() => {
