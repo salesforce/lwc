@@ -62,6 +62,7 @@ export interface LWCDirectives {
 
 export interface IRBaseNode<N extends parse5.Node> {
     type: string;
+    parent?: IRElement;
     location: parse5.Location;
 
     // TODO [#2432]: Remove `__original` property on the `IRBaseNode`.

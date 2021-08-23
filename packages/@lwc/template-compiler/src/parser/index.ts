@@ -124,7 +124,6 @@ function attributeExpressionReferencesForEachIndex(
 export default function parse(source: string, state: State): TemplateParseResult {
     const warnings: CompilerDiagnostic[] = [];
     const seenIds: Set<string> = new Set();
-    const parentStack: IRElement[] = [];
 
     const { fragment, errors: parsingErrors } = parseHTML(source);
 
@@ -139,8 +138,8 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     const root = parseElement(templateRoot);
 
-    function parseElement(elementNode: parse5.Element): IRElement {
-        const element = createElement(elementNode);
+    function parseElement(elementNode: parse5.Element, parent?: IRElement): IRElement {
+        const element = createElement(elementNode, parent);
         const parsedAttr = parseAttributes(element, elementNode);
 
         applyForEach(element, parsedAttr);
@@ -152,7 +151,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         applyKey(element, parsedAttr);
         applyLwcDirectives(element, parsedAttr);
         applyAttributes(element, parsedAttr);
-        validateElement(element, elementNode);
+        validateElement(element);
         validateAttributes(element, parsedAttr);
         validateProperties(element);
 
@@ -166,27 +165,23 @@ export default function parse(source: string, state: State): TemplateParseResult
         const parsedChildren: IRNode[] = [];
         const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
-        parentStack.push(parent);
-
         for (const child of children) {
             if (parse5Utils.isElementNode(child)) {
-                const elmNode = parseElement(child);
+                const elmNode = parseElement(child, parent);
                 parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
-                const textNodes = parseText(child);
+                const textNodes = parseText(child, parent);
                 parsedChildren.push(...textNodes);
             } else if (parse5Utils.isCommentNode(child)) {
-                const commentNode = parseComment(child);
+                const commentNode = parseComment(child, parent);
                 parsedChildren.push(commentNode);
             }
         }
 
-        parentStack.pop();
-
         parent.children = parsedChildren;
     }
 
-    function parseText(node: parse5.TextNode): IRText[] {
+    function parseText(node: parse5.TextNode, parent: IRElement): IRText[] {
         const parsedTextNodes: IRText[] = [];
 
         // Extract the raw source to avoid HTML entity decoding done by parse5
@@ -226,15 +221,15 @@ export default function parse(source: string, state: State): TemplateParseResult
                 value = decodeTextContent(token);
             }
 
-            parsedTextNodes.push(createText(node, value));
+            parsedTextNodes.push(createText(node, parent, value));
         }
 
         return parsedTextNodes;
     }
 
-    function parseComment(node: parse5.CommentNode): IRComment {
+    function parseComment(node: parse5.CommentNode, parent: IRElement): IRComment {
         const value = decodeTextContent(node.data);
-        return createComment(node, value);
+        return createComment(node, parent, value);
     }
 
     function getTemplateRoot(
@@ -353,7 +348,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             return warnOnIRNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, element);
         }
 
-        if (parentStack.length > 0) {
+        if (element.parent) {
             return warnOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
                 ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
                 `<${element.tag}>`,
@@ -376,10 +371,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             return;
         }
 
-        if (
-            parentStack.length > 0 ||
-            lwcPreserveCommentAttribute.type !== IRAttributeType.Boolean
-        ) {
+        if (element.parent || lwcPreserveCommentAttribute.type !== IRAttributeType.Boolean) {
             return warnOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
                 ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
                 `<${element.tag}>`,
@@ -578,9 +570,8 @@ export default function parse(source: string, state: State): TemplateParseResult
                 );
             }
 
-            const forOfParent = getForOfParent(parentStack);
-            const forEachParent = getForEachParent(element, parentStack);
-
+            const forOfParent = getForOfParent(element);
+            const forEachParent = getForEachParent(element);
             if (forOfParent) {
                 if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent.forOf!)) {
                     return warnOnIRNode(
@@ -603,8 +594,8 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             element.forKey = keyAttribute.value;
-        } else if (isIteratorElement(element, parentStack) && element.tag !== 'template') {
-            return warnOnIRNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
+        } else if (isIteratorElement(element) && element.tag !== 'template') {
+            return warnOnIRNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [element.tag]);
         }
     }
 
@@ -664,18 +655,14 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function isInIteration(element: IRElement): boolean {
-        let current: IRElement | undefined = element;
-
-        for (let i = parentStack.length; i >= 0; i--) {
-            if (current.tag === 'template') {
-                if (current.forEach || current.forOf) {
-                    return true;
-                }
+        if (element.tag === 'template') {
+            if (element.forEach || element.forOf) {
+                return true;
             }
-
-            current = parentStack[i - 1];
         }
-
+        if (element.parent) {
+            return isInIteration(element.parent);
+        }
         return false;
     }
 
@@ -765,18 +752,17 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
-    function validateElement(element: IRElement, node: parse5.Element) {
-        const { tag, namespace, location } = element;
-        const isRoot = parentStack.length === 0;
+    function validateElement(element: IRElement) {
+        const { tag, namespace, parent, location, __original: node } = element;
+        const isRoot = !parent;
 
         if (isRoot) {
             if (tag !== 'template') {
                 return warnOnIRNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, element, [tag]);
             }
 
-            const rootHasUnknownAttributes = node.attrs.some(
-                ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
-            );
+            const rootHasUnknownAttributes =
+                node && node.attrs.some(({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name));
             if (rootHasUnknownAttributes) {
                 return warnOnIRNode(
                     ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES,
@@ -805,7 +791,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             //      - Unexpected template element
             //
             // Checking if the original HTMLElement has some attributes applied is a good enough for now.
-            const hasAttributes = node.attrs.length !== 0;
+            const hasAttributes = node && node.attrs.length !== 0;
             if (!isRoot && !hasAttributes) {
                 warnOnIRNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
             }
@@ -984,7 +970,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function getRoot(element: IRElement): IRElement {
-        return parentStack[0] || element;
+        return element.parent ? getRoot(element.parent) : element;
     }
 
     function getRenderMode(element: IRElement): LWCDirectiveRenderMode {

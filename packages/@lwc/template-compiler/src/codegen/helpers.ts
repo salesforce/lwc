@@ -75,13 +75,12 @@ export function hasIdAttribute(element: IRElement): boolean {
 export function memorizeHandler(
     codeGen: CodeGen,
     element: IRElement,
-    parentStack: IRNode[],
     componentHandler: t.Expression,
     handler: t.Expression
 ): t.Expression {
     // #439 - The handler can only be memorized if it is bound to component instance
     const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-    const shouldMemorizeHandler = isComponentProp(id, element, parentStack);
+    const shouldMemorizeHandler = isComponentProp(id, element);
 
     // Apply memorization if the handler is memorizable.
     //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))

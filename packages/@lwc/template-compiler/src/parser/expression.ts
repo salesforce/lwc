@@ -115,37 +115,33 @@ export function parseIdentifier(source: string): TemplateIdentifier | never {
 // Returns the immediate iterator parent if it exists.
 // Traverses up until it finds an element with forOf, or
 // a non-template element without a forOf.
-export function getForOfParent(parentStack: IRElement[]): IRElement | null {
-    let size = parentStack.length;
-    let parent: IRElement | undefined = parentStack[--size];
+export function getForOfParent(element: IRElement): IRElement | null {
+    const parent = element.parent;
+    if (!parent) {
+        return null;
+    }
 
-    while (parent) {
-        if (parent.forOf) {
-            return parent;
-        }
+    if (parent.forOf) {
+        return parent;
+    } else if (parent.tag.toLowerCase() === 'template') {
+        return getForOfParent(parent);
+    }
+    return null;
+}
 
-        parent = parent.tag === 'template' ? parentStack[--size] : undefined;
+export function getForEachParent(element: IRElement): IRElement | null {
+    if (element.forEach) {
+        return element;
+    }
+
+    const parent = element.parent;
+    if (parent && parent.tag.toLowerCase() === 'template') {
+        return getForEachParent(parent);
     }
 
     return null;
 }
 
-export function getForEachParent(element: IRElement, parentStack: IRElement[]): IRElement | null {
-    let current: IRElement | undefined = element;
-    let size = parentStack.length;
-
-    while (current) {
-        if (current.forEach) {
-            return current;
-        }
-
-        const parent = parentStack[--size];
-        current = parent?.tag === 'template' ? parent : undefined;
-    }
-
-    return null;
-}
-
-export function isIteratorElement(element: IRElement, parentStack: IRElement[]): boolean {
-    return !!(getForOfParent(parentStack) || getForEachParent(element, parentStack));
+export function isIteratorElement(element: IRElement): boolean {
+    return !!(getForOfParent(element) || getForEachParent(element));
 }
