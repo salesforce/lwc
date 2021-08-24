@@ -11,7 +11,7 @@ import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors
 import * as t from '../shared/estree';
 import { TemplateExpression, TemplateIdentifier, IRElement } from '../shared/types';
 
-import State from '../state';
+import { ResolvedConfig } from '../config';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -28,24 +28,27 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
-function validateExpression(node: t.BaseNode, state: State): asserts node is TemplateExpression {
+function validateExpression(
+    node: t.BaseNode,
+    config: ResolvedConfig
+): asserts node is TemplateExpression {
     const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
     invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
 
     if (t.isMemberExpression(node)) {
         invariant(
-            state.config.experimentalComputedMemberExpression || !node.computed,
+            config.experimentalComputedMemberExpression || !node.computed,
             ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
         );
 
         const { object, property } = node;
 
         if (!t.isIdentifier(object)) {
-            validateExpression(object, state);
+            validateExpression(object, config);
         }
 
         if (!t.isIdentifier(property)) {
-            validateExpression(property, state);
+            validateExpression(property, config);
         }
     }
 }
@@ -88,12 +91,12 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
     ]);
 }
 
-export function parseExpression(source: string, state: State): TemplateExpression {
+export function parseExpression(source: string, config: ResolvedConfig): TemplateExpression {
     try {
         const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
 
         validateSourceIsParsedExpression(source, parsed);
-        validateExpression(parsed, state);
+        validateExpression(parsed, config);
 
         return parsed;
     } catch (err) {

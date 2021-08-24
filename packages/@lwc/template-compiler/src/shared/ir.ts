@@ -15,6 +15,11 @@ import {
     IRText,
     IRElement,
     IRComment,
+    IRAttribute,
+    IRAttributeType,
+    IRExpressionAttribute,
+    IRStringAttribute,
+    IRBooleanAttribute,
 } from './types';
 
 export function createElement(original: parse5.Element): IRElement {
@@ -124,4 +129,18 @@ export function isComponentProp(
     // The identifier is bound to a component property if no match is found after reaching to AST
     // root.
     return true;
+}
+
+export function isIRExpressionAttribute(
+    attribute: IRAttribute
+): attribute is IRExpressionAttribute {
+    return attribute.type === IRAttributeType.Expression;
+}
+
+export function isIRStringAttribute(attribute: IRAttribute): attribute is IRStringAttribute {
+    return attribute.type === IRAttributeType.String;
+}
+
+export function isIRBooleanAttribute(attribute: IRAttribute): attribute is IRBooleanAttribute {
+    return attribute.type === IRAttributeType.Boolean;
 }
