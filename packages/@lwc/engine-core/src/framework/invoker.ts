@@ -21,25 +21,10 @@ export function isBeingConstructed(vm: VM): boolean {
     return vmBeingConstructed === vm;
 }
 
-let vmInvokingRenderedCallback: VM | null = null;
-export function isInvokingRenderedCallback(vm: VM): boolean {
-    return vmInvokingRenderedCallback === vm;
-}
-
-export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
+export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): void {
     const { component, callHook, owner } = vm;
-    let result;
-    runWithBoundaryProtection(
-        vm,
-        owner,
-        noop,
-        () => {
-            // job
-            result = callHook(component, fn, args);
-        },
-        noop
-    );
-    return result;
+
+    runWithBoundaryProtection(vm, owner, noop, () => callHook(component, fn, args), noop);
 }
 
 export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstructor) {
@@ -115,36 +100,6 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     );
     // If render() invocation failed, process errorCallback in boundary and return an empty template
     return renderInvocationSuccessful ? evaluateTemplate(vm, html!) : [];
-}
-
-export function invokeComponentRenderedCallback(vm: VM): void {
-    const {
-        def: { renderedCallback },
-        component,
-        callHook,
-        owner,
-    } = vm;
-    if (!isUndefined(renderedCallback)) {
-        const vmInvokingRenderedCallbackInception = vmInvokingRenderedCallback;
-        runWithBoundaryProtection(
-            vm,
-            owner,
-            () => {
-                // pre
-                vmInvokingRenderedCallback = vm;
-                logOperationStart(OperationId.RenderedCallback, vm);
-            },
-            () => {
-                // job
-                callHook(component, renderedCallback!);
-            },
-            () => {
-                // post
-                logOperationEnd(OperationId.RenderedCallback, vm);
-                vmInvokingRenderedCallback = vmInvokingRenderedCallbackInception;
-            }
-        );
-    }
 }
 
 export function invokeEventListener(

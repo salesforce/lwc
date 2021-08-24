@@ -28,9 +28,7 @@ import { invokeServiceHook, Services } from './services';
 import {
     invokeComponentCallback,
     invokeComponentConstructor,
-    invokeComponentRenderedCallback,
 } from './invoker';
-
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { LightningElement } from './base-lightning-element';
@@ -443,7 +441,12 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
 }
 
 function runRenderedCallback(vm: VM) {
-    if (isTrue(vm.renderer.ssr)) {
+    const {
+        renderer,
+        def: { renderedCallback },
+    } = vm;
+
+    if (isTrue(renderer.ssr)) {
         return;
     }
 
@@ -451,7 +454,12 @@ function runRenderedCallback(vm: VM) {
     if (rendered) {
         invokeServiceHook(vm, rendered);
     }
-    invokeComponentRenderedCallback(vm);
+
+    if (!isUndefined(renderedCallback)) {
+        logOperationStart(OperationId.RenderedCallback, vm);
+        invokeComponentCallback(vm, renderedCallback);
+        logOperationEnd(OperationId.RenderedCallback, vm);
+    }
 }
 
 let rehydrateQueue: VM[] = [];
