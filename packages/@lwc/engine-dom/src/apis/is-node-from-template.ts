@@ -14,7 +14,7 @@ import { renderer } from '../renderer';
  * API is subject to change or being removed.
  */
 export function isNodeFromTemplate(node: Node): boolean {
-    // eslint-disable-next-line lwc-internal/no-instanceof-uncached-node
+    // eslint-disable-next-line lwc-internal/no-global-node
     if (isFalse(node instanceof Node)) {
         return false;
     }

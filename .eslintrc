@@ -91,7 +91,7 @@
         "template-curly-spacing": "error",
         "yoda": "error",
 
-        "lwc-internal/no-instanceof-uncached-node": "error",
+        "lwc-internal/no-global-node": "error",
         "lwc-internal/no-invalid-todo": "error",
         "import/order": [
             "error",
