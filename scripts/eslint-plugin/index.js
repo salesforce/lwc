@@ -9,11 +9,13 @@
 const noExtendGlobalConstructor = require('./rules/no-extend-global-constructor');
 const noProductionAssert = require('./rules/no-production-assert');
 const noInvalidTodo = require('./rules/no-invalid-todo');
+const noInstanceofUncachedNode = require('./rules/no-instanceof-uncached-node');
 
 module.exports = {
     rules: {
         'no-extend-global-constructor': noExtendGlobalConstructor,
-        'no-production-assert': noProductionAssert,
+        'no-instanceof-uncached-node': noInstanceofUncachedNode,
         'no-invalid-todo': noInvalidTodo,
+        'no-production-assert': noProductionAssert,
     },
 };

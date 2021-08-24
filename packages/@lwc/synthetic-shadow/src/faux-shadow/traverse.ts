@@ -12,7 +12,7 @@ import {
     getShadowRootResolver,
     getShadowRoot,
 } from './shadow-root';
-import { DOMNodeInterface as Node } from '../env/dom';
+import { Node } from '../env/dom';
 import { querySelectorAll } from '../env/element';
 import {
     childNodesGetter,
