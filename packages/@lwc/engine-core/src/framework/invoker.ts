@@ -24,7 +24,15 @@ export function isBeingConstructed(vm: VM): boolean {
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): void {
     const { component, callHook, owner } = vm;
 
-    runWithBoundaryProtection(vm, owner, noop, () => callHook(component, fn, args), noop);
+    runWithBoundaryProtection(
+        vm,
+        owner,
+        noop,
+        () => {
+            callHook(component, fn, args);
+        },
+        noop
+    );
 }
 
 export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstructor) {
