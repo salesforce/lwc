@@ -19,4 +19,11 @@ const eventCurrentTargetGetter: (this: Event) => EventTarget | null = getOwnProp
 const focusEventRelatedTargetGetter: (this: FocusEvent) => EventTarget | null =
     getOwnPropertyDescriptor(FocusEvent.prototype, 'relatedTarget')!.get!;
 
-export { eventTargetGetter, eventCurrentTargetGetter, focusEventRelatedTargetGetter };
+const DOMNodeInterface = Node;
+
+export {
+    eventTargetGetter,
+    eventCurrentTargetGetter,
+    focusEventRelatedTargetGetter,
+    DOMNodeInterface,
+};
