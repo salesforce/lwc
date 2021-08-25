@@ -12,7 +12,6 @@ import {
     getShadowRootResolver,
     getShadowRoot,
 } from './shadow-root';
-import { Node } from '../env/dom';
 import { querySelectorAll } from '../env/element';
 import {
     childNodesGetter,
@@ -20,6 +19,7 @@ import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
+    Node,
 } from '../env/node';
 import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { arrayFromCollection } from '../shared/utils';

@@ -8,7 +8,8 @@ import { defineProperties, isNull, isUndefined } from '@lwc/shared';
 
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { retarget } from '../../3rdparty/polymer/retarget';
-import { eventTargetGetter, eventCurrentTargetGetter, Node } from '../../env/dom';
+import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
+import { Node } from '../../env/node';
 import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';

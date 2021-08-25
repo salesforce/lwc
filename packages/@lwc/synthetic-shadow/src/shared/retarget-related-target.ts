@@ -8,7 +8,8 @@ import { defineProperty, getOwnPropertyDescriptor, isNull } from '@lwc/shared';
 
 import { pathComposer } from '../3rdparty/polymer/path-composer';
 import { retarget } from '../3rdparty/polymer/retarget';
-import { eventCurrentTargetGetter, Node } from '../env/dom';
+import { eventCurrentTargetGetter } from '../env/dom';
+import { Node } from '../env/node';
 import { isNodeShadowed } from '../shared/node-ownership';
 import { getOwnerDocument } from '../shared/utils';
 
