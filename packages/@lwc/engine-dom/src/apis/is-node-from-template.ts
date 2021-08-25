@@ -7,6 +7,7 @@
 
 import { isFalse, isUndefined, KEY__SHADOW_RESOLVER } from '@lwc/shared';
 
+import { Node } from '../node';
 import { renderer } from '../renderer';
 
 /**
@@ -14,7 +15,6 @@ import { renderer } from '../renderer';
  * API is subject to change or being removed.
  */
 export function isNodeFromTemplate(node: Node): boolean {
-    // eslint-disable-next-line lwc-internal/no-global-node
     if (isFalse(node instanceof Node)) {
         return false;
     }

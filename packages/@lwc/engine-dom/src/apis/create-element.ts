@@ -15,6 +15,7 @@ import {
 } from '@lwc/engine-core';
 
 import { renderer } from '../renderer';
+import { Node } from '../node';
 
 type NodeSlotCallback = (element: Node) => void;
 

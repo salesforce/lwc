@@ -6,6 +6,11 @@
  */
 import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 
+// Cached reference to the DOM Node constructor
+// eslint-disable-next-line lwc-internal/no-global-node
+const _Node = Node;
+const nodePrototype = _Node.prototype;
+
 const {
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_CONTAINS,
@@ -17,7 +22,7 @@ const {
     PROCESSING_INSTRUCTION_NODE,
     COMMENT_NODE,
     DOCUMENT_FRAGMENT_NODE,
-} = Node;
+} = _Node;
 
 const {
     appendChild,
@@ -27,56 +32,56 @@ const {
     removeChild,
     replaceChild,
     hasChildNodes,
-} = Node.prototype;
+} = nodePrototype;
 
 const { contains } = HTMLElement.prototype;
 
 const firstChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
-    Node.prototype,
+    nodePrototype,
     'firstChild'
 )!.get!;
 
 const lastChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
-    Node.prototype,
+    nodePrototype,
     'lastChild'
 )!.get!;
 
 const textContentGetter: (this: Node) => string = getOwnPropertyDescriptor(
-    Node.prototype,
+    nodePrototype,
     'textContent'
 )!.get!;
 
 const parentNodeGetter: (this: Node) => (Node & ParentNode) | null = getOwnPropertyDescriptor(
-    Node.prototype,
+    nodePrototype,
     'parentNode'
 )!.get!;
 
 const ownerDocumentGetter: (this: Node) => Document | null = getOwnPropertyDescriptor(
-    Node.prototype,
+    nodePrototype,
     'ownerDocument'
 )!.get!;
 
 const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
-    Node.prototype,
+    nodePrototype,
     'parentElement'
 )
-    ? getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get!
+    ? getOwnPropertyDescriptor(nodePrototype, 'parentElement')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!; // IE11
 
 const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(
-    Node.prototype,
+    nodePrototype,
     'textContent'
 )!.set!;
 
 const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = hasOwnProperty.call(
-    Node.prototype,
+    nodePrototype,
     'childNodes'
 )
-    ? getOwnPropertyDescriptor(Node.prototype, 'childNodes')!.get!
+    ? getOwnPropertyDescriptor(nodePrototype, 'childNodes')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!; // IE11
 
-const isConnected = hasOwnProperty.call(Node.prototype, 'isConnected')
-    ? getOwnPropertyDescriptor(Node.prototype, 'isConnected')!.get!
+const isConnected = hasOwnProperty.call(nodePrototype, 'isConnected')
+    ? getOwnPropertyDescriptor(nodePrototype, 'isConnected')!.get!
     : function (this: Node): boolean {
           const doc = ownerDocumentGetter.call(this);
           // IE11
@@ -89,6 +94,7 @@ const isConnected = hasOwnProperty.call(Node.prototype, 'isConnected')
       };
 
 export {
+    _Node as Node,
     // Node.prototype
     appendChild,
     childNodesGetter,

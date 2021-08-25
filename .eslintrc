@@ -126,6 +126,7 @@
             },
 
             "rules": {
+                "lwc-internal/no-global-node": "off",
                 "jest/no-focused-tests": "error",
                 "jest/valid-expect": "error",
                 "jest/valid-expect-in-promise": "error"
