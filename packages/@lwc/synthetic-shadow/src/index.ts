@@ -6,6 +6,7 @@
  */
 
 // Collecting env references before patching anything
+import './env/global';
 import './env/node';
 import './env/element';
 import './env/slot';

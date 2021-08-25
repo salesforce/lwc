@@ -7,6 +7,7 @@
 
 import { defineProperties } from '@lwc/shared';
 import { assignedSlotGetterPatched } from './slot';
+import { Text } from '../env/global';
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that
 // do not five access to nodes beyond the immediate children.

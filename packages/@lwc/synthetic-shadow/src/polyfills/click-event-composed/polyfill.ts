@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { addEventListener, removeEventListener } from '../../env/event-target';
+import { HTMLElement, Object } from '../../env/global';
 
 const originalClickDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'click');
 

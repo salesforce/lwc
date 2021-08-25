@@ -6,6 +6,8 @@
  */
 import { assign, create, defineProperties } from '@lwc/shared';
 
+import { ClipboardEvent } from '../../env/global';
+
 if (typeof ClipboardEvent !== 'undefined') {
     const isComposedType = assign(create(null), {
         copy: 1,

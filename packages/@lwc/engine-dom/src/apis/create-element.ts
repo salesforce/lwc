@@ -15,7 +15,8 @@ import {
 } from '@lwc/engine-core';
 
 import { renderer } from '../renderer';
-import { Node } from '../node';
+
+const _Node = Node;
 
 type NodeSlotCallback = (element: Node) => void;
 
@@ -38,8 +39,8 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
 
 // Monkey patching Node methods to be able to detect the insertions and removal of root elements
 // created via createElement.
-const { appendChild, insertBefore, removeChild, replaceChild } = Node.prototype;
-assign(Node.prototype, {
+const { appendChild, insertBefore, removeChild, replaceChild } = _Node.prototype;
+assign(_Node.prototype, {
     appendChild(newChild) {
         const appendedNode = appendChild.call(this, newChild);
         return callNodeSlot(appendedNode, ConnectingSlot);

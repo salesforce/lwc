@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { getOwnPropertyDescriptor, defineProperty, isNull, isUndefined } from '@lwc/shared';
+import { HTMLIFrameElement } from '../../env/global';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
 
 export default function apply() {

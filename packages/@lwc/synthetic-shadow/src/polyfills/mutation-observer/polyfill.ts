@@ -16,15 +16,15 @@ import {
     isNull,
     isUndefined,
 } from '@lwc/shared';
+import { MutationObserver, MutationRecord, WeakMap, window } from '../../env/global';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 import { getNodeKey, getNodeNearestOwnerKey } from '../../shared/node-ownership';
 
-const OriginalMutationObserver = MutationObserver;
 const {
     disconnect: originalDisconnect,
     observe: originalObserve,
     takeRecords: originalTakeRecords,
-} = OriginalMutationObserver.prototype;
+} = MutationObserver.prototype;
 
 // Internal fields to maintain relationships
 const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
@@ -209,7 +209,7 @@ function PatchedMutationObserver(
     callback: MutationCallback
 ): MutationObserver {
     const wrappedCallback: any = getWrappedCallback(callback);
-    const observer = new OriginalMutationObserver(wrappedCallback);
+    const observer = new MutationObserver(wrappedCallback);
     return observer;
 }
 
@@ -280,7 +280,7 @@ function patchedTakeRecords(this: MutationObserver): MutationRecord[] {
     return filterMutationRecords(originalTakeRecords.call(this), this);
 }
 
-PatchedMutationObserver.prototype = OriginalMutationObserver.prototype;
+PatchedMutationObserver.prototype = MutationObserver.prototype;
 PatchedMutationObserver.prototype.disconnect = patchedDisconnect;
 PatchedMutationObserver.prototype.observe = patchedObserve;
 PatchedMutationObserver.prototype.takeRecords = patchedTakeRecords;

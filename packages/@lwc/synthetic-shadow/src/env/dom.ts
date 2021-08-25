@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { getOwnPropertyDescriptor } from '@lwc/shared';
+import { Event, FocusEvent } from '../env/global';
 
 const eventTargetGetter: (this: Event) => EventTarget = getOwnPropertyDescriptor(
     Event.prototype,

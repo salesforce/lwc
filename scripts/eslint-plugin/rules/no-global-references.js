@@ -4,25 +4,25 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const errorMessage = 'Avoid referencing the global Node constructor.';
 
 function isGlobalRef(reference) {
     return reference.resolved === null || reference.resolved.scope.type === 'global';
 }
 
+const ignoreNames = new Set(['process', 'undefined']);
+
 module.exports = {
     meta: {
         type: 'problem',
         docs: {
-            description: errorMessage,
+            description: 'Avoid referencing global objects directly.',
         },
     },
 
     create(context) {
         return {
-            'Identifier[name="Node"]': function (node) {
-                // Ignore typescript references
-                if (node.parent.type === 'TSTypeReference') {
+            Identifier: function (node) {
+                if (ignoreNames.has(node.name) || /Type|Interface/.test(node.parent.type)) {
                     return;
                 }
 
@@ -33,7 +33,7 @@ module.exports = {
                 if (reference && isGlobalRef(reference)) {
                     context.report({
                         node,
-                        message: errorMessage,
+                        message: `Avoid using the global '${node.name}' reference directly.`,
                     });
                 }
             },

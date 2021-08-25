@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { getInnerHTML } from './inner-html';
 import { tagNameGetter } from '../../env/element';
+import { Element, Set, String } from '../../env/global';
 import {
     ELEMENT_NODE,
     TEXT_NODE,

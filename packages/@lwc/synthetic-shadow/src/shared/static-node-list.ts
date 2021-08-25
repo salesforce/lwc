@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayMap, create, defineProperty, forEach, setPrototypeOf } from '@lwc/shared';
+import { NodeList, Symbol, TypeError, WeakMap } from '../env/global';
 
 const Items = new WeakMap<any, Node[]>();
 

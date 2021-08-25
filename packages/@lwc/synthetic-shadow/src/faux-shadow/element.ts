@@ -42,6 +42,7 @@ import {
     querySelectorAll as elementQuerySelectorAll,
     shadowRootGetter as originalShadowRootGetter,
 } from '../env/element';
+import { Element, HTMLBodyElement, HTMLElement } from '../env/global';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { getInternalChildNodes, hasMountedChildren } from './node';

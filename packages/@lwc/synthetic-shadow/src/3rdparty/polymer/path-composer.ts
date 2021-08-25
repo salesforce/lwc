@@ -17,7 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { isNull } from '@lwc/shared';
 import { getOwnerDocument } from '../../shared/utils';
-import { Node } from '../../env/node';
+import { Element, Node, Text, window, Window } from '../../env/global';
 import { isInstanceOfNativeShadowRoot } from '../../env/shadow-root';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 

@@ -6,10 +6,9 @@
  */
 import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 
-// Cached reference to the DOM Node constructor
-// eslint-disable-next-line lwc-internal/no-global-node
-const _Node = Node;
-const nodePrototype = _Node.prototype;
+import { HTMLElement, Node } from './global';
+
+const nodePrototype = Node.prototype;
 
 const {
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -22,7 +21,7 @@ const {
     PROCESSING_INSTRUCTION_NODE,
     COMMENT_NODE,
     DOCUMENT_FRAGMENT_NODE,
-} = _Node;
+} = Node;
 
 const {
     appendChild,
@@ -94,7 +93,6 @@ const isConnected = hasOwnProperty.call(nodePrototype, 'isConnected')
       };
 
 export {
-    _Node as Node,
     // Node.prototype
     appendChild,
     childNodesGetter,

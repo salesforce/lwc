@@ -7,6 +7,7 @@
 import { ArrayPush } from '@lwc/shared';
 import { innerTextGetter } from '../env/element';
 import { ELEMENT_NODE, TEXT_NODE } from '../env/node';
+import { document } from '../env/global';
 import { windowGetComputedStyle, windowGetSelection } from '../env/window';
 import { getOwnerWindow } from '../shared/utils';
 import { getTextContent } from './polymer/text-content';

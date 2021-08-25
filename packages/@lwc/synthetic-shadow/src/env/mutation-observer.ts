@@ -9,6 +9,8 @@
 // Mutation Observer constructor, this the code for that.
 // Eventually, the polyfill should uses the patched version, and this file can be removed.
 
-const MO = MutationObserver;
-const MutationObserverObserve = MO.prototype.observe;
-export { MO as MutationObserver, MutationObserverObserve };
+import { MutationObserver } from '../env/global';
+
+const MutationObserverObserve = MutationObserver.prototype.observe;
+
+export { MutationObserverObserve };

@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { HTMLSlotElement } from '../../env/global';
+
 export default function () {
     return typeof HTMLSlotElement === 'undefined';
 }

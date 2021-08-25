@@ -6,6 +6,7 @@
  */
 import { ArraySlice, defineProperties } from '@lwc/shared';
 
+import { Window } from '../../env/global';
 import { windowAddEventListener, windowRemoveEventListener } from '../../env/window';
 import { getEventListenerWrapper } from '../../shared/event-target';
 

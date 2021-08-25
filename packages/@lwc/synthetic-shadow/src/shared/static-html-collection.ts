@@ -7,6 +7,7 @@
 import { create, defineProperty, forEach, setPrototypeOf } from '@lwc/shared';
 
 import { getAttribute } from '../env/element';
+import { HTMLCollection, Symbol, TypeError, WeakMap } from '../env/global';
 
 const Items = new WeakMap<any, Element[]>();
 
