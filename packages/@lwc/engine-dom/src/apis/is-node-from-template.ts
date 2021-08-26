@@ -9,6 +9,7 @@ import { isFalse, isUndefined, KEY__SHADOW_RESOLVER } from '@lwc/shared';
 
 import { renderer } from '../renderer';
 
+// TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
 const _Node = Node;
 

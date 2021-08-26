@@ -6,7 +6,7 @@
  */
 import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 
-// Cached reference to the DOM Node constructor
+// TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
 const _Node = Node;
 const nodePrototype = _Node.prototype;

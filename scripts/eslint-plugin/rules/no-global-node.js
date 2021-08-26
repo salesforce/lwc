@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const errorMessage = 'Avoid referencing the global Node constructor.';
+
+// TODO [#2472]: Remove this lint rule when appropriate.
+const errorMessage = 'Avoid referencing the global Node constructor directly.';
 
 function isGlobalRef(ref) {
     return ref.resolved === null || ref.resolved.scope.type === 'global';
