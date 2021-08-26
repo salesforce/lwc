@@ -91,6 +91,7 @@
         "template-curly-spacing": "error",
         "yoda": "error",
 
+        "lwc-internal/no-global-node": "error",
         "lwc-internal/no-invalid-todo": "error",
         "import/order": [
             "error",
@@ -125,6 +126,7 @@
             },
 
             "rules": {
+                "lwc-internal/no-global-node": "off",
                 "jest/no-focused-tests": "error",
                 "jest/valid-expect": "error",
                 "jest/valid-expect-in-promise": "error"
@@ -154,17 +156,6 @@
 
             "rules": {
                 "no-console": "off"
-            }
-        },
-        {
-            "files": [
-                "**/@lwc/synthetic-shadow/src/**"
-            ],
-
-            "excludedFiles": ["**/__tests__/**"],
-
-            "rules": {
-                "lwc-internal/no-global-references": "error"
             }
         }
     ]

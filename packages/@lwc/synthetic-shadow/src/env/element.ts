@@ -6,8 +6,6 @@
  */
 import { hasOwnProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 
-import { Element, HTMLElement, TypeError } from '../env/global';
-
 const {
     getAttribute,
     getBoundingClientRect,

@@ -7,8 +7,6 @@
 
 import { ArraySlice, setPrototypeOf, StringCharCodeAt, defineProperty } from '@lwc/shared';
 
-import { Document, HTMLElement, Window } from '../../env/global';
-
 const { createElement } = Document.prototype;
 
 const CHAR_S = 115;

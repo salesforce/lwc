@@ -4,15 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
-import { CustomEvent, Object, window } from '../../env/global';
+const CustomEventConstructor = CustomEvent;
 
 function PatchedCustomEvent<T>(
     this: Event,
     type: string,
     eventInitDict: CustomEventInit<T>
 ): CustomEvent<T> {
-    const event = new CustomEvent(type, eventInitDict);
+    const event = new CustomEventConstructor(type, eventInitDict);
 
     const isComposed = !!(eventInitDict && eventInitDict.composed);
     Object.defineProperties(event, {
@@ -28,5 +27,5 @@ function PatchedCustomEvent<T>(
     return event;
 }
 
-PatchedCustomEvent.prototype = CustomEvent.prototype;
+PatchedCustomEvent.prototype = CustomEventConstructor.prototype;
 (window as any).CustomEvent = PatchedCustomEvent;

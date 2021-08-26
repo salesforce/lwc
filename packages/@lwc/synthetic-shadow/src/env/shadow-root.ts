@@ -6,8 +6,6 @@
  */
 import { isNull } from '@lwc/shared';
 
-import { ShadowRoot } from '../env/global';
-
 let NativeShadowRoot: any = null;
 if (typeof ShadowRoot !== 'undefined') {
     NativeShadowRoot = ShadowRoot;

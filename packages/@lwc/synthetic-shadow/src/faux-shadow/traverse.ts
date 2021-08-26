@@ -13,13 +13,13 @@ import {
     getShadowRoot,
 } from './shadow-root';
 import { querySelectorAll } from '../env/element';
-import { Element, HTMLElement, HTMLSlotElement, Node } from '../env/global';
 import {
     childNodesGetter,
     parentNodeGetter,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
+    Node,
 } from '../env/node';
 import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { arrayFromCollection } from '../shared/utils';

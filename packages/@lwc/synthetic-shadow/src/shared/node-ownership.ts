@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperty, isNull, isUndefined } from '@lwc/shared';
-import { parentNodeGetter } from '../env/node';
+import { Node, parentNodeGetter } from '../env/node';
 
 // Used as a back reference to identify the host element
 const HostElementKey = '$$HostElementKey$$';

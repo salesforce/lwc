@@ -7,7 +7,6 @@
 import featureFlags from '@lwc/features';
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
-import { WeakMap } from '../env/global';
 import { getActualTarget } from '../faux-shadow/events';
 import { eventToShadowRootMap, isHostElement } from '../faux-shadow/shadow-root';
 

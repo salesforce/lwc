@@ -7,7 +7,6 @@
 import { ArrayFilter, ArraySlice, isNull, isUndefined } from '@lwc/shared';
 import { isHostElement } from './shadow-root';
 import { getAllMatches, getNodeOwner, getAllSlottedMatches } from './traverse';
-import { HTMLBodyElement } from '../env/global';
 import { getNodeKey, getNodeNearestOwnerKey, getNodeOwnerKey } from '../shared/node-ownership';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 

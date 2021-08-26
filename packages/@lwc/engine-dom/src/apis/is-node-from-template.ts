@@ -7,16 +7,15 @@
 
 import { isFalse, isUndefined, KEY__SHADOW_RESOLVER } from '@lwc/shared';
 
+import { Node } from '../node';
 import { renderer } from '../renderer';
-
-const _Node = Node;
 
 /**
  * EXPERIMENTAL: This function detects whether or not a Node is controlled by a LWC template. This
  * API is subject to change or being removed.
  */
 export function isNodeFromTemplate(node: Node): boolean {
-    if (isFalse(node instanceof _Node)) {
+    if (isFalse(node instanceof Node)) {
         return false;
     }
     // TODO [#1250]: skipping the shadowRoot instances itself makes no sense, we need to revisit

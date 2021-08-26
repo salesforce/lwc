@@ -27,7 +27,6 @@ import {
     ignoreFocusIn,
     isKeyboardFocusNavigationRoutineEnabled,
 } from './focus';
-import { HTMLElement } from '../env/global';
 import { isNodeShadowed } from '../shared/node-ownership';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 import { getInnerText } from '../3rdparty/inner-text';

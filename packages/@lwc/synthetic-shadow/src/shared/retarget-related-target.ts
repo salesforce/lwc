@@ -9,7 +9,7 @@ import { defineProperty, getOwnPropertyDescriptor, isNull } from '@lwc/shared';
 import { pathComposer } from '../3rdparty/polymer/path-composer';
 import { retarget } from '../3rdparty/polymer/retarget';
 import { eventCurrentTargetGetter } from '../env/dom';
-import { FocusEvent, MouseEvent, Node } from '../env/global';
+import { Node } from '../env/node';
 import { isNodeShadowed } from '../shared/node-ownership';
 import { getOwnerDocument } from '../shared/utils';
 

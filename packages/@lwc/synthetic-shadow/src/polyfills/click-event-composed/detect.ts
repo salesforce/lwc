@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
-import { document, Event, Object } from '../../env/global';
-
 const composedDescriptor = Object.getOwnPropertyDescriptor(Event.prototype, 'composed');
 
 export default function detect(): boolean {

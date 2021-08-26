@@ -19,15 +19,7 @@ import {
 } from '@lwc/shared';
 import { getAttribute, setAttribute } from '../env/element';
 import { dispatchEvent } from '../env/event-target';
-import {
-    CustomEvent,
-    Element,
-    HTMLElement,
-    HTMLSlotElement,
-    MutationObserver,
-    WeakMap,
-} from '../env/global';
-import { MutationObserverObserve } from '../env/mutation-observer';
+import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import { childNodesGetter, parentNodeGetter } from '../env/node';
 import {
     assignedNodes as originalAssignedNodes,

@@ -37,14 +37,12 @@ import {
     hasAttribute,
 } from '../env/element';
 import { addEventListener, removeEventListener } from '../env/event-target';
-import { Set, WeakMap } from '../env/global';
 import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_PRECEDING,
     DOCUMENT_POSITION_FOLLOWING,
 } from '../env/node';
-import { windowGetComputedStyle, windowSetTimeout } from '../env/window';
 import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
 
 const FocusableSelector = `
@@ -90,7 +88,7 @@ function isVisible(element: HTMLElement): boolean {
     // The area element can be 0x0 and focusable. Hardcoding this is not ideal
     // but it will minimize changes in the current behavior.
     const isAreaElement = element.tagName === 'AREA';
-    return (noZeroSize || isAreaElement) && windowGetComputedStyle(element).visibility !== 'hidden';
+    return (noZeroSize || isAreaElement) && getComputedStyle(element).visibility !== 'hidden';
 }
 
 // This function based on https://allyjs.io/data-tables/focusable.html
@@ -419,7 +417,7 @@ function bindDocumentMousedownMouseupHandlers(elm: HTMLElement) {
                 // mousedown-setTimeout | mouseup
                 // mouseup              | FOCUSIN
                 // mouseup-setTimeout   | mouseup-setTimeout
-                windowSetTimeout(enableKeyboardFocusNavigationRoutines);
+                setTimeout(enableKeyboardFocusNavigationRoutines);
             },
             true
         );

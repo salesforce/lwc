@@ -6,8 +6,6 @@
  */
 import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 
-import { Document, HTMLDocument } from '../env/global';
-
 const DocumentPrototypeActiveElement: (this: Document) => Element | null = getOwnPropertyDescriptor(
     Document.prototype,
     'activeElement'

@@ -26,7 +26,6 @@ import {
     SyntheticShadowRootInterface,
 } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
-import { TypeError, WeakMap } from '../env/global';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';

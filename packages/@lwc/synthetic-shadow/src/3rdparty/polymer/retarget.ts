@@ -6,8 +6,7 @@
  */
 import { isNull, isUndefined } from '@lwc/shared';
 import { pathComposer } from './path-composer';
-import { Window } from '../../env/global';
-import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
+import { SyntheticShadowRoot } from './../../faux-shadow/shadow-root';
 
 /**
 @license

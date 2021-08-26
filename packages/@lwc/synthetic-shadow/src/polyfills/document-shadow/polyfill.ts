@@ -22,7 +22,6 @@ import {
     getElementsByTagNameNS as documentGetElementsByTagNameNS,
     querySelectorAll as documentQuerySelectorAll,
 } from '../../env/document';
-import { Document, HTMLDocument } from '../../env/global';
 import { parentElementGetter } from '../../env/node';
 import { fauxElementFromPoint } from '../../shared/faux-element-from-point';
 import { getNodeOwnerKey } from '../../shared/node-ownership';

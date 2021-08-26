@@ -34,16 +34,6 @@ import { getTextContent } from '../3rdparty/polymer/text-content';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { DocumentPrototypeActiveElement, createComment } from '../env/document';
 import {
-    document,
-    DocumentFragment,
-    Element,
-    Error,
-    Node,
-    Symbol,
-    TypeError,
-    WeakMap,
-} from '../env/global';
-import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
     parentElementGetter,
@@ -54,6 +44,7 @@ import {
     replaceChild,
     appendChild,
     COMMENT_NODE,
+    Node,
 } from '../env/node';
 import { isInstanceOfNativeShadowRoot, isNativeShadowRootDefined } from '../env/shadow-root';
 import { fauxElementFromPoint } from '../shared/faux-element-from-point';

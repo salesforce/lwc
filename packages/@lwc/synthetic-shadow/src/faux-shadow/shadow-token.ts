@@ -10,9 +10,7 @@ import {
     KEY__SHADOW_TOKEN,
     KEY__SHADOW_TOKEN_PRIVATE,
 } from '@lwc/shared';
-
 import { setAttribute, removeAttribute } from '../env/element';
-import { Element } from '../env/global';
 
 export function getShadowToken(node: Node): string | undefined {
     return (node as any)[KEY__SHADOW_TOKEN];
