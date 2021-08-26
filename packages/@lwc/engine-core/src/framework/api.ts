@@ -69,6 +69,8 @@ import {
     allocateChildrenHook,
     markAsDynamicChildren,
     hydrateElementChildrenHook,
+    hydrateNodeHook,
+    hydrateElmHook,
 } from './hooks';
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -89,9 +91,7 @@ const TextHook: Hooks<VText> = {
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
-    hydrate: (vNode, node) => {
-        vNode.elm = node;
-    },
+    hydrate: hydrateNodeHook,
 };
 
 const CommentHook: Hooks<VComment> = {
@@ -107,9 +107,7 @@ const CommentHook: Hooks<VComment> = {
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
-    hydrate: (vNode, node) => {
-        vNode.elm = node;
-    },
+    hydrate: hydrateNodeHook,
 };
 
 // insert is called after update, which is used somewhere else (via a module)
@@ -153,7 +151,7 @@ const ElementHook: Hooks<VElement> = {
     hydrate: (vnode, node) => {
         vnode.elm = node as Element;
 
-        createElmHook(vnode);
+        hydrateElmHook(vnode);
 
         // hydrate children hook
         hydrateElementChildrenHook(vnode);
@@ -255,7 +253,7 @@ const CustomElementHook: Hooks<VCustomElement> = {
             allocateChildrenHook(vnode, vm);
         }
 
-        createCustomElmHook(vnode);
+        hydrateElmHook(vnode);
 
         // Insert hook section:
         if (vm) {
