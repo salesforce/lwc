@@ -91,7 +91,6 @@
         "template-curly-spacing": "error",
         "yoda": "error",
 
-        "lwc-internal/no-global-node": "error",
         "lwc-internal/no-invalid-todo": "error",
         "import/order": [
             "error",
@@ -102,11 +101,12 @@
     "overrides": [
         {
             "files": [
-                "**/engine-core/**",
-                "**/engine-dom/**",
-                "**/synthetic-shadow/**"
+                "**/@lwc/engine-core/**",
+                "**/@lwc/engine-dom/**",
+                "**/@lwc/synthetic-shadow/**"
             ],
             "rules": {
+                "lwc-internal/no-global-node": "error",
                 "prefer-rest-params": "off",
                 "prefer-spread": "off"
             }
@@ -126,7 +126,6 @@
             },
 
             "rules": {
-                "lwc-internal/no-global-node": "off",
                 "jest/no-focused-tests": "error",
                 "jest/valid-expect": "error",
                 "jest/valid-expect-in-promise": "error"

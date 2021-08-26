@@ -6,8 +6,12 @@
  */
 const errorMessage = 'Avoid referencing the global Node constructor.';
 
-function isGlobalRef(reference) {
-    return reference.resolved === null || reference.resolved.scope.type === 'global';
+function isGlobalRef(ref) {
+    return ref.resolved === null || ref.resolved.scope.type === 'global';
+}
+
+function isTypescriptType(type) {
+    return /Interface|Type/.test(type);
 }
 
 module.exports = {
@@ -21,8 +25,7 @@ module.exports = {
     create(context) {
         return {
             'Identifier[name="Node"]': function (node) {
-                // Ignore typescript references
-                if (node.parent.type === 'TSTypeReference') {
+                if (isTypescriptType(node.parent.type)) {
                     return;
                 }
 

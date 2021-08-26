@@ -17,6 +17,7 @@ import {
     isUndefined,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
+import { Node } from '../env/node';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -33,7 +34,6 @@ import {
     textContentGetter,
     childNodesGetter,
     isConnected,
-    Node,
 } from '../env/node';
 import {
     getNodeOwner,
