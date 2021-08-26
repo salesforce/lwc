@@ -4,13 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isFalse, isFunction, isUndefined } from '@lwc/shared';
-import {
-    invokeComponentConstructor,
-    invokeComponentRenderMethod,
-    isInvokingRender,
-    invokeEventListener,
-} from './invoker';
+import { assert, isFalse, isFunction, isUndefined } from '@lwc/shared';
+import { invokeComponentRenderMethod, isInvokingRender, invokeEventListener } from './invoker';
 import { VM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { ReactiveObserver } from '../libs/mutation-tracker';
@@ -39,17 +34,6 @@ export function getComponentRegisteredTemplate(
     return signedTemplateMap.get(Ctor);
 }
 
-export function createComponent(vm: VM, Ctor: LightningElementConstructor) {
-    // create the component instance
-    invokeComponentConstructor(vm, Ctor);
-
-    if (isUndefined(vm.component)) {
-        throw new ReferenceError(
-            `Invalid construction for ${Ctor}, you must extend LightningElement.`
-        );
-    }
-}
-
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     return new ReactiveObserver(() => {
         const { isDirty } = vm;
@@ -70,12 +54,6 @@ export function renderComponent(vm: VM): VNodes {
     vm.isDirty = false;
     vm.isScheduled = false;
 
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isArray(vnodes),
-            `${vm}.render() should always return an array of vnodes instead of ${vnodes}`
-        );
-    }
     return vnodes;
 }
 

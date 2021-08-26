@@ -22,15 +22,14 @@ import {
     keys,
 } from '@lwc/shared';
 import { getComponentTag } from '../shared/format';
-import {
-    createComponent,
-    renderComponent,
-    markComponentAsDirty,
-    getTemplateReactiveObserver,
-} from './component';
+import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
-import { invokeComponentCallback, invokeComponentRenderedCallback } from './invoker';
+import {
+    invokeComponentCallback,
+    invokeComponentConstructor,
+    invokeComponentRenderedCallback,
+} from './invoker';
 
 import { Template } from './template';
 import { ComponentDef } from './def';
@@ -354,7 +353,7 @@ export function createVM<HostNode, HostElement>(
     }
 
     // Create component instance associated to the vm and the element.
-    createComponent(vm, def.ctor);
+    invokeComponentConstructor(vm, def.ctor);
 
     // Initializing the wire decorator per instance only when really needed
     if (isFalse(renderer.ssr) && hasWireAdapters(vm)) {
