@@ -93,7 +93,7 @@
 
         "lwc-internal/no-invalid-todo": "error",
         "import/order": [
-            "error", 
+            "error",
             { "groups": [["builtin", "external", "internal"]] }
         ]
     },
@@ -101,11 +101,12 @@
     "overrides": [
         {
             "files": [
-                "**/engine-core/**",
-                "**/engine-dom/**",
-                "**/synthetic-shadow/**"
+                "**/@lwc/engine-core/**",
+                "**/@lwc/engine-dom/**",
+                "**/@lwc/synthetic-shadow/**"
             ],
             "rules": {
+                "lwc-internal/no-global-node": "error",
                 "prefer-rest-params": "off",
                 "prefer-spread": "off"
             }

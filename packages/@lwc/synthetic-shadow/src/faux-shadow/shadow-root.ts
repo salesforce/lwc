@@ -44,6 +44,7 @@ import {
     replaceChild,
     appendChild,
     COMMENT_NODE,
+    Node,
 } from '../env/node';
 import { isInstanceOfNativeShadowRoot, isNativeShadowRootDefined } from '../env/shadow-root';
 import { fauxElementFromPoint } from '../shared/faux-element-from-point';
