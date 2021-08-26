@@ -27,17 +27,6 @@
             "message": "LWC1048: srcdoc attribute is disallowed on <iframe> for security reasons",
             "level": 1,
             "location": {
-                "line": 6,
-                "column": 9,
-                "start": 207,
-                "length": 56
-            }
-        },
-        {
-            "code": 1048,
-            "message": "LWC1048: srcdoc attribute is disallowed on <iframe> for security reasons",
-            "level": 1,
-            "location": {
                 "line": 11,
                 "column": 9,
                 "start": 414,

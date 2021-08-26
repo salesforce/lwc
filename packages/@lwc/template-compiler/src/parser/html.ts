@@ -15,7 +15,7 @@ export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {
         const { code, startLine, startCol, startOffset, endOffset } = err;
 
-        ctx.warning.addDiagnostic(
+        ctx.addDiagnostic(
             generateCompilerDiagnostic(ParserDiagnostics.INVALID_HTML_SYNTAX, {
                 messageArgs: [code],
                 origin: {

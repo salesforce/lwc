@@ -93,7 +93,7 @@ describe('event handlers', () => {
 describe('for:each directives', () => {
     it('right syntax', () => {
         const { root } = parseTemplate(
-            `<template><section for:each={items} for:item="item"></section></template>`
+            `<template><section for:each={items} for:item="item" key={item}></section></template>`
         );
         expect(root.children[0].forEach.expression).toMatchObject({
             type: 'Identifier',
@@ -105,7 +105,7 @@ describe('for:each directives', () => {
 
     it('right syntax with index', () => {
         const { root } = parseTemplate(
-            `<template><section for:each={items} for:item="item" for:index="i"></section></template>`
+            `<template><section for:each={items} for:item="item" for:index="i" key={item}></section></template>`
         );
         expect(root.children[0].forEach.expression).toMatchObject({
             type: 'Identifier',
