@@ -44,6 +44,11 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     }
 }
 
+export function hydrateNodeHook(vNode: VNode, node: Node) {
+    vNode.elm = node;
+
+}
+
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     const {
         elm,
@@ -101,6 +106,18 @@ export function createElmHook(vnode: VElement) {
 
 const enum LWCDOMMode {
     manual = 'manual',
+}
+
+export function hydrateElmHook(vnode: VElement) {
+    modEvents.create(vnode);
+    // Attrs are already on the element.
+    // modAttrs.create(vnode);
+    modProps.create(vnode);
+    // Already set.
+    // modStaticClassName.create(vnode);
+    // modStaticStyle.create(vnode);
+    // modComputedClassName.create(vnode);
+    // modComputedStyle.create(vnode);
 }
 
 export function fallbackElmHook(elm: Element, vnode: VElement) {
