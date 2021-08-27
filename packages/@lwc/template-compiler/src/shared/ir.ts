@@ -100,6 +100,20 @@ export function isSlot(element: IRElement) {
     return element.tag === 'slot';
 }
 
+export function isIRExpressionAttribute(
+    attribute: IRAttribute
+): attribute is IRExpressionAttribute {
+    return attribute.type === IRAttributeType.Expression;
+}
+
+export function isIRStringAttribute(attribute: IRAttribute): attribute is IRStringAttribute {
+    return attribute.type === IRAttributeType.String;
+}
+
+export function isIRBooleanAttribute(attribute: IRAttribute): attribute is IRBooleanAttribute {
+    return attribute.type === IRAttributeType.Boolean;
+}
+
 export function isComponentProp(
     identifier: TemplateIdentifier,
     root: IRNode,
@@ -129,18 +143,4 @@ export function isComponentProp(
     // The identifier is bound to a component property if no match is found after reaching to AST
     // root.
     return true;
-}
-
-export function isIRExpressionAttribute(
-    attribute: IRAttribute
-): attribute is IRExpressionAttribute {
-    return attribute.type === IRAttributeType.Expression;
-}
-
-export function isIRStringAttribute(attribute: IRAttribute): attribute is IRStringAttribute {
-    return attribute.type === IRAttributeType.String;
-}
-
-export function isIRBooleanAttribute(attribute: IRAttribute): attribute is IRBooleanAttribute {
-    return attribute.type === IRAttributeType.Boolean;
 }

@@ -7,27 +7,14 @@
 import * as parse5 from 'parse5';
 import * as he from 'he';
 
-import { generateCompilerDiagnostic, ParserDiagnostics } from '@lwc/errors';
+import { ParserDiagnostics } from '@lwc/errors';
 
 import ParserCtx from './parser';
 
 export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {
-        const { code, startLine, startCol, startOffset, endOffset } = err;
-
-        ctx.addDiagnostic(
-            generateCompilerDiagnostic(ParserDiagnostics.INVALID_HTML_SYNTAX, {
-                messageArgs: [code],
-                origin: {
-                    location: {
-                        line: startLine,
-                        column: startCol,
-                        start: startOffset,
-                        length: endOffset - startOffset,
-                    },
-                },
-            })
-        );
+        const { code, ...location } = err;
+        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_SYNTAX, [code], location);
     };
 
     return parse5.parseFragment(source, {

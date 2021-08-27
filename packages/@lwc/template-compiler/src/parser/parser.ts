@@ -14,7 +14,7 @@ import {
     LWCErrorInfo,
     normalizeToDiagnostic,
 } from '@lwc/errors';
-import { IRElement } from '../shared/types';
+import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
 
 import { ResolvedConfig } from '../config';
 
@@ -56,19 +56,24 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
-    callWithTC<T extends (...args: any[]) => any>(
-        fn: T,
-        args: Parameters<T>,
-        errorInfo?: LWCErrorInfo,
-        location?: parse5.Location
-    ): ReturnType<T> | undefined {
+    withErrorRecovery<T>(fn: () => T): T | undefined {
         try {
-            return fn(...args);
+            return fn();
+        } catch (error) {
+            if (error instanceof CompilerError) {
+                this.addDiagnostic(error.toDiagnostic());
+            } else {
+                throw error;
+            }
+        }
+    }
+
+    withErrorWrapping<T>(fn: () => T, errorInfo?: LWCErrorInfo, location?: parse5.Location): T {
+        try {
+            return fn();
         } catch (error) {
             if (errorInfo) {
                 this.throwOnError(errorInfo, error, location);
-            } else if (error instanceof CompilerError) {
-                this.addDiagnostic(error.toDiagnostic());
             } else {
                 throw error;
             }
@@ -124,5 +129,35 @@ export default class ParserCtx {
 
     addDiagnostic(diagnostic: CompilerDiagnostic): void {
         this.warnings.push(diagnostic);
+    }
+
+    getRoot(element: IRElement): IRElement {
+        return this.parentStack[0] || element;
+    }
+
+    getRenderMode(element: IRElement): LWCDirectiveRenderMode {
+        return this.getRoot(element).lwc?.renderMode ?? LWCDirectiveRenderMode.shadow;
+    }
+
+    getPreserveComments(element: IRElement): boolean {
+        return (
+            this.getRoot(element).lwc?.preserveComments?.value ?? this.config.preserveHtmlComments
+        );
+    }
+
+    isInIteration(element: IRElement): boolean {
+        let current: IRElement | undefined = element;
+
+        for (let i = this.parentStack.length; i >= 0; i--) {
+            if (current.tag === 'template') {
+                if (current.forEach || current.forOf) {
+                    return true;
+                }
+            }
+
+            current = this.parentStack[i - 1];
+        }
+
+        return false;
     }
 }

@@ -133,12 +133,10 @@ export default function parse(source: string, state: State): TemplateParseResult
         return { warnings: ctx.warnings };
     }
 
-    const templateRoot = ctx.callWithTC(getTemplateRoot, [ctx, fragment]);
-    if (!templateRoot) {
-        return { warnings: ctx.warnings };
-    }
-
-    const root = ctx.callWithTC(parseElement, [ctx, templateRoot]);
+    const root = ctx.withErrorRecovery(() => {
+        const templateRoot = getTemplateRoot(ctx, fragment);
+        return parseElement(ctx, templateRoot);
+    });
 
     return { root, warnings: ctx.warnings };
 }
@@ -186,7 +184,7 @@ function parseChildren(ctx: ParserCtx, parent: IRElement, parse5Parent: parse5.E
     }
 
     for (const child of children) {
-        ctx.callWithTC(parseChild, [child]);
+        ctx.withErrorRecovery(() => parseChild(child));
     }
 
     ctx.parentStack.pop();
@@ -216,9 +214,8 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): IRText[] {
 
         let value: TemplateExpression | string;
         if (isExpression(token)) {
-            value = ctx.callWithTC(
-                parseExpression,
-                [token, ctx.config],
+            value = ctx.withErrorWrapping(
+                () => parseExpression(token, ctx.config),
                 ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
                 location
             )!;
@@ -240,7 +237,7 @@ function parseComment(node: parse5.CommentNode): IRComment {
 function getTemplateRoot(
     ctx: ParserCtx,
     documentFragment: parse5.DocumentFragment
-): parse5.Element | undefined {
+): parse5.Element {
     // Filter all the empty text nodes
     const validRoots = documentFragment.childNodes.filter(
         (child) =>
@@ -257,9 +254,9 @@ function getTemplateRoot(
 
     if (!root || !parse5Utils.isElementNode(root)) {
         ctx.throwAtLocation(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
-    } else {
-        return root;
     }
+
+    return root;
 }
 
 function applyHandlers(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
@@ -426,7 +423,7 @@ function applyLwcDomDirective(
         return;
     }
 
-    if (getRenderMode(ctx, element) === LWCDirectiveRenderMode.light) {
+    if (ctx.getRenderMode(element) === LWCDirectiveRenderMode.light) {
         ctx.throwOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM, element, [`<${tag}>`]);
     }
 
@@ -471,9 +468,8 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
             );
         }
 
-        const item = ctx.callWithTC(
-            parseIdentifier,
-            [forItemAttribute.value],
+        const item = ctx.withErrorWrapping(
+            () => parseIdentifier(forItemAttribute.value),
             ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
             forItemAttribute.location
         )!;
@@ -484,9 +480,8 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
                 ctx.throwOnIRNode(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, forIndex);
             }
 
-            index = ctx.callWithTC(
-                parseIdentifier,
-                [forIndex.value],
+            index = ctx.withErrorWrapping(
+                () => parseIdentifier(forIndex.value),
                 ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
                 forIndex.location
             );
@@ -526,9 +521,8 @@ function applyIterator(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
         ]);
     }
 
-    const iterator = ctx.callWithTC(
-        parseIdentifier,
-        [iteratorName],
+    const iterator = ctx.withErrorWrapping(
+        () => parseIdentifier(iteratorName),
         ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
         iteratorExpression.location
     )!;
@@ -599,7 +593,7 @@ function applySlot(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribu
     }
 
     // Can't handle slots in applySlot because it would be too late for class and style attrs
-    if (getRenderMode(ctx, element) === LWCDirectiveRenderMode.light) {
+    if (ctx.getRenderMode(element) === LWCDirectiveRenderMode.light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
             .filter(({ name }) => name !== 'name')
@@ -625,22 +619,6 @@ function applySlot(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribu
     }
 
     element.slotName = name;
-}
-
-function isInIteration(ctx: ParserCtx, element: IRElement): boolean {
-    let current: IRElement | undefined = element;
-
-    for (let i = ctx.parentStack.length; i >= 0; i--) {
-        if (current.tag === 'template') {
-            if (current.forEach || current.forOf) {
-                return true;
-            }
-        }
-
-        current = ctx.parentStack[i - 1];
-    }
-
-    return false;
 }
 
 function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
@@ -688,7 +666,7 @@ function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedA
                     ctx.throwOnIRNode(ParserDiagnostics.INVALID_ID_ATTRIBUTE, attr, [value]);
                 }
 
-                if (isInIteration(ctx, element)) {
+                if (ctx.isInIteration(element)) {
                     ctx.throwOnIRNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr, [
                         value,
                     ]);
@@ -796,7 +774,7 @@ function validateElement(ctx: ParserCtx, element: IRElement, node: parse5.Elemen
 }
 
 function validateChildren(ctx: ParserCtx, element: IRElement) {
-    const effectiveChildren = getPreserveComments(ctx, element)
+    const effectiveChildren = ctx.getPreserveComments(element)
         ? element.children
         : element.children.filter((child) => child.type !== 'comment');
     if (element.lwc?.dom && effectiveChildren.length > 0) {
@@ -868,10 +846,7 @@ function parseAttributes(
     const { attrs: attributes } = node;
 
     for (const attr of attributes) {
-        const irAttr = getTemplateAttribute(ctx, element, attr);
-        if (irAttr) {
-            parsedAttrs.append(irAttr);
-        }
+        parsedAttrs.append(getTemplateAttribute(ctx, element, attr));
     }
 
     return parsedAttrs;
@@ -881,7 +856,7 @@ function getTemplateAttribute(
     ctx: ParserCtx,
     element: IRElement,
     attribute: parse5.Attribute
-): IRAttribute | undefined {
+): IRAttribute {
     const name = attributeName(attribute);
 
     // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
@@ -900,7 +875,7 @@ function getTemplateAttribute(
         ]);
     }
 
-    function createAttribute(): IRAttribute | undefined {
+    function createAttribute(): IRAttribute {
         const isBooleanAttribute = !rawAttribute.includes('=');
         const { value, escapedExpression } = normalizeAttributeValue(attribute, rawAttribute, tag);
         if (isExpression(value) && !escapedExpression) {
@@ -927,17 +902,9 @@ function getTemplateAttribute(
         }
     }
 
-    return ctx.callWithTC(createAttribute, [], ParserDiagnostics.GENERIC_PARSING_ERROR, location);
-}
-
-function getRoot(ctx: ParserCtx, element: IRElement): IRElement {
-    return ctx.parentStack[0] || element;
-}
-
-function getRenderMode(ctx: ParserCtx, element: IRElement): LWCDirectiveRenderMode {
-    return getRoot(ctx, element).lwc?.renderMode ?? LWCDirectiveRenderMode.shadow;
-}
-
-function getPreserveComments(ctx: ParserCtx, element: IRElement): boolean {
-    return getRoot(ctx, element).lwc?.preserveComments?.value ?? ctx.config.preserveHtmlComments;
+    return ctx.withErrorWrapping(
+        () => createAttribute(),
+        ParserDiagnostics.GENERIC_PARSING_ERROR,
+        location
+    );
 }
