@@ -7,7 +7,6 @@ import {
     Location,
     LWCErrorInfo,
     normalizeToDiagnostic,
-    // normalizeToCompilerError,
 } from '@lwc/errors';
 import { IRElement } from '../shared/types';
 
@@ -51,12 +50,12 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
-    callWithTC(
-        fn: (...args: any[]) => any,
-        args: any[],
+    callWithTC<T extends (...args: any[]) => any>(
+        fn: T,
+        args: Parameters<T>,
         errorInfo?: LWCErrorInfo,
         location?: parse5.Location
-    ): any {
+    ): ReturnType<T> | undefined {
         try {
             return fn(...args);
         } catch (error) {
@@ -70,11 +69,15 @@ export default class ParserCtx {
         }
     }
 
-    warnOnIRNode(errorInfo: LWCErrorInfo, irNode: IRNode | IRBaseAttribute, messageArgs?: any[]) {
+    warnOnIRNode(
+        errorInfo: LWCErrorInfo,
+        irNode: IRNode | IRBaseAttribute,
+        messageArgs?: any[]
+    ): void {
         this.warnAtLocation(errorInfo, messageArgs, irNode.location);
     }
 
-    warnAtLocation(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location) {
+    warnAtLocation(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): void {
         this.addDiagnostic(
             generateCompilerDiagnostic(errorInfo, {
                 messageArgs,
@@ -92,7 +95,19 @@ export default class ParserCtx {
         throw CompilerError.from(diagnostic);
     }
 
-    throwError(errorInfo: LWCErrorInfo, location: parse5.Location, messageArgs?: any[]): never {
+    throwOnIRNode(
+        errorInfo: LWCErrorInfo,
+        irNode: IRNode | IRBaseAttribute,
+        messageArgs?: any[]
+    ): never {
+        this.throwAtLocation(errorInfo, irNode.location, messageArgs);
+    }
+
+    throwAtLocation(
+        errorInfo: LWCErrorInfo,
+        location?: parse5.Location,
+        messageArgs?: any[]
+    ): never {
         throw generateCompilerError(errorInfo, {
             messageArgs,
             origin: {
@@ -101,7 +116,7 @@ export default class ParserCtx {
         });
     }
 
-    addDiagnostic(diagnostic: CompilerDiagnostic) {
+    addDiagnostic(diagnostic: CompilerDiagnostic): void {
         this.warnings.push(diagnostic);
     }
 }
