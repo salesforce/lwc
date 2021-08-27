@@ -30,6 +30,7 @@ export {
     TemplateIdentifier,
     IRNode,
 } from './shared/types';
+export { isElement } from './shared/ir';
 export { Config } from './config';
 
 export function parse(source: string, config: Config = {}): TemplateParseResult {
