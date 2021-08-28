@@ -68,15 +68,11 @@ export default class ParserCtx {
         }
     }
 
-    withErrorWrapping<T>(fn: () => T, errorInfo?: LWCErrorInfo, location?: parse5.Location): T {
+    withErrorWrapping<T>(fn: () => T, errorInfo: LWCErrorInfo, location: parse5.Location): T {
         try {
             return fn();
         } catch (error) {
-            if (errorInfo) {
-                this.throwOnError(errorInfo, error, location);
-            } else {
-                throw error;
-            }
+            this.throwOnError(errorInfo, error, location);
         }
     }
 
