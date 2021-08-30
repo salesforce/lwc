@@ -264,6 +264,23 @@ function attachShadow(vm: VM) {
     }
 }
 
+function warnForApiCalledInConstructor(methodName: string) {
+    return function (this: LightningElement, ...args: any[]) {
+        const vm = getAssociatedVM(this);
+        const { elm, renderer } = vm;
+
+        if (process.env.NODE_ENV !== 'production' && isBeingConstructed(vm)) {
+            logError(
+                `this.${methodName}() should not be called during the construction of the custom element for ${getComponentTag(
+                    vm
+                )} because the element is not yet in the DOM or has no children yet.`
+            );
+        }
+
+        return (renderer as any)[methodName](elm, ...args);
+    };
+}
+
 // @ts-ignore
 LightningElement.prototype = {
     constructor: LightningElement,
@@ -414,101 +431,6 @@ LightningElement.prototype = {
         lockAttribute(elm, name);
     },
 
-    getBoundingClientRect(): ClientRect {
-        const vm = getAssociatedVM(this);
-        const {
-            elm,
-            renderer: { getBoundingClientRect },
-        } = vm;
-
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.getBoundingClientRect() should not be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`
-            );
-        }
-
-        return getBoundingClientRect(elm);
-    },
-
-    querySelector(selectors: string): Element | null {
-        const vm = getAssociatedVM(this);
-        const {
-            elm,
-            renderer: { querySelector },
-        } = vm;
-
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.querySelector() cannot be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because no children has been added to this element yet.`
-            );
-        }
-
-        return querySelector(elm, selectors);
-    },
-
-    querySelectorAll(selectors: string): NodeList {
-        const vm = getAssociatedVM(this);
-        const {
-            elm,
-            renderer: { querySelectorAll },
-        } = vm;
-
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.querySelectorAll() cannot be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because no children has been added to this element yet.`
-            );
-        }
-
-        return querySelectorAll(elm, selectors);
-    },
-
-    getElementsByTagName(tagNameOrWildCard: string): HTMLCollection {
-        const vm = getAssociatedVM(this);
-        const {
-            elm,
-            renderer: { getElementsByTagName },
-        } = vm;
-
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.getElementsByTagName() cannot be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because no children has been added to this element yet.`
-            );
-        }
-
-        return getElementsByTagName(elm, tagNameOrWildCard);
-    },
-
-    getElementsByClassName(names: string): HTMLCollection {
-        const vm = getAssociatedVM(this);
-        const {
-            elm,
-            renderer: { getElementsByClassName },
-        } = vm;
-
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.getElementsByClassName() cannot be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because no children has been added to this element yet.`
-            );
-        }
-
-        return getElementsByClassName(elm, names);
-    },
-
     get isConnected(): boolean {
         const {
             elm,
@@ -566,6 +488,18 @@ LightningElement.prototype = {
         return `[object ${vm.def.name}]`;
     },
 };
+
+const methodsThatShouldNotBeCalledInConstructor = [
+    'getBoundingClientRect',
+    'getElementsByClassName',
+    'getElementsByTagName',
+    'querySelector',
+    'querySelectorAll',
+];
+
+for (const methodName of methodsThatShouldNotBeCalledInConstructor) {
+    (LightningElement.prototype as any)[methodName] = warnForApiCalledInConstructor(methodName);
+}
 
 export const lightningBasedDescriptors: PropertyDescriptorMap = create(null);
 for (const propName in HTMLElementOriginalDescriptors) {

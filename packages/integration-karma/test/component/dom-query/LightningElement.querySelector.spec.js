@@ -7,9 +7,8 @@ describe('LightningElement.querySelector', () => {
     it('should throw when invoked in the constructor', () => {
         expect(() => {
             createElement('x-constructor-query-selector', { is: ConstructorQuerySelector });
-        }).toThrowErrorDev(
-            Error,
-            /Assert Violation: this.querySelector\(\) cannot be called during the construction of the custom element for <x-constructor-query-selector> because no children has been added to this element yet\./
+        }).toLogErrorDev(
+            /Error: \[LWC error]: this.querySelector\(\) should not be called during the construction of the custom element for <x-constructor-query-selector> because the element is not yet in the DOM or has no children yet\./
         );
     });
 
