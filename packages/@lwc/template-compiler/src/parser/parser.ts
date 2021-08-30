@@ -14,11 +14,8 @@ import {
     LWCErrorInfo,
     normalizeToDiagnostic,
 } from '@lwc/errors';
-import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
-
+import { IRElement, LWCDirectiveRenderMode, IRBaseAttribute, IRNode } from '../shared/types';
 import { ResolvedConfig } from '../config';
-
-import { IRBaseAttribute, IRNode } from '../shared/types';
 
 function normalizeLocation(location?: parse5.Location): Location {
     let line = 0;
@@ -139,21 +136,5 @@ export default class ParserCtx {
         return (
             this.getRoot(element).lwc?.preserveComments?.value ?? this.config.preserveHtmlComments
         );
-    }
-
-    isInIteration(element: IRElement): boolean {
-        let current: IRElement | undefined = element;
-
-        for (let i = this.parentStack.length; i >= 0; i--) {
-            if (current.tag === 'template') {
-                if (current.forEach || current.forOf) {
-                    return true;
-                }
-            }
-
-            current = this.parentStack[i - 1];
-        }
-
-        return false;
     }
 }

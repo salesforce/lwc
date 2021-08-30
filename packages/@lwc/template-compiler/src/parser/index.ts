@@ -170,21 +170,19 @@ function parseChildren(ctx: ParserCtx, parent: IRElement, parse5Parent: parse5.E
 
     ctx.parentStack.push(parent);
 
-    function parseChild(child: parse5.ChildNode): void {
-        if (parse5Utils.isElementNode(child)) {
-            const elmNode = parseElement(ctx, child);
-            parsedChildren.push(elmNode);
-        } else if (parse5Utils.isTextNode(child)) {
-            const textNodes = parseText(ctx, child);
-            parsedChildren.push(...textNodes);
-        } else if (parse5Utils.isCommentNode(child)) {
-            const commentNode = parseComment(child);
-            parsedChildren.push(commentNode);
-        }
-    }
-
     for (const child of children) {
-        ctx.withErrorRecovery(() => parseChild(child));
+        ctx.withErrorRecovery(() => {
+            if (parse5Utils.isElementNode(child)) {
+                const elmNode = parseElement(ctx, child);
+                parsedChildren.push(elmNode);
+            } else if (parse5Utils.isTextNode(child)) {
+                const textNodes = parseText(ctx, child);
+                parsedChildren.push(...textNodes);
+            } else if (parse5Utils.isCommentNode(child)) {
+                const commentNode = parseComment(child);
+                parsedChildren.push(commentNode);
+            }
+        });
     }
 
     ctx.parentStack.pop();
@@ -218,7 +216,7 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): IRText[] {
                 () => parseExpression(token, ctx.config),
                 ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
                 location
-            )!;
+            );
         } else {
             value = decodeTextContent(token);
         }
@@ -472,7 +470,7 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
             () => parseIdentifier(forItemAttribute.value),
             ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
             forItemAttribute.location
-        )!;
+        );
 
         let index: TemplateIdentifier | undefined;
         if (forIndex) {
@@ -525,7 +523,7 @@ function applyIterator(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
         () => parseIdentifier(iteratorName),
         ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
         iteratorExpression.location
-    )!;
+    );
 
     element.forOf = {
         expression: iteratorExpression.value,
@@ -666,7 +664,7 @@ function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedA
                     ctx.throwOnIRNode(ParserDiagnostics.INVALID_ID_ATTRIBUTE, attr, [value]);
                 }
 
-                if (ctx.isInIteration(element)) {
+                if (isInIteration(ctx, element)) {
                     ctx.throwOnIRNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr, [
                         value,
                     ]);
@@ -875,36 +873,54 @@ function getTemplateAttribute(
         ]);
     }
 
-    function createAttribute(): IRAttribute {
-        const isBooleanAttribute = !rawAttribute.includes('=');
-        const { value, escapedExpression } = normalizeAttributeValue(attribute, rawAttribute, tag);
-        if (isExpression(value) && !escapedExpression) {
-            return {
-                name,
-                location,
-                type: IRAttributeType.Expression,
-                value: parseExpression(value, ctx.config),
-            };
-        } else if (isBooleanAttribute) {
-            return {
-                name,
-                location,
-                type: IRAttributeType.Boolean,
-                value: true,
-            };
-        } else {
-            return {
-                name,
-                location,
-                type: IRAttributeType.String,
-                value,
-            };
-        }
-    }
-
     return ctx.withErrorWrapping(
-        () => createAttribute(),
+        () => {
+            const isBooleanAttribute = !rawAttribute.includes('=');
+            const { value, escapedExpression } = normalizeAttributeValue(
+                attribute,
+                rawAttribute,
+                tag
+            );
+            if (isExpression(value) && !escapedExpression) {
+                return {
+                    name,
+                    location,
+                    type: IRAttributeType.Expression,
+                    value: parseExpression(value, ctx.config),
+                };
+            } else if (isBooleanAttribute) {
+                return {
+                    name,
+                    location,
+                    type: IRAttributeType.Boolean,
+                    value: true,
+                };
+            } else {
+                return {
+                    name,
+                    location,
+                    type: IRAttributeType.String,
+                    value,
+                };
+            }
+        },
         ParserDiagnostics.GENERIC_PARSING_ERROR,
         location
     );
+}
+
+function isInIteration(ctx: ParserCtx, element: IRElement): boolean {
+    let current: IRElement | undefined = element;
+
+    for (let i = ctx.parentStack.length; i >= 0; i--) {
+        if (current.tag === 'template') {
+            if (current.forEach || current.forOf) {
+                return true;
+            }
+        }
+
+        current = ctx.parentStack[i - 1];
+    }
+
+    return false;
 }
