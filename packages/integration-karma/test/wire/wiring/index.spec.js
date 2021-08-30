@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import AdapterConsumer from 'x/adapterConsumer';
 import { EchoWireAdapter } from 'x/echoAdapter';
@@ -70,7 +70,22 @@ describe('wiring', () => {
             expect(updateCalls[2].method).toBe('update'); // overriddenInChild
         });
 
-        it('should be called next tick when component with wire that has dynamic params is created', () => {
+        it('should be called after connect when ENABLE_WIRE_DEFERRED_FIRST_UPDATE=false (default) and component with wire that has dynamic params is created', () => {
+            const spy = [];
+            AdapterId.setSpy(spy);
+            expect(spy.length).toBe(0);
+
+            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            document.body.appendChild(elm);
+
+            expect(spy).toHaveSize(2);
+            expect(spy[0].method).toBe('connect');
+            expect(spy[1].method).toBe('update');
+        });
+
+        it('should be called next tick when ENABLE_WIRE_DEFERRED_FIRST_UPDATE=true and component with wire that has dynamic params is created', () => {
+            setFeatureFlagForTest('ENABLE_WIRE_DEFERRED_FIRST_UPDATE', true);
+
             const spy = [];
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
@@ -81,11 +96,13 @@ describe('wiring', () => {
             expect(spy).toHaveSize(1);
             expect(spy[0].method).toBe('connect');
 
-            return Promise.resolve().then(() => {
-                expect(spy).toHaveSize(2);
-                expect(spy[0].method).toBe('connect');
-                expect(spy[1].method).toBe('update');
-            });
+            return Promise.resolve()
+                .then(() => {
+                    expect(spy).toHaveSize(2);
+                    expect(spy[0].method).toBe('connect');
+                    expect(spy[1].method).toBe('update');
+                })
+                .then(() => setFeatureFlagForTest('ENABLE_WIRE_DEFERRED_FIRST_UPDATE', false));
         });
 
         it('should call update only once when the component is created and a wire dynamic param is modified in the same tick', () => {

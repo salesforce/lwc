@@ -12,6 +12,7 @@ import {
     defineProperties,
     noop,
 } from '@lwc/shared';
+import featureFlags from '@lwc/features';
 import { LightningElement } from './base-lightning-element';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';
@@ -339,11 +340,14 @@ export function installWireAdapters(vm: VM) {
             const hasDynamicParams = wireDef.dynamic.length > 0;
             ArrayPush.call(wiredConnecting, () => {
                 connector.connect();
-                if (hasDynamicParams) {
-                    Promise.resolve().then(computeConfigAndUpdate);
-                } else {
-                    computeConfigAndUpdate();
+                if (featureFlags.ENABLE_WIRE_DEFERRED_FIRST_UPDATE) {
+                    if (hasDynamicParams) {
+                        Promise.resolve().then(computeConfigAndUpdate);
+                        return;
+                    }
                 }
+
+                computeConfigAndUpdate();
             });
             ArrayPush.call(wiredDisconnecting, () => {
                 connector.disconnect();
