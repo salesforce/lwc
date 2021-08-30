@@ -26,9 +26,9 @@ import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 export {
     IRAttributeType,
     IRElement,
+    IRNode,
     TemplateExpression,
     TemplateIdentifier,
-    IRNode,
 } from './shared/types';
 export { isElement } from './shared/ir';
 export { Config } from './config';
