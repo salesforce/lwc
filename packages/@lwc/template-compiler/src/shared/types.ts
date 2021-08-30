@@ -105,7 +105,7 @@ export interface IRComment extends IRBaseNode<parse5.CommentNode> {
 
 export type IRNode = IRComment | IRElement | IRText;
 
-export const enum IRAttributeType {
+export enum IRAttributeType {
     Expression,
     String,
     Boolean,
