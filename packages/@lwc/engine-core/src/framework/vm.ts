@@ -25,10 +25,7 @@ import { getComponentTag } from '../shared/format';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
-import {
-    invokeComponentCallback,
-    invokeComponentConstructor,
-} from './invoker';
+import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { LightningElement } from './base-lightning-element';
