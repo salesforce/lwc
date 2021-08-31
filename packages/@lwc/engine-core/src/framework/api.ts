@@ -253,10 +253,10 @@ const CustomElementHook: Hooks<VCustomElement> = {
 };
 
 function linkNodeToShadow(elm: Node, owner: VM) {
-    const { shadowMode } = owner;
+    const { renderMode, shadowMode } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (shadowMode === ShadowMode.Synthetic) {
+    if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         (elm as any)[KEY__SHADOW_RESOLVER] = getRenderRoot(owner)[KEY__SHADOW_RESOLVER];
     }
 }
