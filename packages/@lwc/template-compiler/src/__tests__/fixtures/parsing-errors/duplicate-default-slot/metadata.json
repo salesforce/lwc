@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1137,
+            "message": "LWC1137: Invalid duplicate slot (default).",
+            "level": 2,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 33,
+                "length": 13
+            }
+        }
+    ]
+}

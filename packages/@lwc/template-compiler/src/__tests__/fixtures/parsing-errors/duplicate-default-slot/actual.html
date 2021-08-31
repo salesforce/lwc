@@ -1,0 +1,4 @@
+<template>
+    <slot></slot>
+    <slot></slot>
+</template>

@@ -617,6 +617,19 @@ function applySlot(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribu
     }
 
     element.slotName = name;
+
+    const alreadySeen = ctx.seenSlots.has(name);
+    ctx.seenSlots.add(name);
+
+    if (alreadySeen) {
+        return ctx.warnOnIRNode(ParserDiagnostics.NO_DUPLICATE_SLOTS, element, [
+            name === '' ? 'default' : `name="${name}"`,
+        ]);
+    } else if (isInIteration(ctx, element)) {
+        return ctx.warnOnIRNode(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, element, [
+            name === '' ? 'default' : `name="${name}"`,
+        ]);
+    }
 }
 
 function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
