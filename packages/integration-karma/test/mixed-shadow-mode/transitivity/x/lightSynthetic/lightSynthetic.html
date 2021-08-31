@@ -1,0 +1,28 @@
+<template lwc:render-mode="light">
+    <p>light-synthetic</p>
+    <x-synthetic></x-synthetic>
+    <slot>
+        <x-synthetic class="slot-assigned"></x-synthetic>
+    </slot>
+</template>
+
+
+
+<!--
+1. root has native shadow root
+2. light doesn't have a shadow root
+3. synthetic has native shadow root
+<native-light-synthetic>
+    <light-synthetic>
+        <synthetic>
+
+1. light doesn't have a shadow root
+2. synthetic has synthetic shadow root
+<light-synthetic>
+    <synthetic>
+
+1. synthetic has native shadow root
+<native-light-synthetic>
+    <slot>
+        <synthetic>
+-->
