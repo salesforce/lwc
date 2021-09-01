@@ -353,7 +353,11 @@ function computeShadowMode(vm: VM) {
 
     let shadowMode;
     if (isSyntheticShadowDefined) {
-        if (isNativeShadowDefined) {
+        if (def.renderMode === RenderMode.Light) {
+            // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
+            // everything defaults to native when the synthetic shadow polyfill is unavailable.
+            shadowMode = ShadowMode.Native;
+        } else if (isNativeShadowDefined) {
             if (def.shadowSupportMode === ShadowSupportMode.Any) {
                 shadowMode = ShadowMode.Native;
                 transitivelyNativeVMs.add(vm);
@@ -364,7 +368,8 @@ function computeShadowMode(vm: VM) {
                     shadowMode = ShadowMode.Native;
                     transitivelyNativeVMs.add(vm);
                 } else {
-                    // Synthetic if neither this component nor any of its ancestors are configured to be native.
+                    // Synthetic if neither this component nor any of its ancestors are configured
+                    // to be native.
                     shadowMode = ShadowMode.Synthetic;
                 }
             }
