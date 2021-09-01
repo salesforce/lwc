@@ -92,7 +92,7 @@ describe('wiring', () => {
                 expect(spy[1].method).toBe('update');
             });
 
-            it('should call update only once (in same tick) when the component is created and a wire dynamic param is modified', () => {
+            it('should call synchronously update only once when the component is created and a wire dynamic param is modified', () => {
                 const spy = [];
                 AdapterId.setSpy(spy);
                 expect(spy.length).toBe(0);
