@@ -8,9 +8,8 @@ describe('LightningElement.getElementsByTagName', () => {
             createElement('x-constructor-get-elements-by-tag-name', {
                 is: ConstructorGetElementsByTagName,
             });
-        }).toThrowErrorDev(
-            Error,
-            /Assert Violation: this.getElementsByTagName\(\) cannot be called during the construction of the custom element for <x-constructor-get-elements-by-tag-name> because no children has been added to this element yet\./
+        }).toLogErrorDev(
+            /Error: \[LWC error]: this.getElementsByTagName\(\) should not be called during the construction of the custom element for <x-constructor-get-elements-by-tag-name> because the element is not yet in the DOM or has no children yet\./
         );
     });
 });

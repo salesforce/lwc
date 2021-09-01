@@ -264,6 +264,16 @@ function attachShadow(vm: VM) {
     }
 }
 
+function warnIfInvokedDuringConstruction(vm: VM, methodName: string) {
+    if (isBeingConstructed(vm)) {
+        logError(
+            `this.${methodName}() should not be called during the construction of the custom element for ${getComponentTag(
+                vm
+            )} because the element is not yet in the DOM or has no children yet.`
+        );
+    }
+}
+
 // @ts-ignore
 LightningElement.prototype = {
     constructor: LightningElement,
@@ -422,12 +432,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.getBoundingClientRect() should not be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`
-            );
+            warnIfInvokedDuringConstruction(vm, 'getBoundingClientRect');
         }
 
         return getBoundingClientRect(elm);
@@ -441,12 +446,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.querySelector() cannot be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because no children has been added to this element yet.`
-            );
+            warnIfInvokedDuringConstruction(vm, 'querySelector');
         }
 
         return querySelector(elm, selectors);
@@ -460,12 +460,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.querySelectorAll() cannot be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because no children has been added to this element yet.`
-            );
+            warnIfInvokedDuringConstruction(vm, 'querySelectorAll');
         }
 
         return querySelectorAll(elm, selectors);
@@ -479,12 +474,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.getElementsByTagName() cannot be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because no children has been added to this element yet.`
-            );
+            warnIfInvokedDuringConstruction(vm, 'getElementsByTagName');
         }
 
         return getElementsByTagName(elm, tagNameOrWildCard);
@@ -498,12 +488,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(
-                isBeingConstructed(vm),
-                `this.getElementsByClassName() cannot be called during the construction of the custom element for ${getComponentTag(
-                    vm
-                )} because no children has been added to this element yet.`
-            );
+            warnIfInvokedDuringConstruction(vm, 'getElementsByClassName');
         }
 
         return getElementsByClassName(elm, names);
