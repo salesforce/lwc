@@ -79,7 +79,7 @@ describe('wiring', () => {
                 setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
             });
 
-            it('should be called after connect (in same tick) when a component with wire that has dynamic params is created', () => {
+            it('should be called synchronously after connect when a component with wire that has dynamic params is created', () => {
                 const spy = [];
                 AdapterId.setSpy(spy);
                 expect(spy.length).toBe(0);
