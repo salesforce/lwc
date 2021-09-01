@@ -340,7 +340,7 @@ export function installWireAdapters(vm: VM) {
             const hasDynamicParams = wireDef.dynamic.length > 0;
             ArrayPush.call(wiredConnecting, () => {
                 connector.connect();
-                if (featureFlags.ENABLE_WIRE_DEFERRED_FIRST_UPDATE) {
+                if (!featureFlags.ENABLE_WIRE_SYNC_EMIT) {
                     if (hasDynamicParams) {
                         Promise.resolve().then(computeConfigAndUpdate);
                         return;
