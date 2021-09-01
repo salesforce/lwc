@@ -635,8 +635,8 @@ export function gid(id: string | undefined | null): string | null | undefined {
     if (isNull(id)) {
         return null;
     }
-    const { idx, renderMode, shadowMode } = vmBeingRendered;
-    if (shadowMode === ShadowMode.Synthetic && renderMode === RenderMode.Shadow) {
+    const { idx, shadowMode } = vmBeingRendered;
+    if (shadowMode === ShadowMode.Synthetic) {
         return StringReplace.call(id, /\S+/g, (id) => `${id}-${idx}`);
     }
     return id;
@@ -660,9 +660,9 @@ export function fid(url: string | undefined | null): string | null | undefined {
     if (isNull(url)) {
         return null;
     }
-    const { idx, renderMode, shadowMode } = vmBeingRendered;
+    const { idx, shadowMode } = vmBeingRendered;
     // Apply transformation only for fragment-only-urls, and only in shadow DOM
-    if (shadowMode === ShadowMode.Synthetic && renderMode === RenderMode.Shadow && /^#/.test(url)) {
+    if (shadowMode === ShadowMode.Synthetic && /^#/.test(url)) {
         return `${url}-${idx}`;
     }
     return url;
