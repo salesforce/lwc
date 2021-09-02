@@ -98,11 +98,23 @@ if (process.env.COMPAT !== true) {
             synthetic.shadowRoot.appendChild(div);
             document.body.appendChild(synthetic);
 
-            // The synthetic shadow root is transparent to the native composedPath() because it's
-            // not actually rendered in the DOM. This is not an issue because LWC doesn't yet
-            // support native web components.
-            synthetic.addEventListener('test', (event) => {
-                expect(event.composedPath()).toEqual([
+            let expected;
+            if (process.env.NATIVE_SHADOW) {
+                expected = [
+                    div.shadowRoot,
+                    div,
+                    synthetic.shadowRoot,
+                    synthetic,
+                    document.body,
+                    document.documentElement,
+                    document,
+                    window,
+                ];
+            } else {
+                // The synthetic shadow root is transparent to the native composedPath() because
+                // it's not actually rendered in the DOM. This is not an issue because LWC doesn't
+                // yet support native web components.
+                expected = [
                     div.shadowRoot,
                     div,
                     /* synthetic.shadowRoot, */
@@ -111,7 +123,11 @@ if (process.env.COMPAT !== true) {
                     document.documentElement,
                     document,
                     window,
-                ]);
+                ];
+            }
+
+            synthetic.addEventListener('test', (event) => {
+                expect(event.composedPath()).toEqual(expected);
                 done();
             });
 
