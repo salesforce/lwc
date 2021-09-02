@@ -8,8 +8,17 @@ import { defineProperties, isNull, isUndefined } from '@lwc/shared';
 
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { retarget } from '../../3rdparty/polymer/retarget';
-import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
-import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
+import {
+    composedPath as originalComposedPath,
+    eventTargetGetter,
+    eventCurrentTargetGetter,
+} from '../../env/dom';
+import {
+    eventToShadowRootMap,
+    getShadowRoot,
+    hasInternalSlot,
+    isHostElement,
+} from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
 import { getOwnerDocument } from '../../shared/utils';
@@ -74,13 +83,26 @@ function patchedTargetGetter(this: Event): EventTarget | null {
 
 function patchedComposedPathValue(this: Event): EventTarget[] {
     const originalTarget = eventTargetGetter.call(this);
-    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
     // Account for events with targets that are not instances of Node (e.g., when a readystatechange
     // handler is listening on an instance of XMLHttpRequest).
     if (!(originalTarget instanceof Node)) {
         return [];
     }
+
+    // If the original target is inside a native shadow root, then just call the native
+    // composePath() method. The event is already retargeted and this causes our composedPath()
+    // polyfill to compute the wrong value. This is only an issue when you have a native web
+    // component inside an LWC component (see test in same commit) but this scenario is unlikely
+    // because we don't yet support that. Workaround specifically for W-9846457. Mixed mode solution
+    // will likely be more involved.
+    const hasShadowRoot = Boolean((originalTarget as any).shadowRoot);
+    const hasSyntheticShadowRootAttached = hasInternalSlot(originalTarget);
+    if (hasShadowRoot && !hasSyntheticShadowRootAttached) {
+        return originalComposedPath.call(this);
+    }
+
+    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
     // If the event has completed propagation, the composedPath should be an empty array.
     if (isNull(originalCurrentTarget)) {
