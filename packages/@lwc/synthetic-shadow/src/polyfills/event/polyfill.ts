@@ -8,7 +8,11 @@ import { defineProperties, isNull, isUndefined } from '@lwc/shared';
 
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { retarget } from '../../3rdparty/polymer/retarget';
-import { eventTargetGetter, eventCurrentTargetGetter } from '../../env/dom';
+import {
+    composedPath as originalComposedPath,
+    eventTargetGetter,
+    eventCurrentTargetGetter,
+} from '../../env/dom';
 import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
@@ -74,13 +78,23 @@ function patchedTargetGetter(this: Event): EventTarget | null {
 
 function patchedComposedPathValue(this: Event): EventTarget[] {
     const originalTarget = eventTargetGetter.call(this);
-    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
     // Account for events with targets that are not instances of Node (e.g., when a readystatechange
     // handler is listening on an instance of XMLHttpRequest).
     if (!(originalTarget instanceof Node)) {
         return [];
     }
+
+    // If the event target is a host element which has a native shadow root instance attached to it,
+    // invoke the native composedPath() method.
+    if (isHostElement(originalTarget)) {
+        const ctorString = (originalTarget as any).shadowRoot?.constructor.toString();
+        if (!/function SyntheticShadowRoot/.test(ctorString)) {
+            return originalComposedPath.call(this);
+        }
+    }
+
+    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
     // If the event has completed propagation, the composedPath should be an empty array.
     if (isNull(originalCurrentTarget)) {
