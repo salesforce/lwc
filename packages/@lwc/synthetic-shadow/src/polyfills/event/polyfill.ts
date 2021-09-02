@@ -13,7 +13,12 @@ import {
     eventTargetGetter,
     eventCurrentTargetGetter,
 } from '../../env/dom';
-import { eventToShadowRootMap, getShadowRoot, isHostElement } from '../../faux-shadow/shadow-root';
+import {
+    eventToShadowRootMap,
+    getShadowRoot,
+    hasInternalSlot,
+    isHostElement,
+} from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
 import { getOwnerDocument } from '../../shared/utils';
@@ -85,13 +90,10 @@ function patchedComposedPathValue(this: Event): EventTarget[] {
         return [];
     }
 
-    // If the event target is a host element which has a native shadow root instance attached to it,
-    // invoke the native composedPath() method.
-    if (isHostElement(originalTarget)) {
-        const ctorString = (originalTarget as any).shadowRoot?.constructor.toString();
-        if (!/function SyntheticShadowRoot/.test(ctorString)) {
-            return originalComposedPath.call(this);
-        }
+    const hasShadowRoot = Boolean((originalTarget as any).shadowRoot);
+    const hasSyntheticShadowRootAttached = hasInternalSlot(originalTarget);
+    if (hasShadowRoot && !hasSyntheticShadowRootAttached) {
+        return originalComposedPath.call(this);
     }
 
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
