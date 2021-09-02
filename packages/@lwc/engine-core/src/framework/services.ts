@@ -4,30 +4,24 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, assert, create, isArray, isObject, isUndefined } from '@lwc/shared';
+import { ArrayPush, assert, isObject, isUndefined } from '@lwc/shared';
 
-import { VNodeData } from '../3rdparty/snabbdom/types';
 import { ComponentDef } from './def';
 import { VM, Context } from './vm';
 
-type ServiceCallback = (
-    component: object,
-    data: VNodeData,
-    def: ComponentDef,
-    context: Context
-) => void;
+type ServiceHook = 'connected' | 'disconnected' | 'rendered';
 
-interface ServiceDef {
-    connected?: ServiceCallback;
-    disconnected?: ServiceCallback;
-    rendered?: ServiceCallback;
-}
+type ServiceCallback = (component: object, data: {}, def: ComponentDef, context: Context) => void;
 
-export const Services: {
-    connected?: ServiceCallback[];
-    disconnected?: ServiceCallback[];
-    rendered?: ServiceCallback[];
-} = create(null);
+type ServiceDef = {
+    [key in ServiceHook]?: ServiceCallback;
+};
+
+export const Services: { readonly [key in ServiceHook]: ServiceCallback[] } = {
+    connected: [],
+    disconnected: [],
+    rendered: [],
+};
 
 const hooks: Array<keyof ServiceDef> = ['rendered', 'connected', 'disconnected'];
 
@@ -43,26 +37,20 @@ export function register(service: ServiceDef) {
             `Invalid service declaration, ${service}: service must be an object`
         );
     }
+
     for (let i = 0; i < hooks.length; ++i) {
         const hookName = hooks[i];
-        if (hookName in service) {
-            let l = Services[hookName];
-            if (isUndefined(l)) {
-                Services[hookName] = l = [];
-            }
-            ArrayPush.call(l, service[hookName]);
+        const serviceHook = service[hookName];
+
+        if (!isUndefined(serviceHook)) {
+            ArrayPush.call(Services[hookName], serviceHook);
         }
     }
 }
 
-export function invokeServiceHook(vm: VM, cbs: ServiceCallback[]) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isArray(cbs) && cbs.length > 0,
-            `Optimize invokeServiceHook() to be invoked only when needed`
-        );
-    }
+export function invokeServiceHook(vm: VM, cbs: ServiceCallback[]): void {
     const { component, def, context } = vm;
+
     for (let i = 0, len = cbs.length; i < len; ++i) {
         cbs[i].call(undefined, component, {}, def, context);
     }

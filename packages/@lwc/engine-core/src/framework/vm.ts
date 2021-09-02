@@ -10,7 +10,6 @@ import {
     ArrayUnshift,
     assert,
     create,
-    getOwnPropertyNames,
     globalThis,
     isArray,
     isFalse,
@@ -351,7 +350,7 @@ export function createVM<HostNode, HostElement>(
     invokeComponentConstructor(vm, def.ctor);
 
     // Initializing the wire decorator per instance only when really needed
-    if (isFalse(renderer.ssr) && hasWireAdapters(vm)) {
+    if (isFalse(renderer.ssr)) {
         installWireAdapters(vm);
     }
 
@@ -437,28 +436,6 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
     }
 }
 
-function runRenderedCallback(vm: VM) {
-    const {
-        renderer,
-        def: { renderedCallback },
-    } = vm;
-
-    if (isTrue(renderer.ssr)) {
-        return;
-    }
-
-    const { rendered } = Services;
-    if (rendered) {
-        invokeServiceHook(vm, rendered);
-    }
-
-    if (!isUndefined(renderedCallback)) {
-        logOperationStart(OperationId.RenderedCallback, vm);
-        invokeComponentCallback(vm, renderedCallback);
-        logOperationEnd(OperationId.RenderedCallback, vm);
-    }
-}
-
 let rehydrateQueue: VM[] = [];
 
 function flushRehydrationQueue() {
@@ -502,26 +479,16 @@ export function runConnectedCallback(vm: VM) {
         return; // nothing to do since it was already connected
     }
     vm.state = VMState.connected;
-    // reporting connection
-    const { connected } = Services;
-    if (connected) {
-        invokeServiceHook(vm, connected);
-    }
-    if (hasWireAdapters(vm)) {
-        connectWireAdapters(vm);
-    }
+
+    invokeServiceHook(vm, Services.connected);
+    connectWireAdapters(vm);
+
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         logOperationStart(OperationId.ConnectedCallback, vm);
-
         invokeComponentCallback(vm, connectedCallback);
-
         logOperationEnd(OperationId.ConnectedCallback, vm);
     }
-}
-
-function hasWireAdapters(vm: VM): boolean {
-    return getOwnPropertyNames(vm.def.wire).length > 0;
 }
 
 function runDisconnectedCallback(vm: VM) {
@@ -536,21 +503,34 @@ function runDisconnectedCallback(vm: VM) {
         vm.isDirty = true;
     }
     vm.state = VMState.disconnected;
-    // reporting disconnection
-    const { disconnected } = Services;
-    if (disconnected) {
-        invokeServiceHook(vm, disconnected);
-    }
-    if (hasWireAdapters(vm)) {
-        disconnectWireAdapters(vm);
-    }
+
+    invokeServiceHook(vm, Services.disconnected);
+    disconnectWireAdapters(vm);
+
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
         logOperationStart(OperationId.DisconnectedCallback, vm);
-
         invokeComponentCallback(vm, disconnectedCallback);
-
         logOperationEnd(OperationId.DisconnectedCallback, vm);
+    }
+}
+
+function runRenderedCallback(vm: VM) {
+    const {
+        renderer,
+        def: { renderedCallback },
+    } = vm;
+
+    if (isTrue(renderer.ssr)) {
+        return;
+    }
+
+    invokeServiceHook(vm, Services.rendered);
+
+    if (!isUndefined(renderedCallback)) {
+        logOperationStart(OperationId.RenderedCallback, vm);
+        invokeComponentCallback(vm, renderedCallback);
+        logOperationEnd(OperationId.RenderedCallback, vm);
     }
 }
 

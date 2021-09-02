@@ -11,6 +11,7 @@ import {
     defineProperty,
     defineProperties,
     noop,
+    getOwnPropertyNames,
 } from '@lwc/shared';
 import { LightningElement } from './base-lightning-element';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
@@ -321,6 +322,10 @@ export function installWireAdapters(vm: VM) {
         def: { wire },
     } = vm;
 
+    if (getOwnPropertyNames(wire).length === 0) {
+        return;
+    }
+
     const wiredConnecting = (context.wiredConnecting = []);
     const wiredDisconnecting = (context.wiredDisconnecting = []);
 
@@ -353,16 +358,24 @@ export function installWireAdapters(vm: VM) {
     }
 }
 
-export function connectWireAdapters(vm: VM) {
+export function connectWireAdapters(vm: VM): void {
     const { wiredConnecting } = vm.context;
+
+    if (wiredConnecting.length === 0) {
+        return;
+    }
 
     for (let i = 0, len = wiredConnecting.length; i < len; i += 1) {
         wiredConnecting[i]();
     }
 }
 
-export function disconnectWireAdapters(vm: VM) {
+export function disconnectWireAdapters(vm: VM): void {
     const { wiredDisconnecting } = vm.context;
+
+    if (wiredDisconnecting.length === 0) {
+        return;
+    }
 
     runWithBoundaryProtection(
         vm,

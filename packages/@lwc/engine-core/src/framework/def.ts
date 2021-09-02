@@ -49,7 +49,7 @@ import { getComponentOrSwappedComponent } from './hot-swaps';
 
 export interface ComponentDef {
     name: string;
-    wire: PropertyDescriptorMap | undefined;
+    wire: PropertyDescriptorMap;
     props: PropertyDescriptorMap;
     propsConfig: Record<string, PropType>;
     methods: PropertyDescriptorMap;
