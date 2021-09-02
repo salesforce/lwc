@@ -1,5 +1,5 @@
 if (process.env.COMPAT !== true) {
-    describe('[W-9846457]', () => {
+    describe('[W-9846457] event access when using native shadow dom', () => {
         let nativeParent;
         let nativeChild;
         const noop = () => {};
@@ -61,6 +61,30 @@ if (process.env.COMPAT !== true) {
             nativeChild.shadowRoot.dispatchEvent(
                 new CustomEvent('test', { composed: true, bubbles: true })
             );
+        });
+
+        it('should handle composed bubbling events (native element)', (done) => {
+            const div = document.createElement('div');
+            const span = document.createElement('span');
+
+            const shadowRoot = div.attachShadow({ mode: 'open' });
+            shadowRoot.appendChild(span);
+            document.body.appendChild(div);
+
+            div.addEventListener('test', (event) => {
+                expect(event.composedPath()).toEqual([
+                    span,
+                    div.shadowRoot,
+                    div,
+                    document.body,
+                    document.documentElement,
+                    document,
+                    window,
+                ]);
+                done();
+            });
+
+            span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
         });
     });
 
