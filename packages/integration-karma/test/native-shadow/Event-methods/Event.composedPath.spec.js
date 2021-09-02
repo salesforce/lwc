@@ -1,3 +1,6 @@
+import { createElement } from 'lwc';
+import Synthetic from 'x/synthetic';
+
 if (process.env.COMPAT !== true) {
     describe('[W-9846457] event access when using native shadow dom', () => {
         let nativeParent;
@@ -85,6 +88,62 @@ if (process.env.COMPAT !== true) {
             });
 
             span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
+        });
+
+        it('should handle composed bubbling events (synthetic above native)', (done) => {
+            const synthetic = createElement('x-synthetic', { is: Synthetic });
+            const div = document.createElement('div');
+
+            div.attachShadow({ mode: 'open' });
+            synthetic.shadowRoot.appendChild(div);
+            document.body.appendChild(synthetic);
+
+            // The synthetic shadow root is transparent to the native composedPath() because it's
+            // not actually rendered in the DOM.
+            synthetic.addEventListener('test', (event) => {
+                expect(event.composedPath()).toEqual([
+                    div.shadowRoot,
+                    div,
+                    /* synthetic.shadowRoot, */
+                    synthetic,
+                    document.body,
+                    document.documentElement,
+                    document,
+                    window,
+                ]);
+                done();
+            });
+
+            div.shadowRoot.dispatchEvent(
+                new CustomEvent('test', { bubbles: true, composed: true })
+            );
+        });
+
+        it('should handle composed bubbling events (native above synthetic)', (done) => {
+            const synthetic = createElement('x-synthetic', { is: Synthetic });
+            const native = document.createElement('div');
+
+            native.attachShadow({ mode: 'open' });
+            native.shadowRoot.appendChild(synthetic);
+            document.body.appendChild(native);
+
+            synthetic.addEventListener('test', (event) => {
+                expect(event.composedPath()).toEqual([
+                    synthetic.shadowRoot,
+                    synthetic,
+                    native.shadowRoot,
+                    native,
+                    document.body,
+                    document.documentElement,
+                    document,
+                    window,
+                ]);
+                done();
+            });
+
+            synthetic.shadowRoot.dispatchEvent(
+                new CustomEvent('test', { bubbles: true, composed: true })
+            );
         });
     });
 

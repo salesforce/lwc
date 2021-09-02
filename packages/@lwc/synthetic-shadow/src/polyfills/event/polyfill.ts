@@ -90,6 +90,8 @@ function patchedComposedPathValue(this: Event): EventTarget[] {
         return [];
     }
 
+    // Invokes the native composedPath() method if the target has a native shadow root attached.
+    // Workaround specifically for W-9846457. Mixed mode solution will likely be more involved.
     const hasShadowRoot = Boolean((originalTarget as any).shadowRoot);
     const hasSyntheticShadowRootAttached = hasInternalSlot(originalTarget);
     if (hasShadowRoot && !hasSyntheticShadowRootAttached) {
