@@ -90,8 +90,12 @@ function patchedComposedPathValue(this: Event): EventTarget[] {
         return [];
     }
 
-    // Invokes the native composedPath() method if the target has a native shadow root attached.
-    // Workaround specifically for W-9846457. Mixed mode solution will likely be more involved.
+    // If the original target is inside a native shadow root, then just call the native
+    // composePath() method. The event is already retargeted and this causes our composedPath()
+    // polyfill to compute the wrong value. This is only an issue when you have a native web
+    // component inside an LWC component (see test in same commit) but this scenario is unlikely
+    // because we don't yet support that. Workaround specifically for W-9846457. Mixed mode solution
+    // will likely be more involved.
     const hasShadowRoot = Boolean((originalTarget as any).shadowRoot);
     const hasSyntheticShadowRootAttached = hasInternalSlot(originalTarget);
     if (hasShadowRoot && !hasSyntheticShadowRootAttached) {
