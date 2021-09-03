@@ -7,6 +7,11 @@
 
 'use strict';
 
+// Helpful error. Remove after a few months.
+if (process.env.NATIVE_SHADOW) {
+    throw new Error('NATIVE_SHADOW is deprecated. Use DISABLE_SYNTHETIC instead!');
+}
+
 const COMPAT = Boolean(process.env.COMPAT);
 const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
 const TAGS = [`${DISABLE_SYNTHETIC ? 'native' : 'synthetic'}-shadow`, COMPAT && 'compat'].filter(
