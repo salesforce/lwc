@@ -28,7 +28,7 @@ describe('when root component shadowSupportMode="any"', () => {
         setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
 
-    it('should attach native shadow root (root component)', () => {
+    it('should attach native shadow root (native component)', () => {
         expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
     });
 
@@ -37,9 +37,15 @@ describe('when root component shadowSupportMode="any"', () => {
         expect(light.shadowRoot).toBeNull();
     });
 
-    it('should attach native shadow root (synthetic composed within light)', () => {
+    it('should attach native shadow root (synthetic composed within light composed within native)', () => {
         const light = elm.shadowRoot.querySelector('x-light-synthetic');
         const synthetic = light.querySelector('x-synthetic');
+        expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
+    });
+
+    it('should attach native shadow root (synthetic assigned to light slot composed within native)', () => {
+        const light = elm.shadowRoot.querySelector('x-light-synthetic');
+        const synthetic = light.querySelector('x-synthetic.slot-assigned');
         expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
     });
 });
