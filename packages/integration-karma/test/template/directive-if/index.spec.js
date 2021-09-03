@@ -69,7 +69,7 @@ describe('if:true directive', () => {
                 expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
             });
     });
-    if (process.env.NATIVE_SHADOW) {
+    if (process.env.DISABLE_SYNTHETIC) {
         // In native shadow, the slotted content from parent is always queriable, its only the
         // child's <slot> that is rendered/unrendered based on the directive
         it('should update child with slot content if value changes', () => {

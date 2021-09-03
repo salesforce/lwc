@@ -23,15 +23,16 @@ Every time the test suite runs with the `COVERAGE=1` environment variable it pro
 This set of environment variables applies to the `start` and `test` commands:
 
 -   **`COMPAT=1`:** Compile and deliver tests in COMPAT mode.
--   **`NATIVE_SHADOW=1`:** Force the components to be created with native shadow enabled.
+-   **`DISABLE_SYNTHETIC=1`:** Run without any synthetic shadow polyfill patches.
 -   **`COVERAGE=1`:** Gather engine code coverage, and store it in the `coverage` folder.
 -   **`GREP="pattern"`:** Filter the spec to run based on the pattern.
 
 ## Examples
 
 ```sh
-NATIVE_SHADOW=1 GREP=ShadowRoot yarn start          # Run in watch mode the "ShadowRoot" related tests with native shadow enable
-COVERAGE=1 yarn test                                # Run all the test once and compute coverage
+DISABLE_SYNTHETIC=1 yarn test  # Run tests without any synthetic shadow polyfills
+GREP=ShadowRoot yarn start     # Run "ShadowRoot" related tests in watch mode
+COVERAGE=1 yarn test           # Compute coverage after a single test run
 ```
 
 ## Contributing
@@ -40,8 +41,9 @@ COVERAGE=1 yarn test                                # Run all the test once and 
 -   On top of the standard [jasmine matchers](https://jasmine.github.io/api/edge/matchers.html), the test suite also register custom matchers:
     -   `toLogErrorDev(message)`: `expect` a function to log an error with a specific message in DEV only.
     -   `toThrowErrorDev(Error, message)`: `expect` a function to throw an error with a specific Error constructor and a specific message.
--   You should rather import `createElement` from `test-utils` instead of `lwc`. The `createElement` element from `test-utils` set `fallback` to false if the `--native-shadow` flag is passed to the command.
 -   Some of the test command options are available in the test suite on the global `process.env` object:
-    -   `process.env.COMPAT`: is set to `false` by default and `true` if the `--compat` flag is passed
-    -   `process.env.NATIVE_SHADOW`: is set to `false` by default and `true` if the `--native-shadow` flag is passed
+    -   `process.env.COMPAT`: is set to `false` by default and `true` if the `COMPAT` environment
+        variable is set.
+    -   `process.env.DISABLE_SYNTHETIC`: is set to `false` by default and `true` if the
+        `DISABLE_SYNTHETIC` environment variable is set.
 -   The test setup file (`test-setup.js`) will automatically clean up the DOM before and after each test. So you don't have to do anything to clean up. However, you should use `beforeEach()` rather than `beforeAll()` to add DOM elements for your test, so that the cleanup code can properly clean up the DOM.

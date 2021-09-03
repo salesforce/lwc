@@ -42,7 +42,7 @@ describe('Light DOM IDs and fragment links', () => {
         expect(light.querySelector('.go-to-bar').href).toMatch(/#bar$/);
         expect(light.querySelector('.go-to-quux').href).toMatch(/#quux$/);
 
-        if (process.env.NATIVE_SHADOW) {
+        if (process.env.DISABLE_SYNTHETIC) {
             expect(shadow.shadowRoot.querySelector('.foo').id).toEqual('foo');
             expect(shadow.shadowRoot.querySelector('.quux').id).toEqual('quux');
             expect(shadow.shadowRoot.querySelector('.go-to-foo').href).toMatch(/#foo$/);

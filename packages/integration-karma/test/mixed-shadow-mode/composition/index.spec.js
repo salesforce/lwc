@@ -5,7 +5,7 @@ import SyntheticContainer from 'x/syntheticContainer';
 import NativeContainer from 'x/nativeContainer';
 import NativeLightSynthetic from 'x/nativeLightSynthetic';
 
-if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
+if (!process.env.DISABLE_SYNTHETIC && !process.env.COMPAT) {
     describe('composition', () => {
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);

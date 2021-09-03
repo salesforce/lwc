@@ -2,7 +2,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from 'x/container';
 
 // This test only matters for synthetic shadow
-if (!process.env.NATIVE_SHADOW) {
+if (!process.env.DISABLE_SYNTHETIC) {
     describe('Light DOM and synthetic shadow', () => {
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
