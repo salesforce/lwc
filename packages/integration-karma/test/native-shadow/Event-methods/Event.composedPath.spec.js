@@ -99,7 +99,7 @@ if (process.env.COMPAT !== true) {
             document.body.appendChild(synthetic);
 
             let expected;
-            if (process.env.NATIVE_SHADOW) {
+            if (process.env.DISABLE_SYNTHETIC) {
                 expected = [
                     div.shadowRoot,
                     div,
