@@ -10,7 +10,7 @@ it('should handle multiple idrefs when set dynamically', () => {
     const hokkaido = elm.shadowRoot.querySelector('.hokkaido');
     const input = elm.shadowRoot.querySelector('.dynamic');
 
-    if (process.env.NATIVE_SHADOW) {
+    if (process.env.DISABLE_SYNTHETIC) {
         expect(aomori.id).toMatch(/^aomori$/);
         expect(hokkaido.id).toMatch(/^hokkaido$/);
     } else {
@@ -30,7 +30,7 @@ it('should handle multiple idrefs when set statically', () => {
     const iwate = elm.shadowRoot.querySelector('.iwate');
     const input = elm.shadowRoot.querySelector('.static');
 
-    if (process.env.NATIVE_SHADOW) {
+    if (process.env.DISABLE_SYNTHETIC) {
         expect(aomori.id).toMatch(/^aomori$/);
         expect(iwate.id).toMatch(/^iwate$/);
     } else {

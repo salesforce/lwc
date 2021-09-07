@@ -10,7 +10,7 @@
 const localConfig = require('./base');
 const {
     COMPAT,
-    NATIVE_SHADOW,
+    DISABLE_SYNTHETIC,
     TAGS,
     SAUCE_USERNAME,
     SAUCE_ACCESS_KEY,
@@ -106,7 +106,7 @@ function getSauceConfig() {
         customData: {
             lwc: {
                 COMPAT,
-                NATIVE_SHADOW,
+                DISABLE_SYNTHETIC,
             },
 
             ci: IS_CI,
@@ -127,7 +127,7 @@ function getMatchingBrowsers() {
     return SAUCE_BROWSERS.filter((browser) => {
         return (
             browser.compat === COMPAT &&
-            (!NATIVE_SHADOW || browser.nativeShadowCompatible === NATIVE_SHADOW)
+            (!DISABLE_SYNTHETIC || browser.nativeShadowCompatible === DISABLE_SYNTHETIC)
         );
     });
 }

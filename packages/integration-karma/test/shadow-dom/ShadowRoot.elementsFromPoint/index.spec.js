@@ -20,7 +20,7 @@ describe('elementsFromPoint', () => {
     // https://crbug.com/1207863#c4
     const onlyIncludesElementsInImmediateShadowRoot = (() => {
         function detect() {
-            if (!process.env.NATIVE_SHADOW) {
+            if (!process.env.DISABLE_SYNTHETIC) {
                 return false; // in synthetic shadow we control the behavior, so we match Chrome/Safari
             }
             // detect the Firefox behavior

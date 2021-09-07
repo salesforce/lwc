@@ -35,7 +35,7 @@ describe('post-dispatch event state', () => {
 
         // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
         // In Safari, the event target is not null.
-        if (process.env.NATIVE_SHADOW !== true) {
+        if (process.env.DISABLE_SYNTHETIC !== true) {
             it('{ bubbles: true, composed: false }', () => {
                 const nodes = createComponent();
                 const event = new CustomEvent('test', { bubbles: true, composed: false });
@@ -62,7 +62,7 @@ describe('post-dispatch event state', () => {
 
         // WebKit bug - https://bugs.webkit.org/show_bug.cgi?id=206374
         // In Safari, the event target is not null.
-        if (process.env.NATIVE_SHADOW !== true) {
+        if (process.env.DISABLE_SYNTHETIC !== true) {
             it('{ bubbles: true, composed: false }', () => {
                 const nodes = createComponent();
                 const event = new CustomEvent('test', { bubbles: true, composed: false });

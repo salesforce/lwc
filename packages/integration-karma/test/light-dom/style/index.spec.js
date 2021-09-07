@@ -25,7 +25,7 @@ describe('Light DOM styling', () => {
             'rgb(255, 0, 0)'
         );
         // synthetic shadow can't do this kind of style encapsulation
-        if (process.env.NATIVE_SHADOW === true) {
+        if (process.env.DISABLE_SYNTHETIC === true) {
             expect(
                 getColor(
                     elm.shadowRoot
@@ -36,7 +36,7 @@ describe('Light DOM styling', () => {
         }
 
         // synthetic shadow can't do this kind of style encapsulation
-        if (process.env.NATIVE_SHADOW === true) {
+        if (process.env.DISABLE_SYNTHETIC === true) {
             // sibling elements should be unaffected
             const two = createElement('x-two', { is: Two });
             const shadow = createElement('x-shadow', { is: Shadow });

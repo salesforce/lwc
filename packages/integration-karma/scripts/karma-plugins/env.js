@@ -15,7 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { COMPAT, NATIVE_SHADOW } = require('../shared/options');
+const { COMPAT, DISABLE_SYNTHETIC } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
 const ENV_FILENAME = path.resolve(DIST_DIR, 'env.js');
@@ -30,7 +30,8 @@ function createEnvFile() {
         `    env: {`,
         `        NODE_ENV: "development",`,
         `        COMPAT: ${COMPAT},`,
-        `        NATIVE_SHADOW: ${NATIVE_SHADOW}`,
+        `        DISABLE_SYNTHETIC: ${DISABLE_SYNTHETIC},`,
+        `        NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== "undefined"`,
         `    }`,
         `};`,
     ];

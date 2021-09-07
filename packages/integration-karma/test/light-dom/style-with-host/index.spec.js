@@ -2,7 +2,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from 'x/container';
 
 // synthetic shadow can't do this kind of style encapsulation
-if (process.env.NATIVE_SHADOW === true) {
+if (process.env.DISABLE_SYNTHETIC === true) {
     describe('Light DOM styling with :host', () => {
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);

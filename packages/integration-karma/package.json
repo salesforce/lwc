@@ -6,7 +6,7 @@
         "start": "karma start ./scripts/karma-configs/local.js",
         "test": "karma start ./scripts/karma-configs/local.js --single-run --browsers Chrome",
         "test:compat": "COMPAT=1 yarn test",
-        "test:native": "NATIVE_SHADOW=1 yarn test",
+        "test:native": "DISABLE_SYNTHETIC=1 yarn test",
         "sauce": "karma start ./scripts/karma-configs/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js"
     },
