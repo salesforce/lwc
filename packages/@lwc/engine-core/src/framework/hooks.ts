@@ -165,16 +165,14 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
 
     vm.aChildren = children;
 
-    const { renderer, renderMode, shadowMode } = vm;
-    if (renderer.isSyntheticShadowDefined) {
-        if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
-            // slow path
-            allocateInSlot(vm, children);
-            // save the allocated children in case this vnode is reused.
-            vnode.aChildren = children;
-            // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
-            vnode.children = EmptyArray;
-        }
+    const { renderMode, shadowMode } = vm;
+    if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
+        // slow path
+        allocateInSlot(vm, children);
+        // save the allocated children in case this vnode is reused.
+        vnode.aChildren = children;
+        // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
+        vnode.children = EmptyArray;
     }
 }
 
