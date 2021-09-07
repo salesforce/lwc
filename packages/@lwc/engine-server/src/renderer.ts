@@ -299,6 +299,11 @@ export const renderer: Renderer<HostNode, HostElement> = {
         // synthetic shadow.
     },
 
+    insertStylesheet() {
+        // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
+        // synthetic shadow.
+    },
+
     addEventListener() {
         // Noop on SSR.
     },

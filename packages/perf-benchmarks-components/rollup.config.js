@@ -9,10 +9,14 @@ import path from 'path';
 import glob from 'glob';
 import lwc from '@lwc/rollup-plugin';
 import replace from '@rollup/plugin-replace';
+import { generateStyledComponents } from './scripts/generate-styled-components';
 
-const rootDir = path.join(__dirname, 'src');
+const { tmpDir, styledComponents } = generateStyledComponents();
 
 function createConfig(componentFile, engineType) {
+    const rootDir = componentFile.includes(tmpDir)
+        ? path.join(tmpDir, 'src')
+        : path.join(__dirname, 'src');
     const lwcImportModule = engineType === 'server' ? '@lwc/engine-server' : '@lwc/engine-dom';
     return {
         input: componentFile,
@@ -34,7 +38,7 @@ function createConfig(componentFile, engineType) {
             }),
         ],
         output: {
-            file: componentFile.replace('/src/', `/dist/${engineType}/`),
+            file: componentFile.replace(tmpDir, __dirname).replace('/src/', `/dist/${engineType}/`),
             format: 'esm',
         },
         // These packages need to be external so that perf-benchmarks can potentially swap them out
@@ -43,7 +47,7 @@ function createConfig(componentFile, engineType) {
     };
 }
 
-const components = glob.sync(path.join(__dirname, 'src/**/*.js'));
+const components = [...glob.sync(path.join(__dirname, 'src/**/*.js')), ...styledComponents];
 
 const config = ['server', 'dom']
     .map((engineType) => components.map((component) => createConfig(component, engineType)))
