@@ -288,7 +288,7 @@ export function createVM<HostNode, HostElement>(
     const { mode, owner, renderer, tagName } = options;
 
     let shadowMode;
-    if (renderer.syntheticShadow) {
+    if (renderer.isSyntheticShadowDefined) {
         if (def.renderMode === RenderMode.Light) {
             shadowMode = ShadowMode.Native;
         } else {
