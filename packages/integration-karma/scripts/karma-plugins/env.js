@@ -31,7 +31,7 @@ function createEnvFile() {
         `        NODE_ENV: "development",`,
         `        COMPAT: ${COMPAT},`,
         `        DISABLE_SYNTHETIC: ${DISABLE_SYNTHETIC},`,
-        `        NATIVE_SHADOW_ROOT_DEFINED: ${typeof ShadowRoot !== undefined}`,
+        `        NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== "undefined"`,
         `    }`,
         `};`,
     ];
