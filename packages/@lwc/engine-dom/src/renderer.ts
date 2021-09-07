@@ -93,7 +93,7 @@ if (isCustomElementRegistryAvailable()) {
 export const renderer: Renderer<Node, Element> = {
     ssr: false,
 
-    syntheticShadow: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
+    isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
 
     createElement(tagName: string, namespace: string): Element {
         return isUndefined(namespace)
