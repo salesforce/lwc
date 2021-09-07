@@ -111,7 +111,7 @@ commands:
           name: Run karma integration tests
           working_directory: packages/integration-karma
           command: >
-              <<# parameters.native_shadow >> NATIVE_SHADOW=1 <</ parameters.native_shadow >>
+              <<# parameters.native_shadow >> DISABLE_SYNTHETIC=1 <</ parameters.native_shadow >>
               <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
               <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
               yarn sauce
@@ -128,7 +128,7 @@ jobs:
           name: Install dependencies and build
           command: yarn install --frozen-lockfile
       - run:
-          name: Check missing file headers 
+          name: Check missing file headers
           command: node ./scripts/tasks/check-license-headers.js
       - run:
           name: Check formatting
