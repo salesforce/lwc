@@ -11,14 +11,12 @@ import {
     assert,
     create,
     getOwnPropertyNames,
-    globalThis,
     isArray,
     isFalse,
     isNull,
     isObject,
     isTrue,
     isUndefined,
-    KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     keys,
 } from '@lwc/shared';
 import { getComponentTag } from '../shared/format';
@@ -48,8 +46,6 @@ import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
 type ShadowRootMode = 'open' | 'closed';
-
-const isNativeShadowRootDefined = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 
 export interface TemplateCache {
     [key: string]: any;
@@ -293,7 +289,7 @@ export function createVM<HostNode, HostElement>(
             shadowMode = ShadowMode.Native;
         } else {
             shadowMode =
-                def.shadowSupportMode === ShadowSupportMode.Any && isNativeShadowRootDefined
+                def.shadowSupportMode === ShadowSupportMode.Any && renderer.isNativeShadowDefined
                     ? ShadowMode.Native
                     : ShadowMode.Synthetic;
         }
