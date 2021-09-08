@@ -10,8 +10,10 @@ import {
     create,
     hasOwnProperty,
     htmlPropertyToAttribute,
+    globalThis,
     isFunction,
     isUndefined,
+    KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
     StringToLowerCase,
@@ -138,6 +140,7 @@ if (isCustomElementRegistryAvailable()) {
 export const renderer: Renderer<Node, Element> = {
     ssr: false,
 
+    isNativeShadowDefined: globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED],
     isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
 
     createElement(tagName: string, namespace: string): Element {
