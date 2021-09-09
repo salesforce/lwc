@@ -22,6 +22,9 @@ const featureFlagLookup: FeatureFlagLookup = {
     ENABLE_NON_COMPOSED_EVENTS_LEAKAGE: null,
     ENABLE_LIGHT_DOM_COMPONENTS: null,
     ENABLE_MIXED_SHADOW_MODE: null,
+    // Flag to make the first call to the wire adapter update method right after the component
+    // is connected (instead of next tick). It only affects wire configurations that depend on component values.
+    ENABLE_WIRE_SYNC_EMIT: null,
 };
 export default featureFlagLookup;
 

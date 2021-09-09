@@ -1,5 +1,16 @@
 export let isAdapterInvoked = false;
 
-export function adapter() {
-    isAdapterInvoked = true;
+export class adapter {
+    constructor(dataCallback) {
+        this.dc = dataCallback;
+    }
+
+    connect() {}
+
+    update() {
+        isAdapterInvoked = true;
+        this.dc(true);
+    }
+
+    disconnect() {}
 }

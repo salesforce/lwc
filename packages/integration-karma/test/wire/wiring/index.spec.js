@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import AdapterConsumer from 'x/adapterConsumer';
 import { EchoWireAdapter } from 'x/echoAdapter';
@@ -70,7 +70,45 @@ describe('wiring', () => {
             expect(updateCalls[2].method).toBe('update'); // overriddenInChild
         });
 
-        it('should be called next tick when component with wire that has dynamic params is created', () => {
+        describe('with ENABLE_WIRE_SYNC_EMIT=true', () => {
+            beforeEach(() => {
+                setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', true);
+            });
+
+            afterEach(() => {
+                setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
+            });
+
+            it('should be called synchronously after connect when a component with wire that has dynamic params is created', () => {
+                const spy = [];
+                AdapterId.setSpy(spy);
+                expect(spy.length).toBe(0);
+
+                const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+                document.body.appendChild(elm);
+
+                expect(spy).toHaveSize(2);
+                expect(spy[0].method).toBe('connect');
+                expect(spy[1].method).toBe('update');
+            });
+
+            it('should call synchronously update only once when the component is created and a wire dynamic param is modified', () => {
+                const spy = [];
+                AdapterId.setSpy(spy);
+                expect(spy.length).toBe(0);
+
+                const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+                elm.setDynamicParamSource(1);
+                document.body.appendChild(elm);
+
+                // in the old wire protocol, there is only one call because
+                // on the same tick the config was modified
+                const updateCalls = filterCalls(spy, 'update');
+                expect(updateCalls).toHaveSize(1);
+            });
+        });
+
+        it('should be called next tick when the component with wire that has dynamic params is created', () => {
             const spy = [];
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
