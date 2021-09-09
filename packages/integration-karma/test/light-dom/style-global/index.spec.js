@@ -1,15 +1,10 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
+
 import Container from 'x/container';
 import Two from 'x/two';
 import Shadow from 'x/shadow';
 
 describe('Light DOM styling at the global level', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
     it('styles bleed into other light DOM but not shadow DOM components in root context', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);

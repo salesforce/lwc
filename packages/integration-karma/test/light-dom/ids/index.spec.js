@@ -1,16 +1,10 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 
 import One from 'x/one';
 import Two from 'x/two';
 import Shadow from 'x/shadow';
 
 describe('Light DOM IDs and fragment links', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
     it('should not mangle IDs or hrefs in light DOM', () => {
         document.body.appendChild(createElement('x-one', { is: One }));
         document.body.appendChild(createElement('x-two', { is: Two }));

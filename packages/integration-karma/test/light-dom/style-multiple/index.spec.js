@@ -1,13 +1,8 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
+
 import Container from 'x/container';
 
 describe('Light DOM styling - multiple light DOM components', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
     it('styles bleed mutually across light DOM components', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);

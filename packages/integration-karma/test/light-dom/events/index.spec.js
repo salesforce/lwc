@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import LightChild from 'x/lightChild';
@@ -43,12 +43,9 @@ function dispatchEventWithLog(target, nodes, event) {
 describe('single light child', () => {
     let nodes;
     beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
         nodes = createTestElement('x-light-child', LightChild);
     });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
+
     it('{ bubbles: true, composed: false }', () => {
         const log = dispatchEventWithLog(
             nodes.button,
@@ -98,11 +95,7 @@ describe('single light child', () => {
 describe('shadow container, light child', () => {
     let nodes;
     beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
         nodes = createTestElement('x-shadow-container', ShadowContainer);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
 
     it('{ bubbles: true, composed: true }', () => {
@@ -159,11 +152,7 @@ describe('shadow container, light child', () => {
 describe('light container, shadow child', () => {
     let nodes;
     beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
         nodes = createTestElement('x-light-container', LightContainer);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
     });
 
     it('{ bubbles: true, composed: true }', () => {

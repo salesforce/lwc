@@ -16,7 +16,6 @@ const features: FeatureFlagMap = {
     ENABLE_HTML_COLLECTIONS_PATCH: null,
     ENABLE_NODE_PATCH: null,
     ENABLE_NON_COMPOSED_EVENTS_LEAKAGE: null,
-    ENABLE_LIGHT_DOM_COMPONENTS: null,
     ENABLE_MIXED_SHADOW_MODE: null,
     ENABLE_WIRE_SYNC_EMIT: null,
 };

@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import BasicSlot from 'x/basicSlot';
@@ -16,12 +16,6 @@ function createTestElement(tag, component) {
 }
 
 describe('Slotting', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
     it('should render properly', () => {
         const nodes = createTestElement('x-default-slot', BasicSlot);
 

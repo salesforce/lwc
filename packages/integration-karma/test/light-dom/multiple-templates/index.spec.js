@@ -1,16 +1,8 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 
 import Multi from 'x/multi';
 
 describe('multiple templates', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
-
     it('can render multiple templates with different styles', () => {
         const element = createElement('x-multi', { is: Multi });
 
