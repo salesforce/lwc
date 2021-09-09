@@ -19,7 +19,6 @@ import {
     isUndefined,
     keys,
 } from '@lwc/shared';
-import { getComponentTag } from '../shared/format';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
@@ -251,26 +250,6 @@ function getNearestShadowAncestor(vm: VM): VM | null {
     return ancestor;
 }
 
-function assertNotSyntheticComposedWithinNative(vm: VM) {
-    const isSynthetic =
-        vm.renderMode === RenderMode.Shadow && vm.shadowMode === ShadowMode.Synthetic;
-    if (!isSynthetic) {
-        return;
-    }
-    const ancestor = getNearestShadowAncestor(vm);
-    if (!isNull(ancestor)) {
-        // Any native shadow component being an ancestor of a synthetic shadow component is disallowed.
-        assert.isFalse(
-            ancestor.renderMode === RenderMode.Shadow && ancestor.shadowMode === ShadowMode.Native,
-            `${getComponentTag(
-                vm
-            )} (synthetic shadow DOM) cannot be composed inside of ${getComponentTag(
-                ancestor
-            )} (native shadow DOM), because synthetic-within-native composition is disallowed`
-        );
-    }
-}
-
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
     def: ComponentDef,
@@ -282,20 +261,6 @@ export function createVM<HostNode, HostElement>(
     }
 ): VM {
     const { mode, owner, renderer, tagName } = options;
-
-    let shadowMode;
-    if (renderer.isSyntheticShadowDefined) {
-        if (def.renderMode === RenderMode.Light) {
-            shadowMode = ShadowMode.Native;
-        } else {
-            shadowMode =
-                def.shadowSupportMode === ShadowSupportMode.Any && renderer.isNativeShadowDefined
-                    ? ShadowMode.Native
-                    : ShadowMode.Synthetic;
-        }
-    } else {
-        shadowMode = ShadowMode.Native;
-    }
 
     const vm: VM = {
         elm,
@@ -318,7 +283,7 @@ export function createVM<HostNode, HostElement>(
         cmpTemplate: null,
 
         renderMode: def.renderMode,
-        shadowMode,
+        shadowMode: null!,
 
         context: {
             hostAttribute: undefined,
@@ -338,13 +303,13 @@ export function createVM<HostNode, HostElement>(
         getHook,
     };
 
+    vm.shadowMode = computeShadowMode(vm);
     vm.tro = getTemplateReactiveObserver(vm);
 
     if (process.env.NODE_ENV !== 'production') {
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
-        assertNotSyntheticComposedWithinNative(vm);
     }
 
     // Create component instance associated to the vm and the element.
@@ -356,6 +321,43 @@ export function createVM<HostNode, HostElement>(
     }
 
     return vm;
+}
+
+function computeShadowMode(vm: VM) {
+    const { def, renderer } = vm;
+    const { isNativeShadowDefined, isSyntheticShadowDefined } = renderer;
+
+    let shadowMode;
+    if (isSyntheticShadowDefined) {
+        if (def.renderMode === RenderMode.Light) {
+            // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
+            // everything defaults to native when the synthetic shadow polyfill is unavailable.
+            shadowMode = ShadowMode.Native;
+        } else if (isNativeShadowDefined) {
+            if (def.shadowSupportMode === ShadowSupportMode.Any) {
+                shadowMode = ShadowMode.Native;
+            } else {
+                const shadowAncestor = getNearestShadowAncestor(vm);
+                if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
+                    // Transitive support for native Shadow DOM. A component in native mode
+                    // transitively opts all of its descendants into native.
+                    shadowMode = ShadowMode.Native;
+                } else {
+                    // Synthetic if neither this component nor any of its ancestors are configured
+                    // to be native.
+                    shadowMode = ShadowMode.Synthetic;
+                }
+            }
+        } else {
+            // Synthetic if there is no native Shadow DOM support.
+            shadowMode = ShadowMode.Synthetic;
+        }
+    } else {
+        // Native if the synthetic shadow polyfill is unavailable.
+        shadowMode = ShadowMode.Native;
+    }
+
+    return shadowMode;
 }
 
 function assertIsVM(obj: any): asserts obj is VM {

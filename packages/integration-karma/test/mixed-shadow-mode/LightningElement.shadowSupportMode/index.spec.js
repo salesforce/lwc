@@ -3,7 +3,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
 
-describe('shadowSupportMode flag enabled', () => {
+describe('shadowSupportMode static property', () => {
     beforeEach(() => {
         setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
     });
@@ -22,10 +22,9 @@ describe('shadowSupportMode flag enabled', () => {
             createElement('x-valid', { is: Valid });
         }).not.toThrowError();
     });
-});
 
-describe('shadowSupportMode flag disabled', () => {
-    it('should disallow shadowSupportMode by default', () => {
+    it('should disallow usage unless enabled', () => {
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
         expect(() => {
             createElement('x-invalid', { is: Invalid });
         }).toThrowError(
