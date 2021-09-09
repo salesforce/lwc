@@ -323,8 +323,6 @@ export function createVM<HostNode, HostElement>(
     return vm;
 }
 
-const transitivelyNativeVMs = new WeakSet<VM>();
-
 function computeShadowMode(vm: VM) {
     const { def, renderer } = vm;
     const { isNativeShadowDefined, isSyntheticShadowDefined } = renderer;
@@ -338,14 +336,12 @@ function computeShadowMode(vm: VM) {
         } else if (isNativeShadowDefined) {
             if (def.shadowSupportMode === ShadowSupportMode.Any) {
                 shadowMode = ShadowMode.Native;
-                transitivelyNativeVMs.add(vm);
             } else {
                 const shadowAncestor = getNearestShadowAncestor(vm);
-                if (!isNull(shadowAncestor) && transitivelyNativeVMs.has(shadowAncestor)) {
+                if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
                     // Transitive support for native Shadow DOM. A component in native mode
                     // transitively opts all of its descendants into native.
                     shadowMode = ShadowMode.Native;
-                    transitivelyNativeVMs.add(vm);
                 } else {
                     // Synthetic if neither this component nor any of its ancestors are configured
                     // to be native.
