@@ -155,7 +155,9 @@ export interface VM<N = HostNode, E = HostElement> {
 
 type VMAssociable = HostNode | LightningElement;
 
-let idx: number = 0;
+// Start with a random number to discourage taking a dependency on anything downstream from the idx,
+// such as globally-scoped IDs in synthetic shadow DOM. These are not supposed to be predictable.
+let idx: number = Math.floor(Math.random() * 1000);
 
 /** The internal slot used to associate different objects the engine manipulates with the VM */
 const ViewModelReflection = new WeakMap<any, VM>();
