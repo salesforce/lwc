@@ -86,6 +86,12 @@ export interface FeatureFlagMap {
      * shadow root. More details in #2121.
      */
     ENABLE_NON_COMPOSED_EVENTS_LEAKAGE: FeatureFlagValue;
+
+    /**
+     * Flag to invoke the wire adapter update method right after the component is connected, instead
+     * of next tick. It only affects wire configurations that depend on component values.
+     */
+    ENABLE_WIRE_SYNC_EMIT: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
