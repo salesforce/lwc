@@ -5,17 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { create, isFalse, isTrue, isUndefined, globalThis } from '@lwc/shared';
-import features, { FeatureFlagLookup, FeatureFlagValue } from './flags';
+import features, { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './flags';
 
 if (!globalThis.lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
-const runtimeFlags: FeatureFlagLookup = globalThis.lwcRuntimeFlags;
+const runtimeFlags: FeatureFlagMap = globalThis.lwcRuntimeFlags;
 
 // This function is not supported for use within components and is meant for
 // configuring runtime feature flags during app initialization.
-function setFeatureFlag(name: string, value: FeatureFlagValue) {
+function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue) {
     const isBoolean = isTrue(value) || isFalse(value);
     if (!isBoolean) {
         const message = `Failed to set the value "${value}" for the runtime feature flag "${name}". Runtime feature flags can only be set to a boolean value.`;
@@ -53,7 +53,7 @@ function setFeatureFlag(name: string, value: FeatureFlagValue) {
 
 // This function is exposed to components to facilitate testing so we add a
 // check to make sure it is not invoked in production.
-function setFeatureFlagForTest(name: string, value: FeatureFlagValue) {
+function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagValue) {
     if (process.env.NODE_ENV !== 'production') {
         return setFeatureFlag(name, value);
     }
