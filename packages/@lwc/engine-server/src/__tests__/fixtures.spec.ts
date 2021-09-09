@@ -19,7 +19,7 @@ interface FixtureModule {
     tagName: string;
     default: typeof lwc.LightningElement;
     props?: { [key: string]: any };
-    features?: string[];
+    features?: any[];
 }
 
 jest.setTimeout(10_000 /* 10 seconds */);
@@ -89,7 +89,7 @@ describe('fixtures', () => {
                 module = require(compiledFixturePath);
             });
 
-            const features: string[] = module!.features || [];
+            const features = module!.features ?? [];
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, true);
             });
