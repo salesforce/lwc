@@ -342,7 +342,8 @@ function computeShadowMode(vm: VM) {
             } else {
                 const shadowAncestor = getNearestShadowAncestor(vm);
                 if (!isNull(shadowAncestor) && transitivelyNativeVMs.has(shadowAncestor)) {
-                    // Transitive support for native Shadow DOM.
+                    // Transitive support for native Shadow DOM. A component in native mode
+                    // transitively opts all of its descendants into native.
                     shadowMode = ShadowMode.Native;
                     transitivelyNativeVMs.add(vm);
                 } else {
