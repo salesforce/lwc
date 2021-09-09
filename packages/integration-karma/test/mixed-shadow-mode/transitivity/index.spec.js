@@ -118,7 +118,7 @@ if (SYNTHETIC_SHADOW_DEFINED) {
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         });
 
-        it('should attach a native shadow root when possible', () => {
+        it('should attach a synthetic shadow root', () => {
             expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
         });
 
