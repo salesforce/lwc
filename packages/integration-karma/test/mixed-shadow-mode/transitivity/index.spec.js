@@ -1,8 +1,8 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 
-import DefaultNativeLightSynthetic from 'x/defaultNativeLightSynthetic';
-import LightSynthetic from 'x/lightSynthetic';
-import NativeLightSynthetic from 'x/nativeLightSynthetic';
+import DefaultExtendsNative from 'x/defaultExtendsNative';
+import LightContainer from 'x/lightContainer';
+import NativeContainer from 'x/nativeContainer';
 
 function isSyntheticShadowRootInstance(sr) {
     return Boolean(sr && /function SyntheticShadowRoot/.test(sr.constructor.toString()));
@@ -19,7 +19,7 @@ if (!process.env.DISABLE_SYNTHETIC) {
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-            elm = createElement('x-native-light-synthetic', { is: NativeLightSynthetic });
+            elm = createElement('x-native-container', { is: NativeContainer });
             document.body.appendChild(elm);
         });
 
@@ -28,7 +28,7 @@ if (!process.env.DISABLE_SYNTHETIC) {
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         });
 
-        it('should attach shadow root (native component)', () => {
+        it('should attach shadow root', () => {
             if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
                 expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
             } else {
@@ -36,13 +36,13 @@ if (!process.env.DISABLE_SYNTHETIC) {
             }
         });
 
-        it('should not attach shadow root (light composed within native)', () => {
-            const light = elm.shadowRoot.querySelector('x-light-synthetic');
+        it('should not attach shadow root for child light component', () => {
+            const light = elm.shadowRoot.querySelector('x-light-container');
             expect(light.shadowRoot).toBeNull();
         });
 
-        it('should attach shadow root (synthetic composed within light composed within native)', () => {
-            const light = elm.shadowRoot.querySelector('x-light-synthetic');
+        it('should attach shadow root for child synthetic component', () => {
+            const light = elm.shadowRoot.querySelector('x-light-container');
             const synthetic = light.querySelector('x-synthetic');
             if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
                 expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
@@ -51,8 +51,18 @@ if (!process.env.DISABLE_SYNTHETIC) {
             }
         });
 
-        it('should attach shadow root (synthetic assigned to light slot composed within native)', () => {
-            const light = elm.shadowRoot.querySelector('x-light-synthetic');
+        it('should attach shadow root for child synthetic component with shadowSupportMode="default"', () => {
+            const light = elm.shadowRoot.querySelector('x-light-container');
+            const synthetic = light.querySelector('x-synthetic-default');
+            if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
+                expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
+            } else {
+                expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
+            }
+        });
+
+        it('should attach shadow root for slotted synthetic', () => {
+            const light = elm.shadowRoot.querySelector('x-light-container');
             const synthetic = light.querySelector('x-synthetic.slot-assigned');
             if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
                 expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
@@ -68,7 +78,7 @@ if (!process.env.DISABLE_SYNTHETIC) {
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-            elm = createElement('x-light-synthetic', { is: LightSynthetic });
+            elm = createElement('x-light-container', { is: LightContainer });
             document.body.appendChild(elm);
         });
 
@@ -77,12 +87,22 @@ if (!process.env.DISABLE_SYNTHETIC) {
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         });
 
-        it('should not attach any shadow root (root component)', () => {
+        it('should not attach shadow root', () => {
             expect(elm.shadowRoot).toBeNull();
         });
 
-        it('should attach shadow root (syntheic composed within light)', () => {
+        it('should attach synthetic shadow root for child synthetic component', () => {
             const synthetic = elm.querySelector('x-synthetic');
+            expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
+        });
+
+        it('should attach synthetic shadow root for slotted synthetic component', () => {
+            const synthetic = elm.querySelector('x-synthetic.default-slotted');
+            expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
+        });
+
+        it('should attach synthetic shadow root to child component slotted into native component', () => {
+            const synthetic = elm.querySelector('x-synthetic.native-slotted');
             expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
     });
@@ -93,8 +113,8 @@ if (!process.env.DISABLE_SYNTHETIC) {
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-            elm = createElement('x-default-native-light-synthetic', {
-                is: DefaultNativeLightSynthetic,
+            elm = createElement('x-default-extends-native', {
+                is: DefaultExtendsNative,
             });
             document.body.appendChild(elm);
         });
@@ -104,12 +124,12 @@ if (!process.env.DISABLE_SYNTHETIC) {
             setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         });
 
-        it('should attach shadow root (shadowSupportMode override)', () => {
+        it('should attach shadow root', () => {
             expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
         });
 
-        it('should attach synthetic shadow root (synthetic composed within light composed within override)', () => {
-            const light = elm.shadowRoot.querySelector('x-light-synthetic');
+        it('should attach synthetic shadow root for descendant synthetic component', () => {
+            const light = elm.shadowRoot.querySelector('x-light-container');
             const synthetic = light.querySelector('x-synthetic');
             expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
