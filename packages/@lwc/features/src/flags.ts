@@ -24,7 +24,7 @@ if (!globalThis.lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
-export const runtimeFlags: FeatureFlagMap = globalThis.lwcRuntimeFlags;
+export const runtimeFlags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
 
 /**
  * Set the value at runtime of a given feature flag. This method only be invoked once per feature
