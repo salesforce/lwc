@@ -26,6 +26,7 @@ function rollupConfig({ format }) {
             format,
             banner,
             footer,
+            exports: 'named',
         },
         plugins: [
             nodeResolve({

@@ -4,55 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-export type FeatureFlagValue = boolean | null;
-export type FeatureFlagName = keyof FeatureFlagMap;
+import { create, keys, defineProperty, isUndefined, isBoolean, globalThis } from '@lwc/shared';
+import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
-export interface FeatureFlagMap {
-    /**
-     * TODO
-     */
-    ENABLE_REACTIVE_SETTER: FeatureFlagValue,
-
-    /**
-     * Enable hot module replacement. It allows to exchange, component definition, template and 
-     * stylesheets at runtime without having to reload the entire application.
-     */
-    ENABLE_HMR: FeatureFlagValue,
-
-    /**
-     * Flag to toggle on/off the enforcement of innerText/outerText shadow dom semantic in elements when using synthetic shadow. 
-     * Note: Once active, elements outside the lwc boundary are controlled by the 
-     * ENABLE_ELEMENT_PATCH flag.
-     */
-    ENABLE_INNER_OUTER_TEXT_PATCH: FeatureFlagValue,
-
-    /** 
-     * Flags to toggle on/off the enforcement of shadow dom semantic in element/node outside lwc boundary when using synthetic shadow. 
-     */
-    ENABLE_ELEMENT_PATCH: FeatureFlagValue,
-
-    ENABLE_NODE_LIST_PATCH: FeatureFlagValue,
-    ENABLE_HTML_COLLECTIONS_PATCH: FeatureFlagValue,
-    ENABLE_NODE_PATCH: FeatureFlagValue,
-
-    /** 
-     * Disables the fix for #2121 where non-composed events are visible outside of their shadow root. 
-     */
-    ENABLE_NON_COMPOSED_EVENTS_LEAKAGE: FeatureFlagValue,
-
-    /**
-     * Flag to toggle LWC light DOM support.
-     */
-    ENABLE_LIGHT_DOM_COMPONENTS: FeatureFlagValue,
-
-    /**
-     * Flag to toggle LWC mixed shadow DOM.
-     */
-    ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue,
-}
-
-
-const featureFlagLookup: FeatureFlagMap = {
+const features: FeatureFlagMap = {
     ENABLE_REACTIVE_SETTER: null,
     ENABLE_HMR: null,
     ENABLE_INNER_OUTER_TEXT_PATCH: null,
@@ -65,5 +20,62 @@ const featureFlagLookup: FeatureFlagMap = {
     ENABLE_MIXED_SHADOW_MODE: null,
 };
 
-export default featureFlagLookup;
-export { runtimeFlags, setFeatureFlag, setFeatureFlagForTest } from './runtime';
+if (!globalThis.lwcRuntimeFlags) {
+    Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
+}
+
+export const runtimeFlags: FeatureFlagMap = globalThis.lwcRuntimeFlags;
+
+/**
+ * Set the value at runtime of a given feature flag. This method only be invoked once per feature
+ * flag. It is meant to be used during the app initialization.
+ */
+export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): void {
+    if (!isBoolean(value)) {
+        const message = `Failed to set the value "${value}" for the runtime feature flag "${name}". Runtime feature flags can only be set to a boolean value.`;
+        if (process.env.NODE_ENV !== 'production') {
+            throw new TypeError(message);
+        } else {
+            // eslint-disable-next-line no-console
+            console.error(message);
+            return;
+        }
+    }
+    if (isUndefined(features[name])) {
+        const availableFlags = keys(features)
+            .map((name) => `"${name}"`)
+            .join(', ');
+        // eslint-disable-next-line no-console
+        console.warn(
+            `Failed to set the value "${value}" for the runtime feature flag "${name}" because it is undefined. Available flags: ${availableFlags}.`
+        );
+        return;
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        // Allow the same flag to be set more than once outside of production to enable testing
+        runtimeFlags[name] = value;
+    } else {
+        // Disallow the same flag to be set more than once in production
+        const runtimeValue = runtimeFlags[name];
+        if (!isUndefined(runtimeValue)) {
+            // eslint-disable-next-line no-console
+            console.error(
+                `Failed to set the value "${value}" for the runtime feature flag "${name}". "${name}" has already been set with the value "${runtimeValue}".`
+            );
+            return;
+        }
+        defineProperty(runtimeFlags, name, { value });
+    }
+}
+
+/**
+ * Set the value at runtime of a given feature flag. This method should only be used for testing
+ * purposes. It is a no-op when invoked in production mode.
+ */
+export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagValue): void {
+    if (process.env.NODE_ENV !== 'production') {
+        setFeatureFlag(name, value);
+    }
+}
+
+export default features;
