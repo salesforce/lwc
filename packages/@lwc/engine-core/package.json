@@ -28,7 +28,7 @@
         "@lwc/shared": "2.3.6"
     },
     "devDependencies": {
-        "observable-membrane": "1.0.1"
+        "observable-membrane": "1.1.3"
     },
     "publishConfig": {
         "access": "public"
