@@ -1,17 +1,10 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import LightContainer from 'x/lightContainer';
 import ShadowContainer from 'x/shadowContainer';
 
 describe('Light DOM + Synthetic Shadow DOM', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
-
     describe('light -> shadow', () => {
         let elm, nodes;
         beforeEach(() => {

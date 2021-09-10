@@ -1,16 +1,9 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
 
 import Container from 'x/container';
 
 describe('shadow parent with light child', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
     it('should render properly', () => {
         const element = createElement('x-container', { is: Container });
         element.setAttribute('data-id', 'x-container');

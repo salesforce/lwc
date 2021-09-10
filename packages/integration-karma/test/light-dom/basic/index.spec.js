@@ -1,28 +1,15 @@
-import { createElement, setFeatureFlagForTest, LightningElement } from 'lwc';
+import { createElement, LightningElement } from 'lwc';
 
 import Test from 'x/test';
 import InvalidRenderMode from 'x/invalidRenderMode';
 
 describe('Basic Light DOM', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
     it('should render properly', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot).toBeNull();
         expect(elm.firstChild.innerText).toEqual('Hello, Light DOM');
-    });
-    it('should throw error when feature is disabled', () => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-        expect(() => createElement('x-test', { is: Test })).toThrowErrorDev(
-            Error,
-            'Assert Violation: Test is an invalid LWC component. Light DOM components are not available in this environment.'
-        );
     });
 
     it('should return null for template', () => {

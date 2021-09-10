@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 
 import ShadowExtendsLight from 'x/shadowExtendsLight';
 import DefaultExtendsLight from 'x/defaultExtendsLight';
@@ -6,13 +6,6 @@ import LightExtendsShadow from 'x/lightExtendsShadow';
 import DefaultExtendsShadow from 'x/defaultExtendsShadow';
 
 describe('light/shadow inheritance from base classes', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
-
     const testCases = [
         { tag: 'x-shadow-extends-light', is: ShadowExtendsLight, shadow: true },
         { tag: 'x-default-extends-light', is: DefaultExtendsLight, shadow: false },
