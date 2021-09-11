@@ -11,7 +11,10 @@ import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors
 import * as t from '../shared/estree';
 import { TemplateExpression, TemplateIdentifier, IRElement } from '../shared/types';
 
+import ParserCtx from './parser';
+
 import { ResolvedConfig } from '../config';
+import { isTemplate } from '../shared/ir';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -118,37 +121,21 @@ export function parseIdentifier(source: string): TemplateIdentifier | never {
 // Returns the immediate iterator parent if it exists.
 // Traverses up until it finds an element with forOf, or
 // a non-template element without a forOf.
-export function getForOfParent(parentStack: IRElement[]): IRElement | null {
-    let size = parentStack.length;
-    let parent: IRElement | undefined = parentStack[--size];
-
-    while (parent) {
-        if (parent.forOf) {
-            return parent;
-        }
-
-        parent = parent.tag === 'template' ? parentStack[--size] : undefined;
-    }
-
-    return null;
+export function getForOfParent(ctx: ParserCtx): IRElement | null {
+    return ctx.findAncestor({
+        predicate: (element) => element.forOf,
+        traversalCond: ({ current }) => isTemplate(current),
+    });
 }
 
-export function getForEachParent(element: IRElement, parentStack: IRElement[]): IRElement | null {
-    let current: IRElement | undefined = element;
-    let size = parentStack.length;
-
-    while (current) {
-        if (current.forEach) {
-            return current;
-        }
-
-        const parent = parentStack[--size];
-        current = parent?.tag === 'template' ? parent : undefined;
-    }
-
-    return null;
+export function getForEachParent(ctx: ParserCtx, element: IRElement): IRElement | null {
+    return ctx.findAncestor({
+        element,
+        predicate: (element) => element.forEach,
+        traversalCond: ({ parent }) => parent && isTemplate(parent),
+    });
 }
 
-export function isIteratorElement(element: IRElement, parentStack: IRElement[]): boolean {
-    return !!(getForOfParent(parentStack) || getForEachParent(element, parentStack));
+export function isIteratorElement(ctx: ParserCtx, element: IRElement): boolean {
+    return !!(getForOfParent(ctx) || getForEachParent(ctx, element));
 }

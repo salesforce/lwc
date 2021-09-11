@@ -41,6 +41,7 @@ import {
     isIRBooleanAttribute,
     isIRExpressionAttribute,
     isIRStringAttribute,
+    isTemplate,
 } from '../shared/ir';
 import {
     ForEach,
@@ -258,8 +259,8 @@ function getTemplateRoot(
 }
 
 function applyHandlers(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
-    let eventHandlerAttribute = parsedAttr.pick(EVENT_HANDLER_RE);
-    while (eventHandlerAttribute) {
+    let eventHandlerAttribute;
+    while ((eventHandlerAttribute = parsedAttr.pick(EVENT_HANDLER_RE))) {
         const { name } = eventHandlerAttribute;
 
         if (!isIRExpressionAttribute(eventHandlerAttribute)) {
@@ -278,8 +279,6 @@ function applyHandlers(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
 
         const on = element.on || (element.on = {});
         on[eventName] = eventHandlerAttribute.value;
-
-        eventHandlerAttribute = parsedAttr.pick(EVENT_HANDLER_RE);
     }
 }
 
@@ -540,8 +539,8 @@ function applyKey(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribut
             ctx.throwOnIRNode(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, keyAttribute);
         }
 
-        const forOfParent = getForOfParent(ctx.parentStack);
-        const forEachParent = getForEachParent(element, ctx.parentStack);
+        const forOfParent = getForOfParent(ctx);
+        const forEachParent = getForEachParent(ctx, element);
 
         if (forOfParent) {
             if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent.forOf!)) {
@@ -563,7 +562,7 @@ function applyKey(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribut
         }
 
         element.forKey = keyAttribute.value;
-    } else if (isIteratorElement(element, ctx.parentStack) && element.tag !== 'template') {
+    } else if (isIteratorElement(ctx, element) && !isTemplate(element)) {
         ctx.throwOnIRNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
 }
@@ -625,7 +624,7 @@ function applySlot(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribu
         return ctx.warnOnIRNode(ParserDiagnostics.NO_DUPLICATE_SLOTS, element, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
-    } else if (isInIteration(ctx, element)) {
+    } else if (isInIteration(element, ctx)) {
         return ctx.warnOnIRNode(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, element, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
@@ -677,7 +676,7 @@ function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedA
                     ctx.throwOnIRNode(ParserDiagnostics.INVALID_ID_ATTRIBUTE, attr, [value]);
                 }
 
-                if (isInIteration(ctx, element)) {
+                if (isInIteration(element, ctx)) {
                     ctx.throwOnIRNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr, [
                         value,
                     ]);
@@ -716,7 +715,7 @@ function validateElement(ctx: ParserCtx, element: IRElement, node: parse5.Elemen
     const isRoot = ctx.parentStack.length === 0;
 
     if (isRoot) {
-        if (tag !== 'template') {
+        if (!isTemplate(element)) {
             ctx.throwOnIRNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, element, [tag]);
         }
 
@@ -740,7 +739,7 @@ function validateElement(ctx: ParserCtx, element: IRElement, node: parse5.Elemen
 
     if (tag === 'style' && namespace === HTML_NAMESPACE_URI) {
         ctx.throwOnIRNode(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element);
-    } else if (tag === 'template') {
+    } else if (isTemplate(element)) {
         // We check if the template element has some modifier applied to it. Directly checking if one of the
         // IRElement property is impossible. For example when an error occurs during the parsing of the if
         // expression, the `element.if` property remains undefined. It would results in 2 warnings instead of 1:
@@ -922,18 +921,9 @@ function getTemplateAttribute(
     );
 }
 
-function isInIteration(ctx: ParserCtx, element: IRElement): boolean {
-    let current: IRElement | undefined = element;
-
-    for (let i = ctx.parentStack.length; i >= 0; i--) {
-        if (current.tag === 'template') {
-            if (current.forEach || current.forOf) {
-                return true;
-            }
-        }
-
-        current = ctx.parentStack[i - 1];
-    }
-
-    return false;
+function isInIteration(element: IRElement, ctx: ParserCtx) {
+    return ctx.findAncestor({
+        predicate: (element) => isTemplate(element) && (element.forOf || element.forEach),
+        element,
+    });
 }

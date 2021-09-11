@@ -54,6 +54,30 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
+    *ancestorGenerator(element?: IRElement) {
+        const ancestors = element ? [...this.parentStack, element] : this.parentStack;
+        for (let index = ancestors.length - 1; index > 0; index--) {
+            yield { current: ancestors[index], index };
+        }
+    }
+
+    findAncestor(args: {
+        element?: IRElement;
+        predicate: (elm: IRElement) => unknown;
+        traversalCond?: (nodes: { current: IRElement; parent: IRElement | undefined }) => unknown;
+    }): IRElement | null {
+        const { element, predicate, traversalCond = () => true } = args;
+        for (const { current, index } of this.ancestorGenerator(element)) {
+            if (predicate(current)) {
+                return current;
+            }
+            if (!traversalCond({ current, parent: this.parentStack[index - 1] })) {
+                break;
+            }
+        }
+        return null;
+    }
+
     withErrorRecovery<T>(fn: () => T): T | undefined {
         try {
             return fn();
