@@ -68,8 +68,9 @@
 
   var __concat = Proxy.concat;
 
-  function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-    return nativeShadow ? ":host {color: var(--lwc-my-color);}" : __callKey1([hostSelector, " {color: var(--lwc-my-color);}"], "join", '');
+  function stylesheet(useActualHostSelector, token) {
+    var hostSelector = token ? "[" + token + "-host]" : "";
+    return useActualHostSelector ? ":host {color: var(--lwc-my-color);}" : __callKey1([hostSelector, " {color: var(--lwc-my-color);}"], "join", '');
   }
 
   var _implicitStylesheets = [stylesheet];

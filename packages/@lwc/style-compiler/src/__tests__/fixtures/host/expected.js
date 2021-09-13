@@ -1,4 +1,6 @@
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return (nativeShadow ? ":host {}" : [hostSelector, " {}"].join(''));
+function stylesheet(useActualHostSelector, token) {
+  var shadowSelector = token ? ("[" + token + "]") : "";
+  var hostSelector = token ? ("[" + token + "-host]") : "";
+  return (useActualHostSelector ? ":host {}" : [hostSelector, " {}"].join(''));
 }
 export default [stylesheet];

@@ -35,7 +35,8 @@ function setElementShadowToken(elm: Element, token: string | undefined) {
     (elm as any).$shadowToken$ = token;
 }
 
-function setLightDomScopingTokenIfNecessary(elm: Element, owner: VM) {
+// Set the scope token class for *.scoped.css styles
+function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     const { cmpTemplate, context } = owner;
     const token = cmpTemplate?.stylesheetToken;
     if (!isUndefined(token) && context.hasScopedStyles) {
@@ -104,9 +105,8 @@ const enum LWCDOMMode {
 
 export function fallbackElmHook(elm: Element, vnode: VElement) {
     const { owner } = vnode;
-    if (owner.renderMode === RenderMode.Light) {
-        setLightDomScopingTokenIfNecessary(elm, owner);
-    } else if (owner.shadowMode === ShadowMode.Synthetic) {
+    setScopeTokenClassIfNecessary(elm, owner);
+    if (owner.shadowMode === ShadowMode.Synthetic) {
         const {
             data: { context },
         } = vnode;
@@ -194,9 +194,8 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
         return;
     }
     const { sel, mode, ctor, owner } = vnode;
-    if (owner.renderMode === RenderMode.Light) {
-        setLightDomScopingTokenIfNecessary(elm, owner);
-    } else if (owner.shadowMode === ShadowMode.Synthetic) {
+    setScopeTokenClassIfNecessary(elm, owner);
+    if (owner.shadowMode === ShadowMode.Synthetic) {
         const { stylesheetToken } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.

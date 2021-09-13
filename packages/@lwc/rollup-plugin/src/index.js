@@ -28,14 +28,14 @@ function isImplicitHTMLImport(importee, importer) {
     );
 }
 
-function parseQueryParamsForScopeToken(id) {
+function parseQueryParamsForScopedOption(id) {
     const [filename, query] = id.split('?', 2);
     const params = query && new URLSearchParams(query);
-    const scopeToken = params && params.get('scopeToken');
+    const scoped = !!(params && params.get('scoped'));
     return {
         filename,
         query,
-        scopeToken,
+        scoped,
     };
 }
 
@@ -92,8 +92,8 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 return EMPTY_IMPLICIT_HTML_CONTENT;
             }
 
-            const { filename, scopeToken } = parseQueryParamsForScopeToken(id);
-            if (scopeToken) {
+            const { filename, scoped } = parseQueryParamsForScopedOption(id);
+            if (scoped) {
                 id = filename; // remove query param
             }
 
@@ -103,7 +103,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 const exists = fs.existsSync(id);
                 if (!exists) {
                     return '';
-                } else if (scopeToken) {
+                } else if (scoped) {
                     // load the file ourselves without the query param
                     return fs.readFileSync(filename, 'utf-8');
                 }
@@ -119,8 +119,8 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             // Extract module name and namespace from file path
             const [namespace, name] = path.dirname(id).split(path.sep).slice(-2);
 
-            const { filename, scopeToken } = parseQueryParamsForScopeToken(id);
-            if (scopeToken) {
+            const { filename, scoped } = parseQueryParamsForScopedOption(id);
+            if (scoped) {
                 id = filename; // remove query param
             }
 
@@ -131,7 +131,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 stylesheetConfig: pluginOptions.stylesheetConfig,
                 experimentalDynamicComponent: pluginOptions.experimentalDynamicComponent,
                 preserveHtmlComments: pluginOptions.preserveHtmlComments,
-                cssScopeToken: scopeToken,
+                scopedStyles: scoped,
             });
 
             return { code, map };

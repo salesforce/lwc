@@ -31,7 +31,7 @@ function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
 }
 
 export interface PostCssLwcPluginOptions {
-    isScoped: boolean;
+    scoped: boolean;
 }
 
 export default function postCssLwcPlugin(options: PostCssLwcPluginOptions): TransformCallback {
@@ -45,7 +45,7 @@ export default function postCssLwcPlugin(options: PostCssLwcPluginOptions): Tran
     });
 
     return (root, result) => {
-        transformImport(root, result, options.isScoped);
+        transformImport(root, result, options.scoped);
         transformCustomProperties(root, result);
         transformAtRules(root);
 

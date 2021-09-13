@@ -78,6 +78,10 @@ export const enum ShadowSupportMode {
 export interface Context {
     /** The string used for synthetic shadow DOM and light DOM style scoping. */
     stylesheetToken: string | undefined;
+    /** True if a stylesheetToken was added to the host class */
+    hasTokenInClass: boolean | undefined;
+    /** True if a stylesheetToken was added to the host attributes */
+    hasTokenInAttribute: boolean | undefined;
     /** Whether or not light DOM scoped styles are present in the stylesheets. */
     hasScopedStyles: boolean | undefined;
     /** The VNode injected in all the shadow trees to apply the associated component stylesheets. */
@@ -287,6 +291,8 @@ export function createVM<HostNode, HostElement>(
 
         context: {
             stylesheetToken: undefined,
+            hasTokenInClass: undefined,
+            hasTokenInAttribute: undefined,
             hasScopedStyles: undefined,
             styleVNode: null,
             tplCache: EmptyObject,

@@ -66,7 +66,7 @@ export interface TransformOptions {
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
     preserveHtmlComments?: boolean;
-    cssScopeToken?: string;
+    scopedStyles?: boolean;
 }
 
 type RequiredTransformOptions = Omit<TransformOptions, 'name' | 'namespace'>;

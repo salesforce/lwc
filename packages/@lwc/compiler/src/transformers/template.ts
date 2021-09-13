@@ -63,9 +63,7 @@ function serialize(
     const scopeToken = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
     let buffer = '';
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
-    buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scopeToken=${encodeURIComponent(
-        scopeToken
-    )}";\n\n`;
+    buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scoped=true";\n\n`;
     buffer += code;
     buffer += '\n\n';
     buffer += 'if (_implicitStylesheets) {\n';

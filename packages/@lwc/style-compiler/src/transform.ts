@@ -16,7 +16,7 @@ export interface Config {
         resolverModule?: string;
     };
     /** Token that is used for scoping in light DOM scoped styles */
-    scopeToken?: string;
+    scoped?: boolean;
 }
 
 export function transform(src: string, id: string, config: Config = {}): { code: string } {
@@ -24,8 +24,8 @@ export function transform(src: string, id: string, config: Config = {}): { code:
         return { code: 'export default undefined' };
     }
 
-    const isScoped = !!config.scopeToken;
-    const plugins = [postcssLwc({ isScoped })];
+    const scoped = !!config.scoped;
+    const plugins = [postcssLwc({ scoped })];
 
     const result = postcss(plugins).process(src, { from: id }).sync();
 

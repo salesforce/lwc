@@ -15,7 +15,7 @@ import {
     isTrue,
     isUndefined,
     toString,
-    KEY__SCOPED_CSS
+    KEY__SCOPED_CSS,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
@@ -103,10 +103,6 @@ function validateLightDomTemplate(template: Template, vm: VM) {
         assert.isTrue(
             isUndefined(template.renderMode),
             `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive or set it to 'lwc:render-mode="shadow"`
-        );
-        assert.isFalse(
-            computeHasScopedStyles(template),
-            `Shadow DOM components template can't use scoped styles (*.scoped.css). Use a regular *.css file.`
         );
     }
 }

@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import Basic from 'x/basic';
 import Other from 'x/other';
 import Switchable from 'x/switchable';
@@ -6,12 +6,6 @@ import Unscoped from 'x/unscoped';
 import ShadowWithScoped from 'x/shadowWithScoped';
 
 describe('Light DOM scoped CSS', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
-    });
     it('should scope scoped CSS and allow unscoped CSS to leak out', () => {
         const basicElement = createElement('x-basic', { is: Basic });
         const otherElement = createElement('x-other', { is: Other });
@@ -69,12 +63,15 @@ describe('Light DOM scoped CSS', () => {
         expect(elm.querySelector('div').classList.length).toEqual(0);
     });
 
-    it('disallows scoped styles for shadow components', () => {
-        expect(() => {
-            const elm = createElement('x-shadow-with-scoped', { is: ShadowWithScoped });
-            document.body.appendChild(elm);
-        }).toThrowError(
-            "Assert Violation: Shadow DOM components template can't use scoped styles (*.scoped.css). Use a regular *.css file."
+    it('can scope shadow DOM styles as well', () => {
+        const elm = createElement('x-shadow-with-scoped', { is: ShadowWithScoped });
+        document.body.appendChild(elm);
+        expect(getComputedStyle(elm).backgroundColor).toEqual('rgb(0, 0, 255)');
+        expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
+            'rgb(255, 0, 0)'
         );
+        expect(
+            getComputedStyle(elm.shadowRoot.querySelector('x-light-child div')).color
+        ).not.toEqual('rgb(255, 0, 0)');
     });
 });

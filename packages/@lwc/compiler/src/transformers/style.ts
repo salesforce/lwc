@@ -24,7 +24,7 @@ export default function styleTransform(
                     ? customProperties.resolution.name
                     : undefined,
         },
-        scopeToken: config.cssScopeToken,
+        scoped: config.scopedStyles,
     };
 
     let res;

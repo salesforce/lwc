@@ -26,7 +26,7 @@ interface Token {
 // Javascript identifiers used for the generation of the style module
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
-const SHADOW_DOM_ENABLED_IDENTIFIER = 'nativeShadow';
+const USE_ACTUAL_HOST_SELECTOR = 'useActualHostSelector';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
@@ -58,21 +58,20 @@ export default function serialize(result: Result, config: Config): string {
 
     if (serializedStyle) {
         // inline function
-        if (config.scopeToken) {
-            // light DOM scoped CSS, the string is always exactly the same
-            // TODO [#2368]: this could be made more efficient by just directly putting a string here
-            buffer += `function stylesheet() {\n`;
-            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = ".${config.scopeToken}-host";\n`;
-            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = ".${config.scopeToken}";\n`;
-            buffer += `  var ${SHADOW_DOM_ENABLED_IDENTIFIER} = false;\n`;
-            buffer += `  return ${serializedStyle};\n`;
-            buffer += `}\n`;
-            buffer += `stylesheet.${KEY__SCOPED_CSS} = true;\n`;
+        buffer += `function stylesheet(${USE_ACTUAL_HOST_SELECTOR}, token) {\n`;
+        // For scoped stylesheets, we use classes, but for synthetic shadow DOM, we use attributes
+        if (config.scoped) {
+            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = token ? ("." + token) : "";\n`;
+            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = token ? ("." + token + "-host") : "";\n`;
         } else {
-            // shadow DOM or non-scoped light DOM styles
-            buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
-            buffer += `  return ${serializedStyle};\n`;
-            buffer += `}\n`;
+            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = token ? ("[" + token + "]") : "";\n`;
+            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = token ? ("[" + token + "-host]") : "";\n`;
+        }
+        buffer += `  return ${serializedStyle};\n`;
+        buffer += `}\n`;
+        if (config.scoped) {
+            // Mark the stylesheet as scoped so that we can distinguish it later at runtime
+            buffer += `stylesheet.${KEY__SCOPED_CSS} = true;\n`;
         }
 
         // add import at the end
@@ -145,7 +144,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
 
                 tokens.push({
                     type: TokenType.expression,
-                    value: `(${SHADOW_DOM_ENABLED_IDENTIFIER} ? ${tmpHostExpression} : ${exprToken})`,
+                    value: `(${USE_ACTUAL_HOST_SELECTOR} ? ${tmpHostExpression} : ${exprToken})`,
                 });
 
                 tmpHostExpression = null;

@@ -46,7 +46,7 @@ const { code } = compile(source, 'example.css');
 -   `options` (object, optional)
     -   `customProperties` (object, optional)
         -   `resolverModule` (boolean, optional) - module name for the custom properties resolve
-    -   `scopeToken` (string, optional) - token that is used for scoping in light DOM scoped styles
+    -   `scoped` (boolean, optional) - true if the styles are scoped (via Light DOM style scoping)
 
 **Return:**
 
