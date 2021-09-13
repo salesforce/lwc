@@ -19,14 +19,15 @@
         "build": "tsc"
     },
     "devDependencies": {
-        "@types/estree": "0.0.48",
+        "@types/estree": "0.0.50",
         "@types/he": "^1.1.1",
         "@types/parse5": "^6.0.1"
     },
+    "//": "Currently can't upgrade TypeScript to v4.4.2 because it breaks Rollup: https://git.io/JuCcs",
     "dependencies": {
         "@lwc/errors": "2.3.7",
         "@lwc/shared": "2.3.7",
-        "acorn": "~8.4.0",
+        "acorn": "~8.5.0",
         "astring": "~1.7.0",
         "estree-walker": "~2.0.2",
         "esutils": "~2.0.3",
