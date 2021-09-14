@@ -28,12 +28,14 @@ if (SYNTHETIC_SHADOW_DEFINED) {
 
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
+            setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
             elm = createElement('x-native-container', { is: NativeContainer });
             document.body.appendChild(elm);
         });
 
         afterEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
+            setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         });
 
         it('should attach a native shadow root when possible', () => {
@@ -69,12 +71,14 @@ if (SYNTHETIC_SHADOW_DEFINED) {
 
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
+            setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
             elm = createElement('x-light-container', { is: LightContainer });
             document.body.appendChild(elm);
         });
 
         afterEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
+            setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         });
 
         it('should not attach shadow root', () => {
@@ -102,6 +106,7 @@ if (SYNTHETIC_SHADOW_DEFINED) {
 
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
+            setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', true);
             elm = createElement('x-default-extends-native', {
                 is: DefaultExtendsNative,
             });
@@ -110,6 +115,7 @@ if (SYNTHETIC_SHADOW_DEFINED) {
 
         afterEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
+            setFeatureFlagForTest('ENABLE_LIGHT_DOM_COMPONENTS', false);
         });
 
         it('should attach a synthetic shadow root', () => {
