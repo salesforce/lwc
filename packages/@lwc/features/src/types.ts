@@ -29,11 +29,6 @@ export interface FeatureFlagMap {
     ENABLE_HMR: FeatureFlagValue;
 
     /**
-     * LWC engine flag to toggle LWC light DOM support.
-     */
-    ENABLE_LIGHT_DOM_COMPONENTS: FeatureFlagValue;
-
-    /**
      * LWC engine flag to toggle LWC mixed shadow DOM support.
      */
     ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
