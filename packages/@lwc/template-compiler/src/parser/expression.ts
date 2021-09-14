@@ -6,7 +6,8 @@
  */
 import * as esutils from 'esutils';
 import { Node, parseExpressionAt } from 'acorn';
-import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors';
+import { Location } from 'parse5';
+import { ParserDiagnostics, invariant } from '@lwc/errors';
 
 import * as t from '../shared/estree';
 import { TemplateExpression, TemplateIdentifier, IRElement } from '../shared/types';
@@ -94,27 +95,35 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
     ]);
 }
 
-export function parseExpression(source: string, config: ResolvedConfig): TemplateExpression {
-    try {
-        const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
+export function parseExpression(
+    source: string,
+    ctx: ParserCtx,
+    location: Location
+): TemplateExpression | never {
+    return ctx.withErrorWrapping(
+        () => {
+            const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
 
-        validateSourceIsParsedExpression(source, parsed);
-        validateExpression(parsed, config);
+            validateSourceIsParsedExpression(source, parsed);
+            validateExpression(parsed, ctx.config);
 
-        return parsed;
-    } catch (err) {
-        err.message = `Invalid expression ${source} - ${err.message}`;
-        throw err;
-    }
+            return parsed;
+        },
+        ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
+        location,
+        (err) => `Invalid expression ${source} - ${err.message}`
+    );
 }
 
-export function parseIdentifier(source: string): TemplateIdentifier | never {
+export function parseIdentifier(
+    source: string,
+    ctx: ParserCtx,
+    location: Location
+): TemplateIdentifier | never {
     if (esutils.keyword.isIdentifierES6(source)) {
         return t.identifier(source);
     } else {
-        throw generateCompilerError(ParserDiagnostics.INVALID_IDENTIFIER, {
-            messageArgs: [source],
-        });
+        ctx.throwAtLocation(ParserDiagnostics.INVALID_IDENTIFIER, location, [source]);
     }
 }
 

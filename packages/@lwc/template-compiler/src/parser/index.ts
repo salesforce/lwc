@@ -213,11 +213,7 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): IRText[] {
 
         let value: TemplateExpression | string;
         if (isExpression(token)) {
-            value = ctx.withErrorWrapping(
-                () => parseExpression(token, ctx.config),
-                ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-                location
-            );
+            value = parseExpression(token, ctx, location);
         } else {
             value = decodeTextContent(token);
         }
@@ -465,11 +461,7 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
             );
         }
 
-        const item = ctx.withErrorWrapping(
-            () => parseIdentifier(forItemAttribute.value),
-            ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
-            forItemAttribute.location
-        );
+        const item = parseIdentifier(forItemAttribute.value, ctx, forItemAttribute.location);
 
         let index: TemplateIdentifier | undefined;
         if (forIndex) {
@@ -477,11 +469,7 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
                 ctx.throwOnIRNode(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, forIndex);
             }
 
-            index = ctx.withErrorWrapping(
-                () => parseIdentifier(forIndex.value),
-                ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
-                forIndex.location
-            );
+            index = parseIdentifier(forIndex.value, ctx, forIndex.location);
         }
 
         element.forEach = {
@@ -518,11 +506,7 @@ function applyIterator(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
         ]);
     }
 
-    const iterator = ctx.withErrorWrapping(
-        () => parseIdentifier(iteratorName),
-        ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
-        iteratorExpression.location
-    );
+    const iterator = parseIdentifier(iteratorName, ctx, iteratorExpression.location);
 
     element.forOf = {
         expression: iteratorExpression.value,
@@ -885,40 +869,36 @@ function getTemplateAttribute(
         ]);
     }
 
-    return ctx.withErrorWrapping(
-        () => {
-            const isBooleanAttribute = !rawAttribute.includes('=');
-            const { value, escapedExpression } = normalizeAttributeValue(
-                attribute,
-                rawAttribute,
-                tag
-            );
-            if (isExpression(value) && !escapedExpression) {
-                return {
-                    name,
-                    location,
-                    type: IRAttributeType.Expression,
-                    value: parseExpression(value, ctx.config),
-                };
-            } else if (isBooleanAttribute) {
-                return {
-                    name,
-                    location,
-                    type: IRAttributeType.Boolean,
-                    value: true,
-                };
-            } else {
-                return {
-                    name,
-                    location,
-                    type: IRAttributeType.String,
-                    value,
-                };
-            }
-        },
-        ParserDiagnostics.GENERIC_PARSING_ERROR,
+    const isBooleanAttribute = !rawAttribute.includes('=');
+    const { value, escapedExpression } = normalizeAttributeValue(
+        attribute,
+        rawAttribute,
+        tag,
+        ctx,
         location
     );
+    if (isExpression(value) && !escapedExpression) {
+        return {
+            name,
+            location,
+            type: IRAttributeType.Expression,
+            value: parseExpression(value, ctx, location),
+        };
+    } else if (isBooleanAttribute) {
+        return {
+            name,
+            location,
+            type: IRAttributeType.Boolean,
+            value: true,
+        };
+    } else {
+        return {
+            name,
+            location,
+            type: IRAttributeType.String,
+            value,
+        };
+    }
 }
 
 function isInIteration(element: IRElement, ctx: ParserCtx) {

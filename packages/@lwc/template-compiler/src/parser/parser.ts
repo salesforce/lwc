@@ -64,7 +64,7 @@ export default class ParserCtx {
     findAncestor(args: {
         element?: IRElement;
         predicate: (elm: IRElement) => unknown;
-        traversalCond?: (nodes: { current: IRElement; parent: IRElement | undefined }) => unknown;
+        traversalCond?: (nodes: { current: IRElement; parent: IRElement | null }) => unknown;
     }): IRElement | null {
         const { element, predicate, traversalCond = () => true } = args;
         for (const { current, index } of this.ancestorGenerator(element)) {
@@ -90,31 +90,20 @@ export default class ParserCtx {
         }
     }
 
-    withErrorWrapping<T>(fn: () => T, errorInfo: LWCErrorInfo, location: parse5.Location): T {
+    withErrorWrapping<T>(
+        fn: () => T,
+        errorInfo: LWCErrorInfo,
+        location: parse5.Location,
+        msgFormatter?: (error: any) => string
+    ): T {
         try {
             return fn();
-        } catch (error) {
+        } catch (error: any) {
+            if (msgFormatter) {
+                error.message = msgFormatter(error);
+            }
             this.throwOnError(errorInfo, error, location);
         }
-    }
-
-    warnOnIRNode(
-        errorInfo: LWCErrorInfo,
-        irNode: IRNode | IRBaseAttribute,
-        messageArgs?: any[]
-    ): void {
-        this.warnAtLocation(errorInfo, messageArgs, irNode.location);
-    }
-
-    warnAtLocation(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): void {
-        this.addDiagnostic(
-            generateCompilerDiagnostic(errorInfo, {
-                messageArgs,
-                origin: {
-                    location: normalizeLocation(location),
-                },
-            })
-        );
     }
 
     throwOnError(errorInfo: LWCErrorInfo, error: any, location?: parse5.Location): never {
@@ -143,6 +132,25 @@ export default class ParserCtx {
                 location: normalizeLocation(location),
             },
         });
+    }
+
+    warnOnIRNode(
+        errorInfo: LWCErrorInfo,
+        irNode: IRNode | IRBaseAttribute,
+        messageArgs?: any[]
+    ): void {
+        this.warnAtLocation(errorInfo, messageArgs, irNode.location);
+    }
+
+    warnAtLocation(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): void {
+        this.addDiagnostic(
+            generateCompilerDiagnostic(errorInfo, {
+                messageArgs,
+                origin: {
+                    location: normalizeLocation(location),
+                },
+            })
+        );
     }
 
     addDiagnostic(diagnostic: CompilerDiagnostic): void {

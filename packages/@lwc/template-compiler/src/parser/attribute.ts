@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-import { ParserDiagnostics, generateCompilerError } from '@lwc/errors';
+import { ParserDiagnostics } from '@lwc/errors';
 import { isAriaAttribute, isBooleanAttribute, isGlobalHtmlAttribute } from '@lwc/shared';
 
 import { toPropertyName } from '../shared/utils';
@@ -35,6 +35,7 @@ import {
 } from './constants';
 
 import { isCustomElement } from '../shared/ir';
+import ParserCtx from './parser';
 
 function isQuotedAttribute(rawAttribute: string) {
     const [, value] = rawAttribute.split('=');
@@ -83,7 +84,9 @@ export function isFragmentOnlyUrl(url: string): boolean {
 export function normalizeAttributeValue(
     attr: parse5.Attribute,
     raw: string,
-    tag: string
+    tag: string,
+    ctx: ParserCtx,
+    location: parse5.Location
 ): {
     value: string;
     escapedExpression: boolean;
@@ -91,13 +94,17 @@ export function normalizeAttributeValue(
     const { name, value } = attr;
     if (isBooleanAttribute(name, tag)) {
         if (value === 'true') {
-            throw generateCompilerError(ParserDiagnostics.BOOLEAN_ATTRIBUTE_TRUE, {
-                messageArgs: [tag, name, value],
-            });
+            ctx.throwAtLocation(ParserDiagnostics.BOOLEAN_ATTRIBUTE_TRUE, location, [
+                tag,
+                name,
+                value,
+            ]);
         } else if (value === 'false') {
-            throw generateCompilerError(ParserDiagnostics.BOOLEAN_ATTRIBUTE_FALSE, {
-                messageArgs: [tag, name, value],
-            });
+            ctx.throwAtLocation(ParserDiagnostics.BOOLEAN_ATTRIBUTE_FALSE, location, [
+                tag,
+                name,
+                value,
+            ]);
         }
     }
 
@@ -111,9 +118,11 @@ export function normalizeAttributeValue(
             const unquoted = raw.replace(/"/g, '');
             const escaped = raw.replace('"{', '"\\{');
 
-            throw generateCompilerError(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE, {
-                messageArgs: [raw, unquoted, escaped],
-            });
+            ctx.throwAtLocation(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE, location, [
+                raw,
+                unquoted,
+                escaped,
+            ]);
         }
 
         // <input value={myValue} />
@@ -143,9 +152,10 @@ export function normalizeAttributeValue(
         escaped += escaped.endsWith('"') ? '' : '"';
 
         // Throw if the attribute value looks like an expression, but it can't be resolved by the compiler.
-        throw generateCompilerError(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, {
-            messageArgs: [raw, escaped],
-        });
+        ctx.throwAtLocation(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, location, [
+            raw,
+            escaped,
+        ]);
     }
 
     // <input value="myValue"/>
