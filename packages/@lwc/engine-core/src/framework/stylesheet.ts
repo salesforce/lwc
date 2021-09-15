@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isArray, isUndefined, ArrayJoin, ArrayPush, isNull } from '@lwc/shared';
+import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
 import * as api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
 import { RenderMode, ShadowMode, VM } from './vm';
-import { Template, TemplateStylesheetTokens } from './template';
+import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 
 /**
@@ -17,9 +17,8 @@ import { getStyleOrSwappedStyle } from './hot-swaps';
  * the engine with different values depending on the mode that the component is running on.
  */
 export type StylesheetFactory = (
-    hostSelector: string,
-    shadowSelector: string,
-    nativeShadow: boolean
+    useActualHostSelector: boolean,
+    stylesheetToken: string | undefined
 ) => string;
 
 /**
@@ -28,6 +27,10 @@ export type StylesheetFactory = (
  * @import CSS declaration).
  */
 export type TemplateStylesheetFactories = Array<StylesheetFactory | TemplateStylesheetFactories>;
+
+function makeHostToken(token: string) {
+    return `${token}-host`;
+}
 
 function createInlineStyleVNode(content: string): VNode {
     return api.h(
@@ -42,42 +45,58 @@ function createInlineStyleVNode(content: string): VNode {
     );
 }
 
-export function updateSyntheticShadowAttributes(vm: VM, template: Template) {
-    const { elm, context, renderer, renderMode } = vm;
-    const { stylesheets: newStylesheets, stylesheetTokens: newStylesheetTokens } = template;
+export function updateStylesheetToken(vm: VM, template: Template) {
+    const { elm, context, renderer, renderMode, shadowMode } = vm;
+    const { stylesheets: newStylesheets, stylesheetToken: newStylesheetToken } = template;
+    const isSyntheticShadow =
+        renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic;
+    const { hasScopedStyles } = context;
 
-    let newTokens: TemplateStylesheetTokens | undefined;
+    let newToken: string | undefined;
+    let newHasTokenInClass: boolean | undefined;
+    let newHasTokenInAttribute: boolean | undefined;
 
     // Reset the styling token applied to the host element.
-    const oldHostAttribute = context.hostAttribute;
-    if (!isUndefined(oldHostAttribute)) {
-        renderer.removeAttribute(elm, oldHostAttribute);
+    const {
+        stylesheetToken: oldToken,
+        hasTokenInClass: oldHasTokenInClass,
+        hasTokenInAttribute: oldHasTokenInAttribute,
+    } = context;
+    if (oldHasTokenInClass) {
+        renderer.getClassList(elm).remove(makeHostToken(oldToken!));
+    }
+    if (oldHasTokenInAttribute) {
+        renderer.removeAttribute(elm, makeHostToken(oldToken!));
     }
 
     // Apply the new template styling token to the host element, if the new template has any
-    // associated stylesheets.
-    if (
-        !isUndefined(newStylesheets) &&
-        newStylesheets.length !== 0 &&
-        renderMode === RenderMode.Shadow
-    ) {
-        newTokens = newStylesheetTokens;
+    // associated stylesheets. In the case of light DOM, also ensure there is at least one scoped stylesheet.
+    if (!isUndefined(newStylesheets) && newStylesheets.length !== 0) {
+        newToken = newStylesheetToken;
     }
 
-    if (!isUndefined(newTokens)) {
-        renderer.setAttribute(elm, newTokens.hostAttribute, '');
+    // Set the new styling token on the host element
+    if (!isUndefined(newToken)) {
+        if (hasScopedStyles) {
+            renderer.getClassList(elm).add(makeHostToken(newToken));
+            newHasTokenInClass = true;
+        }
+        if (isSyntheticShadow) {
+            renderer.setAttribute(elm, makeHostToken(newToken), '');
+            newHasTokenInAttribute = true;
+        }
     }
 
     // Update the styling tokens present on the context object.
-    context.hostAttribute = newTokens?.hostAttribute;
-    context.shadowAttribute = newTokens?.shadowAttribute;
+    context.stylesheetToken = newToken;
+    context.hasTokenInClass = newHasTokenInClass;
+    context.hasTokenInAttribute = newHasTokenInAttribute;
 }
 
 function evaluateStylesheetsContent(
     stylesheets: TemplateStylesheetFactories,
-    hostSelector: string,
-    shadowSelector: string,
-    nativeShadow: boolean
+    stylesheetToken: string | undefined,
+    vm: VM
 ): string[] {
     const content: string[] = [];
 
@@ -85,10 +104,7 @@ function evaluateStylesheetsContent(
         let stylesheet = stylesheets[i];
 
         if (isArray(stylesheet)) {
-            ArrayPush.apply(
-                content,
-                evaluateStylesheetsContent(stylesheet, hostSelector, shadowSelector, nativeShadow)
-            );
+            ArrayPush.apply(content, evaluateStylesheetsContent(stylesheet, stylesheetToken, vm));
         } else {
             if (process.env.NODE_ENV !== 'production') {
                 // in dev-mode, we support hot swapping of stylesheet, which means that
@@ -96,7 +112,20 @@ function evaluateStylesheetsContent(
                 // the stylesheet, while internally, we have a replacement for it.
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
-            ArrayPush.call(content, stylesheet(hostSelector, shadowSelector, nativeShadow));
+            // Use the actual `:host` selector if we're rendering global CSS for light DOM, or if we're rendering
+            // native shadow DOM. Synthetic shadow DOM never uses `:host`.
+            const isScopedCss = (stylesheet as any)[KEY__SCOPED_CSS];
+            const useActualHostSelector =
+                vm.renderMode === RenderMode.Light
+                    ? !isScopedCss
+                    : vm.shadowMode === ShadowMode.Native;
+            // Apply the scope token only if the stylesheet itself is scoped, or if we're rendering synthetic shadow.
+            const scopeToken =
+                isScopedCss ||
+                (vm.shadowMode === ShadowMode.Synthetic && vm.renderMode === RenderMode.Shadow)
+                    ? stylesheetToken
+                    : undefined;
+            ArrayPush.call(content, stylesheet(useActualHostSelector, scopeToken));
         }
     }
 
@@ -104,35 +133,12 @@ function evaluateStylesheetsContent(
 }
 
 export function getStylesheetsContent(vm: VM, template: Template): string[] {
-    const { stylesheets, stylesheetTokens } = template;
-    const { renderMode, shadowMode } = vm;
+    const { stylesheets, stylesheetToken } = template;
 
     let content: string[] = [];
 
     if (!isUndefined(stylesheets) && stylesheets.length !== 0) {
-        let hostSelector;
-        let shadowSelector;
-
-        // Scoping with the tokens is only necessary for synthetic shadow. For both
-        // light DOM elements and native shadow, we just render the CSS as-is.
-        if (
-            renderMode === RenderMode.Shadow &&
-            shadowMode === ShadowMode.Synthetic &&
-            !isUndefined(stylesheetTokens)
-        ) {
-            hostSelector = `[${stylesheetTokens.hostAttribute}]`;
-            shadowSelector = `[${stylesheetTokens.shadowAttribute}]`;
-        } else {
-            hostSelector = '';
-            shadowSelector = '';
-        }
-
-        content = evaluateStylesheetsContent(
-            stylesheets,
-            hostSelector,
-            shadowSelector,
-            shadowMode === ShadowMode.Native
-        );
+        content = evaluateStylesheetsContent(stylesheets, stylesheetToken, vm);
     }
 
     return content;

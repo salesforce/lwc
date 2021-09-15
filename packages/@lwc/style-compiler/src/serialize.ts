@@ -7,6 +7,7 @@
 import postcss, { Result, Declaration } from 'postcss';
 import postcssValueParser from 'postcss-value-parser';
 import matchAll from 'string.prototype.matchall';
+import { KEY__SCOPED_CSS } from '@lwc/shared';
 import { Config } from './index';
 import { isImportMessage, isVarFunctionMessage } from './utils/message';
 import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
@@ -25,7 +26,7 @@ interface Token {
 // Javascript identifiers used for the generation of the style module
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
-const SHADOW_DOM_ENABLED_IDENTIFIER = 'nativeShadow';
+const USE_ACTUAL_HOST_SELECTOR = 'useActualHostSelector';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
@@ -57,9 +58,21 @@ export default function serialize(result: Result, config: Config): string {
 
     if (serializedStyle) {
         // inline function
-        buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
+        buffer += `function stylesheet(${USE_ACTUAL_HOST_SELECTOR}, token) {\n`;
+        // For scoped stylesheets, we use classes, but for synthetic shadow DOM, we use attributes
+        if (config.scoped) {
+            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = token ? ("." + token) : "";\n`;
+            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = token ? ("." + token + "-host") : "";\n`;
+        } else {
+            buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = token ? ("[" + token + "]") : "";\n`;
+            buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = token ? ("[" + token + "-host]") : "";\n`;
+        }
         buffer += `  return ${serializedStyle};\n`;
         buffer += `}\n`;
+        if (config.scoped) {
+            // Mark the stylesheet as scoped so that we can distinguish it later at runtime
+            buffer += `stylesheet.${KEY__SCOPED_CSS} = true;\n`;
+        }
 
         // add import at the end
         stylesheetList.push(STYLESHEET_IDENTIFIER);
@@ -131,7 +144,7 @@ function serializeCss(result: Result, collectVarFunctions: boolean): string {
 
                 tokens.push({
                     type: TokenType.expression,
-                    value: `(${SHADOW_DOM_ENABLED_IDENTIFIER} ? ${tmpHostExpression} : ${exprToken})`,
+                    value: `(${USE_ACTUAL_HOST_SELECTOR} ? ${tmpHostExpression} : ${exprToken})`,
                 });
 
                 tmpHostExpression = null;
