@@ -32,15 +32,6 @@ const shadowModeFile = getModulePath(
     isProd ? 'prod' : 'dev'
 );
 
-const wireServicePath = getModulePath(
-    'wire-service',
-    'iife',
-    isCompat ? 'es5' : 'es2017',
-    isProd ? 'prod' : 'dev'
-);
-const todoPath = path.join(require.resolve('../src/shared/todo.js'));
-const todoContent = fs.readFileSync(todoPath).toString();
-
 const testSufix = '.test.js';
 const testPrefix = 'test-';
 
@@ -66,28 +57,18 @@ function getTestName(absPpath) {
         .replace(testPrefix, '');
 }
 
-function getTodoApp(testBundle) {
-    return templates.todoApp(testBundle);
-}
-
 function entryPointResolverPlugin() {
     return {
         name: 'entry-point-resolver',
         resolveId(id) {
             if (id.includes(testSufix)) {
                 return id;
-            } else if (id === 'todo') {
-                return 'todo.js';
             }
         },
         load(id) {
             if (id.includes(testSufix)) {
                 const testBundle = getTestName(id);
-                return testBundle.startsWith('wired-')
-                    ? getTodoApp(testBundle)
-                    : templates.app(testBundle);
-            } else if (id === 'todo.js') {
-                return todoContent;
+                return templates.app(testBundle);
             }
         },
     };
@@ -99,7 +80,6 @@ const globalModules = {
     'compat-polyfills/downgrade': 'window',
     'compat-polyfills/polyfills': 'window',
     lwc: 'LWC',
-    'wire-service': 'WireService',
 };
 
 function createRollupInputConfig() {
@@ -138,9 +118,6 @@ fs.copySync(shadowModeFile, path.join(testSharedOutput, 'shadow.js'));
 fs.writeFileSync(path.join(testSharedOutput, 'downgrade.js'), compatPolyfills.loadDowngrade());
 fs.writeFileSync(path.join(testSharedOutput, 'polyfills.js'), compatPolyfills.loadPolyfills());
 
-fs.copySync(wireServicePath, path.join(testSharedOutput, 'wire.js'));
-fs.copySync(todoPath, path.join(testSharedOutput, 'todo.js'));
-
 // -- Build component tests -----------------------------------------------------=
 
 testEntries
@@ -157,9 +134,7 @@ testEntries
 
         fs.writeFileSync(
             `${testOutput}/${testNamespace}/${testName}/index.html`,
-            testName.startsWith('wired-')
-                ? templates.wireServiceHtml(testName, isCompat)
-                : templates.html(testName, isCompat),
+            templates.html(testName, isCompat),
             'utf8'
         );
     }, Promise.resolve())
