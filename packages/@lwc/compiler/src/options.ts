@@ -73,6 +73,7 @@ type RequiredTransformOptions = Omit<TransformOptions, 'name' | 'namespace'>;
 export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
     name?: string;
     namespace?: string;
+    scopedStyles?: boolean;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {
@@ -156,5 +157,5 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         stylesheetConfig,
         outputConfig,
         experimentalDynamicComponent,
-    } as NormalizedTransformOptions;
+    };
 }
