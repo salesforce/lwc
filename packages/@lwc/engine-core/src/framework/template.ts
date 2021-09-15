@@ -168,7 +168,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
                     // Set the computeHasScopedStyles property in the context, to avoid recomputing it repeatedly.
                     context.hasScopedStyles = computeHasScopedStyles(html);
 
-                    // Update the synthetic shadow attributes on the host element if necessary.
+                    // Update the scoping token on the host element.
                     updateStylesheetToken(vm, html);
 
                     // Evaluate, create stylesheet and cache the produced VNode for future
