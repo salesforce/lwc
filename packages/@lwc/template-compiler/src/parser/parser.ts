@@ -54,7 +54,7 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
-    *ancestorGenerator(element?: IRElement) {
+    *ancestors(element?: IRElement) {
         const ancestors = element ? [...this.parentStack, element] : this.parentStack;
         for (let index = ancestors.length - 1; index > 0; index--) {
             yield { current: ancestors[index], index };
@@ -67,7 +67,7 @@ export default class ParserCtx {
         traversalCond?: (nodes: { current: IRElement; parent: IRElement | null }) => unknown;
     }): IRElement | null {
         const { element, predicate, traversalCond = () => true } = args;
-        for (const { current, index } of this.ancestorGenerator(element)) {
+        for (const { current, index } of this.ancestors(element)) {
             if (predicate(current)) {
                 return current;
             }
@@ -153,7 +153,7 @@ export default class ParserCtx {
         );
     }
 
-    addDiagnostic(diagnostic: CompilerDiagnostic): void {
+    private addDiagnostic(diagnostic: CompilerDiagnostic): void {
         this.warnings.push(diagnostic);
     }
 

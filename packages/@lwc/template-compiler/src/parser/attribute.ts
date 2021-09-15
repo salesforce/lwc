@@ -82,10 +82,10 @@ export function isFragmentOnlyUrl(url: string): boolean {
 }
 
 export function normalizeAttributeValue(
-    attr: parse5.Attribute,
+    ctx: ParserCtx,
     raw: string,
     tag: string,
-    ctx: ParserCtx,
+    attr: parse5.Attribute,
     location: parse5.Location
 ): {
     value: string;

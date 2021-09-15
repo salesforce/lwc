@@ -22,14 +22,7 @@ import {
     ParsedAttribute,
 } from './attribute';
 
-import {
-    getForEachParent,
-    getForOfParent,
-    isExpression,
-    isIteratorElement,
-    parseExpression,
-    parseIdentifier,
-} from './expression';
+import { isExpression, parseExpression, parseIdentifier } from './expression';
 
 import * as t from '../shared/estree';
 import * as parse5Utils from '../shared/parse5';
@@ -213,7 +206,7 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): IRText[] {
 
         let value: TemplateExpression | string;
         if (isExpression(token)) {
-            value = parseExpression(token, ctx, location);
+            value = parseExpression(ctx, token, location);
         } else {
             value = decodeTextContent(token);
         }
@@ -461,7 +454,7 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
             );
         }
 
-        const item = parseIdentifier(forItemAttribute.value, ctx, forItemAttribute.location);
+        const item = parseIdentifier(ctx, forItemAttribute.value, forItemAttribute.location);
 
         let index: TemplateIdentifier | undefined;
         if (forIndex) {
@@ -469,7 +462,7 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
                 ctx.throwOnIRNode(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, forIndex);
             }
 
-            index = parseIdentifier(forIndex.value, ctx, forIndex.location);
+            index = parseIdentifier(ctx, forIndex.value, forIndex.location);
         }
 
         element.forEach = {
@@ -506,7 +499,7 @@ function applyIterator(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
         ]);
     }
 
-    const iterator = parseIdentifier(iteratorName, ctx, iteratorExpression.location);
+    const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
 
     element.forOf = {
         expression: iteratorExpression.value,
@@ -546,7 +539,7 @@ function applyKey(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribut
         }
 
         element.forKey = keyAttribute.value;
-    } else if (isIteratorElement(ctx, element) && !isTemplate(element)) {
+    } else if (isInIteratorElement(ctx, element) && !isTemplate(element)) {
         ctx.throwOnIRNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
 }
@@ -871,10 +864,10 @@ function getTemplateAttribute(
 
     const isBooleanAttribute = !rawAttribute.includes('=');
     const { value, escapedExpression } = normalizeAttributeValue(
-        attribute,
+        ctx,
         rawAttribute,
         tag,
-        ctx,
+        attribute,
         location
     );
     if (isExpression(value) && !escapedExpression) {
@@ -882,7 +875,7 @@ function getTemplateAttribute(
             name,
             location,
             type: IRAttributeType.Expression,
-            value: parseExpression(value, ctx, location),
+            value: parseExpression(ctx, value, location),
         };
     } else if (isBooleanAttribute) {
         return {
@@ -906,4 +899,23 @@ function isInIteration(element: IRElement, ctx: ParserCtx) {
         predicate: (element) => isTemplate(element) && (element.forOf || element.forEach),
         element,
     });
+}
+
+export function getForOfParent(ctx: ParserCtx): IRElement | null {
+    return ctx.findAncestor({
+        predicate: (element) => element.forOf,
+        traversalCond: ({ current }) => isTemplate(current),
+    });
+}
+
+export function getForEachParent(ctx: ParserCtx, element: IRElement): IRElement | null {
+    return ctx.findAncestor({
+        element,
+        predicate: (element) => element.forEach,
+        traversalCond: ({ parent }) => parent && isTemplate(parent),
+    });
+}
+
+export function isInIteratorElement(ctx: ParserCtx, element: IRElement): boolean {
+    return !!(getForOfParent(ctx) || getForEachParent(ctx, element));
 }
