@@ -218,8 +218,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     return vnodes;
 }
 
-export function computeHasScopedStyles(template: Template | null): boolean {
-    const stylesheets = template?.stylesheets;
+export function computeHasScopedStyles(template: Template): boolean {
+    const { stylesheets } = template;
     if (!isUndefined(stylesheets) && stylesheets.length !== 0) {
         for (let i = 0; i < stylesheets.length; i++) {
             if (isTrue((stylesheets[i] as any)[KEY__SCOPED_CSS])) {
