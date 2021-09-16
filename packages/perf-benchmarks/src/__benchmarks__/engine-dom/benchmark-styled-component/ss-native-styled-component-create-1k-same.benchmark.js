@@ -9,4 +9,7 @@ import StyledComponent from 'perf-benchmarks-components/dist/dom/benchmark/shado
 import { styledComponentBenchmark } from '../../../utils/styledComponentBenchmark';
 
 // Create 1k components with the same CSS in each component
-styledComponentBenchmark(`benchmark-styled-component/create/1k/same`, StyledComponent);
+// These components are native, but run with synthetic shadow loaded (mixed mode)
+window.lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE = true;
+StyledComponent.shadowSupportMode = 'any';
+styledComponentBenchmark(`ss-benchmark-styled-component/create/1k/same`, StyledComponent);
