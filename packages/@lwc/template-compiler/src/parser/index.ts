@@ -22,14 +22,7 @@ import {
     ParsedAttribute,
 } from './attribute';
 
-import {
-    getForEachParent,
-    getForOfParent,
-    isExpression,
-    isIteratorElement,
-    parseExpression,
-    parseIdentifier,
-} from './expression';
+import { isExpression, parseExpression, parseIdentifier } from './expression';
 
 import * as t from '../shared/estree';
 import * as parse5Utils from '../shared/parse5';
@@ -41,6 +34,7 @@ import {
     isIRBooleanAttribute,
     isIRExpressionAttribute,
     isIRStringAttribute,
+    isTemplate,
 } from '../shared/ir';
 import {
     ForEach,
@@ -212,11 +206,7 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): IRText[] {
 
         let value: TemplateExpression | string;
         if (isExpression(token)) {
-            value = ctx.withErrorWrapping(
-                () => parseExpression(token, ctx.config),
-                ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-                location
-            );
+            value = parseExpression(ctx, token, location);
         } else {
             value = decodeTextContent(token);
         }
@@ -258,8 +248,8 @@ function getTemplateRoot(
 }
 
 function applyHandlers(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
-    let eventHandlerAttribute = parsedAttr.pick(EVENT_HANDLER_RE);
-    while (eventHandlerAttribute) {
+    let eventHandlerAttribute;
+    while ((eventHandlerAttribute = parsedAttr.pick(EVENT_HANDLER_RE))) {
         const { name } = eventHandlerAttribute;
 
         if (!isIRExpressionAttribute(eventHandlerAttribute)) {
@@ -278,8 +268,6 @@ function applyHandlers(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
 
         const on = element.on || (element.on = {});
         on[eventName] = eventHandlerAttribute.value;
-
-        eventHandlerAttribute = parsedAttr.pick(EVENT_HANDLER_RE);
     }
 }
 
@@ -466,11 +454,7 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
             );
         }
 
-        const item = ctx.withErrorWrapping(
-            () => parseIdentifier(forItemAttribute.value),
-            ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
-            forItemAttribute.location
-        );
+        const item = parseIdentifier(ctx, forItemAttribute.value, forItemAttribute.location);
 
         let index: TemplateIdentifier | undefined;
         if (forIndex) {
@@ -478,11 +462,7 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
                 ctx.throwOnIRNode(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, forIndex);
             }
 
-            index = ctx.withErrorWrapping(
-                () => parseIdentifier(forIndex.value),
-                ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
-                forIndex.location
-            );
+            index = parseIdentifier(ctx, forIndex.value, forIndex.location);
         }
 
         element.forEach = {
@@ -519,11 +499,7 @@ function applyIterator(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
         ]);
     }
 
-    const iterator = ctx.withErrorWrapping(
-        () => parseIdentifier(iteratorName),
-        ParserDiagnostics.IDENTIFIER_PARSING_ERROR,
-        iteratorExpression.location
-    );
+    const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
 
     element.forOf = {
         expression: iteratorExpression.value,
@@ -540,8 +516,8 @@ function applyKey(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribut
             ctx.throwOnIRNode(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, keyAttribute);
         }
 
-        const forOfParent = getForOfParent(ctx.parentStack);
-        const forEachParent = getForEachParent(element, ctx.parentStack);
+        const forOfParent = getForOfParent(ctx);
+        const forEachParent = getForEachParent(ctx, element);
 
         if (forOfParent) {
             if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent.forOf!)) {
@@ -563,7 +539,7 @@ function applyKey(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribut
         }
 
         element.forKey = keyAttribute.value;
-    } else if (isIteratorElement(element, ctx.parentStack) && element.tag !== 'template') {
+    } else if (isInIteratorElement(ctx, element) && !isTemplate(element)) {
         ctx.throwOnIRNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
 }
@@ -716,7 +692,7 @@ function validateElement(ctx: ParserCtx, element: IRElement, node: parse5.Elemen
     const isRoot = ctx.parentStack.length === 0;
 
     if (isRoot) {
-        if (tag !== 'template') {
+        if (!isTemplate(element)) {
             ctx.throwOnIRNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, element, [tag]);
         }
 
@@ -740,7 +716,7 @@ function validateElement(ctx: ParserCtx, element: IRElement, node: parse5.Elemen
 
     if (tag === 'style' && namespace === HTML_NAMESPACE_URI) {
         ctx.throwOnIRNode(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element);
-    } else if (tag === 'template') {
+    } else if (isTemplate(element)) {
         // We check if the template element has some modifier applied to it. Directly checking if one of the
         // IRElement property is impossible. For example when an error occurs during the parsing of the if
         // expression, the `element.if` property remains undefined. It would results in 2 warnings instead of 1:
@@ -886,54 +862,60 @@ function getTemplateAttribute(
         ]);
     }
 
-    return ctx.withErrorWrapping(
-        () => {
-            const isBooleanAttribute = !rawAttribute.includes('=');
-            const { value, escapedExpression } = normalizeAttributeValue(
-                attribute,
-                rawAttribute,
-                tag
-            );
-            if (isExpression(value) && !escapedExpression) {
-                return {
-                    name,
-                    location,
-                    type: IRAttributeType.Expression,
-                    value: parseExpression(value, ctx.config),
-                };
-            } else if (isBooleanAttribute) {
-                return {
-                    name,
-                    location,
-                    type: IRAttributeType.Boolean,
-                    value: true,
-                };
-            } else {
-                return {
-                    name,
-                    location,
-                    type: IRAttributeType.String,
-                    value,
-                };
-            }
-        },
-        ParserDiagnostics.GENERIC_PARSING_ERROR,
+    const isBooleanAttribute = !rawAttribute.includes('=');
+    const { value, escapedExpression } = normalizeAttributeValue(
+        ctx,
+        rawAttribute,
+        tag,
+        attribute,
         location
     );
+    if (isExpression(value) && !escapedExpression) {
+        return {
+            name,
+            location,
+            type: IRAttributeType.Expression,
+            value: parseExpression(ctx, value, location),
+        };
+    } else if (isBooleanAttribute) {
+        return {
+            name,
+            location,
+            type: IRAttributeType.Boolean,
+            value: true,
+        };
+    } else {
+        return {
+            name,
+            location,
+            type: IRAttributeType.String,
+            value,
+        };
+    }
 }
 
-function isInIteration(ctx: ParserCtx, element: IRElement): boolean {
-    let current: IRElement | undefined = element;
+function isInIteration(ctx: ParserCtx, element: IRElement) {
+    return ctx.findAncestor({
+        predicate: (element) => isTemplate(element) && (element.forOf || element.forEach),
+        element,
+    });
+}
 
-    for (let i = ctx.parentStack.length; i >= 0; i--) {
-        if (current.tag === 'template') {
-            if (current.forEach || current.forOf) {
-                return true;
-            }
-        }
+function getForOfParent(ctx: ParserCtx): IRElement | null {
+    return ctx.findAncestor({
+        predicate: (element) => element.forOf,
+        traversalCond: ({ current }) => isTemplate(current),
+    });
+}
 
-        current = ctx.parentStack[i - 1];
-    }
+function getForEachParent(ctx: ParserCtx, element: IRElement): IRElement | null {
+    return ctx.findAncestor({
+        element,
+        predicate: (element) => element.forEach,
+        traversalCond: ({ parent }) => parent && isTemplate(parent),
+    });
+}
 
-    return false;
+function isInIteratorElement(ctx: ParserCtx, element: IRElement): boolean {
+    return !!(getForOfParent(ctx) || getForEachParent(ctx, element));
 }

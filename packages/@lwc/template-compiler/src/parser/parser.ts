@@ -54,6 +54,30 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
+    *ancestors(element?: IRElement) {
+        const ancestors = element ? [...this.parentStack, element] : this.parentStack;
+        for (let index = ancestors.length - 1; index > 0; index--) {
+            yield { current: ancestors[index], index };
+        }
+    }
+
+    findAncestor(args: {
+        element?: IRElement;
+        predicate: (elm: IRElement) => unknown;
+        traversalCond?: (nodes: { current: IRElement; parent: IRElement | null }) => unknown;
+    }): IRElement | null {
+        const { element, predicate, traversalCond = () => true } = args;
+        for (const { current, index } of this.ancestors(element)) {
+            if (predicate(current)) {
+                return current;
+            }
+            if (!traversalCond({ current, parent: this.parentStack[index - 1] })) {
+                break;
+            }
+        }
+        return null;
+    }
+
     withErrorRecovery<T>(fn: () => T): T | undefined {
         try {
             return fn();
@@ -66,31 +90,20 @@ export default class ParserCtx {
         }
     }
 
-    withErrorWrapping<T>(fn: () => T, errorInfo: LWCErrorInfo, location: parse5.Location): T {
+    withErrorWrapping<T>(
+        fn: () => T,
+        errorInfo: LWCErrorInfo,
+        location: parse5.Location,
+        msgFormatter?: (error: any) => string
+    ): T {
         try {
             return fn();
-        } catch (error) {
+        } catch (error: any) {
+            if (msgFormatter) {
+                error.message = msgFormatter(error);
+            }
             this.throwOnError(errorInfo, error, location);
         }
-    }
-
-    warnOnIRNode(
-        errorInfo: LWCErrorInfo,
-        irNode: IRNode | IRBaseAttribute,
-        messageArgs?: any[]
-    ): void {
-        this.warnAtLocation(errorInfo, messageArgs, irNode.location);
-    }
-
-    warnAtLocation(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): void {
-        this.addDiagnostic(
-            generateCompilerDiagnostic(errorInfo, {
-                messageArgs,
-                origin: {
-                    location: normalizeLocation(location),
-                },
-            })
-        );
     }
 
     throwOnError(errorInfo: LWCErrorInfo, error: any, location?: parse5.Location): never {
@@ -121,7 +134,26 @@ export default class ParserCtx {
         });
     }
 
-    addDiagnostic(diagnostic: CompilerDiagnostic): void {
+    warnOnIRNode(
+        errorInfo: LWCErrorInfo,
+        irNode: IRNode | IRBaseAttribute,
+        messageArgs?: any[]
+    ): void {
+        this.warnAtLocation(errorInfo, messageArgs, irNode.location);
+    }
+
+    warnAtLocation(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): void {
+        this.addDiagnostic(
+            generateCompilerDiagnostic(errorInfo, {
+                messageArgs,
+                origin: {
+                    location: normalizeLocation(location),
+                },
+            })
+        );
+    }
+
+    private addDiagnostic(diagnostic: CompilerDiagnostic): void {
         this.warnings.push(diagnostic);
     }
 
