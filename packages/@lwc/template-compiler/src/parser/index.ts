@@ -901,14 +901,14 @@ function isInIteration(element: IRElement, ctx: ParserCtx) {
     });
 }
 
-export function getForOfParent(ctx: ParserCtx): IRElement | null {
+function getForOfParent(ctx: ParserCtx): IRElement | null {
     return ctx.findAncestor({
         predicate: (element) => element.forOf,
         traversalCond: ({ current }) => isTemplate(current),
     });
 }
 
-export function getForEachParent(ctx: ParserCtx, element: IRElement): IRElement | null {
+function getForEachParent(ctx: ParserCtx, element: IRElement): IRElement | null {
     return ctx.findAncestor({
         element,
         predicate: (element) => element.forEach,
@@ -916,6 +916,6 @@ export function getForEachParent(ctx: ParserCtx, element: IRElement): IRElement 
     });
 }
 
-export function isInIteratorElement(ctx: ParserCtx, element: IRElement): boolean {
+function isInIteratorElement(ctx: ParserCtx, element: IRElement): boolean {
     return !!(getForOfParent(ctx) || getForEachParent(ctx, element));
 }
