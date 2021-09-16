@@ -19,10 +19,10 @@ describe('Node.textContent - getter', () => {
 
         const container = elm.shadowRoot.querySelector('x-container');
         expect(container.shadowRoot.textContent).toBe(
-            process.env.DISABLE_SYNTHETIC ? 'Before[default-slotted]After' : 'Before[]After'
+            process.env.NATIVE_SHADOW_MODE ? 'Before[default-slotted]After' : 'Before[]After'
         );
         expect(container.shadowRoot.querySelector('slot').textContent).toBe(
-            process.env.DISABLE_SYNTHETIC ? 'default-slotted' : ''
+            process.env.NATIVE_SHADOW_MODE ? 'default-slotted' : ''
         );
     });
 });

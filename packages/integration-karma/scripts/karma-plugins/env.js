@@ -15,7 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { COMPAT, DISABLE_SYNTHETIC } = require('../shared/options');
+const { COMPAT, DISABLE_SYNTHETIC, FORCED_MIXED_SHADOW_MODE } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
 const ENV_FILENAME = path.resolve(DIST_DIR, 'env.js');
@@ -31,6 +31,8 @@ function createEnvFile() {
         `        NODE_ENV: "development",`,
         `        COMPAT: ${COMPAT},`,
         `        DISABLE_SYNTHETIC: ${DISABLE_SYNTHETIC},`,
+        `        FORCED_MIXED_SHADOW_MODE: ${FORCED_MIXED_SHADOW_MODE},`,
+        `        NATIVE_SHADOW_MODE: ${DISABLE_SYNTHETIC || FORCED_MIXED_SHADOW_MODE},`,
         `        NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== "undefined"`,
         `    }`,
         `};`,

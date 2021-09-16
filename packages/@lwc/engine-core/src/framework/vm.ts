@@ -316,6 +316,10 @@ export function createVM<HostNode, HostElement>(
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
+        // Forced mixed shadow mode for testing
+        if (process.env.FORCED_MIXED_SHADOW_MODE) {
+            vm.shadowMode = ShadowMode.Native;
+        }
     }
 
     // Create component instance associated to the vm and the element.

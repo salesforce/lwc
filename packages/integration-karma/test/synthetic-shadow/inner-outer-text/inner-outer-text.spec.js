@@ -1,7 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from 'x/container';
 
-if (!process.env.DISABLE_SYNTHETIC) {
+if (!process.env.NATIVE_SHADOW_MODE) {
     beforeAll(() => {
         setFeatureFlagForTest('ENABLE_INNER_OUTER_TEXT_PATCH', true);
     });
