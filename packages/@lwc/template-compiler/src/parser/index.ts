@@ -601,7 +601,7 @@ function applySlot(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribu
         return ctx.warnOnIRNode(ParserDiagnostics.NO_DUPLICATE_SLOTS, element, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
-    } else if (isInIteration(element, ctx)) {
+    } else if (isInIteration(ctx, element)) {
         return ctx.warnOnIRNode(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, element, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
@@ -653,7 +653,7 @@ function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedA
                     ctx.throwOnIRNode(ParserDiagnostics.INVALID_ID_ATTRIBUTE, attr, [value]);
                 }
 
-                if (isInIteration(element, ctx)) {
+                if (isInIteration(ctx, element)) {
                     ctx.throwOnIRNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr, [
                         value,
                     ]);
@@ -894,7 +894,7 @@ function getTemplateAttribute(
     }
 }
 
-function isInIteration(element: IRElement, ctx: ParserCtx) {
+function isInIteration(ctx: ParserCtx, element: IRElement) {
     return ctx.findAncestor({
         predicate: (element) => isTemplate(element) && (element.forOf || element.forEach),
         element,
