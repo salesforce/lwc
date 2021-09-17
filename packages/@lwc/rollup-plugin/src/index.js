@@ -34,7 +34,6 @@ function parseQueryParamsForScopedOption(id) {
     const scoped = !!(params && params.get('scoped'));
     return {
         filename,
-        query,
         scoped,
     };
 }
@@ -61,6 +60,10 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             // Note that in @rollup/plugin-node-resolve v13, relative imports will sometimes
             // be in absolute format (e.g. "/path/to/module.js") so we have to check that as well.
             if ((importee.startsWith('.') || importee.startsWith('/')) && importer) {
+                const { scoped, filename } = parseQueryParamsForScopedOption(importee);
+                if (scoped) {
+                    importee = filename; // remove query param
+                }
                 const importerExt = path.extname(importer);
                 const ext = path.extname(importee) || importerExt;
 
@@ -71,7 +74,10 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                     return IMPLICIT_DEFAULT_HTML_PATH;
                 }
 
-                return pluginUtils.addExtension(normalizedPath, ext);
+                return {
+                    id: pluginUtils.addExtension(normalizedPath, ext),
+                    meta: { lwcScopedStyles: scoped },
+                };
             } else if (importer) {
                 // Could be an import like `import component from 'x/component'`
                 try {
@@ -92,20 +98,12 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 return EMPTY_IMPLICIT_HTML_CONTENT;
             }
 
-            const { filename, scoped } = parseQueryParamsForScopedOption(id);
-            if (scoped) {
-                id = filename; // remove query param
-            }
-
             const isCSS = path.extname(id) === '.css';
 
             if (isCSS) {
                 const exists = fs.existsSync(id);
                 if (!exists) {
                     return '';
-                } else if (scoped) {
-                    // load the file ourselves without the query param
-                    return fs.readFileSync(filename, 'utf-8');
                 }
             }
         },
@@ -119,10 +117,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             // Extract module name and namespace from file path
             const [namespace, name] = path.dirname(id).split(path.sep).slice(-2);
 
-            const { filename, scoped } = parseQueryParamsForScopedOption(id);
-            if (scoped) {
-                id = filename; // remove query param
-            }
+            const scopedStyles = this.getModuleInfo(id).meta.lwcScopedStyles;
 
             const { code, map } = compiler.transformSync(src, id, {
                 name,
@@ -131,7 +126,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 stylesheetConfig: pluginOptions.stylesheetConfig,
                 experimentalDynamicComponent: pluginOptions.experimentalDynamicComponent,
                 preserveHtmlComments: pluginOptions.preserveHtmlComments,
-                scopedStyles: scoped,
+                scopedStyles,
             });
 
             return { code, map };
