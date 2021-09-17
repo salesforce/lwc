@@ -23,9 +23,37 @@ import {
     LWCNodeType,
     Literal,
     SourceLocation,
+    Element,
+    Component,
 } from './types';
 
-export function createElement(original: parse5.Element): IRElement {
+export function createElement(original: parse5.Element): Element {
+    const elmLocation = parseElementLocation(original);
+    return {
+        type: LWCNodeType.Element,
+        name: original.nodeName,
+        namespace: original.namespaceURI,
+        location: parseSourceLocation(elmLocation),
+        attributes: [],
+        listeners: [],
+        children: [],
+    };
+}
+
+export function createComponent(original: parse5.Element): Component {
+    const elmLocation = parseElementLocation(original);
+    return {
+        type: LWCNodeType.Component,
+        name: original.nodeName,
+        location: parseSourceLocation(elmLocation),
+        attributes: [],
+        properties: [],
+        listeners: [],
+        children: [],
+    };
+}
+
+function parseElementLocation(original: parse5.Element): parse5.ElementLocation {
     let location = original.sourceCodeLocation;
 
     // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
@@ -45,14 +73,7 @@ export function createElement(original: parse5.Element): IRElement {
         throw new Error('Invalid element AST node. Missing source code location.');
     }
 
-    return {
-        type: 'element',
-        tag: original.tagName,
-        namespace: original.namespaceURI,
-        children: [],
-        location,
-        __original: original,
-    };
+    return location;
 }
 
 export function createText(original: parse5.TextNode, value: string | TemplateExpression): IRText {

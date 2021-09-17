@@ -28,6 +28,7 @@ import * as t from '../shared-next/estree';
 import * as parse5Utils from '../shared-next/parse5';
 import {
     createComment,
+    createComponent,
     createElement,
     createLiteral,
     createText,
@@ -43,6 +44,8 @@ import {
     Attribute,
     LWCNodeType,
     LWCDirectiveRenderMode,
+    Element,
+    Component,
 } from '../shared-next/types';
 
 import ParserCtx from './parser';
@@ -137,18 +140,19 @@ export default function parse(source: string, state: State): TemplateParseResult
 }
 
 function parseElement(ctx: ParserCtx, elementNode: parse5.Element): IRElement {
-    const element = createElement(elementNode);
+    const element = parseElementType(elementNode);
     const parsedAttr = parseAttributes(ctx, element, elementNode);
 
     applyForEach(ctx, element, parsedAttr);
     applyIterator(ctx, element, parsedAttr);
     applyIf(ctx, element, parsedAttr);
+
     applyHandlers(ctx, element, parsedAttr);
-    applyComponent(element);
     applySlot(ctx, element, parsedAttr);
     applyKey(ctx, element, parsedAttr);
     applyLwcDirectives(ctx, element, parsedAttr);
     applyAttributes(ctx, element, parsedAttr);
+
     validateElement(ctx, element, elementNode);
     validateAttributes(ctx, element, parsedAttr);
     validateProperties(ctx, element);
@@ -157,6 +161,16 @@ function parseElement(ctx: ParserCtx, elementNode: parse5.Element): IRElement {
     validateChildren(ctx, element);
 
     return element;
+}
+
+function parseElementType(parse5Elm: parse5.Element): Element | Component {
+    const { tagName: tag } = parse5Elm;
+    // Check if the element tag is a valid custom element name and is not part of known standard
+    // element name containing a dash.
+    if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+        return createElement(parse5Elm);
+    }
+    return createComponent(parse5Elm);
 }
 
 function parseChildren(ctx: ParserCtx, parent: IRElement, parse5Parent: parse5.Element): void {
@@ -545,18 +559,6 @@ function applyKey(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribut
     }
 }
 
-function applyComponent(element: IRElement) {
-    const { tag } = element;
-
-    // Check if the element tag is a valid custom element name and is not part of known standard
-    // element name containing a dash.
-    if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
-        return;
-    }
-
-    element.component = tag;
-}
-
 function applySlot(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
     // Early exit if the element is not a slot
     if (element.tag !== 'slot') {
@@ -827,7 +829,7 @@ function validateProperties(ctx: ParserCtx, element: IRElement) {
 
 function parseAttributes(
     ctx: ParserCtx,
-    element: IRElement,
+    element: Element | Component,
     node: parse5.Element
 ): ParsedAttribute {
     const parsedAttrs = new ParsedAttribute();
@@ -842,21 +844,21 @@ function parseAttributes(
 
 function getTemplateAttribute(
     ctx: ParserCtx,
-    element: IRElement,
+    element: Element | Component,
     attribute: parse5.Attribute
 ): Attribute {
-    const name = attributeName(attribute);
+    const attrName = attributeName(attribute);
 
     // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
     // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state
-    const rawLocation = element.location.attrs[name.toLowerCase()];
+    const rawLocation = element.location.attrs[attrName.toLowerCase()];
     const rawAttribute = ctx.getSource(rawLocation.startOffset, rawLocation.endOffset);
 
-    const { tag } = element;
+    const { name: tag } = element;
 
     // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
     // is not the same before and after the parsing, then the attribute name contains capital letters
-    if (!rawAttribute.startsWith(name)) {
+    if (!rawAttribute.startsWith(attrName)) {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, rawLocation, [
             rawAttribute,
             tag,
@@ -875,7 +877,7 @@ function getTemplateAttribute(
     if (isExpression(value) && !escapedExpression) {
         // expression
         return {
-            name,
+            attrName,
             location,
             type: LWCNodeType.Attribute,
             value: parseExpression(ctx, value, rawLocation),
@@ -883,7 +885,7 @@ function getTemplateAttribute(
     } else if (isBooleanAttribute) {
         // boolean
         return {
-            name,
+            attrName,
             location,
             type: LWCNodeType.Attribute,
             value: createLiteral(true),
@@ -891,7 +893,7 @@ function getTemplateAttribute(
     } else {
         //string
         return {
-            name,
+            attrName,
             location,
             type: LWCNodeType.Attribute,
             value: createLiteral(value),
