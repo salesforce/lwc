@@ -50,7 +50,7 @@ export enum LWCIfBlockModifier {
 
 export interface BaseNode {
     type: string;
-    loc: SourceLocation;
+    location: SourceLocation;
 }
 
 export interface SourceLocation {

@@ -20,6 +20,9 @@ import {
     IRExpressionAttribute,
     IRStringAttribute,
     IRBooleanAttribute,
+    LWCNodeType,
+    Literal,
+    SourceLocation,
 } from './types';
 
 export function createElement(original: parse5.Element): IRElement {
@@ -73,6 +76,24 @@ export function createComment(original: parse5.CommentNode, value: string): IRCo
         type: 'comment',
         value,
         location: original.sourceCodeLocation,
+    };
+}
+
+export function createLiteral(value: string | boolean): Literal {
+    return {
+        type: LWCNodeType.Literal,
+        value,
+    };
+}
+
+export function parseSourceLocation(location: parse5.Location): SourceLocation {
+    return {
+        startLine: location.startLine,
+        startColumn: location.startCol,
+        endLine: location.endLine,
+        endColumn: location.endCol,
+        start: location.startOffset,
+        end: location.endOffset,
     };
 }
 

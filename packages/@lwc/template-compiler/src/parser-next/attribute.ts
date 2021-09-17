@@ -17,7 +17,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import { IRAttribute, IRElement } from '../shared/types';
+import { Attribute } from '../shared-next/types';
 
 import {
     ATTR_NAME,
@@ -34,7 +34,7 @@ import {
     TEMPLATE_DIRECTIVES,
 } from './constants';
 
-import { isCustomElement } from '../shared/ir';
+import { isCustomElement } from '../shared-next/ir';
 import ParserCtx from './parser';
 
 function isQuotedAttribute(rawAttribute: string) {
@@ -245,20 +245,20 @@ export function attributeToPropertyName(attrName: string): string {
 }
 
 export class ParsedAttribute {
-    private readonly attributes: Map<string, IRAttribute> = new Map();
+    private readonly attributes: Map<string, Attribute> = new Map();
 
-    append(attr: IRAttribute): void {
+    append(attr: Attribute): void {
         this.attributes.set(attr.name, attr);
     }
 
-    get(pattern: string | RegExp): IRAttribute | undefined {
+    get(pattern: string | RegExp): Attribute | undefined {
         const key = this.getKey(pattern);
         if (key) {
             return this.attributes.get(key);
         }
     }
 
-    pick(pattern: string | RegExp): IRAttribute | undefined {
+    pick(pattern: string | RegExp): Attribute | undefined {
         const attr = this.get(pattern);
         if (attr) {
             this.attributes.delete(attr.name);
@@ -276,7 +276,7 @@ export class ParsedAttribute {
         return match;
     }
 
-    getAttributes(): IRAttribute[] {
+    getAttributes(): Attribute[] {
         return Array.from(this.attributes.values());
     }
 }
