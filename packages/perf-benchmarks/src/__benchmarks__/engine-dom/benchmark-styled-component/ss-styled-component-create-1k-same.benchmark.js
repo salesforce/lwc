@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import StyledComponent from 'perf-benchmarks-components/dist/dom/benchmark/styledComponent.js';
+import StyledComponent from 'perf-benchmarks-components/dist/dom/benchmark/shadow/styledComponent.js';
 import { styledComponentBenchmark } from '../../../utils/styledComponentBenchmark';
 
 // Create 1k components with the same CSS in each component
