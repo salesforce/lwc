@@ -24,35 +24,26 @@ import {
 
 import { isExpression, parseExpression, parseIdentifier } from './expression';
 
-import * as t from '../shared/estree';
-import * as parse5Utils from '../shared/parse5';
+import * as t from '../shared-next/estree';
+import * as parse5Utils from '../shared-next/parse5';
 import {
     createComment,
     createElement,
+    createLiteral,
     createText,
     isCustomElement,
     isIRBooleanAttribute,
     isIRExpressionAttribute,
     isIRStringAttribute,
     isTemplate,
-} from '../shared/ir';
+    parseSourceLocation,
+} from '../shared-next/ir';
 import {
-    ForEach,
-    ForIterator,
-    IRAttribute,
-    IRAttributeType,
-    IRComment,
-    IRElement,
-    IRExpressionAttribute,
-    IRNode,
-    IRText,
-    LWCDirectiveDomMode,
-    LWCDirectiveRenderMode,
-    LWCDirectives,
-    TemplateExpression,
-    TemplateIdentifier,
     TemplateParseResult,
-} from '../shared/types';
+    Attribute,
+    LWCNodeType,
+    LWCDirectiveRenderMode,
+} from '../shared-next/types';
 
 import ParserCtx from './parser';
 
@@ -81,6 +72,16 @@ import {
     VOID_ELEMENT_SET,
     FOR_DIRECTIVES,
 } from './constants';
+import { IRElement, IRNode, TemplateExpression, TemplateIdentifier } from '..';
+import {
+    IRExpressionAttribute,
+    ForIterator,
+    ForEach,
+    IRText,
+    IRComment,
+    LWCDirectives,
+    LWCDirectiveDomMode,
+} from '../shared/types';
 
 function attributeExpressionReferencesForOfIndex(
     attribute: IRExpressionAttribute,
@@ -843,53 +844,57 @@ function getTemplateAttribute(
     ctx: ParserCtx,
     element: IRElement,
     attribute: parse5.Attribute
-): IRAttribute {
+): Attribute {
     const name = attributeName(attribute);
 
     // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
     // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state
-    const location = element.location.attrs[name.toLowerCase()];
-    const rawAttribute = ctx.getSource(location.startOffset, location.endOffset);
+    const rawLocation = element.location.attrs[name.toLowerCase()];
+    const rawAttribute = ctx.getSource(rawLocation.startOffset, rawLocation.endOffset);
 
     const { tag } = element;
 
     // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
     // is not the same before and after the parsing, then the attribute name contains capital letters
     if (!rawAttribute.startsWith(name)) {
-        ctx.throwAtLocation(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, location, [
+        ctx.throwAtLocation(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, rawLocation, [
             rawAttribute,
             tag,
         ]);
     }
 
     const isBooleanAttribute = !rawAttribute.includes('=');
+    const location = parseSourceLocation(rawLocation);
     const { value, escapedExpression } = normalizeAttributeValue(
         ctx,
         rawAttribute,
         tag,
         attribute,
-        location
+        rawLocation
     );
     if (isExpression(value) && !escapedExpression) {
+        // expression
         return {
             name,
             location,
-            type: IRAttributeType.Expression,
-            value: parseExpression(ctx, value, location),
+            type: LWCNodeType.Attribute,
+            value: parseExpression(ctx, value, rawLocation),
         };
     } else if (isBooleanAttribute) {
+        // boolean
         return {
             name,
             location,
-            type: IRAttributeType.Boolean,
-            value: true,
+            type: LWCNodeType.Attribute,
+            value: createLiteral(true),
         };
     } else {
+        //string
         return {
             name,
             location,
-            type: IRAttributeType.String,
-            value,
+            type: LWCNodeType.Attribute,
+            value: createLiteral(value),
         };
     }
 }
