@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isNull, isUndefined, noop } from '@lwc/shared';
+import { ArrayFilter, assert, isArray, isNull, isUndefined, noop } from '@lwc/shared';
 import { EmptyArray } from './utils';
 import {
     createVM,
@@ -26,6 +26,7 @@ import modStaticStyle from './modules/static-style-attr';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
+import { logError } from '../shared/logger';
 
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
@@ -46,7 +47,6 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
 
 export function hydrateNodeHook(vNode: VNode, node: Node) {
     vNode.elm = node;
-
 }
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
@@ -257,14 +257,176 @@ export function createChildrenHook(vnode: VElement) {
     }
 }
 
-export function hydrateElementChildrenHook(vnode: VElement) {
-    const { elm, children } = vnode;
-    const elmChildren = elm!.childNodes;
+function isElementNode(node: ChildNode): node is Element {
+    return node.nodeType === Node.ELEMENT_NODE;
+}
+
+function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolean {
+    const {
+        data: { attrs = {} },
+        owner: { renderer },
+    } = vnode;
+
+    let nodesAreCompatible = true;
+
+    // Validate attributes, though we could always recovery from those by running the update mods.
+    // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
+    for (const [attrName, attrValue] of Object.entries(attrs)) {
+        const elmAttrValue = renderer.getAttribute(elm, attrName);
+        if (attrValue !== elmAttrValue) {
+            logError(
+                `Error hydrating element: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
+                vnode.owner
+            );
+            nodesAreCompatible = false;
+        }
+    }
+
+    return nodesAreCompatible;
+}
+
+function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolean {
+    const {
+        data: { className, classMap },
+        owner: { renderer },
+    } = vnode;
+
+    let nodesAreCompatible = true;
+
+    if (!isUndefined(className) && className !== elm.className) {
+        // @todo: not sure if the above comparison is correct, maybe we should normalize to classlist
+        // className is used when class is bound to an expr.
+        logError(
+            `Mismatch hydrating element: attribute "class" has different values, expected "${className}" but found "${elm.className}"`,
+            vnode.owner
+        );
+        nodesAreCompatible = false;
+    } else if (!isUndefined(classMap)) {
+        // classMap is used when class is set to static value.
+        // @todo: there might be a simpler method to do this.
+        const classList = renderer.getClassList(elm);
+        let hasClassMismatch = false;
+        let computedClassName = '';
+
+        // all classes from the vnode should be in the element.classList
+        for (const name in classMap) {
+            computedClassName += ' ' + name;
+            if (!classList.contains(name)) {
+                nodesAreCompatible = false;
+                hasClassMismatch = true;
+            }
+        }
+
+        // all classes from element.classList should be in the vnode classMap
+        classList.forEach((name) => {
+            if (!classMap[name]) {
+                nodesAreCompatible = false;
+                hasClassMismatch = true;
+            }
+        });
+
+        if (hasClassMismatch) {
+            logError(
+                `Mismatch hydrating element: attribute "class" has different values, expected "${computedClassName.trim()}" but found "${
+                    elm.className
+                }"`,
+                vnode.owner
+            );
+        }
+    }
+
+    return nodesAreCompatible;
+}
+
+function vnodesAndElementHaveCompatibleStyle(vnode: VNode, elm: Element): boolean {
+    const {
+        data: { style, styleMap },
+        owner: { renderer },
+    } = vnode;
+    const elmStyle = renderer.getAttribute(elm, 'style');
+    let nodesAreCompatible = true;
+
+    // @todo: question: would it be the same or is there a chance that the browser tweak the result of elm.setAttribute('style', ...)?
+    //        ex: such "str" exist that after elm.setAttribute('style', str), elm.getAttribute('style') !== str.
+    if (!isUndefined(style) && style !== elmStyle) {
+        // style is used when class is bound to an expr.
+        logError(
+            `Mismatch hydrating element: attribute "style" has different values, expected "${style}" but found "${elmStyle}".`,
+            vnode.owner
+        );
+        nodesAreCompatible = false;
+    } else if (!isUndefined(styleMap)) {
+        // styleMap is used when class is set to static value.
+        for (const name in styleMap) {
+            // @todo: this probably needs to have its own renderer method.
+            const elmStyleProp = (elm as HTMLElement).style.getPropertyValue(name);
+            if (styleMap[name] !== elmStyleProp) {
+                nodesAreCompatible = false;
+            }
+        }
+
+        // questions: is there a way to check that only those props in styleMap are set in the element?
+        //            how to generate the style?
+        logError('Error hydrating element: attribute "style" has different values.', vnode.owner);
+    }
+
+    return nodesAreCompatible;
+}
+
+function throwHydrationError() {
+    // @todo: maybe create a type for these type of hydration errors
+    assert.fail('Server rendered elements do not match client side generated elements');
+}
+
+export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children: VNodes, vm?: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        const filteredVNodes = ArrayFilter.call(children, (vnode) => !!vnode);
+
+        if (elmChildren.length !== filteredVNodes.length) {
+            logError(
+                `Hydration mismatch: incorrect number of rendered elements, expected ${filteredVNodes.length} but found ${elmChildren.length}.`,
+                vm
+            );
+            throwHydrationError();
+        }
+    }
+
     let elmCurrentChildIdx = 0;
     for (let j = 0, n = children.length; j < n; j++) {
         const ch = children[j];
         if (ch != null) {
-            ch.hook.hydrate(ch, elmChildren[elmCurrentChildIdx]);
+            const childNode = elmChildren[elmCurrentChildIdx];
+
+            if (process.env.NODE_ENV !== 'production') {
+                // VComments and VTexts validation is handled in their hooks
+                if (isElementNode(childNode)) {
+                    if (ch.sel?.toLowerCase() !== childNode.tagName.toLowerCase()) {
+                        logError(
+                            `Hydration mismatch: expecting element with tag "${ch.sel}" but found "${childNode.tagName}".`,
+                            vm
+                        );
+
+                        throwHydrationError();
+                    }
+
+                    // Note: props are not yet set
+                    const isVNodeAndElementCompatible =
+                        vnodesAndElementHaveCompatibleAttrs(ch, childNode) &&
+                        vnodesAndElementHaveCompatibleClass(ch, childNode) &&
+                        vnodesAndElementHaveCompatibleStyle(ch, childNode);
+
+                    if (!isVNodeAndElementCompatible) {
+                        logError(
+                            `Hydration mismatch: incompatible attributes for element with tag "${childNode.tagName}".`,
+                            vm
+                        );
+
+                        throwHydrationError();
+                    }
+                }
+            }
+
+            ch.hook.hydrate(ch, childNode);
             elmCurrentChildIdx++;
         }
     }
