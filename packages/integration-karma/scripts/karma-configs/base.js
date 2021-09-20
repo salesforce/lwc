@@ -15,7 +15,7 @@ const karmaPluginEnv = require('../karma-plugins/env');
 const {
     COMPAT,
     DISABLE_SYNTHETIC,
-    FORCED_MIXED_SHADOW_MODE,
+    FORCED_NATIVE_SHADOW_MODE_FOR_TEST,
     TAGS,
     GREP,
     COVERAGE,
@@ -52,7 +52,7 @@ function getFiles() {
         frameworkFiles.push(createPattern(LWC_ENGINE_COMPAT));
         frameworkFiles.push(createPattern(WIRE_SERVICE_COMPAT));
     } else {
-        if (!DISABLE_SYNTHETIC || FORCED_MIXED_SHADOW_MODE) {
+        if (!DISABLE_SYNTHETIC || FORCED_NATIVE_SHADOW_MODE_FOR_TEST) {
             frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
         }
         frameworkFiles.push(createPattern(LWC_ENGINE));

@@ -317,7 +317,7 @@ export function createVM<HostNode, HostElement>(
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
         // Forced mixed shadow mode for testing
-        if (process.env.FORCED_MIXED_SHADOW_MODE) {
+        if (process.env.FORCED_NATIVE_SHADOW_MODE_FOR_TEST) {
             vm.shadowMode = ShadowMode.Native;
         }
     }
