@@ -10,11 +10,11 @@ import { Location } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
 import * as t from '../shared/estree';
-import { TemplateExpression, TemplateIdentifier } from '../shared/types';
 
 import ParserCtx from './parser';
 
 import { ResolvedConfig } from '../config';
+import { Expression, Identifier, LWCNodeType, SourceLocation } from '../shared-next/types';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -31,10 +31,7 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
-function validateExpression(
-    node: t.BaseNode,
-    config: ResolvedConfig
-): asserts node is TemplateExpression {
+function validateExpression(node: t.BaseNode, config: ResolvedConfig): asserts node is Expression {
     const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
     invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
 
@@ -94,11 +91,7 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
     ]);
 }
 
-export function parseExpression(
-    ctx: ParserCtx,
-    source: string,
-    location: Location
-): TemplateExpression {
+export function parseExpression(ctx: ParserCtx, source: string, location: Location): Expression {
     return ctx.withErrorWrapping(
         () => {
             const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
@@ -117,10 +110,14 @@ export function parseExpression(
 export function parseIdentifier(
     ctx: ParserCtx,
     source: string,
-    location: Location
-): TemplateIdentifier {
+    location: SourceLocation
+): Identifier {
     if (esutils.keyword.isIdentifierES6(source)) {
-        return t.identifier(source);
+        return {
+            type: LWCNodeType.Identifier,
+            location,
+            name: source,
+        };
     } else {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_IDENTIFIER, location, [source]);
     }
