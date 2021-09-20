@@ -13,6 +13,7 @@ import {
 } from '@lwc/engine-core';
 import { isFunction, isNull, isObject } from '@lwc/shared';
 import { renderer, setIsHydrating } from '../renderer';
+import { createElement } from './create-element';
 
 export function hydrateComponent(
     element: Element,
@@ -33,22 +34,42 @@ export function hydrateComponent(
 
     const def = getComponentInternalDef(Ctor);
 
-    // For now, an honest hack so it does not replace the existing shadowRoot in renderer.attachShadow
-    setIsHydrating(true);
+    try {
+        // For now, an honest hack so it does not replace the existing shadowRoot in renderer.attachShadow
+        setIsHydrating(true);
 
-    createVM(element, def, {
-        mode: 'open',
-        owner: null,
-        renderer,
-        tagName: element.tagName.toLowerCase(),
-    });
+        createVM(element, def, {
+            mode: 'open',
+            owner: null,
+            renderer,
+            tagName: element.tagName.toLowerCase(),
+        });
 
-    for (const [key, value] of Object.entries(props)) {
-        (element as any)[key] = value;
+        for (const [key, value] of Object.entries(props)) {
+            (element as any)[key] = value;
+        }
+
+        hydrateRootElement(element);
+
+        // set it back since now we finished hydration.
+        setIsHydrating(false);
+    } catch (e) {
+        // Fallback: In case there's an error while hydrating, let's log the error, and replace the element with
+        //           the client generated DOM.
+
+        /* eslint-disable-next-line no-console */
+        console.error(e);
+
+        setIsHydrating(false);
+        const newElem = createElement(element.tagName, {
+            is: Ctor,
+            mode: 'open',
+        });
+
+        for (const [key, value] of Object.entries(props)) {
+            (newElem as any)[key] = value;
+        }
+
+        element.parentNode!.replaceChild(newElem, element);
     }
-
-    hydrateRootElement(element);
-
-    // set it back since now we finished hydration.
-    setIsHydrating(false);
 }

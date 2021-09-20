@@ -34,7 +34,7 @@ import {
     logGlobalOperationEnd,
     logGlobalOperationStart,
 } from './profiler';
-import { hasDynamicChildren } from './hooks';
+import { hasDynamicChildren, hydrateChildrenHook } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
@@ -213,6 +213,7 @@ export function hydrateRootElement(elm: any) {
 
     runConnectedCallback(vm);
     hydrateVM(vm);
+    // should we hydrate the root children? light dom case.
 }
 
 export function disconnectRootElement(elm: any) {
@@ -433,20 +434,11 @@ function hydrate(vm: VM) {
         // patchShadowRoot(vm, children);
         //  -> addVnodes.
         const children = renderComponent(vm);
-        const element = vm.elm;
         vm.children = children;
 
-        const elementChildren = element.shadowRoot.childNodes;
-        let elementCurrentChildIdx = 0;
+        hydrateChildrenHook(vm.elm.shadowRoot.childNodes, children, vm);
 
-        for (let i = 0, n = children.length; i < n; i++) {
-            const ch = children[i];
-            // ifs may generate null vnodes.
-            if (ch != null) {
-                ch!.hook.hydrate(ch, elementChildren[elementCurrentChildIdx]);
-                elementCurrentChildIdx++;
-            }
-        }
+        runRenderedCallback(vm);
     }
 }
 
