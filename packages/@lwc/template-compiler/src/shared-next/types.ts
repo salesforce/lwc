@@ -34,6 +34,8 @@ export enum LWCNodeType {
     Component = 'component',
     IfBlock = 'if-block',
     ForBlock = 'for-block',
+    ForEach = 'for-each',
+    Iterator = 'iterator',
     Slot = 'slot',
     Root = 'root',
 }
@@ -41,11 +43,6 @@ export enum LWCNodeType {
 export enum LWCDirectiveRenderMode {
     Shadow = 'shadow',
     Light = 'light',
-}
-
-export enum LWCIfBlockModifier {
-    True = 'true',
-    False = 'false',
 }
 
 export interface BaseNode {
@@ -161,16 +158,23 @@ export interface Component extends BaseParentNode {
 
 export interface IfBlock extends BaseParentNode {
     type: LWCNodeType.IfBlock;
-    modifier: LWCIfBlockModifier.True | LWCIfBlockModifier.False;
+    modifier: string;
     condition: Expression;
 }
-
-export interface ForBlock extends BaseParentNode {
-    type: LWCNodeType.ForBlock;
+export interface ForEach extends BaseParentNode {
+    type: LWCNodeType.ForEach;
     expression: Expression;
     item?: Identifier;
     index?: Identifier;
 }
+
+export interface Iterator extends BaseParentNode {
+    type: LWCNodeType.Iterator;
+    expression: Expression;
+    iterator: Identifier;
+}
+
+export type ForBlock = ForEach | Iterator;
 
 export interface Slot extends Omit<Element, 'type'> {
     type: LWCNodeType.Slot;
@@ -182,6 +186,6 @@ export interface Root extends BaseParentNode {
     directives?: RootDirective[];
 }
 
-export type ParentNode = ForBlock | IfBlock | Element | Component | Root;
+export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 
 export type ChildNode = ForBlock | IfBlock | Element | Component | Comment | Text;

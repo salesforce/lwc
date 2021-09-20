@@ -17,14 +17,13 @@ import {
     IRComment,
     IRAttribute,
     IRAttributeType,
-    IRExpressionAttribute,
-    IRStringAttribute,
     IRBooleanAttribute,
     LWCNodeType,
     Literal,
     SourceLocation,
     Element,
     Component,
+    Expression,
 } from './types';
 
 export function createElement(original: parse5.Element): Element {
@@ -142,14 +141,12 @@ export function isSlot(element: IRElement) {
     return element.tag === 'slot';
 }
 
-export function isIRExpressionAttribute(
-    attribute: IRAttribute
-): attribute is IRExpressionAttribute {
-    return attribute.type === IRAttributeType.Expression;
+export function isExpressionAttribute(node: Expression | Literal): node is Expression {
+    return node.type === LWCNodeType.Identifier || node.type === LWCNodeType.MemberExpression;
 }
 
-export function isIRStringAttribute(attribute: IRAttribute): attribute is IRStringAttribute {
-    return attribute.type === IRAttributeType.String;
+export function isStringAttribute(node: Expression | Literal): node is Literal<string> {
+    return node.type === LWCNodeType.Literal && typeof node.value === 'string';
 }
 
 export function isIRBooleanAttribute(attribute: IRAttribute): attribute is IRBooleanAttribute {

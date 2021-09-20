@@ -38,6 +38,9 @@ import {
     isIRStringAttribute,
     isTemplate,
     parseSourceLocation,
+    parseElementLocation,
+    isExpressionAttribute,
+    isStringAttribute,
 } from '../shared-next/ir';
 import {
     TemplateParseResult,
@@ -46,6 +49,13 @@ import {
     LWCDirectiveRenderMode,
     Element,
     Component,
+    ForEach,
+    Identifier,
+    Literal,
+    Expression,
+    Iterator,
+    IfBlock,
+    Slot,
 } from '../shared-next/types';
 
 import ParserCtx from './parser';
@@ -75,16 +85,7 @@ import {
     VOID_ELEMENT_SET,
     FOR_DIRECTIVES,
 } from './constants';
-import { IRElement, IRNode, TemplateExpression, TemplateIdentifier } from '..';
-import {
-    IRExpressionAttribute,
-    ForIterator,
-    ForEach,
-    IRText,
-    IRComment,
-    LWCDirectives,
-    LWCDirectiveDomMode,
-} from '../shared/types';
+import { IRElement, IRNode, TemplateExpression } from '..';
 
 function attributeExpressionReferencesForOfIndex(
     attribute: IRExpressionAttribute,
@@ -139,16 +140,19 @@ export default function parse(source: string, state: State): TemplateParseResult
     return { root, warnings: ctx.warnings };
 }
 
-function parseElement(ctx: ParserCtx, elementNode: parse5.Element): IRElement {
-    const element = parseElementType(elementNode);
-    const parsedAttr = parseAttributes(ctx, element, elementNode);
+function parseElement(ctx: ParserCtx, elementNode: parse5.Element): Element | Component {
+    const parsedAttr = parseAttributes(ctx, elementNode);
 
     applyForEach(ctx, element, parsedAttr);
     applyIterator(ctx, element, parsedAttr);
     applyIf(ctx, element, parsedAttr);
 
+    const element = parseElementType(elementNode);
+    ctx.scope.addDeclaration(element);
+    ctx.scope.current = element;
+
     applyHandlers(ctx, element, parsedAttr);
-    applySlot(ctx, element, parsedAttr);
+    // applySlot(ctx, element, parsedAttr);
     applyKey(ctx, element, parsedAttr);
     applyLwcDirectives(ctx, element, parsedAttr);
     applyAttributes(ctx, element, parsedAttr);
@@ -163,12 +167,14 @@ function parseElement(ctx: ParserCtx, elementNode: parse5.Element): IRElement {
     return element;
 }
 
-function parseElementType(parse5Elm: parse5.Element): Element | Component {
+function parseElementType(parse5Elm: parse5.Element): Element | Component | Slot {
     const { tagName: tag } = parse5Elm;
     // Check if the element tag is a valid custom element name and is not part of known standard
     // element name containing a dash.
     if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
         return createElement(parse5Elm);
+    } else if (tag === 'slot') {
+        return applySlot(ctx, parse5Elm, parsedAttr);
     }
     return createComponent(parse5Elm);
 }
@@ -286,13 +292,13 @@ function applyHandlers(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
     }
 }
 
-function applyIf(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
+function applyIf(ctx: ParserCtx, parsedAttr: ParsedAttribute): IfBlock | undefined {
     const ifAttribute = parsedAttr.pick(IF_RE);
     if (!ifAttribute) {
         return;
     }
 
-    if (!isIRExpressionAttribute(ifAttribute)) {
+    if (!isExpressionAttribute(ifAttribute.value)) {
         ctx.throwOnIRNode(ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION, ifAttribute);
     }
 
@@ -301,8 +307,17 @@ function applyIf(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute
         ctx.throwOnIRNode(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, ifAttribute, [modifier]);
     }
 
-    element.if = ifAttribute.value;
-    element.ifModifier = modifier;
+    const ifNode: IfBlock = {
+        type: LWCNodeType.IfBlock,
+        location: ifAttribute.location,
+        children: [],
+        modifier,
+        condition: ifAttribute.value,
+    };
+
+    ctx.scope.current?.children.push(ifNode);
+    ctx.scope.addDeclaration(ifNode);
+    ctx.scope.current = ifNode;
 }
 
 function applyLwcDirectives(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
@@ -455,36 +470,44 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
     const forIndex = parsedAttr.pick(FOR_DIRECTIVES.FOR_INDEX);
 
     if (forEachAttribute && forItemAttribute) {
-        if (!isIRExpressionAttribute(forEachAttribute)) {
+        if (!isExpressionAttribute(forEachAttribute.value)) {
             ctx.throwOnIRNode(
                 ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION,
                 forEachAttribute
             );
         }
 
-        if (!isIRStringAttribute(forItemAttribute)) {
+        const forItemValue = forItemAttribute.value;
+        if (!isStringAttribute(forItemValue)) {
             ctx.throwOnIRNode(
                 ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING,
                 forItemAttribute
             );
         }
 
-        const item = parseIdentifier(ctx, forItemAttribute.value, forItemAttribute.location);
+        const item = parseIdentifier(ctx, forItemValue.value, forItemAttribute.location);
 
-        let index: TemplateIdentifier | undefined;
+        let index: Identifier | undefined;
         if (forIndex) {
-            if (!isIRStringAttribute(forIndex)) {
+            const forIndexValue = forIndex.value;
+            if (!isStringAttribute(forIndexValue)) {
                 ctx.throwOnIRNode(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, forIndex);
             }
 
-            index = parseIdentifier(ctx, forIndex.value, forIndex.location);
+            index = parseIdentifier(ctx, forIndexValue.value, forIndex.location);
         }
 
-        element.forEach = {
+        const forEach: ForEach = {
+            type: LWCNodeType.ForEach,
             expression: forEachAttribute.value,
+            location: forEachAttribute.location,
+            children: [],
             item,
             index,
         };
+
+        ctx.scope.addDeclaration(forEach);
+        ctx.scope.current = forEach;
     } else if (forEachAttribute || forItemAttribute) {
         ctx.throwOnIRNode(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
@@ -493,13 +516,17 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
     }
 }
 
-function applyIterator(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
+function applyIterator(
+    ctx: ParserCtx,
+    element: IRElement,
+    parsedAttr: ParsedAttribute
+): Iterator | undefined {
     const iteratorExpression = parsedAttr.pick(ITERATOR_RE);
     if (!iteratorExpression) {
         return;
     }
 
-    if (element.forEach) {
+    if (ctx.scope.has(LWCNodeType.ForEach)) {
         ctx.throwOnIRNode(ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR, element, [
             iteratorExpression.name,
         ]);
@@ -508,7 +535,7 @@ function applyIterator(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
     const iteratorAttributeName = iteratorExpression.name;
     const [, iteratorName] = iteratorAttributeName.split(':');
 
-    if (!isIRExpressionAttribute(iteratorExpression)) {
+    if (!isExpressionAttribute(iteratorExpression.value)) {
         ctx.throwOnIRNode(ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION, iteratorExpression, [
             iteratorExpression.name,
         ]);
@@ -516,10 +543,15 @@ function applyIterator(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
 
     const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
 
-    element.forOf = {
+    const it: Iterator = {
+        type: LWCNodeType.Iterator,
         expression: iteratorExpression.value,
         iterator,
+        location: iteratorExpression.location,
+        children: [],
     };
+    ctx.scope.addDeclaration(it);
+    ctx.scope.current = it;
 }
 
 function applyKey(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
@@ -559,18 +591,18 @@ function applyKey(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribut
     }
 }
 
-function applySlot(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
-    // Early exit if the element is not a slot
-    if (element.tag !== 'slot') {
-        return;
-    }
-
-    if (element.forEach || element.forOf || element.if) {
+function applySlot(ctx: ParserCtx, parse5Elm: parse5.Element, parsedAttr: ParsedAttribute): Slot {
+    // if (element.forEach || element.forOf || element.if) {
+    if (
+        ctx.scope.has(LWCNodeType.ForEach) ||
+        ctx.scope.has(LWCNodeType.Iterator) ||
+        ctx.scope.has(LWCNodeType.IfBlock)
+    ) {
         ctx.throwOnIRNode(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, element);
     }
 
     // Can't handle slots in applySlot because it would be too late for class and style attrs
-    if (ctx.getRenderMode(element) === LWCDirectiveRenderMode.light) {
+    if (ctx.getRenderMode(element) === LWCDirectiveRenderMode.Light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
             .filter(({ name }) => name !== 'name')
@@ -588,27 +620,35 @@ function applySlot(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribu
 
     const nameAttribute = parsedAttr.get('name');
     if (nameAttribute) {
-        if (isIRExpressionAttribute(nameAttribute)) {
+        if (isExpressionAttribute(nameAttribute.value)) {
             ctx.throwOnIRNode(ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION, nameAttribute);
-        } else if (isIRStringAttribute(nameAttribute)) {
-            name = nameAttribute.value;
+        } else if (isStringAttribute(nameAttribute.value)) {
+            name = nameAttribute.value.value;
         }
     }
-
-    element.slotName = name;
 
     const alreadySeen = ctx.seenSlots.has(name);
     ctx.seenSlots.add(name);
 
     if (alreadySeen) {
-        return ctx.warnOnIRNode(ParserDiagnostics.NO_DUPLICATE_SLOTS, element, [
+        ctx.warnOnIRNode(ParserDiagnostics.NO_DUPLICATE_SLOTS, element, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
     } else if (isInIteration(ctx, element)) {
-        return ctx.warnOnIRNode(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, element, [
+        ctx.warnOnIRNode(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, element, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
     }
+
+    const location = parseElementLocation(original);
+    return {
+        type: LWCNodeType.Slot,
+        name,
+        attributes: [],
+        listeners: [],
+        children: [],
+        location: parseSourceLocation(location),
+    };
 }
 
 function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
@@ -827,16 +867,13 @@ function validateProperties(ctx: ParserCtx, element: IRElement) {
     }
 }
 
-function parseAttributes(
-    ctx: ParserCtx,
-    element: Element | Component,
-    node: parse5.Element
-): ParsedAttribute {
+function parseAttributes(ctx: ParserCtx, node: parse5.Element): ParsedAttribute {
     const parsedAttrs = new ParsedAttribute();
-    const { attrs: attributes } = node;
+    const { attrs: attributes, tagName } = node;
+    const { attrs: attrLocations } = parseElementLocation(node);
 
     for (const attr of attributes) {
-        parsedAttrs.append(getTemplateAttribute(ctx, element, attr));
+        parsedAttrs.append(getTemplateAttribute(ctx, tagName, attrLocations, attr));
     }
 
     return parsedAttrs;
@@ -844,21 +881,20 @@ function parseAttributes(
 
 function getTemplateAttribute(
     ctx: ParserCtx,
-    element: Element | Component,
+    tag: string,
+    attrLocations: parse5.AttributesLocation,
     attribute: parse5.Attribute
 ): Attribute {
-    const attrName = attributeName(attribute);
+    const name = attributeName(attribute);
 
     // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
     // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state
-    const rawLocation = element.location.attrs[attrName.toLowerCase()];
+    const rawLocation = attrLocations[name.toLowerCase()];
     const rawAttribute = ctx.getSource(rawLocation.startOffset, rawLocation.endOffset);
-
-    const { name: tag } = element;
 
     // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
     // is not the same before and after the parsing, then the attribute name contains capital letters
-    if (!rawAttribute.startsWith(attrName)) {
+    if (!rawAttribute.startsWith(name)) {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, rawLocation, [
             rawAttribute,
             tag,
@@ -874,31 +910,25 @@ function getTemplateAttribute(
         attribute,
         rawLocation
     );
+
+    let attrValue: Literal | Expression;
     if (isExpression(value) && !escapedExpression) {
         // expression
-        return {
-            attrName,
-            location,
-            type: LWCNodeType.Attribute,
-            value: parseExpression(ctx, value, rawLocation),
-        };
+        attrValue = parseExpression(ctx, value, rawLocation);
     } else if (isBooleanAttribute) {
         // boolean
-        return {
-            attrName,
-            location,
-            type: LWCNodeType.Attribute,
-            value: createLiteral(true),
-        };
+        attrValue = createLiteral(true);
     } else {
         //string
-        return {
-            attrName,
-            location,
-            type: LWCNodeType.Attribute,
-            value: createLiteral(value),
-        };
+        attrValue = createLiteral(value);
     }
+
+    return {
+        name,
+        location,
+        type: LWCNodeType.Attribute,
+        value: attrValue,
+    };
 }
 
 function isInIteration(ctx: ParserCtx, element: IRElement) {

@@ -16,6 +16,8 @@ import {
 } from '@lwc/errors';
 import { IRElement, LWCDirectiveRenderMode, IRBaseAttribute, IRNode } from '../shared/types';
 import { ResolvedConfig } from '../config';
+import { ParentNode } from '../shared-next/types';
+import Scope from './scope';
 
 function normalizeLocation(location?: parse5.Location): Location {
     let line = 0;
@@ -43,7 +45,8 @@ export default class ParserCtx {
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
 
-    readonly parentStack: IRElement[] = [];
+    readonly parentStack: ParentNode[] = [];
+    scope: Scope = new Scope();
 
     constructor(source: String, config: ResolvedConfig) {
         this.source = source;
@@ -76,6 +79,18 @@ export default class ParserCtx {
             }
         }
         return null;
+    }
+
+    enterScope() {
+        const newScope = new Scope();
+        newScope.parent = this.scope;
+        this.scope = newScope;
+    }
+
+    exitScope() {
+        if (this.scope.parent) {
+            this.scope = this.scope.parent;
+        }
     }
 
     withErrorRecovery<T>(fn: () => T): T | undefined {
