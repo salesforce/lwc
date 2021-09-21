@@ -216,7 +216,7 @@ export function registerDecorators(
                 // [W-9927596] If a component has both a public property and a private setter/getter
                 // with the same name, the property is defined as a public accessor. This branch is
                 // only here for backward compatibility reasons.
-                if (!isUndefined(descriptor)) {
+                if (!isUndefined(descriptor) && !isUndefined(descriptor.get)) {
                     descriptor = createPublicAccessorDescriptor(fieldName, descriptor);
                 } else {
                     descriptor = createPublicPropertyDescriptor(fieldName);
