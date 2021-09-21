@@ -120,7 +120,7 @@ defineProperties(Element.prototype, {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
                 // If this element is in synthetic shadow, if it's a synthetic shadow host,
-                // or if any of its immediate children are synthetic shadow hosts, then we can't
+                // or if any of its descendants are synthetic shadow hosts, then we can't
                 // use the native innerHTML because it would expose private node internals.
                 // (Note that innerHTMLGetterPatched calls innerHTML on all children, so we only need to check
                 // one level deep.)
