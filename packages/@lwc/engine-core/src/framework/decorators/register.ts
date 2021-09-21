@@ -26,6 +26,7 @@ import {
 } from '../wiring';
 import { EmptyObject } from '../utils';
 import { createObservedFieldPropertyDescriptor } from '../observed-fields';
+import { logError } from '../../shared/logger';
 
 // data produced by compiler
 type WireCompilerMeta = Record<string, WireCompilerDef>;
@@ -57,13 +58,19 @@ interface RegisterDecoratorMeta {
     readonly fields?: string[];
 }
 
-function getClassDescriptorType(descriptor: PropertyDescriptor): string {
+const enum DescriptorType {
+    Method = 'method',
+    Accessor = 'accessor',
+    Field = 'field',
+}
+
+function getClassDescriptorType(descriptor: PropertyDescriptor): DescriptorType {
     if (isFunction(descriptor.value)) {
-        return 'method';
+        return DescriptorType.Method;
     } else if (isFunction(descriptor.set) || isFunction(descriptor.get)) {
-        return 'accessor';
+        return DescriptorType.Accessor;
     } else {
-        return 'field';
+        return DescriptorType.Field;
     }
 }
 
@@ -74,9 +81,15 @@ function validateObservedField(
 ) {
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
-        assert.fail(
-            `Invalid observed ${fieldName} field. Found a duplicate ${type} with the same name.`
-        );
+        const message = `Invalid observed ${fieldName} field. Found a duplicate ${type} with the same name.`;
+
+        // [W-9907857] Ideally we always throw an error when detecting duplicate observed field.
+        // This branch is only here for backward compatibility reasons.
+        if (type === DescriptorType.Accessor) {
+            logError(message);
+        } else {
+            assert.fail(message);
+        }
     }
 }
 
@@ -123,9 +136,15 @@ function validateFieldDecoratedWithApi(
 ) {
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
-        assert.fail(
-            `Invalid @api ${fieldName} field. Found a duplicate ${type} with the same name.`
-        );
+        const message = `Invalid @api ${fieldName} field. Found a duplicate ${type} with the same name.`;
+
+        // [W-9907857] Ideally we always throw an error when detecting duplicate public properties.
+        // This branch is only here for backward compatibility reasons.
+        if (type === DescriptorType.Accessor) {
+            logError(message);
+        } else {
+            assert.fail(message);
+        }
     }
 }
 
@@ -193,7 +212,15 @@ export function registerDecorators(
                 if (process.env.NODE_ENV !== 'production') {
                     validateFieldDecoratedWithApi(Ctor, fieldName, descriptor);
                 }
-                descriptor = createPublicPropertyDescriptor(fieldName);
+
+                // [W-9907857] If a component has both a public property and a private setter/getter
+                // with the same name, the property is defined as a public accessor. This branch is
+                // only here for backward compatibility reasons.
+                if (!isUndefined(descriptor)) {
+                    descriptor = createPublicAccessorDescriptor(fieldName, descriptor);
+                } else {
+                    descriptor = createPublicPropertyDescriptor(fieldName);
+                }
             }
             apiFields[fieldName] = descriptor;
             defineProperty(proto, fieldName, descriptor);
@@ -266,7 +293,13 @@ export function registerDecorators(
             if (process.env.NODE_ENV !== 'production') {
                 validateObservedField(Ctor, fieldName, descriptor);
             }
-            observedFields[fieldName] = createObservedFieldPropertyDescriptor(fieldName);
+
+            // [W-9907857] Only mark a field as observed when there is no associated public
+            // accessor. This is only here for backward compatibility purposes. This happen whenever
+            // a component defines a class field and a public getter/setter with the same name.
+            if (isUndefined(publicProps) || !(fieldName in publicProps)) {
+                observedFields[fieldName] = createObservedFieldPropertyDescriptor(fieldName);
+            }
         }
     }
     setDecoratorsMeta(Ctor, {
