@@ -20,6 +20,7 @@ import {
     setPrototypeOf,
     getPrototypeOf,
     isObject,
+    ArrayPush,
 } from '@lwc/shared';
 import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
 import { dispatchEvent } from '../env/event-target';
@@ -53,7 +54,7 @@ import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { getInternalChildNodes } from './node';
 import { innerHTMLSetter } from '../env/element';
 import { setNodeKey, setNodeOwnerKey } from '../shared/node-ownership';
-import { getOwnerDocument } from '../shared/utils';
+import { arrayFromCollection, getOwnerDocument } from '../shared/utils';
 import { fauxElementsFromPoint } from '../shared/faux-elements-from-point';
 
 const InternalSlot = new WeakMap<any, ShadowRootRecord>();
@@ -129,12 +130,15 @@ export function isHostElement(node: unknown): node is HTMLElement {
 
 // Return true if any descendant is a host element
 export function containsHost(node: Node) {
-    const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
-    let descendantNode;
-    while ((descendantNode = walker.nextNode())) {
-        if (isHostElement(descendantNode)) {
+    const descendants = arrayFromCollection(node.childNodes);
+    let descendant;
+    while (!isUndefined((descendant = descendants.shift()))) {
+        if (isHostElement(descendant)) {
             return true;
         }
+        // TypeScript does not like passing an array-like in as an array
+        // @ts-ignore
+        ArrayPush.apply(descendants, descendant.childNodes);
     }
     return false;
 }
