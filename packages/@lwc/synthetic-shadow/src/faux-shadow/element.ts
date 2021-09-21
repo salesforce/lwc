@@ -122,8 +122,6 @@ defineProperties(Element.prototype, {
                 // If this element is in synthetic shadow, if it's a synthetic shadow host,
                 // or if any of its descendants are synthetic shadow hosts, then we can't
                 // use the native innerHTML because it would expose private node internals.
-                // (Note that innerHTMLGetterPatched calls innerHTML on all children, so we only need to check
-                // one level deep.)
                 if (isNodeShadowed(this) || isHostElement(this) || containsHost(this)) {
                     return innerHTMLGetterPatched.call(this);
                 }
