@@ -737,7 +737,7 @@ describe('Transform property', () => {
     );
 
     pluginTest(
-        'public property with duplicate getter/setter',
+        '[W-9927596] - public property with duplicate getter/setter',
         `
         import { api } from 'lwc';
         export default class Text {
@@ -778,7 +778,7 @@ describe('Transform property', () => {
     );
 
     pluginTest(
-        'public getter/setter with duplicate property',
+        '[W-9927596] - public getter/setter with duplicate property',
         `
         import { api } from 'lwc';
         export default class Text {

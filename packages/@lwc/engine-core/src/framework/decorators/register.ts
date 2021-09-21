@@ -83,7 +83,7 @@ function validateObservedField(
         const type = getClassDescriptorType(descriptor);
         const message = `Invalid observed ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
-        // [W-9907857] Ideally we always throw an error when detecting duplicate observed field.
+        // [W-9927596] Ideally we always throw an error when detecting duplicate observed field.
         // This branch is only here for backward compatibility reasons.
         if (type === DescriptorType.Accessor) {
             logError(message);
@@ -138,7 +138,7 @@ function validateFieldDecoratedWithApi(
         const type = getClassDescriptorType(descriptor);
         const message = `Invalid @api ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
-        // [W-9907857] Ideally we always throw an error when detecting duplicate public properties.
+        // [W-9927596] Ideally we always throw an error when detecting duplicate public properties.
         // This branch is only here for backward compatibility reasons.
         if (type === DescriptorType.Accessor) {
             logError(message);
@@ -213,7 +213,7 @@ export function registerDecorators(
                     validateFieldDecoratedWithApi(Ctor, fieldName, descriptor);
                 }
 
-                // [W-9907857] If a component has both a public property and a private setter/getter
+                // [W-9927596] If a component has both a public property and a private setter/getter
                 // with the same name, the property is defined as a public accessor. This branch is
                 // only here for backward compatibility reasons.
                 if (!isUndefined(descriptor)) {
@@ -294,7 +294,7 @@ export function registerDecorators(
                 validateObservedField(Ctor, fieldName, descriptor);
             }
 
-            // [W-9907857] Only mark a field as observed when there is no associated public
+            // [W-9927596] Only mark a field as observed when there is no associated public
             // accessor. This is only here for backward compatibility purposes. This happen whenever
             // a component defines a class field and a public getter/setter with the same name.
             if (isUndefined(publicProps) || !(fieldName in publicProps)) {
