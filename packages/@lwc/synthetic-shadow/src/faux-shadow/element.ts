@@ -17,7 +17,7 @@ import {
     KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
-import { attachShadow, getShadowRoot, isHostElement } from './shadow-root';
+import { attachShadow, getShadowRoot, hasHostChild, isHostElement } from './shadow-root';
 import {
     getNodeOwner,
     getAllMatches,
@@ -119,7 +119,12 @@ defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
+                // If this element is in synthetic shadow, if it's a synthetic shadow host,
+                // or if any of its immediate children are synthetic shadow hosts, then we can't
+                // use the native innerHTML because it would expose private node internals.
+                // (Note that innerHTMLGetterPatched calls innerHTML on all children, so we only need to check
+                // one level deep.)
+                if (isNodeShadowed(this) || isHostElement(this) || hasHostChild(this)) {
                     return innerHTMLGetterPatched.call(this);
                 }
 
@@ -141,7 +146,8 @@ defineProperties(Element.prototype, {
     outerHTML: {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
+                // See notes above on get innerHTML
+                if (isNodeShadowed(this) || isHostElement(this) || hasHostChild(this)) {
                     return outerHTMLGetterPatched.call(this);
                 }
                 return outerHTMLGetter.call(this);

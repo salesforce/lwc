@@ -29,7 +29,27 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
         }
 
         it('childNodes', () => {
+            // TreeWalker is just a convenient way of getting text nodes without using childNodes
+            const textNodes = {};
+            const walker = document.createTreeWalker(elm, NodeFilter.SHOW_TEXT);
+            let node;
+            while ((node = walker.nextNode())) {
+                textNodes[node.wholeText] = node;
+            }
             expect(Array.from(nodes.slot.childNodes)).toEqual([]);
+            expect(Array.from(nodes.p.childNodes)).toEqual([
+                textNodes['I am an assigned element.'],
+            ]);
+            expect(Array.from(nodes.consumer.childNodes)).toEqual([
+                nodes.p,
+                textNodes['I am an assigned text.'],
+            ]);
+            expect(Array.from(elm.childNodes)).toEqual([nodes.consumer]);
+            expect(Array.from(nodes['consumer.shadowRoot'].childNodes)).toEqual([
+                nodes.pInShadow,
+                nodes.slot,
+            ]);
+            expect(Array.from(nodes.slot)).toEqual([]);
         });
         it('parentNode', () => {
             expect(nodes.p.parentNode).toEqual(nodes.consumer);
@@ -44,16 +64,14 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             expect(nodes.p.getRootNode()).toEqual(document);
             expect(nodes.consumer.getRootNode()).toEqual(document);
         });
-        // TODO [#2425]: Incorrect serialization
-        xit('textContent', () => {
+        it('textContent', () => {
             expect(nodes.p.textContent).toEqual('I am an assigned element.');
             expect(nodes.consumer.textContent).toEqual(
                 'I am an assigned element.I am an assigned text.'
             );
             expect(elm.textContent).toEqual('I am an assigned element.I am an assigned text.');
         });
-        // TODO [#2425]: Incorrect serialization
-        xit('innerHTML', () => {
+        it('innerHTML', () => {
             expect(nodes.p.innerHTML).toEqual('I am an assigned element.');
             expect(nodes.consumer.innerHTML).toEqual(
                 '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
@@ -62,8 +80,7 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
                 '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
             );
         });
-        // TODO [#2425]: Incorrect serialization
-        xit('outerHTML', () => {
+        it('outerHTML', () => {
             expect(nodes.p.outerHTML).toEqual('<p data-id="p">I am an assigned element.</p>');
             expect(nodes.consumer.outerHTML).toEqual(
                 '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'

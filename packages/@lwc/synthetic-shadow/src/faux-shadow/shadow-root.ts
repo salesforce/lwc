@@ -127,6 +127,17 @@ export function isHostElement(node: unknown): node is HTMLElement {
     return !isUndefined(InternalSlot.get(node));
 }
 
+// Return true if any immediate child is a host
+export function hasHostChild(node: Node) {
+    const { childNodes } = node;
+    for (let i = 0, length = childNodes.length; i < length; i++) {
+        if (isHostElement(childNodes[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
 let uid = 0;
 
 export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
