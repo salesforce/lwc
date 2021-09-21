@@ -48,7 +48,7 @@ import {
     getShadowRoot,
     isHostElement,
     getIE11FakeShadowRootPlaceholder,
-    hasHostChild,
+    containsHost,
 } from './shadow-root';
 import { getNodeNearestOwnerKey, getNodeOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
@@ -287,7 +287,7 @@ defineProperties(Node.prototype, {
         get(this: Node): string {
             if (!featureFlags.ENABLE_NODE_PATCH) {
                 // See note on get innerHTML in faux-shadow/element.ts
-                if (isNodeShadowed(this) || isHostElement(this) || hasHostChild(this)) {
+                if (isNodeShadowed(this) || isHostElement(this) || containsHost(this)) {
                     return textContentGetterPatched.call(this);
                 }
 

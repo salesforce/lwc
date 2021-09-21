@@ -127,11 +127,12 @@ export function isHostElement(node: unknown): node is HTMLElement {
     return !isUndefined(InternalSlot.get(node));
 }
 
-// Return true if any immediate child is a host
-export function hasHostChild(node: Node) {
-    const { childNodes } = node;
-    for (let i = 0, length = childNodes.length; i < length; i++) {
-        if (isHostElement(childNodes[i])) {
+// Return true if any descendant is a host element
+export function containsHost(node: Node) {
+    const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
+    let descendantNode;
+    while ((descendantNode = walker.nextNode())) {
+        if (isHostElement(descendantNode)) {
             return true;
         }
     }

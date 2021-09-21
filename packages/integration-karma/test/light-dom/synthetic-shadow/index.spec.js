@@ -3,6 +3,7 @@ import { extractDataIds } from 'test-utils';
 
 import LightContainer from 'x/lightContainer';
 import ShadowContainer from 'x/shadowContainer';
+import LightContainerDeepShadow from 'x/lightContainerDeepShadow';
 
 describe('Light DOM + Synthetic Shadow DOM', () => {
     describe('light -> shadow', () => {
@@ -87,6 +88,46 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             );
             expect(elm.outerHTML).toEqual(
                 '<x-light-container><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></x-light-container>'
+            );
+        });
+    });
+
+    describe('light -> deep shadow', () => {
+        let elm, nodes;
+        beforeEach(() => {
+            elm = createElement('x-light-container-deep-shadow', {
+                is: LightContainerDeepShadow,
+            });
+            document.body.appendChild(elm);
+            nodes = extractDataIds(elm);
+        });
+        it('childNodes', () => {
+            expect(Array.from(elm.childNodes)).toEqual([nodes.wrapper]);
+            expect(Array.from(nodes.wrapper.childNodes)).toEqual([nodes.consumer]);
+        });
+        it('textContent', () => {
+            expect(nodes.p.textContent).toEqual('I am an assigned element.');
+            expect(nodes.consumer.textContent).toEqual(
+                'I am an assigned element.I am an assigned text.'
+            );
+            expect(elm.textContent).toEqual('I am an assigned element.I am an assigned text.');
+        });
+        it('innerHTML', () => {
+            expect(nodes.p.innerHTML).toEqual('I am an assigned element.');
+            expect(nodes.consumer.innerHTML).toEqual(
+                '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
+            );
+            expect(elm.innerHTML).toEqual(
+                '<div data-id="wrapper"><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></div>'
+            );
+        });
+        it('outerHTML', () => {
+            expect(nodes.p.outerHTML).toEqual('<p data-id="p">I am an assigned element.</p>');
+            expect(nodes.consumer.outerHTML).toEqual(
+                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+            );
+            expect(elm.outerHTML).toEqual(
+                '<x-light-container-deep-shadow><div data-id="wrapper"><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></div></x-light-container-deep-shadow>'
             );
         });
     });
