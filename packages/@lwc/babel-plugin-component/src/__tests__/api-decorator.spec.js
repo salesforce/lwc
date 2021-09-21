@@ -735,6 +735,90 @@ describe('Transform property', () => {
             },
         }
     );
+
+    pluginTest(
+        'public property with duplicate getter/setter',
+        `
+        import { api } from 'lwc';
+        export default class Text {
+            @api foo = 1;
+            
+            get foo() {}
+            set foo(value) {}
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
+                import _tmpl from "./test.html";
+
+                class Text {
+                    foo = 1;
+
+                    get foo() {}
+
+                    set foo(value) {}
+                }
+                
+                _registerDecorators(Text, {
+                    publicProps: {
+                        foo: {
+                            config: 0,
+                        },
+                    },
+                });
+
+                export default _registerComponent(Text, {
+                    tmpl: _tmpl,
+                });
+              `,
+            },
+        }
+    );
+
+    pluginTest(
+        'public getter/setter with duplicate property',
+        `
+        import { api } from 'lwc';
+        export default class Text {
+            foo = 1;
+            
+            @api
+            get foo() {}
+            set foo(value) {}
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
+                import _tmpl from "./test.html";
+
+                class Text {
+                    foo = 1;
+
+                    get foo() {}
+
+                    set foo(value) {}
+                }
+                
+                _registerDecorators(Text, {
+                    publicProps: {
+                        foo: {
+                            config: 3,
+                        },
+                    },
+                    fields: ["foo"]
+                });
+
+                export default _registerComponent(Text, {
+                    tmpl: _tmpl,
+                });
+              `,
+            },
+        }
+    );
 });
 
 describe('Transform method', () => {
