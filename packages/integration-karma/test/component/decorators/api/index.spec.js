@@ -169,7 +169,7 @@ describe('regression [W-9927596]', () => {
         });
     });
 
-    describe('public accessor with duplicate accessors', () => {
+    describe('public accessor with duplicate (private) field', () => {
         describe('@api on the getter', () => {
             it('log errors when evaluated and invokes accessors', () => {
                 let Ctor;
