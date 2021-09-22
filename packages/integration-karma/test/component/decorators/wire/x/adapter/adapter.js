@@ -1,1 +1,5 @@
-export function adapter() {}
+export const adapter = class Adapter {
+    connect() {}
+    update() {}
+    disconnect() {}
+};
