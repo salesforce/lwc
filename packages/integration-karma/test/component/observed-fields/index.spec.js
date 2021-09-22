@@ -1,8 +1,10 @@
 import { createElement, LightningElement } from 'lwc';
 
 import Simple from 'x/simple';
-import SideEffect from './x/fieldWithSideEffect/fieldWithSideEffect';
-import FieldForCache from './x/fieldForCache/fieldForCache';
+import SideEffect from 'x/fieldWithSideEffect';
+import FieldForCache from 'x/fieldForCache';
+
+import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
 describe('observed-fields', () => {
     it('should rerender component when field is mutated', () => {
@@ -145,5 +147,42 @@ describe('observed-fields', () => {
                 'Invalid observed showFeatures field. Found a duplicate method with the same name.'
             );
         });
+    });
+});
+
+describe('regression [W-9927596] - observed field with duplicate accessor', () => {
+    it('log errors when evaluated and should not invoke the accessors', () => {
+        let Ctor;
+        const accessors = [];
+
+        expect(() => {
+            class DuplicateAccessor extends LightningElement {
+                foo = 'default';
+
+                set foo(value) {
+                    accessors.push(`setter ${value}`);
+                    this._foo = value;
+                }
+                get foo() {
+                    accessors.push('getter');
+                    return this._foo;
+                }
+
+                render() {
+                    return duplicatePropertyTemplate;
+                }
+            }
+
+            Ctor = DuplicateAccessor;
+        }).toLogErrorDev(
+            /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+        );
+
+        const elm = createElement('x-duplicate-accessor', { is: Ctor });
+
+        document.body.appendChild(elm);
+
+        expect(accessors).toEqual([]);
+        expect(elm.shadowRoot.querySelector('p').textContent).toBe('default');
     });
 });
