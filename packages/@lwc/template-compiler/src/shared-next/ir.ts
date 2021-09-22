@@ -24,6 +24,11 @@ import {
     Element,
     Component,
     Expression,
+    ForBlock,
+    Iterator,
+    ForEach,
+    ParentNode,
+    Node,
 } from './types';
 
 export function createElement(original: parse5.Element): Element {
@@ -129,16 +134,35 @@ export function isCommentNode(node: IRNode): node is IRComment {
     return node.type === 'comment';
 }
 
-export function isCustomElement(node: IRNode): boolean {
-    return isElement(node) && node.component !== undefined;
+// export function isCustomElement(node: IRNode): boolean {
+//     return isElement(node) && node.component !== undefined;
+// }
+
+// jtu:  comeback to verify this is correct
+export function isCustomElement(node: Node): boolean {
+    return node.type === LWCNodeType.Component;
 }
 
-export function isTemplate(element: IRElement) {
-    return element.tag === 'template';
+// jtu:  Come back to this
+export function isTemplate(node: ParentNode) {
+    return (
+        (node.type === LWCNodeType.Element ||
+            node.type === LWCNodeType.Component ||
+            node.type === LWCNodeType.Slot) &&
+        node.name === 'template'
+    );
 }
 
 export function isSlot(element: IRElement) {
     return element.tag === 'slot';
+}
+
+export function isIterator(node: ForBlock): node is Iterator {
+    return node.type === LWCNodeType.Iterator;
+}
+
+export function isForEach(node: ForBlock): node is ForEach {
+    return node.type === LWCNodeType.ForEach;
 }
 
 export function isExpressionAttribute(node: Expression | Literal): node is Expression {
@@ -147,6 +171,10 @@ export function isExpressionAttribute(node: Expression | Literal): node is Expre
 
 export function isStringAttribute(node: Expression | Literal): node is Literal<string> {
     return node.type === LWCNodeType.Literal && typeof node.value === 'string';
+}
+
+export function isBooleanAttribute(node: Expression | Literal): node is Literal<boolean> {
+    return node.type === LWCNodeType.Literal && typeof node.value === 'boolean';
 }
 
 export function isIRBooleanAttribute(attribute: IRAttribute): attribute is IRBooleanAttribute {

@@ -17,7 +17,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import { Attribute } from '../shared-next/types';
+import { Attribute, Component, Element, Slot } from '../shared-next/types';
 
 import {
     ATTR_NAME,
@@ -193,7 +193,7 @@ function isFmkAttribute(attrName: string): boolean {
     return attrName === 'key' || attrName === 'slot';
 }
 
-export function isAttribute(element: IRElement, attrName: string): boolean {
+export function isAttribute(element: Element | Component | Slot, attrName: string): boolean {
     if (isCustomElement(element)) {
         return (
             attrName === 'style' ||
@@ -206,7 +206,7 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
-    if (element.tag === 'input' && (attrName === 'value' || attrName === 'checked')) {
+    if (element.name === 'input' && (attrName === 'value' || attrName === 'checked')) {
         return false;
     }
 
