@@ -17,7 +17,7 @@ import {
     KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
-import { attachShadow, getShadowRoot, containsHost, isHostElement } from './shadow-root';
+import { attachShadow, getShadowRoot, isHostElement } from './shadow-root';
 import {
     getNodeOwner,
     getAllMatches,
@@ -50,6 +50,7 @@ import {
     getNodeKey,
     getNodeNearestOwnerKey,
     getNodeOwnerKey,
+    isNodeOrDescendantsShadowed,
     isNodeShadowed,
 } from '../shared/node-ownership';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
@@ -122,7 +123,7 @@ defineProperties(Element.prototype, {
                 // If this element is in synthetic shadow, if it's a synthetic shadow host,
                 // or if any of its descendants are synthetic shadow hosts, then we can't
                 // use the native innerHTML because it would expose private node internals.
-                if (isNodeShadowed(this) || isHostElement(this) || containsHost(this)) {
+                if (isNodeOrDescendantsShadowed(this)) {
                     return innerHTMLGetterPatched.call(this);
                 }
 
@@ -145,7 +146,7 @@ defineProperties(Element.prototype, {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
                 // See notes above on get innerHTML
-                if (isNodeShadowed(this) || isHostElement(this) || containsHost(this)) {
+                if (isNodeOrDescendantsShadowed(this)) {
                     return outerHTMLGetterPatched.call(this);
                 }
                 return outerHTMLGetter.call(this);
