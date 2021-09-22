@@ -16,10 +16,14 @@ export type TemplateParseResult = {
     warnings: CompilerDiagnostic[];
 };
 
+export enum LWCDirectiveDomMode {
+    manual = 'manual',
+}
+
 export enum LWCNodeType {
     Literal = 'literal',
-    Identifier = 'identifier',
-    MemberExpression = 'member-expression',
+    Identifier = 'Identifier',
+    MemberExpression = 'MemberExpression',
     Attribute = 'attribute',
     Property = 'property',
     EventListener = 'event-listener',
@@ -38,6 +42,7 @@ export enum LWCNodeType {
     Iterator = 'iterator',
     Slot = 'slot',
     Root = 'root',
+    Dom = 'dom',
 }
 
 export enum LWCDirectiveRenderMode {
@@ -65,12 +70,12 @@ export interface Literal<Value = string | boolean> {
 }
 
 export interface Identifier extends BaseNode {
-    type: LWCNodeType.Identifier;
+    type: 'Identifier';
     name: string;
 }
 
 export interface MemberExpression extends BaseNode {
-    type: LWCNodeType.MemberExpression;
+    type: 'MemberExpression';
     object: Expression;
     property: Identifier;
 }
@@ -111,6 +116,11 @@ export interface DynamicDirective extends Directive {
     value: Expression;
 }
 
+export interface DomDirective extends Directive {
+    name: LWCNodeType.Dom;
+    value: Literal<LWCDirectiveDomMode>;
+}
+
 export interface RenderModeDirective extends Directive {
     name: LWCNodeType.RenderMode;
     value: Literal<LWCDirectiveRenderMode.Shadow> | Literal<LWCDirectiveRenderMode.Light>;
@@ -121,7 +131,7 @@ export interface PreserveCommentsDirective extends Directive {
     value: Literal<boolean>;
 }
 
-export type ElementDirective = KeyDirective | DynamicDirective;
+export type ElementDirective = KeyDirective | DynamicDirective | DomDirective;
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {
@@ -138,22 +148,27 @@ export interface BaseParentNode extends BaseNode {
     children: ChildNode[];
 }
 
-export interface Element extends BaseParentNode {
-    type: LWCNodeType.Element;
+// jtu:  come back to this to verify, properties initially only belonged to components
+export interface BaseElement extends BaseParentNode {
     name: string;
-    namespace?: string;
+    properties: Property[];
     attributes: Attribute[];
     listeners: EventListener[];
     directives?: ElementDirective[];
 }
 
-export interface Component extends BaseParentNode {
+export interface Element extends BaseElement {
+    type: LWCNodeType.Element;
+    namespace?: string;
+}
+
+export interface Component extends BaseElement {
     type: LWCNodeType.Component;
-    name: string;
-    attributes: Attribute[];
-    properties: Property[];
-    listeners: EventListener[];
-    directives?: ElementDirective[];
+}
+
+export interface Slot extends BaseElement {
+    type: LWCNodeType.Slot;
+    namespace?: string;
 }
 
 export interface IfBlock extends BaseParentNode {
@@ -176,11 +191,6 @@ export interface Iterator extends BaseParentNode {
 
 export type ForBlock = ForEach | Iterator;
 
-export interface Slot extends Omit<Element, 'type'> {
-    type: LWCNodeType.Slot;
-    name: string;
-}
-
 export interface Root extends BaseParentNode {
     type: LWCNodeType.Root;
     directives?: RootDirective[];
@@ -188,4 +198,14 @@ export interface Root extends BaseParentNode {
 
 export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 
+// jtu:  should slot be a childnode type?
 export type ChildNode = ForBlock | IfBlock | Element | Component | Comment | Text;
+
+export type Node = ForBlock | IfBlock | Element | Component | Comment | Slot | Text;
+
+export interface NodeContainer {
+    parent?: NodeContainer;
+    forBlock?: ForBlock;
+    ifBlock?: IfBlock;
+    node?: ParentNode;
+}

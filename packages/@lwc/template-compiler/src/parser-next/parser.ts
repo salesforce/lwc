@@ -16,8 +16,7 @@ import {
 } from '@lwc/errors';
 import { IRElement, LWCDirectiveRenderMode, IRBaseAttribute, IRNode } from '../shared/types';
 import { ResolvedConfig } from '../config';
-import { ParentNode } from '../shared-next/types';
-import Scope from './scope';
+import { NodeContainer, ParentNode, Root } from '../shared-next/types';
 
 function normalizeLocation(location?: parse5.Location): Location {
     let line = 0;
@@ -46,7 +45,8 @@ export default class ParserCtx {
     readonly seenSlots: Set<string> = new Set();
 
     readonly parentStack: ParentNode[] = [];
-    scope: Scope = new Scope();
+    root?: Root;
+    nodeContainer: NodeContainer = {};
 
     constructor(source: String, config: ResolvedConfig) {
         this.source = source;
@@ -57,40 +57,27 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
-    *ancestors(element?: IRElement) {
-        const ancestors = element ? [...this.parentStack, element] : this.parentStack;
-        for (let index = ancestors.length - 1; index > 0; index--) {
-            yield { current: ancestors[index], index };
+    findAncestor({
+        current = this.nodeContainer,
+        predicate,
+        traversalCond = () => true,
+    }: {
+        current?: NodeContainer;
+        predicate: (node: NodeContainer) => unknown;
+        traversalCond?: (nodes: {
+            current: NodeContainer;
+            parent: NodeContainer | undefined;
+        }) => unknown;
+    }): NodeContainer | null {
+        if (current && predicate(current)) {
+            return current;
         }
-    }
 
-    findAncestor(args: {
-        element?: IRElement;
-        predicate: (elm: IRElement) => unknown;
-        traversalCond?: (nodes: { current: IRElement; parent: IRElement | null }) => unknown;
-    }): IRElement | null {
-        const { element, predicate, traversalCond = () => true } = args;
-        for (const { current, index } of this.ancestors(element)) {
-            if (predicate(current)) {
-                return current;
-            }
-            if (!traversalCond({ current, parent: this.parentStack[index - 1] })) {
-                break;
-            }
+        if (traversalCond({ current, parent: current.parent })) {
+            return this.findAncestor({ current: current.parent, predicate, traversalCond });
         }
+
         return null;
-    }
-
-    enterScope() {
-        const newScope = new Scope();
-        newScope.parent = this.scope;
-        this.scope = newScope;
-    }
-
-    exitScope() {
-        if (this.scope.parent) {
-            this.scope = this.scope.parent;
-        }
     }
 
     withErrorRecovery<T>(fn: () => T): T | undefined {
