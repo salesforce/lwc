@@ -294,10 +294,12 @@ export function registerDecorators(
                 validateObservedField(Ctor, fieldName, descriptor);
             }
 
-            // [W-9927596] Only mark a field as observed when there is no associated public
-            // accessor. This is only here for backward compatibility purposes. This happen whenever
-            // a component defines a class field and a public getter/setter with the same name.
-            if (isUndefined(publicProps) || !(fieldName in publicProps)) {
+            // [W-9927596] Only mark a field as observed whenever it isn't a duplicated public nor
+            // tracked property. This is only here for backward compatibility purposes.
+            const isDuplicatePublicProp = !isUndefined(publicProps) && fieldName in publicProps;
+            const isDuplicateTrackedProp = !isUndefined(track) && fieldName in track;
+
+            if (!isDuplicatePublicProp && !isDuplicateTrackedProp) {
                 observedFields[fieldName] = createObservedFieldPropertyDescriptor(fieldName);
             }
         }

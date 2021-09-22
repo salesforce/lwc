@@ -131,8 +131,39 @@ describe('restrictions', () => {
 });
 
 describe('regression [W-9927596]', () => {
+    describe('public property with duplicate observed field', () => {
+        it('log errors when evaluated and preserve the public property', () => {
+            let Ctor;
+
+            expect(() => {
+                class DuplicateProperty extends LightningElement {
+                    foo = 'observed';
+                    @api foo = 'public';
+
+                    render() {
+                        return duplicatePropertyTemplate;
+                    }
+                }
+
+                Ctor = DuplicateProperty;
+            }).toLogErrorDev(
+                /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+            );
+
+            const elm = createElement('x-duplicate-property', { is: Ctor });
+            document.body.appendChild(elm);
+
+            expect(elm.shadowRoot.querySelector('p').textContent).toBe('public');
+
+            elm.foo = 'updated';
+            return Promise.resolve().then(() => {
+                expect(elm.shadowRoot.querySelector('p').textContent).toBe('updated');
+            });
+        });
+    });
+
     describe('public property with duplicate accessor', () => {
-        it('log errors when evaluated and invokes accessors', () => {
+        it('log errors when evaluated and treat accessors as public', () => {
             let Ctor;
             const accessors = [];
 
@@ -169,9 +200,9 @@ describe('regression [W-9927596]', () => {
         });
     });
 
-    describe('public accessor with duplicate (private) field', () => {
+    describe('public accessor with duplicate observed field', () => {
         describe('@api on the getter', () => {
-            it('log errors when evaluated and invokes accessors', () => {
+            it('log errors when evaluated and preserve the public accessors', () => {
                 let Ctor;
                 const accessors = [];
 
