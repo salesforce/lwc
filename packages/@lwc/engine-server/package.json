@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine-server",
-    "version": "2.5.0",
+    "version": "2.5.1",
     "description": "Renders LWC components in a server environment.",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -24,8 +24,8 @@
         "types/"
     ],
     "devDependencies": {
-        "@lwc/engine-core": "2.5.0",
-        "@lwc/shared": "2.5.0"
+        "@lwc/engine-core": "2.5.1",
+        "@lwc/shared": "2.5.1"
     },
     "publishConfig": {
         "access": "public"

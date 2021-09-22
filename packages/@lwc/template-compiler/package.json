@@ -1,6 +1,6 @@
 {
     "name": "@lwc/template-compiler",
-    "version": "2.5.0",
+    "version": "2.5.1",
     "description": "Template compiler package",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -25,8 +25,8 @@
     },
     "//": "Currently can't upgrade TypeScript to v4.4.2 because it breaks Rollup: https://git.io/JuCcs",
     "dependencies": {
-        "@lwc/errors": "2.5.0",
-        "@lwc/shared": "2.5.0",
+        "@lwc/errors": "2.5.1",
+        "@lwc/shared": "2.5.1",
         "acorn": "~8.5.0",
         "astring": "~1.7.0",
         "estree-walker": "~2.0.2",
