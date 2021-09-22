@@ -130,7 +130,7 @@ describe('restrictions', () => {
     });
 });
 
-describe('regressions', () => {
+describe('regression [W-9927596]', () => {
     describe('public property with duplicate accessor', () => {
         it('log errors when evaluated and invokes accessors', () => {
             let Ctor;
@@ -170,41 +170,82 @@ describe('regressions', () => {
     });
 
     describe('public accessor with duplicate accessors', () => {
-        it('log errors when evaluated and invokes accessors', () => {
-            let Ctor;
-            const accessors = [];
+        describe('@api on the getter', () => {
+            it('log errors when evaluated and invokes accessors', () => {
+                let Ctor;
+                const accessors = [];
 
-            expect(() => {
-                class DuplicateAccessor extends LightningElement {
-                    foo = 'default';
+                expect(() => {
+                    class DuplicateAccessor extends LightningElement {
+                        foo = 'default';
 
-                    @api
-                    get foo() {
-                        accessors.push('getter');
-                        return this._foo;
+                        @api
+                        get foo() {
+                            accessors.push('getter');
+                            return this._foo;
+                        }
+                        set foo(value) {
+                            accessors.push(`setter ${value}`);
+                            this._foo = value;
+                        }
+
+                        render() {
+                            return duplicatePropertyTemplate;
+                        }
                     }
-                    set foo(value) {
-                        accessors.push(`setter ${value}`);
-                        this._foo = value;
+
+                    Ctor = DuplicateAccessor;
+                }).toLogErrorDev(
+                    /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+                );
+
+                const elm = createElement('x-duplicate-accessor', { is: Ctor });
+                elm.foo = 'test';
+
+                document.body.appendChild(elm);
+
+                expect(accessors).toEqual(['setter default', 'setter test', 'getter']);
+                expect(elm.shadowRoot.querySelector('p').textContent).toBe('test');
+            });
+        });
+
+        describe('@api on the setter', () => {
+            it('log errors when evaluated and invokes accessors', () => {
+                let Ctor;
+                const accessors = [];
+
+                expect(() => {
+                    class DuplicateAccessor extends LightningElement {
+                        foo = 'default';
+
+                        @api
+                        set foo(value) {
+                            accessors.push(`setter ${value}`);
+                            this._foo = value;
+                        }
+                        get foo() {
+                            accessors.push('getter');
+                            return this._foo;
+                        }
+
+                        render() {
+                            return duplicatePropertyTemplate;
+                        }
                     }
 
-                    render() {
-                        return duplicatePropertyTemplate;
-                    }
-                }
+                    Ctor = DuplicateAccessor;
+                }).toLogErrorDev(
+                    /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+                );
 
-                Ctor = DuplicateAccessor;
-            }).toLogErrorDev(
-                /Invalid observed foo field\. Found a duplicate accessor with the same name\./
-            );
+                const elm = createElement('x-duplicate-accessor', { is: Ctor });
+                elm.foo = 'test';
 
-            const elm = createElement('x-duplicate-accessor', { is: Ctor });
-            elm.foo = 'test';
+                document.body.appendChild(elm);
 
-            document.body.appendChild(elm);
-
-            expect(accessors).toEqual(['setter default', 'setter test', 'getter']);
-            expect(elm.shadowRoot.querySelector('p').textContent).toBe('test');
+                expect(accessors).toEqual(['setter default', 'setter test', 'getter']);
+                expect(elm.shadowRoot.querySelector('p').textContent).toBe('test');
+            });
         });
     });
 });
