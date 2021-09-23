@@ -503,7 +503,7 @@ export const ParserDiagnostics = {
     LWC_DOM_INVALID_IN_LIGHT_DOM: {
         code: 1135,
         message:
-            "Invalid directive 'lwc:dom' on element. 'lwc:dom' is not supported in Light DOM components.",
+            "Invalid directive 'lwc:dom' on element {0}. 'lwc:dom' is not necessary in Light DOM components.",
         level: DiagnosticLevel.Error,
         url: '',
     },
