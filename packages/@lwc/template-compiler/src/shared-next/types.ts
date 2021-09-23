@@ -199,9 +199,18 @@ export interface Root extends BaseParentNode {
 export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 
 // jtu:  should slot be a childnode type?
-export type ChildNode = ForBlock | IfBlock | Element | Component | Comment | Text;
+export type ChildNode = ForBlock | IfBlock | Element | Component | Slot | Comment | Text;
 
-export type Node = ForBlock | IfBlock | Element | Component | Comment | Slot | Text;
+export type Node =
+    | ForBlock
+    | IfBlock
+    | Element
+    | Component
+    | Comment
+    | Slot
+    | Root
+    | Text
+    | Attribute;
 
 export interface NodeContainer {
     parent?: NodeContainer;

@@ -10,14 +10,7 @@ import * as parse5Utils from './parse5';
 
 import {
     TemplateIdentifier,
-    TemplateExpression,
     IRNode,
-    IRText,
-    IRElement,
-    IRComment,
-    IRAttribute,
-    IRAttributeType,
-    IRBooleanAttribute,
     LWCNodeType,
     Literal,
     SourceLocation,
@@ -29,6 +22,8 @@ import {
     ForEach,
     ParentNode,
     Node,
+    Comment,
+    Text,
 } from './types';
 
 export function createElement(original: parse5.Element): Element {
@@ -38,6 +33,7 @@ export function createElement(original: parse5.Element): Element {
         name: original.nodeName,
         namespace: original.namespaceURI,
         location: parseSourceLocation(elmLocation),
+        properties: [],
         attributes: [],
         listeners: [],
         children: [],
@@ -57,7 +53,7 @@ export function createComponent(original: parse5.Element): Component {
     };
 }
 
-function parseElementLocation(original: parse5.Element): parse5.ElementLocation {
+export function parseElementLocation(original: parse5.Element): parse5.ElementLocation {
     let location = original.sourceCodeLocation;
 
     // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
@@ -80,7 +76,7 @@ function parseElementLocation(original: parse5.Element): parse5.ElementLocation 
     return location;
 }
 
-export function createText(original: parse5.TextNode, value: string | TemplateExpression): IRText {
+export function createText(original: parse5.TextNode, value: string | Expression): Text {
     if (!original.sourceCodeLocation) {
         throw new Error('Invalid text AST node. Missing source code location.');
     }
@@ -92,7 +88,7 @@ export function createText(original: parse5.TextNode, value: string | TemplateEx
     };
 }
 
-export function createComment(original: parse5.CommentNode, value: string): IRComment {
+export function createComment(original: parse5.CommentNode, value: string): Comment {
     if (!original.sourceCodeLocation) {
         throw new Error('Invalid comment AST node. Missing source code location.');
     }
@@ -122,16 +118,16 @@ export function parseSourceLocation(location: parse5.Location): SourceLocation {
     };
 }
 
-export function isElement(node: IRNode): node is IRElement {
-    return node.type === 'element';
+export function isElement(node: Node): node is Element {
+    return node.type === LWCNodeType.Element;
 }
 
-export function isTextNode(node: IRNode): node is IRText {
-    return node.type === 'text';
+export function isTextNode(node: Node): node is Text {
+    return node.type === LWCNodeType.Text;
 }
 
-export function isCommentNode(node: IRNode): node is IRComment {
-    return node.type === 'comment';
+export function isCommentNode(node: Node): node is Comment {
+    return node.type === LWCNodeType.Comment;
 }
 
 // export function isCustomElement(node: IRNode): boolean {
@@ -153,8 +149,8 @@ export function isTemplate(node: ParentNode) {
     );
 }
 
-export function isSlot(element: IRElement) {
-    return element.tag === 'slot';
+export function isSlot(node: Node) {
+    return node.type === LWCNodeType.Slot;
 }
 
 export function isIterator(node: ForBlock): node is Iterator {
@@ -175,10 +171,6 @@ export function isStringAttribute(node: Expression | Literal): node is Literal<s
 
 export function isBooleanAttribute(node: Expression | Literal): node is Literal<boolean> {
     return node.type === LWCNodeType.Literal && typeof node.value === 'boolean';
-}
-
-export function isIRBooleanAttribute(attribute: IRAttribute): attribute is IRBooleanAttribute {
-    return attribute.type === IRAttributeType.Boolean;
 }
 
 export function isComponentProp(
