@@ -6,7 +6,6 @@
  */
 import * as esutils from 'esutils';
 import { Node, parseExpressionAt } from 'acorn';
-import { Location } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
 import * as t from '../shared/estree';
@@ -91,7 +90,11 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
     ]);
 }
 
-export function parseExpression(ctx: ParserCtx, source: string, location: Location): Expression {
+export function parseExpression(
+    ctx: ParserCtx,
+    source: string,
+    location: SourceLocation
+): Expression {
     return ctx.withErrorWrapping(
         () => {
             const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });

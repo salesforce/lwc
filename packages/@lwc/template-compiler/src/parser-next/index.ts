@@ -69,6 +69,7 @@ import {
     DynamicDirective,
     LWCDirectiveDomMode,
     DomDirective,
+    SourceLocation,
 } from '../shared-next/types';
 
 import ParserCtx from './parser';
@@ -98,7 +99,6 @@ import {
     VOID_ELEMENT_SET,
     FOR_DIRECTIVES,
 } from './constants';
-import { IRElement } from '..';
 
 function attributeExpressionReferencesForOfIndex(
     attribute: Attribute,
@@ -179,14 +179,20 @@ function parseRoot(ctx: ParserCtx, parse5Element: parse5.Element): Root {
 }
 
 // jtu:  Come back to this slot is not able to be added as a child for now.
-function parseElement(ctx: ParserCtx, elementNode: parse5.Element): Element | Component {
-    const parsedAttr = parseAttributes(ctx, elementNode);
+function parseElement(ctx: ParserCtx, pare5Element: parse5.Element): Element | Component | Slot {
+    const parsedAttr = parseAttributes(ctx, pare5Element);
+    const elementLocation = parseElementLocation(pare5Element);
+    const location = parseSourceLocation(elementLocation);
 
-    applyForEach(ctx, element, parsedAttr);
-    applyIterator(ctx, element, parsedAttr);
-    applyIf(ctx, element, parsedAttr);
+    // jtu: come back to this find a better way of passing around location information
+    applyForEach(ctx, location, parsedAttr);
+    applyIterator(ctx, location, parsedAttr);
+    applyIf(ctx, parsedAttr);
 
-    const element = parseElementType(ctx, elementNode);
+    // jtu:  Come back to this one may not need to always have an element here
+    // May depend on what other attributes are in the element.
+    // Directives on templates are used in a special way when handled by codegen, keep it in for now.
+    const element = parseElementType(ctx, pare5Element, location, parsedAttr);
 
     applyHandlers(ctx, element, parsedAttr);
     applyKey(ctx, element, parsedAttr);
@@ -195,17 +201,22 @@ function parseElement(ctx: ParserCtx, elementNode: parse5.Element): Element | Co
     applyLwcDirectives(ctx, element, parsedAttr);
     applyAttributes(ctx, element, parsedAttr);
 
-    validateElement(ctx, element, elementNode);
+    validateElement(ctx, element, pare5Element);
     validateAttributes(ctx, element, parsedAttr);
     validateProperties(ctx, element);
 
-    parseChildren(ctx, element, elementNode);
+    parseChildren(ctx, element, pare5Element);
     validateChildren(ctx, element);
 
     return element;
 }
 
-function parseElementType(ctx: ParserCtx, parse5Elm: parse5.Element): Element | Component | Slot {
+function parseElementType(
+    ctx: ParserCtx,
+    parse5Elm: parse5.Element,
+    location: SourceLocation,
+    parsedAttr: ParsedAttribute
+): Element | Component | Slot {
     const { tagName: tag } = parse5Elm;
     // Check if the element tag is a valid custom element name and is not part of known standard
     // element name containing a dash.
@@ -213,7 +224,7 @@ function parseElementType(ctx: ParserCtx, parse5Elm: parse5.Element): Element | 
     if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
         element = createElement(parse5Elm);
     } else if (tag === 'slot') {
-        element = applySlot(ctx, parse5Elm, parsedAttr);
+        element = applySlot(ctx, location, parsedAttr);
     }
     element = createComponent(parse5Elm);
 
@@ -228,7 +239,7 @@ function parseElementType(ctx: ParserCtx, parse5Elm: parse5.Element): Element | 
 
 function parseChildren(
     ctx: ParserCtx,
-    parent: Element | Component | Slot,
+    parent: Element | Component | Slot | Root,
     parse5Parent: parse5.Element
 ): void {
     const parsedChildren: ChildNode[] = [];
@@ -281,7 +292,7 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): Text[] {
 
         let value: Expression | string;
         if (isExpression(token)) {
-            value = parseExpression(ctx, token, location);
+            value = parseExpression(ctx, token, parseSourceLocation(location));
         } else {
             value = decodeTextContent(token);
         }
@@ -310,7 +321,10 @@ function getTemplateRoot(
 
     if (validRoots.length > 1) {
         const duplicateRoot = validRoots[1].sourceCodeLocation!;
-        ctx.throwAtLocation(ParserDiagnostics.MULTIPLE_ROOTS_FOUND, duplicateRoot);
+        ctx.throwAtLocation(
+            ParserDiagnostics.MULTIPLE_ROOTS_FOUND,
+            parseSourceLocation(duplicateRoot)
+        );
     }
 
     const [root] = validRoots;
@@ -332,14 +346,14 @@ function applyHandlers(
         const { name } = eventHandlerAttribute;
 
         if (!isExpressionAttribute(eventHandlerAttribute.value)) {
-            ctx.throwOnIRNode(
+            ctx.throwOnNode(
                 ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION,
                 eventHandlerAttribute
             );
         }
 
         if (!name.match(EVENT_HANDLER_NAME_RE)) {
-            ctx.throwOnIRNode(ParserDiagnostics.INVALID_EVENT_NAME, eventHandlerAttribute, [name]);
+            ctx.throwOnNode(ParserDiagnostics.INVALID_EVENT_NAME, eventHandlerAttribute, [name]);
         }
 
         // Strip the `on` prefix from the event handler name
@@ -364,12 +378,12 @@ function applyIf(ctx: ParserCtx, parsedAttr: ParsedAttribute): IfBlock | undefin
     }
 
     if (!isExpressionAttribute(ifAttribute.value)) {
-        ctx.throwOnIRNode(ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION, ifAttribute);
+        ctx.throwOnNode(ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION, ifAttribute);
     }
 
     const [, modifier] = ifAttribute.name.split(':');
     if (!VALID_IF_MODIFIER.has(modifier)) {
-        ctx.throwOnIRNode(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, ifAttribute, [modifier]);
+        ctx.throwOnNode(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, ifAttribute, [modifier]);
     }
 
     const ifNode: IfBlock = {
@@ -403,12 +417,14 @@ function applyLwcDirectives(
         !LWC_DIRECTIVE_SET.has(lwcAttribute.name) &&
         !ROOT_TEMPLATE_DIRECTIVES_SET.has(lwcAttribute.name)
     ) {
-        ctx.throwOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
             lwcAttribute.name,
             `<${element.name}>`,
         ]);
     }
 
+    //jtu:  come back to this, you may need to still verify that the rendermode and preservecomments
+    // error out when they're on non root nodes
     applyLwcDynamicDirective(ctx, element, parsedAttr);
     applyLwcDomDirective(ctx, element, parsedAttr);
 }
@@ -425,11 +441,14 @@ function applyLwcRenderModeDirective(ctx: ParserCtx, root: Root, parsedAttr: Par
         !isStringAttribute(renderDomAttr) ||
         (renderDomAttr.value !== 'shadow' && renderDomAttr.value !== 'light')
     ) {
-        ctx.throwOnIRNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, element);
+        ctx.throwOnNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, root);
     }
 
+    // jtu:  come back to this
+    // This probably needs to move to the element as validation,
+    // we don't want the render mode on anything other than the root
     if (ctx.parentStack.length > 0) {
-        ctx.throwOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
             ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
             `<${element.tag}>`,
         ]);
@@ -461,8 +480,11 @@ function applyLwcPreserveCommentsDirective(
 
     const { value: lwcPreserveCommentsAttr } = lwcPreserveCommentAttribute;
 
+    // jtu:  come back to this
+    // This probably needs to move to the element as validation,
+    // we don't want the preserve comments on anything other than the root
     if (!isBooleanAttribute(lwcPreserveCommentsAttr)) {
-        ctx.throwOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
             ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
             `<${element.tag}>`,
         ]);
@@ -494,11 +516,11 @@ function applyLwcDynamicDirective(
     }
 
     if (!ctx.config.experimentalDynamicDirective) {
-        ctx.throwOnIRNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element, [`<${tag}>`]);
+        ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element, [`<${tag}>`]);
     }
 
     if (!isCustomElement(element)) {
-        ctx.throwOnIRNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT, element, [
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT, element, [
             `<${tag}>`,
         ]);
     }
@@ -506,9 +528,7 @@ function applyLwcDynamicDirective(
     const { value: lwcDynamicAttr } = lwcDynamicAttribute;
 
     if (!isExpressionAttribute(lwcDynamicAttr)) {
-        ctx.throwOnIRNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [
-            `<${tag}>`,
-        ]);
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
     const directives = element.directives || (element.directives = []);
@@ -535,16 +555,16 @@ function applyLwcDomDirective(
         return;
     }
 
-    if (ctx.getRenderMode(element) === LWCDirectiveRenderMode.light) {
-        ctx.throwOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM, element, [`<${tag}>`]);
+    if (ctx.getRenderMode() === LWCDirectiveRenderMode.Light) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM, element, [`<${tag}>`]);
     }
 
     if (isCustomElement(element)) {
-        ctx.throwOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT, element, [`<${tag}>`]);
+        ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT, element, [`<${tag}>`]);
     }
 
     if (tag === 'slot') {
-        ctx.throwOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT, element);
+        ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT, element);
     }
 
     const { value: lwcDomAttr } = lwcDomAttribute;
@@ -556,7 +576,7 @@ function applyLwcDomDirective(
         const possibleValues = Object.keys(LWCDirectiveDomMode)
             .map((value) => `"${value}"`)
             .join(', or ');
-        ctx.throwOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, [possibleValues]);
+        ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, [possibleValues]);
     }
 
     const directives = element.directives || (element.directives = []);
@@ -574,14 +594,18 @@ function applyLwcDomDirective(
     // lwcOpts.dom = lwcDomAttribute.value as LWCDirectiveDomMode;
 }
 
-function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttribute) {
+function applyForEach(
+    ctx: ParserCtx,
+    elementLocation: SourceLocation,
+    parsedAttr: ParsedAttribute
+) {
     const forEachAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_EACH);
     const forItemAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_ITEM);
     const forIndex = parsedAttr.pick(FOR_DIRECTIVES.FOR_INDEX);
 
     if (forEachAttribute && forItemAttribute) {
         if (!isExpressionAttribute(forEachAttribute.value)) {
-            ctx.throwOnIRNode(
+            ctx.throwOnNode(
                 ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION,
                 forEachAttribute
             );
@@ -589,7 +613,7 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
 
         const forItemValue = forItemAttribute.value;
         if (!isStringAttribute(forItemValue)) {
-            ctx.throwOnIRNode(
+            ctx.throwOnNode(
                 ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING,
                 forItemAttribute
             );
@@ -601,7 +625,7 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
         if (forIndex) {
             const forIndexValue = forIndex.value;
             if (!isStringAttribute(forIndexValue)) {
-                ctx.throwOnIRNode(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, forIndex);
+                ctx.throwOnNode(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, forIndex);
             }
 
             index = parseIdentifier(ctx, forIndexValue.value, forIndex.location);
@@ -619,16 +643,16 @@ function applyForEach(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAttr
         ctx.nodeContainer.forBlock = forEach;
         ctx.nodeContainer.node = forEach;
     } else if (forEachAttribute || forItemAttribute) {
-        ctx.throwOnIRNode(
+        ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
-            element
+            elementLocation
         );
     }
 }
 
 function applyIterator(
     ctx: ParserCtx,
-    element: IRElement,
+    elementLocation: SourceLocation,
     parsedAttr: ParsedAttribute
 ): Iterator | undefined {
     const iteratorExpression = parsedAttr.pick(ITERATOR_RE);
@@ -638,7 +662,7 @@ function applyIterator(
 
     // jtu: come back to this one
     if (ctx.nodeContainer.forBlock) {
-        ctx.throwOnIRNode(ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR, element, [
+        ctx.throwAtLocation(ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR, elementLocation, [
             iteratorExpression.name,
         ]);
     }
@@ -647,7 +671,7 @@ function applyIterator(
     const [, iteratorName] = iteratorAttributeName.split(':');
 
     if (!isExpressionAttribute(iteratorExpression.value)) {
-        ctx.throwOnIRNode(ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION, iteratorExpression, [
+        ctx.throwOnNode(ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION, iteratorExpression, [
             iteratorExpression.name,
         ]);
     }
@@ -675,7 +699,7 @@ function applyKey(
 
     if (keyAttribute) {
         if (!isExpressionAttribute(keyAttribute.value)) {
-            ctx.throwOnIRNode(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, keyAttribute);
+            ctx.throwOnNode(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, keyAttribute);
         }
 
         const forOfParent = getIteratorParent(ctx);
@@ -684,7 +708,7 @@ function applyKey(
         if (forOfParent) {
             // jtu:  come back to this forblock usage
             if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent)) {
-                ctx.throwOnIRNode(
+                ctx.throwOnNode(
                     ParserDiagnostics.KEY_SHOULDNT_REFERENCE_ITERATOR_INDEX,
                     keyAttribute,
                     [tag]
@@ -694,7 +718,7 @@ function applyKey(
             // jtu:  come back to this forblock usage
             if (attributeExpressionReferencesForEachIndex(keyAttribute, forEachParent)) {
                 const name = 'name' in keyAttribute.value && keyAttribute.value.name;
-                ctx.throwOnIRNode(
+                ctx.throwOnNode(
                     ParserDiagnostics.KEY_SHOULDNT_REFERENCE_FOR_EACH_INDEX,
                     keyAttribute,
                     [tag, name]
@@ -713,27 +737,33 @@ function applyKey(
 
         element.directives?.push(forKey);
     } else if (isInIteratorElement(ctx, element) && !isTemplate(element)) {
-        ctx.throwOnIRNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
+        ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
 }
 
-function applySlot(ctx: ParserCtx, parse5Elm: parse5.Element, parsedAttr: ParsedAttribute): Slot {
+function applySlot(
+    ctx: ParserCtx,
+    elementLocation: SourceLocation,
+    parsedAttr: ParsedAttribute
+): Slot {
     // if (element.forEach || element.forOf || element.if) {
     if (ctx.nodeContainer.forBlock || ctx.nodeContainer.ifBlock) {
-        ctx.throwOnIRNode(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, element);
+        ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, elementLocation);
     }
 
     // Can't handle slots in applySlot because it would be too late for class and style attrs
-    if (ctx.getRenderMode(element) === LWCDirectiveRenderMode.Light) {
+    if (ctx.getRenderMode() === LWCDirectiveRenderMode.Light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
             .filter(({ name }) => name !== 'name')
             .map(({ name }) => name);
 
         if (invalidAttrs.length > 0) {
-            ctx.throwOnIRNode(ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_ATTRIBUTES, element, [
-                invalidAttrs.join(','),
-            ]);
+            ctx.throwAtLocation(
+                ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_ATTRIBUTES,
+                elementLocation,
+                [invalidAttrs.join(',')]
+            );
         }
     }
 
@@ -743,7 +773,7 @@ function applySlot(ctx: ParserCtx, parse5Elm: parse5.Element, parsedAttr: Parsed
     const nameAttribute = parsedAttr.get('name');
     if (nameAttribute) {
         if (isExpressionAttribute(nameAttribute.value)) {
-            ctx.throwOnIRNode(ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION, nameAttribute);
+            ctx.throwOnNode(ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION, nameAttribute);
         } else if (isStringAttribute(nameAttribute.value)) {
             name = nameAttribute.value.value;
         }
@@ -753,16 +783,19 @@ function applySlot(ctx: ParserCtx, parse5Elm: parse5.Element, parsedAttr: Parsed
     ctx.seenSlots.add(name);
 
     if (alreadySeen) {
-        ctx.warnOnIRNode(ParserDiagnostics.NO_DUPLICATE_SLOTS, element, [
-            name === '' ? 'default' : `name="${name}"`,
-        ]);
+        ctx.warnAtLocation(
+            ParserDiagnostics.NO_DUPLICATE_SLOTS,
+            [name === '' ? 'default' : `name="${name}"`],
+            elementLocation
+        );
     } else if (isInIteration(ctx)) {
-        ctx.warnOnIRNode(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, element, [
-            name === '' ? 'default' : `name="${name}"`,
-        ]);
+        ctx.warnAtLocation(
+            ParserDiagnostics.NO_SLOTS_IN_ITERATOR,
+            [name === '' ? 'default' : `name="${name}"`],
+            elementLocation
+        );
     }
 
-    const location = parseElementLocation(parse5Elm);
     return {
         type: LWCNodeType.Slot,
         name,
@@ -770,7 +803,7 @@ function applySlot(ctx: ParserCtx, parse5Elm: parse5.Element, parsedAttr: Parsed
         properties: [],
         listeners: [],
         children: [],
-        location: parseSourceLocation(location),
+        location: elementLocation,
     };
 }
 
@@ -786,11 +819,11 @@ function applyAttributes(
         const { name } = attr;
 
         if (!isValidHTMLAttribute(tag, name)) {
-            ctx.warnOnIRNode(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, attr, [name, tag]);
+            ctx.warnOnNode(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, attr, [name, tag]);
         }
 
         if (name.match(/[^a-z0-9]$/)) {
-            ctx.throwOnIRNode(
+            ctx.throwOnNode(
                 ParserDiagnostics.ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER,
                 attr,
                 [name, tag]
@@ -798,7 +831,7 @@ function applyAttributes(
         }
 
         if (!/^-*[a-z]/.test(name)) {
-            ctx.throwOnIRNode(
+            ctx.throwOnNode(
                 ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_OR_HYPHEN_CHARACTER,
                 attr,
                 [name, tag]
@@ -808,7 +841,7 @@ function applyAttributes(
         // disallow attr name which combines underscore character with special character.
         // We normalize camel-cased names with underscores caMel -> ca-mel; thus sanitization.
         if (name.match(/_[^a-z0-9]|[^a-z0-9]_/)) {
-            ctx.throwOnIRNode(
+            ctx.throwOnNode(
                 ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS,
                 attr,
                 [name, tag]
@@ -820,17 +853,17 @@ function applyAttributes(
                 const { value } = attr.value;
 
                 if (/\s+/.test(value)) {
-                    ctx.throwOnIRNode(ParserDiagnostics.INVALID_ID_ATTRIBUTE, attr, [value]);
+                    ctx.throwOnNode(ParserDiagnostics.INVALID_ID_ATTRIBUTE, attr, [value]);
                 }
 
                 if (isInIteration(ctx)) {
-                    ctx.throwOnIRNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr, [
+                    ctx.throwOnNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr, [
                         value,
                     ]);
                 }
 
                 if (ctx.seenIds.has(value)) {
-                    ctx.throwOnIRNode(ParserDiagnostics.DUPLICATE_ID_FOUND, attr, [value]);
+                    ctx.throwOnNode(ParserDiagnostics.DUPLICATE_ID_FOUND, attr, [value]);
                 } else {
                     ctx.seenIds.add(value);
                 }
@@ -839,7 +872,7 @@ function applyAttributes(
 
         // Prevent usage of the slot attribute with expression.
         if (name === 'slot' && isExpressionAttribute(attr.value)) {
-            ctx.throwOnIRNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, attr);
+            ctx.throwOnNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, attr);
         }
 
         // Jtu: come back to this, do we want to continue having the single prop for standard elements?
@@ -885,14 +918,14 @@ function validateElement(
 
     if (isRoot) {
         if (!isTemplate(element)) {
-            ctx.throwOnIRNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, element, [tag]);
+            ctx.throwOnNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, element, [tag]);
         }
 
         const rootHasUnknownAttributes = node.attrs.some(
             ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
         );
         if (rootHasUnknownAttributes) {
-            ctx.throwOnIRNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, element);
+            ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, element);
         }
     }
 
@@ -903,11 +936,11 @@ function validateElement(
     const hasClosingTag = Boolean(location.endTag);
     const isVoidElement = VOID_ELEMENT_SET.has(tag);
     if (!isVoidElement && !hasClosingTag && tag === tag.toLocaleLowerCase()) {
-        ctx.throwOnIRNode(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, element, [tag]);
+        ctx.throwOnNode(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, element, [tag]);
     }
 
     if (tag === 'style' && namespace === HTML_NAMESPACE_URI) {
-        ctx.throwOnIRNode(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element);
+        ctx.throwOnNode(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element);
     } else if (isTemplate(element)) {
         // We check if the template element has some modifier applied to it. Directly checking if one of the
         // IRElement property is impossible. For example when an error occurs during the parsing of the if
@@ -918,24 +951,22 @@ function validateElement(
         // Checking if the original HTMLElement has some attributes applied is a good enough for now.
         const hasAttributes = node.attrs.length !== 0;
         if (!isRoot && !hasAttributes) {
-            ctx.throwOnIRNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
+            ctx.throwOnNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
         }
     } else {
         const isNotAllowedHtmlTag = DISALLOWED_HTML_TAGS.has(tag);
         if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
-            ctx.throwOnIRNode(ParserDiagnostics.FORBIDDEN_TAG_ON_TEMPLATE, element, [tag]);
+            ctx.throwOnNode(ParserDiagnostics.FORBIDDEN_TAG_ON_TEMPLATE, element, [tag]);
         }
 
         const isNotAllowedSvgTag = !SUPPORTED_SVG_TAGS.has(tag);
         if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
-            ctx.throwOnIRNode(ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE, element, [
-                tag,
-            ]);
+            ctx.throwOnNode(ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE, element, [tag]);
         }
 
         const isNotAllowedMathMlTag = DISALLOWED_MATHML_TAGS.has(tag);
         if (namespace === MATHML_NAMESPACE_URI && isNotAllowedMathMlTag) {
-            ctx.throwOnIRNode(ParserDiagnostics.FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE, element, [
+            ctx.throwOnNode(ParserDiagnostics.FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE, element, [
                 tag,
             ]);
         }
@@ -947,17 +978,17 @@ function validateElement(
             DASHED_TAGNAME_ELEMENT_SET.has(tag);
 
         if (!isKnownTag) {
-            ctx.warnOnIRNode(ParserDiagnostics.UNKNOWN_HTML_TAG_IN_TEMPLATE, element, [tag]);
+            ctx.warnOnNode(ParserDiagnostics.UNKNOWN_HTML_TAG_IN_TEMPLATE, element, [tag]);
         }
     }
 }
 
-function validateChildren(ctx: ParserCtx, element: Element | Component | Slot) {
-    const effectiveChildren = ctx.getPreserveComments(element)
+function validateChildren(ctx: ParserCtx, element: Element | Component | Slot | Root) {
+    const effectiveChildren = ctx.getPreserveComments()
         ? element.children
         : element.children.filter((child) => child.type !== 'comment');
     if (element.lwc?.dom && effectiveChildren.length > 0) {
-        ctx.throwOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
+        ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
     }
 }
 
@@ -973,15 +1004,12 @@ function validateAttributes(
         const { name: attrName, value: attrVal } = attr;
 
         if (isProhibitedIsAttribute(attrName)) {
-            ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [
-                attrName,
-                tag,
-            ]);
+            ctx.throwOnNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [attrName, tag]);
         }
 
         if (isTabIndexAttribute(attrName)) {
             if (!isExpressionAttribute(attrVal) && !isValidTabIndexAttributeValue(attrVal.value)) {
-                ctx.throwOnIRNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
+                ctx.throwOnNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
             }
         }
 
@@ -989,7 +1017,7 @@ function validateAttributes(
         // restrict the validation of the "srcdoc" attribute on the "iframe" element only if this element is
         // part of the HTML namespace.
         if (tag === 'iframe' && attrName === 'srcdoc') {
-            ctx.throwOnIRNode(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE, element);
+            ctx.throwOnNode(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE, element);
         }
     }
 }
@@ -1003,10 +1031,7 @@ function validateProperties(ctx: ParserCtx, element: Element | Component | Slot)
             const { name, value } = prop;
 
             if (isProhibitedIsAttribute(name)) {
-                ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [
-                    name,
-                    tag,
-                ]);
+                ctx.throwOnNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [name, tag]);
             }
 
             if (
@@ -1014,7 +1039,7 @@ function validateProperties(ctx: ParserCtx, element: Element | Component | Slot)
                 !isExpressionAttribute(value) &&
                 !isValidTabIndexAttributeValue(value.value)
             ) {
-                ctx.throwOnIRNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
+                ctx.throwOnNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
             }
         }
     }
@@ -1045,29 +1070,29 @@ function getTemplateAttribute(
     const rawLocation = attrLocations[name.toLowerCase()];
     const rawAttribute = ctx.getSource(rawLocation.startOffset, rawLocation.endOffset);
 
+    const location = parseSourceLocation(rawLocation);
     // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
     // is not the same before and after the parsing, then the attribute name contains capital letters
     if (!rawAttribute.startsWith(name)) {
-        ctx.throwAtLocation(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, rawLocation, [
+        ctx.throwAtLocation(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, location, [
             rawAttribute,
             tag,
         ]);
     }
 
     const isBooleanAttribute = !rawAttribute.includes('=');
-    const location = parseSourceLocation(rawLocation);
     const { value, escapedExpression } = normalizeAttributeValue(
         ctx,
         rawAttribute,
         tag,
         attribute,
-        rawLocation
+        location
     );
 
     let attrValue: Literal | Expression;
     if (isExpression(value) && !escapedExpression) {
         // expression
-        attrValue = parseExpression(ctx, value, rawLocation);
+        attrValue = parseExpression(ctx, value, location);
     } else if (isBooleanAttribute) {
         // boolean
         attrValue = createLiteral(true);

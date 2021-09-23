@@ -17,7 +17,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import { Attribute, Component, Element, Slot } from '../shared-next/types';
+import { Attribute, Component, Element, Slot, SourceLocation } from '../shared-next/types';
 
 import {
     ATTR_NAME,
@@ -86,7 +86,7 @@ export function normalizeAttributeValue(
     raw: string,
     tag: string,
     attr: parse5.Attribute,
-    location: parse5.Location
+    location: SourceLocation
 ): {
     value: string;
     escapedExpression: boolean;

@@ -10,11 +10,16 @@ import * as he from 'he';
 import { ParserDiagnostics } from '@lwc/errors';
 
 import ParserCtx from './parser';
+import { parseSourceLocation } from '../shared-next/ir';
 
 export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {
         const { code, ...location } = err;
-        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_SYNTAX, [code], location);
+        ctx.warnAtLocation(
+            ParserDiagnostics.INVALID_HTML_SYNTAX,
+            [code],
+            parseSourceLocation(location)
+        );
     };
 
     return parse5.parseFragment(source, {
