@@ -41,6 +41,7 @@ import {
     isIterator,
     isForEach,
     isBooleanAttribute,
+    isSlot,
 } from '../shared-next/ir';
 import {
     TemplateParseResult,
@@ -158,6 +159,7 @@ function parseRoot(ctx: ParserCtx, parse5Element: parse5.Element): Root {
     const location = parseElementLocation(parse5Element);
     const root: Root = {
         type: LWCNodeType.Root,
+        name: parse5Element.nodeName,
         children: [],
         location: parseSourceLocation(location),
     };
@@ -169,16 +171,15 @@ function parseRoot(ctx: ParserCtx, parse5Element: parse5.Element): Root {
     applyLwcPreserveCommentsDirective(ctx, root, parsedAttr);
 
     // Need to revisit validating the root
-    validateElement(ctx, root, parse5Element);
+    validateRoot(ctx, root, parse5Element);
 
     parseChildren(ctx, root, parse5Element);
     // Need to revisit validating the children
-    validateChildren(ctx, root);
+    // validateChildren(ctx, root);
 
     return root;
 }
 
-// jtu:  Come back to this slot is not able to be added as a child for now.
 function parseElement(ctx: ParserCtx, pare5Element: parse5.Element): Element | Component | Slot {
     const parsedAttr = parseAttributes(ctx, pare5Element);
     const elementLocation = parseElementLocation(pare5Element);
@@ -189,15 +190,13 @@ function parseElement(ctx: ParserCtx, pare5Element: parse5.Element): Element | C
     applyIterator(ctx, location, parsedAttr);
     applyIf(ctx, parsedAttr);
 
-    // jtu:  Come back to this one may not need to always have an element here
-    // May depend on what other attributes are in the element.
-    // Directives on templates are used in a special way when handled by codegen, keep it in for now.
     const element = parseElementType(ctx, pare5Element, location, parsedAttr);
 
     applyHandlers(ctx, element, parsedAttr);
     applyKey(ctx, element, parsedAttr);
 
-    // jtu: come back to this one when you're ready with root
+    // jtu:  Check to see if there's validation on the rendermode and preserve comments
+    // for non root nodes and add it back in.
     applyLwcDirectives(ctx, element, parsedAttr);
     applyAttributes(ctx, element, parsedAttr);
 
@@ -290,11 +289,11 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): Text[] {
             continue;
         }
 
-        let value: Expression | string;
+        let value: Expression | Literal;
         if (isExpression(token)) {
             value = parseExpression(ctx, token, parseSourceLocation(location));
         } else {
-            value = decodeTextContent(token);
+            value = createLiteral(decodeTextContent(token));
         }
 
         parsedTextNodes.push(createText(node, value));
@@ -423,6 +422,21 @@ function applyLwcDirectives(
         ]);
     }
 
+    // Should not allow render mode or preserve comments on non root nodes
+    if (parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE)) {
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
+            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+            `<${element.name}>`,
+        ]);
+    }
+
+    if (parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS)) {
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
+            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+            `<${element.name}>`,
+        ]);
+    }
+
     //jtu:  come back to this, you may need to still verify that the rendermode and preservecomments
     // error out when they're on non root nodes
     applyLwcDynamicDirective(ctx, element, parsedAttr);
@@ -447,12 +461,12 @@ function applyLwcRenderModeDirective(ctx: ParserCtx, root: Root, parsedAttr: Par
     // jtu:  come back to this
     // This probably needs to move to the element as validation,
     // we don't want the render mode on anything other than the root
-    if (ctx.parentStack.length > 0) {
-        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
-            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
-            `<${element.tag}>`,
-        ]);
-    }
+    // if (ctx.parentStack.length > 0) {
+    //     ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
+    //         ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+    //         `<${element.tag}>`,
+    //     ]);
+    // }
 
     // lwcOpts.renderMode = lwcRenderModeAttribute.value as LWCDirectiveRenderMode;
     const directives = root.directives || (root.directives = []);
@@ -484,9 +498,9 @@ function applyLwcPreserveCommentsDirective(
     // This probably needs to move to the element as validation,
     // we don't want the preserve comments on anything other than the root
     if (!isBooleanAttribute(lwcPreserveCommentsAttr)) {
-        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
             ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
-            `<${element.tag}>`,
+            `<${root.name}>`,
         ]);
     }
 
@@ -736,7 +750,7 @@ function applyKey(
         //jtu:  come back to this it is optional property.
 
         element.directives?.push(forKey);
-    } else if (isInIteratorElement(ctx, element) && !isTemplate(element)) {
+    } else if (isInIteratorElement(ctx) && !isTemplate(element)) {
         ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
 }
@@ -906,34 +920,51 @@ function applyAttributes(
     }
 }
 
+// jtu:  come back and verify this can be done without consequences
+function validateRoot(ctx: ParserCtx, root: Root, node: parse5.Element) {
+    if (!isTemplate(root)) {
+        ctx.throwOnNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, root, [node.tagName]);
+    }
+
+    const rootHasUnknownAttributes = node.attrs.some(
+        ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
+    );
+    if (rootHasUnknownAttributes) {
+        ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, root);
+    }
+}
+
 function validateElement(
     ctx: ParserCtx,
-    element: Element | Component | Slot | Root,
+    element: Element | Component | Slot,
     node: parse5.Element
 ) {
-    const { name: tag = '', namespace = '', location } = element;
+    const { name: tag } = element;
+    // jtu:  come back to this, is it ok to take namespace directly from the parse5.element?
+    const namespace = node.namespaceURI;
+    const elementLocation = parseElementLocation(node);
 
     // const isRoot = ctx.parentStack.length === 0;
-    const isRoot = element.type === LWCNodeType.Root;
+    // const isRoot = element.type === LWCNodeType.Root;
 
-    if (isRoot) {
-        if (!isTemplate(element)) {
-            ctx.throwOnNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, element, [tag]);
-        }
+    // if (isRoot) {
+    //     if (!isTemplate(element)) {
+    //         ctx.throwOnNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, element, [tag]);
+    //     }
 
-        const rootHasUnknownAttributes = node.attrs.some(
-            ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
-        );
-        if (rootHasUnknownAttributes) {
-            ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, element);
-        }
-    }
+    //     const rootHasUnknownAttributes = node.attrs.some(
+    //         ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
+    //     );
+    //     if (rootHasUnknownAttributes) {
+    //         ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, element);
+    //     }
+    // }
 
     // Check if a non-void element has a matching closing tag.
     //
     // Note: Parse5 currently fails to collect end tag location for element with a tag name
     // containing an upper case character (inikulin/parse5#352).
-    const hasClosingTag = Boolean(location.endTag);
+    const hasClosingTag = Boolean(elementLocation.endTag);
     const isVoidElement = VOID_ELEMENT_SET.has(tag);
     if (!isVoidElement && !hasClosingTag && tag === tag.toLocaleLowerCase()) {
         ctx.throwOnNode(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, element, [tag]);
@@ -950,7 +981,8 @@ function validateElement(
         //
         // Checking if the original HTMLElement has some attributes applied is a good enough for now.
         const hasAttributes = node.attrs.length !== 0;
-        if (!isRoot && !hasAttributes) {
+        // if (!isRoot && !hasAttributes) {
+        if (!hasAttributes) {
             ctx.throwOnNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
         }
     } else {
@@ -983,11 +1015,24 @@ function validateElement(
     }
 }
 
-function validateChildren(ctx: ParserCtx, element: Element | Component | Slot | Root) {
+// jtu:  come back to this, does it make sense for the root to perform this validtion?
+// It will never have element.lwc anymore and def not lwc.dom.
+// validtion that root doesn't have lwc.dom can be found on validateRoot.
+// Look into what this is really supposed to do, not sure what lwc.dom does
+function validateChildren(ctx: ParserCtx, element: Element | Component | Slot) {
+    // slots not allowed to have a directive, maybe just check before calling this?
+    if (isSlot(element)) {
+        return;
+    }
     const effectiveChildren = ctx.getPreserveComments()
         ? element.children
         : element.children.filter((child) => child.type !== 'comment');
-    if (element.lwc?.dom && effectiveChildren.length > 0) {
+    // if (element.lwc?.dom && effectiveChildren.length > 0) {
+    //     ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
+    // }
+    // jtu:  come back and verify this is correct
+    const hasDomDirective = element.directives?.find((dir) => dir.name === LWCNodeType.Dom);
+    if (hasDomDirective && effectiveChildren.length > 0) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
     }
 }
@@ -1115,7 +1160,7 @@ function isInIteration(ctx: ParserCtx) {
     });
 }
 
-// jtu: come back to this
+// jtu: come back to this can simplify by a lot
 function getIteratorParent(ctx: ParserCtx): Iterator | null {
     const result = ctx.findAncestor({
         current: ctx.nodeContainer.parent,

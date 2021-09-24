@@ -149,6 +149,8 @@ export interface BaseParentNode extends BaseNode {
 }
 
 // jtu:  come back to this to verify, properties initially only belonged to components
+// see if there's a better way to split up the component / element / slot.
+// Maybe create a type alias for it.
 export interface BaseElement extends BaseParentNode {
     name: string;
     properties: Property[];
@@ -193,6 +195,7 @@ export type ForBlock = ForEach | Iterator;
 
 export interface Root extends BaseParentNode {
     type: LWCNodeType.Root;
+    name: string;
     directives?: RootDirective[];
 }
 

@@ -158,6 +158,7 @@ export default class ParserCtx {
         this.warnings.push(diagnostic);
     }
 
+    // jtu: come back to this, can simplify
     getRootDirective(type: LWCNodeType) {
         return this.root?.directives?.find((directive) => directive.name === type);
     }
