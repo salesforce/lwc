@@ -39,6 +39,7 @@ import {
 } from './stylesheet';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
+import { getComponentTag } from '../shared/format';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -97,12 +98,16 @@ function validateLightDomTemplate(template: Template, vm: VM) {
     if (vm.renderMode === RenderMode.Light) {
         assert.isTrue(
             template.renderMode === 'light',
-            `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(vm)}.`
+            `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
+                vm
+            )}.`
         );
     } else {
         assert.isTrue(
             isUndefined(template.renderMode),
-            `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(vm)} or set it to 'lwc:render-mode="shadow"`
+            `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
+                vm
+            )} or set it to 'lwc:render-mode="shadow"`
         );
     }
 }
