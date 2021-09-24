@@ -9,8 +9,8 @@ import * as parse5 from 'parse5';
 import * as parse5Utils from './parse5';
 
 import {
-    TemplateIdentifier,
-    IRNode,
+    // TemplateIdentifier,
+    // IRNode,
     LWCNodeType,
     Literal,
     SourceLocation,
@@ -20,7 +20,6 @@ import {
     ForBlock,
     Iterator,
     ForEach,
-    ParentNode,
     Node,
     Comment,
     Text,
@@ -76,15 +75,18 @@ export function parseElementLocation(original: parse5.Element): parse5.ElementLo
     return location;
 }
 
-export function createText(original: parse5.TextNode, value: string | Expression): Text {
+// jtu: come back to this, should value be literal or literal<string>?
+export function createText(original: parse5.TextNode, value: Literal | Expression): Text {
     if (!original.sourceCodeLocation) {
         throw new Error('Invalid text AST node. Missing source code location.');
     }
 
+    const location = parseSourceLocation(original.sourceCodeLocation);
+
     return {
-        type: 'text',
+        type: LWCNodeType.Text,
         value,
-        location: original.sourceCodeLocation,
+        location,
     };
 }
 
@@ -93,10 +95,12 @@ export function createComment(original: parse5.CommentNode, value: string): Comm
         throw new Error('Invalid comment AST node. Missing source code location.');
     }
 
+    const location = parseSourceLocation(original.sourceCodeLocation);
+
     return {
-        type: 'comment',
+        type: LWCNodeType.Comment,
         value,
-        location: original.sourceCodeLocation,
+        location,
     };
 }
 
@@ -140,11 +144,12 @@ export function isCustomElement(node: Node): boolean {
 }
 
 // jtu:  Come back to this
-export function isTemplate(node: ParentNode) {
+export function isTemplate(node: Node) {
     return (
         (node.type === LWCNodeType.Element ||
             node.type === LWCNodeType.Component ||
-            node.type === LWCNodeType.Slot) &&
+            node.type === LWCNodeType.Slot ||
+            node.type === LWCNodeType.Root) &&
         node.name === 'template'
     );
 }
@@ -173,33 +178,33 @@ export function isBooleanAttribute(node: Expression | Literal): node is Literal<
     return node.type === LWCNodeType.Literal && typeof node.value === 'boolean';
 }
 
-export function isComponentProp(
-    identifier: TemplateIdentifier,
-    root: IRNode,
-    parentStack: IRNode[]
-): boolean {
-    const { name } = identifier;
-    let current: IRNode | undefined = root;
+// export function isComponentProp(
+//     identifier: TemplateIdentifier,
+//     root: IRNode,
+//     parentStack: IRNode[]
+// ): boolean {
+//     const { name } = identifier;
+//     let current: IRNode | undefined = root;
 
-    // Walking up the AST and checking for each node to find if the identifer name is identical to
-    // an iteration variable.
-    for (let i = parentStack.length; i >= 0; i--) {
-        if (isElement(current)) {
-            const { forEach, forOf } = current;
+//     // Walking up the AST and checking for each node to find if the identifer name is identical to
+//     // an iteration variable.
+//     for (let i = parentStack.length; i >= 0; i--) {
+//         if (isElement(current)) {
+//             const { forEach, forOf } = current;
 
-            if (
-                forEach?.item.name === name ||
-                forEach?.index?.name === name ||
-                forOf?.iterator.name === name
-            ) {
-                return false;
-            }
-        }
+//             if (
+//                 forEach?.item.name === name ||
+//                 forEach?.index?.name === name ||
+//                 forOf?.iterator.name === name
+//             ) {
+//                 return false;
+//             }
+//         }
 
-        current = parentStack[i - 1];
-    }
+//         current = parentStack[i - 1];
+//     }
 
-    // The identifier is bound to a component property if no match is found after reaching to AST
-    // root.
-    return true;
-}
+//     // The identifier is bound to a component property if no match is found after reaching to AST
+//     // root.
+//     return true;
+// }
