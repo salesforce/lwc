@@ -9,7 +9,7 @@ describe('lwc:render-mode', () => {
             const root = createElement('x-test', { is: Light });
             document.body.appendChild(root);
         }).toThrowError(
-            /Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive on the root template tag./
+            /Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of <x-test>./
         );
     });
     it('should throw error if light template is passed to shadow component', () => {
@@ -17,7 +17,7 @@ describe('lwc:render-mode', () => {
             const root = createElement('x-test', { is: Shadow });
             document.body.appendChild(root);
         }).toThrowError(
-            /Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive or set it to 'lwc:render-mode="shadow"/
+            /Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from <x-test> or set it to 'lwc:render-mode="shadow"/
         );
     });
 });
