@@ -97,7 +97,7 @@ function validateLightDomTemplate(template: Template, vm: VM) {
     if (vm.renderMode === RenderMode.Light) {
         assert.isTrue(
             template.renderMode === 'light',
-            `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of <${vm.tagName}>.`
+            `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(vm)}.`
         );
     } else {
         assert.isTrue(
