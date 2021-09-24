@@ -292,7 +292,13 @@ const CustomElementHook: Hooks<VCustomElement> = {
             }
             runConnectedCallback(vm);
         }
-        hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vm);
+
+        if (!(vm && vm.renderMode === RenderMode.Light)) {
+            // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
+            // Note: for Light DOM, this is handled while hydrating the VM
+            hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vm);
+        }
+
         if (vm) {
             hydrateVM(vm);
         }

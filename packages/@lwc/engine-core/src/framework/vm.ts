@@ -436,7 +436,9 @@ function hydrate(vm: VM) {
         const children = renderComponent(vm);
         vm.children = children;
 
-        hydrateChildrenHook(vm.elm.shadowRoot.childNodes, children, vm);
+        const vmChildren =
+            vm.renderMode === RenderMode.Light ? vm.elm.childNodes : vm.elm.shadowRoot.childNodes;
+        hydrateChildrenHook(vmChildren, children, vm);
 
         runRenderedCallback(vm);
     }
