@@ -17,13 +17,16 @@ import { ResolvedConfig } from '../config';
 import {
     LWCNodeType,
     Node,
-    NodeContainer,
+    ScopeNode,
     ParentNode,
     RenderModeDirective,
     Root,
     SourceLocation,
     LWCDirectiveRenderMode,
     PreserveCommentsDirective,
+    ChildNode,
+    ForBlock,
+    IfBlock,
 } from '../shared-next/types';
 
 function normalizeLocation(location?: SourceLocation): Location {
@@ -43,6 +46,11 @@ function normalizeLocation(location?: SourceLocation): Location {
     return { line, column, start, length };
 }
 
+interface RootDirective {
+    renderMode: LWCDirectiveRenderMode;
+    preserveComments: boolean;
+}
+
 export default class ParserCtx {
     private readonly source: String;
     readonly config: ResolvedConfig;
@@ -52,30 +60,36 @@ export default class ParserCtx {
     readonly seenSlots: Set<string> = new Set();
 
     readonly parentStack: ParentNode[] = [];
-    root?: Root;
-    nodeContainer: NodeContainer = {};
+
+    // jtu:  come back to this the consequence of this is that the root will always be an empty object
+    scope: ScopeNode = {};
+    readonly rootDirective: RootDirective;
 
     constructor(source: String, config: ResolvedConfig) {
         this.source = source;
         this.config = config;
+        this.rootDirective = {
+            renderMode: LWCDirectiveRenderMode.Shadow,
+            preserveComments: this.config.preserveHtmlComments,
+        };
     }
 
     getSource(start: number, end: number): string {
         return this.source.slice(start, end);
     }
 
+    // jtu: come back to this I think we need to readjust the logic for placing things back in here aka current
+    // Check if we're adding the element directly into the nodeCOntainer or waiting for the parent to do it.
+    // update:  this needs to go back to the old way of doing it, where you pass in the current to look up
     findAncestor({
-        current = this.nodeContainer,
+        current = this.scope,
         predicate,
         traversalCond = () => true,
     }: {
-        current?: NodeContainer;
-        predicate: (node: NodeContainer) => unknown;
-        traversalCond?: (nodes: {
-            current: NodeContainer;
-            parent: NodeContainer | undefined;
-        }) => unknown;
-    }): NodeContainer | null {
+        current?: ScopeNode;
+        predicate: (node: ScopeNode) => unknown;
+        traversalCond?: (nodes: { current: ScopeNode; parent: ScopeNode | undefined }) => unknown;
+    }): ScopeNode | null {
         if (current && predicate(current)) {
             return current;
         }
@@ -158,20 +172,85 @@ export default class ParserCtx {
         this.warnings.push(diagnostic);
     }
 
-    // jtu: come back to this, can simplify
-    getRootDirective(type: LWCNodeType) {
-        return this.root?.directives?.find((directive) => directive.name === type);
+    enterScope(node: ParentNode) {
+        this.scope = {
+            parent: this.scope,
+            node,
+        };
+    }
+
+    exitScope() {
+        if (this.scope.parent) {
+            // jtu: come back to this dunno if you actually need to set to undefined
+            const parent = this.scope.parent;
+            this.scope.parent = undefined;
+            this.scope = parent;
+        }
+    }
+
+    // jtu:  come up with a better name or method for this
+    appendChildAndEnterScope(node: ForBlock | IfBlock) {
+        this.appendChildNode(node);
+        this.enterScope(node);
+    }
+
+    appendChildNode(child: ChildNode) {
+        this.scope.node?.children.push(child);
+    }
+
+    // jtu: come back to this could be cleaner
+
+    setRootDirective(root: Root) {
+        const { renderMode, preserveComments } = this.rootDirective;
+        if (root.directives) {
+            // const renderMode = this.getRootDirective(root, LWCNodeType.RenderMode) as RenderModeDirective;
+            // const preserveComment = this.getRootDirective(root, LWCNodeType.PreserveComments) as PreserveCommentsDirective;
+            // this.rootDirective.renderMode = renderMode?.value.value ?? this.rootDirective.renderMode;
+            // this.rootDirective.preserveComments = preserveComment?.value.value ?? this.rootDirective.preserveComments;
+            const rootRenderMode = this.getRootRenderMode(root);
+            const rootPreserveComments = this.getRootPreserverComments(root);
+            this.rootDirective.renderMode = rootRenderMode?.value ?? renderMode;
+            this.rootDirective.preserveComments = rootPreserveComments?.value ?? preserveComments;
+
+            // const rootRenderMode = this.getRootDirective(
+            //     root,
+            //     LWCNodeType.RenderMode
+            // ) as RenderModeDirective;
+            // const rootPreserveComments = this.getRootDirective(
+            //     root,
+            //     LWCNodeType.PreserveComments
+            // ) as PreserveCommentsDirective;
+            // this.rootDirective.renderMode = rootRenderMode?.value.value ?? renderMode;
+            // this.rootDirective.preserveComments =
+            //     rootPreserveComments?.value.value ?? preserveComments;
+        }
+    }
+
+    private getRootRenderMode(root: Root) {
+        const renderMode = this.getRootDirective(
+            root,
+            LWCNodeType.RenderMode
+        ) as RenderModeDirective;
+        return renderMode?.value;
+    }
+
+    private getRootPreserverComments(root: Root) {
+        const preserveComments = this.getRootDirective(
+            root,
+            LWCNodeType.PreserveComments
+        ) as PreserveCommentsDirective;
+        return preserveComments.value;
+    }
+
+    private getRootDirective(root: Root, type: LWCNodeType) {
+        return root.directives?.find((dir) => dir.name === type);
     }
 
     getRenderMode(): LWCDirectiveRenderMode {
-        const directive = this.getRootDirective(LWCNodeType.RenderMode) as RenderModeDirective;
-        return directive?.value.value ?? LWCDirectiveRenderMode.Shadow;
+        return this.rootDirective.renderMode;
     }
 
     getPreserveComments(): boolean {
-        const directive = this.getRootDirective(
-            LWCNodeType.PreserveComments
-        ) as PreserveCommentsDirective;
-        return directive?.value.value ?? this.config.preserveHtmlComments;
+        return !!this.rootDirective.preserveComments;
     }
 }

@@ -17,9 +17,6 @@ import {
     Element,
     Component,
     Expression,
-    ForBlock,
-    Iterator,
-    ForEach,
     Node,
     Comment,
     Text,
@@ -156,14 +153,6 @@ export function isTemplate(node: Node) {
 
 export function isSlot(node: Node) {
     return node.type === LWCNodeType.Slot;
-}
-
-export function isIterator(node: ForBlock): node is Iterator {
-    return node.type === LWCNodeType.Iterator;
-}
-
-export function isForEach(node: ForBlock): node is ForEach {
-    return node.type === LWCNodeType.ForEach;
 }
 
 export function isExpressionAttribute(node: Expression | Literal): node is Expression {

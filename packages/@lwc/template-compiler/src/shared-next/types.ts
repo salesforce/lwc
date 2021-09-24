@@ -215,9 +215,11 @@ export type Node =
     | Text
     | Attribute;
 
-export interface NodeContainer {
-    parent?: NodeContainer;
+export interface ScopeNode {
+    parent?: ScopeNode;
     forBlock?: ForBlock;
+    forEach?: ForEach;
+    iterator?: Iterator;
     ifBlock?: IfBlock;
     node?: ParentNode;
 }

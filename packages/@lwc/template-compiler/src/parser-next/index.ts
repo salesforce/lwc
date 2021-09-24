@@ -38,8 +38,6 @@ import {
     parseElementLocation,
     isExpressionAttribute,
     isStringAttribute,
-    isIterator,
-    isForEach,
     isBooleanAttribute,
     isSlot,
 } from '../shared-next/ir';
@@ -57,7 +55,6 @@ import {
     Iterator,
     IfBlock,
     Slot,
-    NodeContainer,
     EventListener,
     KeyDirective,
     ChildNode,
@@ -164,8 +161,7 @@ function parseRoot(ctx: ParserCtx, parse5Element: parse5.Element): Root {
         location: parseSourceLocation(location),
     };
 
-    ctx.nodeContainer.node = root;
-    ctx.root = root;
+    // ctx.scope.node = root;
 
     applyLwcRenderModeDirective(ctx, root, parsedAttr);
     applyLwcPreserveCommentsDirective(ctx, root, parsedAttr);
@@ -227,11 +223,13 @@ function parseElementType(
     }
     element = createComponent(parse5Elm);
 
-    if (ctx.nodeContainer.node) {
-        ctx.nodeContainer.node.children.push(element);
-    } else {
-        ctx.nodeContainer.node = element;
-    }
+    ctx.appendChildNode(element);
+
+    // if (ctx.scope.node) {
+    //     ctx.scope.node.children.push(element);
+    // } else {
+    //     ctx.scope.node = element;
+    // }
 
     return element;
 }
@@ -244,8 +242,9 @@ function parseChildren(
     const parsedChildren: ChildNode[] = [];
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
-    const newNodeContainer: NodeContainer = { parent: ctx.nodeContainer };
-    ctx.nodeContainer = newNodeContainer;
+    // const newscope: scope = { parent: ctx.scope };
+    // ctx.scope = newscope;
+    ctx.enterScope(parent);
 
     for (const child of children) {
         ctx.withErrorRecovery(() => {
@@ -262,9 +261,10 @@ function parseChildren(
         });
     }
 
-    if (ctx.nodeContainer.parent) {
-        ctx.nodeContainer = ctx.nodeContainer.parent;
-    }
+    // if (ctx.scope.parent) {
+    //     ctx.scope = ctx.scope.parent;
+    // }
+    ctx.exitScope();
 
     parent.children = parsedChildren;
 }
@@ -393,13 +393,14 @@ function applyIf(ctx: ParserCtx, parsedAttr: ParsedAttribute): IfBlock | undefin
         condition: ifAttribute.value,
     };
 
-    ctx.nodeContainer.ifBlock = ifNode;
+    ctx.appendChildAndEnterScope(ifNode);
+    ctx.scope.ifBlock = ifNode;
 
-    if (ctx.nodeContainer.node) {
-        ctx.nodeContainer.node.children.push(ifNode);
-    } else {
-        ctx.nodeContainer.node = ifNode;
-    }
+    // if (ctx.scope.node) {
+    //     ctx.scope.node.children.push(ifNode);
+    // } else {
+    //     ctx.scope.node = ifNode;
+    // }
 }
 
 function applyLwcDirectives(
@@ -654,8 +655,13 @@ function applyForEach(
             index,
         };
 
-        ctx.nodeContainer.forBlock = forEach;
-        ctx.nodeContainer.node = forEach;
+        // jtu: come back to this maybe find a better way
+        ctx.appendChildAndEnterScope(forEach);
+        // ctx.appendChildNode(forEach);
+        // // ctx.scope.node = forEach;
+        // ctx.enterScope(forEach);
+        ctx.scope.forEach = forEach;
+        ctx.scope.forBlock = forEach;
     } else if (forEachAttribute || forItemAttribute) {
         ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
@@ -675,7 +681,7 @@ function applyIterator(
     }
 
     // jtu: come back to this one
-    if (ctx.nodeContainer.forBlock) {
+    if (ctx.scope.forEach || ctx.scope.iterator) {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR, elementLocation, [
             iteratorExpression.name,
         ]);
@@ -699,8 +705,14 @@ function applyIterator(
         location: iteratorExpression.location,
         children: [],
     };
-    ctx.nodeContainer.forBlock = it;
-    ctx.nodeContainer.node = it;
+
+    // jtu:  come back to this, seems like there's a better way to do this.
+    // ctx.appendChildNode(it);
+    // ctx.enterScope(it);
+    ctx.appendChildAndEnterScope(it);
+    ctx.scope.iterator = it;
+    ctx.scope.forBlock = it;
+    // ctx.scope.node = it;
 }
 
 function applyKey(
@@ -761,7 +773,7 @@ function applySlot(
     parsedAttr: ParsedAttribute
 ): Slot {
     // if (element.forEach || element.forOf || element.if) {
-    if (ctx.nodeContainer.forBlock || ctx.nodeContainer.ifBlock) {
+    if (ctx.scope.forBlock || ctx.scope.ifBlock) {
         ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, elementLocation);
     }
 
@@ -1026,7 +1038,7 @@ function validateChildren(ctx: ParserCtx, element: Element | Component | Slot) {
     }
     const effectiveChildren = ctx.getPreserveComments()
         ? element.children
-        : element.children.filter((child) => child.type !== 'comment');
+        : element.children.filter((child) => child.type !== LWCNodeType.Comment);
     // if (element.lwc?.dom && effectiveChildren.length > 0) {
     //     ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
     // }
@@ -1161,21 +1173,25 @@ function isInIteration(ctx: ParserCtx) {
 }
 
 // jtu: come back to this can simplify by a lot
+// update:  we need to pass the scopenode back in here for getting parent forof like before
+// problem is we don't have access to a scopenode anymore
 function getIteratorParent(ctx: ParserCtx): Iterator | null {
     const result = ctx.findAncestor({
-        current: ctx.nodeContainer.parent,
-        predicate: (node) => node.forBlock && isIterator(node.forBlock),
+        current: ctx.scope.parent,
+        predicate: (node) => node.iterator,
         traversalCond: ({ current }) => current.node && isTemplate(current.node),
     });
-    return result?.forBlock && isIterator(result.forBlock) ? result.forBlock : null;
+    return result?.iterator || null;
+    // return result?.forBlock && isIterator(result.forBlock) ? result.forBlock : null;
 }
 
 function getForEachParent(ctx: ParserCtx): ForEach | null {
     const result = ctx.findAncestor({
-        predicate: (node) => node.forBlock && isForEach(node.forBlock),
+        predicate: (node) => node.forEach,
         traversalCond: ({ parent }) => parent?.node && isTemplate(parent.node),
     });
-    return result?.forBlock && isForEach(result.forBlock) ? result.forBlock : null;
+    return result?.forEach || null;
+    // return result?.forBlock && isForEach(result.forBlock) ? result.forBlock : null;
 }
 
 function isInIteratorElement(ctx: ParserCtx): boolean {
