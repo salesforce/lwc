@@ -258,6 +258,8 @@ export function createChildrenHook(vnode: VElement) {
 }
 
 function isElementNode(node: ChildNode): node is Element {
+    // @todo: should the hydrate be part of engine-dom? can we move hydrate out of the hooks?
+    // eslint-disable-next-line lwc-internal/no-global-node
     return node.nodeType === Node.ELEMENT_NODE;
 }
 
@@ -340,7 +342,7 @@ function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolea
 
 function vnodesAndElementHaveCompatibleStyle(vnode: VNode, elm: Element): boolean {
     const {
-        data: { style, styleMap },
+        data: { style, styleDecls },
         owner: { renderer },
     } = vnode;
     const elmStyle = renderer.getAttribute(elm, 'style');
@@ -355,12 +357,13 @@ function vnodesAndElementHaveCompatibleStyle(vnode: VNode, elm: Element): boolea
             vnode.owner
         );
         nodesAreCompatible = false;
-    } else if (!isUndefined(styleMap)) {
+    } else if (!isUndefined(styleDecls)) {
         // styleMap is used when class is set to static value.
-        for (const name in styleMap) {
-            // @todo: this probably needs to have its own renderer method.
-            const elmStyleProp = (elm as HTMLElement).style.getPropertyValue(name);
-            if (styleMap[name] !== elmStyleProp) {
+        for (let i = 0; i < styleDecls.length; i++) {
+            const [prop, value, important] = styleDecls[i];
+            const elmPropValue = (elm as HTMLElement).style.getPropertyValue(prop);
+            const elmPropPriority = (elm as HTMLElement).style.getPropertyPriority(prop);
+            if (value !== elmPropValue || important !== (elmPropPriority === 'important')) {
                 nodesAreCompatible = false;
             }
         }
