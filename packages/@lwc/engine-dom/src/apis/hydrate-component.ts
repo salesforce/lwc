@@ -58,7 +58,7 @@ export function hydrateComponent(
         //           the client generated DOM.
 
         /* eslint-disable-next-line no-console */
-        console.error(e);
+        console.error('Recovering from error while hydrating: ', e);
 
         setIsHydrating(false);
         const newElem = createElement(element.tagName, {
