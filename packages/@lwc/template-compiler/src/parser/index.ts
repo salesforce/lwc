@@ -263,6 +263,13 @@ function applyHandlers(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedAtt
             ctx.throwOnIRNode(ParserDiagnostics.INVALID_EVENT_NAME, eventHandlerAttribute, [name]);
         }
 
+        // Light DOM slots cannot have events because there's no actual `<slot>` element
+        if (element.tag === 'slot' && ctx.getRenderMode(element) === LWCDirectiveRenderMode.light) {
+            ctx.throwOnIRNode(ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_EVENT_LISTENER, element, [
+                name,
+            ]);
+        }
+
         // Strip the `on` prefix from the event handler name
         const eventName = name.slice(2);
 

@@ -525,4 +525,11 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+    LWC_LIGHT_SLOT_INVALID_EVENT_LISTENER: {
+        code: 1139,
+        message:
+            "Invalid event listener '{0}' on slot. Slots in Light DOM templates cannot have event listeners.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
