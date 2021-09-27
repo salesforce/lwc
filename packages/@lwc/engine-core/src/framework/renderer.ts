@@ -10,6 +10,7 @@ export type HostElement = any;
 
 export interface Renderer<N = HostNode, E = HostElement> {
     ssr: boolean;
+    readonly isHydrating: boolean;
     isNativeShadowDefined: boolean;
     isSyntheticShadowDefined: boolean;
     insert(node: N, parent: E, anchor: N | null): void;

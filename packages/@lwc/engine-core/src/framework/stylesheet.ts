@@ -164,7 +164,7 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
         for (let i = 0; i < stylesheets.length; i++) {
             renderer.insertGlobalStylesheet(stylesheets[i]);
         }
-    } else if (renderer.ssr) {
+    } else if (renderer.ssr || renderer.isHydrating) {
         // native shadow or light DOM, SSR
         const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
         return createInlineStyleVNode(combinedStylesheetContent);
