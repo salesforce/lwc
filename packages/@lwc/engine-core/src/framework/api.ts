@@ -24,7 +24,6 @@ import {
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
-import { RenderMode, getComponentInternalDef } from './vm';
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
@@ -41,6 +40,7 @@ import {
     getRenderRoot,
     createVM,
     hydrateVM,
+    RenderMode,
 } from './vm';
 import {
     VNode,
@@ -71,7 +71,7 @@ import {
     hydrateChildrenHook,
     hydrateElmHook,
 } from './hooks';
-import { isComponentConstructor } from './def';
+import { getComponentInternalDef, isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
@@ -93,6 +93,7 @@ const TextHook: Hooks<VText> = {
     hydrate: (vNode: VNode, node: Node) => {
         // @todo tests.
         if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line lwc-internal/no-global-node
             if (node.nodeType !== Node.TEXT_NODE) {
                 logError('Hydration mismatch: incorrect node type received', vNode.owner);
                 assert.fail('Hydration mismatch: incorrect node type received.');
@@ -128,6 +129,7 @@ const CommentHook: Hooks<VComment> = {
     hydrate: (vNode: VNode, node: Node) => {
         // @todo tests.
         if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line lwc-internal/no-global-node
             if (node.nodeType !== Node.COMMENT_NODE) {
                 logError('Hydration mismatch: incorrect node type received', vNode.owner);
                 assert.fail('Hydration mismatch: incorrect node type received.');
