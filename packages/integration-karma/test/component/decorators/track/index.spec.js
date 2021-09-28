@@ -1,9 +1,11 @@
-import { LightningElement, track, createElement } from 'lwc';
+import { LightningElement, api, track, createElement } from 'lwc';
 
 import Properties from 'x/properties';
 import SideEffect from 'x/sideEffect';
 import NonObservable from 'x/nonObservable';
 import SetTrackedValueToNull from 'x/setTrackedValueToNull';
+
+import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
 it('rerenders the component when a track property is updated - literal', () => {
     const elm = createElement('x-properties', { is: Properties });
@@ -171,5 +173,40 @@ describe('non-observable values', () => {
         expect(() => {
             elm.foo;
         }).not.toThrow();
+    });
+});
+
+describe('regression [W-9927596] - track field with duplicate observed field', () => {
+    it('log errors when evaluated and preserve the public property', () => {
+        let Ctor;
+
+        expect(() => {
+            class DuplicateProperty extends LightningElement {
+                foo;
+                @track foo = { name: 'track' };
+
+                @api updateProperty(name) {
+                    this.foo.name = name;
+                }
+
+                render() {
+                    return duplicatePropertyTemplate;
+                }
+            }
+
+            Ctor = DuplicateProperty;
+        }).toLogErrorDev(
+            /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+        );
+
+        const elm = createElement('x-duplicate-property', { is: Ctor });
+        document.body.appendChild(elm);
+
+        expect(elm.shadowRoot.querySelector('p').textContent).toBe('track');
+
+        elm.updateProperty('updated');
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('p').textContent).toBe('updated');
+        });
     });
 });

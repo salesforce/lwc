@@ -1,6 +1,7 @@
-import { LightningElement, wire } from 'lwc';
+import { createElement, LightningElement, wire } from 'lwc';
 
 import { adapter } from 'x/adapter';
+import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
 describe('restrictions', () => {
     it('throws a property error when a wired field conflicts with a method', () => {
@@ -15,5 +16,31 @@ describe('restrictions', () => {
         }).toThrowError(
             'Invalid @wire showFeatures field. Found a duplicate method with the same name.'
         );
+    });
+});
+
+describe('regression [W-9927596] - wired field with duplicate observed field', () => {
+    it('log errors when evaluated and preserve the wired property', () => {
+        let Ctor;
+
+        expect(() => {
+            class DuplicateProperty extends LightningElement {
+                foo = 'observed';
+                @wire(adapter) foo = 'wired';
+
+                render() {
+                    return duplicatePropertyTemplate;
+                }
+            }
+
+            Ctor = DuplicateProperty;
+        }).toLogErrorDev(
+            /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+        );
+
+        const elm = createElement('x-duplicate-property', { is: Ctor });
+        document.body.appendChild(elm);
+
+        expect(elm.shadowRoot.querySelector('p').textContent).toBe('wired');
     });
 });

@@ -9,6 +9,8 @@ import Methods from 'x/methods';
 import Inheritance from 'x/inheritance';
 import NullInitialValue from 'x/nullInitialValue';
 
+import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
+
 describe('properties', () => {
     it('should expose class properties with the api decorator', () => {
         const elm = createElement('x-properties', { is: Properties });
@@ -125,5 +127,156 @@ describe('restrictions', () => {
         }).toThrowError(
             'Invalid @api showFeatures field. Found a duplicate method with the same name.'
         );
+    });
+});
+
+describe('regression [W-9927596]', () => {
+    describe('public property with duplicate observed field', () => {
+        it('log errors when evaluated and preserve the public property', () => {
+            let Ctor;
+
+            expect(() => {
+                class DuplicateProperty extends LightningElement {
+                    foo = 'observed';
+                    @api foo = 'public';
+
+                    render() {
+                        return duplicatePropertyTemplate;
+                    }
+                }
+
+                Ctor = DuplicateProperty;
+            }).toLogErrorDev(
+                /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+            );
+
+            const elm = createElement('x-duplicate-property', { is: Ctor });
+            document.body.appendChild(elm);
+
+            expect(elm.shadowRoot.querySelector('p').textContent).toBe('public');
+
+            elm.foo = 'updated';
+            return Promise.resolve().then(() => {
+                expect(elm.shadowRoot.querySelector('p').textContent).toBe('updated');
+            });
+        });
+    });
+
+    describe('public property with duplicate accessor', () => {
+        it('log errors when evaluated and treat accessors as public', () => {
+            let Ctor;
+            const accessors = [];
+
+            expect(() => {
+                class DuplicateProperty extends LightningElement {
+                    @api foo = 'default';
+
+                    get foo() {
+                        accessors.push('getter');
+                        return this._foo;
+                    }
+                    set foo(value) {
+                        accessors.push(`setter ${value}`);
+                        this._foo = value;
+                    }
+
+                    render() {
+                        return duplicatePropertyTemplate;
+                    }
+                }
+
+                Ctor = DuplicateProperty;
+            }).toLogErrorDev(
+                /Invalid @api foo field\. Found a duplicate accessor with the same name\./
+            );
+
+            const elm = createElement('x-duplicate-property', { is: Ctor });
+            elm.foo = 'test';
+
+            document.body.appendChild(elm);
+
+            expect(accessors).toEqual(['setter default', 'setter test', 'getter']);
+            expect(elm.shadowRoot.querySelector('p').textContent).toBe('test');
+        });
+    });
+
+    describe('public accessor with duplicate observed field', () => {
+        describe('@api on the getter', () => {
+            it('log errors when evaluated and preserve the public accessors', () => {
+                let Ctor;
+                const accessors = [];
+
+                expect(() => {
+                    class DuplicateAccessor extends LightningElement {
+                        foo = 'default';
+
+                        @api
+                        get foo() {
+                            accessors.push('getter');
+                            return this._foo;
+                        }
+                        set foo(value) {
+                            accessors.push(`setter ${value}`);
+                            this._foo = value;
+                        }
+
+                        render() {
+                            return duplicatePropertyTemplate;
+                        }
+                    }
+
+                    Ctor = DuplicateAccessor;
+                }).toLogErrorDev(
+                    /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+                );
+
+                const elm = createElement('x-duplicate-accessor', { is: Ctor });
+                elm.foo = 'test';
+
+                document.body.appendChild(elm);
+
+                expect(accessors).toEqual(['setter default', 'setter test', 'getter']);
+                expect(elm.shadowRoot.querySelector('p').textContent).toBe('test');
+            });
+        });
+
+        describe('@api on the setter', () => {
+            it('log errors when evaluated and invokes accessors', () => {
+                let Ctor;
+                const accessors = [];
+
+                expect(() => {
+                    class DuplicateAccessor extends LightningElement {
+                        foo = 'default';
+
+                        @api
+                        set foo(value) {
+                            accessors.push(`setter ${value}`);
+                            this._foo = value;
+                        }
+                        get foo() {
+                            accessors.push('getter');
+                            return this._foo;
+                        }
+
+                        render() {
+                            return duplicatePropertyTemplate;
+                        }
+                    }
+
+                    Ctor = DuplicateAccessor;
+                }).toLogErrorDev(
+                    /Invalid observed foo field\. Found a duplicate accessor with the same name\./
+                );
+
+                const elm = createElement('x-duplicate-accessor', { is: Ctor });
+                elm.foo = 'test';
+
+                document.body.appendChild(elm);
+
+                expect(accessors).toEqual(['setter default', 'setter test', 'getter']);
+                expect(elm.shadowRoot.querySelector('p').textContent).toBe('test');
+            });
+        });
     });
 });
