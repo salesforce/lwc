@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1139,
+            "message": "LWC1139: Invalid event listener 'onslotchange' on slot. Slots in Light DOM templates cannot have event listeners.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 39,
+                "length": 41
+            }
+        }
+    ]
+}
