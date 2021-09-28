@@ -22,10 +22,11 @@
     },
     "dependencies": {
         "@lwc/module-resolver": "2.5.1",
-        "@rollup/pluginutils": "~4.1.1"
+        "@rollup/pluginutils": "~4.1.1",
+        "semver": "^7.3.5"
     },
     "peerDependencies": {
-        "rollup": "^1.2.0||^2.0.0"
+        "rollup": "^2.29.0"
     },
     "publishConfig": {
         "access": "public"
