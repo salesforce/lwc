@@ -20,6 +20,12 @@ import {
     Node,
     Comment,
     Text,
+    ParentNode,
+    ParentWrapper,
+    Iterator,
+    ForEach,
+    ForBlock,
+    IfBlock,
 } from './types';
 
 export function createElement(original: parse5.Element): Element {
@@ -70,6 +76,13 @@ export function parseElementLocation(original: parse5.Element): parse5.ElementLo
     }
 
     return location;
+}
+
+export function createParentWrapper(node: ParentNode, parent?: ParentWrapper) {
+    return {
+        parent,
+        node,
+    };
 }
 
 // jtu: come back to this, should value be literal or literal<string>?
@@ -165,6 +178,22 @@ export function isStringAttribute(node: Expression | Literal): node is Literal<s
 
 export function isBooleanAttribute(node: Expression | Literal): node is Literal<boolean> {
     return node.type === LWCNodeType.Literal && typeof node.value === 'boolean';
+}
+
+export function isIterator(node: Node): node is Iterator {
+    return node.type === LWCNodeType.Iterator;
+}
+
+export function isForEach(node: Node): node is ForEach {
+    return node.type === LWCNodeType.ForEach;
+}
+
+export function isForBlock(node: Node): node is ForBlock {
+    return isIterator(node) || isForEach(node);
+}
+
+export function isIfBlock(node: Node): node is IfBlock {
+    return node.type === LWCNodeType.IfBlock;
 }
 
 // export function isComponentProp(
