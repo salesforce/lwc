@@ -14,19 +14,18 @@ import {
     normalizeToDiagnostic,
 } from '@lwc/errors';
 import { ResolvedConfig } from '../config';
+
 import {
     LWCNodeType,
     Node,
-    ScopeNode,
-    ParentNode,
     RenderModeDirective,
     Root,
     SourceLocation,
     LWCDirectiveRenderMode,
     PreserveCommentsDirective,
+    ParentWrapper,
+    ParentNode,
     ChildNode,
-    ForBlock,
-    IfBlock,
 } from '../shared-next/types';
 
 function normalizeLocation(location?: SourceLocation): Location {
@@ -59,10 +58,6 @@ export default class ParserCtx {
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
 
-    readonly parentStack: ParentNode[] = [];
-
-    // jtu:  come back to this the consequence of this is that the root will always be an empty object
-    scope: ScopeNode = {};
     readonly rootDirective: RootDirective;
 
     constructor(source: String, config: ResolvedConfig) {
@@ -82,23 +77,36 @@ export default class ParserCtx {
     // Check if we're adding the element directly into the nodeCOntainer or waiting for the parent to do it.
     // update:  this needs to go back to the old way of doing it, where you pass in the current to look up
     findAncestor({
-        current = this.scope,
+        current,
         predicate,
         traversalCond = () => true,
     }: {
-        current?: ScopeNode;
-        predicate: (node: ScopeNode) => unknown;
-        traversalCond?: (nodes: { current: ScopeNode; parent: ScopeNode | undefined }) => unknown;
-    }): ScopeNode | null {
-        if (current && predicate(current)) {
-            return current;
+        current: ParentWrapper;
+        predicate: (node: ParentWrapper) => unknown;
+        traversalCond?: (nodes: { current: ParentWrapper; parent: ParentWrapper }) => unknown;
+    }): ParentNode | null {
+        if (predicate(current)) {
+            return current.node;
         }
 
-        if (traversalCond({ current, parent: current.parent })) {
-            return this.findAncestor({ current: current.parent, predicate, traversalCond });
+        const parent = current.parent;
+        if (parent && traversalCond({ current, parent })) {
+            return this.findAncestor({ current: parent, predicate, traversalCond });
         }
 
         return null;
+    }
+
+    appendChildAndCreateParent(child: ParentNode & ChildNode, parent: ParentWrapper) {
+        parent.node.children.push(child);
+        return this.parentWrapper(child, parent);
+    }
+
+    parentWrapper(node: ParentNode, parent: ParentWrapper): ParentWrapper {
+        return {
+            parent,
+            node,
+        };
     }
 
     withErrorRecovery<T>(fn: () => T): T | undefined {
@@ -170,32 +178,6 @@ export default class ParserCtx {
 
     private addDiagnostic(diagnostic: CompilerDiagnostic): void {
         this.warnings.push(diagnostic);
-    }
-
-    enterScope(node: ParentNode) {
-        this.scope = {
-            parent: this.scope,
-            node,
-        };
-    }
-
-    exitScope() {
-        if (this.scope.parent) {
-            // jtu: come back to this dunno if you actually need to set to undefined
-            const parent = this.scope.parent;
-            this.scope.parent = undefined;
-            this.scope = parent;
-        }
-    }
-
-    // jtu:  come up with a better name or method for this
-    appendChildAndEnterScope(node: ForBlock | IfBlock) {
-        this.appendChildNode(node);
-        this.enterScope(node);
-    }
-
-    appendChildNode(child: ChildNode) {
-        this.scope.node?.children.push(child);
     }
 
     // jtu: come back to this could be cleaner

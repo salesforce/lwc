@@ -40,6 +40,11 @@ import {
     isStringAttribute,
     isBooleanAttribute,
     isSlot,
+    createParentWrapper,
+    isIterator,
+    isForEach,
+    isForBlock,
+    isIfBlock,
 } from '../shared-next/ir';
 import {
     TemplateParseResult,
@@ -68,6 +73,7 @@ import {
     LWCDirectiveDomMode,
     DomDirective,
     SourceLocation,
+    ParentWrapper,
 } from '../shared-next/types';
 
 import ParserCtx from './parser';
@@ -161,46 +167,104 @@ function parseRoot(ctx: ParserCtx, parse5Element: parse5.Element): Root {
         location: parseSourceLocation(location),
     };
 
-    // ctx.scope.node = root;
-
     applyLwcRenderModeDirective(ctx, root, parsedAttr);
     applyLwcPreserveCommentsDirective(ctx, root, parsedAttr);
 
     // Need to revisit validating the root
     validateRoot(ctx, root, parse5Element);
 
-    parseChildren(ctx, root, parse5Element);
+    parseChildren(ctx, createParentWrapper(root), parse5Element);
     // Need to revisit validating the children
     // validateChildren(ctx, root);
 
     return root;
 }
 
-function parseElement(ctx: ParserCtx, pare5Element: parse5.Element): Element | Component | Slot {
-    const parsedAttr = parseAttributes(ctx, pare5Element);
-    const elementLocation = parseElementLocation(pare5Element);
+// function parseElement(
+//     ctx: ParserCtx,
+//     parse5Element: parse5.Element,
+//     parent: ParentWrapper,
+//     attrs?: ParsedAttribute
+// ) {
+//     const parsedAttr = attrs || parseAttributes(ctx, parse5Element);
+//     if (
+//         parsedAttr.get(FOR_DIRECTIVES.FOR_EACH) ||
+//         parsedAttr.get(FOR_DIRECTIVES.FOR_ITEM) ||
+//         parsedAttr.get(ITERATOR_RE)
+//     ) {
+//         return parseElementIterator(ctx, parse5Element, parent, parsedAttr);
+//     } else if (parsedAttr.get(IF_RE)) {
+//         return parseElementIf(ctx, parse5Element, parent, parsedAttr);
+//     } else {
+//         return parseElementContent(ctx, parse5Element, parent, parsedAttr);
+//     }
+// }
+
+// function parseElementIterator(
+//     ctx: ParserCtx,
+//     parse5Element: parse5.Element,
+//     parent: ParentWrapper,
+//     parsedAttr: ParsedAttribute
+// ) {
+//     const elementLocation = parseElementLocation(parse5Element);
+//     const location = parseSourceLocation(elementLocation);
+//     const name = parse5Element.tagName;
+//     let current = parent;
+//     current = applyForEach(ctx, name, location, parsedAttr, current);
+//     current = applyIterator(ctx, name, location, parsedAttr, current);
+//     parseChildren(ctx, current, parse5Element, parsedAttr);
+//     return current.node as ForBlock;
+// }
+
+// function parseElementIf(
+//     ctx: ParserCtx,
+//     parse5Element: parse5.Element,
+//     parent: ParentWrapper,
+//     parsedAttr: ParsedAttribute
+// ) {
+//     const name = parse5Element.tagName;
+//     const parentWrapper = applyIf(ctx, name, parsedAttr, parent);
+//     parseChildren(ctx, parentWrapper, parse5Element, parsedAttr);
+//     return parentWrapper.node as IfBlock;
+// }
+
+function parseElement(
+    ctx: ParserCtx,
+    parse5Element: parse5.Element,
+    parent: ParentWrapper
+): Element | Component | Slot {
+    const parsedAttr = parseAttributes(ctx, parse5Element);
+    const elementLocation = parseElementLocation(parse5Element);
     const location = parseSourceLocation(elementLocation);
+    const name = parse5Element.tagName;
+    let current = parent;
+    // jtu: note to self, right now applyIterator checks if you have a foreach and throws error,
+    // if you want to move this around need to preserve the error handling
 
-    // jtu: come back to this find a better way of passing around location information
-    applyForEach(ctx, location, parsedAttr);
-    applyIterator(ctx, location, parsedAttr);
-    applyIf(ctx, parsedAttr);
-
-    const element = parseElementType(ctx, pare5Element, location, parsedAttr);
+    current = applyForEach(ctx, name, location, parsedAttr, current);
+    current = applyIterator(ctx, name, location, parsedAttr, current);
+    current = applyIf(ctx, name, parsedAttr, parent);
+    const { element, parentWrapper } = parseElementType(
+        ctx,
+        parse5Element,
+        location,
+        parsedAttr,
+        current
+    );
 
     applyHandlers(ctx, element, parsedAttr);
-    applyKey(ctx, element, parsedAttr);
+    applyKey(ctx, element, parentWrapper, parent, parsedAttr);
 
     // jtu:  Check to see if there's validation on the rendermode and preserve comments
     // for non root nodes and add it back in.
     applyLwcDirectives(ctx, element, parsedAttr);
-    applyAttributes(ctx, element, parsedAttr);
+    applyAttributes(ctx, element, parentWrapper, parsedAttr);
 
-    validateElement(ctx, element, pare5Element);
+    validateElement(ctx, element, parse5Element);
     validateAttributes(ctx, element, parsedAttr);
     validateProperties(ctx, element);
 
-    parseChildren(ctx, element, pare5Element);
+    parseChildren(ctx, parentWrapper, parse5Element);
     validateChildren(ctx, element);
 
     return element;
@@ -210,8 +274,9 @@ function parseElementType(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
     location: SourceLocation,
-    parsedAttr: ParsedAttribute
-): Element | Component | Slot {
+    parsedAttr: ParsedAttribute,
+    parent: ParentWrapper
+): { element: Element | Component | Slot; parentWrapper: ParentWrapper } {
     const { tagName: tag } = parse5Elm;
     // Check if the element tag is a valid custom element name and is not part of known standard
     // element name containing a dash.
@@ -219,37 +284,23 @@ function parseElementType(
     if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
         element = createElement(parse5Elm);
     } else if (tag === 'slot') {
-        element = applySlot(ctx, location, parsedAttr);
+        element = applySlot(ctx, location, parsedAttr, parent);
+    } else {
+        element = createComponent(parse5Elm);
     }
-    element = createComponent(parse5Elm);
 
-    ctx.appendChildNode(element);
-
-    // if (ctx.scope.node) {
-    //     ctx.scope.node.children.push(element);
-    // } else {
-    //     ctx.scope.node = element;
-    // }
-
-    return element;
+    const parentWrapper = ctx.appendChildAndCreateParent(element, parent);
+    return { element, parentWrapper };
 }
 
-function parseChildren(
-    ctx: ParserCtx,
-    parent: Element | Component | Slot | Root,
-    parse5Parent: parse5.Element
-): void {
+function parseChildren(ctx: ParserCtx, parent: ParentWrapper, parse5Parent: parse5.Element): void {
     const parsedChildren: ChildNode[] = [];
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
-
-    // const newscope: scope = { parent: ctx.scope };
-    // ctx.scope = newscope;
-    ctx.enterScope(parent);
 
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
-                const elmNode = parseElement(ctx, child);
+                const elmNode = parseElement(ctx, child, parent);
                 parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
@@ -261,12 +312,7 @@ function parseChildren(
         });
     }
 
-    // if (ctx.scope.parent) {
-    //     ctx.scope = ctx.scope.parent;
-    // }
-    ctx.exitScope();
-
-    parent.children = parsedChildren;
+    parent.node.children = parsedChildren;
 }
 
 function parseText(ctx: ParserCtx, node: parse5.TextNode): Text[] {
@@ -370,10 +416,15 @@ function applyHandlers(
     }
 }
 
-function applyIf(ctx: ParserCtx, parsedAttr: ParsedAttribute): IfBlock | undefined {
+function applyIf(
+    ctx: ParserCtx,
+    name: string,
+    parsedAttr: ParsedAttribute,
+    current: ParentWrapper
+) {
     const ifAttribute = parsedAttr.pick(IF_RE);
     if (!ifAttribute) {
-        return;
+        return current;
     }
 
     if (!isExpressionAttribute(ifAttribute.value)) {
@@ -387,20 +438,14 @@ function applyIf(ctx: ParserCtx, parsedAttr: ParsedAttribute): IfBlock | undefin
 
     const ifNode: IfBlock = {
         type: LWCNodeType.IfBlock,
+        name,
         location: ifAttribute.location,
         children: [],
         modifier,
         condition: ifAttribute.value,
     };
 
-    ctx.appendChildAndEnterScope(ifNode);
-    ctx.scope.ifBlock = ifNode;
-
-    // if (ctx.scope.node) {
-    //     ctx.scope.node.children.push(ifNode);
-    // } else {
-    //     ctx.scope.node = ifNode;
-    // }
+    return ctx.appendChildAndCreateParent(ifNode, current);
 }
 
 function applyLwcDirectives(
@@ -605,18 +650,19 @@ function applyLwcDomDirective(
         location: lwcDomAttribute.location,
     };
     directives.push(values);
-
-    // lwcOpts.dom = lwcDomAttribute.value as LWCDirectiveDomMode;
 }
 
 function applyForEach(
     ctx: ParserCtx,
+    name: string,
     elementLocation: SourceLocation,
-    parsedAttr: ParsedAttribute
+    parsedAttr: ParsedAttribute,
+    parent: ParentWrapper
 ) {
     const forEachAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_EACH);
     const forItemAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_ITEM);
     const forIndex = parsedAttr.pick(FOR_DIRECTIVES.FOR_INDEX);
+    let parentWrapper = parent;
 
     if (forEachAttribute && forItemAttribute) {
         if (!isExpressionAttribute(forEachAttribute.value)) {
@@ -648,6 +694,7 @@ function applyForEach(
 
         const forEach: ForEach = {
             type: LWCNodeType.ForEach,
+            name,
             expression: forEachAttribute.value,
             location: forEachAttribute.location,
             children: [],
@@ -655,33 +702,29 @@ function applyForEach(
             index,
         };
 
-        // jtu: come back to this maybe find a better way
-        ctx.appendChildAndEnterScope(forEach);
-        // ctx.appendChildNode(forEach);
-        // // ctx.scope.node = forEach;
-        // ctx.enterScope(forEach);
-        ctx.scope.forEach = forEach;
-        ctx.scope.forBlock = forEach;
+        parentWrapper = ctx.appendChildAndCreateParent(forEach, parentWrapper);
     } else if (forEachAttribute || forItemAttribute) {
         ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
             elementLocation
         );
     }
+    return parentWrapper;
 }
 
 function applyIterator(
     ctx: ParserCtx,
+    name: string,
     elementLocation: SourceLocation,
-    parsedAttr: ParsedAttribute
-): Iterator | undefined {
+    parsedAttr: ParsedAttribute,
+    current: ParentWrapper
+) {
     const iteratorExpression = parsedAttr.pick(ITERATOR_RE);
     if (!iteratorExpression) {
-        return;
+        return current;
     }
 
-    // jtu: come back to this one
-    if (ctx.scope.forEach || ctx.scope.iterator) {
+    if (isForBlock(current.node)) {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR, elementLocation, [
             iteratorExpression.name,
         ]);
@@ -700,24 +743,21 @@ function applyIterator(
 
     const it: Iterator = {
         type: LWCNodeType.Iterator,
+        name,
         expression: iteratorExpression.value,
         iterator,
         location: iteratorExpression.location,
         children: [],
     };
 
-    // jtu:  come back to this, seems like there's a better way to do this.
-    // ctx.appendChildNode(it);
-    // ctx.enterScope(it);
-    ctx.appendChildAndEnterScope(it);
-    ctx.scope.iterator = it;
-    ctx.scope.forBlock = it;
-    // ctx.scope.node = it;
+    return ctx.appendChildAndCreateParent(it, current);
 }
 
 function applyKey(
     ctx: ParserCtx,
     element: Element | Component | Slot,
+    current: ParentWrapper,
+    parent: ParentWrapper,
     parsedAttr: ParsedAttribute
 ) {
     const { name: tag } = element;
@@ -728,8 +768,8 @@ function applyKey(
             ctx.throwOnNode(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, keyAttribute);
         }
 
-        const forOfParent = getIteratorParent(ctx);
-        const forEachParent = getForEachParent(ctx);
+        const forOfParent = getIteratorParent(ctx, parent);
+        const forEachParent = getForEachParent(ctx, current);
 
         if (forOfParent) {
             // jtu:  come back to this forblock usage
@@ -760,9 +800,8 @@ function applyKey(
         };
 
         //jtu:  come back to this it is optional property.
-
         element.directives?.push(forKey);
-    } else if (isInIteratorElement(ctx) && !isTemplate(element)) {
+    } else if (isInIteratorElement(ctx, current, parent) && !isTemplate(element)) {
         ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
 }
@@ -770,10 +809,12 @@ function applyKey(
 function applySlot(
     ctx: ParserCtx,
     elementLocation: SourceLocation,
-    parsedAttr: ParsedAttribute
+    parsedAttr: ParsedAttribute,
+    parent: ParentWrapper
 ): Slot {
     // if (element.forEach || element.forOf || element.if) {
-    if (ctx.scope.forBlock || ctx.scope.ifBlock) {
+
+    if (isForBlock(parent.node) || isIfBlock(parent.node)) {
         ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, elementLocation);
     }
 
@@ -814,7 +855,7 @@ function applySlot(
             [name === '' ? 'default' : `name="${name}"`],
             elementLocation
         );
-    } else if (isInIteration(ctx)) {
+    } else if (isInIteration(ctx, parent)) {
         ctx.warnAtLocation(
             ParserDiagnostics.NO_SLOTS_IN_ITERATOR,
             [name === '' ? 'default' : `name="${name}"`],
@@ -836,6 +877,7 @@ function applySlot(
 function applyAttributes(
     ctx: ParserCtx,
     element: Element | Component | Slot,
+    current: ParentWrapper,
     parsedAttr: ParsedAttribute
 ) {
     const { name: tag } = element;
@@ -882,7 +924,7 @@ function applyAttributes(
                     ctx.throwOnNode(ParserDiagnostics.INVALID_ID_ATTRIBUTE, attr, [value]);
                 }
 
-                if (isInIteration(ctx)) {
+                if (isInIteration(ctx, current)) {
                     ctx.throwOnNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr, [
                         value,
                     ]);
@@ -941,6 +983,7 @@ function validateRoot(ctx: ParserCtx, root: Root, node: parse5.Element) {
     const rootHasUnknownAttributes = node.attrs.some(
         ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
     );
+
     if (rootHasUnknownAttributes) {
         ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, root);
     }
@@ -1084,7 +1127,6 @@ function validateProperties(ctx: ParserCtx, element: Element | Component | Slot)
 
     if (props !== undefined) {
         for (const prop of props) {
-            // const propAttr = props[propName];
             const { name, value } = prop;
 
             if (isProhibitedIsAttribute(name)) {
@@ -1166,34 +1208,43 @@ function getTemplateAttribute(
     };
 }
 
-function isInIteration(ctx: ParserCtx) {
+function isInIteration(ctx: ParserCtx, element: ParentWrapper) {
     return ctx.findAncestor({
-        predicate: (node) => node.node && isTemplate(node.node) && node.forBlock,
+        current: element,
+        predicate: (wrapper) => isTemplate(wrapper.node) && isForBlock(wrapper.node),
     });
 }
 
 // jtu: come back to this can simplify by a lot
 // update:  we need to pass the scopenode back in here for getting parent forof like before
 // problem is we don't have access to a scopenode anymore
-function getIteratorParent(ctx: ParserCtx): Iterator | null {
+// update 2: actually, we have the info on the current scopenode but we're also now setting potenially two layers
+// of parents between elements, ie foreach/iterator > if > element.  This means we need to adjust the search criteria
+// for traversalCond, because it's running on the assumption that we're using an IRElement, which had the parent child
+// relationship between IRElements contained between IRElements.  Now we have two layers of separation.
+
+function getIteratorParent(ctx: ParserCtx, parent: ParentWrapper): Iterator | null {
     const result = ctx.findAncestor({
-        current: ctx.scope.parent,
-        predicate: (node) => node.iterator,
-        traversalCond: ({ current }) => current.node && isTemplate(current.node),
+        current: parent,
+        predicate: (wrapper) => isIterator(wrapper.node),
+        traversalCond: ({ current }) => isTemplate(current.node),
     });
-    return result?.iterator || null;
-    // return result?.forBlock && isIterator(result.forBlock) ? result.forBlock : null;
+    return result ? (result as Iterator) : null;
 }
 
-function getForEachParent(ctx: ParserCtx): ForEach | null {
+function getForEachParent(ctx: ParserCtx, current: ParentWrapper): ForEach | null {
     const result = ctx.findAncestor({
-        predicate: (node) => node.forEach,
-        traversalCond: ({ parent }) => parent?.node && isTemplate(parent.node),
+        current,
+        predicate: (wrapper) => isForEach(wrapper.node),
+        traversalCond: ({ parent }) => parent && isTemplate(parent.node),
     });
-    return result?.forEach || null;
-    // return result?.forBlock && isForEach(result.forBlock) ? result.forBlock : null;
+    return result ? (result as ForEach) : null;
 }
 
-function isInIteratorElement(ctx: ParserCtx): boolean {
-    return !!(getIteratorParent(ctx) || getForEachParent(ctx));
+function isInIteratorElement(
+    ctx: ParserCtx,
+    current: ParentWrapper,
+    parent: ParentWrapper
+): boolean {
+    return !!(getIteratorParent(ctx, parent) || getForEachParent(ctx, current));
 }

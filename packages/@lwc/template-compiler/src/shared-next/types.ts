@@ -145,6 +145,7 @@ export interface Comment extends BaseNode {
 }
 
 export interface BaseParentNode extends BaseNode {
+    name: string;
     children: ChildNode[];
 }
 
@@ -152,7 +153,6 @@ export interface BaseParentNode extends BaseNode {
 // see if there's a better way to split up the component / element / slot.
 // Maybe create a type alias for it.
 export interface BaseElement extends BaseParentNode {
-    name: string;
     properties: Property[];
     attributes: Attribute[];
     listeners: EventListener[];
@@ -195,7 +195,6 @@ export type ForBlock = ForEach | Iterator;
 
 export interface Root extends BaseParentNode {
     type: LWCNodeType.Root;
-    name: string;
     directives?: RootDirective[];
 }
 
@@ -205,6 +204,8 @@ export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 export type ChildNode = ForBlock | IfBlock | Element | Component | Slot | Comment | Text;
 
 export type Node =
+    | ForEach
+    | Iterator
     | ForBlock
     | IfBlock
     | Element
@@ -215,11 +216,7 @@ export type Node =
     | Text
     | Attribute;
 
-export interface ScopeNode {
-    parent?: ScopeNode;
-    forBlock?: ForBlock;
-    forEach?: ForEach;
-    iterator?: Iterator;
-    ifBlock?: IfBlock;
-    node?: ParentNode;
+export interface ParentWrapper {
+    parent?: ParentWrapper;
+    node: ParentNode;
 }
