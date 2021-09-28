@@ -14,7 +14,7 @@ if (process.env.NATIVE_SHADOW) {
 
 const COMPAT = Boolean(process.env.COMPAT);
 const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
-const FORCED_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(process.env.FORCED_NATIVE_SHADOW_MODE_FOR_TEST);
+const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST);
 const TAGS = [`${DISABLE_SYNTHETIC ? 'native' : 'synthetic'}-shadow`, COMPAT && 'compat'].filter(
     (v) => Boolean(v)
 );
@@ -23,7 +23,7 @@ module.exports = {
     // Test configuration
     COMPAT,
     DISABLE_SYNTHETIC,
-    FORCED_NATIVE_SHADOW_MODE_FOR_TEST,
+    FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     TAGS,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),

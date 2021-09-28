@@ -24,7 +24,7 @@ This set of environment variables applies to the `start` and `test` commands:
 
 -   **`COMPAT=1`:** Compile and deliver tests in COMPAT mode.
 -   **`DISABLE_SYNTHETIC=1`:** Run without any synthetic shadow polyfill patches.
--   **`FORCED_NATIVE_SHADOW_MODE_FOR_TEST=1`:** Force tests to run in native shadow mode with synthetic shadow polyfill patches.
+-   **`FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1`:** Force tests to run in native shadow mode with synthetic shadow polyfill patches.
 -   **`COVERAGE=1`:** Gather engine code coverage, and store it in the `coverage` folder.
 -   **`GREP="pattern"`:** Filter the spec to run based on the pattern.
 
@@ -47,6 +47,6 @@ COVERAGE=1 yarn test           # Compute coverage after a single test run
         variable is set.
     -   `process.env.DISABLE_SYNTHETIC`: is set to `false` by default and `true` if the
         `DISABLE_SYNTHETIC` environment variable is set.
-    -   `FORCED_NATIVE_SHADOW_MODE_FOR_TEST`: is set to `false` by default and `true` if the
-        `FORCED_NATIVE_SHADOW_MODE_FOR_TEST` environment variable is set.
+    -   `FORCE_NATIVE_SHADOW_MODE_FOR_TEST`: is set to `false` by default and `true` if the
+        `FORCE_NATIVE_SHADOW_MODE_FOR_TEST` environment variable is set.
 -   The test setup file (`test-setup.js`) will automatically clean up the DOM before and after each test. So you don't have to do anything to clean up. However, you should use `beforeEach()` rather than `beforeAll()` to add DOM elements for your test, so that the cleanup code can properly clean up the DOM.

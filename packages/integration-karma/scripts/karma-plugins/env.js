@@ -18,7 +18,7 @@ const path = require('path');
 const {
     COMPAT,
     DISABLE_SYNTHETIC,
-    FORCED_NATIVE_SHADOW_MODE_FOR_TEST,
+    FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
 } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
@@ -35,8 +35,8 @@ function createEnvFile() {
         `        NODE_ENV: "development",`,
         `        COMPAT: ${COMPAT},`,
         `        DISABLE_SYNTHETIC: ${DISABLE_SYNTHETIC},`,
-        `        FORCED_NATIVE_SHADOW_MODE_FOR_TEST: ${FORCED_NATIVE_SHADOW_MODE_FOR_TEST},`,
-        `        NATIVE_SHADOW_MODE: ${DISABLE_SYNTHETIC || FORCED_NATIVE_SHADOW_MODE_FOR_TEST},`,
+        `        FORCE_NATIVE_SHADOW_MODE_FOR_TEST: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},`,
+        `        NATIVE_SHADOW_MODE: ${DISABLE_SYNTHETIC || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},`,
         `        NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== "undefined"`,
         `    }`,
         `};`,
