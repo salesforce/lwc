@@ -13,7 +13,7 @@ import * as t from '../shared/estree';
 import ParserCtx from './parser';
 
 import { ResolvedConfig } from '../config';
-import { Expression, Identifier, LWCNodeType, SourceLocation } from '../shared-next/types';
+import { Expression, Identifier, SourceLocation } from '../shared-next/types';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -102,7 +102,8 @@ export function parseExpression(
             validateSourceIsParsedExpression(source, parsed);
             validateExpression(parsed, ctx.config);
 
-            return parsed;
+            // jtu: come back to this, does location HAVE to be on this one?
+            return { ...parsed, location };
         },
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         location,
@@ -110,16 +111,17 @@ export function parseExpression(
     );
 }
 
+// jtu:  come back to this, the type is a string from t.identifier
 export function parseIdentifier(
     ctx: ParserCtx,
     source: string,
     location: SourceLocation
 ): Identifier {
     if (esutils.keyword.isIdentifierES6(source)) {
+        const id = t.identifier(source);
         return {
-            type: LWCNodeType.Identifier,
+            ...id,
             location,
-            name: source,
         };
     } else {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_IDENTIFIER, location, [source]);

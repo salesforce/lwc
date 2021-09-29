@@ -5,12 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
+import { attributeToPropertyName } from '../parser-next/attribute';
 
 import * as parse5Utils from './parse5';
 
 import {
-    // TemplateIdentifier,
-    // IRNode,
     LWCNodeType,
     Literal,
     SourceLocation,
@@ -20,21 +19,41 @@ import {
     Node,
     Comment,
     Text,
-    ParentNode,
-    ParentWrapper,
     Iterator,
     ForEach,
     ForBlock,
     IfBlock,
+    ElementNode,
+    Slot,
+    Identifier,
+    Root,
+    EventListener,
+    KeyDirective,
+    DynamicDirective,
+    DomDirective,
+    LWCDirectiveDomMode,
+    PreserveCommentsDirective,
+    RenderModeDirective,
+    LWCDirectiveRenderMode,
+    Attribute,
+    Property,
 } from './types';
 
-export function createElement(original: parse5.Element): Element {
-    const elmLocation = parseElementLocation(original);
+export function root(original: parse5.Element): Root {
+    return {
+        type: LWCNodeType.Root,
+        name: original.nodeName,
+        children: [],
+        location: parseElementSourceLocation(original),
+    };
+}
+
+export function element(original: parse5.Element): Element {
     return {
         type: LWCNodeType.Element,
         name: original.nodeName,
         namespace: original.namespaceURI,
-        location: parseSourceLocation(elmLocation),
+        location: parseElementSourceLocation(original),
         properties: [],
         attributes: [],
         listeners: [],
@@ -42,17 +61,33 @@ export function createElement(original: parse5.Element): Element {
     };
 }
 
-export function createComponent(original: parse5.Element): Component {
-    const elmLocation = parseElementLocation(original);
+export function component(original: parse5.Element): Component {
     return {
         type: LWCNodeType.Component,
         name: original.nodeName,
-        location: parseSourceLocation(elmLocation),
+        location: parseElementSourceLocation(original),
         attributes: [],
         properties: [],
         listeners: [],
         children: [],
     };
+}
+
+export function slot(name: string, location: SourceLocation): Slot {
+    return {
+        type: LWCNodeType.Slot,
+        name,
+        attributes: [],
+        properties: [],
+        listeners: [],
+        children: [],
+        location,
+    };
+}
+
+export function parseElementSourceLocation(original: parse5.Element): SourceLocation {
+    const elementLocation = parseElementLocation(original);
+    return parseSourceLocation(elementLocation);
 }
 
 export function parseElementLocation(original: parse5.Element): parse5.ElementLocation {
@@ -78,15 +113,19 @@ export function parseElementLocation(original: parse5.Element): parse5.ElementLo
     return location;
 }
 
-export function createParentWrapper(node: ParentNode, parent?: ParentWrapper) {
+export function parseSourceLocation(location: parse5.Location): SourceLocation {
     return {
-        parent,
-        node,
+        startLine: location.startLine,
+        startColumn: location.startCol,
+        endLine: location.endLine,
+        endColumn: location.endCol,
+        start: location.startOffset,
+        end: location.endOffset,
     };
 }
 
 // jtu: come back to this, should value be literal or literal<string>?
-export function createText(original: parse5.TextNode, value: Literal | Expression): Text {
+export function text(original: parse5.TextNode, value: Literal | Expression): Text {
     if (!original.sourceCodeLocation) {
         throw new Error('Invalid text AST node. Missing source code location.');
     }
@@ -100,7 +139,7 @@ export function createText(original: parse5.TextNode, value: Literal | Expressio
     };
 }
 
-export function createComment(original: parse5.CommentNode, value: string): Comment {
+export function comment(original: parse5.CommentNode, value: string): Comment {
     if (!original.sourceCodeLocation) {
         throw new Error('Invalid comment AST node. Missing source code location.');
     }
@@ -114,21 +153,159 @@ export function createComment(original: parse5.CommentNode, value: string): Comm
     };
 }
 
-export function createLiteral(value: string | boolean): Literal {
+export function literal(value: string | boolean): Literal {
     return {
         type: LWCNodeType.Literal,
         value,
     };
 }
 
-export function parseSourceLocation(location: parse5.Location): SourceLocation {
+export function forEach(
+    name: string,
+    expression: Expression,
+    location: SourceLocation,
+    item?: Identifier,
+    index?: Identifier
+): ForEach {
     return {
-        startLine: location.startLine,
-        startColumn: location.startCol,
-        endLine: location.endLine,
-        endColumn: location.endCol,
-        start: location.startOffset,
-        end: location.endOffset,
+        type: LWCNodeType.ForEach,
+        name,
+        expression,
+        location,
+        children: [],
+        item,
+        index,
+    };
+}
+
+export function iterator(
+    name: string,
+    expression: Expression,
+    iterator: Identifier,
+    location: SourceLocation
+): Iterator {
+    return {
+        type: LWCNodeType.Iterator,
+        name,
+        expression,
+        iterator,
+        location,
+        children: [],
+    };
+}
+
+export function ifBlock(
+    name: string,
+    location: SourceLocation,
+    modifier: string,
+    condition: Expression
+): IfBlock {
+    return {
+        type: LWCNodeType.IfBlock,
+        name,
+        location,
+        children: [],
+        modifier,
+        condition,
+    };
+}
+
+export function eventListener(
+    name: string,
+    handler: Expression,
+    location: SourceLocation
+): EventListener {
+    return {
+        type: LWCNodeType.EventListener,
+        name,
+        handler,
+        location,
+    };
+}
+
+export function keyDirective(value: Expression, location: SourceLocation): KeyDirective {
+    return {
+        type: LWCNodeType.Directive,
+        name: LWCNodeType.Key,
+        value,
+        location,
+    };
+}
+
+export function dynamicDirective(value: Expression, location: SourceLocation): DynamicDirective {
+    return {
+        name: LWCNodeType.Dynamic,
+        value,
+        type: LWCNodeType.Directive,
+        location,
+    };
+}
+
+export function domDirective(lwcDomAttr: string, location: SourceLocation): DomDirective {
+    return {
+        type: LWCNodeType.Directive,
+        name: LWCNodeType.Dom,
+        value: {
+            type: LWCNodeType.Literal,
+            value: lwcDomAttr as LWCDirectiveDomMode,
+        },
+        location,
+    };
+}
+
+export function preserveCommentsDirective(
+    preserveComments: boolean,
+    location: SourceLocation
+): PreserveCommentsDirective {
+    return {
+        name: LWCNodeType.PreserveComments,
+        value: {
+            type: LWCNodeType.Literal,
+            value: preserveComments,
+        },
+        type: LWCNodeType.Directive,
+        location,
+    };
+}
+
+export function renderModeDirective(
+    renderMode: string,
+    location: SourceLocation
+): RenderModeDirective {
+    return {
+        name: LWCNodeType.RenderMode,
+        value: {
+            type: LWCNodeType.Literal,
+            value: renderMode as LWCDirectiveRenderMode,
+        },
+        type: LWCNodeType.Directive,
+        location,
+    };
+}
+
+export function attribute(
+    name: string,
+    value: Expression | Literal,
+    location: SourceLocation
+): Attribute {
+    return {
+        type: LWCNodeType.Attribute,
+        name,
+        value,
+        location,
+    };
+}
+
+export function property(
+    name: string,
+    value: Expression | Literal,
+    location: SourceLocation
+): Property {
+    return {
+        type: LWCNodeType.Property,
+        name: attributeToPropertyName(name),
+        value,
+        location,
     };
 }
 
@@ -149,19 +326,14 @@ export function isCommentNode(node: Node): node is Comment {
 // }
 
 // jtu:  comeback to verify this is correct
+// how does this interact when it's a slot?
 export function isCustomElement(node: Node): boolean {
     return node.type === LWCNodeType.Component;
 }
 
 // jtu:  Come back to this
-export function isTemplate(node: Node) {
-    return (
-        (node.type === LWCNodeType.Element ||
-            node.type === LWCNodeType.Component ||
-            node.type === LWCNodeType.Slot ||
-            node.type === LWCNodeType.Root) &&
-        node.name === 'template'
-    );
+export function isTemplate(node: ElementNode) {
+    return node.name === 'template';
 }
 
 export function isSlot(node: Node) {

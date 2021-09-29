@@ -198,6 +198,8 @@ export interface Root extends BaseParentNode {
     directives?: RootDirective[];
 }
 
+export type ElementNode = Root | Component | Element | Slot | ForBlock | IfBlock;
+
 export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 
 // jtu:  should slot be a childnode type?
