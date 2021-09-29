@@ -7,7 +7,8 @@
 import { DiagnosticLevel } from '@lwc/errors';
 import { mergeConfig } from '../config';
 import State from '../state';
-import parse from '../parser';
+// import parse from '../parser';
+import parse from '../parser-next';
 
 const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
 const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
@@ -33,9 +34,9 @@ function parseTemplate(src: string): any {
 describe('parsing', () => {
     it('simple parsing', () => {
         const { root } = parseTemplate(`<template><h1>hello</h1></template>`);
-        expect(root.tag).toBe('template');
-        expect(root.children[0].tag).toBe('h1');
-        expect(root.children[0].children[0].value).toBe('hello');
+        expect(root.name).toBe('template');
+        expect(root.children[0].name).toBe('h1');
+        expect(root.children[0].children[0].value.value).toBe('hello');
     });
 
     it('html entities', () => {
@@ -43,8 +44,8 @@ describe('parsing', () => {
             <p>foo&amp;bar</p>
             <p>const &#123; foo &#125; = bar;</p>
         </template>`);
-        expect(root.children[0].children[0].value).toBe('foo&bar');
-        expect(root.children[1].children[0].value).toBe('const { foo } = bar;');
+        expect(root.children[0].children[0].value.value).toBe('foo&bar');
+        expect(root.children[1].children[0].value.value).toBe('const { foo } = bar;');
     });
 
     it('text identifier', () => {
@@ -54,17 +55,17 @@ describe('parsing', () => {
 
     it('text identifier in text block', () => {
         const { root } = parseTemplate(`<template>Hello {name}, from {location}</template>`);
-        expect(root.children[0].value).toBe('Hello ');
+        expect(root.children[0].value.value).toBe('Hello ');
         expect(root.children[1].value).toMatchObject(TEMPLATE_IDENTIFIER);
-        expect(root.children[2].value).toBe(', from ');
+        expect(root.children[2].value.value).toBe(', from ');
         expect(root.children[3].value).toMatchObject(TEMPLATE_IDENTIFIER);
     });
 
     it('child elements', () => {
         const { root } = parseTemplate(`<template><ul><li>hello</li></ul></template>`);
-        expect(root.children[0].tag).toBe('ul');
-        expect(root.children[0].children[0].tag).toBe('li');
-        expect(root.children[0].children[0].children[0].value).toBe('hello');
+        expect(root.children[0].name).toBe('ul');
+        expect(root.children[0].children[0].name).toBe('li');
+        expect(root.children[0].children[0].children[0].value.value).toBe('hello');
     });
 });
 
@@ -73,9 +74,21 @@ describe('event handlers', () => {
         const { root } = parseTemplate(
             `<template><h1 onclick={handleClick} onmousemove={handleMouseMove}></h1></template>`
         );
-        expect(root.children[0].on).toMatchObject({
-            click: { type: 'Identifier', name: 'handleClick' },
-            mousemove: { type: 'Identifier', name: 'handleMouseMove' },
+        expect(root.children[0].listeners[0]).toMatchObject({
+            type: 'event-listener',
+            name: 'click',
+            handler: {
+                type: 'Identifier',
+                name: 'handleClick',
+            },
+        });
+        expect(root.children[0].listeners[1]).toMatchObject({
+            type: 'event-listener',
+            name: 'mousemove',
+            handler: {
+                type: 'Identifier',
+                name: 'handleMouseMove',
+            },
         });
     });
 
@@ -95,24 +108,26 @@ describe('for:each directives', () => {
         const { root } = parseTemplate(
             `<template><section for:each={items} for:item="item" key={item}></section></template>`
         );
-        expect(root.children[0].forEach.expression).toMatchObject({
+
+        expect(root.children[0]).toMatchObject({ type: 'for-each', name: 'section' });
+        expect(root.children[0].expression).toMatchObject({
             type: 'Identifier',
             name: 'items',
         });
-        expect(root.children[0].forEach.item).toMatchObject({ type: 'Identifier', name: 'item' });
-        expect(root.children[0].forEach.index).toBeUndefined();
+        expect(root.children[0].item).toMatchObject({ type: 'Identifier', name: 'item' });
+        expect(root.children[0].index).toBeUndefined();
     });
 
     it('right syntax with index', () => {
         const { root } = parseTemplate(
             `<template><section for:each={items} for:item="item" for:index="i" key={item}></section></template>`
         );
-        expect(root.children[0].forEach.expression).toMatchObject({
+        expect(root.children[0].expression).toMatchObject({
             type: 'Identifier',
             name: 'items',
         });
-        expect(root.children[0].forEach.item).toMatchObject({ type: 'Identifier', name: 'item' });
-        expect(root.children[0].forEach.index).toMatchObject({ type: 'Identifier', name: 'i' });
+        expect(root.children[0].item).toMatchObject({ type: 'Identifier', name: 'item' });
+        expect(root.children[0].index).toMatchObject({ type: 'Identifier', name: 'i' });
     });
 
     it('error missing for:item', () => {
@@ -147,11 +162,15 @@ describe('for:of directives', () => {
         const { root } = parseTemplate(
             `<template><section iterator:it={items}></section></template>`
         );
-        expect(root.children[0].forOf.expression).toMatchObject({
+        expect(root.children[0]).toMatchObject({
+            type: 'iterator',
+            name: 'section',
+        });
+        expect(root.children[0].expression).toMatchObject({
             type: 'Identifier',
             name: 'items',
         });
-        expect(root.children[0].forOf.iterator).toMatchObject({ type: 'Identifier', name: 'it' });
+        expect(root.children[0].iterator).toMatchObject({ type: 'Identifier', name: 'it' });
     });
 
     it('error expression value for for:iterator', () => {
@@ -172,14 +191,15 @@ describe('for:of directives', () => {
 describe('if directive', () => {
     it('if directive', () => {
         const { root } = parseTemplate(`<template><h1 if:true={visible}></h1></template>`);
-        expect(root.children[0].if).toMatchObject(TEMPLATE_IDENTIFIER);
-        expect(root.children[0].ifModifier).toBe('true');
+        expect(root.children[0]).toMatchObject({ type: 'if-block', name: 'h1' });
+        expect(root.children[0].condition).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(root.children[0].modifier).toBe('true');
     });
 
     it('if directive with false modifier', () => {
         const { root } = parseTemplate(`<template><h1 if:false={visible}></h1></template>`);
-        expect(root.children[0].if).toMatchObject(TEMPLATE_IDENTIFIER);
-        expect(root.children[0].ifModifier).toBe('false');
+        expect(root.children[0].condition).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(root.children[0].modifier).toBe('false');
     });
 
     it('if directive with unexpecteed modifier', () => {
@@ -203,17 +223,37 @@ describe('if directive', () => {
     });
 });
 
+describe('forBlock with if directive', () => {
+    it('forEach and if directive', () => {
+        const { root } = parseTemplate(
+            `<template><section for:each={items} for:item="item" key={item} if:true={visible}></section></template>`
+        );
+        expect(root.children[0]).toMatchObject({ type: 'for-each', name: 'section' });
+        expect(root.children[0].children[0]).toMatchObject({ type: 'if-block', name: 'section' });
+    });
+
+    it('forOf with if directive', () => {
+        const { root } = parseTemplate(
+            `<template><section iterator:it={items} if:true={visible}></section></template>`
+        );
+        expect(root.children[0]).toMatchObject({
+            type: 'iterator',
+            name: 'section',
+        });
+        expect(root.children[0].children[0]).toMatchObject({ type: 'if-block', name: 'section' });
+    });
+});
+
 describe('custom component', () => {
     it('custom component', () => {
         const { root } = parseTemplate(`<template><x-button></x-button></template>`);
-        expect(root.children[0].tag).toBe('x-button');
-        expect(root.children[0].component).toBe('x-button');
+        expect(root.children[0]).toMatchObject({ type: 'component', name: 'x-button' });
     });
 
     it('html element with dashed tag name', () => {
         const { root } = parseTemplate('<template><color-profile></color-profile></template>');
-        expect(root.children[0].tag).toBe('color-profile');
-        expect(root.children[0].component).toBeUndefined();
+        expect(root.children[0].name).toBe('color-profile');
+        expect(root.children[0].type).not.toBe('component');
     });
 
     it('custom component self closing error', () => {
@@ -402,12 +442,20 @@ describe('expression', () => {
 
     it('autofix unquoted value next to unary tag', () => {
         const { root } = parseTemplate(`<template><input title={myValue}/></template>`);
-        expect(root.children[0].attrs.title).toMatchObject({ value: TEMPLATE_IDENTIFIER });
+        expect(root.children[0].attributes[0]).toMatchObject({
+            type: 'attribute',
+            name: 'title',
+            value: { type: 'Identifier', name: 'myValue' },
+        });
     });
 
     it('escaped attribute with curly braces', () => {
         const { root } = parseTemplate(`<template><input title="\\{myValue}"/></template>`);
-        expect(root.children[0].attrs.title.value).toBe('{myValue}');
+        expect(root.children[0].attributes[0]).toMatchObject({
+            type: 'attribute',
+            name: 'title',
+            value: { type: 'literal', value: '{myValue}' },
+        });
     });
 
     it('potential expression error', () => {
@@ -465,27 +513,39 @@ describe('props and attributes', () => {
         const { root } = parseTemplate(
             `<template><textarea minlength="1" maxlength="5"></textarea></template>`
         );
-        expect(root.children[0].attrs).toMatchObject({
-            minlength: { value: '1' },
-            maxlength: { value: '5' },
-        });
+        expect(root.children[0].attributes).toMatchObject([
+            {
+                name: 'minlength',
+                value: { value: '1' },
+            },
+            {
+                name: 'maxlength',
+                value: { value: '5' },
+            },
+        ]);
     });
 
     it('global attribute validation', () => {
         const { root } = parseTemplate(
             `<template><p title="title" aria-hidden="true"></p></template>`
         );
-        expect(root.children[0].attrs).toMatchObject({
-            'aria-hidden': { value: 'true' },
-            title: { value: 'title' },
-        });
+        expect(root.children[0].attributes).toMatchObject([
+            {
+                name: 'title',
+                value: { value: 'title' },
+            },
+            {
+                name: 'aria-hidden',
+                value: { value: 'true' },
+            },
+        ]);
     });
 
     it('custom element props', () => {
         const { root } = parseTemplate(
             `<template><x-button prop={state.prop}></x-button></template>`
         );
-        expect(root.children[0].props.prop).toMatchObject({ value: TEMPLATE_EXPRESSION });
+        expect(root.children[0].properties[0].value).toMatchObject(TEMPLATE_EXPRESSION);
     });
 
     it('custom element attribute / props mix', () => {
@@ -497,14 +557,28 @@ describe('props and attributes', () => {
                 foo="bar"
                 role="xx"></x-button>
         </template>`);
-        expect(root.children[0].props).toMatchObject({
-            ariaHidden: { value: 'hidden' },
-            fooBar: { value: 'x' },
-            foo: { value: 'bar' },
-            role: { value: 'xx' },
-        });
-        expect(root.children[0].attrs).toMatchObject({
-            'data-xx': { value: 'foo' },
+
+        expect(root.children[0].properties).toMatchObject([
+            {
+                name: 'ariaHidden',
+                value: { type: 'literal', value: 'hidden' },
+            },
+            {
+                name: 'fooBar',
+                value: { type: 'literal', value: 'x' },
+            },
+            {
+                name: 'foo',
+                value: { type: 'literal', value: 'bar' },
+            },
+            {
+                name: 'role',
+                value: { type: 'literal', value: 'xx' },
+            },
+        ]);
+        expect(root.children[0].attributes[1]).toMatchObject({
+            name: 'data-xx',
+            value: { value: 'foo' },
         });
     });
 
@@ -579,9 +653,12 @@ describe('props and attributes', () => {
                 <x-button under_score="bar"></x-button>
             </template>`);
 
-            expect(root.children[0].props).toMatchObject({
-                under_score: { value: 'bar' },
-            });
+            expect(root.children[0].properties).toMatchObject([
+                {
+                    name: 'under_score',
+                    value: { value: 'bar' },
+                },
+            ]);
         });
 
         it('attribute name separated by underscore and starts with a number', () => {
@@ -589,9 +666,12 @@ describe('props and attributes', () => {
                 <x-button under_1="bar"></x-button>
             </template>`);
 
-            expect(root.children[0].props).toMatchObject({
-                under_1: { value: 'bar' },
-            });
+            expect(root.children[0].properties).toMatchObject([
+                {
+                    name: 'under_1',
+                    value: { value: 'bar' },
+                },
+            ]);
         });
 
         it('attribute name separated by underscore which contains hyphen', () => {
@@ -599,9 +679,12 @@ describe('props and attributes', () => {
                 <x-button under_score-hyphen="bar"></x-button>
             </template>`);
 
-            expect(root.children[0].props).toMatchObject({
-                under_scoreHyphen: { value: 'bar' },
-            });
+            expect(root.children[0].properties).toMatchObject([
+                {
+                    name: 'under_scoreHyphen',
+                    value: { value: 'bar' },
+                },
+            ]);
         });
 
         it('attribute name separated by two underscore and contains hyphen', () => {
@@ -609,9 +692,12 @@ describe('props and attributes', () => {
                 <x-button under_score-second_under-score="bar"></x-button>
             </template>`);
 
-            expect(root.children[0].props).toMatchObject({
-                under_scoreSecond_underScore: { value: 'bar' },
-            });
+            expect(root.children[0].properties).toMatchObject([
+                {
+                    name: 'under_scoreSecond_underScore',
+                    value: { value: 'bar' },
+                },
+            ]);
         });
     });
 });

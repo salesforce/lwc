@@ -97,12 +97,15 @@ export default class ParserCtx {
         return null;
     }
 
-    appendChildAndCreateParent(child: ParentNode & ChildNode, parent: ParentWrapper) {
+    appendChildAndCreateParent(
+        child: ParentNode & ChildNode,
+        parent: ParentWrapper
+    ): ParentWrapper {
         parent.node.children.push(child);
         return this.parentWrapper(child, parent);
     }
 
-    parentWrapper(node: ParentNode, parent: ParentWrapper): ParentWrapper {
+    parentWrapper(node: ParentNode, parent?: ParentWrapper): ParentWrapper {
         return {
             parent,
             node,

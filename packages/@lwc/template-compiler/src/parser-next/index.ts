@@ -12,7 +12,6 @@ import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 
 import {
     attributeName,
-    attributeToPropertyName,
     isAttribute,
     isProhibitedIsAttribute,
     isTabIndexAttribute,
@@ -26,26 +25,7 @@ import { isExpression, parseExpression, parseIdentifier } from './expression';
 
 import * as t from '../shared-next/estree';
 import * as parse5Utils from '../shared-next/parse5';
-import {
-    createComment,
-    createComponent,
-    createElement,
-    createLiteral,
-    createText,
-    isCustomElement,
-    isTemplate,
-    parseSourceLocation,
-    parseElementLocation,
-    isExpressionAttribute,
-    isStringAttribute,
-    isBooleanAttribute,
-    isSlot,
-    createParentWrapper,
-    isIterator,
-    isForEach,
-    isForBlock,
-    isIfBlock,
-} from '../shared-next/ir';
+import * as ir from '../shared-next/ir';
 import {
     TemplateParseResult,
     Attribute,
@@ -58,20 +38,12 @@ import {
     Literal,
     Expression,
     Iterator,
-    IfBlock,
     Slot,
-    EventListener,
-    KeyDirective,
     ChildNode,
-    Property,
     Text,
     Comment,
     Root,
-    RenderModeDirective,
-    PreserveCommentsDirective,
-    DynamicDirective,
     LWCDirectiveDomMode,
-    DomDirective,
     SourceLocation,
     ParentWrapper,
 } from '../shared-next/types';
@@ -159,74 +131,20 @@ export default function parse(source: string, state: State): TemplateParseResult
 
 function parseRoot(ctx: ParserCtx, parse5Element: parse5.Element): Root {
     const parsedAttr = parseAttributes(ctx, parse5Element);
-    const location = parseElementLocation(parse5Element);
-    const root: Root = {
-        type: LWCNodeType.Root,
-        name: parse5Element.nodeName,
-        children: [],
-        location: parseSourceLocation(location),
-    };
+    const root = ir.root(parse5Element);
 
-    applyLwcRenderModeDirective(ctx, root, parsedAttr);
-    applyLwcPreserveCommentsDirective(ctx, root, parsedAttr);
+    applyRootLwcDirectives(ctx, root, parsedAttr);
+    ctx.setRootDirective(root);
 
     // Need to revisit validating the root
     validateRoot(ctx, root, parse5Element);
 
-    parseChildren(ctx, createParentWrapper(root), parse5Element);
+    parseChildren(ctx, ctx.parentWrapper(root), parse5Element);
     // Need to revisit validating the children
     // validateChildren(ctx, root);
 
     return root;
 }
-
-// function parseElement(
-//     ctx: ParserCtx,
-//     parse5Element: parse5.Element,
-//     parent: ParentWrapper,
-//     attrs?: ParsedAttribute
-// ) {
-//     const parsedAttr = attrs || parseAttributes(ctx, parse5Element);
-//     if (
-//         parsedAttr.get(FOR_DIRECTIVES.FOR_EACH) ||
-//         parsedAttr.get(FOR_DIRECTIVES.FOR_ITEM) ||
-//         parsedAttr.get(ITERATOR_RE)
-//     ) {
-//         return parseElementIterator(ctx, parse5Element, parent, parsedAttr);
-//     } else if (parsedAttr.get(IF_RE)) {
-//         return parseElementIf(ctx, parse5Element, parent, parsedAttr);
-//     } else {
-//         return parseElementContent(ctx, parse5Element, parent, parsedAttr);
-//     }
-// }
-
-// function parseElementIterator(
-//     ctx: ParserCtx,
-//     parse5Element: parse5.Element,
-//     parent: ParentWrapper,
-//     parsedAttr: ParsedAttribute
-// ) {
-//     const elementLocation = parseElementLocation(parse5Element);
-//     const location = parseSourceLocation(elementLocation);
-//     const name = parse5Element.tagName;
-//     let current = parent;
-//     current = applyForEach(ctx, name, location, parsedAttr, current);
-//     current = applyIterator(ctx, name, location, parsedAttr, current);
-//     parseChildren(ctx, current, parse5Element, parsedAttr);
-//     return current.node as ForBlock;
-// }
-
-// function parseElementIf(
-//     ctx: ParserCtx,
-//     parse5Element: parse5.Element,
-//     parent: ParentWrapper,
-//     parsedAttr: ParsedAttribute
-// ) {
-//     const name = parse5Element.tagName;
-//     const parentWrapper = applyIf(ctx, name, parsedAttr, parent);
-//     parseChildren(ctx, parentWrapper, parse5Element, parsedAttr);
-//     return parentWrapper.node as IfBlock;
-// }
 
 function parseElement(
     ctx: ParserCtx,
@@ -234,37 +152,32 @@ function parseElement(
     parent: ParentWrapper
 ): Element | Component | Slot {
     const parsedAttr = parseAttributes(ctx, parse5Element);
-    const elementLocation = parseElementLocation(parse5Element);
-    const location = parseSourceLocation(elementLocation);
+    const location = ir.parseElementSourceLocation(parse5Element);
     const name = parse5Element.tagName;
     let current = parent;
     // jtu: note to self, right now applyIterator checks if you have a foreach and throws error,
     // if you want to move this around need to preserve the error handling
 
-    current = applyForEach(ctx, name, location, parsedAttr, current);
-    current = applyIterator(ctx, name, location, parsedAttr, current);
-    current = applyIf(ctx, name, parsedAttr, parent);
-    const { element, parentWrapper } = parseElementType(
-        ctx,
-        parse5Element,
-        location,
-        parsedAttr,
-        current
-    );
+    current = parseForEach(ctx, name, location, parsedAttr, current);
+    current = parseIterator(ctx, name, location, parsedAttr, current);
+    current = parseIf(ctx, name, parsedAttr, current);
+    current = parseElementType(ctx, parse5Element, location, parsedAttr, current);
+
+    const element = current.node as Component | Element | Slot;
 
     applyHandlers(ctx, element, parsedAttr);
-    applyKey(ctx, element, parentWrapper, parent, parsedAttr);
+    applyKey(ctx, element, current, parent, parsedAttr);
 
     // jtu:  Check to see if there's validation on the rendermode and preserve comments
     // for non root nodes and add it back in.
     applyLwcDirectives(ctx, element, parsedAttr);
-    applyAttributes(ctx, element, parentWrapper, parsedAttr);
+    applyAttributes(ctx, element, current, parsedAttr);
 
     validateElement(ctx, element, parse5Element);
     validateAttributes(ctx, element, parsedAttr);
     validateProperties(ctx, element);
 
-    parseChildren(ctx, parentWrapper, parse5Element);
+    parseChildren(ctx, current, parse5Element);
     validateChildren(ctx, element);
 
     return element;
@@ -276,21 +189,22 @@ function parseElementType(
     location: SourceLocation,
     parsedAttr: ParsedAttribute,
     parent: ParentWrapper
-): { element: Element | Component | Slot; parentWrapper: ParentWrapper } {
+) {
     const { tagName: tag } = parse5Elm;
     // Check if the element tag is a valid custom element name and is not part of known standard
     // element name containing a dash.
     let element: Element | Component | Slot;
     if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
-        element = createElement(parse5Elm);
+        element = ir.element(parse5Elm);
     } else if (tag === 'slot') {
-        element = applySlot(ctx, location, parsedAttr, parent);
+        element = parseSlot(ctx, location, parsedAttr, parent);
     } else {
-        element = createComponent(parse5Elm);
+        element = ir.component(parse5Elm);
     }
 
-    const parentWrapper = ctx.appendChildAndCreateParent(element, parent);
-    return { element, parentWrapper };
+    // jtu: come back to this may be better way
+    return ctx.appendChildAndCreateParent(element, parent);
+    // return { element, parentWrapper };
 }
 
 function parseChildren(ctx: ParserCtx, parent: ParentWrapper, parse5Parent: parse5.Element): void {
@@ -300,8 +214,11 @@ function parseChildren(ctx: ParserCtx, parent: ParentWrapper, parse5Parent: pars
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
-                const elmNode = parseElement(ctx, child, parent);
-                parsedChildren.push(elmNode);
+                // jtu:  come back to this, it's kinda weird to break out of the mold like this
+                // Look for a way to return the forEach or whatever is the first element first
+                parseElement(ctx, child, parent);
+                // const elmNode = parseElement(ctx, child, parent);
+                // parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
                 parsedChildren.push(...textNodes);
@@ -312,7 +229,7 @@ function parseChildren(ctx: ParserCtx, parent: ParentWrapper, parse5Parent: pars
         });
     }
 
-    parent.node.children = parsedChildren;
+    parent.node.children.push(...parsedChildren);
 }
 
 function parseText(ctx: ParserCtx, node: parse5.TextNode): Text[] {
@@ -337,12 +254,12 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): Text[] {
 
         let value: Expression | Literal;
         if (isExpression(token)) {
-            value = parseExpression(ctx, token, parseSourceLocation(location));
+            value = parseExpression(ctx, token, ir.parseSourceLocation(location));
         } else {
-            value = createLiteral(decodeTextContent(token));
+            value = ir.literal(decodeTextContent(token));
         }
 
-        parsedTextNodes.push(createText(node, value));
+        parsedTextNodes.push(ir.text(node, value));
     }
 
     return parsedTextNodes;
@@ -350,7 +267,7 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): Text[] {
 
 function parseComment(node: parse5.CommentNode): Comment {
     const value = decodeTextContent(node.data);
-    return createComment(node, value);
+    return ir.comment(node, value);
 }
 
 function getTemplateRoot(
@@ -368,7 +285,7 @@ function getTemplateRoot(
         const duplicateRoot = validRoots[1].sourceCodeLocation!;
         ctx.throwAtLocation(
             ParserDiagnostics.MULTIPLE_ROOTS_FOUND,
-            parseSourceLocation(duplicateRoot)
+            ir.parseSourceLocation(duplicateRoot)
         );
     }
 
@@ -390,7 +307,7 @@ function applyHandlers(
     while ((eventHandlerAttribute = parsedAttr.pick(EVENT_HANDLER_RE))) {
         const { name } = eventHandlerAttribute;
 
-        if (!isExpressionAttribute(eventHandlerAttribute.value)) {
+        if (!ir.isExpressionAttribute(eventHandlerAttribute.value)) {
             ctx.throwOnNode(
                 ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION,
                 eventHandlerAttribute
@@ -403,20 +320,16 @@ function applyHandlers(
 
         // Strip the `on` prefix from the event handler name
         const eventName = name.slice(2);
-
-        // const on = element.on || (element.on = {});
-        // on[eventName] = eventHandlerAttribute.value;
-        const listener: EventListener = {
-            type: LWCNodeType.EventListener,
-            name: eventName,
-            handler: eventHandlerAttribute.value,
-            location: eventHandlerAttribute.location,
-        };
+        const listener = ir.eventListener(
+            eventName,
+            eventHandlerAttribute.value,
+            eventHandlerAttribute.location
+        );
         element.listeners.push(listener);
     }
 }
 
-function applyIf(
+function parseIf(
     ctx: ParserCtx,
     name: string,
     parsedAttr: ParsedAttribute,
@@ -427,7 +340,7 @@ function applyIf(
         return current;
     }
 
-    if (!isExpressionAttribute(ifAttribute.value)) {
+    if (!ir.isExpressionAttribute(ifAttribute.value)) {
         ctx.throwOnNode(ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION, ifAttribute);
     }
 
@@ -435,17 +348,91 @@ function applyIf(
     if (!VALID_IF_MODIFIER.has(modifier)) {
         ctx.throwOnNode(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, ifAttribute, [modifier]);
     }
-
-    const ifNode: IfBlock = {
-        type: LWCNodeType.IfBlock,
-        name,
-        location: ifAttribute.location,
-        children: [],
-        modifier,
-        condition: ifAttribute.value,
-    };
+    const ifNode = ir.ifBlock(name, ifAttribute.location, modifier, ifAttribute.value);
 
     return ctx.appendChildAndCreateParent(ifNode, current);
+}
+
+function applyRootLwcDirectives(ctx: ParserCtx, root: Root, parsedAttr: ParsedAttribute) {
+    const lwcAttribute = parsedAttr.get(LWC_RE);
+    if (!lwcAttribute) {
+        return;
+    }
+    // jtu: come back to verify that these are the correct attributes to check against
+
+    if (
+        !LWC_DIRECTIVE_SET.has(lwcAttribute.name) &&
+        !ROOT_TEMPLATE_DIRECTIVES_SET.has(lwcAttribute.name)
+    ) {
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
+            lwcAttribute.name,
+            `<${root.name}>`,
+        ]);
+    }
+
+    applyLwcRenderModeDirective(ctx, root, parsedAttr);
+    applyLwcPreserveCommentsDirective(ctx, root, parsedAttr);
+}
+
+function applyLwcRenderModeDirective(ctx: ParserCtx, root: Root, parsedAttr: ParsedAttribute) {
+    const lwcRenderModeAttribute = parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE);
+    if (!lwcRenderModeAttribute) {
+        return;
+    }
+
+    const { value: renderDomAttr } = lwcRenderModeAttribute;
+
+    if (
+        !ir.isStringAttribute(renderDomAttr) ||
+        (renderDomAttr.value !== 'shadow' && renderDomAttr.value !== 'light')
+    ) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, root);
+    }
+
+    // jtu:  come back to this
+    // This probably needs to move to the element as validation,
+    // we don't want the render mode on anything other than the root
+    // if (ctx.parentStack.length > 0) {
+    //     ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
+    //         ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+    //         `<${element.tag}>`,
+    //     ]);
+    // }
+
+    // lwcOpts.renderMode = lwcRenderModeAttribute.value as LWCDirectiveRenderMode;
+    const value = ir.renderModeDirective(renderDomAttr.value, lwcRenderModeAttribute.location);
+    const directives = root.directives || (root.directives = []);
+    directives.push(value);
+}
+
+function applyLwcPreserveCommentsDirective(
+    ctx: ParserCtx,
+    root: Root,
+    parsedAttr: ParsedAttribute
+) {
+    const lwcPreserveCommentAttribute = parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS);
+    if (!lwcPreserveCommentAttribute) {
+        return;
+    }
+
+    const { value: lwcPreserveCommentsAttr } = lwcPreserveCommentAttribute;
+
+    // jtu:  come back to this
+    // This probably needs to move to the element as validation,
+    // we don't want the preserve comments on anything other than the root
+    if (!ir.isBooleanAttribute(lwcPreserveCommentsAttr)) {
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
+            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+            `<${root.name}>`,
+        ]);
+    }
+
+    const value = ir.preserveCommentsDirective(
+        lwcPreserveCommentsAttr.value,
+        lwcPreserveCommentAttribute.location
+    );
+    const directives = root.directives || (root.directives = []);
+    directives.push(value);
 }
 
 function applyLwcDirectives(
@@ -489,80 +476,6 @@ function applyLwcDirectives(
     applyLwcDomDirective(ctx, element, parsedAttr);
 }
 
-function applyLwcRenderModeDirective(ctx: ParserCtx, root: Root, parsedAttr: ParsedAttribute) {
-    const lwcRenderModeAttribute = parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE);
-    if (!lwcRenderModeAttribute) {
-        return;
-    }
-
-    const { value: renderDomAttr } = lwcRenderModeAttribute;
-
-    if (
-        !isStringAttribute(renderDomAttr) ||
-        (renderDomAttr.value !== 'shadow' && renderDomAttr.value !== 'light')
-    ) {
-        ctx.throwOnNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, root);
-    }
-
-    // jtu:  come back to this
-    // This probably needs to move to the element as validation,
-    // we don't want the render mode on anything other than the root
-    // if (ctx.parentStack.length > 0) {
-    //     ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
-    //         ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
-    //         `<${element.tag}>`,
-    //     ]);
-    // }
-
-    // lwcOpts.renderMode = lwcRenderModeAttribute.value as LWCDirectiveRenderMode;
-    const directives = root.directives || (root.directives = []);
-    const values: RenderModeDirective = {
-        name: LWCNodeType.RenderMode,
-        value: {
-            type: LWCNodeType.Literal,
-            value: renderDomAttr.value as LWCDirectiveRenderMode,
-        },
-        type: LWCNodeType.Directive,
-        location: lwcRenderModeAttribute.location,
-    };
-    directives.push(values);
-}
-
-function applyLwcPreserveCommentsDirective(
-    ctx: ParserCtx,
-    root: Root,
-    parsedAttr: ParsedAttribute
-) {
-    const lwcPreserveCommentAttribute = parsedAttr.get(ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS);
-    if (!lwcPreserveCommentAttribute) {
-        return;
-    }
-
-    const { value: lwcPreserveCommentsAttr } = lwcPreserveCommentAttribute;
-
-    // jtu:  come back to this
-    // This probably needs to move to the element as validation,
-    // we don't want the preserve comments on anything other than the root
-    if (!isBooleanAttribute(lwcPreserveCommentsAttr)) {
-        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
-            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
-            `<${root.name}>`,
-        ]);
-    }
-
-    const directives = root.directives || (root.directives = []);
-    const values: PreserveCommentsDirective = {
-        name: LWCNodeType.PreserveComments,
-        value: {
-            type: LWCNodeType.Literal,
-            value: lwcPreserveCommentsAttr.value,
-        },
-        type: LWCNodeType.Directive,
-        location: lwcPreserveCommentAttribute.location,
-    };
-    directives.push(values);
-}
-
 function applyLwcDynamicDirective(
     ctx: ParserCtx,
     element: Element | Component | Slot,
@@ -579,7 +492,7 @@ function applyLwcDynamicDirective(
         ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element, [`<${tag}>`]);
     }
 
-    if (!isCustomElement(element)) {
+    if (!ir.isCustomElement(element)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT, element, [
             `<${tag}>`,
         ]);
@@ -587,17 +500,12 @@ function applyLwcDynamicDirective(
 
     const { value: lwcDynamicAttr } = lwcDynamicAttribute;
 
-    if (!isExpressionAttribute(lwcDynamicAttr)) {
+    if (!ir.isExpressionAttribute(lwcDynamicAttr)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
+    const values = ir.dynamicDirective(lwcDynamicAttr, lwcDynamicAttr.location);
     const directives = element.directives || (element.directives = []);
-    const values: DynamicDirective = {
-        name: LWCNodeType.Dynamic,
-        value: lwcDynamicAttr,
-        type: LWCNodeType.Directive,
-        location: lwcDynamicAttribute.location,
-    };
     directives.push(values);
 
     // lwcOpts.dynamic = lwcDynamicAttribute.value;
@@ -619,7 +527,7 @@ function applyLwcDomDirective(
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM, element, [`<${tag}>`]);
     }
 
-    if (isCustomElement(element)) {
+    if (ir.isCustomElement(element)) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT, element, [`<${tag}>`]);
     }
 
@@ -630,7 +538,7 @@ function applyLwcDomDirective(
     const { value: lwcDomAttr } = lwcDomAttribute;
 
     if (
-        !isStringAttribute(lwcDomAttr) ||
+        !ir.isStringAttribute(lwcDomAttr) ||
         hasOwnProperty.call(LWCDirectiveDomMode, lwcDomAttr.value) === false
     ) {
         const possibleValues = Object.keys(LWCDirectiveDomMode)
@@ -639,20 +547,12 @@ function applyLwcDomDirective(
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, [possibleValues]);
     }
 
+    const value = ir.domDirective(lwcDomAttr.value, lwcDomAttribute.location);
     const directives = element.directives || (element.directives = []);
-    const values: DomDirective = {
-        name: LWCNodeType.Dom,
-        value: {
-            type: LWCNodeType.Literal,
-            value: lwcDomAttr.value as LWCDirectiveDomMode,
-        },
-        type: LWCNodeType.Directive,
-        location: lwcDomAttribute.location,
-    };
-    directives.push(values);
+    directives.push(value);
 }
 
-function applyForEach(
+function parseForEach(
     ctx: ParserCtx,
     name: string,
     elementLocation: SourceLocation,
@@ -665,7 +565,7 @@ function applyForEach(
     let parentWrapper = parent;
 
     if (forEachAttribute && forItemAttribute) {
-        if (!isExpressionAttribute(forEachAttribute.value)) {
+        if (!ir.isExpressionAttribute(forEachAttribute.value)) {
             ctx.throwOnNode(
                 ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION,
                 forEachAttribute
@@ -673,7 +573,7 @@ function applyForEach(
         }
 
         const forItemValue = forItemAttribute.value;
-        if (!isStringAttribute(forItemValue)) {
+        if (!ir.isStringAttribute(forItemValue)) {
             ctx.throwOnNode(
                 ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING,
                 forItemAttribute
@@ -685,22 +585,19 @@ function applyForEach(
         let index: Identifier | undefined;
         if (forIndex) {
             const forIndexValue = forIndex.value;
-            if (!isStringAttribute(forIndexValue)) {
+            if (!ir.isStringAttribute(forIndexValue)) {
                 ctx.throwOnNode(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, forIndex);
             }
 
             index = parseIdentifier(ctx, forIndexValue.value, forIndex.location);
         }
-
-        const forEach: ForEach = {
-            type: LWCNodeType.ForEach,
+        const forEach = ir.forEach(
             name,
-            expression: forEachAttribute.value,
-            location: forEachAttribute.location,
-            children: [],
+            forEachAttribute.value,
+            forEachAttribute.location,
             item,
-            index,
-        };
+            index
+        );
 
         parentWrapper = ctx.appendChildAndCreateParent(forEach, parentWrapper);
     } else if (forEachAttribute || forItemAttribute) {
@@ -712,7 +609,7 @@ function applyForEach(
     return parentWrapper;
 }
 
-function applyIterator(
+function parseIterator(
     ctx: ParserCtx,
     name: string,
     elementLocation: SourceLocation,
@@ -724,7 +621,7 @@ function applyIterator(
         return current;
     }
 
-    if (isForBlock(current.node)) {
+    if (ir.isForBlock(current.node)) {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR, elementLocation, [
             iteratorExpression.name,
         ]);
@@ -733,22 +630,14 @@ function applyIterator(
     const iteratorAttributeName = iteratorExpression.name;
     const [, iteratorName] = iteratorAttributeName.split(':');
 
-    if (!isExpressionAttribute(iteratorExpression.value)) {
+    if (!ir.isExpressionAttribute(iteratorExpression.value)) {
         ctx.throwOnNode(ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION, iteratorExpression, [
             iteratorExpression.name,
         ]);
     }
 
     const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
-
-    const it: Iterator = {
-        type: LWCNodeType.Iterator,
-        name,
-        expression: iteratorExpression.value,
-        iterator,
-        location: iteratorExpression.location,
-        children: [],
-    };
+    const it = ir.iterator(name, iteratorExpression.value, iterator, iteratorExpression.location);
 
     return ctx.appendChildAndCreateParent(it, current);
 }
@@ -764,7 +653,7 @@ function applyKey(
     const keyAttribute = parsedAttr.pick('key');
 
     if (keyAttribute) {
-        if (!isExpressionAttribute(keyAttribute.value)) {
+        if (!ir.isExpressionAttribute(keyAttribute.value)) {
             ctx.throwOnNode(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, keyAttribute);
         }
 
@@ -792,29 +681,22 @@ function applyKey(
             }
         }
 
-        const forKey: KeyDirective = {
-            type: LWCNodeType.Directive,
-            name: LWCNodeType.Key,
-            value: keyAttribute.value,
-            location: keyAttribute.location,
-        };
-
-        //jtu:  come back to this it is optional property.
-        element.directives?.push(forKey);
-    } else if (isInIteratorElement(ctx, current, parent) && !isTemplate(element)) {
+        const forKey = ir.keyDirective(keyAttribute.value, keyAttribute.location);
+        // jtu: come back maight be better way to do it
+        const directive = element.directives || (element.directives = []);
+        directive.push(forKey);
+    } else if (isInIteratorElement(ctx, current, parent) && !ir.isTemplate(element)) {
         ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
 }
 
-function applySlot(
+function parseSlot(
     ctx: ParserCtx,
     elementLocation: SourceLocation,
     parsedAttr: ParsedAttribute,
     parent: ParentWrapper
 ): Slot {
-    // if (element.forEach || element.forOf || element.if) {
-
-    if (isForBlock(parent.node) || isIfBlock(parent.node)) {
+    if (ir.isForBlock(parent.node) || ir.isIfBlock(parent.node)) {
         ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, elementLocation);
     }
 
@@ -839,9 +721,9 @@ function applySlot(
 
     const nameAttribute = parsedAttr.get('name');
     if (nameAttribute) {
-        if (isExpressionAttribute(nameAttribute.value)) {
+        if (ir.isExpressionAttribute(nameAttribute.value)) {
             ctx.throwOnNode(ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION, nameAttribute);
-        } else if (isStringAttribute(nameAttribute.value)) {
+        } else if (ir.isStringAttribute(nameAttribute.value)) {
             name = nameAttribute.value.value;
         }
     }
@@ -863,15 +745,7 @@ function applySlot(
         );
     }
 
-    return {
-        type: LWCNodeType.Slot,
-        name,
-        attributes: [],
-        properties: [],
-        listeners: [],
-        children: [],
-        location: elementLocation,
-    };
+    return ir.slot(name, elementLocation);
 }
 
 function applyAttributes(
@@ -916,7 +790,7 @@ function applyAttributes(
             );
         }
 
-        if (isStringAttribute(attr.value)) {
+        if (ir.isStringAttribute(attr.value)) {
             if (name === 'id') {
                 const { value } = attr.value;
 
@@ -939,7 +813,7 @@ function applyAttributes(
         }
 
         // Prevent usage of the slot attribute with expression.
-        if (name === 'slot' && isExpressionAttribute(attr.value)) {
+        if (name === 'slot' && ir.isExpressionAttribute(attr.value)) {
             ctx.throwOnNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, attr);
         }
 
@@ -948,25 +822,11 @@ function applyAttributes(
         // 1. All attributes for standard elements except 1 case are handled as attributes
         // 2. For custom elements, only key, slot and data are handled as attributes, rest as properties
         if (isAttribute(element, name)) {
-            const attribute: Attribute = {
-                type: LWCNodeType.Attribute,
-                name,
-                value: attr.value,
-                location: attr.location,
-            };
-            // const attrs = element.attrs || (element.attrs = {});
-            // attrs[name] = attr;
-            element.attributes.push(attribute);
+            // jtu:  come back to this, is it ok to just push the attr directly?
+            // const attribute = createAttribute(name, attr.value, attr.location);
+            element.attributes.push(attr);
         } else {
-            const property: Property = {
-                type: LWCNodeType.Property,
-                name: attributeToPropertyName(name),
-                value: attr.value,
-                location: attr.location,
-            };
-            // const props = element.props || (element.props = {});
-            // props[attributeToPropertyName(name)] = attr;
-
+            const property = ir.property(name, attr.value, attr.location);
             element.properties.push(property);
 
             parsedAttr.pick(name);
@@ -976,7 +836,7 @@ function applyAttributes(
 
 // jtu:  come back and verify this can be done without consequences
 function validateRoot(ctx: ParserCtx, root: Root, node: parse5.Element) {
-    if (!isTemplate(root)) {
+    if (!ir.isTemplate(root)) {
         ctx.throwOnNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, root, [node.tagName]);
     }
 
@@ -997,7 +857,7 @@ function validateElement(
     const { name: tag } = element;
     // jtu:  come back to this, is it ok to take namespace directly from the parse5.element?
     const namespace = node.namespaceURI;
-    const elementLocation = parseElementLocation(node);
+    const elementLocation = ir.parseElementLocation(node);
 
     // const isRoot = ctx.parentStack.length === 0;
     // const isRoot = element.type === LWCNodeType.Root;
@@ -1027,7 +887,7 @@ function validateElement(
 
     if (tag === 'style' && namespace === HTML_NAMESPACE_URI) {
         ctx.throwOnNode(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element);
-    } else if (isTemplate(element)) {
+    } else if (ir.isTemplate(element)) {
         // We check if the template element has some modifier applied to it. Directly checking if one of the
         // IRElement property is impossible. For example when an error occurs during the parsing of the if
         // expression, the `element.if` property remains undefined. It would results in 2 warnings instead of 1:
@@ -1059,7 +919,7 @@ function validateElement(
         }
 
         const isKnownTag =
-            isCustomElement(element) ||
+            ir.isCustomElement(element) ||
             KNOWN_HTML_ELEMENTS.has(tag) ||
             SUPPORTED_SVG_TAGS.has(tag) ||
             DASHED_TAGNAME_ELEMENT_SET.has(tag);
@@ -1076,7 +936,7 @@ function validateElement(
 // Look into what this is really supposed to do, not sure what lwc.dom does
 function validateChildren(ctx: ParserCtx, element: Element | Component | Slot) {
     // slots not allowed to have a directive, maybe just check before calling this?
-    if (isSlot(element)) {
+    if (ir.isSlot(element)) {
         return;
     }
     const effectiveChildren = ctx.getPreserveComments()
@@ -1108,7 +968,10 @@ function validateAttributes(
         }
 
         if (isTabIndexAttribute(attrName)) {
-            if (!isExpressionAttribute(attrVal) && !isValidTabIndexAttributeValue(attrVal.value)) {
+            if (
+                !ir.isExpressionAttribute(attrVal) &&
+                !isValidTabIndexAttributeValue(attrVal.value)
+            ) {
                 ctx.throwOnNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
             }
         }
@@ -1135,7 +998,7 @@ function validateProperties(ctx: ParserCtx, element: Element | Component | Slot)
 
             if (
                 isTabIndexAttribute(name) &&
-                !isExpressionAttribute(value) &&
+                !ir.isExpressionAttribute(value) &&
                 !isValidTabIndexAttributeValue(value.value)
             ) {
                 ctx.throwOnNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
@@ -1147,7 +1010,7 @@ function validateProperties(ctx: ParserCtx, element: Element | Component | Slot)
 function parseAttributes(ctx: ParserCtx, node: parse5.Element): ParsedAttribute {
     const parsedAttrs = new ParsedAttribute();
     const { attrs: attributes, tagName } = node;
-    const { attrs: attrLocations } = parseElementLocation(node);
+    const { attrs: attrLocations } = ir.parseElementLocation(node);
 
     for (const attr of attributes) {
         parsedAttrs.append(getTemplateAttribute(ctx, tagName, attrLocations, attr));
@@ -1169,7 +1032,7 @@ function getTemplateAttribute(
     const rawLocation = attrLocations[name.toLowerCase()];
     const rawAttribute = ctx.getSource(rawLocation.startOffset, rawLocation.endOffset);
 
-    const location = parseSourceLocation(rawLocation);
+    const location = ir.parseSourceLocation(rawLocation);
     // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
     // is not the same before and after the parsing, then the attribute name contains capital letters
     if (!rawAttribute.startsWith(name)) {
@@ -1194,24 +1057,18 @@ function getTemplateAttribute(
         attrValue = parseExpression(ctx, value, location);
     } else if (isBooleanAttribute) {
         // boolean
-        attrValue = createLiteral(true);
+        attrValue = ir.literal(true);
     } else {
         //string
-        attrValue = createLiteral(value);
+        attrValue = ir.literal(value);
     }
-
-    return {
-        name,
-        location,
-        type: LWCNodeType.Attribute,
-        value: attrValue,
-    };
+    return ir.attribute(name, attrValue, location);
 }
 
 function isInIteration(ctx: ParserCtx, element: ParentWrapper) {
     return ctx.findAncestor({
         current: element,
-        predicate: (wrapper) => isTemplate(wrapper.node) && isForBlock(wrapper.node),
+        predicate: (wrapper) => ir.isTemplate(wrapper.node) && ir.isForBlock(wrapper.node),
     });
 }
 
@@ -1226,8 +1083,8 @@ function isInIteration(ctx: ParserCtx, element: ParentWrapper) {
 function getIteratorParent(ctx: ParserCtx, parent: ParentWrapper): Iterator | null {
     const result = ctx.findAncestor({
         current: parent,
-        predicate: (wrapper) => isIterator(wrapper.node),
-        traversalCond: ({ current }) => isTemplate(current.node),
+        predicate: (wrapper) => ir.isIterator(wrapper.node),
+        traversalCond: ({ current }) => ir.isTemplate(current.node),
     });
     return result ? (result as Iterator) : null;
 }
@@ -1235,8 +1092,8 @@ function getIteratorParent(ctx: ParserCtx, parent: ParentWrapper): Iterator | nu
 function getForEachParent(ctx: ParserCtx, current: ParentWrapper): ForEach | null {
     const result = ctx.findAncestor({
         current,
-        predicate: (wrapper) => isForEach(wrapper.node),
-        traversalCond: ({ parent }) => parent && isTemplate(parent.node),
+        predicate: (wrapper) => ir.isForEach(wrapper.node),
+        traversalCond: ({ parent }) => parent && ir.isTemplate(parent.node),
     });
     return result ? (result as ForEach) : null;
 }
