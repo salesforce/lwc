@@ -198,6 +198,8 @@ export interface Root extends BaseParentNode {
     directives?: RootDirective[];
 }
 
+export type DirectiveNode = Root | Component | Element | Slot;
+
 export type ElementNode = Root | Component | Element | Slot | ForBlock | IfBlock;
 
 export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
@@ -206,8 +208,6 @@ export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 export type ChildNode = ForBlock | IfBlock | Element | Component | Slot | Comment | Text;
 
 export type Node =
-    | ForEach
-    | Iterator
     | ForBlock
     | IfBlock
     | Element
@@ -216,7 +216,9 @@ export type Node =
     | Slot
     | Root
     | Text
-    | Attribute;
+    | Attribute
+    | Literal
+    | Expression;
 
 export interface ParentWrapper {
     parent?: ParentWrapper;

@@ -4,11 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as t from '../shared/estree';
-import { toPropertyName } from '../shared/utils';
-import { IRElement, IRNode, LWCDirectiveRenderMode } from '../shared/types';
-import { isElement, isTemplate, isComponentProp } from '../shared/ir';
-import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
+import * as t from '../shared-next/estree';
+import { toPropertyName } from '../shared-next/utils';
+import { IRElement, IRNode, LWCDirectiveRenderMode, ParentNode } from '../shared-next/types';
+import {
+    isElement,
+    isTemplate,
+    isComponentProp,
+    isIdentifier,
+    isParentNode,
+    hasAttributes,
+} from '../shared-next/ir';
+import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared-next/constants';
 
 import CodeGen from './codegen';
 
@@ -58,13 +65,16 @@ export function shouldFlatten(children: IRNode[], codeGen: CodeGen): boolean {
 /**
  * Returns true if the AST element or any of its descendants use an id attribute.
  */
-export function hasIdAttribute(element: IRElement): boolean {
-    if (element.attrs?.id || element.props?.id) {
-        return true;
+export function hasIdAttribute(node: ParentNode): boolean {
+    if (hasAttributes(node)) {
+        const attrs = [...node.attributes, ...node.properties];
+        if (attrs.find((attr) => isIdentifier(attr.value))) {
+            return true;
+        }
     }
 
-    for (const child of element.children) {
-        if (child.type === 'element' && hasIdAttribute(child)) {
+    for (const child of node.children) {
+        if (isParentNode(child) && hasIdAttribute(child)) {
             return true;
         }
     }

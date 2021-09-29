@@ -18,16 +18,19 @@ import {
     isTemplate,
     isTextNode,
     isSlot,
-} from '../shared/ir';
-import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
+    isStringLiteral,
+} from '../shared-next/ir';
+import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared-next/constants';
 import {
-    IRNode,
     IRElement,
-    IRText,
     IRAttribute,
     IRAttributeType,
     IRComment,
-} from '../shared/types';
+    Root,
+    ParentNode,
+    ChildNode,
+    Text,
+} from '../shared-next/types';
 
 import CodeGen from './codegen';
 import { bindExpression } from './scope';
@@ -46,7 +49,7 @@ import {
 import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
 
-import * as t from '../shared/estree';
+import * as t from '../shared-next/estree';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isAttribute,
@@ -54,10 +57,10 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-import { SVG_NAMESPACE_URI } from '../parser/constants';
+import { SVG_NAMESPACE_URI } from '../parser-next/constants';
 
 function transform(codeGen: CodeGen): t.Expression {
-    const parentStack: IRNode[] = [];
+    const parentStack: ParentNode[] = [];
 
     function transformElement(element: IRElement): t.Expression {
         const databag = elementDataBag(element);
@@ -113,12 +116,15 @@ function transform(codeGen: CodeGen): t.Expression {
         }
     }
 
-    function transformText(consecutiveText: IRText[]): t.Expression {
+    function transformText(consecutiveText: Text[]): t.Expression {
         return codeGen.genText(
             consecutiveText.map((text) => {
                 const { value } = text;
 
-                return typeof value === 'string' ? value : bindExpression(value, text, parentStack);
+                // jtu: come back to this, I dunno if you should be able to pass a boolean to bindExpression
+                return isStringLiteral(value)
+                    ? value.value
+                    : bindExpression(value, text, parentStack);
             })
         );
     }
@@ -127,11 +133,11 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genComment(comment.value);
     }
 
-    function transformChildren(parent: IRElement): t.Expression {
+    function transformChildren(parent: ParentNode): t.Expression {
         const res: t.Expression[] = [];
         const children = parent.children;
         const childrenIterator = children[Symbol.iterator]();
-        let current: IteratorResult<IRNode>;
+        let current: IteratorResult<ChildNode>;
 
         parentStack.push(parent);
 
@@ -139,7 +145,7 @@ function transform(codeGen: CodeGen): t.Expression {
             let child = current.value;
 
             if (isTextNode(child)) {
-                const continuousText: IRText[] = [];
+                const continuousText: Text[] = [];
 
                 // Consume all the contiguous text nodes.
                 do {
@@ -155,6 +161,10 @@ function transform(codeGen: CodeGen): t.Expression {
                     break;
                 }
             }
+
+            // jtu: Add forOf / forEach handling
+
+            // jtu: Add if handling
 
             if (isElement(child)) {
                 if (isTemplate(child)) {
@@ -567,7 +577,7 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
     );
 }
 
-export default function (root: IRElement, config: ResolvedConfig): string {
+export default function (root: Root, config: ResolvedConfig): string {
     const scopeFragmentId = hasIdAttribute(root);
     const codeGen = new CodeGen({
         root,

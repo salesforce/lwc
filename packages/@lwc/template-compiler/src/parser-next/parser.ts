@@ -14,15 +14,13 @@ import {
     normalizeToDiagnostic,
 } from '@lwc/errors';
 import { ResolvedConfig } from '../config';
+import { getPreserveComments, getRenderModeDirective } from '../shared-next/ir';
 
 import {
-    LWCNodeType,
     Node,
-    RenderModeDirective,
     Root,
     SourceLocation,
     LWCDirectiveRenderMode,
-    PreserveCommentsDirective,
     ParentWrapper,
     ParentNode,
     ChildNode,
@@ -45,11 +43,6 @@ function normalizeLocation(location?: SourceLocation): Location {
     return { line, column, start, length };
 }
 
-interface RootDirective {
-    renderMode: LWCDirectiveRenderMode;
-    preserveComments: boolean;
-}
-
 export default class ParserCtx {
     private readonly source: String;
     readonly config: ResolvedConfig;
@@ -58,15 +51,14 @@ export default class ParserCtx {
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
 
-    readonly rootDirective: RootDirective;
+    renderMode: LWCDirectiveRenderMode;
+    preserveComments: boolean;
 
     constructor(source: String, config: ResolvedConfig) {
         this.source = source;
         this.config = config;
-        this.rootDirective = {
-            renderMode: LWCDirectiveRenderMode.Shadow,
-            preserveComments: this.config.preserveHtmlComments,
-        };
+        this.renderMode = LWCDirectiveRenderMode.Shadow;
+        this.preserveComments = this.config.preserveHtmlComments;
     }
 
     getSource(start: number, end: number): string {
@@ -183,59 +175,8 @@ export default class ParserCtx {
         this.warnings.push(diagnostic);
     }
 
-    // jtu: come back to this could be cleaner
-
     setRootDirective(root: Root) {
-        const { renderMode, preserveComments } = this.rootDirective;
-        if (root.directives) {
-            // const renderMode = this.getRootDirective(root, LWCNodeType.RenderMode) as RenderModeDirective;
-            // const preserveComment = this.getRootDirective(root, LWCNodeType.PreserveComments) as PreserveCommentsDirective;
-            // this.rootDirective.renderMode = renderMode?.value.value ?? this.rootDirective.renderMode;
-            // this.rootDirective.preserveComments = preserveComment?.value.value ?? this.rootDirective.preserveComments;
-            const rootRenderMode = this.getRootRenderMode(root);
-            const rootPreserveComments = this.getRootPreserverComments(root);
-            this.rootDirective.renderMode = rootRenderMode?.value ?? renderMode;
-            this.rootDirective.preserveComments = rootPreserveComments?.value ?? preserveComments;
-
-            // const rootRenderMode = this.getRootDirective(
-            //     root,
-            //     LWCNodeType.RenderMode
-            // ) as RenderModeDirective;
-            // const rootPreserveComments = this.getRootDirective(
-            //     root,
-            //     LWCNodeType.PreserveComments
-            // ) as PreserveCommentsDirective;
-            // this.rootDirective.renderMode = rootRenderMode?.value.value ?? renderMode;
-            // this.rootDirective.preserveComments =
-            //     rootPreserveComments?.value.value ?? preserveComments;
-        }
-    }
-
-    private getRootRenderMode(root: Root) {
-        const renderMode = this.getRootDirective(
-            root,
-            LWCNodeType.RenderMode
-        ) as RenderModeDirective;
-        return renderMode?.value;
-    }
-
-    private getRootPreserverComments(root: Root) {
-        const preserveComments = this.getRootDirective(
-            root,
-            LWCNodeType.PreserveComments
-        ) as PreserveCommentsDirective;
-        return preserveComments.value;
-    }
-
-    private getRootDirective(root: Root, type: LWCNodeType) {
-        return root.directives?.find((dir) => dir.name === type);
-    }
-
-    getRenderMode(): LWCDirectiveRenderMode {
-        return this.rootDirective.renderMode;
-    }
-
-    getPreserveComments(): boolean {
-        return !!this.rootDirective.preserveComments;
+        this.renderMode = getRenderModeDirective(root) ?? this.renderMode;
+        this.preserveComments = getPreserveComments(root) ?? this.preserveComments;
     }
 }

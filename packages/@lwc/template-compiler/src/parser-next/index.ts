@@ -523,7 +523,7 @@ function applyLwcDomDirective(
         return;
     }
 
-    if (ctx.getRenderMode() === LWCDirectiveRenderMode.Light) {
+    if (ctx.renderMode === LWCDirectiveRenderMode.Light) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM, element, [`<${tag}>`]);
     }
 
@@ -701,7 +701,7 @@ function parseSlot(
     }
 
     // Can't handle slots in applySlot because it would be too late for class and style attrs
-    if (ctx.getRenderMode() === LWCDirectiveRenderMode.Light) {
+    if (ctx.renderMode === LWCDirectiveRenderMode.Light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
             .filter(({ name }) => name !== 'name')
@@ -939,7 +939,7 @@ function validateChildren(ctx: ParserCtx, element: Element | Component | Slot) {
     if (ir.isSlot(element)) {
         return;
     }
-    const effectiveChildren = ctx.getPreserveComments()
+    const effectiveChildren = ctx.preserveComments
         ? element.children
         : element.children.filter((child) => child.type !== LWCNodeType.Comment);
     // if (element.lwc?.dom && effectiveChildren.length > 0) {

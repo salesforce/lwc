@@ -37,6 +37,8 @@ import {
     LWCDirectiveRenderMode,
     Attribute,
     Property,
+    RootDirective,
+    ParentNode,
 } from './types';
 
 export function root(original: parse5.Element): Root {
@@ -313,6 +315,18 @@ export function isElement(node: Node): node is Element {
     return node.type === LWCNodeType.Element;
 }
 
+export function isRoot(node: Node): node is Root {
+    return node.type === LWCNodeType.Root;
+}
+
+export function isComponent(node: Node): node is Component {
+    return node.type === LWCNodeType.Component;
+}
+
+export function isSlot(node: Node) {
+    return node.type === LWCNodeType.Slot;
+}
+
 export function isTextNode(node: Node): node is Text {
     return node.type === LWCNodeType.Text;
 }
@@ -336,14 +350,15 @@ export function isTemplate(node: ElementNode) {
     return node.name === 'template';
 }
 
-export function isSlot(node: Node) {
-    return node.type === LWCNodeType.Slot;
+export function isIdentifier(expression: Expression | Literal): expression is Identifier {
+    return expression.type === LWCNodeType.Identifier;
 }
 
 export function isExpressionAttribute(node: Expression | Literal): node is Expression {
     return node.type === LWCNodeType.Identifier || node.type === LWCNodeType.MemberExpression;
 }
 
+// jtu: come back to this and verify that it is correct usage.
 export function isStringAttribute(node: Expression | Literal): node is Literal<string> {
     return node.type === LWCNodeType.Literal && typeof node.value === 'string';
 }
@@ -366,6 +381,57 @@ export function isForBlock(node: Node): node is ForBlock {
 
 export function isIfBlock(node: Node): node is IfBlock {
     return node.type === LWCNodeType.IfBlock;
+}
+
+export function isAttribute(node: Node): node is Attribute {
+    return node.type === LWCNodeType.Attribute;
+}
+
+export function isLiteral(node: Node): node is Literal {
+    return node.type === LWCNodeType.Literal;
+}
+
+// jtu:  com eback ot this looks like it coudl be combo'd with isStringAttribute
+export function isStringLiteral(node: Node): node is Literal<string> {
+    return node.type === LWCNodeType.Literal && typeof node.value === 'string';
+}
+
+// jtu:  below this line needs work, find better ways of doing these
+// most of these are for codegen
+
+export function isParentNode(node: Node): node is ParentNode {
+    return !isCommentNode(node) || !isTextNode(node) || !isAttribute(node);
+}
+
+export function hasAttributes(node: Node): node is Element {
+    return isElement(node) || isComponent(node) || isSlot(node);
+}
+
+// jtu: come back to this seems like there's a better way to do this
+export function isRenderModeDirective(directive: RootDirective): directive is RenderModeDirective {
+    return directive.name === LWCNodeType.RenderMode;
+}
+
+export function isPreserveComments(
+    directive: RootDirective
+): directive is PreserveCommentsDirective {
+    return directive.name === LWCNodeType.PreserveComments;
+}
+
+// export function getDirectiveValue(node: DirectiveNode, type: LWCNodeType) {
+//     return node.directives?.find(dir => dir.name === type)?.value.value;
+// }
+
+export function getRenderModeDirective(root: Root) {
+    return root.directives?.find((dir) => isRenderModeDirective(dir))?.value.value as
+        | LWCDirectiveRenderMode
+        | undefined;
+}
+
+export function getPreserveComments(root: Root) {
+    return root.directives?.find((dir) => isPreserveComments(dir))?.value.value as
+        | boolean
+        | undefined;
 }
 
 // export function isComponentProp(
