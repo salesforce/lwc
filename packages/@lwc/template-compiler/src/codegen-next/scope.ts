@@ -9,7 +9,7 @@ import { walk } from 'estree-walker';
 import * as t from '../shared/estree';
 import { TEMPLATE_PARAMS } from '../shared/constants';
 import { isComponentProp } from '../shared/ir';
-import { IRNode, TemplateExpression } from '../shared/types';
+import { Node, Expression, ParentNode, Literal } from '../shared-next/types';
 
 /**
  * Bind the passed expression to the component instance. It applies the following transformation to the expression:
@@ -17,9 +17,10 @@ import { IRNode, TemplateExpression } from '../shared/types';
  * - {value[index]} --> {$cmp.value[$cmp.index]}
  */
 export function bindExpression(
-    expression: TemplateExpression,
-    irNode: IRNode,
-    parentStack: IRNode[]
+    // jtu:  come back and look at thsi, dunno if a literal can really fit in here for sure.
+    expression: Expression | Literal,
+    irNode: Node,
+    parentStack: ParentNode[]
 ): t.Expression {
     if (t.isIdentifier(expression)) {
         if (isComponentProp(expression, irNode, parentStack)) {
