@@ -6,18 +6,28 @@
  */
 import * as t from '../shared-next/estree';
 import { toPropertyName } from '../shared-next/utils';
-import { IRElement, IRNode, LWCDirectiveRenderMode, ParentNode } from '../shared-next/types';
 import {
-    isElement,
+    ChildNode,
+    Component,
+    Element,
+    LWCDirectiveRenderMode,
+    ParentNode,
+    Slot,
+} from '../shared-next/types';
+import {
     isTemplate,
-    isComponentProp,
     isIdentifier,
     isParentNode,
-    hasAttributes,
+    isSlot,
+    isForBlock,
+    isBaseElement,
+    isDynamicDirective,
+    isIfBlock,
 } from '../shared-next/ir';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared-next/constants';
 
 import CodeGen from './codegen';
+import Scope from './scope';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toPropertyName(name)}`);
@@ -42,23 +52,25 @@ export function objectToAST(
     );
 }
 
-function isDynamic(element: IRElement): boolean {
-    return element.lwc?.dynamic !== undefined;
+function isDynamic(element: Element | Component | Slot): boolean {
+    return !!element.directives?.find((dir) => isDynamicDirective(dir));
 }
 
-export function containsDynamicChildren(children: IRNode[]): boolean {
-    return children.some((child) => isElement(child) && isDynamic(child));
+export function containsDynamicChildren(children: ChildNode[]): boolean {
+    // jtu: need to traverse down the children to find the element node from child
+    return children.some((child) => isBaseElement(child) && isDynamic(child));
 }
 
-export function shouldFlatten(children: IRNode[], codeGen: CodeGen): boolean {
+// jtu: come back to this it's not ready yet
+export function shouldFlatten(children: ChildNode[], codeGen: CodeGen): boolean {
     return children.some(
         (child) =>
-            isElement(child) &&
-            (isDynamic(child) ||
-                !!child.forEach ||
-                !!child.forOf ||
-                (codeGen.renderMode === LWCDirectiveRenderMode.light && child.tag === 'slot') ||
-                (isTemplate(child) && shouldFlatten(child.children, codeGen)))
+            !!isForBlock(child) ||
+            (isParentNode(child) &&
+                ((isBaseElement(child) && isDynamic(child)) ||
+                    ((isIfBlock(child) || isTemplate(child)) &&
+                        shouldFlatten(child.children, codeGen)) ||
+                    (codeGen.renderMode === LWCDirectiveRenderMode.Light && isSlot(child))))
     );
 }
 
@@ -66,9 +78,10 @@ export function shouldFlatten(children: IRNode[], codeGen: CodeGen): boolean {
  * Returns true if the AST element or any of its descendants use an id attribute.
  */
 export function hasIdAttribute(node: ParentNode): boolean {
-    if (hasAttributes(node)) {
-        const attrs = [...node.attributes, ...node.properties];
-        if (attrs.find((attr) => isIdentifier(attr.value))) {
+    // jtu:  come back and reevaluate this
+    if (isBaseElement(node)) {
+        const attrs = [...node.attributes, ...node.properties].map((attr) => attr.value);
+        if (attrs.find((expr) => isIdentifier(expr))) {
             return true;
         }
     }
@@ -84,14 +97,13 @@ export function hasIdAttribute(node: ParentNode): boolean {
 
 export function memorizeHandler(
     codeGen: CodeGen,
-    element: IRElement,
-    parentStack: IRNode[],
+    scope: Scope,
     componentHandler: t.Expression,
     handler: t.Expression
 ): t.Expression {
     // #439 - The handler can only be memorized if it is bound to component instance
     const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-    const shouldMemorizeHandler = isComponentProp(id, element, parentStack);
+    const shouldMemorizeHandler = scope.resolve(id);
 
     // Apply memorization if the handler is memorizable.
     //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
@@ -135,7 +147,7 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
     // ignore when shadow because we don't want to modify template unnecessarily
-    if (codeGen.renderMode === LWCDirectiveRenderMode.light) {
+    if (codeGen.renderMode === LWCDirectiveRenderMode.Light) {
         const renderModeMetadata = t.assignmentExpression(
             '=',
             t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('renderMode')),

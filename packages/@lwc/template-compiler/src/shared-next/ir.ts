@@ -39,6 +39,9 @@ import {
     Property,
     RootDirective,
     ParentNode,
+    ElementDirective,
+    BaseNode,
+    MemberExpression,
 } from './types';
 
 export function root(original: parse5.Element): Root {
@@ -323,8 +326,13 @@ export function isComponent(node: Node): node is Component {
     return node.type === LWCNodeType.Component;
 }
 
-export function isSlot(node: Node) {
+export function isSlot(node: Node): node is Slot {
     return node.type === LWCNodeType.Slot;
+}
+
+// jtu: come back to this one, you'll need to change the name of this if you change the name of the type
+export function isBaseElement(node: Node): node is Element {
+    return isElement(node) || isCommentNode(node) || isSlot(node);
 }
 
 export function isTextNode(node: Node): node is Text {
@@ -350,8 +358,16 @@ export function isTemplate(node: ElementNode) {
     return node.name === 'template';
 }
 
-export function isIdentifier(expression: Expression | Literal): expression is Identifier {
-    return expression.type === LWCNodeType.Identifier;
+export function isIdentifier(node: BaseNode | Literal): node is Identifier {
+    return node.type === LWCNodeType.Identifier;
+}
+
+export function isMemberExpression(node: BaseNode | Literal): node is MemberExpression {
+    return node.type === LWCNodeType.MemberExpression;
+}
+
+export function isExpression(node: BaseNode | Literal): node is Expression {
+    return isMemberExpression(node) || isIdentifier(node);
 }
 
 export function isExpressionAttribute(node: Expression | Literal): node is Expression {
@@ -399,12 +415,21 @@ export function isStringLiteral(node: Node): node is Literal<string> {
 // jtu:  below this line needs work, find better ways of doing these
 // most of these are for codegen
 
+// jtu come back to this one it's not going to work as it is right now, plan is to add more types to node so we'll need a better way of checking for parent node
 export function isParentNode(node: Node): node is ParentNode {
     return !isCommentNode(node) || !isTextNode(node) || !isAttribute(node);
 }
 
-export function hasAttributes(node: Node): node is Element {
-    return isElement(node) || isComponent(node) || isSlot(node);
+export function isDomDirective(directive: ElementDirective): directive is DomDirective {
+    return directive.name === LWCNodeType.Dom;
+}
+
+export function isDynamicDirective(directive: ElementDirective): directive is DynamicDirective {
+    return directive.name === LWCNodeType.Dynamic;
+}
+
+export function isKeyDirective(directive: ElementDirective): directive is KeyDirective {
+    return directive.name === LWCNodeType.Key;
 }
 
 // jtu: come back to this seems like there's a better way to do this
@@ -422,6 +447,10 @@ export function isPreserveComments(
 //     return node.directives?.find(dir => dir.name === type)?.value.value;
 // }
 
+export function getDomDirective(element: Element | Component | Slot) {
+    return element.directives?.find((dir) => isDomDirective(dir)) as DomDirective | undefined;
+}
+
 export function getRenderModeDirective(root: Root) {
     return root.directives?.find((dir) => isRenderModeDirective(dir))?.value.value as
         | LWCDirectiveRenderMode
@@ -434,33 +463,6 @@ export function getPreserveComments(root: Root) {
         | undefined;
 }
 
-// export function isComponentProp(
-//     identifier: TemplateIdentifier,
-//     root: IRNode,
-//     parentStack: IRNode[]
-// ): boolean {
-//     const { name } = identifier;
-//     let current: IRNode | undefined = root;
-
-//     // Walking up the AST and checking for each node to find if the identifer name is identical to
-//     // an iteration variable.
-//     for (let i = parentStack.length; i >= 0; i--) {
-//         if (isElement(current)) {
-//             const { forEach, forOf } = current;
-
-//             if (
-//                 forEach?.item.name === name ||
-//                 forEach?.index?.name === name ||
-//                 forOf?.iterator.name === name
-//             ) {
-//                 return false;
-//             }
-//         }
-
-//         current = parentStack[i - 1];
-//     }
-
-//     // The identifier is bound to a component property if no match is found after reaching to AST
-//     // root.
-//     return true;
-// }
+export function getForKeyDirective(element: Element | Component | Slot) {
+    return element.directives?.find((dir) => isKeyDirective(dir)) as KeyDirective | undefined;
+}
