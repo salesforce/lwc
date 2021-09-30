@@ -152,11 +152,14 @@ export interface BaseParentNode extends BaseNode {
 // jtu:  come back to this to verify, properties initially only belonged to components
 // see if there's a better way to split up the component / element / slot.
 // Maybe create a type alias for it.
+
+//jtu: update, come back to this, does namespace need to be a part of component?
 export interface BaseElement extends BaseParentNode {
     properties: Property[];
     attributes: Attribute[];
     listeners: EventListener[];
     directives?: ElementDirective[];
+    namespace?: string;
 }
 
 export interface Element extends BaseElement {
@@ -200,6 +203,7 @@ export interface Root extends BaseParentNode {
 
 export type DirectiveNode = Root | Component | Element | Slot;
 
+// Jtu: come back to this maybe think of a better name?  These just have the name attribute
 export type ElementNode = Root | Component | Element | Slot | ForBlock | IfBlock;
 
 export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;

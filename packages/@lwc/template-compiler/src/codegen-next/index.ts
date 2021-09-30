@@ -19,21 +19,37 @@ import {
     isTextNode,
     isSlot,
     isStringLiteral,
+    isForBlock,
+    isIfBlock,
+    isForEach,
+    isBaseElement,
+    isDynamicDirective,
+    isExpressionAttribute,
+    isStringAttribute,
+    isBooleanAttribute as irIsBooleanAttribute,
+    getDomDirective,
+    getForKeyDirective,
 } from '../shared-next/ir';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared-next/constants';
 import {
-    IRElement,
-    IRAttribute,
-    IRAttributeType,
-    IRComment,
     Root,
     ParentNode,
     ChildNode,
     Text,
+    IfBlock,
+    ForBlock,
+    ForEach,
+    Iterator,
+    Slot,
+    Component,
+    Element,
+    Attribute,
+    Property,
+    Comment,
 } from '../shared-next/types';
 
 import CodeGen from './codegen';
-import { bindExpression } from './scope';
+import Scope from './scope';
 import {
     identifierFromComponentName,
     objectToAST,
@@ -56,28 +72,29 @@ import {
     isFragmentOnlyUrl,
     isIdReferencingAttribute,
     isSvgUseHref,
-} from '../parser/attribute';
+} from '../parser-next/attribute';
 import { SVG_NAMESPACE_URI } from '../parser-next/constants';
 
-function transform(codeGen: CodeGen): t.Expression {
-    const parentStack: ParentNode[] = [];
-
-    function transformElement(element: IRElement): t.Expression {
+function transform(codeGen: CodeGen, scope: Scope): t.Expression {
+    function transformElement(element: Element | Component | Slot): t.Expression {
         const databag = elementDataBag(element);
         let res: t.Expression;
 
         const children = transformChildren(element);
 
         // Check wether it has the special directive lwc:dynamic
-        if (element.lwc && element.lwc.dynamic) {
-            const expression = bindExpression(element.lwc.dynamic, element, parentStack);
-            res = codeGen.genDynamicElement(element.tag, expression, databag, children);
+        const { name } = element;
+        const dynamic = element.directives?.find((dir) => isDynamicDirective(dir));
+        if (dynamic) {
+            const expression = scope.bindExpression(dynamic.value);
+            res = codeGen.genDynamicElement(name, expression, databag, children);
         } else if (isCustomElement(element)) {
             // Make sure to register the component
-            const componentClassName = element.component!;
+            const componentClassName = name;
 
+            // jtu: come back to this, originally it was element.tag, is there a difference between name and tag?
             res = codeGen.genCustomElement(
-                element.tag,
+                name,
                 identifierFromComponentName(componentClassName),
                 databag,
                 children
@@ -85,35 +102,39 @@ function transform(codeGen: CodeGen): t.Expression {
         } else if (isSlot(element)) {
             const defaultSlot = children;
 
-            res = codeGen.getSlot(element.slotName!, databag, defaultSlot);
+            res = codeGen.getSlot(name, databag, defaultSlot);
         } else {
-            res = codeGen.genElement(element.tag, databag, children);
+            res = codeGen.genElement(name, databag, children);
         }
 
-        res = applyInlineIf(element, res);
-        res = applyInlineFor(element, res);
+        // res = applyInlineIf(element, res);
+        // res = applyInlineFor(element, res);
 
         return res;
     }
 
-    function transformTemplate(element: IRElement): t.Expression | t.Expression[] {
+    function transformTemplate(element: Element | Component | Slot): t.Expression | t.Expression[] {
         const children = transformChildren(element);
+        // jtu: come back to ths one I think it's ok but just double check
+        return t.isArrayExpression(children) ? (children.elements as t.Expression[]) : children;
 
-        let res = applyTemplateIf(element, children);
+        // let res = applyTemplateIf(element, children);
 
-        if (element.forEach) {
-            res = applyTemplateFor(element, res);
-        } else if (element.forOf) {
-            res = applyTemplateForOf(element, res);
-        }
+        // if (element.forEach) {
+        //     res = applyTemplateFor(element, res);
+        // } else if (element.forOf) {
+        //     res = applyTemplateForOf(element, res);
+        // }
 
-        if (t.isArrayExpression(res) && element.if) {
-            // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
-            // typecast it to t.Expression[]
-            return res.elements as t.Expression[];
-        } else {
-            return res;
-        }
+        // // jtu: need to come back to this one, so basically we're saying that for array expressions, when it's an if we need to
+        // // return the res.elements
+        // if (t.isArrayExpression(res) && element.if) {
+        //     // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
+        //     // typecast it to t.Expression[]
+        //     return res.elements as t.Expression[];
+        // } else {
+        //     return res;
+        // }
     }
 
     function transformText(consecutiveText: Text[]): t.Expression {
@@ -121,15 +142,13 @@ function transform(codeGen: CodeGen): t.Expression {
             consecutiveText.map((text) => {
                 const { value } = text;
 
-                // jtu: come back to this, I dunno if you should be able to pass a boolean to bindExpression
-                return isStringLiteral(value)
-                    ? value.value
-                    : bindExpression(value, text, parentStack);
+                // jtu: come back to this, I dunno if you should be able to pass a boolean to scope.bindExpression
+                return isStringLiteral(value) ? value.value : scope.bindExpression(value);
             })
         );
     }
 
-    function transformComment(comment: IRComment): t.Expression {
+    function transformComment(comment: Comment): t.Expression {
         return codeGen.genComment(comment.value);
     }
 
@@ -139,7 +158,8 @@ function transform(codeGen: CodeGen): t.Expression {
         const childrenIterator = children[Symbol.iterator]();
         let current: IteratorResult<ChildNode>;
 
-        parentStack.push(parent);
+        scope.beginScope();
+        scope.declare(parent);
 
         while ((current = childrenIterator.next()) && !current.done) {
             let child = current.value;
@@ -162,12 +182,21 @@ function transform(codeGen: CodeGen): t.Expression {
                 }
             }
 
-            // jtu: Add forOf / forEach handling
+            // jtu: need to modify, if there is a array expression and a if block in the results, we need to
+            // return the res.element instead
+            if (isForBlock(child)) {
+                res.push(transformForBlock(child));
+            }
 
-            // jtu: Add if handling
+            if (isIfBlock(child)) {
+                res.push(transformIf(child));
+            }
 
             if (isElement(child)) {
                 if (isTemplate(child)) {
+                    // jtu: two options, either we elimnate the need for an element in the IR when there's a template and for or if
+                    // or we just call the transformTemplate on the IR element and have it just return the children
+                    // Keep it the same for now, look into changing this later.
                     const templateChildren = transformTemplate(child);
                     Array.isArray(templateChildren)
                         ? res.push(...templateChildren)
@@ -182,9 +211,10 @@ function transform(codeGen: CodeGen): t.Expression {
             }
         }
 
-        parentStack.pop();
+        scope.endScope();
 
-        if (shouldFlatten(children, codeGen)) {
+        // jtu: come back to this root should be a valid entry too
+        if (isBaseElement(parent) && shouldFlatten(children, codeGen)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
                 return res[0];
             } else {
@@ -195,22 +225,38 @@ function transform(codeGen: CodeGen): t.Expression {
         }
     }
 
+    function transformIf(ifBlock: IfBlock) {
+        const children = transformChildren(ifBlock);
+
+        // jtu: com eback to this one, may be able to simply more
+        let res: t.Expression;
+        if (isTemplate(ifBlock)) {
+            res = applyTemplateIf(ifBlock, children);
+        } else {
+            let expression = children;
+            if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+                expression = expression.elements[0] as t.Expression;
+            }
+
+            // jtu:  The current AST structure, the if will only have one child, which is the element.
+            res = applyInlineIf(ifBlock, expression);
+        }
+
+        return res;
+    }
+
     function applyInlineIf(
-        element: IRElement,
+        ifBlock: IfBlock,
         node: t.Expression,
         testExpression?: t.Expression,
         falseValue?: t.Expression
-    ): t.Expression {
-        if (!element.if) {
-            return node;
-        }
-
+    ) {
         if (!testExpression) {
-            testExpression = bindExpression(element.if!, element, parentStack);
+            testExpression = scope.bindExpression(ifBlock.condition);
         }
 
         let leftExpression: t.Expression;
-        const modifier = element.ifModifier!;
+        const modifier = ifBlock.modifier!;
         if (modifier === 'true') {
             leftExpression = testExpression;
         } else if (modifier === 'false') {
@@ -226,18 +272,65 @@ function transform(codeGen: CodeGen): t.Expression {
         return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
     }
 
-    function applyInlineFor(element: IRElement, node: t.Expression) {
-        if (!element.forEach) {
-            return node;
+    function transformForBlock(forBlock: ForBlock) {
+        const children = transformChildren(forBlock);
+
+        let expression = children;
+        if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+            expression = expression.elements[0] as t.Expression;
         }
 
-        const { expression, item, index } = element.forEach;
+        // jtu:  Template has potential for array expression to come back with more than one element in expression.element
+        let res: t.Expression;
+        if (isForEach(forBlock)) {
+            res = applyInlineFor(forBlock, expression);
+        } else {
+            res = applyInlineForOf(forBlock, expression);
+        }
+
+        return res;
+    }
+
+    // function applyTemplateForBlock(forBlock: ForBlock, fragmentNodes: t.Expression) {
+    //     let expression = fragmentNodes;
+    //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+    //         expression = expression.elements[0] as t.Expression;
+    //     }
+
+    //     let res: t.Expression;
+    //     if (isForEach(forBlock)) {
+    //         res = applyTemplateFor(forBlock, expression);
+    //     } else {
+    //         res = applyTemplateForOf(forBlock, expression);
+    //     }
+
+    //     return res;
+    // }
+
+    // function applyInlineForBlock(forBlock: ForBlock, fragmentNodes: t.Expression) {
+    //     let expression = fragmentNodes;
+    //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+    //         expression = expression.elements[0] as t.Expression;
+    //     }
+
+    //     let res: t.Expression;
+    //     if (isForEach(forBlock)) {
+    //         res = applyInlineFor(forBlock, expression);
+    //     } else {
+    //         res = applyInlineForOf(forBlock, expression);
+    //     }
+
+    //     return res;
+    // }
+
+    function applyInlineFor(forEach: ForEach, node: t.Expression) {
+        const { expression, item, index } = forEach;
         const params = [item];
         if (index) {
             params.push(index);
         }
 
-        const iterable = bindExpression(expression, element, parentStack);
+        const iterable = scope.bindExpression(expression);
         const iterationFunction = t.functionExpression(
             null,
             params,
@@ -247,12 +340,8 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function applyInlineForOf(element: IRElement, node: t.Expression) {
-        if (!element.forOf) {
-            return node;
-        }
-
-        const { expression, iterator } = element.forOf;
+    function applyInlineForOf(forOf: Iterator, node: t.Expression) {
+        const { expression, iterator } = forOf;
         const { name: iteratorName } = iterator;
 
         const argsMapping = {
@@ -269,7 +358,7 @@ function transform(codeGen: CodeGen): t.Expression {
             )
         );
 
-        const iterable = bindExpression(expression, element, parentStack);
+        const iterable = scope.bindExpression(expression);
         const iterationFunction = t.functionExpression(
             null,
             iteratorArgs,
@@ -284,152 +373,153 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function applyTemplateForOf(element: IRElement, fragmentNodes: t.Expression) {
-        let expression = fragmentNodes;
-        if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-            expression = expression.elements[0] as t.Expression;
-        }
+    // function applyTemplateForOf(element: IRElement, fragmentNodes: t.Expression) {
+    //     let expression = fragmentNodes;
+    //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+    //         expression = expression.elements[0] as t.Expression;
+    //     }
 
-        return applyInlineForOf(element, expression);
-    }
+    //     return applyInlineForOf(element, expression);
+    // }
 
-    function applyTemplateFor(element: IRElement, fragmentNodes: t.Expression): t.Expression {
-        let expression = fragmentNodes;
-        if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-            expression = expression.elements[0] as t.Expression;
-        }
+    // function applyTemplateFor(element: IRElement, fragmentNodes: t.Expression) {
+    //     let expression = fragmentNodes;
+    //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+    //         expression = expression.elements[0] as t.Expression;
+    //     }
 
-        return applyInlineFor(element, expression);
-    }
+    //     return applyInlineFor(element, expression);
+    // }
 
-    function applyTemplateIf(element: IRElement, fragmentNodes: t.Expression): t.Expression {
-        if (!element.if) {
-            return fragmentNodes;
-        }
-
+    function applyTemplateIf(ifBlock: IfBlock, fragmentNodes: t.Expression): t.Expression {
         if (t.isArrayExpression(fragmentNodes)) {
             // Bind the expression once for all the template children
-            const testExpression = bindExpression(element.if!, element, parentStack);
+            const testExpression = scope.bindExpression(ifBlock.condition);
 
             return t.arrayExpression(
                 fragmentNodes.elements.map((child) =>
                     child !== null
-                        ? applyInlineIf(element, child as t.Expression, testExpression)
+                        ? applyInlineIf(ifBlock, child as t.Expression, testExpression)
                         : null
                 )
             );
         } else {
             // If the template has a single children, make sure the ternary expression returns an array
-            return applyInlineIf(element, fragmentNodes, undefined, t.arrayExpression([]));
+            return applyInlineIf(ifBlock, fragmentNodes, undefined, t.arrayExpression([]));
         }
     }
 
-    function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
-        const { tag, namespace } = element;
-        const isUsedAsAttribute = isAttribute(element, attr.name);
+    function computeAttrValue(
+        attr: Attribute | Property,
+        element: Element | Component | Slot
+    ): t.Expression {
+        const { name: elmName, namespace } = element;
+        const { name: attrName, value: attrValue } = attr;
+        const isUsedAsAttribute = isAttribute(element, attrName);
 
-        switch (attr.type) {
-            case IRAttributeType.Expression: {
-                const expression = bindExpression(attr.value, element, parentStack);
+        if (isExpressionAttribute(attrValue)) {
+            const expression = scope.bindExpression(attrValue);
 
-                // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
-                if (isUsedAsAttribute && isBooleanAttribute(attr.name, tag)) {
-                    // We need to do some manipulation to allow the diffing algorithm add/remove the attribute
-                    // without handling special cases at runtime.
-                    return codeGen.genBooleanAttributeExpr(expression);
-                }
-                if (attr.name === 'tabindex') {
-                    return codeGen.genTabIndex([expression]);
-                }
-                if (attr.name === 'id' || isIdReferencingAttribute(attr.name)) {
-                    return codeGen.genScopedId(expression);
-                }
-                if (
-                    codeGen.scopeFragmentId &&
-                    isAllowedFragOnlyUrlsXHTML(tag, attr.name, namespace)
-                ) {
-                    return codeGen.genScopedFragId(expression);
-                }
-                if (isSvgUseHref(tag, attr.name, namespace)) {
-                    codeGen.usedLwcApis.add('sanitizeAttribute');
+            // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
+            if (isUsedAsAttribute && isBooleanAttribute(attrName, elmName)) {
+                // We need to do some manipulation to allow the diffing algorithm add/remove the attribute
+                // without handling special cases at runtime.
+                return codeGen.genBooleanAttributeExpr(expression);
+            }
+            if (attrName === 'tabindex') {
+                return codeGen.genTabIndex([expression]);
+            }
+            if (attrName === 'id' || isIdReferencingAttribute(attrName)) {
+                return codeGen.genScopedId(expression);
+            }
+            if (
+                codeGen.scopeFragmentId &&
+                isAllowedFragOnlyUrlsXHTML(elmName, attrName, namespace)
+            ) {
+                return codeGen.genScopedFragId(expression);
+            }
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                codeGen.usedLwcApis.add('sanitizeAttribute');
 
-                    return t.callExpression(t.identifier('sanitizeAttribute'), [
-                        t.literal(tag),
-                        t.literal(namespace),
-                        t.literal(attr.name),
-                        codeGen.genScopedFragId(expression),
-                    ]);
-                }
-
-                return expression;
+                return t.callExpression(t.identifier('sanitizeAttribute'), [
+                    t.literal(elmName),
+                    t.literal(namespace),
+                    t.literal(attrName),
+                    codeGen.genScopedFragId(expression),
+                ]);
             }
 
-            case IRAttributeType.String: {
-                if (attr.name === 'id') {
-                    return codeGen.genScopedId(attr.value);
-                }
-                if (attr.name === 'spellcheck') {
-                    return t.literal(attr.value.toLowerCase() !== 'false');
-                }
+            return expression;
+        }
 
-                if (!isUsedAsAttribute && isBooleanAttribute(attr.name, tag)) {
-                    // We are in presence of a string value, for a recognized boolean attribute, which is used as
-                    // property. for these cases, always set the property to true.
-                    return t.literal(true);
-                }
-
-                if (isIdReferencingAttribute(attr.name)) {
-                    return codeGen.genScopedId(attr.value);
-                }
-                if (
-                    codeGen.scopeFragmentId &&
-                    isAllowedFragOnlyUrlsXHTML(tag, attr.name, namespace) &&
-                    isFragmentOnlyUrl(attr.value)
-                ) {
-                    return codeGen.genScopedFragId(attr.value);
-                }
-                if (isSvgUseHref(tag, attr.name, namespace)) {
-                    codeGen.usedLwcApis.add('sanitizeAttribute');
-
-                    return t.callExpression(t.identifier('sanitizeAttribute'), [
-                        t.literal(tag),
-                        t.literal(namespace),
-                        t.literal(attr.name),
-                        isFragmentOnlyUrl(attr.value)
-                            ? codeGen.genScopedFragId(attr.value)
-                            : t.literal(attr.value),
-                    ]);
-                }
-                return t.literal(attr.value);
+        if (isStringAttribute(attrValue)) {
+            if (attrName === 'id') {
+                return codeGen.genScopedId(attrValue.value);
+            }
+            if (attrName === 'spellcheck') {
+                return t.literal(attrValue.value.toLowerCase() !== 'false');
             }
 
-            case IRAttributeType.Boolean: {
-                // A boolean value used in an attribute should always generate .setAttribute(attr.name, ''),
-                // regardless if is a boolean attribute or not.
-                return isUsedAsAttribute ? t.literal('') : t.literal(attr.value);
+            if (!isUsedAsAttribute && isBooleanAttribute(attrName, elmName)) {
+                // We are in presence of a string value, for a recognized boolean attribute, which is used as
+                // property. for these cases, always set the property to true.
+                return t.literal(true);
             }
+
+            if (isIdReferencingAttribute(attrName)) {
+                return codeGen.genScopedId(attrValue.value);
+            }
+            if (
+                codeGen.scopeFragmentId &&
+                isAllowedFragOnlyUrlsXHTML(elmName, attrName, namespace) &&
+                isFragmentOnlyUrl(attrValue.value)
+            ) {
+                return codeGen.genScopedFragId(attrValue.value);
+            }
+            if (isSvgUseHref(elmName, attrName, namespace)) {
+                codeGen.usedLwcApis.add('sanitizeAttribute');
+
+                return t.callExpression(t.identifier('sanitizeAttribute'), [
+                    t.literal(elmName),
+                    t.literal(namespace),
+                    t.literal(attrName),
+                    isFragmentOnlyUrl(attrValue.value)
+                        ? codeGen.genScopedFragId(attrValue.value)
+                        : t.literal(attrValue.value),
+                ]);
+            }
+            return t.literal(attrValue.value);
+        }
+
+        if (irIsBooleanAttribute(attrValue)) {
+            // A boolean value used in an attribute should always generate .setAttribute(attr.name, ''),
+            // regardless if is a boolean attribute or not.
+            return isUsedAsAttribute ? t.literal('') : t.literal(attrValue.value);
         }
     }
 
-    function elementDataBag(element: IRElement): t.ObjectExpression {
+    function elementDataBag(element: Element | Component | Slot): t.ObjectExpression {
         const data: t.Property[] = [];
 
-        const { attrs, props, on, forKey, lwc } = element;
+        const { attributes, properties, listeners } = element;
+        const dom = getDomDirective(element);
+        const forKey = getForKeyDirective(element);
 
         // Attributes
-        if (attrs) {
+        if (attributes) {
             const rest: { [name: string]: t.Expression } = {};
 
-            for (const [name, value] of Object.entries(attrs)) {
+            for (const attr of attributes) {
+                const { name, value } = attr;
                 if (name === 'class') {
                     // Handle class attribute:
                     // - expression values are turned into a `className` property.
                     // - string values are parsed and turned into a `classMap` object associating
                     //   each individual class name with a `true` boolean.
-                    if (value.type === IRAttributeType.Expression) {
-                        const classExpression = bindExpression(value.value, element, parentStack);
+                    if (isExpressionAttribute(value)) {
+                        const classExpression = scope.bindExpression(value);
                         data.push(t.property(t.identifier('className'), classExpression));
-                    } else if (value.type === IRAttributeType.String) {
+                    } else if (isStringAttribute(value)) {
                         const classNames = parseClassNames(value.value);
                         const classMap = t.objectExpression(
                             classNames.map((name) => t.property(t.literal(name), t.literal(true)))
@@ -441,16 +531,16 @@ function transform(codeGen: CodeGen): t.Expression {
                     // - expression values are turned into a `style` property.
                     // - string values are parsed and turned into a `styles` array
                     // containing triples of [name, value, important (optional)]
-                    if (value.type === IRAttributeType.Expression) {
-                        const styleExpression = bindExpression(value.value, element, parentStack);
+                    if (isExpressionAttribute(value)) {
+                        const styleExpression = scope.bindExpression(value);
                         data.push(t.property(t.identifier('style'), styleExpression));
-                    } else if (value.type === IRAttributeType.String) {
+                    } else if (isStringAttribute(value)) {
                         const styleMap = parseStyleText(value.value);
                         const styleAST = styleMapToStyleDeclsAST(styleMap);
                         data.push(t.property(t.identifier('styleDecls'), styleAST));
                     }
                 } else {
-                    rest[name] = computeAttrValue(attrs[name], element);
+                    rest[name] = computeAttrValue(attr, element);
                 }
             }
 
@@ -463,17 +553,20 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         // Properties
-        if (props) {
+        if (properties) {
+            const props = properties.reduce((obj, prop) => (obj[prop.name] = prop), {});
             const propsObj = objectToAST(props, (key) => computeAttrValue(props[key], element));
             data.push(t.property(t.identifier('props'), propsObj));
         }
 
         // Context
-        if (lwc?.dom) {
+        if (dom) {
             const contextObj = t.objectExpression([
                 t.property(
                     t.identifier('lwc'),
-                    t.objectExpression([t.property(t.identifier('dom'), t.literal(lwc.dom))])
+                    t.objectExpression([
+                        t.property(t.identifier('dom'), t.literal(dom.value.value)),
+                    ])
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));
@@ -482,7 +575,7 @@ function transform(codeGen: CodeGen): t.Expression {
         // Key property on VNode
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
-            const forKeyExpression = bindExpression(forKey, element, parentStack);
+            const forKeyExpression = scope.bindExpression(forKey.value);
             const generatedKey = codeGen.genKey(t.literal(codeGen.generateKey()), forKeyExpression);
             data.push(t.property(t.identifier('key'), generatedKey));
         } else {
@@ -492,12 +585,13 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         // Event handler
-        if (on) {
-            const onObj = objectToAST(on, (key) => {
-                const componentHandler = bindExpression(on[key], element, parentStack);
+        if (listeners) {
+            const listenerObj = listeners.reduce((obj, val) => (obj[val.name] = val), {});
+            const onObj = objectToAST(listenerObj, (key) => {
+                const componentHandler = scope.bindExpression(listenerObj[key]);
                 const handler = codeGen.genBind(componentHandler);
 
-                return memorizeHandler(codeGen, element, parentStack, componentHandler, handler);
+                return memorizeHandler(codeGen, scope, componentHandler, handler);
             });
             data.push(t.property(t.identifier('on'), onObj));
         }
@@ -513,8 +607,8 @@ function transform(codeGen: CodeGen): t.Expression {
     return transformChildren(codeGen.root);
 }
 
-function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
-    const returnedValue = transform(codeGen);
+function generateTemplateFunction(codeGen: CodeGen, scope: Scope): t.FunctionDeclaration {
+    const returnedValue = transform(codeGen, scope);
 
     const args = [
         TEMPLATE_PARAMS.API,
@@ -584,8 +678,9 @@ export default function (root: Root, config: ResolvedConfig): string {
         config,
         scopeFragmentId,
     });
+    const scope = new Scope();
 
-    const templateFunction = generateTemplateFunction(codeGen);
+    const templateFunction = generateTemplateFunction(codeGen, scope);
 
     let program: t.Program;
     switch (config.format) {

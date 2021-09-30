@@ -17,13 +17,13 @@ import { ResolvedConfig } from '../config';
 import { getPreserveComments, getRenderModeDirective } from '../shared-next/ir';
 
 import {
-    Node,
     Root,
     SourceLocation,
     LWCDirectiveRenderMode,
     ParentWrapper,
     ParentNode,
     ChildNode,
+    BaseNode,
 } from '../shared-next/types';
 
 function normalizeLocation(location?: SourceLocation): Location {
@@ -139,7 +139,7 @@ export default class ParserCtx {
         throw CompilerError.from(diagnostic);
     }
 
-    throwOnNode(errorInfo: LWCErrorInfo, node: Node, messageArgs?: any[]): never {
+    throwOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): never {
         this.throwAtLocation(errorInfo, node.location, messageArgs);
     }
 
@@ -156,7 +156,7 @@ export default class ParserCtx {
         });
     }
 
-    warnOnNode(errorInfo: LWCErrorInfo, node: Node, messageArgs?: any[]): void {
+    warnOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): void {
         this.warnAtLocation(errorInfo, messageArgs, node.location);
     }
 
