@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 // This test only matters for synthetic shadow
-if (!process.env.NATIVE_SHADOW_MODE) {
+if (!process.env.NATIVE_SHADOW) {
     describe('Light DOM and synthetic shadow', () => {
         it('shadow scoping tokens are not set for light DOM components', () => {
             // shadow grandparent, light child, shadow grandchild

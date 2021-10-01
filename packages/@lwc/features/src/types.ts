@@ -50,6 +50,11 @@ export interface FeatureFlagMap {
     ENABLE_ELEMENT_PATCH: FeatureFlagValue;
 
     /**
+     * LWC engine flag to force native shadow mode for mixed shadow mode testing.
+     */
+    ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: FeatureFlagValue;
+
+    /**
      * Synthetic shadow DOM flag to enable `Node.prototype` global patching. The following APIs are
      * affected by this flag:
      *  - `Node.prototype.textContent`

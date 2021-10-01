@@ -48,13 +48,13 @@ describe('Node.childNodes', () => {
         // While with synthetic shadow, the fallback slot content is only rendered only when the slot has no assigned
         // nodes.
         expect(container.shadowRoot.querySelector('slot').childNodes.length).toBe(
-            process.env.NATIVE_SHADOW_MODE ? 1 : 0
+            process.env.NATIVE_SHADOW ? 1 : 0
         );
     });
 
     // TODO [#1761]: Difference in behavior of slot.childNodes in native and synthetic-shadow
     // enable this test in synthetic-shadow mode once the bug is fixed
-    if (process.env.NATIVE_SHADOW_MODE) {
+    if (process.env.NATIVE_SHADOW) {
         it('should always return an default content for slots not rendering default content', () => {
             const elm = createElement('x-slotted-parent', { is: SlottedParent });
             document.body.appendChild(elm);

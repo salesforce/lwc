@@ -142,7 +142,7 @@ orderings. For any given component, the invariants are:
 
 It's ok to update the orderings below after a refactor, as long as these invariants hold!
 */
-if (process.env.NATIVE_SHADOW_MODE) {
+if (process.env.NATIVE_SHADOW) {
     it(`should invoke connectedCallback and renderedCallback in the expected order (native shadow)`, () => {
         const elm = createElement('order-container', { is: Container });
         document.body.appendChild(elm);

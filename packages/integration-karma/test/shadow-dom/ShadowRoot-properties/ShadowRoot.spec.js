@@ -66,7 +66,7 @@ describe('Properties overrides', () => {
     });
 });
 
-if (!process.env.NATIVE_SHADOW_MODE) {
+if (!process.env.NATIVE_SHADOW) {
     describe('synthetic-shadow restrictions', () => {
         let elm;
 

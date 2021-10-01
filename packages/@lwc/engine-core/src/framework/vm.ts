@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import features from '@lwc/features';
 import {
     ArrayPush,
     ArraySlice,
@@ -316,8 +317,7 @@ export function createVM<HostNode, HostElement>(
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
-        // Forced mixed shadow mode for testing
-        if (process.env.FORCED_NATIVE_SHADOW_MODE_FOR_TEST) {
+        if (features.ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
             vm.shadowMode = ShadowMode.Native;
         }
     }

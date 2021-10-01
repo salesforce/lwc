@@ -20,7 +20,7 @@ function assertNativeShadowRootWhenPossible(elm) {
     }
 }
 
-if (!process.env.NATIVE_SHADOW_MODE) {
+if (!process.env.NATIVE_SHADOW) {
     describe('when root component shadowSupportMode="any"', () => {
         let elm;
 
