@@ -51,7 +51,7 @@ describe('dynamic nodes', () => {
             expect(document.querySelector('span.manual-span')).toBe(null);
         });
     });
-    if (!process.env.NATIVE_SHADOW_MODE) {
+    if (!process.env.NATIVE_SHADOW) {
         // TODO [#1252]: old behavior that is still used by some pieces of the platform
         // that is only useful in synthetic mode where elements inserted manually without lwc:dom="manual"
         // are still considered global elements

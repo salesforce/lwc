@@ -51,7 +51,7 @@ it('should return true on elements manually inserted in the DOM inside an elemen
     // TODO [#1253]: optimization to synchronously adopt new child nodes added
     // to this elm, we can do that by patching the most common operations
     // on the node itself
-    if (!process.env.NATIVE_SHADOW_MODE) {
+    if (!process.env.NATIVE_SHADOW) {
         expect(isNodeFromTemplate(div)).toBe(false); // it is false sync because MO hasn't pick up the element yet
     }
     return new Promise((resolve) => {
@@ -63,7 +63,7 @@ it('should return true on elements manually inserted in the DOM inside an elemen
 
 // TODO [#1252]: old behavior that is still used by some pieces of the platform
 // if isNodeFromTemplate() returns true, locker will prevent traversing to such elements from document
-if (!process.env.NATIVE_SHADOW_MODE) {
+if (!process.env.NATIVE_SHADOW) {
     it('should return false on elements manually inserted in the DOM inside an element NOT marked with lwc:dom="manual"', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);

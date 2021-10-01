@@ -314,7 +314,7 @@ describe('Node.getRootNode', () => {
             expect(processingInstruction.getRootNode(composedTrueConfig)).toBe(fragment);
         });
 
-        if (process.env.NATIVE_SHADOW_MODE) {
+        if (process.env.NATIVE_SHADOW) {
             it('native shadow dom', () => {
                 const shadowHost = document.createElement('div');
                 document.body.appendChild(shadowHost);

@@ -29,7 +29,7 @@ describe('custom elements', () => {
                 expect(xSimple.assignedSlot).not.toBeNull();
                 expect(elm.shadowRoot.querySelector('.mark')).not.toBeNull();
 
-                if (!process.env.NATIVE_SHADOW_MODE) {
+                if (!process.env.NATIVE_SHADOW) {
                     expect(xSimple).not.toBe(firstRenderCustomElement);
                 }
             });
@@ -37,7 +37,7 @@ describe('custom elements', () => {
 });
 
 describe('elements', () => {
-    if (!process.env.NATIVE_SHADOW_MODE) {
+    if (!process.env.NATIVE_SHADOW) {
         it('should not be reused when slotted', function () {
             const elm = createElement('x-container', { is: Container });
             elm.isElement = true;
@@ -94,7 +94,7 @@ describe('elements', () => {
     });
 });
 
-if (process.env.NATIVE_SHADOW_MODE) {
+if (process.env.NATIVE_SHADOW) {
     it('should render same styles for custom element instances', function () {
         const elm = createElement('x-container', { is: Container });
         elm.isStyleCheck = true;
