@@ -465,12 +465,11 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         // Properties: lwc:inner-html directive
-        if (lwc?.innerHTML) {
+        if (element.lwc && element.lwc.innerHTML) {
             const expr =
-                typeof lwc.innerHTML === 'string'
-                    ? t.literal(lwc.innerHTML)
-                    : bindExpression(lwc.innerHTML, element);
-
+                typeof element.lwc.innerHTML === 'string'
+                    ? t.literal(element.lwc.innerHTML)
+                    : bindExpression(element.lwc.innerHTML, element, parentStack);
             propsObj.properties.push(
                 t.property(t.identifier('innerHTML'), codeGen.genSanitizedHtmlExpr(expr))
             );

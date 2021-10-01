@@ -40,7 +40,9 @@ export interface ForIterator {
     iterator: TemplateIdentifier;
 }
 
-export type LWCDirectiveDomMode = 'manual';
+export enum LWCDirectiveDomMode {
+    manual = 'manual',
+}
 
 export enum LWCDirectiveRenderMode {
     shadow = 'shadow',

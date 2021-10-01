@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-
+import { hasOwnProperty } from '@lwc/shared';
 import { ParserDiagnostics } from '@lwc/errors';
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 
@@ -46,6 +46,7 @@ import {
     IRNode,
     IRText,
     LWCDirectiveRenderMode,
+    LWCDirectiveDomMode,
     LWCDirectives,
     TemplateExpression,
     TemplateIdentifier,
@@ -316,7 +317,7 @@ function applyLwcDirectives(ctx: ParserCtx, element: IRElement, parsedAttr: Pars
     applyLwcDomDirective(ctx, element, parsedAttr, lwcOpts);
     applyLwcRenderModeDirective(ctx, element, parsedAttr, lwcOpts);
     applyLwcPreserveCommentsDirective(ctx, element, parsedAttr, lwcOpts);
-    applyLwcInnerHtmlDirective(element, lwcOpts);
+    applyLwcInnerHtmlDirective(ctx, element, parsedAttr, lwcOpts);
 
     element.lwc = lwcOpts;
 }
@@ -370,29 +371,32 @@ function applyLwcPreserveCommentsDirective(
     lwcOpts.preserveComments = lwcPreserveCommentAttribute;
 }
 
-function applyLwcInnerHtmlDirective(element: IRElement, lwcOpts: LWCDirectives) {
-    const lwcInnerHtmlDirective = getTemplateAttribute(element, LWC_DIRECTIVES.INNER_HTML);
+function applyLwcInnerHtmlDirective(
+    ctx: ParserCtx,
+    element: IRElement,
+    parsedAttr: ParsedAttribute,
+    lwcOpts: LWCDirectives
+) {
+    const lwcInnerHtmlDirective = parsedAttr.pick(LWC_DIRECTIVES.INNER_HTML);
 
     if (!lwcInnerHtmlDirective) {
         return;
     }
 
-    removeAttribute(element, LWC_DIRECTIVES.INNER_HTML);
-
     if (isCustomElement(element)) {
-        return warnOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_CUSTOM_ELEMENT, element, [
+        ctx.throwOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_CUSTOM_ELEMENT, element, [
             `<${element.tag}>`,
         ]);
     }
 
     if (element.tag === 'slot' || element.tag === 'template') {
-        return warnOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT, element, [
+        ctx.throwOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT, element, [
             `<${element.tag}>`,
         ]);
     }
 
     if (lwcInnerHtmlDirective.type === IRAttributeType.Boolean) {
-        return warnOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_VALUE, element, [
+        ctx.throwOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_VALUE, element, [
             `<${element.tag}>`,
         ]);
     }
@@ -415,11 +419,6 @@ function applyLwcDynamicDirective(
 
     if (!ctx.config.experimentalDynamicDirective) {
         ctx.throwOnIRNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element, [`<${tag}>`]);
-        if (lwcDomAttribute.type !== IRAttributeType.String || lwcDomAttribute.value !== 'manual') {
-            return warnOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, ['"manual"']);
-        }
-
-        lwcOpts.dom = lwcDomAttribute.value;
     }
 
     if (!isCustomElement(element)) {
@@ -713,13 +712,6 @@ function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedA
             ctx.throwOnIRNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, attr);
         }
 
-        // prevents lwc:inner-html to be used in an element with content
-        if (element.lwc?.innerHTML && effectiveChildren.length > 0) {
-            return warnOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_CONTENTS, element, [
-                `<${element.tag}>`,
-            ]);
-        }
-
         // the if branch handles
         // 1. All attributes for standard elements except 1 case are handled as attributes
         // 2. For custom elements, only key, slot and data are handled as attributes, rest as properties
@@ -814,6 +806,13 @@ function validateChildren(ctx: ParserCtx, element: IRElement) {
         : element.children.filter((child) => child.type !== 'comment');
     if (element.lwc?.dom && effectiveChildren.length > 0) {
         ctx.throwOnIRNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
+    }
+
+    // prevents lwc:inner-html to be used in an element with content
+    if (element.lwc?.innerHTML && effectiveChildren.length > 0) {
+        ctx.throwOnIRNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_CONTENTS, element, [
+            `<${element.tag}>`,
+        ]);
     }
 }
 
