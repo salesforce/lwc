@@ -49,7 +49,7 @@ export function sanitizeAttribute(
  * lwc:inner-html directive.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function sanitizeHtmlContent(content: string): string {
+export function sanitizeHtmlContent(content: unknown): string {
     // locker-service patches this function during runtime to sanitize HTML content.
     throw new Error('sanitizeHtmlContent hook must be implemented.');
 }
