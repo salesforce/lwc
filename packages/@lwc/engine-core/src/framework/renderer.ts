@@ -45,6 +45,12 @@ export interface Renderer<N = HostNode, E = HostElement> {
     querySelectorAll(element: E, selectors: string): NodeList;
     getElementsByTagName(element: E, tagNameOrWildCard: string): HTMLCollection;
     getElementsByClassName(element: E, names: string): HTMLCollection;
+    getChildren(element: E): HTMLCollection;
+    getChildNodes(element: E): NodeList;
+    getFirstChild(element: E): N | null;
+    getFirstElementChild(element: E): E | null;
+    getLastChild(element: E): N | null;
+    getLastElementChild(element: E): E | null;
     isConnected(node: N): boolean;
     insertGlobalStylesheet(content: string): void;
     insertStylesheet(content: string, target: N): void;

@@ -135,10 +135,14 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         HTMLElement,
         | 'accessKey'
         | 'addEventListener'
+        | 'children'
+        | 'childNodes'
         | 'classList'
         | 'dir'
         | 'dispatchEvent'
         | 'draggable'
+        | 'firstChild'
+        | 'firstElementChild'
         | 'getAttribute'
         | 'getAttributeNS'
         | 'getBoundingClientRect'
@@ -150,6 +154,8 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'id'
         | 'isConnected'
         | 'lang'
+        | 'lastChild'
+        | 'lastElementChild'
         | 'querySelector'
         | 'querySelectorAll'
         | 'removeAttribute'
@@ -254,10 +260,10 @@ function attachShadow(vm: VM) {
     }
 }
 
-function warnIfInvokedDuringConstruction(vm: VM, methodName: string) {
+function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     if (isBeingConstructed(vm)) {
         logError(
-            `this.${methodName}() should not be called during the construction of the custom element for ${getComponentTag(
+            `this.${methodOrPropName} should not be called during the construction of the custom element for ${getComponentTag(
                 vm
             )} because the element is not yet in the DOM or has no children yet.`
         );
@@ -267,6 +273,90 @@ function warnIfInvokedDuringConstruction(vm: VM, methodName: string) {
 // @ts-ignore
 LightningElement.prototype = {
     constructor: LightningElement,
+
+    get children() {
+        const vm = getAssociatedVM(this);
+        const {
+            elm,
+            renderer: { getChildren },
+        } = vm;
+
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'children');
+        }
+
+        return getChildren(elm);
+    },
+
+    get childNodes() {
+        const vm = getAssociatedVM(this);
+        const {
+            elm,
+            renderer: { getChildNodes },
+        } = vm;
+
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'childNodes');
+        }
+
+        return getChildNodes(elm);
+    },
+
+    get firstChild() {
+        const vm = getAssociatedVM(this);
+        const {
+            elm,
+            renderer: { getFirstChild },
+        } = vm;
+
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'firstChild');
+        }
+
+        return getFirstChild(elm);
+    },
+
+    get firstElementChild() {
+        const vm = getAssociatedVM(this);
+        const {
+            elm,
+            renderer: { getFirstElementChild },
+        } = vm;
+
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'firstElementChild');
+        }
+
+        return getFirstElementChild(elm);
+    },
+
+    get lastChild() {
+        const vm = getAssociatedVM(this);
+        const {
+            elm,
+            renderer: { getLastChild },
+        } = vm;
+
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'lastChild');
+        }
+
+        return getLastChild(elm);
+    },
+
+    get lastElementChild() {
+        const vm = getAssociatedVM(this);
+        const {
+            elm,
+            renderer: { getLastElementChild },
+        } = vm;
+
+        if (process.env.NODE_ENV !== 'production') {
+            warnIfInvokedDuringConstruction(vm, 'lastElementChild');
+        }
+
+        return getLastElementChild(elm);
+    },
 
     dispatchEvent(event: Event): boolean {
         const {
@@ -422,7 +512,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'getBoundingClientRect');
+            warnIfInvokedDuringConstruction(vm, 'getBoundingClientRect()');
         }
 
         return getBoundingClientRect(elm);
@@ -436,7 +526,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'querySelector');
+            warnIfInvokedDuringConstruction(vm, 'querySelector()');
         }
 
         return querySelector(elm, selectors);
@@ -450,7 +540,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'querySelectorAll');
+            warnIfInvokedDuringConstruction(vm, 'querySelectorAll()');
         }
 
         return querySelectorAll(elm, selectors);
@@ -464,7 +554,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'getElementsByTagName');
+            warnIfInvokedDuringConstruction(vm, 'getElementsByTagName()');
         }
 
         return getElementsByTagName(elm, tagNameOrWildCard);
@@ -478,7 +568,7 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'getElementsByClassName');
+            warnIfInvokedDuringConstruction(vm, 'getElementsByClassName()');
         }
 
         return getElementsByClassName(elm, names);
