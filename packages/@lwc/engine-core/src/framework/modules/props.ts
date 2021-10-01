@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isUndefined, keys } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared';
 import { VElement } from '../../3rdparty/snabbdom/types';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
@@ -22,13 +22,6 @@ function update(oldVnode: VElement, vnode: VElement) {
     const oldProps = oldVnode.data.props;
     if (oldProps === props) {
         return;
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isUndefined(oldProps) || keys(oldProps).join(',') === keys(props).join(','),
-            'vnode.data.props cannot change shape.'
-        );
     }
 
     const isFirstPatch = isUndefined(oldProps);

@@ -762,9 +762,16 @@ let dynamicImportedComponentCounter = 0;
 /**
  * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
  */
-function dc(
+type LightningElementConfig = {
+    constructor: LightningElementConstructor;
+    props: Record<string, any>;
+};
+function isConfig(obj: any): obj is LightningElementConfig {
+    return !!obj.props;
+}
+export function dc(
     sel: string,
-    Ctor: LightningElementConstructor | null | undefined,
+    Ctor: LightningElementConstructor | LightningElementConfig | null | undefined,
     data: VElementData,
     children?: VNodes
 ): VCustomElement | null {
@@ -780,6 +787,11 @@ function dc(
     if (Ctor == null) {
         return null;
     }
+    let props = {};
+    if (isConfig(Ctor)) {
+        props = Ctor.props;
+        Ctor = Ctor.constructor;
+    }
     if (!isComponentConstructor(Ctor)) {
         throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
     }
@@ -792,6 +804,7 @@ function dc(
     // to identify different constructors as vnodes with different keys to avoid reusing the
     // element used for previous constructors.
     data.key = `dc:${idx}:${data.key}`;
+    data.props = { ...data.props, ...props };
     return c(sel, Ctor, data, children);
 }
 
