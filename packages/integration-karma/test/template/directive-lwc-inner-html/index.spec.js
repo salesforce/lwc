@@ -2,6 +2,16 @@ import { createElement } from 'lwc';
 
 import XInnerHtml from 'x/innerHtml';
 
+const originalSanitizeHtmlContent = LWC.sanitizeHtmlContent;
+
+beforeAll(() => {
+    LWC.sanitizeHtmlContent = (content) => content;
+});
+
+afterAll(() => {
+    LWC.sanitizeHtmlContent = originalSanitizeHtmlContent;
+});
+
 it('renders the content as HTML', () => {
     const elm = createElement('x-inner-html', { is: XInnerHtml });
     elm.content = 'Hello <b>World</b>';

@@ -107,7 +107,7 @@ This experimental API enables the sanitization of HTML attribute values by exter
 
 ### sanitizeHtmlContent()
 
-This experimental API enables the sanitization of HTML content by external services.
+This experimental API enables the sanitization of HTML content by external services. This hook must be overridden as the default implementation is to throw an error.
 
 ### unwrap()
 

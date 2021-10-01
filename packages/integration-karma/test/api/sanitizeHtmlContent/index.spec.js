@@ -12,12 +12,11 @@ afterEach(() => {
 });
 
 it('uses the original passthrough sanitizer when not overridden', () => {
-    const elm = createElement('x-inner-html', { is: XInnerHtml });
-    elm.content = ACTUAL_CONTENT;
-    document.body.appendChild(elm);
-
-    const div = elm.shadowRoot.querySelector('div');
-    expect(div.innerHTML).toBe(ACTUAL_CONTENT);
+    expect(() => {
+        const elm = createElement('x-inner-html', { is: XInnerHtml });
+        elm.content = ACTUAL_CONTENT;
+        document.body.appendChild(elm);
+    }).toThrowError(Error, /sanitizeHtmlContent hook must be implemented/);
 });
 
 it('receives the right parameters', () => {

@@ -48,8 +48,8 @@ export function sanitizeAttribute(
  * libraries to sanitize HTML content. This hook process the content passed via the template to
  * lwc:inner-html directive.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function sanitizeHtmlContent(content: string): string {
-    // locker-service patches this function during runtime to sanitize HTML content. When ran
-    // off-core this function becomes a noop and returns the user authored value.
-    return content;
+    // locker-service patches this function during runtime to sanitize HTML content.
+    throw new Error('sanitizeHtmlContent hook must be implemented.');
 }

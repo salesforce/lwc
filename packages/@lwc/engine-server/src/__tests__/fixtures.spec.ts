@@ -58,6 +58,16 @@ function formatHTML(code: string): string {
     });
 }
 
+jest.mock('lwc', () => {
+    const originalLWC = jest.requireActual('lwc');
+
+    return {
+        __esModule: true,
+        ...originalLWC,
+        sanitizeHtmlContent: (content: string) => content,
+    };
+});
+
 describe('fixtures', () => {
     testFixtureDir(
         {
