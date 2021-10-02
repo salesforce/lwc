@@ -15,6 +15,7 @@ import {
     isAttribute,
     isProhibitedIsAttribute,
     isTabIndexAttribute,
+    isTabIndexProperty,
     isValidHTMLAttribute,
     isValidTabIndexAttributeValue,
     normalizeAttributeValue,
@@ -39,7 +40,7 @@ import {
     Expression,
     Iterator,
     Slot,
-    ChildNode,
+    // ChildNode,
     Text,
     Comment,
     Root,
@@ -208,9 +209,10 @@ function parseElementType(
 }
 
 function parseChildren(ctx: ParserCtx, parent: ParentWrapper, parse5Parent: parse5.Element): void {
-    const parsedChildren: ChildNode[] = [];
+    // const parsedChildren: ChildNode[] = [];
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
+    // jtu: revisit this whole thing
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
@@ -221,15 +223,17 @@ function parseChildren(ctx: ParserCtx, parent: ParentWrapper, parse5Parent: pars
                 // parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
-                parsedChildren.push(...textNodes);
+                // parsedChildren.push(...textNodes);
+                parent.node.children.push(...textNodes);
             } else if (parse5Utils.isCommentNode(child)) {
                 const commentNode = parseComment(child);
-                parsedChildren.push(commentNode);
+                // parsedChildren.push(commentNode);
+                parent.node.children.push(commentNode);
             }
         });
     }
 
-    parent.node.children.push(...parsedChildren);
+    // parent.node.children.push(...parsedChildren);
 }
 
 function parseText(ctx: ParserCtx, node: parse5.TextNode): Text[] {
@@ -997,7 +1001,8 @@ function validateProperties(ctx: ParserCtx, element: Element | Component | Slot)
             }
 
             if (
-                isTabIndexAttribute(name) &&
+                // attributeToPropertyName transforms property names to camel case
+                isTabIndexProperty(name) &&
                 !ir.isExpressionAttribute(value) &&
                 !isValidTabIndexAttributeValue(value.value)
             ) {
@@ -1084,7 +1089,8 @@ function getIteratorParent(ctx: ParserCtx, parent: ParentWrapper): Iterator | nu
     const result = ctx.findAncestor({
         current: parent,
         predicate: (wrapper) => ir.isIterator(wrapper.node),
-        traversalCond: ({ current }) => ir.isTemplate(current.node),
+        traversalCond: ({ current }) =>
+            !ir.isBaseElement(current.node) || ir.isTemplate(current.node),
     });
     return result ? (result as Iterator) : null;
 }
@@ -1093,7 +1099,7 @@ function getForEachParent(ctx: ParserCtx, current: ParentWrapper): ForEach | nul
     const result = ctx.findAncestor({
         current,
         predicate: (wrapper) => ir.isForEach(wrapper.node),
-        traversalCond: ({ parent }) => parent && ir.isTemplate(parent.node),
+        traversalCond: ({ parent }) => !ir.isBaseElement(parent.node) || ir.isTemplate(parent.node),
     });
     return result ? (result as ForEach) : null;
 }

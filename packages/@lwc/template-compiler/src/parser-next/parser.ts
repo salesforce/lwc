@@ -30,14 +30,13 @@ function normalizeLocation(location?: SourceLocation): Location {
     let line = 0;
     let column = 0;
     let length = 0;
-    const start = 0;
+    let start = 0;
 
     if (location) {
-        const { start, end } = location;
-
         line = location.startLine;
         column = location.startColumn;
-        length = end - start;
+        length = location.end - location.start;
+        start = location.start;
     }
 
     return { line, column, start, length };

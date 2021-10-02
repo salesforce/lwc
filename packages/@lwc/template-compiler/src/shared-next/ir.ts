@@ -169,7 +169,7 @@ export function forEach(
     name: string,
     expression: Expression,
     location: SourceLocation,
-    item?: Identifier,
+    item: Identifier,
     index?: Identifier
 ): ForEach {
     return {
@@ -332,7 +332,7 @@ export function isSlot(node: Node): node is Slot {
 
 // jtu: come back to this one, you'll need to change the name of this if you change the name of the type
 export function isBaseElement(node: Node): node is Element {
-    return isElement(node) || isCommentNode(node) || isSlot(node);
+    return isElement(node) || isComponent(node) || isSlot(node);
 }
 
 export function isTextNode(node: Node): node is Text {
@@ -417,7 +417,7 @@ export function isStringLiteral(node: Node): node is Literal<string> {
 
 // jtu come back to this one it's not going to work as it is right now, plan is to add more types to node so we'll need a better way of checking for parent node
 export function isParentNode(node: Node): node is ParentNode {
-    return !isCommentNode(node) || !isTextNode(node) || !isAttribute(node);
+    return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIfBlock(node);
 }
 
 export function isDomDirective(directive: ElementDirective): directive is DomDirective {
@@ -465,4 +465,8 @@ export function getPreserveComments(root: Root) {
 
 export function getForKeyDirective(element: Element | Component | Slot) {
     return element.directives?.find((dir) => isKeyDirective(dir)) as KeyDirective | undefined;
+}
+
+export function isProperty(node: BaseNode) {
+    return node.type === LWCNodeType.Property;
 }
