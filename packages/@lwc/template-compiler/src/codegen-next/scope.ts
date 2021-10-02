@@ -8,7 +8,7 @@ import { walk } from 'estree-walker';
 
 import * as t from '../shared/estree';
 import { TEMPLATE_PARAMS } from '../shared/constants';
-import { Expression, Literal, ParentNode } from '../shared-next/types';
+import { Expression, Literal } from '../shared-next/types';
 
 export default class Scope {
     private readonly scopes: t.Identifier[][] = [];
@@ -25,22 +25,82 @@ export default class Scope {
         return this.scopes[this.scopes.length - 1];
     }
 
-    declare(node: ParentNode) {
+    // declare(node: ParentNode) {
+    //     // for (const prop of Object.values(node)) {
+    //     //     if (t.isIdentifier(prop)) {
+    //     //         this.peek().push(prop);
+    //     //     }
+    //     // }
+    //     let key: keyof typeof node;
+    //     for (key in node) {
+    //         const prop = node[key];
+    //         if (t.isIdentifier(prop)) {
+    //             this.peek().push(prop);
+    //         }
+    //     }
+    // }
+
+    // declare<T extends t.BaseNode>(node: T) {
+    //     for (const key in node) {
+    //         const prop = node[key];
+    //         if (typeof prop === 'object') {
+    //             const prop2 = prop as unknown as t.BaseNode;
+    //             if (t.isIdentifier(prop2)) {
+    //                 this.peek().push(prop2);
+    //             }
+    //         }
+    //     }
+    // }
+
+    // declare<T>(node: T) {
+    //     for (const key in node) {
+    //         const prop = node[key];
+    //         if (typeof prop === 'symbol' && t.isIdentifier(prop))
+    //     }
+    // }
+
+    // castToIdentifier<T>(prop: T): prop is t.Identifier {
+    //     return
+    // }
+
+    // // jtu: look at this tomo, seems like the way to go
+    // // https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type
+
+    // validateIdentifier<T extends Record<K, BaseNode>, K extends keyof T>(item: T, key: K) {
+    //     const prop = item[key];
+    //     if (typeof prop === 'object' && t.isIdentifier(prop)) {
+    //         this.peek().push(prop);
+    //     }
+    // }
+
+    declare<T>(node: T) {
+        // let key: keyof typeof node;
         for (const key in node) {
-            const prop = node[key];
-            if (t.isIdentifier(prop)) {
-                this.peek().push(prop);
+            // const prop = node[key];
+            // if ('type' in prop && t.isIdentifier(prop)) {
+            //     this.peek().push(prop);
+            // }
+            const prop = this.typeChecker(node, key);
+            if (prop && t.isIdentifier(prop as t.BaseNode)) {
+                this.peek().push(prop as t.Identifier);
             }
+        }
+    }
+
+    typeChecker<T, K extends keyof T>(item: T, key: K): unknown {
+        const prop = item[key];
+        if (typeof prop === 'object' && 'type' in prop) {
+            return prop;
         }
     }
 
     resolve(identifier: t.Identifier) {
         for (const id of this.scopes.flat()) {
             if (identifier.name === id.name) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     // resolve(identifier: t.Identifier) {

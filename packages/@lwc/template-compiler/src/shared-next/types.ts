@@ -184,7 +184,7 @@ export interface IfBlock extends BaseParentNode {
 export interface ForEach extends BaseParentNode {
     type: LWCNodeType.ForEach;
     expression: Expression;
-    item?: Identifier;
+    item: Identifier;
     index?: Identifier;
 }
 

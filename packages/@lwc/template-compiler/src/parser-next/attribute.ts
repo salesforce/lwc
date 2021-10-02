@@ -176,6 +176,11 @@ export function isTabIndexAttribute(attrName: string): boolean {
     return attrName === 'tabindex';
 }
 
+// jtu:  come back tot his should we jsut do a tolowercase?
+export function isTabIndexProperty(attrName: string): boolean {
+    return attrName === 'tabIndex';
+}
+
 export function isValidTabIndexAttributeValue(value: any): boolean {
     // object means it is a Node representing the expression
     return value === '0' || value === '-1';
@@ -242,6 +247,15 @@ function isTemplateDirective(attrName: string): boolean {
  */
 export function attributeToPropertyName(attrName: string): string {
     return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);
+}
+
+// jtu: come back and take a look at this
+const reverseAttrsPropsTransform: { [name: string]: string } = Object.keys(
+    ATTRS_PROPS_TRANFORMS
+).reduce((acc, key) => ({ ...acc, [ATTRS_PROPS_TRANFORMS[key]]: key }), {});
+
+export function propertyNameToAttribute(propName: string): string {
+    return reverseAttrsPropsTransform[propName] || propName;
 }
 
 export class ParsedAttribute {

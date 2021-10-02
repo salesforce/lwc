@@ -17,11 +17,11 @@ import {
 import State from './state';
 import { mergeConfig, Config } from './config';
 
-import parseTemplate from './parser';
-import generate from './codegen';
+import parseTemplate from './parser-next';
+import generate from './codegen-next';
 
-import { TemplateCompileResult, TemplateParseResult } from './shared/types';
-import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
+import { TemplateCompileResult, TemplateParseResult } from './shared-next/types';
+import { TEMPLATE_MODULES_PARAMETER } from './shared-next/constants';
 
 export {
     IRAttributeType,

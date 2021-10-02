@@ -16,7 +16,6 @@ import {
 } from '../shared-next/types';
 import {
     isTemplate,
-    isIdentifier,
     isParentNode,
     isSlot,
     isForBlock,
@@ -52,6 +51,28 @@ export function objectToAST(
     );
 }
 
+export function arrayToObjectAST<T>(
+    arr: Array<T>,
+    keyMapper: (val: T) => string,
+    valueMapper: (val: T) => t.Expression
+) {
+    return t.objectExpression(
+        arr.map((val: T) => t.property(t.literal(keyMapper(val)), valueMapper(val)))
+    );
+}
+
+//jtu: explore if you want to keep it one way or the other
+// export function arrayToObjectAST<T>(
+//     arr: Array<T>,
+//     propertyMapper: (val: T) => string
+// ): { [name: string]: T } {
+//     const obj: { [name: string]: T } = {};
+//     for (const val of arr) {
+//         obj[propertyMapper(val)] = val;
+//     }
+//     return obj;
+// }
+
 function isDynamic(element: Element | Component | Slot): boolean {
     return !!element.directives?.find((dir) => isDynamicDirective(dir));
 }
@@ -80,8 +101,10 @@ export function shouldFlatten(children: ChildNode[], codeGen: CodeGen): boolean 
 export function hasIdAttribute(node: ParentNode): boolean {
     // jtu:  come back and reevaluate this
     if (isBaseElement(node)) {
-        const attrs = [...node.attributes, ...node.properties].map((attr) => attr.value);
-        if (attrs.find((expr) => isIdentifier(expr))) {
+        // const attrs = [...node.attributes, ...node.properties].map((attr) => attr.value);
+        const attrs = node.attributes.find((attr) => attr.name === 'id');
+        const props = node.properties.find((prop) => prop.name === 'id');
+        if (attrs || props) {
             return true;
         }
     }
