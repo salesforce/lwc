@@ -57,7 +57,7 @@ export default class ParserCtx {
         this.source = source;
         this.config = config;
         this.renderMode = LWCDirectiveRenderMode.Shadow;
-        this.preserveComments = this.config.preserveHtmlComments;
+        this.preserveComments = config.preserveHtmlComments;
     }
 
     getSource(start: number, end: number): string {
@@ -85,19 +85,15 @@ export default class ParserCtx {
         return null;
     }
 
-    appendChildAndCreateParent(
-        child: ParentNode & ChildNode,
-        parent: ParentWrapper
-    ): ParentWrapper {
-        parent.node.children.push(child);
-        return this.parentWrapper(child, parent);
-    }
-
-    parentWrapper(node: ParentNode, parent?: ParentWrapper): ParentWrapper {
+    wrapParent(node: ParentNode, parent?: ParentWrapper): ParentWrapper {
         return {
             parent,
             node,
         };
+    }
+
+    appendChild(child: ParentNode & ChildNode, parent: ParentWrapper) {
+        parent.node.children.push(child);
     }
 
     withErrorRecovery<T>(fn: () => T): T | undefined {

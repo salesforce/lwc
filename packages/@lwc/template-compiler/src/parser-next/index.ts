@@ -40,13 +40,16 @@ import {
     Expression,
     Iterator,
     Slot,
-    // ChildNode,
     Text,
     Comment,
     Root,
     LWCDirectiveDomMode,
     SourceLocation,
     ParentWrapper,
+    ParentNode,
+    // IfBlock,
+    // ForBlock,
+    ChildNode,
 } from '../shared-next/types';
 
 import ParserCtx from './parser';
@@ -140,7 +143,7 @@ function parseRoot(ctx: ParserCtx, parse5Element: parse5.Element): Root {
     // Need to revisit validating the root
     validateRoot(ctx, root, parse5Element);
 
-    parseChildren(ctx, ctx.parentWrapper(root), parse5Element);
+    parseChildren(ctx, ctx.wrapParent(root), parse5Element);
     // Need to revisit validating the children
     // validateChildren(ctx, root);
 
@@ -151,25 +154,10 @@ function parseElement(
     ctx: ParserCtx,
     parse5Element: parse5.Element,
     parent: ParentWrapper
-): Element | Component | Slot {
+): Element {
     const parsedAttr = parseAttributes(ctx, parse5Element);
-    const location = ir.parseElementSourceLocation(parse5Element);
-    const name = parse5Element.tagName;
-    let current = parent;
-    // jtu: note to self, right now applyIterator checks if you have a foreach and throws error,
-    // if you want to move this around need to preserve the error handling
-
-    current = parseForEach(ctx, name, location, parsedAttr, current);
-    current = parseIterator(ctx, name, location, parsedAttr, current);
-    current = parseIf(ctx, name, parsedAttr, current);
-    current = parseElementType(ctx, parse5Element, location, parsedAttr, current);
-
-    let head = current;
-
-    while (head.parent && head.parent !== parent) {
-        head = head.parent;
-    }
-
+    const { head, current } = parseElementDirectives(ctx, parse5Element, parent, parsedAttr);
+    // parseElementDirectives will always return an Element | Component | Slot
     const element = current.node as Component | Element | Slot;
 
     applyHandlers(ctx, element, parsedAttr);
@@ -187,17 +175,40 @@ function parseElement(
     parseChildren(ctx, current, parse5Element);
     validateChildren(ctx, element);
 
-    return head.node as Element;
+    return head as Element;
+}
+
+function parseElementDirectives(
+    ctx: ParserCtx,
+    parse5Element: parse5.Element,
+    parent: ParentWrapper,
+    parsedAttr: ParsedAttribute
+): { head: ParentNode; current: ParentWrapper } {
+    let current = parent;
+    const stack: ParentNode[] = [];
+
+    const parsers = [parseForEach, parseIterator, parseIf, parseElementType];
+    for (const parser of parsers) {
+        const node = parser(ctx, parse5Element, parsedAttr, current);
+        if (node) {
+            const prev = stack[stack.length - 1];
+            prev?.children.push(node);
+            stack.push(node);
+            current = ctx.wrapParent(node, current);
+        }
+    }
+
+    return { head: stack[0], current };
 }
 
 function parseElementType(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
-    location: SourceLocation,
     parsedAttr: ParsedAttribute,
     parent: ParentWrapper
 ) {
     const { tagName: tag } = parse5Elm;
+    const location = ir.parseElementSourceLocation(parse5Elm);
     // Check if the element tag is a valid custom element name and is not part of known standard
     // element name containing a dash.
     let element: Element | Component | Slot;
@@ -209,44 +220,29 @@ function parseElementType(
         element = ir.component(parse5Elm);
     }
 
-    // jtu: come back to this may be better way
-    // return ctx.appendChildAndCreateParent(element, parent);
-
-    if (!ir.isBaseElement(parent.node) && !ir.isRoot(parent.node)) {
-        return ctx.appendChildAndCreateParent(element, parent);
-    } else {
-        return ctx.parentWrapper(element, parent);
-    }
-
-    // return { element, parentWrapper };
+    return element;
 }
 
 function parseChildren(ctx: ParserCtx, parent: ParentWrapper, parse5Parent: parse5.Element): void {
-    // const parsedChildren: ChildNode[] = [];
+    const parsedChildren: ChildNode[] = [];
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
-    // jtu: revisit this whole thing
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
-                // jtu:  come back to this, it's kinda weird to break out of the mold like this
-                // Look for a way to return the forEach or whatever is the first element first
-                // parseElement(ctx, child, parent);
                 const elmNode = parseElement(ctx, child, parent);
-                parent.node.children.push(elmNode);
+                parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
-                // parsedChildren.push(...textNodes);
-                parent.node.children.push(...textNodes);
+                parsedChildren.push(...textNodes);
             } else if (parse5Utils.isCommentNode(child)) {
                 const commentNode = parseComment(child);
-                // parsedChildren.push(commentNode);
-                parent.node.children.push(commentNode);
+                parsedChildren.push(commentNode);
             }
         });
     }
 
-    // parent.node.children.push(...parsedChildren);
+    parent.node.children = parsedChildren;
 }
 
 function parseText(ctx: ParserCtx, node: parse5.TextNode): Text[] {
@@ -346,15 +342,10 @@ function applyHandlers(
     }
 }
 
-function parseIf(
-    ctx: ParserCtx,
-    name: string,
-    parsedAttr: ParsedAttribute,
-    current: ParentWrapper
-) {
+function parseIf(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr: ParsedAttribute) {
     const ifAttribute = parsedAttr.pick(IF_RE);
     if (!ifAttribute) {
-        return current;
+        return;
     }
 
     if (!ir.isExpressionAttribute(ifAttribute.value)) {
@@ -365,15 +356,8 @@ function parseIf(
     if (!VALID_IF_MODIFIER.has(modifier)) {
         ctx.throwOnNode(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, ifAttribute, [modifier]);
     }
-    const ifNode = ir.ifBlock(name, ifAttribute.location, modifier, ifAttribute.value);
 
-    // return ctx.appendChildAndCreateParent(ifNode, current);
-    // return ctx.parentWrapper(ifNode, current);
-    if (!ir.isBaseElement(current.node) && !ir.isRoot(current.node)) {
-        return ctx.appendChildAndCreateParent(ifNode, current);
-    } else {
-        return ctx.parentWrapper(ifNode, current);
-    }
+    return ir.ifBlock(parse5Element.tagName, ifAttribute.location, modifier, ifAttribute.value);
 }
 
 function applyRootLwcDirectives(ctx: ParserCtx, root: Root, parsedAttr: ParsedAttribute) {
@@ -579,17 +563,10 @@ function applyLwcDomDirective(
     directives.push(value);
 }
 
-function parseForEach(
-    ctx: ParserCtx,
-    name: string,
-    elementLocation: SourceLocation,
-    parsedAttr: ParsedAttribute,
-    parent: ParentWrapper
-) {
+function parseForEach(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr: ParsedAttribute) {
     const forEachAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_EACH);
     const forItemAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_ITEM);
     const forIndex = parsedAttr.pick(FOR_DIRECTIVES.FOR_INDEX);
-    let parentWrapper = parent;
 
     if (forEachAttribute && forItemAttribute) {
         if (!ir.isExpressionAttribute(forEachAttribute.value)) {
@@ -618,39 +595,36 @@ function parseForEach(
 
             index = parseIdentifier(ctx, forIndexValue.value, forIndex.location);
         }
-        const forEach = ir.forEach(
-            name,
+        return ir.forEach(
+            parse5Element.tagName,
             forEachAttribute.value,
             forEachAttribute.location,
             item,
             index
         );
-
-        parentWrapper = ctx.parentWrapper(forEach, parentWrapper);
-        // parentWrapper = ctx.appendChildAndCreateParent(forEach, parentWrapper);
     } else if (forEachAttribute || forItemAttribute) {
+        const location = ir.parseElementSourceLocation(parse5Element);
         ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
-            elementLocation
+            location
         );
     }
-    return parentWrapper;
 }
 
 function parseIterator(
     ctx: ParserCtx,
-    name: string,
-    elementLocation: SourceLocation,
+    parse5Element: parse5.Element,
     parsedAttr: ParsedAttribute,
     current: ParentWrapper
 ) {
     const iteratorExpression = parsedAttr.pick(ITERATOR_RE);
     if (!iteratorExpression) {
-        return current;
+        return;
     }
 
-    if (ir.isForBlock(current.node)) {
-        ctx.throwAtLocation(ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR, elementLocation, [
+    if (ir.isForEach(current.node)) {
+        const location = ir.parseElementSourceLocation(parse5Element);
+        ctx.throwAtLocation(ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR, location, [
             iteratorExpression.name,
         ]);
     }
@@ -665,14 +639,13 @@ function parseIterator(
     }
 
     const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
-    const it = ir.iterator(name, iteratorExpression.value, iterator, iteratorExpression.location);
 
-    // return ctx.appendChildAndCreateParent(it, current);
-    if (!ir.isBaseElement(current.node) && !ir.isRoot(current.node)) {
-        return ctx.appendChildAndCreateParent(it, current);
-    } else {
-        return ctx.parentWrapper(it, current);
-    }
+    return ir.iterator(
+        parse5Element.tagName,
+        iteratorExpression.value,
+        iterator,
+        iteratorExpression.location
+    );
 }
 
 function applyKey(
@@ -1108,8 +1081,8 @@ function getTemplateAttribute(
     return ir.attribute(name, attrValue, location);
 }
 
-function isInIteration(ctx: ParserCtx, element: ParentWrapper) {
-    return ctx.findAncestor({
+function isInIteration(ctx: ParserCtx, element: ParentWrapper): boolean {
+    return !!ctx.findAncestor({
         current: element,
         predicate: (wrapper) => ir.isTemplate(wrapper.node) && ir.isForBlock(wrapper.node),
     });
