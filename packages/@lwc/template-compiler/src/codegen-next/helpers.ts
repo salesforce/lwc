@@ -74,12 +74,19 @@ export function arrayToObjectAST<T>(
 // }
 
 function isDynamic(element: Element | Component | Slot): boolean {
-    return !!element.directives?.find((dir) => isDynamicDirective(dir));
+    return !!element.directives?.some((dir) => isDynamicDirective(dir));
 }
 
 export function containsDynamicChildren(children: ChildNode[]): boolean {
-    // jtu: need to traverse down the children to find the element node from child
-    return children.some((child) => isBaseElement(child) && isDynamic(child));
+    return children.some((child) => {
+        let result = false;
+        if (isForBlock(child) || isIfBlock(child)) {
+            result = containsDynamicChildren(child.children);
+        } else if (isBaseElement(child)) {
+            result = isDynamic(child);
+        }
+        return result;
+    });
 }
 
 // jtu: come back to this it's not ready yet

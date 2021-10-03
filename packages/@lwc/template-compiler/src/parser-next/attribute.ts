@@ -255,7 +255,7 @@ const reverseAttrsPropsTransform: { [name: string]: string } = Object.keys(
 ).reduce((acc, key) => ({ ...acc, [ATTRS_PROPS_TRANFORMS[key]]: key }), {});
 
 export function propertyNameToAttribute(propName: string): string {
-    return reverseAttrsPropsTransform[propName] || propName;
+    return reverseAttrsPropsTransform[propName] || propName.toLowerCase();
 }
 
 export class ParsedAttribute {

@@ -73,25 +73,29 @@ export default class Scope {
     //     }
     // }
 
-    declare<T>(node: T) {
-        // let key: keyof typeof node;
-        for (const key in node) {
-            // const prop = node[key];
-            // if ('type' in prop && t.isIdentifier(prop)) {
-            //     this.peek().push(prop);
-            // }
-            const prop = this.typeChecker(node, key);
-            if (prop && t.isIdentifier(prop as t.BaseNode)) {
-                this.peek().push(prop as t.Identifier);
-            }
-        }
-    }
+    // declare<T>(node: T) {
+    //     // let key: keyof typeof node;
+    //     for (const key in node) {
+    //         // const prop = node[key];
+    //         // if ('type' in prop && t.isIdentifier(prop)) {
+    //         //     this.peek().push(prop);
+    //         // }
+    //         const prop = this.typeChecker(node, key);
+    //         if (prop && t.isIdentifier(prop as t.BaseNode)) {
+    //             this.peek().push(prop as t.Identifier);
+    //         }
+    //     }
+    // }
 
-    typeChecker<T, K extends keyof T>(item: T, key: K): unknown {
-        const prop = item[key];
-        if (typeof prop === 'object' && 'type' in prop) {
-            return prop;
-        }
+    // typeChecker<T, K extends keyof T>(item: T, key: K): unknown {
+    //     const prop = item[key];
+    //     if (typeof prop === 'object' && 'type' in prop) {
+    //         return prop;
+    //     }
+    // }
+
+    declare(identifier: t.Identifier) {
+        this.peek().push(identifier);
     }
 
     resolve(identifier: t.Identifier) {
