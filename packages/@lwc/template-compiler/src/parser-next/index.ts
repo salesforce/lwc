@@ -164,6 +164,12 @@ function parseElement(
     current = parseIf(ctx, name, parsedAttr, current);
     current = parseElementType(ctx, parse5Element, location, parsedAttr, current);
 
+    let head = current;
+
+    while (head.parent && head.parent !== parent) {
+        head = head.parent;
+    }
+
     const element = current.node as Component | Element | Slot;
 
     applyHandlers(ctx, element, parsedAttr);
@@ -181,7 +187,7 @@ function parseElement(
     parseChildren(ctx, current, parse5Element);
     validateChildren(ctx, element);
 
-    return element;
+    return head.node as Element;
 }
 
 function parseElementType(
@@ -195,16 +201,23 @@ function parseElementType(
     // Check if the element tag is a valid custom element name and is not part of known standard
     // element name containing a dash.
     let element: Element | Component | Slot;
-    if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
-        element = ir.element(parse5Elm);
-    } else if (tag === 'slot') {
+    if (tag === 'slot') {
         element = parseSlot(ctx, location, parsedAttr, parent);
+    } else if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+        element = ir.element(parse5Elm);
     } else {
         element = ir.component(parse5Elm);
     }
 
     // jtu: come back to this may be better way
-    return ctx.appendChildAndCreateParent(element, parent);
+    // return ctx.appendChildAndCreateParent(element, parent);
+
+    if (!ir.isBaseElement(parent.node) && !ir.isRoot(parent.node)) {
+        return ctx.appendChildAndCreateParent(element, parent);
+    } else {
+        return ctx.parentWrapper(element, parent);
+    }
+
     // return { element, parentWrapper };
 }
 
@@ -218,9 +231,9 @@ function parseChildren(ctx: ParserCtx, parent: ParentWrapper, parse5Parent: pars
             if (parse5Utils.isElementNode(child)) {
                 // jtu:  come back to this, it's kinda weird to break out of the mold like this
                 // Look for a way to return the forEach or whatever is the first element first
-                parseElement(ctx, child, parent);
-                // const elmNode = parseElement(ctx, child, parent);
-                // parsedChildren.push(elmNode);
+                // parseElement(ctx, child, parent);
+                const elmNode = parseElement(ctx, child, parent);
+                parent.node.children.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
                 // parsedChildren.push(...textNodes);
@@ -354,7 +367,13 @@ function parseIf(
     }
     const ifNode = ir.ifBlock(name, ifAttribute.location, modifier, ifAttribute.value);
 
-    return ctx.appendChildAndCreateParent(ifNode, current);
+    // return ctx.appendChildAndCreateParent(ifNode, current);
+    // return ctx.parentWrapper(ifNode, current);
+    if (!ir.isBaseElement(current.node) && !ir.isRoot(current.node)) {
+        return ctx.appendChildAndCreateParent(ifNode, current);
+    } else {
+        return ctx.parentWrapper(ifNode, current);
+    }
 }
 
 function applyRootLwcDirectives(ctx: ParserCtx, root: Root, parsedAttr: ParsedAttribute) {
@@ -485,7 +504,9 @@ function applyLwcDynamicDirective(
     element: Element | Component | Slot,
     parsedAttr: ParsedAttribute
 ) {
-    const { name: tag } = element;
+    // const { name: tag } = element;
+    // jtu: come back to this should name be tag for slot?
+    const tag = ir.isSlot(element) ? 'slot' : element.name;
 
     const lwcDynamicAttribute = parsedAttr.pick(LWC_DIRECTIVES.DYNAMIC);
     if (!lwcDynamicAttribute) {
@@ -520,7 +541,9 @@ function applyLwcDomDirective(
     element: Element | Component | Slot,
     parsedAttr: ParsedAttribute
 ) {
-    const { name: tag } = element;
+    // const { name: tag } = element;
+    // jtu: come back to this should name be tag for slot?
+    const tag = ir.isSlot(element) ? 'slot' : element.name;
 
     const lwcDomAttribute = parsedAttr.pick(LWC_DIRECTIVES.DOM);
     if (!lwcDomAttribute) {
@@ -535,7 +558,7 @@ function applyLwcDomDirective(
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT, element, [`<${tag}>`]);
     }
 
-    if (tag === 'slot') {
+    if (ir.isSlot(element)) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT, element);
     }
 
@@ -603,7 +626,8 @@ function parseForEach(
             index
         );
 
-        parentWrapper = ctx.appendChildAndCreateParent(forEach, parentWrapper);
+        parentWrapper = ctx.parentWrapper(forEach, parentWrapper);
+        // parentWrapper = ctx.appendChildAndCreateParent(forEach, parentWrapper);
     } else if (forEachAttribute || forItemAttribute) {
         ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
@@ -643,7 +667,12 @@ function parseIterator(
     const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
     const it = ir.iterator(name, iteratorExpression.value, iterator, iteratorExpression.location);
 
-    return ctx.appendChildAndCreateParent(it, current);
+    // return ctx.appendChildAndCreateParent(it, current);
+    if (!ir.isBaseElement(current.node) && !ir.isRoot(current.node)) {
+        return ctx.appendChildAndCreateParent(it, current);
+    } else {
+        return ctx.parentWrapper(it, current);
+    }
 }
 
 function applyKey(
@@ -653,7 +682,9 @@ function applyKey(
     parent: ParentWrapper,
     parsedAttr: ParsedAttribute
 ) {
-    const { name: tag } = element;
+    // const { name: tag } = element;
+    // jtu: come back to this should name be tag for slot?
+    const tag = ir.isSlot(element) ? 'slot' : element.name;
     const keyAttribute = parsedAttr.pick('key');
 
     if (keyAttribute) {
@@ -758,7 +789,9 @@ function applyAttributes(
     current: ParentWrapper,
     parsedAttr: ParsedAttribute
 ) {
-    const { name: tag } = element;
+    // const { name: tag } = element;
+    // jtu: come back to this should the name be the tag or name for slots?
+    const tag = ir.isSlot(element) ? 'slot' : element.name;
     const attributes = parsedAttr.getAttributes();
 
     for (const attr of attributes) {
@@ -858,7 +891,8 @@ function validateElement(
     element: Element | Component | Slot,
     node: parse5.Element
 ) {
-    const { name: tag } = element;
+    // jtu: come back to this, should name be the tag name or the slot name for slots?
+    const tag = ir.isSlot(element) ? 'slot' : element.name;
     // jtu:  come back to this, is it ok to take namespace directly from the parse5.element?
     const namespace = node.namespaceURI;
     const elementLocation = ir.parseElementLocation(node);
@@ -961,7 +995,9 @@ function validateAttributes(
     element: Element | Component | Slot,
     parsedAttr: ParsedAttribute
 ) {
-    const { name: tag } = element;
+    // const { name: tag } = element;
+    // jtu: come back to this should name be tag for slot?
+    const tag = ir.isSlot(element) ? 'slot' : element.name;
     const attributes = parsedAttr.getAttributes();
 
     for (const attr of attributes) {
@@ -990,7 +1026,9 @@ function validateAttributes(
 }
 
 function validateProperties(ctx: ParserCtx, element: Element | Component | Slot) {
-    const { name: tag, properties: props } = element;
+    const { properties: props } = element;
+    // jtu: come back to this should name be tag for slot?
+    const tag = ir.isSlot(element) ? 'slot' : element.name;
 
     if (props !== undefined) {
         for (const prop of props) {
@@ -1001,7 +1039,7 @@ function validateProperties(ctx: ParserCtx, element: Element | Component | Slot)
             }
 
             if (
-                // attributeToPropertyName transforms property names to camel case
+                // jtu: attributeToPropertyName transforms property names to camel case
                 isTabIndexProperty(name) &&
                 !ir.isExpressionAttribute(value) &&
                 !isValidTabIndexAttributeValue(value.value)
@@ -1077,20 +1115,12 @@ function isInIteration(ctx: ParserCtx, element: ParentWrapper) {
     });
 }
 
-// jtu: come back to this can simplify by a lot
-// update:  we need to pass the scopenode back in here for getting parent forof like before
-// problem is we don't have access to a scopenode anymore
-// update 2: actually, we have the info on the current scopenode but we're also now setting potenially two layers
-// of parents between elements, ie foreach/iterator > if > element.  This means we need to adjust the search criteria
-// for traversalCond, because it's running on the assumption that we're using an IRElement, which had the parent child
-// relationship between IRElements contained between IRElements.  Now we have two layers of separation.
-
-function getIteratorParent(ctx: ParserCtx, parent: ParentWrapper): Iterator | null {
+function getIteratorParent(ctx: ParserCtx, srcNode: ParentWrapper): Iterator | null {
     const result = ctx.findAncestor({
-        current: parent,
+        current: srcNode,
         predicate: (wrapper) => ir.isIterator(wrapper.node),
-        traversalCond: ({ current }) =>
-            !ir.isBaseElement(current.node) || ir.isTemplate(current.node),
+        traversalCond: ({ current, parent }) =>
+            !ir.isBaseElement(parent.node) || ir.isTemplate(current.node),
     });
     return result ? (result as Iterator) : null;
 }

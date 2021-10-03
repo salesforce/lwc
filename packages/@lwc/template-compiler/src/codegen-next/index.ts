@@ -105,6 +105,8 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         } else if (isSlot(element)) {
             const defaultSlot = children;
 
+            // jtu:  the name may need to be taken from the attributes depending on if
+            // the name for slots is the tag name.
             res = codeGen.getSlot(name, databag, defaultSlot);
         } else {
             res = codeGen.genElement(name, databag, children);
@@ -162,11 +164,6 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         const childrenIterator = children[Symbol.iterator]();
         let current: IteratorResult<ChildNode>;
 
-        if (isForBlock(parent)) {
-            scope.beginScope();
-            scope.declare(parent);
-        }
-
         while ((current = childrenIterator.next()) && !current.done) {
             let child = current.value;
 
@@ -220,9 +217,6 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             if (isCommentNode(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
             }
-        }
-        if (isForBlock(parent)) {
-            scope.endScope();
         }
 
         // jtu: come back to this root should be a valid entry too
@@ -298,7 +292,18 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
     }
 
     function transformForBlock(forBlock: ForBlock) {
+        scope.beginScope();
+
+        if (isForEach(forBlock)) {
+            scope.declare(forBlock.item);
+            if (forBlock.index) {
+                scope.declare(forBlock.index);
+            }
+        } else {
+            scope.declare(forBlock.iterator);
+        }
         const children = transformChildren(forBlock);
+        scope.endScope();
 
         let expression = children;
 
@@ -535,7 +540,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         const forKey = getForKeyDirective(element);
 
         // Attributes
-        if (attributes.length > 0) {
+        if (attributes.length) {
             const rest: { [name: string]: t.Expression } = {};
 
             for (const attr of attributes) {
@@ -582,7 +587,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         }
 
         // Properties
-        if (properties.length > 0) {
+        if (properties.length) {
             // jtu: probably think of a new name for this or replace with reduce
             // const props = arrayToObjectAST(properties, (prop) => prop.name);
             // const propsObj = objectToAST(props, (key) => computeAttrValue(props[key], element));
@@ -620,7 +625,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         }
 
         // Event handler
-        if (listeners.length > 0) {
+        if (listeners.length) {
             // const listenerObj = arrayToObjectAST(listeners, (listener) => listener.name)
             // const listenerObj = listeners.reduce((obj, val) => (obj[val.name] = val), {});
             // const onObj = objectToAST(listenerObj, (key) => {

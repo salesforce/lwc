@@ -64,9 +64,6 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
-    // jtu: come back to this I think we need to readjust the logic for placing things back in here aka current
-    // Check if we're adding the element directly into the nodeCOntainer or waiting for the parent to do it.
-    // update:  this needs to go back to the old way of doing it, where you pass in the current to look up
     findAncestor({
         current,
         predicate,
