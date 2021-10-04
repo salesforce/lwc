@@ -32,6 +32,9 @@ function createEnvFile() {
     fs.writeFileSync(
         ENV_FILENAME,
         `
+        window.lwcRuntimeFlags = {
+            ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST}
+        };
         window.process = {
             env: {
                 NODE_ENV: 'development',
