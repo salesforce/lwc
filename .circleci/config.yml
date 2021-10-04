@@ -250,6 +250,12 @@ workflows:
           requires:
             - build
 
+      - test_karma_mixed_shadow_mode:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - build
+
       - test_karma:
           filters:
             <<: *ignore_forks
