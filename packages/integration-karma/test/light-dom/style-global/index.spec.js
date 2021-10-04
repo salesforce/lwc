@@ -16,7 +16,7 @@ describe('Light DOM styling at the global level', () => {
         expect(getColor(elm.querySelector('x-one .globally-styled'))).toEqual('rgb(0, 0, 255)');
         expect(getColor(elm.querySelector('x-two .globally-styled'))).toEqual('rgb(0, 0, 255)');
         // synthetic shadow can't do this kind of style encapsulation
-        if (process.env.DISABLE_SYNTHETIC === true) {
+        if (process.env.NATIVE_SHADOW) {
             expect(
                 getColor(elm.querySelector('x-shadow').shadowRoot.querySelector('.globally-styled'))
             ).toEqual('rgb(0, 0, 0)');
@@ -31,7 +31,7 @@ describe('Light DOM styling at the global level', () => {
 
         expect(getColor(two.querySelector('.globally-styled'))).toEqual('rgb(0, 0, 255)');
         // synthetic shadow can't do this kind of style encapsulation
-        if (process.env.DISABLE_SYNTHETIC === true) {
+        if (process.env.NATIVE_SHADOW) {
             expect(getColor(shadow.shadowRoot.querySelector('.globally-styled'))).toEqual(
                 'rgb(0, 0, 0)'
             );

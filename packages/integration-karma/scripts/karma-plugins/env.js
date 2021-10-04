@@ -15,7 +15,11 @@
 const fs = require('fs');
 const path = require('path');
 
-const { COMPAT, DISABLE_SYNTHETIC } = require('../shared/options');
+const {
+    COMPAT,
+    FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
+    SYNTHETIC_SHADOW_ENABLED,
+} = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
 const ENV_FILENAME = path.resolve(DIST_DIR, 'env.js');
@@ -25,17 +29,19 @@ function createEnvFile() {
         fs.mkdirSync(DIST_DIR);
     }
 
-    const content = [
-        `window.process = {`,
-        `    env: {`,
-        `        NODE_ENV: "development",`,
-        `        COMPAT: ${COMPAT},`,
-        `        DISABLE_SYNTHETIC: ${DISABLE_SYNTHETIC},`,
-        `        NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== "undefined"`,
-        `    }`,
-        `};`,
-    ];
-    fs.writeFileSync(ENV_FILENAME, content.join('\n'));
+    fs.writeFileSync(
+        ENV_FILENAME,
+        `
+        window.process = {
+            env: {
+                NODE_ENV: 'development',
+                COMPAT: ${COMPAT},
+                NATIVE_SHADOW: ${!SYNTHETIC_SHADOW_ENABLED || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
+                NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== 'undefined'
+            }
+        };
+    `
+    );
 }
 
 function initEnv(files) {

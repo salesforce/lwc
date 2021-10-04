@@ -12,6 +12,7 @@ const features: FeatureFlagMap = {
     ENABLE_HMR: null,
     ENABLE_INNER_OUTER_TEXT_PATCH: null,
     ENABLE_ELEMENT_PATCH: null,
+    ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
     ENABLE_NODE_LIST_PATCH: null,
     ENABLE_HTML_COLLECTIONS_PATCH: null,
     ENABLE_NODE_PATCH: null,

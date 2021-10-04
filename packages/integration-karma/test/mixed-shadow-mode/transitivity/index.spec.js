@@ -20,9 +20,7 @@ function assertNativeShadowRootWhenPossible(elm) {
     }
 }
 
-const SYNTHETIC_SHADOW_DEFINED = !process.env.DISABLE_SYNTHETIC;
-
-if (SYNTHETIC_SHADOW_DEFINED) {
+if (!process.env.NATIVE_SHADOW) {
     describe('when root component shadowSupportMode="any"', () => {
         let elm;
 

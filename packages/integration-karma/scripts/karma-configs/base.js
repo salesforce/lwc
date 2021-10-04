@@ -12,7 +12,7 @@ const { getModulePath } = require('lwc');
 
 const karmaPluginLwc = require('../karma-plugins/lwc');
 const karmaPluginEnv = require('../karma-plugins/env');
-const { COMPAT, DISABLE_SYNTHETIC, TAGS, GREP, COVERAGE } = require('../shared/options');
+const { COMPAT, SYNTHETIC_SHADOW_ENABLED, TAGS, GREP, COVERAGE } = require('../shared/options');
 
 const BASE_DIR = path.resolve(__dirname, '../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
@@ -45,7 +45,7 @@ function getFiles() {
         frameworkFiles.push(createPattern(LWC_ENGINE_COMPAT));
         frameworkFiles.push(createPattern(WIRE_SERVICE_COMPAT));
     } else {
-        if (!DISABLE_SYNTHETIC) {
+        if (SYNTHETIC_SHADOW_ENABLED) {
             frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
         }
         frameworkFiles.push(createPattern(LWC_ENGINE));

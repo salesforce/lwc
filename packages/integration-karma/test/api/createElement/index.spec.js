@@ -47,7 +47,7 @@ it('returns an HTMLElement', () => {
     expect(elm instanceof HTMLElement).toBe(true);
 });
 
-if (!process.env.DISABLE_SYNTHETIC) {
+if (!process.env.NATIVE_SHADOW) {
     it('should create an element with a synthetic shadow root by default', () => {
         const elm = createElement('x-component', { is: Test });
         expect(elm.shadowRoot.constructor.name).toBe('SyntheticShadowRoot');
@@ -64,7 +64,7 @@ it('supports component constructors in circular dependency', () => {
     expect(elm instanceof HTMLElement).toBe(true);
 });
 
-if (process.env.DISABLE_SYNTHETIC) {
+if (process.env.NATIVE_SHADOW) {
     it('should create an element with a native shadow root if fallback is false', () => {
         const elm = createElement('x-component', {
             is: Test,

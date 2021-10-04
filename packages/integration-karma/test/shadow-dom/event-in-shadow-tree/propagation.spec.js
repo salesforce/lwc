@@ -133,7 +133,7 @@ describe('event propagation', () => {
             ];
 
             let expectedLogs;
-            if (process.env.DISABLE_SYNTHETIC) {
+            if (process.env.NATIVE_SHADOW) {
                 expectedLogs = [
                     [nodes.button, nodes.button, composedPath],
                     [nodes['x-button'], nodes['x-button'], composedPath],
@@ -158,7 +158,7 @@ describe('event propagation', () => {
             expect(actualLogs).toEqual(expectedLogs);
         });
 
-        if (!process.env.DISABLE_SYNTHETIC) {
+        if (!process.env.NATIVE_SHADOW) {
             describe('when the ENABLE_NON_COMPOSED_EVENTS_LEAKAGE flag is enabled', () => {
                 beforeEach(() => {
                     setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
@@ -299,7 +299,7 @@ describe('event propagation', () => {
             ];
 
             let expectedLogs;
-            if (process.env.DISABLE_SYNTHETIC) {
+            if (process.env.NATIVE_SHADOW) {
                 expectedLogs = [
                     [nodes['x-button'], nodes['x-button'], composedPath],
                     [nodes['x-container'], nodes['x-container'], composedPath],
@@ -333,7 +333,7 @@ describe('event propagation', () => {
             expect(actualLogs).toEqual(expectedLogs);
         });
 
-        if (!process.env.DISABLE_SYNTHETIC) {
+        if (!process.env.NATIVE_SHADOW) {
             describe('when the ENABLE_NON_COMPOSED_EVENTS_LEAKAGE flag is enabled', () => {
                 beforeEach(() => {
                     setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
@@ -471,7 +471,7 @@ describe('event propagation', () => {
             ];
 
             let expectedLogs;
-            if (process.env.DISABLE_SYNTHETIC) {
+            if (process.env.NATIVE_SHADOW) {
                 expectedLogs = [
                     [nodes['x-button'].shadowRoot, nodes['x-button'].shadowRoot, composedPath],
                     [nodes['x-button'], nodes['x-button'], composedPath],
@@ -502,7 +502,7 @@ describe('event propagation', () => {
     });
 
     describe('dispatched on lwc:dom="manual" node', () => {
-        if (!process.env.DISABLE_SYNTHETIC) {
+        if (!process.env.NATIVE_SHADOW) {
             describe('when the ENABLE_NON_COMPOSED_EVENTS_LEAKAGE flag is enabled', () => {
                 beforeEach(() => {
                     setFeatureFlagForTest('ENABLE_NON_COMPOSED_EVENTS_LEAKAGE', true);
@@ -614,7 +614,7 @@ describe('event propagation', () => {
             ];
 
             let expectedLogs;
-            if (process.env.DISABLE_SYNTHETIC) {
+            if (process.env.NATIVE_SHADOW) {
                 expectedLogs = [
                     [nodes.container_span_manual, nodes.container_span_manual, composedPath],
                     [nodes['x-container'], nodes['x-container'], composedPath],
@@ -701,7 +701,7 @@ describe('event propagation', () => {
                 ];
 
                 let expectedLogs;
-                if (process.env.DISABLE_SYNTHETIC) {
+                if (process.env.NATIVE_SHADOW) {
                     expectedLogs = [
                         [nodes.container_div, nodes.container_div, composedPath],
                         [nodes['x-container'], nodes['x-container'], composedPath],
