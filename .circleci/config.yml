@@ -167,10 +167,10 @@ jobs:
           command: yarn test:ci
 
 
-  test_karma:
+  test_karma_mixed_shadow_mode:
     executor: node
     environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma_mixed_shadow_mode
     steps:
       - load_workspace
       - start_sauce_connect
@@ -178,6 +178,16 @@ jobs:
           disable_synthetic: false
           compat: false
           force_native_shadow_mode: true
+      - stop_sauce_connect
+
+
+  test_karma:
+    executor: node
+    environment:
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma
+    steps:
+      - load_workspace
+      - start_sauce_connect
       - run_karma:
           disable_synthetic: false
           compat: false
