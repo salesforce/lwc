@@ -13,7 +13,6 @@ import { ResolvedConfig } from '../config';
 
 import {
     isCommentNode,
-    isCustomElement,
     isTemplate,
     isTextNode,
     isSlot,
@@ -29,6 +28,7 @@ import {
     getElementDirective,
     getKeyDirective,
     getDomDirective,
+    isComponent,
 } from '../shared-next/ir';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared-next/constants';
 import {
@@ -73,7 +73,7 @@ import {
     isFragmentOnlyUrl,
     isIdReferencingAttribute,
     isSvgUseHref,
-    propertyNameToAttribute,
+    propertyToAttributeName,
 } from '../parser-next/attribute';
 import { SVG_NAMESPACE_URI } from '../parser-next/constants';
 
@@ -86,12 +86,11 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
         // Check wether it has the special directive lwc:dynamic
         const { name } = element;
-        // jtu: there's probably a better way to do this
         const dynamic = getElementDirective(element, isDynamicDirective);
         if (dynamic) {
             const expression = scope.bindExpression(dynamic.value);
             res = codeGen.genDynamicElement(name, expression, databag, children);
-        } else if (isCustomElement(element)) {
+        } else if (isComponent(element)) {
             // Make sure to register the component
             const componentClassName = name;
 
@@ -112,35 +111,12 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             res = codeGen.genElement(name, databag, children);
         }
 
-        // res = applyInlineIf(element, res);
-        // res = applyInlineFor(element, res);
-
         return res;
     }
 
+    // jtu come back and verify the return type
     function transformTemplate(element: Element | Component | Slot): t.Expression | t.Expression[] {
-        const children = transformChildren(element);
-        // jtu: come back to ths one I think it's ok but just double check
-        // return t.isArrayExpression(children) ? (children.elements as t.Expression[]) : children;
-        return children;
-
-        // let res = applyTemplateIf(element, children);
-
-        // if (element.forEach) {
-        //     res = applyTemplateFor(element, res);
-        // } else if (element.forOf) {
-        //     res = applyTemplateForOf(element, res);
-        // }
-
-        // // jtu: need to come back to this one, so basically we're saying that for array expressions, when it's an if we need to
-        // // return the res.elements
-        // if (t.isArrayExpression(res) && element.if) {
-        //     // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
-        //     // typecast it to t.Expression[]
-        //     return res.elements as t.Expression[];
-        // } else {
-        //     return res;
-        // }
+        return transformChildren(element);
     }
 
     function transformText(consecutiveText: Text[]): t.Expression {
@@ -185,8 +161,6 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
                 }
             }
 
-            // jtu: need to modify, if there is a array expression and a if block in the results, we need to
-            // return the res.element instead
             if (isForBlock(child)) {
                 res.push(transformForBlock(child));
             }
@@ -327,38 +301,6 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         return res;
     }
 
-    // function applyTemplateForBlock(forBlock: ForBlock, fragmentNodes: t.Expression) {
-    //     let expression = fragmentNodes;
-    //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-    //         expression = expression.elements[0] as t.Expression;
-    //     }
-
-    //     let res: t.Expression;
-    //     if (isForEach(forBlock)) {
-    //         res = applyTemplateFor(forBlock, expression);
-    //     } else {
-    //         res = applyTemplateForOf(forBlock, expression);
-    //     }
-
-    //     return res;
-    // }
-
-    // function applyInlineForBlock(forBlock: ForBlock, fragmentNodes: t.Expression) {
-    //     let expression = fragmentNodes;
-    //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-    //         expression = expression.elements[0] as t.Expression;
-    //     }
-
-    //     let res: t.Expression;
-    //     if (isForEach(forBlock)) {
-    //         res = applyInlineFor(forBlock, expression);
-    //     } else {
-    //         res = applyInlineForOf(forBlock, expression);
-    //     }
-
-    //     return res;
-    // }
-
     function applyInlineFor(forEach: ForEach, node: t.Expression) {
         const { expression, item, index } = forEach;
         const params = [item];
@@ -409,24 +351,6 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    // function applyTemplateForOf(element: IRElement, fragmentNodes: t.Expression) {
-    //     let expression = fragmentNodes;
-    //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-    //         expression = expression.elements[0] as t.Expression;
-    //     }
-
-    //     return applyInlineForOf(element, expression);
-    // }
-
-    // function applyTemplateFor(element: IRElement, fragmentNodes: t.Expression) {
-    //     let expression = fragmentNodes;
-    //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-    //         expression = expression.elements[0] as t.Expression;
-    //     }
-
-    //     return applyInlineFor(element, expression);
-    // }
-
     function applyTemplateIf(ifBlock: IfBlock, fragmentNodes: t.Expression): t.Expression {
         if (t.isArrayExpression(fragmentNodes)) {
             // Bind the expression once for all the template children
@@ -452,7 +376,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         const { name: elmName, namespace = '' } = element;
         const { name, value: attrValue } = attr;
         // Properties have names camel cased
-        const attrName = isProperty(attr) ? propertyNameToAttribute(name) : name;
+        const attrName = isProperty(attr) ? propertyToAttributeName(name) : name;
         const isUsedAsAttribute = isAttribute(element, attrName);
 
         if (isExpression(attrValue)) {

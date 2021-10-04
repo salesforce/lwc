@@ -22,7 +22,6 @@ import {
     LWCDirectiveRenderMode,
     ParentWrapper,
     ParentNode,
-    ChildNode,
     BaseNode,
 } from '../shared-next/types';
 
@@ -83,17 +82,6 @@ export default class ParserCtx {
         }
 
         return null;
-    }
-
-    wrapParent(node: ParentNode, parent?: ParentWrapper): ParentWrapper {
-        return {
-            parent,
-            node,
-        };
-    }
-
-    appendChild(child: ParentNode & ChildNode, parent: ParentWrapper) {
-        parent.node.children.push(child);
     }
 
     withErrorRecovery<T>(fn: () => T): T | undefined {

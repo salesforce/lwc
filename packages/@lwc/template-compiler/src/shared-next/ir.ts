@@ -39,6 +39,7 @@ import {
     ForOf,
     BaseElement,
     Directive,
+    ParentWrapper,
 } from './types';
 
 export function root(original: parse5.Element): Root {
@@ -310,6 +311,13 @@ export function property(
     };
 }
 
+export function parentWrapper(node: ParentNode, parent?: ParentWrapper): ParentWrapper {
+    return {
+        parent,
+        node,
+    };
+}
+
 export function isElement(node: BaseNode): node is Element {
     return node.type === LWCNodeType.Element;
 }
@@ -336,12 +344,6 @@ export function isTextNode(node: BaseNode): node is Text {
 
 export function isCommentNode(node: BaseNode): node is Comment {
     return node.type === LWCNodeType.Comment;
-}
-
-// jtu:  comeback to verify this is correct
-// how does this interact when it's a slot?
-export function isCustomElement(node: BaseNode): boolean {
-    return node.type === LWCNodeType.Component;
 }
 
 export function isTemplate(node: ParentNode): boolean {

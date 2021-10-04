@@ -15,11 +15,12 @@ import {
     isAttribute,
     isProhibitedIsAttribute,
     isTabIndexAttribute,
-    isTabIndexProperty,
     isValidHTMLAttribute,
     isValidTabIndexAttributeValue,
     normalizeAttributeValue,
     ParsedAttribute,
+    parseTagName,
+    propertyToAttributeName,
 } from './attribute';
 
 import { isExpression, parseExpression, parseIdentifier } from './expression';
@@ -30,7 +31,6 @@ import * as ir from '../shared-next/ir';
 import {
     TemplateParseResult,
     Attribute,
-    LWCNodeType,
     LWCDirectiveRenderMode,
     Element,
     Component,
@@ -47,9 +47,8 @@ import {
     SourceLocation,
     ParentWrapper,
     ParentNode,
-    // IfBlock,
-    // ForBlock,
     ChildNode,
+    BaseElement,
 } from '../shared-next/types';
 
 import ParserCtx from './parser';
@@ -130,73 +129,66 @@ export default function parse(source: string, state: State): TemplateParseResult
     return { root, warnings: ctx.warnings };
 }
 
-function parseRoot(ctx: ParserCtx, parse5Element: parse5.Element): Root {
-    const parsedAttr = parseAttributes(ctx, parse5Element);
-    const root = ir.root(parse5Element);
+function parseRoot(ctx: ParserCtx, parse5Elm: parse5.Element): Root {
+    const parsedAttr = parseAttributes(ctx, parse5Elm);
+    const root = ir.root(parse5Elm);
 
     applyRootLwcDirectives(ctx, root, parsedAttr);
     ctx.setRootDirective(root);
-
-    // Need to revisit validating the root
-    validateRoot(ctx, root, parse5Element);
-
-    parseChildren(ctx, ctx.wrapParent(root), parse5Element);
-    // Need to revisit validating the children
-    // validateChildren(ctx, root);
+    validateRoot(ctx, root, parse5Elm);
+    parseChildren(ctx, ir.parentWrapper(root), parse5Elm);
 
     return root;
 }
 
 function parseElement(
     ctx: ParserCtx,
-    parse5Element: parse5.Element,
+    parse5Elm: parse5.Element,
     parent: ParentWrapper
-): Element {
-    const parsedAttr = parseAttributes(ctx, parse5Element);
-    const { head, current } = parseElementDirectives(ctx, parse5Element, parent, parsedAttr);
+): ParentNode & ChildNode {
+    const parsedAttr = parseAttributes(ctx, parse5Elm);
+    const { head, current } = parseElementNodes(ctx, parse5Elm, parent, parsedAttr);
     // parseElementDirectives will always return an Element | Component | Slot
     const element = current.node as Component | Element | Slot;
 
     applyHandlers(ctx, element, parsedAttr);
     applyKey(ctx, element, current, parent, parsedAttr);
-
-    // jtu:  Check to see if there's validation on the rendermode and preserve comments
-    // for non root nodes and add it back in.
     applyLwcDirectives(ctx, element, parsedAttr);
     applyAttributes(ctx, element, current, parsedAttr);
 
-    validateElement(ctx, element, parse5Element);
+    validateElement(ctx, element, parse5Elm);
     validateAttributes(ctx, element, parsedAttr);
     validateProperties(ctx, element);
 
-    parseChildren(ctx, current, parse5Element);
+    parseChildren(ctx, current, parse5Elm);
     validateChildren(ctx, element);
 
-    return head as Element;
+    return head;
 }
 
-function parseElementDirectives(
+function parseElementNodes(
     ctx: ParserCtx,
-    parse5Element: parse5.Element,
+    parse5Elm: parse5.Element,
     parent: ParentWrapper,
     parsedAttr: ParsedAttribute
-): { head: ParentNode; current: ParentWrapper } {
+): { head: ParentNode & ChildNode; current: ParentWrapper } {
     let current = parent;
-    const stack: ParentNode[] = [];
-
+    const elmNodes: ParentNode[] = [];
     const parsers = [parseForEach, parseIterator, parseIf, parseElementType];
+
     for (const parser of parsers) {
-        const node = parser(ctx, parse5Element, parsedAttr, current);
+        const node = parser(ctx, parse5Elm, parsedAttr, current);
         if (node) {
-            const prev = stack[stack.length - 1];
+            const prev = elmNodes[elmNodes.length - 1];
             prev?.children.push(node);
-            stack.push(node);
-            current = ctx.wrapParent(node, current);
+            elmNodes.push(node);
+            current = ir.parentWrapper(node, current);
         }
     }
 
-    // parseElementType is guaranteed to return either an Element | Component | Slot
-    return { head: stack[0], current };
+    // elmNodes will always have at least one value because parseElementType
+    // will return Element | Component | Slot
+    return { head: elmNodes[0] as ParentNode & ChildNode, current };
 }
 
 function parseElementType(
@@ -311,7 +303,7 @@ function getTemplateRoot(
 
 function applyHandlers(
     ctx: ParserCtx,
-    element: Element | Component | Slot,
+    element: Component | Element | Slot,
     parsedAttr: ParsedAttribute
 ) {
     let eventHandlerAttribute;
@@ -340,7 +332,7 @@ function applyHandlers(
     }
 }
 
-function parseIf(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr: ParsedAttribute) {
+function parseIf(ctx: ParserCtx, parse5Elm: parse5.Element, parsedAttr: ParsedAttribute) {
     const ifAttribute = parsedAttr.pick(IF_RE);
     if (!ifAttribute) {
         return;
@@ -355,7 +347,7 @@ function parseIf(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr: Pars
         ctx.throwOnNode(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, ifAttribute, [modifier]);
     }
 
-    return ir.ifBlock(parse5Element.tagName, ifAttribute.location, modifier, ifAttribute.value);
+    return ir.ifBlock(parse5Elm.tagName, ifAttribute.location, modifier, ifAttribute.value);
 }
 
 function applyRootLwcDirectives(ctx: ParserCtx, root: Root, parsedAttr: ParsedAttribute) {
@@ -363,7 +355,6 @@ function applyRootLwcDirectives(ctx: ParserCtx, root: Root, parsedAttr: ParsedAt
     if (!lwcAttribute) {
         return;
     }
-    // jtu: come back to verify that these are the correct attributes to check against
 
     if (
         !LWC_DIRECTIVE_SET.has(lwcAttribute.name) &&
@@ -389,22 +380,12 @@ function applyLwcRenderModeDirective(ctx: ParserCtx, root: Root, parsedAttr: Par
 
     if (
         !ir.isStringLiteral(renderDomAttr) ||
-        (renderDomAttr.value !== 'shadow' && renderDomAttr.value !== 'light')
+        (renderDomAttr.value !== LWCDirectiveRenderMode.Shadow &&
+            renderDomAttr.value !== LWCDirectiveRenderMode.Light)
     ) {
         ctx.throwOnNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, root);
     }
 
-    // jtu:  come back to this
-    // This probably needs to move to the element as validation,
-    // we don't want the render mode on anything other than the root
-    // if (ctx.parentStack.length > 0) {
-    //     ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
-    //         ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
-    //         `<${element.tag}>`,
-    //     ]);
-    // }
-
-    // lwcOpts.renderMode = lwcRenderModeAttribute.value as LWCDirectiveRenderMode;
     const value = ir.renderModeDirective(renderDomAttr.value, lwcRenderModeAttribute.location);
     const directives = root.directives || (root.directives = []);
     directives.push(value);
@@ -422,9 +403,6 @@ function applyLwcPreserveCommentsDirective(
 
     const { value: lwcPreserveCommentsAttr } = lwcPreserveCommentAttribute;
 
-    // jtu:  come back to this
-    // This probably needs to move to the element as validation,
-    // we don't want the preserve comments on anything other than the root
     if (!ir.isBooleanLiteral(lwcPreserveCommentsAttr)) {
         ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
             ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
@@ -475,8 +453,6 @@ function applyLwcDirectives(
         ]);
     }
 
-    //jtu:  come back to this, you may need to still verify that the rendermode and preservecomments
-    // error out when they're on non root nodes
     applyLwcDynamicDirective(ctx, element, parsedAttr);
     applyLwcDomDirective(ctx, element, parsedAttr);
 }
@@ -486,9 +462,7 @@ function applyLwcDynamicDirective(
     element: Element | Component | Slot,
     parsedAttr: ParsedAttribute
 ) {
-    // const { name: tag } = element;
-    // jtu: come back to this should name be tag for slot?
-    const tag = ir.isSlot(element) ? 'slot' : element.name;
+    const tag = parseTagName(element);
 
     const lwcDynamicAttribute = parsedAttr.pick(LWC_DIRECTIVES.DYNAMIC);
     if (!lwcDynamicAttribute) {
@@ -499,23 +473,19 @@ function applyLwcDynamicDirective(
         ctx.throwOnNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element, [`<${tag}>`]);
     }
 
-    if (!ir.isCustomElement(element)) {
+    if (!ir.isComponent(element)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT, element, [
             `<${tag}>`,
         ]);
     }
 
     const { value: lwcDynamicAttr } = lwcDynamicAttribute;
-
     if (!ir.isExpression(lwcDynamicAttr)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
-    const values = ir.dynamicDirective(lwcDynamicAttr, lwcDynamicAttr.location);
     const directives = element.directives || (element.directives = []);
-    directives.push(values);
-
-    // lwcOpts.dynamic = lwcDynamicAttribute.value;
+    directives.push(ir.dynamicDirective(lwcDynamicAttr, lwcDynamicAttr.location));
 }
 
 function applyLwcDomDirective(
@@ -523,9 +493,7 @@ function applyLwcDomDirective(
     element: Element | Component | Slot,
     parsedAttr: ParsedAttribute
 ) {
-    // const { name: tag } = element;
-    // jtu: come back to this should name be tag for slot?
-    const tag = ir.isSlot(element) ? 'slot' : element.name;
+    const tag = parseTagName(element);
 
     const lwcDomAttribute = parsedAttr.pick(LWC_DIRECTIVES.DOM);
     if (!lwcDomAttribute) {
@@ -536,7 +504,7 @@ function applyLwcDomDirective(
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM, element, [`<${tag}>`]);
     }
 
-    if (ir.isCustomElement(element)) {
+    if (ir.isComponent(element)) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT, element, [`<${tag}>`]);
     }
 
@@ -556,12 +524,11 @@ function applyLwcDomDirective(
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, [possibleValues]);
     }
 
-    const value = ir.domDirective(lwcDomAttr.value, lwcDomAttribute.location);
     const directives = element.directives || (element.directives = []);
-    directives.push(value);
+    directives.push(ir.domDirective(lwcDomAttr.value, lwcDomAttribute.location));
 }
 
-function parseForEach(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr: ParsedAttribute) {
+function parseForEach(ctx: ParserCtx, parse5Elm: parse5.Element, parsedAttr: ParsedAttribute) {
     const forEachAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_EACH);
     const forItemAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_ITEM);
     const forIndex = parsedAttr.pick(FOR_DIRECTIVES.FOR_INDEX);
@@ -594,14 +561,14 @@ function parseForEach(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr:
             index = parseIdentifier(ctx, forIndexValue.value, forIndex.location);
         }
         return ir.forEach(
-            parse5Element.tagName,
+            parse5Elm.tagName,
             forEachAttribute.value,
             forEachAttribute.location,
             item,
             index
         );
     } else if (forEachAttribute || forItemAttribute) {
-        const location = ir.parseElementSourceLocation(parse5Element);
+        const location = ir.parseElementSourceLocation(parse5Elm);
         ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
             location
@@ -611,7 +578,7 @@ function parseForEach(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr:
 
 function parseIterator(
     ctx: ParserCtx,
-    parse5Element: parse5.Element,
+    parse5Elm: parse5.Element,
     parsedAttr: ParsedAttribute,
     current: ParentWrapper
 ) {
@@ -621,7 +588,7 @@ function parseIterator(
     }
 
     if (ir.isForEach(current.node)) {
-        const location = ir.parseElementSourceLocation(parse5Element);
+        const location = ir.parseElementSourceLocation(parse5Elm);
         ctx.throwAtLocation(ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR, location, [
             iteratorExpression.name,
         ]);
@@ -639,7 +606,7 @@ function parseIterator(
     const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
 
     return ir.forOf(
-        parse5Element.tagName,
+        parse5Elm.tagName,
         iteratorExpression.value,
         iterator,
         iteratorExpression.location
@@ -648,14 +615,12 @@ function parseIterator(
 
 function applyKey(
     ctx: ParserCtx,
-    element: Element | Component | Slot,
+    element: Component | Element | Slot,
     current: ParentWrapper,
     parent: ParentWrapper,
     parsedAttr: ParsedAttribute
 ) {
-    // const { name: tag } = element;
-    // jtu: come back to this should name be tag for slot?
-    const tag = ir.isSlot(element) ? 'slot' : element.name;
+    const tag = parseTagName(element);
     const keyAttribute = parsedAttr.pick('key');
 
     if (keyAttribute) {
@@ -667,7 +632,6 @@ function applyKey(
         const forEachParent = getForEachParent(ctx, current);
 
         if (forOfParent) {
-            // jtu:  come back to this forblock usage
             if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent)) {
                 ctx.throwOnNode(
                     ParserDiagnostics.KEY_SHOULDNT_REFERENCE_ITERATOR_INDEX,
@@ -676,7 +640,6 @@ function applyKey(
                 );
             }
         } else if (forEachParent) {
-            // jtu:  come back to this forblock usage
             if (attributeExpressionReferencesForEachIndex(keyAttribute, forEachParent)) {
                 const name = 'name' in keyAttribute.value && keyAttribute.value.name;
                 ctx.throwOnNode(
@@ -688,7 +651,6 @@ function applyKey(
         }
 
         const forKey = ir.keyDirective(keyAttribute.value, keyAttribute.location);
-        // jtu: come back maight be better way to do it
         const directive = element.directives || (element.directives = []);
         directive.push(forKey);
     } else if (isInIteratorElement(ctx, current, parent) && !ir.isTemplate(element)) {
@@ -760,9 +722,7 @@ function applyAttributes(
     current: ParentWrapper,
     parsedAttr: ParsedAttribute
 ) {
-    // const { name: tag } = element;
-    // jtu: come back to this should the name be the tag or name for slots?
-    const tag = ir.isSlot(element) ? 'slot' : element.name;
+    const tag = parseTagName(element);
     const attributes = parsedAttr.getAttributes();
 
     for (const attr of attributes) {
@@ -825,64 +785,53 @@ function applyAttributes(
             ctx.throwOnNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, attr);
         }
 
-        // Jtu: come back to this, do we want to continue having the single prop for standard elements?
         // the if branch handles
         // 1. All attributes for standard elements except 1 case are handled as attributes
         // 2. For custom elements, only key, slot and data are handled as attributes, rest as properties
         if (isAttribute(element, name)) {
-            // jtu:  come back to this, is it ok to just push the attr directly?
-            // const attribute = createAttribute(name, attr.value, attr.location);
             element.attributes.push(attr);
         } else {
-            const property = ir.property(name, attr.value, attr.location);
-            element.properties.push(property);
+            element.properties.push(ir.property(name, attr.value, attr.location));
 
             parsedAttr.pick(name);
         }
     }
 }
 
-// jtu:  come back and verify this can be done without consequences
-function validateRoot(ctx: ParserCtx, root: Root, node: parse5.Element) {
+function validateRoot(ctx: ParserCtx, root: Root, parse5Elm: parse5.Element) {
+    const { tagName: tag } = parse5Elm;
+
     if (!ir.isTemplate(root)) {
-        ctx.throwOnNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, root, [node.tagName]);
+        ctx.throwOnNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, root, [tag]);
     }
 
-    const rootHasUnknownAttributes = node.attrs.some(
+    const rootHasUnknownAttributes = parse5Elm.attrs.some(
         ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
     );
 
     if (rootHasUnknownAttributes) {
         ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, root);
     }
+
+    // Check if a non-void element has a matching closing tag.
+    //
+    // Note: Parse5 currently fails to collect end tag location for element with a tag name
+    // containing an upper case character (inikulin/parse5#352).
+    const location = ir.parseElementLocation(parse5Elm);
+    const hasClosingTag = Boolean(location.endTag);
+    const isVoidElement = VOID_ELEMENT_SET.has(tag);
+    if (!isVoidElement && !hasClosingTag && tag === tag.toLocaleLowerCase()) {
+        ctx.throwOnNode(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, root, [tag]);
+    }
 }
 
 function validateElement(
     ctx: ParserCtx,
     element: Element | Component | Slot,
-    node: parse5.Element
+    parse5Elm: parse5.Element
 ) {
-    // jtu: come back to this, should name be the tag name or the slot name for slots?
-    const tag = ir.isSlot(element) ? 'slot' : element.name;
-    // jtu:  come back to this, is it ok to take namespace directly from the parse5.element?
-    const namespace = node.namespaceURI;
-    const elementLocation = ir.parseElementLocation(node);
-
-    // const isRoot = ctx.parentStack.length === 0;
-    // const isRoot = element.type === LWCNodeType.Root;
-
-    // if (isRoot) {
-    //     if (!isTemplate(element)) {
-    //         ctx.throwOnNode(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, element, [tag]);
-    //     }
-
-    //     const rootHasUnknownAttributes = node.attrs.some(
-    //         ({ name }) => !ROOT_TEMPLATE_DIRECTIVES_SET.has(name)
-    //     );
-    //     if (rootHasUnknownAttributes) {
-    //         ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, element);
-    //     }
-    // }
+    const { tagName: tag, namespaceURI: namespace } = parse5Elm;
+    const elementLocation = ir.parseElementLocation(parse5Elm);
 
     // Check if a non-void element has a matching closing tag.
     //
@@ -904,7 +853,7 @@ function validateElement(
         //      - Unexpected template element
         //
         // Checking if the original HTMLElement has some attributes applied is a good enough for now.
-        const hasAttributes = node.attrs.length !== 0;
+        const hasAttributes = parse5Elm.attrs.length !== 0;
         // if (!isRoot && !hasAttributes) {
         if (!hasAttributes) {
             ctx.throwOnNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
@@ -928,7 +877,7 @@ function validateElement(
         }
 
         const isKnownTag =
-            ir.isCustomElement(element) ||
+            ir.isComponent(element) ||
             KNOWN_HTML_ELEMENTS.has(tag) ||
             SUPPORTED_SVG_TAGS.has(tag) ||
             DASHED_TAGNAME_ELEMENT_SET.has(tag);
@@ -939,23 +888,11 @@ function validateElement(
     }
 }
 
-// jtu:  come back to this, does it make sense for the root to perform this validtion?
-// It will never have element.lwc anymore and def not lwc.dom.
-// validtion that root doesn't have lwc.dom can be found on validateRoot.
-// Look into what this is really supposed to do, not sure what lwc.dom does
 function validateChildren(ctx: ParserCtx, element: Element | Component | Slot) {
-    // slots not allowed to have a directive, maybe just check before calling this?
-    if (ir.isSlot(element)) {
-        return;
-    }
     const effectiveChildren = ctx.preserveComments
         ? element.children
-        : element.children.filter((child) => child.type !== LWCNodeType.Comment);
-    // if (element.lwc?.dom && effectiveChildren.length > 0) {
-    //     ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
-    // }
-    // jtu:  come back and verify this is correct
-    const hasDomDirective = element.directives?.find((dir) => dir.name === LWCNodeType.Dom);
+        : element.children.filter((child) => !ir.isCommentNode(child));
+    const hasDomDirective = ir.getDomDirective(element);
     if (hasDomDirective && effectiveChildren.length > 0) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
     }
@@ -966,9 +903,7 @@ function validateAttributes(
     element: Element | Component | Slot,
     parsedAttr: ParsedAttribute
 ) {
-    // const { name: tag } = element;
-    // jtu: come back to this should name be tag for slot?
-    const tag = ir.isSlot(element) ? 'slot' : element.name;
+    const tag = parseTagName(element);
     const attributes = parsedAttr.getAttributes();
 
     for (const attr of attributes) {
@@ -993,35 +928,31 @@ function validateAttributes(
     }
 }
 
-function validateProperties(ctx: ParserCtx, element: Element | Component | Slot) {
-    const { properties: props } = element;
-    // jtu: come back to this should name be tag for slot?
-    const tag = ir.isSlot(element) ? 'slot' : element.name;
+function validateProperties(ctx: ParserCtx, element: BaseElement) {
+    const tag = parseTagName(element);
 
-    if (props !== undefined) {
-        for (const prop of props) {
-            const { name, value } = prop;
+    for (const prop of element.properties) {
+        const { name, value } = prop;
+        const attrName = propertyToAttributeName(name);
 
-            if (isProhibitedIsAttribute(name)) {
-                ctx.throwOnNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [name, tag]);
-            }
+        if (isProhibitedIsAttribute(attrName)) {
+            ctx.throwOnNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [attrName, tag]);
+        }
 
-            if (
-                // jtu: attributeToPropertyName transforms property names to camel case
-                isTabIndexProperty(name) &&
-                !ir.isExpression(value) &&
-                !isValidTabIndexAttributeValue(value.value)
-            ) {
-                ctx.throwOnNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
-            }
+        if (
+            isTabIndexAttribute(attrName) &&
+            !ir.isExpression(value) &&
+            !isValidTabIndexAttributeValue(value.value)
+        ) {
+            ctx.throwOnNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
         }
     }
 }
 
-function parseAttributes(ctx: ParserCtx, node: parse5.Element): ParsedAttribute {
+function parseAttributes(ctx: ParserCtx, parse5Elm: parse5.Element): ParsedAttribute {
     const parsedAttrs = new ParsedAttribute();
-    const { attrs: attributes, tagName } = node;
-    const { attrs: attrLocations } = ir.parseElementLocation(node);
+    const { attrs: attributes, tagName } = parse5Elm;
+    const { attrs: attrLocations } = ir.parseElementLocation(parse5Elm);
 
     for (const attr of attributes) {
         parsedAttrs.append(getTemplateAttribute(ctx, tagName, attrLocations, attr));
@@ -1064,15 +995,13 @@ function getTemplateAttribute(
 
     let attrValue: Literal | Expression;
     if (isExpression(value) && !escapedExpression) {
-        // expression
         attrValue = parseExpression(ctx, value, location);
     } else if (isBooleanAttribute) {
-        // boolean
         attrValue = ir.literal(true);
     } else {
-        //string
         attrValue = ir.literal(value);
     }
+
     return ir.attribute(name, attrValue, location);
 }
 
