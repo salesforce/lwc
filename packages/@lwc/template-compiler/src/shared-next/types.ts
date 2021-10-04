@@ -21,28 +21,28 @@ export enum LWCDirectiveDomMode {
 }
 
 export enum LWCNodeType {
-    Literal = 'literal',
+    Literal = 'Literal',
     Identifier = 'Identifier',
     MemberExpression = 'MemberExpression',
-    Attribute = 'attribute',
-    Property = 'property',
-    EventListener = 'event-listener',
-    Directive = 'directive',
-    Key = 'key',
-    Dynamic = 'dynamic',
-    RenderMode = 'render-mode',
-    PreserveComments = 'preserve-comments',
-    Text = 'text',
-    Comment = 'comment',
-    Element = 'element',
-    Component = 'component',
-    IfBlock = 'if-block',
-    ForBlock = 'for-block',
-    ForEach = 'for-each',
-    Iterator = 'iterator',
-    Slot = 'slot',
-    Root = 'root',
-    Dom = 'dom',
+    Attribute = 'Attribute',
+    Property = 'Property',
+    EventListener = 'EventListener',
+    Directive = 'Directive',
+    Key = 'Key',
+    Dynamic = 'Dynamic',
+    RenderMode = 'RenderMode',
+    PreserveComments = 'PreserveComments',
+    Text = 'Text',
+    Comment = 'Comment',
+    Element = 'Element',
+    Component = 'Component',
+    IfBlock = 'IfBlock',
+    ForBlock = 'ForBlock',
+    ForEach = 'ForEach',
+    ForOf = 'ForOf',
+    Slot = 'Slot',
+    Root = 'Root',
+    Dom = 'Dom',
 }
 
 export enum LWCDirectiveRenderMode {
@@ -65,17 +65,17 @@ export interface SourceLocation {
 }
 
 export interface Literal<Value = string | boolean> {
-    type: LWCNodeType.Literal;
+    type: `${LWCNodeType.Literal}`;
     value: Value;
 }
 
 export interface Identifier extends BaseNode {
-    type: 'Identifier';
+    type: `${LWCNodeType.Identifier}`;
     name: string;
 }
 
 export interface MemberExpression extends BaseNode {
-    type: 'MemberExpression';
+    type: `${LWCNodeType.MemberExpression}`;
     object: Expression;
     property: Identifier;
 }
@@ -83,51 +83,51 @@ export interface MemberExpression extends BaseNode {
 export type Expression = Identifier | MemberExpression;
 
 export interface Attribute extends BaseNode {
-    type: LWCNodeType.Attribute;
+    type: `${LWCNodeType.Attribute}`;
     name: string;
     value: Literal | Expression;
 }
 
 export interface Property extends BaseNode {
-    type: LWCNodeType.Property;
+    type: `${LWCNodeType.Property}`;
     name: string;
     value: Literal | Expression;
 }
 
 export interface EventListener extends BaseNode {
-    type: LWCNodeType.EventListener;
+    type: `${LWCNodeType.EventListener}`;
     name: string;
     handler: Expression;
 }
 
 export interface Directive extends BaseNode {
-    type: LWCNodeType.Directive;
+    type: `${LWCNodeType.Directive}`;
     name: string;
     value: Expression | Literal;
 }
 
 export interface KeyDirective extends Directive {
-    name: LWCNodeType.Key;
+    name: `${LWCNodeType.Key}`;
     value: Expression;
 }
 
 export interface DynamicDirective extends Directive {
-    name: LWCNodeType.Dynamic;
+    name: `${LWCNodeType.Dynamic}`;
     value: Expression;
 }
 
 export interface DomDirective extends Directive {
-    name: LWCNodeType.Dom;
+    name: `${LWCNodeType.Dom}`;
     value: Literal<LWCDirectiveDomMode>;
 }
 
 export interface RenderModeDirective extends Directive {
-    name: LWCNodeType.RenderMode;
+    name: `${LWCNodeType.RenderMode}`;
     value: Literal<LWCDirectiveRenderMode.Shadow> | Literal<LWCDirectiveRenderMode.Light>;
 }
 
 export interface PreserveCommentsDirective extends Directive {
-    name: LWCNodeType.PreserveComments;
+    name: `${LWCNodeType.PreserveComments}`;
     value: Literal<boolean>;
 }
 
@@ -135,12 +135,12 @@ export type ElementDirective = KeyDirective | DynamicDirective | DomDirective;
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {
-    type: LWCNodeType.Text;
+    type: `${LWCNodeType.Text}`;
     value: Literal | Expression;
 }
 
 export interface Comment extends BaseNode {
-    type: LWCNodeType.Comment;
+    type: `${LWCNodeType.Comment}`;
     value: string;
 }
 
@@ -149,11 +149,6 @@ export interface BaseParentNode extends BaseNode {
     children: ChildNode[];
 }
 
-// jtu:  come back to this to verify, properties initially only belonged to components
-// see if there's a better way to split up the component / element / slot.
-// Maybe create a type alias for it.
-
-//jtu: update, come back to this, does namespace need to be a part of component?
 export interface BaseElement extends BaseParentNode {
     properties: Property[];
     attributes: Attribute[];
@@ -163,66 +158,48 @@ export interface BaseElement extends BaseParentNode {
 }
 
 export interface Element extends BaseElement {
-    type: LWCNodeType.Element;
-    namespace?: string;
+    type: `${LWCNodeType.Element}`;
 }
 
 export interface Component extends BaseElement {
-    type: LWCNodeType.Component;
+    type: `${LWCNodeType.Component}`;
 }
 
 export interface Slot extends BaseElement {
-    type: LWCNodeType.Slot;
-    namespace?: string;
+    type: `${LWCNodeType.Slot}`;
 }
 
 export interface IfBlock extends BaseParentNode {
-    type: LWCNodeType.IfBlock;
+    type: `${LWCNodeType.IfBlock}`;
     modifier: string;
     condition: Expression;
 }
+
 export interface ForEach extends BaseParentNode {
-    type: LWCNodeType.ForEach;
+    type: `${LWCNodeType.ForEach}`;
     expression: Expression;
     item: Identifier;
     index?: Identifier;
 }
 
-export interface Iterator extends BaseParentNode {
-    type: LWCNodeType.Iterator;
+export interface ForOf extends BaseParentNode {
+    type: `${LWCNodeType.ForOf}`;
     expression: Expression;
     iterator: Identifier;
 }
 
-export type ForBlock = ForEach | Iterator;
+export type ForBlock = ForEach | ForOf;
 
 export interface Root extends BaseParentNode {
-    type: LWCNodeType.Root;
+    type: `${LWCNodeType.Root}`;
     directives?: RootDirective[];
 }
 
 export type DirectiveNode = Root | Component | Element | Slot;
 
-// Jtu: come back to this maybe think of a better name?  These just have the name attribute
-export type ElementNode = Root | Component | Element | Slot | ForBlock | IfBlock;
-
 export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 
-// jtu:  should slot be a childnode type?
 export type ChildNode = ForBlock | IfBlock | Element | Component | Slot | Comment | Text;
-
-export type Node =
-    | ForBlock
-    | IfBlock
-    | Element
-    | Component
-    | Comment
-    | Slot
-    | Root
-    | Text
-    | Attribute
-    | Literal
-    | Expression;
 
 export interface ParentWrapper {
     parent?: ParentWrapper;
