@@ -23,7 +23,6 @@ import {
     isBaseElement,
     isDynamicDirective,
     isExpression,
-    isRoot,
     isProperty,
     getElementDirective,
     getKeyDirective,
@@ -60,7 +59,7 @@ import {
     parseStyleText,
     hasIdAttribute,
     styleMapToStyleDeclsAST,
-    arrayToObjectAST,
+    arrayToObjectMapper,
 } from './helpers';
 
 import { format as formatModule } from './formatters/module';
@@ -94,7 +93,6 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             // Make sure to register the component
             const componentClassName = name;
 
-            // jtu: come back to this, originally it was element.tag, is there a difference between name and tag?
             res = codeGen.genCustomElement(
                 name,
                 identifierFromComponentName(componentClassName),
@@ -104,8 +102,6 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         } else if (isSlot(element)) {
             const defaultSlot = children;
 
-            // jtu:  the name may need to be taken from the attributes depending on if
-            // the name for slots is the tag name.
             res = codeGen.getSlot(name, databag, defaultSlot);
         } else {
             res = codeGen.genElement(name, databag, children);
@@ -114,17 +110,11 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         return res;
     }
 
-    // jtu come back and verify the return type
-    function transformTemplate(element: Element | Component | Slot): t.Expression | t.Expression[] {
-        return transformChildren(element);
-    }
-
     function transformText(consecutiveText: Text[]): t.Expression {
         return codeGen.genText(
             consecutiveText.map((text) => {
                 const { value } = text;
 
-                // jtu: come back to this, I dunno if you should be able to pass a boolean to scope.bindExpression
                 return isStringLiteral(value) ? value.value : scope.bindExpression(value);
             })
         );
@@ -162,7 +152,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             }
 
             if (isForBlock(child)) {
-                res.push(transformForBlock(child));
+                res.push(transformFor(child));
             }
 
             if (isIfBlock(child)) {
@@ -170,19 +160,11 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
                 Array.isArray(ifBlockChildren)
                     ? res.push(...ifBlockChildren)
                     : res.push(ifBlockChildren);
-                // res.push(transformIf(child));
             }
 
             if (isBaseElement(child)) {
                 if (isTemplate(child)) {
-                    // jtu: two options, either we elimnate the need for an element in the IR when there's a template and for or if
-                    // or we just call the transformTemplate on the IR element and have it just return the children
-                    // Keep it the same for now, look into changing this later.
-                    // jtu com eback to this right now it'll only return a single Expression
-                    const templateChildren = transformTemplate(child);
-                    Array.isArray(templateChildren)
-                        ? res.push(...templateChildren)
-                        : res.push(templateChildren);
+                    res.push(transformChildren(child));
                 } else {
                     res.push(transformElement(child));
                 }
@@ -193,8 +175,9 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             }
         }
 
-        // jtu: come back to this root should be a valid entry too
-        if ((isRoot(parent) || isBaseElement(parent)) && shouldFlatten(children, codeGen)) {
+        if (isForBlock(parent) || isIfBlock(parent)) {
+            return res[0];
+        } else if (shouldFlatten(children, codeGen)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
                 return res[0];
             } else {
@@ -208,24 +191,15 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
     function transformIf(ifBlock: IfBlock): t.Expression | t.Expression[] {
         const children = transformChildren(ifBlock);
 
-        // jtu: definitely need to come back and look at this
-        // first time to unwrap the child from either if or element
-        let expression = children;
-        if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-            expression = expression.elements[0] as t.Expression;
-        }
-
-        // jtu: com eback to this one, may be able to simply more
         let res: t.Expression;
         if (isTemplate(ifBlock)) {
-            res = applyTemplateIf(ifBlock, expression);
+            res = applyTemplateIf(ifBlock, children);
         } else {
             let expression = children;
             if (t.isArrayExpression(expression) && expression.elements.length === 1) {
                 expression = expression.elements[0] as t.Expression;
             }
 
-            // jtu:  The current AST structure, the if will only have one child, which is the element.
             res = applyInlineIf(ifBlock, expression);
         }
 
@@ -265,32 +239,14 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
     }
 
-    function transformForBlock(forBlock: ForBlock) {
-        scope.beginScope();
-
-        if (isForEach(forBlock)) {
-            scope.declare(forBlock.item);
-            if (forBlock.index) {
-                scope.declare(forBlock.index);
-            }
-        } else {
-            scope.declare(forBlock.iterator);
-        }
-        const children = transformChildren(forBlock);
-        scope.endScope();
+    function transformFor(forBlock: ForBlock): t.Expression {
+        const children = transformForChildren(forBlock);
 
         let expression = children;
-
-        // first time to unwrap the child from either if or element
         if (t.isArrayExpression(expression) && expression.elements.length === 1) {
             expression = expression.elements[0] as t.Expression;
         }
 
-        if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-            expression = expression.elements[0] as t.Expression;
-        }
-
-        // jtu:  Template has potential for array expression to come back with more than one element in expression.element
         let res: t.Expression;
         if (isForEach(forBlock)) {
             res = applyInlineFor(forBlock, expression);
@@ -301,7 +257,26 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         return res;
     }
 
-    function applyInlineFor(forEach: ForEach, node: t.Expression) {
+    function transformForChildren(forBlock: ForBlock): t.Expression {
+        scope.beginScope();
+
+        if (isForEach(forBlock)) {
+            const { item, index } = forBlock;
+            if (index) {
+                scope.declare(index);
+            }
+            scope.declare(item);
+        } else {
+            scope.declare(forBlock.iterator);
+        }
+
+        const children = transformChildren(forBlock);
+        scope.endScope();
+
+        return children;
+    }
+
+    function applyInlineFor(forEach: ForEach, node: t.Expression): t.Expression {
         const { expression, item, index } = forEach;
         const params = [item];
         if (index) {
@@ -318,7 +293,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function applyInlineForOf(forOf: ForOf, node: t.Expression) {
+    function applyInlineForOf(forOf: ForOf, node: t.Expression): t.Expression {
         const { expression, iterator } = forOf;
         const { name: iteratorName } = iterator;
 
@@ -512,14 +487,8 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
         // Properties
         if (properties.length) {
-            // jtu: probably think of a new name for this or replace with reduce
-            // const props = arrayToObjectAST(properties, (prop) => prop.name);
-            // const propsObj = objectToAST(props, (key) => computeAttrValue(props[key], element));
-            const propsObj = arrayToObjectAST(
-                properties,
-                (prop) => prop.name,
-                (prop) => computeAttrValue(prop, element)
-            );
+            const props = arrayToObjectMapper(properties, (prop) => prop.name);
+            const propsObj = objectToAST(props, (key) => computeAttrValue(props[key], element));
             data.push(t.property(t.identifier('props'), propsObj));
         }
 
@@ -550,29 +519,14 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
         // Event handler
         if (listeners.length) {
-            // const listenerObj = arrayToObjectAST(listeners, (listener) => listener.name)
-            // const listenerObj = listeners.reduce((obj, val) => (obj[val.name] = val), {});
-            // const onObj = objectToAST(listenerObj, (key) => {
-            //     const componentHandler = scope.bindExpression(listenerObj[key].handler);
-            //     const handler = codeGen.genBind(componentHandler);
+            const listenerObj = arrayToObjectMapper(listeners, (listener) => listener.name);
+            const onlistenerObjAST = objectToAST(listenerObj, (key) => {
+                const componentHandler = scope.bindExpression(listenerObj[key].handler);
+                const handler = codeGen.genBind(componentHandler);
 
-            //     return memorizeHandler(codeGen, scope, componentHandler, handler);
-            // });
-
-            // jtu: come back to this, dunno if I want to keep it like this.  Main reason is the need for the key mapper
-            // seems like it's unneccesary to turn into a obj only to turn it back into an array again
-            // seems unnecessary to need to require a key mapper too.
-            const listnerObj = arrayToObjectAST(
-                listeners,
-                (listener) => listener.name,
-                (listener) => {
-                    const componentHandler = scope.bindExpression(listener.handler);
-                    const handler = codeGen.genBind(componentHandler);
-
-                    return memorizeHandler(codeGen, scope, componentHandler, handler);
-                }
-            );
-            data.push(t.property(t.identifier('on'), listnerObj));
+                return memorizeHandler(codeGen, scope, componentHandler, handler);
+            });
+            data.push(t.property(t.identifier('on'), onlistenerObjAST));
         }
 
         // SVG handling

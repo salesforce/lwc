@@ -20,7 +20,6 @@ import {
     normalizeAttributeValue,
     ParsedAttribute,
     parseTagName,
-    propertyToAttributeName,
 } from './attribute';
 
 import { isExpression, parseExpression, parseIdentifier } from './expression';
@@ -933,14 +932,14 @@ function validateProperties(ctx: ParserCtx, element: BaseElement) {
 
     for (const prop of element.properties) {
         const { name, value } = prop;
-        const attrName = propertyToAttributeName(name);
 
-        if (isProhibitedIsAttribute(attrName)) {
-            ctx.throwOnNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [attrName, tag]);
+        if (isProhibitedIsAttribute(name)) {
+            ctx.throwOnNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [name, tag]);
         }
 
         if (
-            isTabIndexAttribute(attrName) &&
+            // tabindex is transformed to tabIndex for properties
+            isTabIndexAttribute(name.toLowerCase()) &&
             !ir.isExpression(value) &&
             !isValidTabIndexAttributeValue(value.value)
         ) {
