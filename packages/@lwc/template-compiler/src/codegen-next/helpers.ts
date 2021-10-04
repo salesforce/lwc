@@ -45,27 +45,16 @@ export function objectToAST(
     );
 }
 
-export function arrayToObjectAST<T>(
-    arr: Array<T>,
-    keyMapper: (val: T) => string,
-    valueMapper: (val: T) => t.Expression
-) {
-    return t.objectExpression(
-        arr.map((val: T) => t.property(t.literal(keyMapper(val)), valueMapper(val)))
-    );
+export function arrayToObjectMapper<T>(
+    arr: T[],
+    propertyMapper: (val: T) => string
+): { [name: string]: T } {
+    const obj: { [name: string]: T } = {};
+    for (const val of arr) {
+        obj[propertyMapper(val)] = val;
+    }
+    return obj;
 }
-
-//jtu: explore if you want to keep it one way or the other
-// export function arrayToObjectAST<T>(
-//     arr: Array<T>,
-//     propertyMapper: (val: T) => string
-// ): { [name: string]: T } {
-//     const obj: { [name: string]: T } = {};
-//     for (const val of arr) {
-//         obj[propertyMapper(val)] = val;
-//     }
-//     return obj;
-// }
 
 function isDynamic(element: BaseElement): boolean {
     return !!getElementDirective(element, isDynamicDirective);
@@ -83,7 +72,6 @@ export function containsDynamicChildren(children: ChildNode[]): boolean {
     });
 }
 
-// jtu: come back to this it's not ready yet
 export function shouldFlatten(children: ChildNode[], codeGen: CodeGen): boolean {
     return children.some(
         (child) =>
