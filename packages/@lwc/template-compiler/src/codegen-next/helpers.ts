@@ -6,14 +6,7 @@
  */
 import * as t from '../shared-next/estree';
 import { toPropertyName } from '../shared-next/utils';
-import {
-    ChildNode,
-    Component,
-    Element,
-    LWCDirectiveRenderMode,
-    ParentNode,
-    Slot,
-} from '../shared-next/types';
+import { BaseElement, ChildNode, LWCDirectiveRenderMode, ParentNode } from '../shared-next/types';
 import {
     isTemplate,
     isParentNode,
@@ -22,6 +15,7 @@ import {
     isBaseElement,
     isDynamicDirective,
     isIfBlock,
+    getElementDirective,
 } from '../shared-next/ir';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared-next/constants';
 
@@ -73,8 +67,8 @@ export function arrayToObjectAST<T>(
 //     return obj;
 // }
 
-function isDynamic(element: Element | Component | Slot): boolean {
-    return !!element.directives?.some((dir) => isDynamicDirective(dir));
+function isDynamic(element: BaseElement): boolean {
+    return !!getElementDirective(element, isDynamicDirective);
 }
 
 export function containsDynamicChildren(children: ChildNode[]): boolean {

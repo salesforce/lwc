@@ -23,12 +23,12 @@ import {
     isForEach,
     isBaseElement,
     isDynamicDirective,
-    isExpressionAttribute,
-    isStringAttribute,
-    getDomDirective,
-    getForKeyDirective,
+    isExpression,
     isRoot,
     isProperty,
+    getElementDirective,
+    getKeyDirective,
+    getDomDirective,
 } from '../shared-next/ir';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared-next/constants';
 import {
@@ -39,13 +39,13 @@ import {
     IfBlock,
     ForBlock,
     ForEach,
-    Iterator,
     Slot,
     Component,
     Element,
     Attribute,
     Property,
     Comment,
+    ForOf,
 } from '../shared-next/types';
 
 import CodeGen from './codegen';
@@ -87,7 +87,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         // Check wether it has the special directive lwc:dynamic
         const { name } = element;
         // jtu: there's probably a better way to do this
-        const dynamic = element.directives?.find((dir) => isDynamicDirective(dir));
+        const dynamic = getElementDirective(element, isDynamicDirective);
         if (dynamic) {
             const expression = scope.bindExpression(dynamic.value);
             res = codeGen.genDynamicElement(name, expression, databag, children);
@@ -376,7 +376,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function applyInlineForOf(forOf: Iterator, node: t.Expression) {
+    function applyInlineForOf(forOf: ForOf, node: t.Expression) {
         const { expression, iterator } = forOf;
         const { name: iteratorName } = iterator;
 
@@ -455,7 +455,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         const attrName = isProperty(attr) ? propertyNameToAttribute(name) : name;
         const isUsedAsAttribute = isAttribute(element, attrName);
 
-        if (isExpressionAttribute(attrValue)) {
+        if (isExpression(attrValue)) {
             const expression = scope.bindExpression(attrValue);
 
             // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
@@ -488,7 +488,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             }
 
             return expression;
-        } else if (isStringAttribute(attrValue)) {
+        } else if (isStringLiteral(attrValue)) {
             if (attrName === 'id') {
                 return codeGen.genScopedId(attrValue.value);
             }
@@ -537,7 +537,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
         const { attributes, properties, listeners } = element;
         const dom = getDomDirective(element);
-        const forKey = getForKeyDirective(element);
+        const forKey = getKeyDirective(element);
 
         // Attributes
         if (attributes.length) {
@@ -550,10 +550,10 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
                     // - expression values are turned into a `className` property.
                     // - string values are parsed and turned into a `classMap` object associating
                     //   each individual class name with a `true` boolean.
-                    if (isExpressionAttribute(value)) {
+                    if (isExpression(value)) {
                         const classExpression = scope.bindExpression(value);
                         data.push(t.property(t.identifier('className'), classExpression));
-                    } else if (isStringAttribute(value)) {
+                    } else if (isStringLiteral(value)) {
                         const classNames = parseClassNames(value.value);
                         const classMap = t.objectExpression(
                             classNames.map((name) => t.property(t.literal(name), t.literal(true)))
@@ -565,10 +565,10 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
                     // - expression values are turned into a `style` property.
                     // - string values are parsed and turned into a `styles` array
                     // containing triples of [name, value, important (optional)]
-                    if (isExpressionAttribute(value)) {
+                    if (isExpression(value)) {
                         const styleExpression = scope.bindExpression(value);
                         data.push(t.property(t.identifier('style'), styleExpression));
-                    } else if (isStringAttribute(value)) {
+                    } else if (isStringLiteral(value)) {
                         const styleMap = parseStyleText(value.value);
                         const styleAST = styleMapToStyleDeclsAST(styleMap);
                         data.push(t.property(t.identifier('styleDecls'), styleAST));

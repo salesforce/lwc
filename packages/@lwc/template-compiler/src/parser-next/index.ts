@@ -38,7 +38,7 @@ import {
     Identifier,
     Literal,
     Expression,
-    Iterator,
+    ForOf,
     Slot,
     Text,
     Comment,
@@ -80,10 +80,7 @@ import {
     FOR_DIRECTIVES,
 } from './constants';
 
-function attributeExpressionReferencesForOfIndex(
-    attribute: Attribute,
-    iterator: Iterator
-): boolean {
+function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
     // if not an expression, it is not referencing iterator index
     if (!t.isMemberExpression(value)) {
@@ -95,7 +92,7 @@ function attributeExpressionReferencesForOfIndex(
         return false;
     }
 
-    if (iterator.iterator.name !== object.name) {
+    if (forOf.iterator.name !== object.name) {
         return false;
     }
 
@@ -198,6 +195,7 @@ function parseElementDirectives(
         }
     }
 
+    // parseElementType is guaranteed to return either an Element | Component | Slot
     return { head: stack[0], current };
 }
 
@@ -320,7 +318,7 @@ function applyHandlers(
     while ((eventHandlerAttribute = parsedAttr.pick(EVENT_HANDLER_RE))) {
         const { name } = eventHandlerAttribute;
 
-        if (!ir.isExpressionAttribute(eventHandlerAttribute.value)) {
+        if (!ir.isExpression(eventHandlerAttribute.value)) {
             ctx.throwOnNode(
                 ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION,
                 eventHandlerAttribute
@@ -348,7 +346,7 @@ function parseIf(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr: Pars
         return;
     }
 
-    if (!ir.isExpressionAttribute(ifAttribute.value)) {
+    if (!ir.isExpression(ifAttribute.value)) {
         ctx.throwOnNode(ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION, ifAttribute);
     }
 
@@ -390,7 +388,7 @@ function applyLwcRenderModeDirective(ctx: ParserCtx, root: Root, parsedAttr: Par
     const { value: renderDomAttr } = lwcRenderModeAttribute;
 
     if (
-        !ir.isStringAttribute(renderDomAttr) ||
+        !ir.isStringLiteral(renderDomAttr) ||
         (renderDomAttr.value !== 'shadow' && renderDomAttr.value !== 'light')
     ) {
         ctx.throwOnNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, root);
@@ -427,7 +425,7 @@ function applyLwcPreserveCommentsDirective(
     // jtu:  come back to this
     // This probably needs to move to the element as validation,
     // we don't want the preserve comments on anything other than the root
-    if (!ir.isBooleanAttribute(lwcPreserveCommentsAttr)) {
+    if (!ir.isBooleanLiteral(lwcPreserveCommentsAttr)) {
         ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, root, [
             ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
             `<${root.name}>`,
@@ -509,7 +507,7 @@ function applyLwcDynamicDirective(
 
     const { value: lwcDynamicAttr } = lwcDynamicAttribute;
 
-    if (!ir.isExpressionAttribute(lwcDynamicAttr)) {
+    if (!ir.isExpression(lwcDynamicAttr)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
@@ -549,7 +547,7 @@ function applyLwcDomDirective(
     const { value: lwcDomAttr } = lwcDomAttribute;
 
     if (
-        !ir.isStringAttribute(lwcDomAttr) ||
+        !ir.isStringLiteral(lwcDomAttr) ||
         hasOwnProperty.call(LWCDirectiveDomMode, lwcDomAttr.value) === false
     ) {
         const possibleValues = Object.keys(LWCDirectiveDomMode)
@@ -569,7 +567,7 @@ function parseForEach(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr:
     const forIndex = parsedAttr.pick(FOR_DIRECTIVES.FOR_INDEX);
 
     if (forEachAttribute && forItemAttribute) {
-        if (!ir.isExpressionAttribute(forEachAttribute.value)) {
+        if (!ir.isExpression(forEachAttribute.value)) {
             ctx.throwOnNode(
                 ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION,
                 forEachAttribute
@@ -577,7 +575,7 @@ function parseForEach(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr:
         }
 
         const forItemValue = forItemAttribute.value;
-        if (!ir.isStringAttribute(forItemValue)) {
+        if (!ir.isStringLiteral(forItemValue)) {
             ctx.throwOnNode(
                 ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING,
                 forItemAttribute
@@ -589,7 +587,7 @@ function parseForEach(ctx: ParserCtx, parse5Element: parse5.Element, parsedAttr:
         let index: Identifier | undefined;
         if (forIndex) {
             const forIndexValue = forIndex.value;
-            if (!ir.isStringAttribute(forIndexValue)) {
+            if (!ir.isStringLiteral(forIndexValue)) {
                 ctx.throwOnNode(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, forIndex);
             }
 
@@ -632,7 +630,7 @@ function parseIterator(
     const iteratorAttributeName = iteratorExpression.name;
     const [, iteratorName] = iteratorAttributeName.split(':');
 
-    if (!ir.isExpressionAttribute(iteratorExpression.value)) {
+    if (!ir.isExpression(iteratorExpression.value)) {
         ctx.throwOnNode(ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION, iteratorExpression, [
             iteratorExpression.name,
         ]);
@@ -640,7 +638,7 @@ function parseIterator(
 
     const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
 
-    return ir.iterator(
+    return ir.forOf(
         parse5Element.tagName,
         iteratorExpression.value,
         iterator,
@@ -661,7 +659,7 @@ function applyKey(
     const keyAttribute = parsedAttr.pick('key');
 
     if (keyAttribute) {
-        if (!ir.isExpressionAttribute(keyAttribute.value)) {
+        if (!ir.isExpression(keyAttribute.value)) {
             ctx.throwOnNode(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, keyAttribute);
         }
 
@@ -729,9 +727,9 @@ function parseSlot(
 
     const nameAttribute = parsedAttr.get('name');
     if (nameAttribute) {
-        if (ir.isExpressionAttribute(nameAttribute.value)) {
+        if (ir.isExpression(nameAttribute.value)) {
             ctx.throwOnNode(ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION, nameAttribute);
-        } else if (ir.isStringAttribute(nameAttribute.value)) {
+        } else if (ir.isStringLiteral(nameAttribute.value)) {
             name = nameAttribute.value.value;
         }
     }
@@ -800,7 +798,7 @@ function applyAttributes(
             );
         }
 
-        if (ir.isStringAttribute(attr.value)) {
+        if (ir.isStringLiteral(attr.value)) {
             if (name === 'id') {
                 const { value } = attr.value;
 
@@ -823,7 +821,7 @@ function applyAttributes(
         }
 
         // Prevent usage of the slot attribute with expression.
-        if (name === 'slot' && ir.isExpressionAttribute(attr.value)) {
+        if (name === 'slot' && ir.isExpression(attr.value)) {
             ctx.throwOnNode(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, attr);
         }
 
@@ -981,10 +979,7 @@ function validateAttributes(
         }
 
         if (isTabIndexAttribute(attrName)) {
-            if (
-                !ir.isExpressionAttribute(attrVal) &&
-                !isValidTabIndexAttributeValue(attrVal.value)
-            ) {
+            if (!ir.isExpression(attrVal) && !isValidTabIndexAttributeValue(attrVal.value)) {
                 ctx.throwOnNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
             }
         }
@@ -1014,7 +1009,7 @@ function validateProperties(ctx: ParserCtx, element: Element | Component | Slot)
             if (
                 // jtu: attributeToPropertyName transforms property names to camel case
                 isTabIndexProperty(name) &&
-                !ir.isExpressionAttribute(value) &&
+                !ir.isExpression(value) &&
                 !isValidTabIndexAttributeValue(value.value)
             ) {
                 ctx.throwOnNode(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element);
@@ -1088,14 +1083,14 @@ function isInIteration(ctx: ParserCtx, element: ParentWrapper): boolean {
     });
 }
 
-function getIteratorParent(ctx: ParserCtx, srcNode: ParentWrapper): Iterator | null {
+function getIteratorParent(ctx: ParserCtx, srcNode: ParentWrapper): ForOf | null {
     const result = ctx.findAncestor({
         current: srcNode,
-        predicate: (wrapper) => ir.isIterator(wrapper.node),
+        predicate: (wrapper) => ir.isForOf(wrapper.node),
         traversalCond: ({ current, parent }) =>
             !ir.isBaseElement(parent.node) || ir.isTemplate(current.node),
     });
-    return result ? (result as Iterator) : null;
+    return result ? (result as ForOf) : null;
 }
 
 function getForEachParent(ctx: ParserCtx, current: ParentWrapper): ForEach | null {

@@ -16,14 +16,11 @@ import {
     Element,
     Component,
     Expression,
-    Node,
     Comment,
     Text,
-    Iterator,
     ForEach,
     ForBlock,
     IfBlock,
-    ElementNode,
     Slot,
     Identifier,
     Root,
@@ -37,11 +34,11 @@ import {
     LWCDirectiveRenderMode,
     Attribute,
     Property,
-    RootDirective,
     ParentNode,
-    ElementDirective,
     BaseNode,
-    MemberExpression,
+    ForOf,
+    BaseElement,
+    Directive,
 } from './types';
 
 export function root(original: parse5.Element): Root {
@@ -90,6 +87,34 @@ export function slot(name: string, location: SourceLocation): Slot {
     };
 }
 
+export function text(original: parse5.TextNode, value: Literal | Expression): Text {
+    if (!original.sourceCodeLocation) {
+        throw new Error('Invalid text AST node. Missing source code location.');
+    }
+
+    const location = parseSourceLocation(original.sourceCodeLocation);
+
+    return {
+        type: LWCNodeType.Text,
+        value,
+        location,
+    };
+}
+
+export function comment(original: parse5.CommentNode, value: string): Comment {
+    if (!original.sourceCodeLocation) {
+        throw new Error('Invalid comment AST node. Missing source code location.');
+    }
+
+    const location = parseSourceLocation(original.sourceCodeLocation);
+
+    return {
+        type: LWCNodeType.Comment,
+        value,
+        location,
+    };
+}
+
 export function parseElementSourceLocation(original: parse5.Element): SourceLocation {
     const elementLocation = parseElementLocation(original);
     return parseSourceLocation(elementLocation);
@@ -129,35 +154,6 @@ export function parseSourceLocation(location: parse5.Location): SourceLocation {
     };
 }
 
-// jtu: come back to this, should value be literal or literal<string>?
-export function text(original: parse5.TextNode, value: Literal | Expression): Text {
-    if (!original.sourceCodeLocation) {
-        throw new Error('Invalid text AST node. Missing source code location.');
-    }
-
-    const location = parseSourceLocation(original.sourceCodeLocation);
-
-    return {
-        type: LWCNodeType.Text,
-        value,
-        location,
-    };
-}
-
-export function comment(original: parse5.CommentNode, value: string): Comment {
-    if (!original.sourceCodeLocation) {
-        throw new Error('Invalid comment AST node. Missing source code location.');
-    }
-
-    const location = parseSourceLocation(original.sourceCodeLocation);
-
-    return {
-        type: LWCNodeType.Comment,
-        value,
-        location,
-    };
-}
-
 export function literal(value: string | boolean): Literal {
     return {
         type: LWCNodeType.Literal,
@@ -183,14 +179,14 @@ export function forEach(
     };
 }
 
-export function iterator(
+export function forOf(
     name: string,
     expression: Expression,
     iterator: Identifier,
     location: SourceLocation
-): Iterator {
+): ForOf {
     return {
-        type: LWCNodeType.Iterator,
+        type: LWCNodeType.ForOf,
         name,
         expression,
         iterator,
@@ -314,159 +310,122 @@ export function property(
     };
 }
 
-export function isElement(node: Node): node is Element {
+export function isElement(node: BaseNode): node is Element {
     return node.type === LWCNodeType.Element;
 }
 
-export function isRoot(node: Node): node is Root {
+export function isRoot(node: BaseNode): node is Root {
     return node.type === LWCNodeType.Root;
 }
 
-export function isComponent(node: Node): node is Component {
+export function isComponent(node: BaseNode): node is Component {
     return node.type === LWCNodeType.Component;
 }
 
-export function isSlot(node: Node): node is Slot {
+export function isSlot(node: BaseNode): node is Slot {
     return node.type === LWCNodeType.Slot;
 }
 
-// jtu: come back to this one, you'll need to change the name of this if you change the name of the type
-export function isBaseElement(node: Node): node is Element {
+export function isBaseElement(node: BaseNode): node is Element {
     return isElement(node) || isComponent(node) || isSlot(node);
 }
 
-export function isTextNode(node: Node): node is Text {
+export function isTextNode(node: BaseNode): node is Text {
     return node.type === LWCNodeType.Text;
 }
 
-export function isCommentNode(node: Node): node is Comment {
+export function isCommentNode(node: BaseNode): node is Comment {
     return node.type === LWCNodeType.Comment;
 }
 
-// export function isCustomElement(node: IRNode): boolean {
-//     return isElement(node) && node.component !== undefined;
-// }
-
 // jtu:  comeback to verify this is correct
 // how does this interact when it's a slot?
-export function isCustomElement(node: Node): boolean {
+export function isCustomElement(node: BaseNode): boolean {
     return node.type === LWCNodeType.Component;
 }
 
-// jtu:  Come back to this
-export function isTemplate(node: ElementNode) {
+export function isTemplate(node: ParentNode): boolean {
     return node.name === 'template';
 }
 
-export function isIdentifier(node: BaseNode | Literal): node is Identifier {
-    return node.type === LWCNodeType.Identifier;
-}
-
-export function isMemberExpression(node: BaseNode | Literal): node is MemberExpression {
-    return node.type === LWCNodeType.MemberExpression;
-}
-
-export function isExpression(node: BaseNode | Literal): node is Expression {
-    return isMemberExpression(node) || isIdentifier(node);
-}
-
-export function isExpressionAttribute(node: Expression | Literal): node is Expression {
+export function isExpression(node: Expression | Literal): node is Expression {
     return node.type === LWCNodeType.Identifier || node.type === LWCNodeType.MemberExpression;
 }
 
-// jtu: come back to this and verify that it is correct usage.
-export function isStringAttribute(node: Expression | Literal): node is Literal<string> {
+export function isStringLiteral(node: Expression | Literal): node is Literal<string> {
     return node.type === LWCNodeType.Literal && typeof node.value === 'string';
 }
 
-export function isBooleanAttribute(node: Expression | Literal): node is Literal<boolean> {
+export function isBooleanLiteral(node: Expression | Literal): node is Literal<boolean> {
     return node.type === LWCNodeType.Literal && typeof node.value === 'boolean';
 }
 
-export function isIterator(node: Node): node is Iterator {
-    return node.type === LWCNodeType.Iterator;
+export function isForOf(node: BaseNode): node is ForOf {
+    return node.type === LWCNodeType.ForOf;
 }
 
-export function isForEach(node: Node): node is ForEach {
+export function isForEach(node: BaseNode): node is ForEach {
     return node.type === LWCNodeType.ForEach;
 }
 
-export function isForBlock(node: Node): node is ForBlock {
-    return isIterator(node) || isForEach(node);
+export function isForBlock(node: BaseNode): node is ForBlock {
+    return isForOf(node) || isForEach(node);
 }
 
-export function isIfBlock(node: Node): node is IfBlock {
+export function isIfBlock(node: BaseNode): node is IfBlock {
     return node.type === LWCNodeType.IfBlock;
 }
 
-export function isAttribute(node: Node): node is Attribute {
-    return node.type === LWCNodeType.Attribute;
-}
-
-export function isLiteral(node: Node): node is Literal {
-    return node.type === LWCNodeType.Literal;
-}
-
-// jtu:  com eback ot this looks like it coudl be combo'd with isStringAttribute
-export function isStringLiteral(node: Node): node is Literal<string> {
-    return node.type === LWCNodeType.Literal && typeof node.value === 'string';
-}
-
-// jtu:  below this line needs work, find better ways of doing these
-// most of these are for codegen
-
-// jtu come back to this one it's not going to work as it is right now, plan is to add more types to node so we'll need a better way of checking for parent node
-export function isParentNode(node: Node): node is ParentNode {
+export function isParentNode(node: BaseNode): node is ParentNode {
     return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIfBlock(node);
 }
 
-export function isDomDirective(directive: ElementDirective): directive is DomDirective {
-    return directive.name === LWCNodeType.Dom;
+export function isProperty(node: BaseNode): boolean {
+    return node.type === LWCNodeType.Property;
 }
 
-export function isDynamicDirective(directive: ElementDirective): directive is DynamicDirective {
+export function isDynamicDirective(directive: Directive): directive is DynamicDirective {
     return directive.name === LWCNodeType.Dynamic;
 }
 
-export function isKeyDirective(directive: ElementDirective): directive is KeyDirective {
-    return directive.name === LWCNodeType.Key;
+export function isDomDirective(directive: Directive): directive is DomDirective {
+    return directive.name === LWCNodeType.Dom;
 }
 
-// jtu: come back to this seems like there's a better way to do this
-export function isRenderModeDirective(directive: RootDirective): directive is RenderModeDirective {
+export function isRenderModeDirective(directive: Directive): directive is RenderModeDirective {
     return directive.name === LWCNodeType.RenderMode;
 }
 
-export function isPreserveComments(
-    directive: RootDirective
-): directive is PreserveCommentsDirective {
+export function isPreserveComments(directive: Directive): directive is PreserveCommentsDirective {
     return directive.name === LWCNodeType.PreserveComments;
 }
 
-// export function getDirectiveValue(node: DirectiveNode, type: LWCNodeType) {
-//     return node.directives?.find(dir => dir.name === type)?.value.value;
-// }
+export function isKeyDirective(directive: Directive): directive is KeyDirective {
+    return directive.name === LWCNodeType.Key;
+}
 
-export function getDomDirective(element: Element | Component | Slot) {
-    return element.directives?.find((dir) => isDomDirective(dir)) as DomDirective | undefined;
+export function getElementDirective(element: BaseElement, predicate: (dir: Directive) => boolean) {
+    return element.directives?.find((dir) => predicate(dir));
+}
+
+export function getDomDirective(element: BaseElement) {
+    return getElementDirective(element, isDomDirective) as DomDirective | undefined;
+}
+
+export function getKeyDirective(element: BaseElement) {
+    return getElementDirective(element, isKeyDirective) as KeyDirective | undefined;
+}
+
+export function getRootDirective(root: Root, predicate: (dir: Directive) => boolean) {
+    return root.directives?.find((dir) => predicate(dir));
 }
 
 export function getRenderModeDirective(root: Root) {
-    return root.directives?.find((dir) => isRenderModeDirective(dir))?.value.value as
+    return getRootDirective(root, isRenderModeDirective)?.value.value as
         | LWCDirectiveRenderMode
         | undefined;
 }
 
 export function getPreserveComments(root: Root) {
-    return root.directives?.find((dir) => isPreserveComments(dir))?.value.value as
-        | boolean
-        | undefined;
-}
-
-export function getForKeyDirective(element: Element | Component | Slot) {
-    return element.directives?.find((dir) => isKeyDirective(dir)) as KeyDirective | undefined;
-}
-
-export function isProperty(node: BaseNode) {
-    return node.type === LWCNodeType.Property;
+    return getRootDirective(root, isPreserveComments)?.value.value as boolean | undefined;
 }

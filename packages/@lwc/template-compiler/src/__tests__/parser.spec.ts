@@ -75,7 +75,7 @@ describe('event handlers', () => {
             `<template><h1 onclick={handleClick} onmousemove={handleMouseMove}></h1></template>`
         );
         expect(root.children[0].listeners[0]).toMatchObject({
-            type: 'event-listener',
+            type: 'EventListener',
             name: 'click',
             handler: {
                 type: 'Identifier',
@@ -83,7 +83,7 @@ describe('event handlers', () => {
             },
         });
         expect(root.children[0].listeners[1]).toMatchObject({
-            type: 'event-listener',
+            type: 'EventListener',
             name: 'mousemove',
             handler: {
                 type: 'Identifier',
@@ -109,7 +109,7 @@ describe('for:each directives', () => {
             `<template><section for:each={items} for:item="item" key={item}></section></template>`
         );
 
-        expect(root.children[0]).toMatchObject({ type: 'for-each', name: 'section' });
+        expect(root.children[0]).toMatchObject({ type: 'ForEach', name: 'section' });
         expect(root.children[0].expression).toMatchObject({
             type: 'Identifier',
             name: 'items',
@@ -163,7 +163,7 @@ describe('for:of directives', () => {
             `<template><section iterator:it={items}></section></template>`
         );
         expect(root.children[0]).toMatchObject({
-            type: 'iterator',
+            type: 'ForOf',
             name: 'section',
         });
         expect(root.children[0].expression).toMatchObject({
@@ -191,7 +191,7 @@ describe('for:of directives', () => {
 describe('if directive', () => {
     it('if directive', () => {
         const { root } = parseTemplate(`<template><h1 if:true={visible}></h1></template>`);
-        expect(root.children[0]).toMatchObject({ type: 'if-block', name: 'h1' });
+        expect(root.children[0]).toMatchObject({ type: 'IfBlock', name: 'h1' });
         expect(root.children[0].condition).toMatchObject(TEMPLATE_IDENTIFIER);
         expect(root.children[0].modifier).toBe('true');
     });
@@ -228,32 +228,29 @@ describe('forBlock with if directive', () => {
         const { root } = parseTemplate(
             `<template><section for:each={items} for:item="item" key={item} if:true={visible}></section></template>`
         );
-        expect(root.children[0]).toMatchObject({ type: 'for-each', name: 'section' });
-        expect(root.children[0].children[0]).toMatchObject({ type: 'if-block', name: 'section' });
+        expect(root.children[0]).toMatchObject({ type: 'ForEach', name: 'section' });
+        expect(root.children[0].children[0]).toMatchObject({ type: 'IfBlock', name: 'section' });
     });
 
     it('forOf with if directive', () => {
         const { root } = parseTemplate(
             `<template><section iterator:it={items} if:true={visible}></section></template>`
         );
-        expect(root.children[0]).toMatchObject({
-            type: 'iterator',
-            name: 'section',
-        });
-        expect(root.children[0].children[0]).toMatchObject({ type: 'if-block', name: 'section' });
+        expect(root.children[0]).toMatchObject({ type: 'ForOf', name: 'section' });
+        expect(root.children[0].children[0]).toMatchObject({ type: 'IfBlock', name: 'section' });
     });
 });
 
 describe('custom component', () => {
     it('custom component', () => {
         const { root } = parseTemplate(`<template><x-button></x-button></template>`);
-        expect(root.children[0]).toMatchObject({ type: 'component', name: 'x-button' });
+        expect(root.children[0]).toMatchObject({ type: 'Component', name: 'x-button' });
     });
 
     it('html element with dashed tag name', () => {
         const { root } = parseTemplate('<template><color-profile></color-profile></template>');
         expect(root.children[0].name).toBe('color-profile');
-        expect(root.children[0].type).not.toBe('component');
+        expect(root.children[0].type).not.toBe('Component');
     });
 
     it('custom component self closing error', () => {
@@ -443,7 +440,7 @@ describe('expression', () => {
     it('autofix unquoted value next to unary tag', () => {
         const { root } = parseTemplate(`<template><input title={myValue}/></template>`);
         expect(root.children[0].attributes[0]).toMatchObject({
-            type: 'attribute',
+            type: 'Attribute',
             name: 'title',
             value: { type: 'Identifier', name: 'myValue' },
         });
@@ -452,9 +449,9 @@ describe('expression', () => {
     it('escaped attribute with curly braces', () => {
         const { root } = parseTemplate(`<template><input title="\\{myValue}"/></template>`);
         expect(root.children[0].attributes[0]).toMatchObject({
-            type: 'attribute',
+            type: 'Attribute',
             name: 'title',
-            value: { type: 'literal', value: '{myValue}' },
+            value: { type: 'Literal', value: '{myValue}' },
         });
     });
 
@@ -561,19 +558,19 @@ describe('props and attributes', () => {
         expect(root.children[0].properties).toMatchObject([
             {
                 name: 'ariaHidden',
-                value: { type: 'literal', value: 'hidden' },
+                value: { type: 'Literal', value: 'hidden' },
             },
             {
                 name: 'fooBar',
-                value: { type: 'literal', value: 'x' },
+                value: { type: 'Literal', value: 'x' },
             },
             {
                 name: 'foo',
-                value: { type: 'literal', value: 'bar' },
+                value: { type: 'Literal', value: 'bar' },
             },
             {
                 name: 'role',
-                value: { type: 'literal', value: 'xx' },
+                value: { type: 'Literal', value: 'xx' },
             },
         ]);
         expect(root.children[0].attributes[1]).toMatchObject({
