@@ -81,9 +81,6 @@
   "engines": {
     "node": ">=10"
   },
-  "resolutions": {
-    "axios": "^0.21.2"
-  },
   "volta": {
     "node": "14.17.6",
     "yarn": "1.22.5"
