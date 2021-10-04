@@ -7,7 +7,7 @@
 
     function stylesheet(useActualHostSelector, token) {
       var hostSelector = token ? ("[" + token + "-host]") : "";
-      return (useActualHostSelector ? [":host {color: ", varResolver__default['default']("--lwc-my-color"), ";}"].join('') : [hostSelector, " {color: ", varResolver__default['default']("--lwc-my-color"), ";}"].join(''));
+      return (useActualHostSelector ? [":host {color: ", varResolver__default["default"]("--lwc-my-color"), ";}"].join('') : [hostSelector, " {color: ", varResolver__default["default"]("--lwc-my-color"), ";}"].join(''));
     }
     var _implicitStylesheets = [stylesheet];
 
@@ -82,4 +82,4 @@
     });
     container.appendChild(element);
 
-}(LWC, resolveCss));
+})(LWC, resolveCss);
