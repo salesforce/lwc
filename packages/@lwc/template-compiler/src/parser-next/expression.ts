@@ -102,7 +102,6 @@ export function parseExpression(
             validateSourceIsParsedExpression(source, parsed);
             validateExpression(parsed, ctx.config);
 
-            // jtu: come back to this, does location HAVE to be on this one?
             return { ...parsed, location };
         },
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
@@ -111,7 +110,6 @@ export function parseExpression(
     );
 }
 
-// jtu:  come back to this, the type is a string from t.identifier
 export function parseIdentifier(
     ctx: ParserCtx,
     source: string,

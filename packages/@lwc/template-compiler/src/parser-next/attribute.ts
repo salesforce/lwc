@@ -17,7 +17,14 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import { Attribute, Component, Element, Slot, SourceLocation } from '../shared-next/types';
+import {
+    Attribute,
+    BaseElement,
+    Component,
+    Element,
+    Slot,
+    SourceLocation,
+} from '../shared-next/types';
 
 import {
     ATTR_NAME,
@@ -34,7 +41,7 @@ import {
     TEMPLATE_DIRECTIVES,
 } from './constants';
 
-import { isCustomElement } from '../shared-next/ir';
+import { isComponent, isSlot } from '../shared-next/ir';
 import ParserCtx from './parser';
 
 function isQuotedAttribute(rawAttribute: string) {
@@ -176,11 +183,6 @@ export function isTabIndexAttribute(attrName: string): boolean {
     return attrName === 'tabindex';
 }
 
-// jtu:  come back tot his should we jsut do a tolowercase?
-export function isTabIndexProperty(attrName: string): boolean {
-    return attrName === 'tabIndex';
-}
-
 export function isValidTabIndexAttributeValue(value: any): boolean {
     // object means it is a Node representing the expression
     return value === '0' || value === '-1';
@@ -199,7 +201,7 @@ function isFmkAttribute(attrName: string): boolean {
 }
 
 export function isAttribute(element: Element | Component | Slot, attrName: string): boolean {
-    if (isCustomElement(element)) {
+    if (isComponent(element)) {
         return (
             attrName === 'style' ||
             attrName === 'class' ||
@@ -249,13 +251,16 @@ export function attributeToPropertyName(attrName: string): string {
     return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);
 }
 
-// jtu: come back and take a look at this
 const reverseAttrsPropsTransform: { [name: string]: string } = Object.keys(
     ATTRS_PROPS_TRANFORMS
 ).reduce((acc, key) => ({ ...acc, [ATTRS_PROPS_TRANFORMS[key]]: key }), {});
 
-export function propertyNameToAttribute(propName: string): string {
+export function propertyToAttributeName(propName: string): string {
     return reverseAttrsPropsTransform[propName] || propName.toLowerCase();
+}
+
+export function parseTagName(element: BaseElement): string {
+    return isSlot(element) ? 'slot' : element.name;
 }
 
 export class ParsedAttribute {
