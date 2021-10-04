@@ -101,6 +101,8 @@ commands:
     parameters:
       disable_synthetic:
         type: boolean
+      force_native_shadow_mode:
+        type: boolean
       compat:
         type: boolean
       coverage:
@@ -112,6 +114,7 @@ commands:
           working_directory: packages/integration-karma
           command: >
               <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >>
+              <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >>
               <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
               <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
               yarn sauce
@@ -174,12 +177,15 @@ jobs:
       - run_karma:
           disable_synthetic: false
           compat: false
+          force_native_shadow_mode: false
       - run_karma:
           disable_synthetic: true
           compat: false
+          force_native_shadow_mode: false
       - run_karma:
           disable_synthetic: false
           compat: true
+          force_native_shadow_mode: false
       - run:
           name: Compute karma coverage
           command: yarn coverage
