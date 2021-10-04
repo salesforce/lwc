@@ -7,8 +7,7 @@
 import { DiagnosticLevel } from '@lwc/errors';
 import { mergeConfig } from '../config';
 import State from '../state';
-// import parse from '../parser';
-import parse from '../parser-next';
+import parse from '../parser';
 
 const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
 const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
