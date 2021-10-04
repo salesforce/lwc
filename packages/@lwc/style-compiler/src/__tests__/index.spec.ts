@@ -45,7 +45,7 @@ describe('fixtures', () => {
 
             try {
                 result = transform(src, filename, config);
-            } catch (err) {
+            } catch (err: any) {
                 error = JSON.stringify(normalizeError(err), null, 4);
             }
 

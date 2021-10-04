@@ -18,7 +18,7 @@ export function toThrowErrorWithCode(
 
     try {
         received();
-    } catch (err) {
+    } catch (err: any) {
         error = err;
     }
 
