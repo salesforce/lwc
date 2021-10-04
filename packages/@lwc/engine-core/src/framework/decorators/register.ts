@@ -288,7 +288,7 @@ export function registerDecorators(
     }
     if (!isUndefined(fields)) {
         for (let i = 0, n = fields.length; i < n; i++) {
-            const fieldName = fields[i];
+            const fieldName: string = fields[i];
             descriptor = getOwnPropertyDescriptor(proto, fieldName);
             if (process.env.NODE_ENV !== 'production') {
                 validateObservedField(Ctor, fieldName, descriptor);

@@ -110,7 +110,7 @@ function resolveModuleFromNpm(
             basedir: opts.rootDir,
             preserveSymlinks: true,
         });
-    } catch (error) {
+    } catch (error: any) {
         // If the module "package.json" can't be found, throw an an invalid config error. Otherwise
         // rethrow the original error.
         if (error.code === 'MODULE_NOT_FOUND') {
