@@ -17,19 +17,12 @@ import {
 import State from './state';
 import { mergeConfig, Config } from './config';
 
-import parseTemplate from './parser-next';
-import generate from './codegen-next';
+import parseTemplate from './parser';
+import generate from './codegen';
 
-import { TemplateCompileResult, TemplateParseResult } from './shared-next/types';
-import { TEMPLATE_MODULES_PARAMETER } from './shared-next/constants';
+import { TemplateCompileResult, TemplateParseResult } from './shared/types';
+import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 
-export {
-    IRAttributeType,
-    IRElement,
-    IRNode,
-    TemplateExpression,
-    TemplateIdentifier,
-} from './shared/types';
 export { isElement } from './shared/ir';
 export { Config } from './config';
 

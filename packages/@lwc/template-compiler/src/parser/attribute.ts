@@ -17,7 +17,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import { IRAttribute, IRElement } from '../shared/types';
+import { Attribute, BaseElement, Component, Element, Slot, SourceLocation } from '../shared/types';
 
 import {
     ATTR_NAME,
@@ -32,9 +32,10 @@ import {
     ID_REFERENCING_ATTRIBUTES_SET,
     KNOWN_HTML_ELEMENTS,
     TEMPLATE_DIRECTIVES,
+    PROPS_ATTRS_TRANSFORMS,
 } from './constants';
 
-import { isCustomElement } from '../shared/ir';
+import { isComponent, isSlot } from '../shared/ir';
 import ParserCtx from './parser';
 
 function isQuotedAttribute(rawAttribute: string) {
@@ -86,7 +87,7 @@ export function normalizeAttributeValue(
     raw: string,
     tag: string,
     attr: parse5.Attribute,
-    location: parse5.Location
+    location: SourceLocation
 ): {
     value: string;
     escapedExpression: boolean;
@@ -193,8 +194,8 @@ function isFmkAttribute(attrName: string): boolean {
     return attrName === 'key' || attrName === 'slot';
 }
 
-export function isAttribute(element: IRElement, attrName: string): boolean {
-    if (isCustomElement(element)) {
+export function isAttribute(element: Element | Component | Slot, attrName: string): boolean {
+    if (isComponent(element)) {
         return (
             attrName === 'style' ||
             attrName === 'class' ||
@@ -206,7 +207,7 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
-    if (element.tag === 'input' && (attrName === 'value' || attrName === 'checked')) {
+    if (element.name === 'input' && (attrName === 'value' || attrName === 'checked')) {
         return false;
     }
 
@@ -244,21 +245,30 @@ export function attributeToPropertyName(attrName: string): string {
     return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);
 }
 
-export class ParsedAttribute {
-    private readonly attributes: Map<string, IRAttribute> = new Map();
+// Retrieve the attribute name from property.
+export function propertyToAttributeName(propName: string): string {
+    return PROPS_ATTRS_TRANSFORMS[propName] || propName.toLowerCase();
+}
 
-    append(attr: IRAttribute): void {
+export function parseTagName(element: BaseElement): string {
+    return isSlot(element) ? 'slot' : element.name;
+}
+
+export class ParsedAttribute {
+    private readonly attributes: Map<string, Attribute> = new Map();
+
+    append(attr: Attribute): void {
         this.attributes.set(attr.name, attr);
     }
 
-    get(pattern: string | RegExp): IRAttribute | undefined {
+    get(pattern: string | RegExp): Attribute | undefined {
         const key = this.getKey(pattern);
         if (key) {
             return this.attributes.get(key);
         }
     }
 
-    pick(pattern: string | RegExp): IRAttribute | undefined {
+    pick(pattern: string | RegExp): Attribute | undefined {
         const attr = this.get(pattern);
         if (attr) {
             this.attributes.delete(attr.name);
@@ -276,7 +286,7 @@ export class ParsedAttribute {
         return match;
     }
 
-    getAttributes(): IRAttribute[] {
+    getAttributes(): Attribute[] {
         return Array.from(this.attributes.values());
     }
 }

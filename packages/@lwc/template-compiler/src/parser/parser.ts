@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5';
 import {
     CompilerDiagnostic,
     CompilerError,
@@ -14,22 +13,29 @@ import {
     LWCErrorInfo,
     normalizeToDiagnostic,
 } from '@lwc/errors';
-import { IRElement, LWCDirectiveRenderMode, IRBaseAttribute, IRNode } from '../shared/types';
 import { ResolvedConfig } from '../config';
+import { getPreserveComments, getRenderModeDirective } from '../shared/ir';
 
-function normalizeLocation(location?: parse5.Location): Location {
+import {
+    Root,
+    SourceLocation,
+    LWCDirectiveRenderMode,
+    ParentWrapper,
+    ParentNode,
+    BaseNode,
+} from '../shared/types';
+
+function normalizeLocation(location?: SourceLocation): Location {
     let line = 0;
     let column = 0;
-    let start = 0;
     let length = 0;
+    let start = 0;
 
     if (location) {
-        const { startOffset, endOffset } = location;
-
         line = location.startLine;
-        column = location.startCol;
-        start = startOffset;
-        length = endOffset - startOffset;
+        column = location.startColumn;
+        length = location.end - location.start;
+        start = location.start;
     }
 
     return { line, column, start, length };
@@ -43,38 +49,38 @@ export default class ParserCtx {
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
 
-    readonly parentStack: IRElement[] = [];
+    renderMode: LWCDirectiveRenderMode;
+    preserveComments: boolean;
 
     constructor(source: String, config: ResolvedConfig) {
         this.source = source;
         this.config = config;
+        this.renderMode = LWCDirectiveRenderMode.Shadow;
+        this.preserveComments = config.preserveHtmlComments;
     }
 
     getSource(start: number, end: number): string {
         return this.source.slice(start, end);
     }
 
-    *ancestors(element?: IRElement) {
-        const ancestors = element ? [...this.parentStack, element] : this.parentStack;
-        for (let index = ancestors.length - 1; index > 0; index--) {
-            yield { current: ancestors[index], index };
+    findAncestor({
+        current,
+        predicate,
+        traversalCond = () => true,
+    }: {
+        current: ParentWrapper;
+        predicate: (node: ParentWrapper) => unknown;
+        traversalCond?: (nodes: { current: ParentWrapper; parent: ParentWrapper }) => unknown;
+    }): ParentNode | null {
+        if (predicate(current)) {
+            return current.node;
         }
-    }
 
-    findAncestor(args: {
-        element?: IRElement;
-        predicate: (elm: IRElement) => unknown;
-        traversalCond?: (nodes: { current: IRElement; parent: IRElement | null }) => unknown;
-    }): IRElement | null {
-        const { element, predicate, traversalCond = () => true } = args;
-        for (const { current, index } of this.ancestors(element)) {
-            if (predicate(current)) {
-                return current;
-            }
-            if (!traversalCond({ current, parent: this.parentStack[index - 1] })) {
-                break;
-            }
+        const parent = current.parent;
+        if (parent && traversalCond({ current, parent })) {
+            return this.findAncestor({ current: parent, predicate, traversalCond });
         }
+
         return null;
     }
 
@@ -93,7 +99,7 @@ export default class ParserCtx {
     withErrorWrapping<T>(
         fn: () => T,
         errorInfo: LWCErrorInfo,
-        location: parse5.Location,
+        location: SourceLocation,
         msgFormatter?: (error: any) => string
     ): T {
         try {
@@ -106,24 +112,20 @@ export default class ParserCtx {
         }
     }
 
-    throwOnError(errorInfo: LWCErrorInfo, error: any, location?: parse5.Location): never {
+    throwOnError(errorInfo: LWCErrorInfo, error: any, location?: SourceLocation): never {
         const diagnostic = normalizeToDiagnostic(errorInfo, error, {
             location: normalizeLocation(location),
         });
         throw CompilerError.from(diagnostic);
     }
 
-    throwOnIRNode(
-        errorInfo: LWCErrorInfo,
-        irNode: IRNode | IRBaseAttribute,
-        messageArgs?: any[]
-    ): never {
-        this.throwAtLocation(errorInfo, irNode.location, messageArgs);
+    throwOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): never {
+        this.throwAtLocation(errorInfo, node.location, messageArgs);
     }
 
     throwAtLocation(
         errorInfo: LWCErrorInfo,
-        location?: parse5.Location,
+        location?: SourceLocation,
         messageArgs?: any[]
     ): never {
         throw generateCompilerError(errorInfo, {
@@ -134,15 +136,11 @@ export default class ParserCtx {
         });
     }
 
-    warnOnIRNode(
-        errorInfo: LWCErrorInfo,
-        irNode: IRNode | IRBaseAttribute,
-        messageArgs?: any[]
-    ): void {
-        this.warnAtLocation(errorInfo, messageArgs, irNode.location);
+    warnOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): void {
+        this.warnAtLocation(errorInfo, messageArgs, node.location);
     }
 
-    warnAtLocation(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): void {
+    warnAtLocation(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): void {
         this.addDiagnostic(
             generateCompilerDiagnostic(errorInfo, {
                 messageArgs,
@@ -157,17 +155,8 @@ export default class ParserCtx {
         this.warnings.push(diagnostic);
     }
 
-    getRoot(element: IRElement): IRElement {
-        return this.parentStack[0] || element;
-    }
-
-    getRenderMode(element: IRElement): LWCDirectiveRenderMode {
-        return this.getRoot(element).lwc?.renderMode ?? LWCDirectiveRenderMode.shadow;
-    }
-
-    getPreserveComments(element: IRElement): boolean {
-        return (
-            this.getRoot(element).lwc?.preserveComments?.value ?? this.config.preserveHtmlComments
-        );
+    setRootDirective(root: Root) {
+        this.renderMode = getRenderModeDirective(root) ?? this.renderMode;
+        this.preserveComments = getPreserveComments(root) ?? this.preserveComments;
     }
 }

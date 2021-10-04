@@ -8,7 +8,8 @@ import * as esutils from 'esutils';
 import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
-import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
+import { getPreserveComments, getRenderModeDirective } from '../shared/ir';
+import { LWCDirectiveRenderMode, Root } from '../shared/types';
 import { toPropertyName } from '../shared/utils';
 
 type RenderPrimitive =
@@ -51,7 +52,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
 
 export default class CodeGen {
     /** The AST root. */
-    readonly root: IRElement;
+    readonly root: Root;
 
     /** The template render mode. */
     readonly renderMode: LWCDirectiveRenderMode;
@@ -84,13 +85,13 @@ export default class CodeGen {
         config,
         scopeFragmentId,
     }: {
-        root: IRElement;
+        root: Root;
         config: ResolvedConfig;
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        this.renderMode = root.lwc?.renderMode ?? LWCDirectiveRenderMode.shadow;
-        this.preserveComments = root.lwc?.preserveComments?.value ?? config.preserveHtmlComments;
+        this.renderMode = getRenderModeDirective(root) ?? LWCDirectiveRenderMode.Shadow;
+        this.preserveComments = getPreserveComments(root) ?? config.preserveHtmlComments;
         this.scopeFragmentId = scopeFragmentId;
     }
 

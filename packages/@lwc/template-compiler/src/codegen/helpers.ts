@@ -6,11 +6,21 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { IRElement, IRNode, LWCDirectiveRenderMode } from '../shared/types';
-import { isElement, isTemplate, isComponentProp } from '../shared/ir';
+import { BaseElement, ChildNode, LWCDirectiveRenderMode, ParentNode } from '../shared/types';
+import {
+    isTemplate,
+    isParentNode,
+    isSlot,
+    isForBlock,
+    isBaseElement,
+    isDynamicDirective,
+    isIfBlock,
+    getElementDirective,
+} from '../shared/ir';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
+import Scope from './scope';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toPropertyName(name)}`);
@@ -35,36 +45,59 @@ export function objectToAST(
     );
 }
 
-function isDynamic(element: IRElement): boolean {
-    return element.lwc?.dynamic !== undefined;
+export function arrayToObjectMapper<T>(
+    arr: T[],
+    propertyMapper: (val: T) => string
+): { [name: string]: T } {
+    const obj: { [name: string]: T } = {};
+    for (const val of arr) {
+        obj[propertyMapper(val)] = val;
+    }
+    return obj;
 }
 
-export function containsDynamicChildren(children: IRNode[]): boolean {
-    return children.some((child) => isElement(child) && isDynamic(child));
+function isDynamic(element: BaseElement): boolean {
+    return !!getElementDirective(element, isDynamicDirective);
 }
 
-export function shouldFlatten(children: IRNode[], codeGen: CodeGen): boolean {
+export function containsDynamicChildren(children: ChildNode[]): boolean {
+    return children.some((child) => {
+        let result = false;
+        if (isForBlock(child) || isIfBlock(child)) {
+            result = containsDynamicChildren(child.children);
+        } else if (isBaseElement(child)) {
+            result = isDynamic(child);
+        }
+        return result;
+    });
+}
+
+export function shouldFlatten(children: ChildNode[], codeGen: CodeGen): boolean {
     return children.some(
         (child) =>
-            isElement(child) &&
-            (isDynamic(child) ||
-                !!child.forEach ||
-                !!child.forOf ||
-                (codeGen.renderMode === LWCDirectiveRenderMode.light && child.tag === 'slot') ||
-                (isTemplate(child) && shouldFlatten(child.children, codeGen)))
+            !!isForBlock(child) ||
+            (isParentNode(child) &&
+                ((isBaseElement(child) && isDynamic(child)) ||
+                    ((isIfBlock(child) || isTemplate(child)) &&
+                        shouldFlatten(child.children, codeGen)) ||
+                    (codeGen.renderMode === LWCDirectiveRenderMode.Light && isSlot(child))))
     );
 }
 
 /**
  * Returns true if the AST element or any of its descendants use an id attribute.
  */
-export function hasIdAttribute(element: IRElement): boolean {
-    if (element.attrs?.id || element.props?.id) {
-        return true;
+export function hasIdAttribute(node: ParentNode): boolean {
+    if (isBaseElement(node)) {
+        const attrs = node.attributes.some((attr) => attr.name === 'id');
+        const props = node.properties.some((prop) => prop.name === 'id');
+        if (attrs || props) {
+            return true;
+        }
     }
 
-    for (const child of element.children) {
-        if (child.type === 'element' && hasIdAttribute(child)) {
+    for (const child of node.children) {
+        if (isParentNode(child) && hasIdAttribute(child)) {
             return true;
         }
     }
@@ -74,14 +107,13 @@ export function hasIdAttribute(element: IRElement): boolean {
 
 export function memorizeHandler(
     codeGen: CodeGen,
-    element: IRElement,
-    parentStack: IRNode[],
+    scope: Scope,
     componentHandler: t.Expression,
     handler: t.Expression
 ): t.Expression {
     // #439 - The handler can only be memorized if it is bound to component instance
     const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-    const shouldMemorizeHandler = isComponentProp(id, element, parentStack);
+    const shouldMemorizeHandler = scope.resolve(id);
 
     // Apply memorization if the handler is memorizable.
     //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
@@ -125,7 +157,7 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
     // ignore when shadow because we don't want to modify template unnecessarily
-    if (codeGen.renderMode === LWCDirectiveRenderMode.light) {
+    if (codeGen.renderMode === LWCDirectiveRenderMode.Light) {
         const renderModeMetadata = t.assignmentExpression(
             '=',
             t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('renderMode')),

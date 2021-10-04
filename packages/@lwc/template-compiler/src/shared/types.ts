@@ -4,20 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5';
 import { CompilerDiagnostic } from '@lwc/errors';
-
-export type TemplateIdentifier = { type: 'Identifier'; name: string };
-export type TemplateExpression =
-    | {
-          type: 'MemberExpression';
-          object: TemplateExpression;
-          property: TemplateExpression;
-          computed: boolean;
-          optional: boolean;
-      }
-    | { type: 'Literal'; value: string | number | boolean | null }
-    | TemplateIdentifier;
 
 export type TemplateCompileResult = {
     code: string;
@@ -25,111 +12,196 @@ export type TemplateCompileResult = {
 };
 
 export type TemplateParseResult = {
-    root?: IRElement | undefined;
+    root?: Root | undefined;
     warnings: CompilerDiagnostic[];
 };
-
-export interface ForEach {
-    expression: TemplateExpression;
-    item: TemplateIdentifier;
-    index?: TemplateIdentifier;
-}
-
-export interface ForIterator {
-    expression: TemplateExpression;
-    iterator: TemplateIdentifier;
-}
 
 export enum LWCDirectiveDomMode {
     manual = 'manual',
 }
 
+export enum LWCNodeType {
+    Literal = 'Literal',
+    Identifier = 'Identifier',
+    MemberExpression = 'MemberExpression',
+    Attribute = 'Attribute',
+    Property = 'Property',
+    EventListener = 'EventListener',
+    Directive = 'Directive',
+    Key = 'Key',
+    Dynamic = 'Dynamic',
+    RenderMode = 'RenderMode',
+    PreserveComments = 'PreserveComments',
+    Text = 'Text',
+    Comment = 'Comment',
+    Element = 'Element',
+    Component = 'Component',
+    IfBlock = 'IfBlock',
+    ForBlock = 'ForBlock',
+    ForEach = 'ForEach',
+    ForOf = 'ForOf',
+    Slot = 'Slot',
+    Root = 'Root',
+    Dom = 'Dom',
+}
+
 export enum LWCDirectiveRenderMode {
-    shadow = 'shadow',
-    light = 'light',
+    Shadow = 'shadow',
+    Light = 'light',
 }
 
-export interface LWCDirectiveDynamic {
-    prop: string;
-}
-
-export interface LWCDirectives {
-    dom?: LWCDirectiveDomMode;
-    dynamic?: TemplateExpression;
-    renderMode?: LWCDirectiveRenderMode;
-    preserveComments?: IRBooleanAttribute;
-}
-
-export interface IRBaseNode<N extends parse5.Node> {
+export interface BaseNode {
     type: string;
-    location: parse5.Location;
-
-    // TODO [#2432]: Remove `__original` property on the `IRBaseNode`.
-    __original?: N;
+    location: SourceLocation;
 }
 
-export interface IRElement extends IRBaseNode<parse5.Element> {
-    type: 'element';
-    tag: string;
-    namespace: string;
-    children: IRNode[];
-    location: parse5.ElementLocation;
-
-    component?: string;
-
-    on?: { [name: string]: TemplateExpression };
-    attrs?: { [name: string]: IRAttribute };
-    props?: { [name: string]: IRAttribute };
-
-    if?: TemplateExpression;
-    ifModifier?: string;
-
-    forEach?: ForEach;
-    forOf?: ForIterator;
-    forKey?: TemplateExpression;
-
-    lwc?: LWCDirectives;
-
-    slotName?: string;
+export interface SourceLocation {
+    startLine: number;
+    startColumn: number;
+    endLine: number;
+    endColumn: number;
+    start: number;
+    end: number;
 }
 
-export interface IRText extends IRBaseNode<parse5.TextNode> {
-    type: 'text';
-    value: string | TemplateExpression;
+export interface Literal<Value = string | boolean> {
+    type: `${LWCNodeType.Literal}`;
+    value: Value;
 }
 
-export interface IRComment extends IRBaseNode<parse5.CommentNode> {
-    type: 'comment';
-    value: string;
-}
-
-export type IRNode = IRComment | IRElement | IRText;
-
-export enum IRAttributeType {
-    Expression,
-    String,
-    Boolean,
-}
-
-export interface IRBaseAttribute {
+export interface Identifier extends BaseNode {
+    type: `${LWCNodeType.Identifier}`;
     name: string;
-    location: parse5.Location;
-    type: IRAttributeType;
 }
 
-export interface IRExpressionAttribute extends IRBaseAttribute {
-    type: IRAttributeType.Expression;
-    value: TemplateExpression;
+export interface MemberExpression extends BaseNode {
+    type: `${LWCNodeType.MemberExpression}`;
+    object: Expression;
+    property: Identifier;
 }
 
-export interface IRStringAttribute extends IRBaseAttribute {
-    type: IRAttributeType.String;
+export type Expression = Identifier | MemberExpression;
+
+export interface Attribute extends BaseNode {
+    type: `${LWCNodeType.Attribute}`;
+    name: string;
+    value: Literal | Expression;
+}
+
+export interface Property extends BaseNode {
+    type: `${LWCNodeType.Property}`;
+    name: string;
+    value: Literal | Expression;
+}
+
+export interface EventListener extends BaseNode {
+    type: `${LWCNodeType.EventListener}`;
+    name: string;
+    handler: Expression;
+}
+
+export interface Directive extends BaseNode {
+    type: `${LWCNodeType.Directive}`;
+    name: string;
+    value: Expression | Literal;
+}
+
+export interface KeyDirective extends Directive {
+    name: `${LWCNodeType.Key}`;
+    value: Expression;
+}
+
+export interface DynamicDirective extends Directive {
+    name: `${LWCNodeType.Dynamic}`;
+    value: Expression;
+}
+
+export interface DomDirective extends Directive {
+    name: `${LWCNodeType.Dom}`;
+    value: Literal<LWCDirectiveDomMode>;
+}
+
+export interface RenderModeDirective extends Directive {
+    name: `${LWCNodeType.RenderMode}`;
+    value: Literal<LWCDirectiveRenderMode.Shadow> | Literal<LWCDirectiveRenderMode.Light>;
+}
+
+export interface PreserveCommentsDirective extends Directive {
+    name: `${LWCNodeType.PreserveComments}`;
+    value: Literal<boolean>;
+}
+
+export type ElementDirective = KeyDirective | DynamicDirective | DomDirective;
+export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
+
+export interface Text extends BaseNode {
+    type: `${LWCNodeType.Text}`;
+    value: Literal | Expression;
+}
+
+export interface Comment extends BaseNode {
+    type: `${LWCNodeType.Comment}`;
     value: string;
 }
 
-export interface IRBooleanAttribute extends IRBaseAttribute {
-    type: IRAttributeType.Boolean;
-    value: true;
+export interface BaseParentNode extends BaseNode {
+    name: string;
+    children: ChildNode[];
 }
 
-export type IRAttribute = IRStringAttribute | IRExpressionAttribute | IRBooleanAttribute;
+export interface BaseElement extends BaseParentNode {
+    properties: Property[];
+    attributes: Attribute[];
+    listeners: EventListener[];
+    directives?: ElementDirective[];
+    namespace?: string;
+}
+
+export interface Element extends BaseElement {
+    type: `${LWCNodeType.Element}`;
+}
+
+export interface Component extends BaseElement {
+    type: `${LWCNodeType.Component}`;
+}
+
+export interface Slot extends BaseElement {
+    type: `${LWCNodeType.Slot}`;
+}
+
+export interface IfBlock extends BaseParentNode {
+    type: `${LWCNodeType.IfBlock}`;
+    modifier: string;
+    condition: Expression;
+}
+
+export interface ForEach extends BaseParentNode {
+    type: `${LWCNodeType.ForEach}`;
+    expression: Expression;
+    item: Identifier;
+    index?: Identifier;
+}
+
+export interface ForOf extends BaseParentNode {
+    type: `${LWCNodeType.ForOf}`;
+    expression: Expression;
+    iterator: Identifier;
+}
+
+export type ForBlock = ForEach | ForOf;
+
+export interface Root extends BaseParentNode {
+    type: `${LWCNodeType.Root}`;
+    directives?: RootDirective[];
+}
+
+export type DirectiveNode = Root | Component | Element | Slot;
+
+export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
+
+export type ChildNode = ForBlock | IfBlock | Element | Component | Slot | Comment | Text;
+
+export interface ParentWrapper {
+    parent?: ParentWrapper;
+    node: ParentNode;
+}
