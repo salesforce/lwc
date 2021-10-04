@@ -170,7 +170,7 @@ jobs:
   test_karma_mixed_shadow_mode:
     executor: node
     environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma_mixed_shadow_mode
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id >>_test_karma_mixed_shadow_mode
     steps:
       - load_workspace
       - start_sauce_connect

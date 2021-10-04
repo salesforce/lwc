@@ -17,7 +17,7 @@ const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
 const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST);
 const TAGS = [
     `${DISABLE_SYNTHETIC ? 'native' : 'synthetic'}-shadow`,
-    FORCE_NATIVE_SHADOW_MODE_FOR_TEST && 'forced-shadow-mode',
+    FORCE_NATIVE_SHADOW_MODE_FOR_TEST && 'force-native-shadow-mode',
     COMPAT && 'compat',
 ].filter(Boolean);
 
