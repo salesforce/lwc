@@ -41,54 +41,97 @@ function createDisconnectedTestElement() {
 
 describe('event propagation', () => {
     describe('dispatched on native element', () => {
-        it('{bubbles: true, composed: true}', () => {
-            const nodes = createTestElement();
-            const event = new CustomEvent('test', { bubbles: true, composed: true });
-            const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
+        if (!process.env.MIXED_SHADOW) {
+            it('{bubbles: true, composed: true}', () => {
+                const nodes = createTestElement();
+                const event = new CustomEvent('test', { bubbles: true, composed: true });
+                const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
 
-            const composedPath = [
-                nodes.button,
-                nodes.button_div,
-                nodes['x-button'].shadowRoot,
-                nodes['x-button'],
-                nodes.button_group_slot,
-                nodes.button_group_internal_slot,
-                nodes['x-button-group-internal'].shadowRoot,
-                nodes['x-button-group-internal'],
-                nodes.button_group_div,
-                nodes['x-button-group'].shadowRoot,
-                nodes['x-button-group'],
-                nodes.container_div,
-                nodes['x-container'].shadowRoot,
-                nodes['x-container'],
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ];
-            const expectedLogs = [
-                [nodes.button, nodes.button, composedPath],
-                [nodes.button_div, nodes.button, composedPath],
-                [nodes['x-button'].shadowRoot, nodes.button, composedPath],
-                [nodes['x-button'], nodes['x-button'], composedPath],
-                [nodes.button_group_slot, nodes['x-button'], composedPath],
-                [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
-                [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
-                [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
-                [nodes.button_group_div, nodes['x-button'], composedPath],
-                [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
-                [nodes['x-button-group'], nodes['x-button'], composedPath],
-                [nodes.container_div, nodes['x-button'], composedPath],
-                [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
-                [nodes['x-container'], nodes['x-container'], composedPath],
-                [document.body, nodes['x-container'], composedPath],
-                [document.documentElement, nodes['x-container'], composedPath],
-                [document, nodes['x-container'], composedPath],
-                [window, nodes['x-container'], composedPath],
-            ];
+                const composedPath = [
+                    nodes.button,
+                    nodes.button_div,
+                    nodes['x-button'].shadowRoot,
+                    nodes['x-button'],
+                    nodes.button_group_slot,
+                    nodes.button_group_internal_slot,
+                    nodes['x-button-group-internal'].shadowRoot,
+                    nodes['x-button-group-internal'],
+                    nodes.button_group_div,
+                    nodes['x-button-group'].shadowRoot,
+                    nodes['x-button-group'],
+                    nodes.container_div,
+                    nodes['x-container'].shadowRoot,
+                    nodes['x-container'],
+                    document.body,
+                    document.documentElement,
+                    document,
+                    window,
+                ];
+                const expectedLogs = [
+                    [nodes.button, nodes.button, composedPath],
+                    [nodes.button_div, nodes.button, composedPath],
+                    [nodes['x-button'].shadowRoot, nodes.button, composedPath],
+                    [nodes['x-button'], nodes['x-button'], composedPath],
+                    [nodes.button_group_slot, nodes['x-button'], composedPath],
+                    [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
+                    [nodes.button_group_div, nodes['x-button'], composedPath],
+                    [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group'], nodes['x-button'], composedPath],
+                    [nodes.container_div, nodes['x-button'], composedPath],
+                    [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
+                    [nodes['x-container'], nodes['x-container'], composedPath],
+                    [document.body, nodes['x-container'], composedPath],
+                    [document.documentElement, nodes['x-container'], composedPath],
+                    [document, nodes['x-container'], composedPath],
+                    [window, nodes['x-container'], composedPath],
+                ];
 
-            expect(actualLogs).toEqual(expectedLogs);
-        });
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+
+            it('{bubbles: false, composed: true}', () => {
+                const nodes = createTestElement();
+                const event = new CustomEvent('test', { bubbles: false, composed: true });
+                const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
+
+                const composedPath = [
+                    nodes.button,
+                    nodes.button_div,
+                    nodes['x-button'].shadowRoot,
+                    nodes['x-button'],
+                    nodes.button_group_slot,
+                    nodes.button_group_internal_slot,
+                    nodes['x-button-group-internal'].shadowRoot,
+                    nodes['x-button-group-internal'],
+                    nodes.button_group_div,
+                    nodes['x-button-group'].shadowRoot,
+                    nodes['x-button-group'],
+                    nodes.container_div,
+                    nodes['x-container'].shadowRoot,
+                    nodes['x-container'],
+                    document.body,
+                    document.documentElement,
+                    document,
+                    window,
+                ];
+
+                let expectedLogs;
+                if (process.env.NATIVE_SHADOW) {
+                    expectedLogs = [
+                        [nodes.button, nodes.button, composedPath],
+                        [nodes['x-button'], nodes['x-button'], composedPath],
+                        [nodes['x-container'], nodes['x-container'], composedPath],
+                    ];
+                } else {
+                    // TODO [#1138]: {bubbles: false, composed: true} events should invoke event listeners on ancestor hosts
+                    expectedLogs = [[nodes.button, nodes.button, composedPath]];
+                }
+
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+        }
 
         it('{bubbles: true, composed: false}', () => {
             const nodes = createTestElement();
@@ -102,47 +145,6 @@ describe('event propagation', () => {
                 [nodes.button_div, nodes.button, composedPath],
                 [nodes['x-button'].shadowRoot, nodes.button, composedPath],
             ];
-
-            expect(actualLogs).toEqual(expectedLogs);
-        });
-
-        it('{bubbles: false, composed: true}', () => {
-            const nodes = createTestElement();
-            const event = new CustomEvent('test', { bubbles: false, composed: true });
-            const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);
-
-            const composedPath = [
-                nodes.button,
-                nodes.button_div,
-                nodes['x-button'].shadowRoot,
-                nodes['x-button'],
-                nodes.button_group_slot,
-                nodes.button_group_internal_slot,
-                nodes['x-button-group-internal'].shadowRoot,
-                nodes['x-button-group-internal'],
-                nodes.button_group_div,
-                nodes['x-button-group'].shadowRoot,
-                nodes['x-button-group'],
-                nodes.container_div,
-                nodes['x-container'].shadowRoot,
-                nodes['x-container'],
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ];
-
-            let expectedLogs;
-            if (process.env.NATIVE_SHADOW) {
-                expectedLogs = [
-                    [nodes.button, nodes.button, composedPath],
-                    [nodes['x-button'], nodes['x-button'], composedPath],
-                    [nodes['x-container'], nodes['x-container'], composedPath],
-                ];
-            } else {
-                // TODO [#1138]: {bubbles: false, composed: true} events should invoke event listeners on ancestor hosts
-                expectedLogs = [[nodes.button, nodes.button, composedPath]];
-            }
 
             expect(actualLogs).toEqual(expectedLogs);
         });
@@ -388,50 +390,93 @@ describe('event propagation', () => {
     });
 
     describe('dispatched on shadow root', () => {
-        it('{bubbles: true, composed: true}', () => {
-            const nodes = createTestElement();
-            const event = new CustomEvent('test', { bubbles: true, composed: true });
-            const actualLogs = dispatchEventWithLog(nodes['x-button'].shadowRoot, nodes, event);
+        if (!process.env.MIXED_SHADOW) {
+            it('{bubbles: true, composed: true}', () => {
+                const nodes = createTestElement();
+                const event = new CustomEvent('test', { bubbles: true, composed: true });
+                const actualLogs = dispatchEventWithLog(nodes['x-button'].shadowRoot, nodes, event);
 
-            const composedPath = [
-                nodes['x-button'].shadowRoot,
-                nodes['x-button'],
-                nodes.button_group_slot,
-                nodes.button_group_internal_slot,
-                nodes['x-button-group-internal'].shadowRoot,
-                nodes['x-button-group-internal'],
-                nodes.button_group_div,
-                nodes['x-button-group'].shadowRoot,
-                nodes['x-button-group'],
-                nodes.container_div,
-                nodes['x-container'].shadowRoot,
-                nodes['x-container'],
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ];
-            const expectedLogs = [
-                [nodes['x-button'].shadowRoot, nodes['x-button'].shadowRoot, composedPath],
-                [nodes['x-button'], nodes['x-button'], composedPath],
-                [nodes.button_group_slot, nodes['x-button'], composedPath],
-                [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
-                [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
-                [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
-                [nodes.button_group_div, nodes['x-button'], composedPath],
-                [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
-                [nodes['x-button-group'], nodes['x-button'], composedPath],
-                [nodes.container_div, nodes['x-button'], composedPath],
-                [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
-                [nodes['x-container'], nodes['x-container'], composedPath],
-                [document.body, nodes['x-container'], composedPath],
-                [document.documentElement, nodes['x-container'], composedPath],
-                [document, nodes['x-container'], composedPath],
-                [window, nodes['x-container'], composedPath],
-            ];
+                const composedPath = [
+                    nodes['x-button'].shadowRoot,
+                    nodes['x-button'],
+                    nodes.button_group_slot,
+                    nodes.button_group_internal_slot,
+                    nodes['x-button-group-internal'].shadowRoot,
+                    nodes['x-button-group-internal'],
+                    nodes.button_group_div,
+                    nodes['x-button-group'].shadowRoot,
+                    nodes['x-button-group'],
+                    nodes.container_div,
+                    nodes['x-container'].shadowRoot,
+                    nodes['x-container'],
+                    document.body,
+                    document.documentElement,
+                    document,
+                    window,
+                ];
+                const expectedLogs = [
+                    [nodes['x-button'].shadowRoot, nodes['x-button'].shadowRoot, composedPath],
+                    [nodes['x-button'], nodes['x-button'], composedPath],
+                    [nodes.button_group_slot, nodes['x-button'], composedPath],
+                    [nodes.button_group_internal_slot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group-internal'].shadowRoot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group-internal'], nodes['x-button'], composedPath],
+                    [nodes.button_group_div, nodes['x-button'], composedPath],
+                    [nodes['x-button-group'].shadowRoot, nodes['x-button'], composedPath],
+                    [nodes['x-button-group'], nodes['x-button'], composedPath],
+                    [nodes.container_div, nodes['x-button'], composedPath],
+                    [nodes['x-container'].shadowRoot, nodes['x-button'], composedPath],
+                    [nodes['x-container'], nodes['x-container'], composedPath],
+                    [document.body, nodes['x-container'], composedPath],
+                    [document.documentElement, nodes['x-container'], composedPath],
+                    [document, nodes['x-container'], composedPath],
+                    [window, nodes['x-container'], composedPath],
+                ];
 
-            expect(actualLogs).toEqual(expectedLogs);
-        });
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+
+            it('{bubbles: false, composed: true}', () => {
+                const nodes = createTestElement();
+                const event = new CustomEvent('test', { bubbles: false, composed: true });
+                const actualLogs = dispatchEventWithLog(nodes['x-button'].shadowRoot, nodes, event);
+
+                const composedPath = [
+                    nodes['x-button'].shadowRoot,
+                    nodes['x-button'],
+                    nodes.button_group_slot,
+                    nodes.button_group_internal_slot,
+                    nodes['x-button-group-internal'].shadowRoot,
+                    nodes['x-button-group-internal'],
+                    nodes.button_group_div,
+                    nodes['x-button-group'].shadowRoot,
+                    nodes['x-button-group'],
+                    nodes.container_div,
+                    nodes['x-container'].shadowRoot,
+                    nodes['x-container'],
+                    document.body,
+                    document.documentElement,
+                    document,
+                    window,
+                ];
+
+                let expectedLogs;
+                if (process.env.NATIVE_SHADOW) {
+                    expectedLogs = [
+                        [nodes['x-button'].shadowRoot, nodes['x-button'].shadowRoot, composedPath],
+                        [nodes['x-button'], nodes['x-button'], composedPath],
+                        [nodes['x-container'], nodes['x-container'], composedPath],
+                    ];
+                } else {
+                    expectedLogs = [
+                        [nodes['x-button'].shadowRoot, nodes['x-button'].shadowRoot, composedPath],
+                        [nodes['x-button'], nodes['x-button'], composedPath],
+                    ];
+                }
+
+                expect(actualLogs).toEqual(expectedLogs);
+            });
+        }
 
         it('{bubbles: true, composed: false}', () => {
             const nodes = createTestElement();
@@ -442,47 +487,6 @@ describe('event propagation', () => {
             const expectedLogs = [
                 [nodes['x-button'].shadowRoot, nodes['x-button'].shadowRoot, composedPath],
             ];
-
-            expect(actualLogs).toEqual(expectedLogs);
-        });
-
-        it('{bubbles: false, composed: true}', () => {
-            const nodes = createTestElement();
-            const event = new CustomEvent('test', { bubbles: false, composed: true });
-            const actualLogs = dispatchEventWithLog(nodes['x-button'].shadowRoot, nodes, event);
-
-            const composedPath = [
-                nodes['x-button'].shadowRoot,
-                nodes['x-button'],
-                nodes.button_group_slot,
-                nodes.button_group_internal_slot,
-                nodes['x-button-group-internal'].shadowRoot,
-                nodes['x-button-group-internal'],
-                nodes.button_group_div,
-                nodes['x-button-group'].shadowRoot,
-                nodes['x-button-group'],
-                nodes.container_div,
-                nodes['x-container'].shadowRoot,
-                nodes['x-container'],
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ];
-
-            let expectedLogs;
-            if (process.env.NATIVE_SHADOW) {
-                expectedLogs = [
-                    [nodes['x-button'].shadowRoot, nodes['x-button'].shadowRoot, composedPath],
-                    [nodes['x-button'], nodes['x-button'], composedPath],
-                    [nodes['x-container'], nodes['x-container'], composedPath],
-                ];
-            } else {
-                expectedLogs = [
-                    [nodes['x-button'].shadowRoot, nodes['x-button'].shadowRoot, composedPath],
-                    [nodes['x-button'], nodes['x-button'], composedPath],
-                ];
-            }
 
             expect(actualLogs).toEqual(expectedLogs);
         });

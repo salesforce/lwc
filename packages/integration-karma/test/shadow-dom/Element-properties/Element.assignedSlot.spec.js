@@ -23,37 +23,51 @@ describe('assignedSlot', () => {
         expect(child.assignedSlot).toBe(null);
     });
 
-    it('should return the correct slot when native element is slotted', () => {
-        const elm = createElement('x-native-slotted-component', { is: SlottedParent });
-        document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-slot').shadowRoot.querySelector('slot');
-        const child = elm.shadowRoot.querySelector('div');
-        expect(child.assignedSlot).toBe(slot);
-    });
+    if (!process.env.MIXED_SHADOW) {
+        it('should return the correct slot when native element is slotted', () => {
+            const elm = createElement('x-native-slotted-component', { is: SlottedParent });
+            document.body.appendChild(elm);
+            const slot = elm.shadowRoot.querySelector('x-slot').shadowRoot.querySelector('slot');
+            const child = elm.shadowRoot.querySelector('div');
+            expect(child.assignedSlot).toBe(slot);
+        });
 
-    it('should return the correct slot when custom element is slotted', () => {
-        const elm = createElement('x-custom-slotted-component', { is: SlottedCustomElement });
-        document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-slot').shadowRoot.querySelector('slot');
-        const child = elm.shadowRoot.querySelector('x-child');
-        expect(child.assignedSlot).toBe(slot);
-    });
+        it('should return the correct slot when custom element is slotted', () => {
+            const elm = createElement('x-custom-slotted-component', { is: SlottedCustomElement });
+            document.body.appendChild(elm);
+            const slot = elm.shadowRoot.querySelector('x-slot').shadowRoot.querySelector('slot');
+            const child = elm.shadowRoot.querySelector('x-child');
+            expect(child.assignedSlot).toBe(slot);
+        });
 
-    it('should return the correct named slot when native element is slotted', () => {
-        const elm = createElement('x-native-slotted-component', { is: SlottedParent });
-        document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-named-slot').shadowRoot.querySelector('slot');
-        const child = elm.shadowRoot.querySelector('div.named');
-        expect(child.assignedSlot).toBe(slot);
-    });
+        it('should return the correct named slot when native element is slotted', () => {
+            const elm = createElement('x-native-slotted-component', { is: SlottedParent });
+            document.body.appendChild(elm);
+            const slot = elm.shadowRoot
+                .querySelector('x-named-slot')
+                .shadowRoot.querySelector('slot');
+            const child = elm.shadowRoot.querySelector('div.named');
+            expect(child.assignedSlot).toBe(slot);
+        });
 
-    it('should return the correct named slot when custom element is slotted', () => {
-        const elm = createElement('x-custom-slotted-component', { is: SlottedCustomElement });
-        document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-named-slot').shadowRoot.querySelector('slot');
-        const child = elm.shadowRoot.querySelector('x-child.named');
-        expect(child.assignedSlot).toBe(slot);
-    });
+        it('should return the correct named slot when custom element is slotted', () => {
+            const elm = createElement('x-custom-slotted-component', { is: SlottedCustomElement });
+            document.body.appendChild(elm);
+            const slot = elm.shadowRoot
+                .querySelector('x-named-slot')
+                .shadowRoot.querySelector('slot');
+            const child = elm.shadowRoot.querySelector('x-child.named');
+            expect(child.assignedSlot).toBe(slot);
+        });
+
+        it('should return the correct slot when text is slotted', () => {
+            const elm = createElement('x-native-slotted-component', { is: TextSlotted });
+            document.body.appendChild(elm);
+            const slot = elm.shadowRoot.querySelector('x-slot').shadowRoot.querySelector('slot');
+            const text = getHostChildNodes(elm.shadowRoot.querySelector('x-slot'))[0];
+            expect(text.assignedSlot).toBe(slot);
+        });
+    }
 
     it('should return null when native element default slot content', () => {
         const elm = createElement('x-assigned-slot', { is: SlotReceiver });
@@ -67,13 +81,5 @@ describe('assignedSlot', () => {
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-child');
         expect(child.assignedSlot).toBe(null);
-    });
-
-    it('should return the correct slot when text is slotted', () => {
-        const elm = createElement('x-native-slotted-component', { is: TextSlotted });
-        document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-slot').shadowRoot.querySelector('slot');
-        const text = getHostChildNodes(elm.shadowRoot.querySelector('x-slot'))[0];
-        expect(text.assignedSlot).toBe(slot);
     });
 });
