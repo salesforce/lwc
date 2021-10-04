@@ -177,6 +177,10 @@ jobs:
       - run_karma:
           disable_synthetic: false
           compat: false
+          force_native_shadow_mode: true
+      - run_karma:
+          disable_synthetic: false
+          compat: false
           force_native_shadow_mode: false
       - run_karma:
           disable_synthetic: true
