@@ -7,33 +7,35 @@ import Container from 'x/container';
 // In the synthetic shadow however, slot content will be not be present in the DOM when not rendered.
 
 describe('custom elements', () => {
-    it('should not be reused when slotted', function () {
-        const elm = createElement('x-container', { is: Container });
-        elm.isCustomElement = true;
-        document.body.appendChild(elm);
+    if (!process.env.MIXED_SHADOW) {
+        it('should not be reused when slotted', function () {
+            const elm = createElement('x-container', { is: Container });
+            elm.isCustomElement = true;
+            document.body.appendChild(elm);
 
-        const child = elm.shadowRoot.querySelector('x-child');
-        let firstRenderCustomElement;
+            const child = elm.shadowRoot.querySelector('x-child');
+            let firstRenderCustomElement;
 
-        return Promise.resolve()
-            .then(() => (child.open = true))
-            .then(() => {
-                firstRenderCustomElement = elm.shadowRoot.querySelector('x-simple');
-                child.open = false;
-            })
-            .then(() => (child.open = true))
-            .then(() => {
-                const xSimple = elm.shadowRoot.querySelector('x-simple');
+            return Promise.resolve()
+                .then(() => (child.open = true))
+                .then(() => {
+                    firstRenderCustomElement = elm.shadowRoot.querySelector('x-simple');
+                    child.open = false;
+                })
+                .then(() => (child.open = true))
+                .then(() => {
+                    const xSimple = elm.shadowRoot.querySelector('x-simple');
 
-                expect(xSimple).not.toBeNull();
-                expect(xSimple.assignedSlot).not.toBeNull();
-                expect(elm.shadowRoot.querySelector('.mark')).not.toBeNull();
+                    expect(xSimple).not.toBeNull();
+                    expect(xSimple.assignedSlot).not.toBeNull();
+                    expect(elm.shadowRoot.querySelector('.mark')).not.toBeNull();
 
-                if (!process.env.NATIVE_SHADOW) {
-                    expect(xSimple).not.toBe(firstRenderCustomElement);
-                }
-            });
-    });
+                    if (!process.env.NATIVE_SHADOW) {
+                        expect(xSimple).not.toBe(firstRenderCustomElement);
+                    }
+                });
+        });
+    }
 });
 
 describe('elements', () => {

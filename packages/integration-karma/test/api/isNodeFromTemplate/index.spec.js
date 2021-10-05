@@ -33,33 +33,35 @@ it('should return false on the shadow root', () => {
     expect(isNodeFromTemplate(elm.shadowRoot)).toBe(false);
 });
 
-it('should return true on elements rendered from the template', () => {
-    const elm = createElement('x-test', { is: Test });
-    document.body.appendChild(elm);
+if (!process.env.MIXED_SHADOW) {
+    it('should return true on elements rendered from the template', () => {
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
 
-    const div = elm.shadowRoot.querySelector('div');
-    expect(isNodeFromTemplate(div)).toBe(true);
-});
-
-it('should return true on elements manually inserted in the DOM inside an element with lwc:dom="manual"', () => {
-    const elm = createElement('x-test', { is: Test });
-    document.body.appendChild(elm);
-
-    const div = document.createElement('div');
-    elm.shadowRoot.querySelector('div').appendChild(div);
-
-    // TODO [#1253]: optimization to synchronously adopt new child nodes added
-    // to this elm, we can do that by patching the most common operations
-    // on the node itself
-    if (!process.env.NATIVE_SHADOW) {
-        expect(isNodeFromTemplate(div)).toBe(false); // it is false sync because MO hasn't pick up the element yet
-    }
-    return new Promise((resolve) => {
-        setTimeout(resolve);
-    }).then(() => {
-        expect(isNodeFromTemplate(div)).toBe(true); // it is true async because MO has already pick up the element
+        const div = elm.shadowRoot.querySelector('div');
+        expect(isNodeFromTemplate(div)).toBe(true);
     });
-});
+
+    it('should return true on elements manually inserted in the DOM inside an element with lwc:dom="manual"', () => {
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+
+        const div = document.createElement('div');
+        elm.shadowRoot.querySelector('div').appendChild(div);
+
+        // TODO [#1253]: optimization to synchronously adopt new child nodes added
+        // to this elm, we can do that by patching the most common operations
+        // on the node itself
+        if (!process.env.NATIVE_SHADOW) {
+            expect(isNodeFromTemplate(div)).toBe(false); // it is false sync because MO hasn't pick up the element yet
+        }
+        return new Promise((resolve) => {
+            setTimeout(resolve);
+        }).then(() => {
+            expect(isNodeFromTemplate(div)).toBe(true); // it is true async because MO has already pick up the element
+        });
+    });
+}
 
 // TODO [#1252]: old behavior that is still used by some pieces of the platform
 // if isNodeFromTemplate() returns true, locker will prevent traversing to such elements from document

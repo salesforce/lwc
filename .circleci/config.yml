@@ -99,7 +99,9 @@ commands:
   run_karma:
     description: Run Karma integration tests
     parameters:
-      native_shadow:
+      disable_synthetic:
+        type: boolean
+      force_native_shadow_mode:
         type: boolean
       compat:
         type: boolean
@@ -111,7 +113,8 @@ commands:
           name: Run karma integration tests
           working_directory: packages/integration-karma
           command: >
-              <<# parameters.native_shadow >> DISABLE_SYNTHETIC=1 <</ parameters.native_shadow >>
+              <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >>
+              <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >>
               <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
               <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
               yarn sauce
@@ -172,14 +175,21 @@ jobs:
       - load_workspace
       - start_sauce_connect
       - run_karma:
-          native_shadow: false
+          disable_synthetic: false
           compat: false
+          force_native_shadow_mode: false
       - run_karma:
-          native_shadow: true
+          disable_synthetic: true
           compat: false
+          force_native_shadow_mode: false
       - run_karma:
-          native_shadow: false
+          disable_synthetic: false
           compat: true
+          force_native_shadow_mode: false
+      - run_karma:
+          disable_synthetic: false
+          compat: false
+          force_native_shadow_mode: true
       - run:
           name: Compute karma coverage
           command: yarn coverage
