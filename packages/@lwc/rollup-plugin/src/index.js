@@ -112,10 +112,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             if (isCSS) {
                 const exists = fs.existsSync(id);
                 const code = exists ? fs.readFileSync(id, 'utf8') : '';
-                return {
-                    code,
-                    meta: { lwcScopedStyles: scoped },
-                };
+                return code;
             }
         },
 
@@ -125,7 +122,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 return;
             }
 
-            const scopedStyles = this.getModuleInfo(id).meta.lwcScopedStyles;
             const { scoped, filename } = parseQueryParamsForScopedOption(id);
             if (scoped) {
                 id = filename; // remove query param
@@ -141,7 +137,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 stylesheetConfig: pluginOptions.stylesheetConfig,
                 experimentalDynamicComponent: pluginOptions.experimentalDynamicComponent,
                 preserveHtmlComments: pluginOptions.preserveHtmlComments,
-                scopedStyles,
+                scopedStyles: scoped,
             });
 
             return { code, map };
