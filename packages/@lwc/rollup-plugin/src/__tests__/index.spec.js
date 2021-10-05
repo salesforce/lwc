@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
+const fs = require('fs');
 const rollup = require('rollup');
 const rollupCompat = require('rollup-plugin-compat');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
@@ -14,6 +15,7 @@ require('jest-utils-lwc-internals');
 const fixturesDir = path.join(__dirname, 'fixtures');
 const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
 const simpleAppWithThirdPartyDir = path.join(fixturesDir, 'simple_app_third_party_import/src');
+const simpleAppDirWithScopedStyles = path.join(fixturesDir, 'simple_app_with_scoped_styles/src');
 const tsAppDir = path.join(fixturesDir, 'ts_simple_app/src');
 const jsMultiVersion = path.join(fixturesDir, 'multi_version');
 
@@ -61,6 +63,35 @@ describe('default configuration', () => {
         return doRollup(entry, { compat: false, resolve: true }).then(({ code: actual }) => {
             expect(actual).toMatchFile(
                 path.join(fixturesDir, 'expected_default_config_simple_app_third_party.js')
+            );
+        });
+    });
+
+    it('simple app with another plugin that resolves scoped styles', () => {
+        const entry = path.join(simpleAppDirWithScopedStyles, 'main.js');
+        const extraPlugins = [
+            {
+                name: 'resolve-scoped-styles',
+                resolveId(importee, importer) {
+                    if (importee.endsWith('?scoped=true')) {
+                        const importeeWithoutQuery = importee.replace('?scoped=true', '');
+                        const importerDir = path.dirname(importer);
+                        const fullImportee = path.resolve(importerDir, importee);
+                        const fullImporteeWithoutQuery = path.resolve(
+                            importerDir,
+                            importeeWithoutQuery
+                        );
+                        if (fs.existsSync(fullImporteeWithoutQuery)) {
+                            // mimics @rollup/plugin-node-resolve, which can resolve the ID with the query param
+                            return fullImportee;
+                        }
+                    }
+                },
+            },
+        ];
+        return doRollup(entry, { extraPlugins }).then(({ code: actual }) => {
+            expect(actual).toMatchFile(
+                path.join(fixturesDir, 'expected_default_config_simple_app_with_scoped_styles.js')
             );
         });
     });
@@ -117,11 +148,12 @@ describe('multi-package-version', () => {
 
 const globalModules = { lwc: 'LWC', myCssResolver: 'resolveCss' };
 
-async function doRollup(input, { compat, resolve } = {}, rollupCompileOptions) {
+async function doRollup(input, { compat, resolve, extraPlugins } = {}, rollupCompileOptions) {
     const bundle = await rollup.rollup({
         input,
         external: (id) => id in globalModules,
         plugins: [
+            ...(extraPlugins || []),
             resolve && nodeResolve(),
             rollupCompile(rollupCompileOptions),
             compat && rollupCompat({ polyfills: false }),

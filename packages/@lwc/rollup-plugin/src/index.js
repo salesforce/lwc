@@ -70,10 +70,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             // Note that in @rollup/plugin-node-resolve v13, relative imports will sometimes
             // be in absolute format (e.g. "/path/to/module.js") so we have to check that as well.
             if ((importee.startsWith('.') || importee.startsWith('/')) && importer) {
-                const { scoped, filename } = parseQueryParamsForScopedOption(importee);
-                if (scoped) {
-                    importee = filename; // remove query param
-                }
                 const importerExt = path.extname(importer);
                 const ext = path.extname(importee) || importerExt;
 
@@ -84,10 +80,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                     return IMPLICIT_DEFAULT_HTML_PATH;
                 }
 
-                return {
-                    id: pluginUtils.addExtension(normalizedPath, ext),
-                    meta: { lwcScopedStyles: scoped },
-                };
+                return pluginUtils.addExtension(normalizedPath, ext);
             } else if (importer) {
                 // Could be an import like `import component from 'x/component'`
                 try {
@@ -108,13 +101,21 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 return EMPTY_IMPLICIT_HTML_CONTENT;
             }
 
+            // Have to parse the `?scoped=true` in `load`, because it's not guaranteed
+            // that `resolveId` will always be called (e.g. if another plugin resolves it first)
+            const { scoped, filename } = parseQueryParamsForScopedOption(id);
+            if (scoped) {
+                id = filename; // remove query param
+            }
             const isCSS = path.extname(id) === '.css';
 
             if (isCSS) {
                 const exists = fs.existsSync(id);
-                if (!exists) {
-                    return '';
-                }
+                const code = exists ? fs.readFileSync(id, 'utf8') : '';
+                return {
+                    code,
+                    meta: { lwcScopedStyles: scoped },
+                };
             }
         },
 
@@ -124,10 +125,14 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 return;
             }
 
+            const scopedStyles = this.getModuleInfo(id).meta.lwcScopedStyles;
+            const { scoped, filename } = parseQueryParamsForScopedOption(id);
+            if (scoped) {
+                id = filename; // remove query param
+            }
+
             // Extract module name and namespace from file path
             const [namespace, name] = path.dirname(id).split(path.sep).slice(-2);
-
-            const scopedStyles = this.getModuleInfo(id).meta.lwcScopedStyles;
 
             const { code, map } = compiler.transformSync(src, id, {
                 name,
