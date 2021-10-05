@@ -84,4 +84,4 @@
 
     console.log('>>', doNothing());
 
-}(LWC));
+})(LWC);

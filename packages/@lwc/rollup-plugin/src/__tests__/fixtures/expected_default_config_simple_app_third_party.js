@@ -37,4 +37,4 @@
   });
   container.appendChild(element);
 
-}(LWC));
+})(LWC);

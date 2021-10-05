@@ -192,4 +192,4 @@
 
   __callKey1(container, "appendChild", element);
 
-}(LWC));
+})(LWC);

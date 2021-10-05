@@ -15,6 +15,6 @@
     },
     "devDependencies": {
         "glob-hash": "^1.0.5",
-        "tachometer": "^0.5.9"
+        "tachometer": "^0.5.10"
     }
 }
