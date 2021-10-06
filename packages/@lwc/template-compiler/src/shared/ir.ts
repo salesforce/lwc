@@ -362,16 +362,16 @@ export function isDomDirective(directive: Directive): directive is DomDirective 
     return directive.name === LWCNodeType.Dom;
 }
 
+export function isInnerHTMLDirective(directive: Directive): directive is InnerHTMLDirective {
+    return directive.name === LWCNodeType.InnerHTML;
+}
+
 export function isRenderModeDirective(directive: Directive): directive is RenderModeDirective {
     return directive.name === LWCNodeType.RenderMode;
 }
 
 export function isPreserveComments(directive: Directive): directive is PreserveCommentsDirective {
     return directive.name === LWCNodeType.PreserveComments;
-}
-
-export function isInnerHTMLDirective(directive: Directive): directive is InnerHTMLDirective {
-    return directive.name === 'InnerHTML';
 }
 
 export function isKeyDirective(directive: Directive): directive is KeyDirective {

@@ -16,14 +16,7 @@ import {
 import { ResolvedConfig } from '../config';
 import { getPreserveComments, getRenderModeDirective } from '../shared/ir';
 
-import {
-    Root,
-    SourceLocation,
-    LWCDirectiveRenderMode,
-    ParentWrapper,
-    ParentNode,
-    BaseNode,
-} from '../shared/types';
+import { Root, SourceLocation, ParentNode, BaseNode, LWCDirectiveRenderMode } from '../shared/types';
 
 function normalizeLocation(location?: SourceLocation): Location {
     let line = 0;
@@ -40,16 +33,16 @@ function normalizeLocation(location?: SourceLocation): Location {
 
     return { line, column, start, length };
 }
-
 export default class ParserCtx {
     private readonly source: String;
     readonly config: ResolvedConfig;
-
     readonly warnings: CompilerDiagnostic[] = [];
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
 
-    renderMode: LWCDirectiveRenderMode;
+    private readonly ancestors: ParentNode[][] = [[]];
+
+    renderMode: string;
     preserveComments: boolean;
 
     constructor(source: String, config: ResolvedConfig) {
@@ -63,25 +56,50 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
+    *getAncestors(element?: ParentNode) {
+        const array: ParentNode[] = [];
+        const ancestors = array.concat(...this.ancestors);
+        const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
+
+        for (let i = start; i >= 0; i--) {
+            yield { current: ancestors[i], parent: ancestors[i - 1] };
+        }
+    }
+
     findAncestor({
-        current,
+        element,
         predicate,
         traversalCond = () => true,
     }: {
-        current: ParentWrapper;
-        predicate: (node: ParentWrapper) => unknown;
-        traversalCond?: (nodes: { current: ParentWrapper; parent: ParentWrapper }) => unknown;
+        element?: ParentNode;
+        predicate: (elm: ParentNode) => unknown;
+        traversalCond?: (nodes: { current: ParentNode; parent: ParentNode | null }) => unknown;
     }): ParentNode | null {
-        if (predicate(current)) {
-            return current.node;
+        for (const { current, parent } of this.getAncestors(element)) {
+            if (predicate(current)) {
+                return current;
+            }
+            if (!traversalCond({ current, parent })) {
+                break;
+            }
         }
-
-        const parent = current.parent;
-        if (parent && traversalCond({ current, parent })) {
-            return this.findAncestor({ current: parent, predicate, traversalCond });
-        }
-
         return null;
+    }
+
+    beginAncestors() {
+        this.ancestors.push([]);
+    }
+
+    endAncestors() {
+        this.ancestors.pop();
+    }
+
+    current() {
+        return this.ancestors[this.ancestors.length - 1];
+    }
+
+    addParent(parent: ParentNode) {
+        this.current().push(parent);
     }
 
     /**

@@ -28,6 +28,7 @@ import {
     getKeyDirective,
     getDomDirective,
     isComponent,
+    isInnerHTMLDirective,
 } from '../shared/ir';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
@@ -45,7 +46,6 @@ import {
     Property,
     Comment,
     ForOf,
-    LWCNodeType,
 } from '../shared/types';
 
 import CodeGen from './codegen';
@@ -438,7 +438,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
         const { attributes, properties, listeners } = element;
         const dom = getDomDirective(element);
-        const innerHTML = element.directives?.find(dir => dir.name === LWCNodeType.InnerHTML);
+        const innerHTML = element.directives?.find(isInnerHTMLDirective);
         const forKey = getKeyDirective(element);
 
         // Attributes
