@@ -11,7 +11,7 @@ afterEach(() => {
     LWC.sanitizeHtmlContent = originalSanitizeHtmlContent;
 });
 
-it('uses the original passthrough sanitizer when not overridden', () => {
+it('throws when not overridden', () => {
     expect(() => {
         const elm = createElement('x-inner-html', { is: XInnerHtml });
         elm.content = ACTUAL_CONTENT;

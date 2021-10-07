@@ -549,7 +549,7 @@ export const ParserDiagnostics = {
     LWC_INNER_HTML_INVALID_CONTENTS: {
         code: 1142,
         message:
-            'Invalid lwc:inner-html usage on element "{0}". The directive can\'t be used on a element with content.',
+            'Invalid lwc:inner-html usage on element "{0}". The directive can\'t be used on an element with content.',
         level: DiagnosticLevel.Error,
         url: '',
     },
