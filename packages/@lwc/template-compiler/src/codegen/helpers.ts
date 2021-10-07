@@ -19,7 +19,6 @@ import {
 import { LWC_RENDERMODE, TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
-import Scope from './scope';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toPropertyName(name)}`);
@@ -95,13 +94,12 @@ export function hasIdAttribute(node: ParentNode): boolean {
 
 export function memorizeHandler(
     codeGen: CodeGen,
-    scope: Scope,
     componentHandler: t.Expression,
     handler: t.Expression
 ): t.Expression {
     // #439 - The handler can only be memorized if it is bound to component instance
     const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-    const shouldMemorizeHandler = scope.resolve(id);
+    const shouldMemorizeHandler = codeGen.resolve(id);
 
     // Apply memorization if the handler is memorizable.
     //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))

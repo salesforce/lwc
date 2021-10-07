@@ -46,7 +46,6 @@ import {
 } from '../shared/types';
 
 import CodeGen from './codegen';
-import Scope from './scope';
 import {
     identifierFromComponentName,
     objectToAST,
@@ -73,7 +72,7 @@ import {
 } from '../parser/attribute';
 import { SVG_NAMESPACE_URI } from '../parser/constants';
 
-function transform(codeGen: CodeGen, scope: Scope): t.Expression {
+function transform(codeGen: CodeGen): t.Expression {
     function transformElement(element: Element | Component | Slot): t.Expression {
         const databag = elementDataBag(element);
         let res: t.Expression;
@@ -85,7 +84,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
         const dynamic = element.directives?.find(isDirectiveType('Dynamic'));
         if (dynamic) {
-            const expression = scope.bindExpression(dynamic.value);
+            const expression = codeGen.bindExpression(dynamic.value);
             res = codeGen.genDynamicElement(name, expression, databag, children);
         } else if (isComponent(element)) {
             // Make sure to register the component
@@ -113,7 +112,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             consecutiveText.map((text) => {
                 const { value } = text;
 
-                return isStringLiteral(value) ? value.value : scope.bindExpression(value);
+                return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
             })
         );
     }
@@ -150,11 +149,11 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             }
 
             if (isForBlock(child)) {
-                res.push(transformFor(child));
+                res.push(transformForBlock(child));
             }
 
             if (isIfBlock(child)) {
-                const ifBlockChildren = transformIf(child);
+                const ifBlockChildren = trnasformIfBlock(child);
                 Array.isArray(ifBlockChildren)
                     ? res.push(...ifBlockChildren)
                     : res.push(ifBlockChildren);
@@ -186,7 +185,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         }
     }
 
-    function transformIf(ifBlock: IfBlock): t.Expression | t.Expression[] {
+    function trnasformIfBlock(ifBlock: IfBlock): t.Expression | t.Expression[] {
         const children = transformChildren(ifBlock);
         const child = ifBlock.children[0];
 
@@ -218,7 +217,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         falseValue?: t.Expression
     ) {
         if (!testExpression) {
-            testExpression = scope.bindExpression(ifBlock.condition);
+            testExpression = codeGen.bindExpression(ifBlock.condition);
         }
 
         let leftExpression: t.Expression;
@@ -239,7 +238,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
     }
 
-    function transformFor(forBlock: ForBlock): t.Expression {
+    function transformForBlock(forBlock: ForBlock): t.Expression {
         const children = transformForChildren(forBlock);
 
         let expression = children;
@@ -258,20 +257,20 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
     }
 
     function transformForChildren(forBlock: ForBlock): t.Expression {
-        scope.beginScope();
+        codeGen.beginScope();
 
         if (isForEach(forBlock)) {
             const { item, index } = forBlock;
             if (index) {
-                scope.declare(index);
+                codeGen.declare(index);
             }
-            scope.declare(item);
+            codeGen.declare(item);
         } else {
-            scope.declare(forBlock.iterator);
+            codeGen.declare(forBlock.iterator);
         }
 
         const children = transformChildren(forBlock);
-        scope.endScope();
+        codeGen.endScope();
 
         return children;
     }
@@ -283,7 +282,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             params.push(index);
         }
 
-        const iterable = scope.bindExpression(expression);
+        const iterable = codeGen.bindExpression(expression);
         const iterationFunction = t.functionExpression(
             null,
             params,
@@ -311,7 +310,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             )
         );
 
-        const iterable = scope.bindExpression(expression);
+        const iterable = codeGen.bindExpression(expression);
         const iterationFunction = t.functionExpression(
             null,
             iteratorArgs,
@@ -329,7 +328,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
     function applyTemplateIf(ifBlock: IfBlock, fragmentNodes: t.Expression): t.Expression {
         if (t.isArrayExpression(fragmentNodes)) {
             // Bind the expression once for all the template children
-            const testExpression = scope.bindExpression(ifBlock.condition);
+            const testExpression = codeGen.bindExpression(ifBlock.condition);
 
             return t.arrayExpression(
                 fragmentNodes.elements.map((child) =>
@@ -355,7 +354,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         const isUsedAsAttribute = isAttribute(element, attrName);
 
         if (isExpression(attrValue)) {
-            const expression = scope.bindExpression(attrValue);
+            const expression = codeGen.bindExpression(attrValue);
 
             // TODO [#2012]: Normalize global boolean attrs values passed to custom elements as props
             if (isUsedAsAttribute && isBooleanAttribute(attrName, elmName)) {
@@ -451,7 +450,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
                     // - string values are parsed and turned into a `classMap` object associating
                     //   each individual class name with a `true` boolean.
                     if (isExpression(value)) {
-                        const classExpression = scope.bindExpression(value);
+                        const classExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('className'), classExpression));
                     } else if (isStringLiteral(value)) {
                         const classNames = parseClassNames(value.value);
@@ -466,7 +465,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
                     // - string values are parsed and turned into a `styles` array
                     // containing triples of [name, value, important (optional)]
                     if (isExpression(value)) {
-                        const styleExpression = scope.bindExpression(value);
+                        const styleExpression = codeGen.bindExpression(value);
                         data.push(t.property(t.identifier('style'), styleExpression));
                     } else if (isStringLiteral(value)) {
                         const styleMap = parseStyleText(value.value);
@@ -504,7 +503,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
             const expr =
                 isStringLiteral(innerHTML.value)
                     ? t.literal(innerHTML.value.value)
-                    : scope.bindExpression(innerHTML.value);
+                    : codeGen.bindExpression(innerHTML.value);
                 propsObj.properties.push(
                 t.property(t.identifier('innerHTML'), codeGen.genSanitizedHtmlExpr(expr))
             );
@@ -530,7 +529,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         // Key property on VNode
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
-            const forKeyExpression = scope.bindExpression(forKey.value);
+            const forKeyExpression = codeGen.bindExpression(forKey.value);
             const generatedKey = codeGen.genKey(t.literal(codeGen.generateKey()), forKeyExpression);
             data.push(t.property(t.identifier('key'), generatedKey));
         } else {
@@ -545,10 +544,10 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
                 listeners.map((listener) => [listener.name, listener])
             );
             const onlistenerObjAST = objectToAST(listenerObj, (key) => {
-                const componentHandler = scope.bindExpression(listenerObj[key].handler);
+                const componentHandler = codeGen.bindExpression(listenerObj[key].handler);
                 const handler = codeGen.genBind(componentHandler);
 
-                return memorizeHandler(codeGen, scope, componentHandler, handler);
+                return memorizeHandler(codeGen, componentHandler, handler);
             });
             data.push(t.property(t.identifier('on'), onlistenerObjAST));
         }
@@ -564,8 +563,8 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
     return transformChildren(codeGen.root);
 }
 
-function generateTemplateFunction(codeGen: CodeGen, scope: Scope): t.FunctionDeclaration {
-    const returnedValue = transform(codeGen, scope);
+function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
+    const returnedValue = transform(codeGen);
 
     const args = [
         TEMPLATE_PARAMS.API,
@@ -618,9 +617,8 @@ export default function (root: Root, config: ResolvedConfig): string {
         config,
         scopeFragmentId,
     });
-    const scope = new Scope();
 
-    const templateFunction = generateTemplateFunction(codeGen, scope);
+    const templateFunction = generateTemplateFunction(codeGen);
 
     let program: t.Program;
     switch (config.format) {

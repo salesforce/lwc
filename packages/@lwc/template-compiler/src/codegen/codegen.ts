@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { walk } from 'estree-walker';
 import { ResolvedConfig } from '../config';
-import { LWC_RENDERMODE } from '../shared/constants';
 
 import * as t from '../shared/estree';
 import { isDirectiveType } from '../shared/ast';
-import { Root } from '../shared/types';
-import { TEMPLATE_PARAMS } from '../shared/constants';
+import { Expression, Literal, Root } from '../shared/types';
+import { LWC_RENDERMODE, TEMPLATE_PARAMS } from '../shared/constants';
 
 type RenderPrimitive =
     | 'iterator'
@@ -52,6 +52,11 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
 };
 
+interface Scope {
+    parent?: Scope;
+    declaration: Set<string>;
+}
+
 export default class CodeGen {
     /** The AST root. */
     readonly root: Root;
@@ -70,6 +75,8 @@ export default class CodeGen {
      * fashion.
      */
     readonly scopeFragmentId: boolean;
+
+    private scope: Scope;
 
     currentId = 0;
     currentKey = 0;
@@ -99,6 +106,9 @@ export default class CodeGen {
             root.directives?.find(isDirectiveType('PreserveComments'))?.value.value ??
             config.preserveHtmlComments;
         this.scopeFragmentId = scopeFragmentId;
+        this.scope = {
+            declaration: new Set(),
+        };
     }
 
     generateKey() {
@@ -304,5 +314,61 @@ export default class CodeGen {
         }
 
         return t.callExpression(identifier, params);
+    }
+
+    beginScope() {
+        this.scope = {
+            parent: this.scope,
+            declaration: new Set(),
+        };
+    }
+
+    endScope() {
+        if (this.scope.parent) {
+            this.scope = this.scope.parent;
+        }
+    }
+
+    declare(identifier: t.Identifier) {
+        this.scope.declaration.add(identifier.name);
+    }
+
+    resolve(identifier: t.Identifier, current = this.scope): boolean {
+        if (current.declaration.has(identifier.name)) {
+            return false;
+        }
+
+        if (current.parent) {
+            return this.resolve(identifier, current.parent);
+        }
+
+        return true;
+    }
+
+    bindExpression(expression: Expression | Literal): t.Expression {
+        if (t.isIdentifier(expression)) {
+            if (this.resolve(expression)) {
+                return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
+            } else {
+                return expression;
+            }
+        }
+
+        const scope = this;
+        walk(expression, {
+            leave(node, parent) {
+                if (
+                    parent !== null &&
+                    t.isIdentifier(node) &&
+                    t.isMemberExpression(parent) &&
+                    parent.object === node &&
+                    scope.resolve(node)
+                ) {
+                    this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
+                }
+            },
+        });
+
+        return expression as t.Expression;
     }
 }
