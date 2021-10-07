@@ -41,8 +41,8 @@ export function root(parse5Elm: parse5.Element, location: SourceLocation): Root 
     return {
         type: 'Root',
         name: parse5Elm.nodeName,
-        children: [],
         location,
+        children: [],
     };
 }
 
@@ -52,8 +52,8 @@ export function element(parse5Elm: parse5.Element, location: SourceLocation): El
         name: parse5Elm.nodeName,
         namespace: parse5Elm.namespaceURI,
         location,
-        properties: [],
         attributes: [],
+        properties: [],
         listeners: [],
         children: [],
     };
@@ -75,11 +75,11 @@ export function slot(name: string, location: SourceLocation): Slot {
     return {
         type: 'Slot',
         name,
+        location,
         attributes: [],
         properties: [],
         listeners: [],
         children: [],
-        location,
     };
 }
 
@@ -118,7 +118,6 @@ export function literal<T extends string | boolean>(value: T): Literal<T> {
 }
 
 export function forEach(
-    name: string,
     expression: Expression,
     location: SourceLocation,
     item: Identifier,
@@ -126,24 +125,21 @@ export function forEach(
 ): ForEach {
     return {
         type: 'ForEach',
-        name,
         expression,
-        location,
-        children: [],
         item,
         index,
+        location,
+        children: [],
     };
 }
 
 export function forOf(
-    name: string,
     expression: Expression,
     iterator: Identifier,
     location: SourceLocation
 ): ForOf {
     return {
         type: 'ForOf',
-        name,
         expression,
         iterator,
         location,
@@ -152,18 +148,16 @@ export function forOf(
 }
 
 export function ifBlock(
-    name: string,
     location: SourceLocation,
     modifier: string,
     condition: Expression
 ): IfBlock {
     return {
         type: 'IfBlock',
-        name,
-        location,
-        children: [],
         modifier,
         condition,
+        location,
+        children: [],
     };
 }
 
@@ -224,9 +218,9 @@ export function preserveCommentsDirective(
     location: SourceLocation
 ): PreserveCommentsDirective {
     return {
+        type: 'Directive',
         name: 'PreserveComments',
         value: literal(preserveComments),
-        type: 'Directive',
         location,
     };
 }
@@ -236,9 +230,9 @@ export function renderModeDirective<T extends 'light', K extends 'shadow'>(
     location: SourceLocation
 ): RenderModeDirective {
     return {
+        type: 'Directive',
         name: 'RenderMode',
         value: literal(renderMode),
-        type: 'Directive',
         location,
     };
 }
@@ -285,7 +279,7 @@ export function isSlot(node: BaseNode): node is Slot {
     return node.type === 'Slot';
 }
 
-export function isBaseElement(node: BaseNode): node is Element {
+export function isBaseElement(node: BaseNode): node is Element | Component | Slot {
     return isElement(node) || isComponent(node) || isSlot(node);
 }
 
@@ -298,7 +292,7 @@ export function isCommentNode(node: BaseNode): node is Comment {
 }
 
 export function isTemplate(node: ParentNode): boolean {
-    return node.name === 'template';
+    return (isBaseElement(node) || isRoot(node)) && node.name === 'template';
 }
 
 export function isExpression(node: Expression | Literal): node is Expression {
@@ -343,6 +337,6 @@ export function isInnerHTMLDirective(directive: Directive): directive is InnerHT
 
 export function isDirectiveType<D extends ElementDirective | RootDirective, T extends D['name']>(
     type: T
-) {
+): (dir: D) => dir is Extract<D, Record<'name', T>> {
     return (dir: D): dir is Extract<D, Record<'name', T>> => dir.name === type;
 }

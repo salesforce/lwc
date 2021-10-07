@@ -116,11 +116,11 @@ export interface Comment extends BaseNode {
 }
 
 export interface BaseParentNode extends BaseNode {
-    name: string;
     children: ChildNode[];
 }
 
 export interface BaseElement extends BaseParentNode {
+    name: string;
     properties: Property[];
     attributes: Attribute[];
     listeners: EventListener[];
@@ -163,6 +163,7 @@ export type ForBlock = ForEach | ForOf;
 
 export interface Root extends BaseParentNode {
     type: 'Root';
+    name: string;
     directives?: RootDirective[];
 }
 

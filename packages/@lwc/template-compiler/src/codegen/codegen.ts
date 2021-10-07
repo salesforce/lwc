@@ -8,7 +8,7 @@ import { ResolvedConfig } from '../config';
 import { LWC_RENDERMODE } from '../shared/constants';
 
 import * as t from '../shared/estree';
-import { isDirectiveType } from '../shared/ir';
+import { isDirectiveType } from '../shared/ast';
 import { Root } from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
 

@@ -26,7 +26,7 @@ import {
     isComponent,
     isDirectiveType,
     isInnerHTMLDirective,
-} from '../shared/ir';
+} from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
     Root,
@@ -57,7 +57,6 @@ import {
     parseStyleText,
     hasIdAttribute,
     styleMapToStyleDeclsAST,
-    arrayToObjectMapper,
 } from './helpers';
 
 import { format as formatModule } from './formatters/module';
@@ -492,7 +491,7 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
         // Properties
         if (properties.length) {
-            const props = arrayToObjectMapper(properties, (prop) => prop.name);
+            const props = Object.fromEntries(properties.map((prop) => [prop.name, prop]));
             for (const [key, value] of Object.entries(props)) {
                 propsObj.properties.push(
                     t.property(t.literal(key), computeAttrValue(value, element))
@@ -542,7 +541,9 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
         // Event handler
         if (listeners.length) {
-            const listenerObj = arrayToObjectMapper(listeners, (listener) => listener.name);
+            const listenerObj = Object.fromEntries(
+                listeners.map((listener) => [listener.name, listener])
+            );
             const onlistenerObjAST = objectToAST(listenerObj, (key) => {
                 const componentHandler = scope.bindExpression(listenerObj[key].handler);
                 const handler = codeGen.genBind(componentHandler);

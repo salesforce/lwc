@@ -15,7 +15,7 @@ import {
 } from '@lwc/errors';
 import { ResolvedConfig } from '../config';
 import { LWC_RENDERMODE } from '../shared/constants';
-import { isDirectiveType } from '../shared/ir';
+import { isDirectiveType } from '../shared/ast';
 
 import { Root, SourceLocation, ParentNode, BaseNode } from '../shared/types';
 
@@ -58,8 +58,7 @@ export default class ParserCtx {
     }
 
     *getAncestors(element?: ParentNode) {
-        const array: ParentNode[] = [];
-        const ancestors = array.concat(...this.ancestors);
+        const ancestors = ([] as ParentNode[]).concat(...this.ancestors);
         const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
 
         for (let i = start; i >= 0; i--) {

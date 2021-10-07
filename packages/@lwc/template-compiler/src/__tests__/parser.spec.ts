@@ -108,7 +108,7 @@ describe('for:each directives', () => {
             `<template><section for:each={items} for:item="item" key={item}></section></template>`
         );
 
-        expect(root.children[0]).toMatchObject({ type: 'ForEach', name: 'section' });
+        expect(root.children[0]).toMatchObject({ type: 'ForEach' });
         expect(root.children[0].expression).toMatchObject({
             type: 'Identifier',
             name: 'items',
@@ -121,10 +121,7 @@ describe('for:each directives', () => {
         const { root } = parseTemplate(
             `<template><section for:each={items} for:item="item" for:index="i" key={item}></section></template>`
         );
-        expect(root.children[0].expression).toMatchObject({
-            type: 'Identifier',
-            name: 'items',
-        });
+        expect(root.children[0].expression).toMatchObject({ type: 'Identifier', name: 'items' });
         expect(root.children[0].item).toMatchObject({ type: 'Identifier', name: 'item' });
         expect(root.children[0].index).toMatchObject({ type: 'Identifier', name: 'i' });
     });
@@ -161,10 +158,7 @@ describe('for:of directives', () => {
         const { root } = parseTemplate(
             `<template><section iterator:it={items}></section></template>`
         );
-        expect(root.children[0]).toMatchObject({
-            type: 'ForOf',
-            name: 'section',
-        });
+        expect(root.children[0]).toMatchObject({ type: 'ForOf' });
         expect(root.children[0].expression).toMatchObject({
             type: 'Identifier',
             name: 'items',
@@ -190,7 +184,7 @@ describe('for:of directives', () => {
 describe('if directive', () => {
     it('if directive', () => {
         const { root } = parseTemplate(`<template><h1 if:true={visible}></h1></template>`);
-        expect(root.children[0]).toMatchObject({ type: 'IfBlock', name: 'h1' });
+        expect(root.children[0]).toMatchObject({ type: 'IfBlock' });
         expect(root.children[0].condition).toMatchObject(TEMPLATE_IDENTIFIER);
         expect(root.children[0].modifier).toBe('true');
     });
@@ -227,16 +221,16 @@ describe('forBlock with if directive', () => {
         const { root } = parseTemplate(
             `<template><section for:each={items} for:item="item" key={item} if:true={visible}></section></template>`
         );
-        expect(root.children[0]).toMatchObject({ type: 'ForEach', name: 'section' });
-        expect(root.children[0].children[0]).toMatchObject({ type: 'IfBlock', name: 'section' });
+        expect(root.children[0]).toMatchObject({ type: 'ForEach' });
+        expect(root.children[0].children[0]).toMatchObject({ type: 'IfBlock' });
     });
 
     it('forOf with if directive', () => {
         const { root } = parseTemplate(
             `<template><section iterator:it={items} if:true={visible}></section></template>`
         );
-        expect(root.children[0]).toMatchObject({ type: 'ForOf', name: 'section' });
-        expect(root.children[0].children[0]).toMatchObject({ type: 'IfBlock', name: 'section' });
+        expect(root.children[0]).toMatchObject({ type: 'ForOf' });
+        expect(root.children[0].children[0]).toMatchObject({ type: 'IfBlock' });
     });
 });
 

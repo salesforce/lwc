@@ -35,7 +35,7 @@ import {
     PROPS_ATTRS_TRANSFORMS,
 } from './constants';
 
-import { isComponent, isSlot } from '../shared/ir';
+import { isComponent, isSlot } from '../shared/ast';
 import ParserCtx from './parser';
 
 function isQuotedAttribute(rawAttribute: string) {

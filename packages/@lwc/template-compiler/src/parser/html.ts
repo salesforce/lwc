@@ -10,7 +10,7 @@ import * as he from 'he';
 import { ParserDiagnostics } from '@lwc/errors';
 
 import ParserCtx from './parser';
-import { sourceLocation } from '../shared/ir';
+import { sourceLocation } from '../shared/ast';
 
 export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {

@@ -15,7 +15,7 @@ import {
     isBaseElement,
     isIfBlock,
     isDirectiveType,
-} from '../shared/ir';
+} from '../shared/ast';
 import { LWC_RENDERMODE, TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
@@ -42,17 +42,6 @@ export function objectToAST(
     return t.objectExpression(
         Object.keys(obj).map((key) => t.property(t.literal(key), valueMapper(key)))
     );
-}
-
-export function arrayToObjectMapper<T>(
-    arr: T[],
-    propertyMapper: (val: T) => string
-): { [name: string]: T } {
-    const obj: { [name: string]: T } = {};
-    for (const val of arr) {
-        obj[propertyMapper(val)] = val;
-    }
-    return obj;
 }
 
 function isDynamic(element: BaseElement): boolean {
