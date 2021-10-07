@@ -44,6 +44,7 @@ const LWC_SUPPORTED_APIS = new Set([
     'readonly',
     'register',
     'setFeatureFlagForTest',
+    'setSanitizeHtmlContentHookForTest',
     'unwrap',
 
     // From "@lwc/engine-dom"

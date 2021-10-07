@@ -105,7 +105,7 @@ component life-cycle.
 
 This experimental API enables the sanitization of HTML attribute values by external services.
 
-### sanitizeHtmlContent()
+### setSanitizeHtmlContentHook()
 
 This experimental API enables the sanitization of HTML content by external services. The `lwc:inner-html` binding relies on this hook. This hook must be overridden as the default implementation is to throw an error.
 

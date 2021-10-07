@@ -1,6 +1,6 @@
-import { registerTemplate, sanitizeHtmlContent } from "lwc";
+import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
+  const { shc: api_sanitize_html_content, h: api_element } = $api;
   return [
     api_element(
       "div",
@@ -8,7 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           innerHTML:
             $ctx._sanitizedHtml$0 ||
-            ($ctx._sanitizedHtml$0 = sanitizeHtmlContent(
+            ($ctx._sanitizedHtml$0 = api_sanitize_html_content(
               "Hello <b>world</b>!"
             )),
         },
@@ -27,7 +27,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           innerHTML:
             $ctx._rawHtml$1 !== ($ctx._rawHtml$1 = $cmp.greeting)
-              ? ($ctx._sanitizedHtml$1 = sanitizeHtmlContent($cmp.greeting))
+              ? ($ctx._sanitizedHtml$1 = api_sanitize_html_content(
+                  $cmp.greeting
+                ))
               : $ctx._sanitizedHtml$1,
         },
         context: {

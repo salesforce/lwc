@@ -22,7 +22,8 @@ export {
     registerComponent,
     registerDecorators,
     sanitizeAttribute,
-    sanitizeHtmlContent,
+    setSanitizeHtmlContentHook,
+    setSanitizeHtmlContentHookForTest,
     getComponentDef,
     isComponentConstructor,
 } from '@lwc/engine-core';

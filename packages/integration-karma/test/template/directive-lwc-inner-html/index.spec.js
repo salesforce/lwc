@@ -1,15 +1,15 @@
-import { createElement } from 'lwc';
+import { createElement, setSanitizeHtmlContentHookForTest } from 'lwc';
 
 import XInnerHtml from 'x/innerHtml';
 
-const originalSanitizeHtmlContent = LWC.sanitizeHtmlContent;
+let originalSanitizeHtmlContent;
 
 beforeAll(() => {
-    LWC.sanitizeHtmlContent = (content) => content;
+    originalSanitizeHtmlContent = setSanitizeHtmlContentHookForTest((content) => content);
 });
 
 afterAll(() => {
-    LWC.sanitizeHtmlContent = originalSanitizeHtmlContent;
+    setSanitizeHtmlContentHookForTest(originalSanitizeHtmlContent);
 });
 
 it('renders the content as HTML', () => {

@@ -1,7 +1,8 @@
 import _aB from "a/b";
-import { registerTemplate, sanitizeHtmlContent } from "lwc";
+import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
+    shc: api_sanitize_html_content,
     h: api_element,
     k: api_key,
     i: api_iterator,
@@ -26,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 props: {
                   innerHTML:
                     $ctx._rawHtml$0 !== ($ctx._rawHtml$0 = $cmp.ifRawHtml)
-                      ? ($ctx._sanitizedHtml$0 = sanitizeHtmlContent(
+                      ? ($ctx._sanitizedHtml$0 = api_sanitize_html_content(
                           $cmp.ifRawHtml
                         ))
                       : $ctx._sanitizedHtml$0,
@@ -48,7 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               props: {
                 innerHTML:
                   $ctx._rawHtml$1 !== ($ctx._rawHtml$1 = item.forRawHtml)
-                    ? ($ctx._sanitizedHtml$1 = sanitizeHtmlContent(
+                    ? ($ctx._sanitizedHtml$1 = api_sanitize_html_content(
                         item.forRawHtml
                       ))
                     : $ctx._sanitizedHtml$1,

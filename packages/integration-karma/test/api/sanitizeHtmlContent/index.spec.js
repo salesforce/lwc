@@ -1,15 +1,11 @@
-import { createElement } from 'lwc';
+import { createElement, setSanitizeHtmlContentHookForTest } from 'lwc';
 
 import XInnerHtml from 'x/innerHtml';
 
 const ACTUAL_CONTENT = 'Hello <b>World</b>';
 const ALTERNATIVE_CONTENT = 'Hello <b>LWC</b>';
 
-const originalSanitizeHtmlContent = LWC.sanitizeHtmlContent;
-afterEach(() => {
-    // Reset original sanitizer after each test.
-    LWC.sanitizeHtmlContent = originalSanitizeHtmlContent;
-});
+const override = (content) => content;
 
 it('throws when not overridden', () => {
     expect(() => {
@@ -20,34 +16,38 @@ it('throws when not overridden', () => {
 });
 
 it('receives the right parameters', () => {
-    spyOn(LWC, 'sanitizeHtmlContent');
+    const spy = jasmine.createSpy('sanitizeHook', override);
+    const original = setSanitizeHtmlContentHookForTest(spy);
 
     const elm = createElement('x-inner-html', { is: XInnerHtml });
     elm.content = ACTUAL_CONTENT;
     document.body.appendChild(elm);
 
-    expect(LWC.sanitizeHtmlContent).toHaveBeenCalledWith(ACTUAL_CONTENT);
+    expect(spy).toHaveBeenCalledWith(ACTUAL_CONTENT);
+    setSanitizeHtmlContentHookForTest(original);
 });
 
 it('does not call sanitizeHtmlContent when raw value does not change', () => {
-    spyOn(LWC, 'sanitizeHtmlContent');
+    const spy = jasmine.createSpy('sanitizeHook', override);
+    const original = setSanitizeHtmlContentHookForTest(spy);
 
     const elm = createElement('x-inner-html', { is: XInnerHtml });
     elm.message = 'initial';
     elm.content = ACTUAL_CONTENT;
     document.body.appendChild(elm);
-    expect(LWC.sanitizeHtmlContent).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
 
     elm.message = 'modified';
 
     return Promise.resolve().then(() => {
-        expect(LWC.sanitizeHtmlContent).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledTimes(1);
         expect(elm.shadowRoot.querySelector('p').innerText).toBe('modified');
+        setSanitizeHtmlContentHookForTest(original);
     });
 });
 
 it('replace the original attribute value with the returned value', () => {
-    LWC.sanitizeHtmlContent = () => ALTERNATIVE_CONTENT;
+    const original = setSanitizeHtmlContentHookForTest(() => ALTERNATIVE_CONTENT);
 
     const elm = createElement('x-inner-html', { is: XInnerHtml });
     elm.content = ACTUAL_CONTENT;
@@ -55,4 +55,6 @@ it('replace the original attribute value with the returned value', () => {
 
     const div = elm.shadowRoot.querySelector('div');
     expect(div.innerHTML).toBe(ALTERNATIVE_CONTENT);
+
+    setSanitizeHtmlContentHookForTest(original);
 });

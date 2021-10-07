@@ -26,7 +26,8 @@ type RenderPrimitive =
     | 'tabindex'
     | 'scopedId'
     | 'scopedFragId'
-    | 'comment';
+    | 'comment'
+    | 'sanitizeHtmlContent';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -48,6 +49,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     scopedId: { name: 'gid', alias: 'api_scoped_id' },
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
     comment: { name: 'co', alias: 'api_comment' },
+    sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
 };
 
 export default class CodeGen {
@@ -153,6 +155,10 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
     }
 
+    genSanitizeHtmlContent(content: t.Expression): t.Expression {
+        return this._renderApiCall(RENDER_APIS.sanitizeHtmlContent, [content]);
+    }
+
     genIterator(iterable: t.Expression, callback: t.FunctionExpression) {
         return this._renderApiCall(RENDER_APIS.iterator, [iterable, callback]);
     }
@@ -220,11 +226,9 @@ export default class CodeGen {
     genSanitizedHtmlExpr(expr: t.Expression) {
         const instance = this.innerHtmlInstances++;
 
-        this.usedLwcApis.add('sanitizeHtmlContent');
-
         // Optimization for static html.
         // Example input: <div lwc:inner-html="foo">
-        // Output: $ctx._sanitizedHtml$0 || ($ctx._sanitizedHtml$0 = sanitizeHtmlContent("foo"))
+        // Output: $ctx._sanitizedHtml$0 || ($ctx._sanitizedHtml$0 = api_sanitize_html_content("foo"))
         if (t.isLiteral(expr)) {
             return t.logicalExpression(
                 '||',
@@ -238,14 +242,14 @@ export default class CodeGen {
                         t.identifier(TEMPLATE_PARAMS.CONTEXT),
                         t.identifier(`_sanitizedHtml$${instance}`)
                     ),
-                    t.callExpression(t.identifier('sanitizeHtmlContent'), [expr])
+                    this.genSanitizeHtmlContent(expr)
                 )
             );
         }
 
         // Example input: <div lwc:inner-html={foo}>
         // Output: $ctx._rawHtml$0 !== ($ctx._rawHtml$0 = $cmp.foo)
-        //             ? ($ctx._sanitizedHtml$0 = sanitizeHtmlContent($cmp.foo))
+        //             ? ($ctx._sanitizedHtml$0 = api_sanitize_html_content($cmp.foo))
         //             : $ctx._sanitizedHtml$0
         //
         // Note: In the case of iterations, when the lwc:inner-html bound value depends on the
@@ -274,7 +278,7 @@ export default class CodeGen {
                     t.identifier(TEMPLATE_PARAMS.CONTEXT),
                     t.identifier(`_sanitizedHtml$${instance}`)
                 ),
-                t.callExpression(t.identifier('sanitizeHtmlContent'), [expr])
+                this.genSanitizeHtmlContent(expr)
             ),
             t.memberExpression(
                 t.identifier(TEMPLATE_PARAMS.CONTEXT),

@@ -33,11 +33,12 @@ export { registerDecorators } from './decorators/register';
 
 // Mics. internal APIs -----------------------------------------------------------------------------
 export { unwrap } from './membrane';
-export { sanitizeAttribute, sanitizeHtmlContent } from './secure-template';
+export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
 export { getUpgradableConstructor } from './upgradable-element';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
+export { setSanitizeHtmlContentHook, setSanitizeHtmlContentHookForTest } from './api';
 
 // Types -------------------------------------------------------------------------------------------
 export type { Renderer } from './renderer';

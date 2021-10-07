@@ -99,6 +99,7 @@ export interface RenderAPI {
     b(fn: EventListener): EventListener;
     k(compilerKey: number, iteratorValue: any): string | void;
     co(text: string): VComment;
+    shc(content: unknown): string;
 }
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
@@ -736,4 +737,36 @@ export function sc(vnodes: VNodes): VNodes {
     // static dummy algo.
     markAsDynamicChildren(vnodes);
     return vnodes;
+}
+
+/**
+ * EXPERIMENTAL: This function acts like a hook for Lightning Locker Service and other similar
+ * libraries to sanitize HTML content. This hook process the content passed via the template to
+ * lwc:inner-html directive.
+ * It is meant to be overridden with setSanitizeHtmlContentHook
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+let sanitizeHtmlContentHook = (content: unknown): string => {
+    // locker-service patches this function during runtime to sanitize HTML content.
+    throw new Error('sanitizeHtmlContent hook must be implemented.');
+};
+
+export function shc(content: unknown): string {
+    return sanitizeHtmlContentHook(content);
+}
+
+export function setSanitizeHtmlContentHook(hookImpl: (content: unknown) => string): void {
+    sanitizeHtmlContentHook = hookImpl;
+}
+
+export function setSanitizeHtmlContentHookForTest(
+    hookImpl: (content: unknown) => string
+): ((content: unknown) => string) | undefined {
+    if (process.env.NODE_ENV !== 'production') {
+        const currentHook = sanitizeHtmlContentHook;
+
+        setSanitizeHtmlContentHook(hookImpl);
+
+        return currentHook;
+    }
 }
