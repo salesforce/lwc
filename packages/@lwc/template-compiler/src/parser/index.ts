@@ -5,12 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-import { hasOwnProperty } from '@lwc/shared';
 import { ParserDiagnostics } from '@lwc/errors';
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 
 import {
     attributeName,
+    attributeToPropertyName,
     isAttribute,
     isProhibitedIsAttribute,
     isTabIndexAttribute,
@@ -30,7 +30,6 @@ import * as ir from '../shared/ir';
 import {
     TemplateParseResult,
     Attribute,
-    LWCDirectiveRenderMode,
     Element,
     Component,
     ForEach,
@@ -41,7 +40,6 @@ import {
     Slot,
     Text,
     Root,
-    LWCDirectiveDomMode,
     SourceLocation,
     ParentNode,
     BaseElement,
@@ -75,6 +73,7 @@ import {
     VOID_ELEMENT_SET,
     FOR_DIRECTIVES,
 } from './constants';
+import { LWC_RENDERMODE } from '../shared/constants';
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
@@ -368,7 +367,7 @@ function applyHandlers(
         }
 
         // Light DOM slots cannot have events because there's no actual `<slot>` element
-        if (ir.isSlot(element) && ctx.renderMode === LWCDirectiveRenderMode.Light) {
+        if (ir.isSlot(element) && ctx.renderMode === LWC_RENDERMODE.LIGHT) {
             ctx.throwOnNode(ParserDiagnostics.LWC_LIGHT_SLOT_INVALID_EVENT_LISTENER, element, [
                 name,
             ]);
@@ -433,8 +432,7 @@ function applyLwcRenderModeDirective(ctx: ParserCtx, root: Root, parsedAttr: Par
 
     if (
         !ir.isStringLiteral(renderDomAttr) ||
-        (renderDomAttr.value !== LWCDirectiveRenderMode.Shadow &&
-            renderDomAttr.value !== LWCDirectiveRenderMode.Light)
+        (renderDomAttr.value !== 'shadow' && renderDomAttr.value !== 'light')
     ) {
         ctx.throwOnNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, root);
     }
@@ -589,7 +587,7 @@ function applyLwcDomDirective(
         return;
     }
 
-    if (ctx.renderMode === LWCDirectiveRenderMode.Light) {
+    if (ctx.renderMode === LWC_RENDERMODE.LIGHT) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM, element, [`<${tag}>`]);
     }
 
@@ -603,14 +601,8 @@ function applyLwcDomDirective(
 
     const { value: lwcDomAttr } = lwcDomAttribute;
 
-    if (
-        !ir.isStringLiteral(lwcDomAttr) ||
-        hasOwnProperty.call(LWCDirectiveDomMode, lwcDomAttr.value) === false
-    ) {
-        const possibleValues = Object.keys(LWCDirectiveDomMode)
-            .map((value) => `"${value}"`)
-            .join(', or ');
-        ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, [possibleValues]);
+    if (!ir.isStringLiteral(lwcDomAttr) || lwcDomAttr.value !== 'manual') {
+        ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, [`"manual"`]);
     }
 
     const directives = element.directives || (element.directives = []);
@@ -757,7 +749,7 @@ function parseSlot(
     }
 
     // Can't handle slots in applySlot because it would be too late for class and style attrs
-    if (ctx.renderMode === LWCDirectiveRenderMode.Light) {
+    if (ctx.renderMode === LWC_RENDERMODE.LIGHT) {
         const invalidAttrs = parsedAttr
             .getAttributes()
             .filter(({ name }) => name !== 'name')
@@ -876,7 +868,8 @@ function applyAttributes(
         if (isAttribute(element, name)) {
             element.attributes.push(attr);
         } else {
-            element.properties.push(ir.property(name, attr.value, attr.location));
+            const propName = attributeToPropertyName(name);
+            element.properties.push(ir.property(propName, attr.value, attr.location));
             // if standard elemnt, console log element and check the one case in the comment to check
             parsedAttr.pick(name);
         }
@@ -982,7 +975,7 @@ function validateChildren(ctx: ParserCtx, element: Element | Component | Slot) {
     const effectiveChildren = ctx.preserveComments
         ? element.children
         : element.children.filter((child) => !ir.isCommentNode(child));
-    const hasDomDirective = ir.getDomDirective(element);
+    const hasDomDirective = element.directives?.find(ir.isDirectiveType('Dom'));
     if (hasDomDirective && effectiveChildren.length > 0) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
     }

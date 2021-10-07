@@ -12,44 +12,9 @@ export type TemplateCompileResult = {
 };
 
 export type TemplateParseResult = {
-    root?: Root | undefined;
+    root?: Root;
     warnings: CompilerDiagnostic[];
 };
-
-export enum LWCDirectiveDomMode {
-    manual = 'manual',
-}
-
-export enum LWCNodeType {
-    Literal = 'Literal',
-    Identifier = 'Identifier',
-    MemberExpression = 'MemberExpression',
-    Attribute = 'Attribute',
-    Property = 'Property',
-    EventListener = 'EventListener',
-    Directive = 'Directive',
-    Key = 'Key',
-    Dynamic = 'Dynamic',
-    RenderMode = 'RenderMode',
-    PreserveComments = 'PreserveComments',
-    Text = 'Text',
-    Comment = 'Comment',
-    Element = 'Element',
-    Component = 'Component',
-    IfBlock = 'IfBlock',
-    ForBlock = 'ForBlock',
-    ForEach = 'ForEach',
-    ForOf = 'ForOf',
-    Slot = 'Slot',
-    Root = 'Root',
-    Dom = 'Dom',
-    InnerHTML = 'InnerHTML',
-}
-
-export enum LWCDirectiveRenderMode {
-    Shadow = 'shadow',
-    Light = 'light',
-}
 
 export interface BaseNode {
     type: string;
@@ -66,17 +31,17 @@ export interface SourceLocation {
 }
 
 export interface Literal<Value = string | boolean> {
-    type: `${LWCNodeType.Literal}`;
+    type: 'Literal';
     value: Value;
 }
 
 export interface Identifier extends BaseNode {
-    type: `${LWCNodeType.Identifier}`;
+    type: 'Identifier';
     name: string;
 }
 
 export interface MemberExpression extends BaseNode {
-    type: `${LWCNodeType.MemberExpression}`;
+    type: 'MemberExpression';
     object: Expression;
     property: Identifier;
 }
@@ -84,56 +49,56 @@ export interface MemberExpression extends BaseNode {
 export type Expression = Identifier | MemberExpression;
 
 export interface Attribute extends BaseNode {
-    type: `${LWCNodeType.Attribute}`;
+    type: 'Attribute';
     name: string;
     value: Literal | Expression;
 }
 
 export interface Property extends BaseNode {
-    type: `${LWCNodeType.Property}`;
+    type: 'Property';
     name: string;
     value: Literal | Expression;
 }
 
 export interface EventListener extends BaseNode {
-    type: `${LWCNodeType.EventListener}`;
+    type: 'EventListener';
     name: string;
     handler: Expression;
 }
 
 export interface Directive extends BaseNode {
-    type: `${LWCNodeType.Directive}`;
+    type: 'Directive';
     name: string;
     value: Expression | Literal;
 }
 
 export interface KeyDirective extends Directive {
-    name: `${LWCNodeType.Key}`;
+    name: 'Key';
     value: Expression;
 }
 
 export interface DynamicDirective extends Directive {
-    name: `${LWCNodeType.Dynamic}`;
+    name: 'Dynamic';
     value: Expression;
 }
 
 export interface DomDirective extends Directive {
-    name: `${LWCNodeType.Dom}`;
-    value: Literal<LWCDirectiveDomMode>;
+    name: 'Dom';
+    value: Literal<'manual'>;
 }
 
 export interface InnerHTMLDirective extends Directive {
-    name : `${LWCNodeType.InnerHTML}`;
+    name : `InnerHTML`;
     value: Expression | Literal<string>;
 }
 
 export interface RenderModeDirective extends Directive {
-    name: `${LWCNodeType.RenderMode}`;
-    value: Literal<LWCDirectiveRenderMode.Shadow> | Literal<LWCDirectiveRenderMode.Light>;
+    name: 'RenderMode';
+    value: Literal<'shadow'> | Literal<'light'>;
 }
 
 export interface PreserveCommentsDirective extends Directive {
-    name: `${LWCNodeType.PreserveComments}`;
+    name: 'PreserveComments';
     value: Literal<boolean>;
 }
 
@@ -141,12 +106,12 @@ export type ElementDirective = KeyDirective | DynamicDirective | DomDirective | 
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {
-    type: `${LWCNodeType.Text}`;
+    type: 'Text';
     value: Literal | Expression;
 }
 
 export interface Comment extends BaseNode {
-    type: `${LWCNodeType.Comment}`;
+    type: 'Comment';
     value: string;
 }
 
@@ -164,32 +129,32 @@ export interface BaseElement extends BaseParentNode {
 }
 
 export interface Element extends BaseElement {
-    type: `${LWCNodeType.Element}`;
+    type: 'Element';
 }
 
 export interface Component extends BaseElement {
-    type: `${LWCNodeType.Component}`;
+    type: 'Component';
 }
 
 export interface Slot extends BaseElement {
-    type: `${LWCNodeType.Slot}`;
+    type: 'Slot';
 }
 
 export interface IfBlock extends BaseParentNode {
-    type: `${LWCNodeType.IfBlock}`;
+    type: 'IfBlock';
     modifier: string;
     condition: Expression;
 }
 
 export interface ForEach extends BaseParentNode {
-    type: `${LWCNodeType.ForEach}`;
+    type: 'ForEach';
     expression: Expression;
     item: Identifier;
     index?: Identifier;
 }
 
 export interface ForOf extends BaseParentNode {
-    type: `${LWCNodeType.ForOf}`;
+    type: 'ForOf';
     expression: Expression;
     iterator: Identifier;
 }
@@ -197,7 +162,7 @@ export interface ForOf extends BaseParentNode {
 export type ForBlock = ForEach | ForOf;
 
 export interface Root extends BaseParentNode {
-    type: `${LWCNodeType.Root}`;
+    type: 'Root';
     directives?: RootDirective[];
 }
 
@@ -206,8 +171,3 @@ export type DirectiveNode = Root | Component | Element | Slot;
 export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 
 export type ChildNode = ForBlock | IfBlock | Element | Component | Slot | Comment | Text;
-
-export interface ParentWrapper {
-    parent?: ParentWrapper;
-    node: ParentNode;
-}

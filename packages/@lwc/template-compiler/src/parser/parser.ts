@@ -14,9 +14,10 @@ import {
     normalizeToDiagnostic,
 } from '@lwc/errors';
 import { ResolvedConfig } from '../config';
-import { getPreserveComments, getRenderModeDirective } from '../shared/ir';
+import { LWC_RENDERMODE } from '../shared/constants';
+import { isDirectiveType } from '../shared/ir';
 
-import { Root, SourceLocation, ParentNode, BaseNode, LWCDirectiveRenderMode } from '../shared/types';
+import { Root, SourceLocation, ParentNode, BaseNode } from '../shared/types';
 
 function normalizeLocation(location?: SourceLocation): Location {
     let line = 0;
@@ -48,7 +49,7 @@ export default class ParserCtx {
     constructor(source: String, config: ResolvedConfig) {
         this.source = source;
         this.config = config;
-        this.renderMode = LWCDirectiveRenderMode.Shadow;
+        this.renderMode = LWC_RENDERMODE.SHADOW;
         this.preserveComments = config.preserveHtmlComments;
     }
 
@@ -208,7 +209,10 @@ export default class ParserCtx {
     }
 
     setRootDirective(root: Root) {
-        this.renderMode = getRenderModeDirective(root) ?? this.renderMode;
-        this.preserveComments = getPreserveComments(root) ?? this.preserveComments;
+        this.renderMode =
+            root.directives?.find(isDirectiveType('RenderMode'))?.value.value ?? this.renderMode;
+        this.preserveComments =
+            root.directives?.find(isDirectiveType('PreserveComments'))?.value.value ||
+            this.preserveComments;
     }
 }

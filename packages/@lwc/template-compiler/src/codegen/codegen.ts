@@ -5,10 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ResolvedConfig } from '../config';
+import { LWC_RENDERMODE } from '../shared/constants';
 
 import * as t from '../shared/estree';
-import { getPreserveComments, getRenderModeDirective } from '../shared/ir';
-import { LWCDirectiveRenderMode, Root } from '../shared/types';
+import { isDirectiveType } from '../shared/ir';
+import { Root } from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
 
 type RenderPrimitive =
@@ -56,7 +57,7 @@ export default class CodeGen {
     readonly root: Root;
 
     /** The template render mode. */
-    readonly renderMode: LWCDirectiveRenderMode;
+    readonly renderMode: string;
 
     /** Indicates whether the generated code should preserve HTML comments or not. */
     readonly preserveComments: boolean;
@@ -91,8 +92,12 @@ export default class CodeGen {
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        this.renderMode = getRenderModeDirective(root) ?? LWCDirectiveRenderMode.Shadow;
-        this.preserveComments = getPreserveComments(root) ?? config.preserveHtmlComments;
+        this.renderMode =
+            root.directives?.find(isDirectiveType('RenderMode'))?.value.value ??
+            LWC_RENDERMODE.SHADOW;
+        this.preserveComments =
+            root.directives?.find(isDirectiveType('PreserveComments'))?.value.value ??
+            config.preserveHtmlComments;
         this.scopeFragmentId = scopeFragmentId;
     }
 

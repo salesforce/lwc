@@ -21,13 +21,10 @@ import {
     isIfBlock,
     isForEach,
     isBaseElement,
-    isDynamicDirective,
     isExpression,
     isProperty,
-    getElementDirective,
-    getKeyDirective,
-    getDomDirective,
     isComponent,
+    isDirectiveType,
     isInnerHTMLDirective,
 } from '../shared/ir';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
@@ -86,7 +83,8 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
         // Check wether it has the special directive lwc:dynamic
         const { name } = element;
-        const dynamic = getElementDirective(element, isDynamicDirective);
+
+        const dynamic = element.directives?.find(isDirectiveType('Dynamic'));
         if (dynamic) {
             const expression = scope.bindExpression(dynamic.value);
             res = codeGen.genDynamicElement(name, expression, databag, children);
@@ -191,9 +189,10 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
 
     function transformIf(ifBlock: IfBlock): t.Expression | t.Expression[] {
         const children = transformChildren(ifBlock);
+        const child = ifBlock.children[0];
 
         let res: t.Expression;
-        if (isTemplate(ifBlock)) {
+        if (isBaseElement(child) && isTemplate(child)) {
             res = applyTemplateIf(ifBlock, children);
         } else {
             let expression = children;
@@ -437,9 +436,9 @@ function transform(codeGen: CodeGen, scope: Scope): t.Expression {
         const data: t.Property[] = [];
 
         const { attributes, properties, listeners } = element;
-        const dom = getDomDirective(element);
+        const forKey = element.directives?.find(isDirectiveType('Key'));
+        const dom = element.directives?.find(isDirectiveType('Dom'));
         const innerHTML = element.directives?.find(isInnerHTMLDirective);
-        const forKey = getKeyDirective(element);
 
         // Attributes
         if (attributes.length) {

@@ -5,10 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-import { attributeToPropertyName } from '../parser/attribute';
 
 import {
-    LWCNodeType,
     Literal,
     SourceLocation,
     Element,
@@ -26,24 +24,22 @@ import {
     KeyDirective,
     DynamicDirective,
     DomDirective,
-    LWCDirectiveDomMode,
     PreserveCommentsDirective,
     RenderModeDirective,
-    LWCDirectiveRenderMode,
     Attribute,
     Property,
     ParentNode,
     BaseNode,
     ForOf,
-    BaseElement,
+    ElementDirective,
+    RootDirective,
     Directive,
-    ParentWrapper,
     InnerHTMLDirective,
 } from './types';
 
 export function root(parse5Elm: parse5.Element, location: SourceLocation): Root {
     return {
-        type: LWCNodeType.Root,
+        type: 'Root',
         name: parse5Elm.nodeName,
         children: [],
         location,
@@ -52,7 +48,7 @@ export function root(parse5Elm: parse5.Element, location: SourceLocation): Root 
 
 export function element(parse5Elm: parse5.Element, location: SourceLocation): Element {
     return {
-        type: LWCNodeType.Element,
+        type: 'Element',
         name: parse5Elm.nodeName,
         namespace: parse5Elm.namespaceURI,
         location,
@@ -65,7 +61,7 @@ export function element(parse5Elm: parse5.Element, location: SourceLocation): El
 
 export function component(parse5Elm: parse5.Element, location: SourceLocation): Component {
     return {
-        type: LWCNodeType.Component,
+        type: 'Component',
         name: parse5Elm.nodeName,
         location,
         attributes: [],
@@ -77,7 +73,7 @@ export function component(parse5Elm: parse5.Element, location: SourceLocation): 
 
 export function slot(name: string, location: SourceLocation): Slot {
     return {
-        type: LWCNodeType.Slot,
+        type: 'Slot',
         name,
         attributes: [],
         properties: [],
@@ -89,7 +85,7 @@ export function slot(name: string, location: SourceLocation): Slot {
 
 export function text(value: Literal | Expression, parse5Location: parse5.Location): Text {
     return {
-        type: LWCNodeType.Text,
+        type: 'Text',
         value,
         location: sourceLocation(parse5Location),
     };
@@ -97,7 +93,7 @@ export function text(value: Literal | Expression, parse5Location: parse5.Locatio
 
 export function comment(value: string, parse5Location: parse5.Location): Comment {
     return {
-        type: LWCNodeType.Comment,
+        type: 'Comment',
         value,
         location: sourceLocation(parse5Location),
     };
@@ -114,9 +110,9 @@ export function sourceLocation(location?: parse5.Location): SourceLocation {
     };
 }
 
-export function literal(value: string | boolean): Literal {
+export function literal<T extends string | boolean>(value: T): Literal<T> {
     return {
-        type: LWCNodeType.Literal,
+        type: 'Literal',
         value,
     };
 }
@@ -129,7 +125,7 @@ export function forEach(
     index?: Identifier
 ): ForEach {
     return {
-        type: LWCNodeType.ForEach,
+        type: 'ForEach',
         name,
         expression,
         location,
@@ -146,7 +142,7 @@ export function forOf(
     location: SourceLocation
 ): ForOf {
     return {
-        type: LWCNodeType.ForOf,
+        type: 'ForOf',
         name,
         expression,
         iterator,
@@ -162,7 +158,7 @@ export function ifBlock(
     condition: Expression
 ): IfBlock {
     return {
-        type: LWCNodeType.IfBlock,
+        type: 'IfBlock',
         name,
         location,
         children: [],
@@ -177,7 +173,7 @@ export function eventListener(
     location: SourceLocation
 ): EventListener {
     return {
-        type: LWCNodeType.EventListener,
+        type: 'EventListener',
         name,
         handler,
         location,
@@ -186,8 +182,8 @@ export function eventListener(
 
 export function keyDirective(value: Expression, location: SourceLocation): KeyDirective {
     return {
-        type: LWCNodeType.Directive,
-        name: LWCNodeType.Key,
+        type: 'Directive',
+        name: 'Key',
         value,
         location,
     };
@@ -195,29 +191,29 @@ export function keyDirective(value: Expression, location: SourceLocation): KeyDi
 
 export function dynamicDirective(value: Expression, location: SourceLocation): DynamicDirective {
     return {
-        name: LWCNodeType.Dynamic,
+        type: 'Directive',
+        name: 'Dynamic',
         value,
-        type: LWCNodeType.Directive,
         location,
     };
 }
 
-export function domDirective(lwcDomAttr: string, location: SourceLocation): DomDirective {
+export function domDirective<T extends 'manual'>(
+    lwcDomAttr: T,
+    location: SourceLocation
+): DomDirective {
     return {
-        type: LWCNodeType.Directive,
-        name: LWCNodeType.Dom,
-        value: {
-            type: LWCNodeType.Literal,
-            value: lwcDomAttr as LWCDirectiveDomMode,
-        },
+        type: 'Directive',
+        name: 'Dom',
+        value: literal(lwcDomAttr),
         location,
     };
 }
 
 export function innerHTMLDirective(value: Expression | Literal<string>, location: SourceLocation): InnerHTMLDirective {
     return {
-        type: LWCNodeType.Directive,
-        name: LWCNodeType.InnerHTML,
+        type: 'Directive',
+        name: 'InnerHTML',
         value,
         location,
     }
@@ -228,27 +224,21 @@ export function preserveCommentsDirective(
     location: SourceLocation
 ): PreserveCommentsDirective {
     return {
-        name: LWCNodeType.PreserveComments,
-        value: {
-            type: LWCNodeType.Literal,
-            value: preserveComments,
-        },
-        type: LWCNodeType.Directive,
+        name: 'PreserveComments',
+        value: literal(preserveComments),
+        type: 'Directive',
         location,
     };
 }
 
-export function renderModeDirective(
-    renderMode: string,
+export function renderModeDirective<T extends 'light', K extends 'shadow'>(
+    renderMode: T | K,
     location: SourceLocation
 ): RenderModeDirective {
     return {
-        name: LWCNodeType.RenderMode,
-        value: {
-            type: LWCNodeType.Literal,
-            value: renderMode as LWCDirectiveRenderMode,
-        },
-        type: LWCNodeType.Directive,
+        name: 'RenderMode',
+        value: literal(renderMode),
+        type: 'Directive',
         location,
     };
 }
@@ -259,7 +249,7 @@ export function attribute(
     location: SourceLocation
 ): Attribute {
     return {
-        type: LWCNodeType.Attribute,
+        type: 'Attribute',
         name,
         value,
         location,
@@ -272,34 +262,27 @@ export function property(
     location: SourceLocation
 ): Property {
     return {
-        type: LWCNodeType.Property,
-        name: attributeToPropertyName(name),
+        type: 'Property',
+        name,
         value,
         location,
     };
 }
 
-export function parentWrapper(node: ParentNode, parent?: ParentWrapper): ParentWrapper {
-    return {
-        parent,
-        node,
-    };
-}
-
 export function isElement(node: BaseNode): node is Element {
-    return node.type === LWCNodeType.Element;
+    return node.type === 'Element';
 }
 
 export function isRoot(node: BaseNode): node is Root {
-    return node.type === LWCNodeType.Root;
+    return node.type === 'Root';
 }
 
 export function isComponent(node: BaseNode): node is Component {
-    return node.type === LWCNodeType.Component;
+    return node.type === 'Component';
 }
 
 export function isSlot(node: BaseNode): node is Slot {
-    return node.type === LWCNodeType.Slot;
+    return node.type === 'Slot';
 }
 
 export function isBaseElement(node: BaseNode): node is Element {
@@ -307,11 +290,11 @@ export function isBaseElement(node: BaseNode): node is Element {
 }
 
 export function isTextNode(node: BaseNode): node is Text {
-    return node.type === LWCNodeType.Text;
+    return node.type === 'Text';
 }
 
 export function isCommentNode(node: BaseNode): node is Comment {
-    return node.type === LWCNodeType.Comment;
+    return node.type === 'Comment';
 }
 
 export function isTemplate(node: ParentNode): boolean {
@@ -319,23 +302,23 @@ export function isTemplate(node: ParentNode): boolean {
 }
 
 export function isExpression(node: Expression | Literal): node is Expression {
-    return node.type === LWCNodeType.Identifier || node.type === LWCNodeType.MemberExpression;
+    return node.type === 'Identifier' || node.type === 'MemberExpression';
 }
 
 export function isStringLiteral(node: Expression | Literal): node is Literal<string> {
-    return node.type === LWCNodeType.Literal && typeof node.value === 'string';
+    return node.type === 'Literal' && typeof node.value === 'string';
 }
 
 export function isBooleanLiteral(node: Expression | Literal): node is Literal<boolean> {
-    return node.type === LWCNodeType.Literal && typeof node.value === 'boolean';
+    return node.type === 'Literal' && typeof node.value === 'boolean';
 }
 
 export function isForOf(node: BaseNode): node is ForOf {
-    return node.type === LWCNodeType.ForOf;
+    return node.type === 'ForOf';
 }
 
 export function isForEach(node: BaseNode): node is ForEach {
-    return node.type === LWCNodeType.ForEach;
+    return node.type === 'ForEach';
 }
 
 export function isForBlock(node: BaseNode): node is ForBlock {
@@ -343,7 +326,7 @@ export function isForBlock(node: BaseNode): node is ForBlock {
 }
 
 export function isIfBlock(node: BaseNode): node is IfBlock {
-    return node.type === LWCNodeType.IfBlock;
+    return node.type === 'IfBlock';
 }
 
 export function isParentNode(node: BaseNode): node is ParentNode {
@@ -351,55 +334,15 @@ export function isParentNode(node: BaseNode): node is ParentNode {
 }
 
 export function isProperty(node: BaseNode): boolean {
-    return node.type === LWCNodeType.Property;
-}
-
-export function isDynamicDirective(directive: Directive): directive is DynamicDirective {
-    return directive.name === LWCNodeType.Dynamic;
-}
-
-export function isDomDirective(directive: Directive): directive is DomDirective {
-    return directive.name === LWCNodeType.Dom;
+    return node.type === 'Property';
 }
 
 export function isInnerHTMLDirective(directive: Directive): directive is InnerHTMLDirective {
-    return directive.name === LWCNodeType.InnerHTML;
+    return directive.name === 'InnerHTML';
 }
 
-export function isRenderModeDirective(directive: Directive): directive is RenderModeDirective {
-    return directive.name === LWCNodeType.RenderMode;
-}
-
-export function isPreserveComments(directive: Directive): directive is PreserveCommentsDirective {
-    return directive.name === LWCNodeType.PreserveComments;
-}
-
-export function isKeyDirective(directive: Directive): directive is KeyDirective {
-    return directive.name === LWCNodeType.Key;
-}
-
-export function getElementDirective(element: BaseElement, predicate: (dir: Directive) => boolean) {
-    return element.directives?.find((dir) => predicate(dir));
-}
-
-export function getDomDirective(element: BaseElement) {
-    return getElementDirective(element, isDomDirective) as DomDirective | undefined;
-}
-
-export function getKeyDirective(element: BaseElement) {
-    return getElementDirective(element, isKeyDirective) as KeyDirective | undefined;
-}
-
-export function getRootDirective(root: Root, predicate: (dir: Directive) => boolean) {
-    return root.directives?.find((dir) => predicate(dir));
-}
-
-export function getRenderModeDirective(root: Root) {
-    return getRootDirective(root, isRenderModeDirective)?.value.value as
-        | LWCDirectiveRenderMode
-        | undefined;
-}
-
-export function getPreserveComments(root: Root) {
-    return getRootDirective(root, isPreserveComments)?.value.value as boolean | undefined;
+export function isDirectiveType<D extends ElementDirective | RootDirective, T extends D['name']>(
+    type: T
+) {
+    return (dir: D): dir is Extract<D, Record<'name', T>> => dir.name === type;
 }

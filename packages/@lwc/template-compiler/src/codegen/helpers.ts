@@ -6,18 +6,17 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { BaseElement, ChildNode, LWCDirectiveRenderMode, ParentNode } from '../shared/types';
+import { BaseElement, ChildNode, ParentNode } from '../shared/types';
 import {
     isTemplate,
     isParentNode,
     isSlot,
     isForBlock,
     isBaseElement,
-    isDynamicDirective,
     isIfBlock,
-    getElementDirective,
+    isDirectiveType,
 } from '../shared/ir';
-import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
+import { LWC_RENDERMODE, TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
 import Scope from './scope';
@@ -57,7 +56,7 @@ export function arrayToObjectMapper<T>(
 }
 
 function isDynamic(element: BaseElement): boolean {
-    return !!getElementDirective(element, isDynamicDirective);
+    return !!element.directives?.find(isDirectiveType('Dynamic'));
 }
 
 export function containsDynamicChildren(children: ChildNode[]): boolean {
@@ -80,7 +79,7 @@ export function shouldFlatten(children: ChildNode[], codeGen: CodeGen): boolean 
                 ((isBaseElement(child) && isDynamic(child)) ||
                     ((isIfBlock(child) || isTemplate(child)) &&
                         shouldFlatten(child.children, codeGen)) ||
-                    (codeGen.renderMode === LWCDirectiveRenderMode.Light && isSlot(child))))
+                    (codeGen.renderMode === LWC_RENDERMODE.LIGHT && isSlot(child))))
     );
 }
 
@@ -157,7 +156,7 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
     // ignore when shadow because we don't want to modify template unnecessarily
-    if (codeGen.renderMode === LWCDirectiveRenderMode.Light) {
+    if (codeGen.renderMode === LWC_RENDERMODE.LIGHT) {
         const renderModeMetadata = t.assignmentExpression(
             '=',
             t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('renderMode')),
