@@ -62,7 +62,14 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
-    *getAncestors(element?: ParentNode) {
+    *getAncestors(element?: ParentNode): Generator<
+        {
+            current: ParentNode;
+            parent: ParentNode;
+        },
+        void,
+        unknown
+    > {
         const ancestors = ([] as ParentNode[]).concat(...this.ancestors);
         const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
 
@@ -91,19 +98,19 @@ export default class ParserCtx {
         return null;
     }
 
-    beginAncestors() {
+    beginAncestors(): void {
         this.ancestors.push([]);
     }
 
-    endAncestors() {
+    endAncestors(): void {
         this.ancestors.pop();
     }
 
-    current() {
+    current(): ParentNode[] {
         return this.ancestors[this.ancestors.length - 1];
     }
 
-    addParent(parent: ParentNode) {
+    addParent(parent: ParentNode): void {
         this.current().push(parent);
     }
 
@@ -212,7 +219,7 @@ export default class ParserCtx {
         this.warnings.push(diagnostic);
     }
 
-    setRootDirective(root: Root) {
+    setRootDirective(root: Root): void {
         this.renderMode =
             root.directives?.find(isDirectiveType('RenderMode'))?.value.value ?? this.renderMode;
         this.preserveComments =

@@ -245,7 +245,10 @@ export function attributeToPropertyName(attrName: string): string {
     return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);
 }
 
-// Retrieve the attribute name from property.
+/**
+ * Retrieve the attribute name from property.
+ * Note, this does not convert from camel back to kebab case.
+ */
 export function propertyToAttributeName(propName: string): string {
     return PROPS_ATTRS_TRANSFORMS[propName] || propName.toLowerCase();
 }

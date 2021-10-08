@@ -8,7 +8,6 @@ import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
 import {
-    isTemplate,
     isParentNode,
     isSlot,
     isForBlock,
@@ -67,8 +66,7 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
             isForBlock(child) ||
             (isParentNode(child) &&
                 ((isBaseElement(child) && isDynamic(child)) ||
-                    ((isIfBlock(child) || isTemplate(child)) &&
-                        shouldFlatten(codeGen, child.children)) ||
+                    (isIfBlock(child) && shouldFlatten(codeGen, child.children)) ||
                     (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child))))
     );
 }
@@ -81,6 +79,7 @@ export function hasIdAttribute(node: Node): boolean {
         const hasIdAttr = [...node.attributes, ...node.properties].some(
             (attr) => attr.name === 'id'
         );
+
         if (hasIdAttr) {
             return true;
         }

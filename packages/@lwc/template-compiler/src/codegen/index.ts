@@ -80,8 +80,8 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Check wether it has the special directive lwc:dynamic
         const { name } = element;
-
         const dynamic = element.directives.find(isDirectiveType('Dynamic'));
+
         if (dynamic) {
             const expression = codeGen.bindExpression(dynamic.value);
             res = codeGen.genDynamicElement(name, expression, databag, children);
@@ -180,12 +180,28 @@ function transform(codeGen: CodeGen): t.Expression {
 
     function transformIfBlock(ifBlock: IfBlock): t.Expression | t.Expression[] {
         const children = transformChildren(ifBlock);
-        const res = applyTemplateIf(ifBlock, children);
+        let res: t.Expression | t.Expression[];
+
+        if (t.isArrayExpression(children)) {
+            // Bind the expression once for all the template children
+            const testExpression = codeGen.bindExpression(ifBlock.condition);
+
+            res = t.arrayExpression(
+                children.elements.map((child) =>
+                    child !== null
+                        ? applyInlineIf(ifBlock, child as t.Expression, testExpression)
+                        : null
+                )
+            );
+        } else {
+            // If the template has a single children, make sure the ternary expression returns an array
+            res = applyInlineIf(ifBlock, children, undefined, t.arrayExpression([]));
+        }
 
         if (t.isArrayExpression(res)) {
             // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
             // typecast it to t.Expression[]
-            return res.elements as t.Expression[];
+            res = res.elements as t.Expression[];
         }
 
         return res;
@@ -196,7 +212,7 @@ function transform(codeGen: CodeGen): t.Expression {
         node: t.Expression,
         testExpression?: t.Expression,
         falseValue?: t.Expression
-    ) {
+    ): t.Expression {
         if (!testExpression) {
             testExpression = codeGen.bindExpression(ifBlock.condition);
         }
@@ -245,6 +261,7 @@ function transform(codeGen: CodeGen): t.Expression {
             if (index) {
                 codeGen.declareIdentifier(index);
             }
+
             codeGen.declareIdentifier(item);
         } else {
             codeGen.declareIdentifier(forBlock.iterator);
@@ -306,24 +323,6 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function applyTemplateIf(ifBlock: IfBlock, fragmentNodes: t.Expression): t.Expression {
-        if (t.isArrayExpression(fragmentNodes)) {
-            // Bind the expression once for all the template children
-            const testExpression = codeGen.bindExpression(ifBlock.condition);
-
-            return t.arrayExpression(
-                fragmentNodes.elements.map((child) =>
-                    child !== null
-                        ? applyInlineIf(ifBlock, child as t.Expression, testExpression)
-                        : null
-                )
-            );
-        } else {
-            // If the template has a single children, make sure the ternary expression returns an array
-            return applyInlineIf(ifBlock, fragmentNodes, undefined, t.arrayExpression([]));
-        }
-    }
-
     function computeAttrValue(
         attr: Attribute | Property,
         element: Element | Component | Slot
@@ -371,6 +370,7 @@ function transform(codeGen: CodeGen): t.Expression {
             if (attrName === 'id') {
                 return codeGen.genScopedId(attrValue.value);
             }
+
             if (attrName === 'spellcheck') {
                 return t.literal(attrValue.value.toLowerCase() !== 'false');
             }
@@ -384,6 +384,7 @@ function transform(codeGen: CodeGen): t.Expression {
             if (isIdReferencingAttribute(attrName)) {
                 return codeGen.genScopedId(attrValue.value);
             }
+
             if (
                 codeGen.scopeFragmentId &&
                 isAllowedFragOnlyUrlsXHTML(elmName, attrName, namespace) &&
@@ -391,6 +392,7 @@ function transform(codeGen: CodeGen): t.Expression {
             ) {
                 return codeGen.genScopedFragId(attrValue.value);
             }
+
             if (isSvgUseHref(elmName, attrName, namespace)) {
                 codeGen.usedLwcApis.add('sanitizeAttribute');
 
@@ -403,6 +405,7 @@ function transform(codeGen: CodeGen): t.Expression {
                         : t.literal(attrValue.value),
                 ]);
             }
+
             return t.literal(attrValue.value);
         } else {
             // A boolean value used in an attribute should always generate .setAttribute(attr.name, ''),
@@ -415,14 +418,9 @@ function transform(codeGen: CodeGen): t.Expression {
         const data: t.Property[] = [];
 
         const { attributes, properties, listeners } = element;
-<<<<<<< HEAD
         const forKey = element.directives?.find(isDirectiveType('Key'));
         const dom = element.directives?.find(isDirectiveType('Dom'));
         const innerHTML = element.directives?.find(isInnerHTMLDirective);
-=======
-        const forKey = element.directives.find(isDirectiveType('Key'));
-        const dom = element.directives.find(isDirectiveType('Dom'));
->>>>>>> 5d2dfe022 (refactor: updated BaseElement to require directives)
 
         // Attributes
         if (attributes.length) {

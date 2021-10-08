@@ -77,10 +77,10 @@ export default class CodeGen {
     readonly scopeFragmentId: boolean;
 
     /**
-     * The scope keeps track of the identifiers that have been seen during the descent down the AST.
+     * The scope keeps track of the identifiers that have been seen while traversing the AST.
      * Currently, we are keeping track of item, index and iterator on the ForEach and ForOf nodes respectively.
      *
-     * It is used to in bindExpression to determine if the expression is a known identifier.
+     * Scope is used in bindExpression to determine if the expression is a known identifier.
      * A known identifier exists if it exists on the scope.
      */
     private scope: Scope;

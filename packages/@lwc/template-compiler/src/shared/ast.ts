@@ -294,10 +294,6 @@ export function isCommentNode(node: BaseNode): node is Comment {
     return node.type === 'Comment';
 }
 
-export function isTemplate(node: ParentNode): boolean {
-    return (isBaseElement(node) || isRoot(node)) && node.name === 'template';
-}
-
 export function isExpression(node: Expression | Literal): node is Expression {
     return node.type === 'Identifier' || node.type === 'MemberExpression';
 }
