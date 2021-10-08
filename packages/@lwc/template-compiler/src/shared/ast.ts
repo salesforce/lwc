@@ -337,6 +337,6 @@ export function isInnerHTMLDirective(directive: Directive): directive is InnerHT
 
 export function isDirectiveType<D extends ElementDirective | RootDirective, T extends D['name']>(
     type: T
-): (dir: D) => dir is Extract<D, Record<'name', T>> {
-    return (dir: D): dir is Extract<D, Record<'name', T>> => dir.name === type;
+): (directive: D) => directive is Extract<D, Record<'name', T>> {
+    return (directive: D): directive is Extract<D, Record<'name', T>> => directive.name === type;
 }

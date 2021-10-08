@@ -9,8 +9,8 @@ import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
 import { isDirectiveType } from '../shared/ast';
-import { Expression, Literal, Root } from '../shared/types';
-import { LWC_RENDERMODE, TEMPLATE_PARAMS } from '../shared/constants';
+import { Expression, Literal, LWCDirectiveRenderMode, Root } from '../shared/types';
+import { TEMPLATE_PARAMS } from '../shared/constants';
 
 type RenderPrimitive =
     | 'iterator'
@@ -62,7 +62,7 @@ export default class CodeGen {
     readonly root: Root;
 
     /** The template render mode. */
-    readonly renderMode: string;
+    readonly renderMode: LWCDirectiveRenderMode;
 
     /** Indicates whether the generated code should preserve HTML comments or not. */
     readonly preserveComments: boolean;
@@ -106,9 +106,8 @@ export default class CodeGen {
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        this.renderMode =
-            root.directives?.find(isDirectiveType('RenderMode'))?.value.value ??
-            LWC_RENDERMODE.SHADOW;
+        this.renderMode = (root.directives?.find(isDirectiveType('RenderMode'))?.value.value ??
+            LWCDirectiveRenderMode.shadow) as LWCDirectiveRenderMode;
         this.preserveComments =
             root.directives?.find(isDirectiveType('PreserveComments'))?.value.value ??
             config.preserveHtmlComments;

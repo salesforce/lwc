@@ -6,6 +6,7 @@
  */
 import * as parse5 from 'parse5';
 import { ParserDiagnostics } from '@lwc/errors';
+import { hasOwnProperty } from '@lwc/shared';
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 
 import {
@@ -44,6 +45,8 @@ import {
     ParentNode,
     BaseElement,
     Comment,
+    LWCDirectiveRenderMode,
+    LWCDirectiveDomMode,
 } from '../shared/types';
 
 import ParserCtx from './parser';
@@ -73,7 +76,6 @@ import {
     VOID_ELEMENT_SET,
     FOR_DIRECTIVES,
 } from './constants';
-import { LWC_RENDERMODE } from '../shared/constants';
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
@@ -433,7 +435,8 @@ function applyLwcRenderModeDirective(ctx: ParserCtx, root: Root, parsedAttr: Par
 
     if (
         !ast.isStringLiteral(renderDomAttr) ||
-        (renderDomAttr.value !== 'shadow' && renderDomAttr.value !== 'light')
+        (renderDomAttr.value !== LWCDirectiveRenderMode.shadow &&
+            renderDomAttr.value !== LWCDirectiveRenderMode.light)
     ) {
         ctx.throwOnNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, root);
     }
@@ -585,7 +588,7 @@ function applyLwcDomDirective(
         return;
     }
 
-    if (ctx.renderMode === LWC_RENDERMODE.LIGHT) {
+    if (ctx.renderMode === LWCDirectiveRenderMode.light) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_IN_LIGHT_DOM, element, [`<${tag}>`]);
     }
 
@@ -599,12 +602,20 @@ function applyLwcDomDirective(
 
     const { value: lwcDomAttr } = lwcDomAttribute;
 
-    if (!ast.isStringLiteral(lwcDomAttr) || lwcDomAttr.value !== 'manual') {
-        ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, [`"manual"`]);
+    if (
+        !ast.isStringLiteral(lwcDomAttr) ||
+        hasOwnProperty.call(LWCDirectiveDomMode, lwcDomAttr.value) === false
+    ) {
+        const possibleValues = Object.keys(LWCDirectiveDomMode)
+            .map((value) => `"${value}"`)
+            .join(', or ');
+        ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, [possibleValues]);
     }
 
     const directives = element.directives || (element.directives = []);
-    directives.push(ast.domDirective(lwcDomAttr.value, lwcDomAttribute.location));
+    directives.push(
+        ast.domDirective(lwcDomAttr.value as LWCDirectiveDomMode.manual, lwcDomAttribute.location)
+    );
 }
 
 function parseForEach(ctx: ParserCtx, parse5Elm: parse5.Element, parsedAttr: ParsedAttribute) {
@@ -736,7 +747,7 @@ function parseSlot(
     }
 
     // Can't handle slots in applySlot because it would be too late for class and style attrs
-    if (ctx.renderMode === LWC_RENDERMODE.LIGHT) {
+    if (ctx.renderMode === LWCDirectiveRenderMode.light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
             .filter(({ name }) => name !== 'name')

@@ -14,10 +14,15 @@ import {
     normalizeToDiagnostic,
 } from '@lwc/errors';
 import { ResolvedConfig } from '../config';
-import { LWC_RENDERMODE } from '../shared/constants';
 import { isDirectiveType } from '../shared/ast';
 
-import { Root, SourceLocation, ParentNode, BaseNode } from '../shared/types';
+import {
+    Root,
+    SourceLocation,
+    ParentNode,
+    BaseNode,
+    LWCDirectiveRenderMode,
+} from '../shared/types';
 
 function normalizeLocation(location?: SourceLocation): Location {
     let line = 0;
@@ -49,7 +54,7 @@ export default class ParserCtx {
     constructor(source: String, config: ResolvedConfig) {
         this.source = source;
         this.config = config;
-        this.renderMode = LWC_RENDERMODE.SHADOW;
+        this.renderMode = LWCDirectiveRenderMode.shadow;
         this.preserveComments = config.preserveHtmlComments;
     }
 

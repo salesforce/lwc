@@ -16,6 +16,15 @@ export type TemplateParseResult = {
     warnings: CompilerDiagnostic[];
 };
 
+export enum LWCDirectiveDomMode {
+    manual = 'manual',
+}
+
+export enum LWCDirectiveRenderMode {
+    shadow = 'shadow',
+    light = 'light',
+}
+
 export interface BaseNode {
     type: string;
     location: SourceLocation;

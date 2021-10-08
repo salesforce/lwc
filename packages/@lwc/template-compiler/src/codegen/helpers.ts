@@ -6,7 +6,7 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { BaseElement, ChildNode, Node } from '../shared/types';
+import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
 import {
     isTemplate,
     isParentNode,
@@ -16,7 +16,7 @@ import {
     isIfBlock,
     isDirectiveType,
 } from '../shared/ast';
-import { LWC_RENDERMODE, TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
+import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
 
@@ -69,7 +69,7 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
                 ((isBaseElement(child) && isDynamic(child)) ||
                     ((isIfBlock(child) || isTemplate(child)) &&
                         shouldFlatten(codeGen, child.children)) ||
-                    (codeGen.renderMode === LWC_RENDERMODE.LIGHT && isSlot(child))))
+                    (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child))))
     );
 }
 
@@ -144,7 +144,7 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
     // ignore when shadow because we don't want to modify template unnecessarily
-    if (codeGen.renderMode === LWC_RENDERMODE.LIGHT) {
+    if (codeGen.renderMode === LWCDirectiveRenderMode.light) {
         const renderModeMetadata = t.assignmentExpression(
             '=',
             t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('renderMode')),
