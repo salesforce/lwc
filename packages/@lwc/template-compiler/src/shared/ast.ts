@@ -54,6 +54,7 @@ export function element(parse5Elm: parse5.Element, location: SourceLocation): El
         location,
         attributes: [],
         properties: [],
+        directives: [],
         listeners: [],
         children: [],
     };
@@ -66,6 +67,7 @@ export function component(parse5Elm: parse5.Element, location: SourceLocation): 
         location,
         attributes: [],
         properties: [],
+        directives: [],
         listeners: [],
         children: [],
     };
@@ -78,6 +80,7 @@ export function slot(name: string, location: SourceLocation): Slot {
         location,
         attributes: [],
         properties: [],
+        directives: [],
         listeners: [],
         children: [],
     };

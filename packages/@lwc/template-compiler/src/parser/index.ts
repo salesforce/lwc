@@ -572,8 +572,7 @@ function applyLwcDynamicDirective(
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP, element, [`<${tag}>`]);
     }
 
-    const directives = element.directives || (element.directives = []);
-    directives.push(ast.dynamicDirective(lwcDynamicAttr, lwcDynamicAttr.location));
+    element.directives.push(ast.dynamicDirective(lwcDynamicAttr, lwcDynamicAttr.location));
 }
 
 function applyLwcDomDirective(
@@ -612,8 +611,7 @@ function applyLwcDomDirective(
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element, [possibleValues]);
     }
 
-    const directives = element.directives || (element.directives = []);
-    directives.push(
+    element.directives.push(
         ast.domDirective(lwcDomAttr.value as LWCDirectiveDomMode.manual, lwcDomAttribute.location)
     );
 }
@@ -728,9 +726,7 @@ function applyKey(
             }
         }
 
-        const forKey = ast.keyDirective(keyAttribute.value, keyAttribute.location);
-        const directive = element.directives || (element.directives = []);
-        directive.push(forKey);
+        element.directives.push(ast.keyDirective(keyAttribute.value, keyAttribute.location));
     } else if (isInIteratorElement(ctx, parent)) {
         ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
@@ -996,7 +992,7 @@ function validateChildren(ctx: ParserCtx, element?: Element | Component | Slot) 
     const effectiveChildren = ctx.preserveComments
         ? element.children
         : element.children.filter((child) => !ast.isCommentNode(child));
-    const hasDomDirective = element.directives?.find(ast.isDirectiveType('Dom'));
+    const hasDomDirective = element.directives.find(ast.isDirectiveType('Dom'));
     if (hasDomDirective && effectiveChildren.length > 0) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
     }

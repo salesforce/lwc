@@ -81,7 +81,7 @@ function transform(codeGen: CodeGen): t.Expression {
         // Check wether it has the special directive lwc:dynamic
         const { name } = element;
 
-        const dynamic = element.directives?.find(isDirectiveType('Dynamic'));
+        const dynamic = element.directives.find(isDirectiveType('Dynamic'));
         if (dynamic) {
             const expression = codeGen.bindExpression(dynamic.value);
             res = codeGen.genDynamicElement(name, expression, databag, children);
@@ -415,9 +415,14 @@ function transform(codeGen: CodeGen): t.Expression {
         const data: t.Property[] = [];
 
         const { attributes, properties, listeners } = element;
+<<<<<<< HEAD
         const forKey = element.directives?.find(isDirectiveType('Key'));
         const dom = element.directives?.find(isDirectiveType('Dom'));
         const innerHTML = element.directives?.find(isInnerHTMLDirective);
+=======
+        const forKey = element.directives.find(isDirectiveType('Key'));
+        const dom = element.directives.find(isDirectiveType('Dom'));
+>>>>>>> 5d2dfe022 (refactor: updated BaseElement to require directives)
 
         // Attributes
         if (attributes.length) {

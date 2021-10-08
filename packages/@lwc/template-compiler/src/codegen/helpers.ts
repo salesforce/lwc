@@ -44,7 +44,7 @@ export function objectToAST(
 }
 
 function isDynamic(element: BaseElement): boolean {
-    return !!element.directives?.find(isDirectiveType('Dynamic'));
+    return element.directives.some(isDirectiveType('Dynamic'));
 }
 
 export function containsDynamicChildren(children: ChildNode[]): boolean {

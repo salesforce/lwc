@@ -133,7 +133,7 @@ export interface BaseElement extends BaseParentNode {
     properties: Property[];
     attributes: Attribute[];
     listeners: EventListener[];
-    directives?: ElementDirective[];
+    directives: ElementDirective[];
     namespace?: string;
 }
 
