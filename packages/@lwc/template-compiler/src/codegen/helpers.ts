@@ -6,7 +6,7 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { BaseElement, ChildNode, ParentNode } from '../shared/types';
+import { BaseElement, ChildNode, Node } from '../shared/types';
 import {
     isTemplate,
     isParentNode,
@@ -49,24 +49,26 @@ function isDynamic(element: BaseElement): boolean {
 
 export function containsDynamicChildren(children: ChildNode[]): boolean {
     return children.some((child) => {
-        let result = false;
         if (isForBlock(child) || isIfBlock(child)) {
-            result = containsDynamicChildren(child.children);
-        } else if (isBaseElement(child)) {
-            result = isDynamic(child);
+            return containsDynamicChildren(child.children);
         }
-        return result;
+
+        if (isBaseElement(child)) {
+            return isDynamic(child);
+        }
+
+        return false;
     });
 }
 
-export function shouldFlatten(children: ChildNode[], codeGen: CodeGen): boolean {
+export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
     return children.some(
         (child) =>
-            !!isForBlock(child) ||
+            isForBlock(child) ||
             (isParentNode(child) &&
                 ((isBaseElement(child) && isDynamic(child)) ||
                     ((isIfBlock(child) || isTemplate(child)) &&
-                        shouldFlatten(child.children, codeGen)) ||
+                        shouldFlatten(codeGen, child.children)) ||
                     (codeGen.renderMode === LWC_RENDERMODE.LIGHT && isSlot(child))))
     );
 }
@@ -74,19 +76,18 @@ export function shouldFlatten(children: ChildNode[], codeGen: CodeGen): boolean 
 /**
  * Returns true if the AST element or any of its descendants use an id attribute.
  */
-export function hasIdAttribute(node: ParentNode): boolean {
+export function hasIdAttribute(node: Node): boolean {
     if (isBaseElement(node)) {
-        const attrs = node.attributes.some((attr) => attr.name === 'id');
-        const props = node.properties.some((prop) => prop.name === 'id');
-        if (attrs || props) {
+        const hasIdAttr = [...node.attributes, ...node.properties].some(
+            (attr) => attr.name === 'id'
+        );
+        if (hasIdAttr) {
             return true;
         }
     }
 
-    for (const child of node.children) {
-        if (isParentNode(child) && hasIdAttribute(child)) {
-            return true;
-        }
+    if (isParentNode(node)) {
+        return node.children.some((child) => hasIdAttribute(child));
     }
 
     return false;
@@ -99,7 +100,7 @@ export function memorizeHandler(
 ): t.Expression {
     // #439 - The handler can only be memorized if it is bound to component instance
     const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-    const shouldMemorizeHandler = codeGen.resolve(id);
+    const shouldMemorizeHandler = !codeGen.isLocalIdentifier(id);
 
     // Apply memorization if the handler is memorizable.
     //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))

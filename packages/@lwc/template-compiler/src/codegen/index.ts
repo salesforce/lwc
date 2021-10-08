@@ -167,7 +167,7 @@ function transform(codeGen: CodeGen): t.Expression {
             }
         }
 
-        if (shouldFlatten(children, codeGen)) {
+        if (shouldFlatten(codeGen, children)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
                 return res[0];
             } else {
@@ -180,20 +180,6 @@ function transform(codeGen: CodeGen): t.Expression {
 
     function transformIfBlock(ifBlock: IfBlock): t.Expression | t.Expression[] {
         const children = transformChildren(ifBlock);
-        // const child = ifBlock.children[0];
-
-        // let res: t.Expression;
-        // if (isBaseElement(child) && isTemplate(child)) {
-        //     res = applyTemplateIf(ifBlock, children);
-        // } else {
-        //     let expression = children;
-        //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-        //         expression = expression.elements[0] as t.Expression;
-        //     }
-
-        //     res = applyInlineIf(ifBlock, expression);
-        // }
-
         const res = applyTemplateIf(ifBlock, children);
 
         if (t.isArrayExpression(res)) {
@@ -257,11 +243,11 @@ function transform(codeGen: CodeGen): t.Expression {
         if (isForEach(forBlock)) {
             const { item, index } = forBlock;
             if (index) {
-                codeGen.declare(index);
+                codeGen.declareIdentifier(index);
             }
-            codeGen.declare(item);
+            codeGen.declareIdentifier(item);
         } else {
-            codeGen.declare(forBlock.iterator);
+            codeGen.declareIdentifier(forBlock.iterator);
         }
 
         const children = transformChildren(forBlock);

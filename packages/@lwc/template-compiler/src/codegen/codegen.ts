@@ -53,7 +53,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
 };
 
 interface Scope {
-    parent?: Scope;
+    parent: Scope | null;
     declaration: Set<string>;
 }
 
@@ -76,6 +76,13 @@ export default class CodeGen {
      */
     readonly scopeFragmentId: boolean;
 
+    /**
+     * The scope keeps track of the identifiers that have been seen during the descent down the AST.
+     * Currently, we are keeping track of item, index and iterator on the ForEach and ForOf nodes respectively.
+     *
+     * It is used to in bindExpression to determine if the expression is a known identifier.
+     * A known identifier exists if it exists on the scope.
+     */
     private scope: Scope;
 
     currentId = 0;
@@ -107,6 +114,7 @@ export default class CodeGen {
             config.preserveHtmlComments;
         this.scopeFragmentId = scopeFragmentId;
         this.scope = {
+            parent: null,
             declaration: new Set(),
         };
     }
@@ -316,38 +324,45 @@ export default class CodeGen {
         return t.callExpression(identifier, params);
     }
 
-    beginScope() {
+    beginScope(): void {
         this.scope = {
             parent: this.scope,
             declaration: new Set(),
         };
     }
 
-    endScope() {
-        if (this.scope.parent) {
-            this.scope = this.scope.parent;
+    endScope(): void {
+        if (!this.scope.parent) {
+            throw new Error("Can't invoke endScope if the current scope has no parent");
         }
+
+        this.scope = this.scope.parent;
     }
 
-    declare(identifier: t.Identifier) {
+    declareIdentifier(identifier: t.Identifier): void {
         this.scope.declaration.add(identifier.name);
     }
 
-    resolve(identifier: t.Identifier, current = this.scope): boolean {
+    isLocalIdentifier(identifier: t.Identifier, current = this.scope): boolean {
         if (current.declaration.has(identifier.name)) {
-            return false;
+            return true;
         }
 
         if (current.parent) {
-            return this.resolve(identifier, current.parent);
+            return this.isLocalIdentifier(identifier, current.parent);
         }
 
-        return true;
+        return false;
     }
 
+    /**
+     * Bind the passed expression to the component instance. It applies the following transformation to the expression:
+     * - {value} --> {$cmp.value}
+     * - {value[index]} --> {$cmp.value[$cmp.index]}
+     */
     bindExpression(expression: Expression | Literal): t.Expression {
         if (t.isIdentifier(expression)) {
-            if (this.resolve(expression)) {
+            if (!this.isLocalIdentifier(expression)) {
                 return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
             } else {
                 return expression;
@@ -362,7 +377,7 @@ export default class CodeGen {
                     t.isIdentifier(node) &&
                     t.isMemberExpression(parent) &&
                     parent.object === node &&
-                    scope.resolve(node)
+                    !scope.isLocalIdentifier(node)
                 ) {
                     this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
                 }

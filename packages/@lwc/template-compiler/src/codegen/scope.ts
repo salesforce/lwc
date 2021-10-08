@@ -18,7 +18,7 @@ import CodeGen from './codegen';
  */
 export function bindExpression(expression: Expression | Literal, codegen: CodeGen): t.Expression {
     if (t.isIdentifier(expression)) {
-        if (codegen.resolve(expression)) {
+        if (!codegen.isLocalIdentifier(expression)) {
             return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
         } else {
             return expression;
@@ -32,7 +32,7 @@ export function bindExpression(expression: Expression | Literal, codegen: CodeGe
                 t.isIdentifier(node) &&
                 t.isMemberExpression(parent) &&
                 parent.object === node &&
-                codegen.resolve(node)
+                !codegen.isLocalIdentifier(node)
             ) {
                 this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
             }

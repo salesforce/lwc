@@ -167,8 +167,8 @@ export interface Root extends BaseParentNode {
     directives?: RootDirective[];
 }
 
-export type DirectiveNode = Root | Component | Element | Slot;
-
 export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 
 export type ChildNode = ForBlock | IfBlock | Element | Component | Slot | Comment | Text;
+
+export type Node = Root | ForBlock | IfBlock | Element | Component | Slot | Comment | Text;

@@ -23,7 +23,7 @@ import generate from './codegen';
 import { TemplateCompileResult, TemplateParseResult } from './shared/types';
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 
-export * as Types from './shared/types';
+export * from './shared/types';
 export { Config } from './config';
 
 export function parse(source: string, config: Config = {}): TemplateParseResult {
