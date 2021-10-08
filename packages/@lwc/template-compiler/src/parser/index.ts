@@ -170,10 +170,10 @@ function parseElementDirectives(
 ): ParentNode {
     let current = parent;
 
-    const parsers = [parseForEach, parseIterator, parseIf];
+    const parsers = [parseForEach, parseForOf, parseIf];
     for (const parser of parsers) {
         // Currently, parseIterator is the only parser that requires the previous node.
-        // If the parent node is a ForEach, do not pass it to parseIterator.  This will
+        // If the parent node is a ForEach, do not pass it to parseForOf.  This will
         // avoid a false positive on the INVALID_FOR_EACH_WITH_ITERATOR error.
         const prev = current !== parent ? current : undefined;
         const node = parser(ctx, parsedAttr, parse5Elm, prev);
@@ -671,7 +671,7 @@ function parseForEach(
     }
 }
 
-function parseIterator(
+function parseForOf(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
     parse5Elm: parse5.Element,
