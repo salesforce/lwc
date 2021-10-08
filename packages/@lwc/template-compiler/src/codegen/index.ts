@@ -13,7 +13,6 @@ import { ResolvedConfig } from '../config';
 
 import {
     isCommentNode,
-    isTemplate,
     isTextNode,
     isSlot,
     isStringLiteral,
@@ -153,18 +152,14 @@ function transform(codeGen: CodeGen): t.Expression {
             }
 
             if (isIfBlock(child)) {
-                const ifBlockChildren = trnasformIfBlock(child);
+                const ifBlockChildren = transformIfBlock(child);
                 Array.isArray(ifBlockChildren)
                     ? res.push(...ifBlockChildren)
                     : res.push(ifBlockChildren);
             }
 
             if (isBaseElement(child)) {
-                if (isTemplate(child)) {
-                    res.push(transformChildren(child));
-                } else {
-                    res.push(transformElement(child));
-                }
+                res.push(transformElement(child));
             }
 
             if (isCommentNode(child) && codeGen.preserveComments) {
@@ -172,9 +167,7 @@ function transform(codeGen: CodeGen): t.Expression {
             }
         }
 
-        if (isForBlock(parent) || isIfBlock(parent)) {
-            return res[0];
-        } else if (shouldFlatten(children, codeGen)) {
+        if (shouldFlatten(children, codeGen)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
                 return res[0];
             } else {
@@ -185,21 +178,23 @@ function transform(codeGen: CodeGen): t.Expression {
         }
     }
 
-    function trnasformIfBlock(ifBlock: IfBlock): t.Expression | t.Expression[] {
+    function transformIfBlock(ifBlock: IfBlock): t.Expression | t.Expression[] {
         const children = transformChildren(ifBlock);
-        const child = ifBlock.children[0];
+        // const child = ifBlock.children[0];
 
-        let res: t.Expression;
-        if (isBaseElement(child) && isTemplate(child)) {
-            res = applyTemplateIf(ifBlock, children);
-        } else {
-            let expression = children;
-            if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-                expression = expression.elements[0] as t.Expression;
-            }
+        // let res: t.Expression;
+        // if (isBaseElement(child) && isTemplate(child)) {
+        //     res = applyTemplateIf(ifBlock, children);
+        // } else {
+        //     let expression = children;
+        //     if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+        //         expression = expression.elements[0] as t.Expression;
+        //     }
 
-            res = applyInlineIf(ifBlock, expression);
-        }
+        //     res = applyInlineIf(ifBlock, expression);
+        // }
+
+        const res = applyTemplateIf(ifBlock, children);
 
         if (t.isArrayExpression(res)) {
             // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely

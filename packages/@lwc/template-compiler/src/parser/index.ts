@@ -143,16 +143,19 @@ function parseElement(ctx: ParserCtx, parse5Elm: parse5.Element, parse5Parent: p
     const directive = parseElementDirectives(ctx, parse5Elm, parsedAttr, parent);
     const element = parseElementType(ctx, parse5Elm, parsedAttr, directive, parse5Parent);
 
-    applyHandlers(ctx, element, parsedAttr);
-    applyKey(ctx, element, parsedAttr, parent);
-    applyLwcDirectives(ctx, element, parsedAttr);
-    applyAttributes(ctx, element, parsedAttr);
+    if (element) {
+        applyHandlers(ctx, element, parsedAttr);
+        applyKey(ctx, element, parsedAttr, parent);
+        applyLwcDirectives(ctx, element, parsedAttr);
+        applyAttributes(ctx, element, parsedAttr);
 
-    validateElement(ctx, element, parse5Elm);
-    validateAttributes(ctx, element, parsedAttr);
-    validateProperties(ctx, element);
+        validateElement(ctx, element, parse5Elm);
+        validateAttributes(ctx, element, parsedAttr);
+        validateProperties(ctx, element);
+    }
 
-    parseChildren(ctx, element, parse5Elm);
+    validateTemplate(ctx, parse5Elm);
+    parseChildren(ctx, element || directive, parse5Elm);
     validateChildren(ctx, element);
 }
 
@@ -166,7 +169,11 @@ function parseElementDirectives(
 
     const parsers = [parseForEach, parseIterator, parseIf];
     for (const parser of parsers) {
-        const node = parser(ctx, parse5Elm, parsedAttr, current);
+        // Currently, parseIterator is the only parser that requires the previous node.
+        // If the parent node is a ForEach, do not pass it to parseIterator.  This will
+        // avoid a false positive on the INVALID_FOR_EACH_WITH_ITERATOR error.
+        const prev = current !== parent ? current : undefined;
+        const node = parser(ctx, parse5Elm, parsedAttr, prev);
         if (node) {
             ctx.addParent(node);
             current.children.push(node);
@@ -188,17 +195,19 @@ function parseElementType(
     const location = parseSourceLocation(ctx, parse5Elm, parse5Parent);
     // Check if the element tag is a valid custom element name and is not part of known standard
     // element name containing a dash.
-    let element: Element | Component | Slot;
+    let element: Element | Component | Slot | undefined;
     if (tag === 'slot') {
         element = parseSlot(ctx, location, parsedAttr, parent);
-    } else if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+    } else if (tag !== 'template' && (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag))) {
         element = ast.element(parse5Elm, location);
-    } else {
+    } else if (tag !== 'template') {
         element = ast.component(parse5Elm, location);
     }
 
-    parent.children.push(element);
-    ctx.addParent(element);
+    if (element) {
+        parent.children.push(element);
+        ctx.addParent(element);
+    }
 
     return element;
 }
@@ -644,7 +653,7 @@ function parseIterator(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
     parsedAttr: ParsedAttribute,
-    current: ParentNode
+    current?: ParentNode
 ) {
     const iteratorExpression = parsedAttr.pick(ITERATOR_RE);
     if (!iteratorExpression) {
@@ -711,7 +720,7 @@ function applyKey(
         const forKey = ast.keyDirective(keyAttribute.value, keyAttribute.location);
         const directive = element.directives || (element.directives = []);
         directive.push(forKey);
-    } else if (isInIteratorElement(ctx, parent) && !ast.isTemplate(element)) {
+    } else if (isInIteratorElement(ctx, parent)) {
         ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
 }
@@ -858,7 +867,7 @@ function applyAttributes(
         } else {
             const propName = attributeToPropertyName(name);
             element.properties.push(ast.property(propName, attr.value, attr.location));
-            // if standard elemnt, console log element and check the one case in the comment to check
+
             parsedAttr.pick(name);
         }
     }
@@ -911,7 +920,7 @@ function validateElement(
 
     if (tag === 'style' && namespace === HTML_NAMESPACE_URI) {
         ctx.throwOnNode(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element);
-    } else if (ast.isTemplate(element)) {
+    } else if (tag === 'template') {
         // We check if the template element has some modifier applied to it. Directly checking if one of the
         // IRElement property is impossible. For example when an error occurs during the parsing of the if
         // expression, the `element.if` property remains undefined. It would results in 2 warnings instead of 1:
@@ -958,7 +967,21 @@ function validateElement(
     }
 }
 
-function validateChildren(ctx: ParserCtx, element: Element | Component | Slot) {
+function validateTemplate(ctx: ParserCtx, parse5Elm: parse5.Element) {
+    if (parse5Elm.tagName === 'template') {
+        const location = parseSourceLocation(ctx, parse5Elm)
+        const hasAttributes = parse5Elm.attrs.length !== 0;
+        if (!hasAttributes) {
+            ctx.throwAtLocation(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, location);
+        }
+    }
+}
+
+function validateChildren(ctx: ParserCtx, element?: Element | Component | Slot) {
+    if (!element) {
+        return;
+    }
+
     const effectiveChildren = ctx.preserveComments
         ? element.children
         : element.children.filter((child) => !ast.isCommentNode(child));
@@ -1084,6 +1107,7 @@ function getTemplateAttribute(
 function isInIteration(ctx: ParserCtx): boolean {
     return !!ctx.findAncestor({
         predicate: (node) => ast.isForBlock(node),
+        // traversalCond: ({ parent }) => parent && ast.isForBlock(parent)
     });
 }
 
@@ -1091,8 +1115,7 @@ function getForOfParent(ctx: ParserCtx, src: ParentNode): ForOf | null {
     const ancestor = ctx.findAncestor({
         element: src,
         predicate: (node) => ast.isForOf(node),
-        traversalCond: ({ current, parent }) =>
-            (parent && !ast.isBaseElement(parent)) || ast.isTemplate(current),
+        traversalCond: ({ current }) => current && !ast.isBaseElement(current),
     });
 
     if (ancestor && ast.isForOf(ancestor)) {
@@ -1105,8 +1128,7 @@ function getForOfParent(ctx: ParserCtx, src: ParentNode): ForOf | null {
 function getForEachParent(ctx: ParserCtx): ForEach | null {
     const ancestor = ctx.findAncestor({
         predicate: (node) => ast.isForEach(node),
-        traversalCond: ({ parent }) =>
-            parent && (!ast.isBaseElement(parent) || ast.isTemplate(parent)),
+        traversalCond: ({ parent }) => parent && !ast.isBaseElement(parent),
     });
 
     if (ancestor && ast.isForEach(ancestor)) {
