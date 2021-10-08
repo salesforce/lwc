@@ -124,7 +124,8 @@ export function getShadowRoot(elm: Element): SyntheticShadowRootInterface {
 // Intentionally adding `Node` here in addition to `Element` since this check is harmless for nodes
 // and we can avoid having to cast the type before calling this method in a few places.
 export function isHostElement(node: unknown): node is HTMLElement {
-    return InternalSlot.has(node);
+    const shadowRootRecord = InternalSlot.get(node);
+    return !isUndefined(shadowRootRecord) && node === shadowRootRecord.host;
 }
 
 // Return true if any descendant is a host element
