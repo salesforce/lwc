@@ -124,7 +124,7 @@ export function getShadowRoot(elm: Element): SyntheticShadowRootInterface {
 // Intentionally adding `Node` here in addition to `Element` since this check is harmless for nodes
 // and we can avoid having to cast the type before calling this method in a few places.
 export function isHostElement(node: unknown): node is HTMLElement {
-    return !isUndefined(InternalSlot.get(node));
+    return InternalSlot.has(node);
 }
 
 // Return true if any descendant is a host element
@@ -144,7 +144,7 @@ export function containsHost(node: Node) {
 let uid = 0;
 
 export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
-    if (!isUndefined(InternalSlot.get(elm))) {
+    if (InternalSlot.has(elm)) {
         throw new Error(
             `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`
         );
