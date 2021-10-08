@@ -3,21 +3,22 @@ import { createElement } from 'lwc';
 import Component from 'x/component';
 
 describe(':dir() pseudoclass', () => {
-    // See https://stackoverflow.com/a/61597966
-    function supportsSelector(selector) {
-        const style = document.createElement('style');
-        document.head.appendChild(style);
-        try {
-            style.sheet.insertRule(selector + '{}', 0);
-        } catch (e) {
-            return false;
-        } finally {
-            document.head.removeChild(style);
-        }
-        return true;
+    function supportsDirPseudoclass() {
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <style>.test-dir-pseudo:dir(rtl){ color: red }</style>
+          <div dir="rtl" class="test-dir-pseudo"></div>
+        `;
+
+        document.body.appendChild(div);
+
+        const supports =
+            getComputedStyle(div.querySelector('.test-dir-pseudo')).color === 'rgb(255, 0, 0)';
+        document.body.removeChild(div);
+        return supports;
     }
 
-    if (!process.env.NATIVE_SHADOW || supportsSelector(':dir(ltr)')) {
+    if (!process.env.NATIVE_SHADOW || supportsDirPseudoclass()) {
         // In native shadow we delegate to the browser, so it has to support :dir()
 
         it('can apply styles based on :dir()', () => {
