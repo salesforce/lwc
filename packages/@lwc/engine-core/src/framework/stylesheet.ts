@@ -17,8 +17,9 @@ import { getStyleOrSwappedStyle } from './hot-swaps';
  * the engine with different values depending on the mode that the component is running on.
  */
 export type StylesheetFactory = (
+    stylesheetToken: string | undefined,
     useActualHostSelector: boolean,
-    stylesheetToken: string | undefined
+    useNativeDirPseudoclass: boolean
 ) => string;
 
 /**
@@ -112,20 +113,27 @@ function evaluateStylesheetsContent(
                 // the stylesheet, while internally, we have a replacement for it.
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
-            // Use the actual `:host` selector if we're rendering global CSS for light DOM, or if we're rendering
-            // native shadow DOM. Synthetic shadow DOM never uses `:host`.
             const isScopedCss = (stylesheet as any)[KEY__SCOPED_CSS];
-            const useActualHostSelector =
-                vm.renderMode === RenderMode.Light
-                    ? !isScopedCss
-                    : vm.shadowMode === ShadowMode.Native;
             // Apply the scope token only if the stylesheet itself is scoped, or if we're rendering synthetic shadow.
             const scopeToken =
                 isScopedCss ||
                 (vm.shadowMode === ShadowMode.Synthetic && vm.renderMode === RenderMode.Shadow)
                     ? stylesheetToken
                     : undefined;
-            ArrayPush.call(content, stylesheet(useActualHostSelector, scopeToken));
+            // Use the actual `:host` selector if we're rendering global CSS for light DOM, or if we're rendering
+            // native shadow DOM. Synthetic shadow DOM never uses `:host`.
+            const useActualHostSelector =
+                vm.renderMode === RenderMode.Light
+                    ? !isScopedCss
+                    : vm.shadowMode === ShadowMode.Native;
+            // Use the native :dir() pseudoclass only in native shadow DOM. Otherwise, in synthetic shadow,
+            // we use an attribute selector on the host to simulate :dir().
+            const useNativeDirPseudoclass =
+                vm.shadowMode === ShadowMode.Native && vm.renderMode === RenderMode.Shadow;
+            ArrayPush.call(
+                content,
+                stylesheet(scopeToken, useActualHostSelector, useNativeDirPseudoclass)
+            );
         }
     }
 
