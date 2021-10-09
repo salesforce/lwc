@@ -31,10 +31,8 @@ import {
     ParentNode,
     BaseNode,
     ForOf,
-    ElementDirective,
-    RootDirective,
-    Directive,
     InnerHTMLDirective,
+    Directive,
     ElementSourceLocation,
 } from './types';
 
@@ -301,11 +299,11 @@ export function isBaseElement(node: BaseNode): node is Element | Component | Slo
     return isElement(node) || isComponent(node) || isSlot(node);
 }
 
-export function isTextNode(node: BaseNode): node is Text {
+export function isText(node: BaseNode): node is Text {
     return node.type === 'Text';
 }
 
-export function isCommentNode(node: BaseNode): node is Comment {
+export function isComment(node: BaseNode): node is Comment {
     return node.type === 'Comment';
 }
 
@@ -341,16 +339,32 @@ export function isParentNode(node: BaseNode): node is ParentNode {
     return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIfBlock(node);
 }
 
-export function isProperty(node: BaseNode): boolean {
-    return node.type === 'Property';
+export function isDynamicDirective(directive: Directive): directive is DynamicDirective {
+    return directive.name === 'Dynamic';
+}
+
+export function isDomDirective(directive: Directive): directive is DomDirective {
+    return directive.name === 'Dom';
 }
 
 export function isInnerHTMLDirective(directive: Directive): directive is InnerHTMLDirective {
     return directive.name === 'InnerHTML';
 }
 
-export function isDirectiveType<D extends ElementDirective | RootDirective, T extends D['name']>(
-    type: T
-): (directive: D) => directive is Extract<D, Record<'name', T>> {
-    return (directive: D): directive is Extract<D, Record<'name', T>> => directive.name === type;
+export function isKeyDirective(directive: Directive): directive is KeyDirective {
+    return directive.name === 'Key';
+}
+
+export function isRenderModeDirective(directive: Directive): directive is RenderModeDirective {
+    return directive.name === 'RenderMode';
+}
+
+export function isPreserveCommentsDirective(
+    directive: Directive
+): directive is PreserveCommentsDirective {
+    return directive.name === 'PreserveComments';
+}
+
+export function isProperty(node: BaseNode): node is Property {
+    return node.type === 'Property';
 }

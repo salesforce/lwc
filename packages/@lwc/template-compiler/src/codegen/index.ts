@@ -12,8 +12,8 @@ import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 import { ResolvedConfig } from '../config';
 
 import {
-    isCommentNode,
-    isTextNode,
+    isComment,
+    isText,
     isSlot,
     isStringLiteral,
     isForBlock,
@@ -23,8 +23,10 @@ import {
     isExpression,
     isProperty,
     isComponent,
-    isDirectiveType,
     isInnerHTMLDirective,
+    isDynamicDirective,
+    isKeyDirective,
+    isDomDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
@@ -80,7 +82,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Check wether it has the special directive lwc:dynamic
         const { name } = element;
-        const dynamic = element.directives.find(isDirectiveType('Dynamic'));
+        const dynamic = element.directives.find(isDynamicDirective);
 
         if (dynamic) {
             const expression = codeGen.bindExpression(dynamic.value);
@@ -129,7 +131,7 @@ function transform(codeGen: CodeGen): t.Expression {
         while ((current = childrenIterator.next()) && !current.done) {
             let child = current.value;
 
-            if (isTextNode(child)) {
+            if (isText(child)) {
                 const continuousText: Text[] = [];
 
                 // Consume all the contiguous text nodes.
@@ -137,7 +139,7 @@ function transform(codeGen: CodeGen): t.Expression {
                     continuousText.push(child);
                     current = childrenIterator.next();
                     child = current.value;
-                } while (!current.done && isTextNode(child));
+                } while (!current.done && isText(child));
 
                 res.push(transformText(continuousText));
 
@@ -162,7 +164,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformElement(child));
             }
 
-            if (isCommentNode(child) && codeGen.preserveComments) {
+            if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
             }
         }
@@ -418,9 +420,11 @@ function transform(codeGen: CodeGen): t.Expression {
         const data: t.Property[] = [];
 
         const { attributes, properties, listeners } = element;
-        const forKey = element.directives?.find(isDirectiveType('Key'));
-        const dom = element.directives?.find(isDirectiveType('Dom'));
-        const innerHTML = element.directives?.find(isInnerHTMLDirective);
+
+        const innerHTML = element.directives.find(isInnerHTMLDirective);
+        const forKey = element.directives.find(isKeyDirective);
+        const dom = element.directives.find(isDomDirective);
+
 
         // Attributes
         if (attributes.length) {

@@ -201,9 +201,11 @@ function parseElementType(
 ): Element | Component | Slot | undefined {
     const { tagName: tag } = parse5Elm;
     const location = parseElementLocation(ctx, parse5Elm, parse5Parent);
+
     // Check if the element tag is a valid custom element name and is not part of known standard
     // element name containing a dash.
     let element: Element | Component | Slot | undefined;
+
     if (tag === 'slot') {
         element = parseSlot(ctx, parsedAttr, location);
         // Skip creating template nodes
@@ -387,7 +389,7 @@ function getTemplateRoot(
 function applyHandlers(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: Component | Element | Slot
+    element: Element | Component | Slot
 ): void {
     let eventHandlerAttribute;
     while ((eventHandlerAttribute = parsedAttr.pick(EVENT_HANDLER_RE))) {
@@ -474,7 +476,7 @@ function applyLwcRenderModeDirective(
         ctx.throwOnNode(ParserDiagnostics.LWC_RENDER_MODE_INVALID_VALUE, root);
     }
 
-    const directives = root.directives || (root.directives = []);
+    const directives = root.directives ?? (root.directives = []);
     directives.push(ast.renderModeDirective(renderDomAttr.value, lwcRenderModeAttribute.location));
 }
 
@@ -494,7 +496,7 @@ function applyLwcPreserveCommentsDirective(
         ctx.throwOnNode(ParserDiagnostics.PRESERVE_COMMENTS_MUST_BE_BOOLEAN, root);
     }
 
-    const directives = root.directives || (root.directives = []);
+    const directives = root.directives ?? (root.directives = []);
     directives.push(
         ast.preserveCommentsDirective(
             lwcPreserveCommentsAttr.value,
@@ -631,7 +633,7 @@ function applyLwcInnerHtmlDirective(
         ]);
     }
 
-    if (element.name === 'slot') {
+    if (ast.isSlot(element)) {
         ctx.throwOnNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT, element, [
             `<${element.name}>`,
         ]);
@@ -728,7 +730,7 @@ function parseForOf(
 function applyKey(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    element: Component | Element | Slot,
+    element: Element | Component | Slot,
     parent: ParentNode
 ): void {
     const tag = parseTagName(element);
@@ -1016,8 +1018,8 @@ function validateChildren(ctx: ParserCtx, element?: Element | Component | Slot):
 
     const effectiveChildren = ctx.preserveComments
         ? element.children
-        : element.children.filter((child) => !ast.isCommentNode(child));
-    const hasDomDirective = element.directives.find(ast.isDirectiveType('Dom'));
+        : element.children.filter((child) => !ast.isComment(child));
+    const hasDomDirective = element.directives.find(ast.isDomDirective);
     if (hasDomDirective && effectiveChildren.length > 0) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
     }
@@ -1137,24 +1139,15 @@ function getTemplateAttribute(
 }
 
 function isInIteration(ctx: ParserCtx): boolean {
-    return !!ctx.findAncestor({
-        predicate: ast.isForBlock,
-    });
+    return !!ctx.findAncestor(ast.isForBlock);
 }
 
 function getForOfParent(ctx: ParserCtx, srcNode: ParentNode): ForOf | null {
-    return ctx.findAncestor({
-        startNode: srcNode,
-        predicate: ast.isForOf,
-        traversalCond: ({ current }) => !ast.isBaseElement(current),
-    });
+    return ctx.findAncestor(ast.isForOf, ({ current }) => !ast.isBaseElement(current), srcNode);
 }
 
 function getForEachParent(ctx: ParserCtx): ForEach | null {
-    return ctx.findAncestor({
-        predicate: ast.isForEach,
-        traversalCond: ({ parent }) => parent && !ast.isBaseElement(parent),
-    });
+    return ctx.findAncestor(ast.isForEach, ({ parent }) => parent && !ast.isBaseElement(parent));
 }
 
 function isInIteratorElement(ctx: ParserCtx, parent: ParentNode): boolean {

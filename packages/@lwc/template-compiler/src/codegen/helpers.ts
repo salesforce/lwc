@@ -13,7 +13,7 @@ import {
     isForBlock,
     isBaseElement,
     isIfBlock,
-    isDirectiveType,
+    isDynamicDirective,
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
@@ -43,7 +43,7 @@ export function objectToAST(
 }
 
 function isDynamic(element: BaseElement): boolean {
-    return element.directives.some(isDirectiveType('Dynamic'));
+    return element.directives.some(isDynamicDirective);
 }
 
 export function containsDynamicChildren(children: ChildNode[]): boolean {

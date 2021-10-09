@@ -8,9 +8,9 @@ import { walk } from 'estree-walker';
 import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
-import { isDirectiveType } from '../shared/ast';
 import { Expression, Literal, LWCDirectiveRenderMode, Root } from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
+import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 
 type RenderPrimitive =
     | 'iterator'
@@ -81,7 +81,7 @@ export default class CodeGen {
      * Currently, we are keeping track of item, index and iterator on the ForEach and ForOf nodes respectively.
      *
      * Scope is used in bindExpression to determine if the expression is a known identifier.
-     * A known identifier exists if it exists on the scope.
+     * A known identifier exists if it exists in the scope chain.
      */
     private scope: Scope;
 
@@ -106,11 +106,12 @@ export default class CodeGen {
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        this.renderMode = (root.directives?.find(isDirectiveType('RenderMode'))?.value.value ??
+        this.renderMode = (root.directives?.find(isRenderModeDirective)?.value.value ??
             LWCDirectiveRenderMode.shadow) as LWCDirectiveRenderMode;
         this.preserveComments =
-            root.directives?.find(isDirectiveType('PreserveComments'))?.value.value ??
+            root.directives?.find(isPreserveCommentsDirective)?.value.value ??
             config.preserveHtmlComments;
+
         this.scopeFragmentId = scopeFragmentId;
         this.scope = {
             parent: null,
@@ -342,6 +343,9 @@ export default class CodeGen {
         this.scope.declaration.add(identifier.name);
     }
 
+    /**
+     * Searches the scopes to find an identifier with a matching name.
+     */
     isLocalIdentifier(identifier: t.Identifier, current = this.scope): boolean {
         if (current.declaration.has(identifier.name)) {
             return true;

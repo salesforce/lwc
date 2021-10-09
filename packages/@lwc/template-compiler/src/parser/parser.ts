@@ -14,7 +14,7 @@ import {
     normalizeToDiagnostic,
 } from '@lwc/errors';
 import { ResolvedConfig } from '../config';
-import { isDirectiveType } from '../shared/ast';
+import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 
 import {
     Root,
@@ -47,8 +47,10 @@ interface ParentWrapper {
 
 export default class ParserCtx {
     private readonly source: String;
+
     readonly config: ResolvedConfig;
     readonly warnings: CompilerDiagnostic[] = [];
+
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
 
@@ -59,6 +61,7 @@ export default class ParserCtx {
      *
      * Currently, each scope has a hierarchy of ForBlock > IfBlock > Element | Component | Slot.
      * Note: Not all scopes will have all three, but when they do, they will appear in this order.
+     * We do not keep track of template nodes.
      *
      * Each scope corresponds to the original parse5.Element node.
      */
@@ -79,10 +82,10 @@ export default class ParserCtx {
     }
 
     setRootDirective(root: Root): void {
-        this.renderMode = (root.directives?.find(isDirectiveType('RenderMode'))?.value.value ??
+        this.renderMode = (root.directives?.find(isRenderModeDirective)?.value.value ??
             this.renderMode) as LWCDirectiveRenderMode;
         this.preserveComments =
-            root.directives?.find(isDirectiveType('PreserveComments'))?.value.value ||
+            root.directives?.find(isPreserveCommentsDirective)?.value.value ||
             this.preserveComments;
     }
 
@@ -101,21 +104,18 @@ export default class ParserCtx {
     /**
      * This method searches the ancestors and returns the corresponding ParentNode that satisfies the predicate.
      *
-     * Note: There are instances when we want to terminate the traversal early, such as searching for the ForEach parent.
+     * Note: There are instances when we want to terminate the traversal early, such as searching for a ForBlock parent.
      *
      * @param {ParentNode} startNode - Starting node to begin search, defaults to the tail of the current scope.
-     * @param {function} predicate - Callback function that determines if the search criteria is satisfied.  Must be a use defined type guard.
-     * @param {function} traversalCond - Identifies if the traversal should continue or terminate.  Defaults to true.
+     * @param {function} predicate - This callback is called once for each ancestor until it finds one where predicate returns true.
+     * @param {function} traversalCond - This callback is called after predicate and will terminate the traversal if it returns false.
+     * traversalCond is ignored if no value is provided.
      */
-    findAncestor<A extends ParentNode>({
-        startNode,
-        predicate,
-        traversalCond = () => true,
-    }: {
-        startNode?: ParentNode;
-        predicate: (elm: ParentNode) => elm is A;
-        traversalCond?: (nodes: ParentWrapper) => unknown;
-    }): A | null {
+    findAncestor<A extends ParentNode>(
+        predicate: (node: ParentNode) => node is A,
+        traversalCond: (nodes: ParentWrapper) => unknown = () => true,
+        startNode?: ParentNode
+    ): A | null {
         for (const { current, parent } of this.ancestors(startNode)) {
             if (predicate(current)) {
                 return current;
@@ -132,9 +132,10 @@ export default class ParserCtx {
     /**
      * This method searchs the current scope and returns the value that satisfies the predicate.
      *
-     * @param {function} predicate - Callback function to indicate what sibling to search for.  Must be user defined type guard.
+     * @param {function} predicate - This callback is called once for each sibling in the current scope
+     * until it finds one where predicate returns true.
      */
-    findSibling<A extends ParentNode>(predicate: (current: ParentNode) => current is A): A | null {
+    findSibling<A extends ParentNode>(predicate: (node: ParentNode) => node is A): A | null {
         const currentScope = this.currentScope() || [];
         const sibling = currentScope.find(predicate);
         return sibling || null;
