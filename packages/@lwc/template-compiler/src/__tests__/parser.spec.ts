@@ -33,7 +33,7 @@ function parseTemplate(src: string): any {
 describe('parsing', () => {
     it('simple parsing', () => {
         const { root } = parseTemplate(`<template><h1>hello</h1></template>`);
-        expect(root.name).toBe('template');
+        expect(root.type).toBe('Root');
         expect(root.children[0].name).toBe('h1');
         expect(root.children[0].children[0].value.value).toBe('hello');
     });

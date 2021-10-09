@@ -39,6 +39,11 @@ export interface SourceLocation {
     end: number;
 }
 
+export interface ElementSourceLocation extends SourceLocation {
+    startTag: SourceLocation;
+    endTag?: SourceLocation;
+}
+
 export interface Literal<Value = string | boolean> {
     type: 'Literal';
     value: Value;
@@ -97,7 +102,7 @@ export interface DomDirective extends Directive {
 }
 
 export interface InnerHTMLDirective extends Directive {
-    name : `InnerHTML`;
+    name: `InnerHTML`;
     value: Expression | Literal<string>;
 }
 
@@ -130,6 +135,7 @@ export interface BaseParentNode extends BaseNode {
 
 export interface BaseElement extends BaseParentNode {
     name: string;
+    location: ElementSourceLocation;
     properties: Property[];
     attributes: Attribute[];
     listeners: EventListener[];
@@ -147,6 +153,12 @@ export interface Component extends BaseElement {
 
 export interface Slot extends BaseElement {
     type: 'Slot';
+}
+
+export interface Root extends BaseParentNode {
+    type: 'Root';
+    location: ElementSourceLocation;
+    directives?: RootDirective[];
 }
 
 export interface IfBlock extends BaseParentNode {
@@ -169,12 +181,6 @@ export interface ForOf extends BaseParentNode {
 }
 
 export type ForBlock = ForEach | ForOf;
-
-export interface Root extends BaseParentNode {
-    type: 'Root';
-    name: string;
-    directives?: RootDirective[];
-}
 
 export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
 

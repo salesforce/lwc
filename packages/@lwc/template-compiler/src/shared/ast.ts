@@ -35,23 +35,23 @@ import {
     RootDirective,
     Directive,
     InnerHTMLDirective,
+    ElementSourceLocation,
 } from './types';
 
-export function root(parse5Elm: parse5.Element, location: SourceLocation): Root {
+export function root(parse5ElementLocation: parse5.ElementLocation): Root {
     return {
         type: 'Root',
-        name: parse5Elm.nodeName,
-        location,
+        location: elementSourceLocation(parse5ElementLocation),
         children: [],
     };
 }
 
-export function element(parse5Elm: parse5.Element, location: SourceLocation): Element {
+export function element(parse5Elm: parse5.Element, parse5ElementLocation: parse5.ElementLocation): Element {
     return {
         type: 'Element',
         name: parse5Elm.nodeName,
         namespace: parse5Elm.namespaceURI,
-        location,
+        location: elementSourceLocation(parse5ElementLocation),
         attributes: [],
         properties: [],
         directives: [],
@@ -60,11 +60,11 @@ export function element(parse5Elm: parse5.Element, location: SourceLocation): El
     };
 }
 
-export function component(parse5Elm: parse5.Element, location: SourceLocation): Component {
+export function component(parse5Elm: parse5.Element, parse5ElementLocation: parse5.ElementLocation): Component {
     return {
         type: 'Component',
         name: parse5Elm.nodeName,
-        location,
+        location: elementSourceLocation(parse5ElementLocation),
         attributes: [],
         properties: [],
         directives: [],
@@ -73,7 +73,7 @@ export function component(parse5Elm: parse5.Element, location: SourceLocation): 
     };
 }
 
-export function slot(name: string, location: SourceLocation): Slot {
+export function slot(name: string, location: ElementSourceLocation): Slot {
     return {
         type: 'Slot',
         name,
@@ -100,6 +100,18 @@ export function comment(value: string, parse5Location: parse5.Location): Comment
         value,
         location: sourceLocation(parse5Location),
     };
+}
+
+export function elementSourceLocation(
+    parse5ElmLocation?: parse5.ElementLocation
+): ElementSourceLocation {
+    const elementLocation = sourceLocation(parse5ElmLocation);
+    const startTag = sourceLocation(parse5ElmLocation?.startTag);
+    // endTag must be optional because Parse5 currently fails to collect end tag location for element with a tag name
+    // containing an upper case character (inikulin/parse5#352).
+    const endTag = parse5ElmLocation?.endTag ? sourceLocation(parse5ElmLocation.endTag) : undefined;
+
+    return { ...elementLocation, startTag, endTag };
 }
 
 export function sourceLocation(location?: parse5.Location): SourceLocation {
@@ -207,13 +219,16 @@ export function domDirective<T extends 'manual'>(
     };
 }
 
-export function innerHTMLDirective(value: Expression | Literal<string>, location: SourceLocation): InnerHTMLDirective {
+export function innerHTMLDirective(
+    value: Expression | Literal<string>,
+    location: SourceLocation
+): InnerHTMLDirective {
     return {
         type: 'Directive',
         name: 'InnerHTML',
         value,
         location,
-    }
+    };
 }
 
 export function preserveCommentsDirective(

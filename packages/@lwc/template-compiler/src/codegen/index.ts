@@ -484,11 +484,10 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Properties: lwc:inner-html directive
         if (innerHTML) {
-            const expr =
-                isStringLiteral(innerHTML.value)
-                    ? t.literal(innerHTML.value.value)
-                    : codeGen.bindExpression(innerHTML.value);
-                propsObj.properties.push(
+            const expr = isStringLiteral(innerHTML.value)
+                ? t.literal(innerHTML.value.value)
+                : codeGen.bindExpression(innerHTML.value);
+            propsObj.properties.push(
                 t.property(t.identifier('innerHTML'), codeGen.genSanitizedHtmlExpr(expr))
             );
         }
@@ -502,9 +501,7 @@ function transform(codeGen: CodeGen): t.Expression {
             const contextObj = t.objectExpression([
                 t.property(
                     t.identifier('lwc'),
-                    t.objectExpression([
-                        t.property(t.identifier('dom'), t.literal('manual')),
-                    ])
+                    t.objectExpression([t.property(t.identifier('dom'), t.literal('manual'))])
                 ),
             ]);
             data.push(t.property(t.identifier('context'), contextObj));

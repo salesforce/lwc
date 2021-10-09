@@ -39,6 +39,12 @@ function normalizeLocation(location?: SourceLocation): Location {
 
     return { line, column, start, length };
 }
+
+interface ParentWrapper {
+    parent: ParentNode | null;
+    current: ParentNode;
+}
+
 export default class ParserCtx {
     private readonly source: String;
     readonly config: ResolvedConfig;
@@ -46,9 +52,19 @@ export default class ParserCtx {
     readonly seenIds: Set<string> = new Set();
     readonly seenSlots: Set<string> = new Set();
 
-    private readonly ancestors: ParentNode[][] = [[]];
+    /**
+     * Scopes keep track of the hierarchy of ParentNodes as the parser traverses the parse5 AST.
+     * Each scope is represented by an array where each node in the array correspond to either
+     * a ForEach, ForOf, IfBlock, Element, Component, or Slot.
+     *
+     * Currently, each scope has a hierarchy of ForBlock > IfBlock > Element | Component | Slot.
+     * Note: Not all scopes will have all three, but when they do, they will appear in this order.
+     *
+     * Each scope corresponds to the original parse5.Element node.
+     */
+    private readonly scopes: ParentNode[][] = [];
 
-    renderMode: string;
+    renderMode: LWCDirectiveRenderMode;
     preserveComments: boolean;
 
     constructor(source: String, config: ResolvedConfig) {
@@ -62,15 +78,19 @@ export default class ParserCtx {
         return this.source.slice(start, end);
     }
 
-    *getAncestors(element?: ParentNode): Generator<
-        {
-            current: ParentNode;
-            parent: ParentNode;
-        },
-        void,
-        unknown
-    > {
-        const ancestors = ([] as ParentNode[]).concat(...this.ancestors);
+    setRootDirective(root: Root): void {
+        this.renderMode = (root.directives?.find(isDirectiveType('RenderMode'))?.value.value ??
+            this.renderMode) as LWCDirectiveRenderMode;
+        this.preserveComments =
+            root.directives?.find(isDirectiveType('PreserveComments'))?.value.value ||
+            this.preserveComments;
+    }
+
+    /**
+     * This method flattens the scopes into a single array for traversal.
+     */
+    *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
+        const ancestors = ([] as ParentNode[]).concat(...this.scopes);
         const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
 
         for (let i = start; i >= 0; i--) {
@@ -78,40 +98,68 @@ export default class ParserCtx {
         }
     }
 
-    findAncestor({
-        element,
+    /**
+     * This method searches the ancestors and returns the corresponding ParentNode that satisfies the predicate.
+     *
+     * Note: There are instances when we want to terminate the traversal early, such as searching for the ForEach parent.
+     *
+     * @param {ParentNode} startNode - Starting node to begin search, defaults to the tail of the current scope.
+     * @param {function} predicate - Callback function that determines if the search criteria is satisfied.  Must be a use defined type guard.
+     * @param {function} traversalCond - Identifies if the traversal should continue or terminate.  Defaults to true.
+     */
+    findAncestor<A extends ParentNode>({
+        startNode,
         predicate,
         traversalCond = () => true,
     }: {
-        element?: ParentNode;
-        predicate: (elm: ParentNode) => unknown;
-        traversalCond?: (nodes: { current: ParentNode; parent: ParentNode | null }) => unknown;
-    }): ParentNode | null {
-        for (const { current, parent } of this.getAncestors(element)) {
+        startNode?: ParentNode;
+        predicate: (elm: ParentNode) => elm is A;
+        traversalCond?: (nodes: ParentWrapper) => unknown;
+    }): A | null {
+        for (const { current, parent } of this.ancestors(startNode)) {
             if (predicate(current)) {
                 return current;
             }
+
             if (!traversalCond({ current, parent })) {
                 break;
             }
         }
+
         return null;
     }
 
-    beginAncestors(): void {
-        this.ancestors.push([]);
+    /**
+     * This method searchs the current scope and returns the value that satisfies the predicate.
+     *
+     * @param {function} predicate - Callback function to indicate what sibling to search for.  Must be user defined type guard.
+     */
+    findSibling<A extends ParentNode>(predicate: (current: ParentNode) => current is A): A | null {
+        const currentScope = this.currentScope() || [];
+        const sibling = currentScope.find(predicate);
+        return sibling || null;
     }
 
-    endAncestors(): void {
-        this.ancestors.pop();
+    beginScope(): void {
+        this.scopes.push([]);
     }
 
-    current(): ParentNode[] {
-        return this.ancestors[this.ancestors.length - 1];
+    endScope(): void {
+        this.scopes.pop();
     }
 
-    addParent(parent: ParentNode): void {
-        this.current().push(parent);
+    addNodeCurrentScope(node: ParentNode): void {
+        const currentScope = this.currentScope();
+
+        if (!currentScope) {
+            throw new Error("Can't invoke addNodeCurrentScope if there is no current scope");
+        }
+
+        currentScope.push(node);
+    }
+
+    private currentScope(): ParentNode[] | undefined {
+        return this.scopes[this.scopes.length - 1];
     }
 
     /**
@@ -167,11 +215,7 @@ export default class ParserCtx {
     /**
      * This method throws a diagnostic error with location information.
      */
-    throwAtLocation(
-        errorInfo: LWCErrorInfo,
-        location: SourceLocation,
-        messageArgs?: any[]
-    ): never {
+    throwAtLocation(errorInfo: LWCErrorInfo, location: SourceLocation, messageArgs?: any[]): never {
         this.throw(errorInfo, messageArgs, location);
     }
 
@@ -189,7 +233,7 @@ export default class ParserCtx {
 
     /**
      * This method logs a diagnostic warning with the node's location.
-    */
+     */
     warnOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): void {
         this.warn(errorInfo, messageArgs, node.location);
     }
@@ -217,13 +261,5 @@ export default class ParserCtx {
 
     private addDiagnostic(diagnostic: CompilerDiagnostic): void {
         this.warnings.push(diagnostic);
-    }
-
-    setRootDirective(root: Root): void {
-        this.renderMode =
-            root.directives?.find(isDirectiveType('RenderMode'))?.value.value ?? this.renderMode;
-        this.preserveComments =
-            root.directives?.find(isDirectiveType('PreserveComments'))?.value.value ||
-            this.preserveComments;
     }
 }
