@@ -1,4 +1,4 @@
-import { createElement, setSanitizeHtmlContentHookForTest } from 'lwc';
+import { createElement, OverridableHooks, setHooksForTest } from 'lwc';
 
 import XInnerHtml from 'x/innerHtml';
 
@@ -14,6 +14,14 @@ it('throws when not overridden', () => {
         document.body.appendChild(elm);
     }).toThrowError(Error, /sanitizeHtmlContent hook must be implemented/);
 });
+
+function setSanitizeHtmlContentHookForTest(impl) {
+    const originalHooks = setHooksForTest({
+        [OverridableHooks.SanitizeHtmlContent]: impl,
+    });
+
+    return originalHooks[OverridableHooks.SanitizeHtmlContent];
+}
 
 it('receives the right parameters', () => {
     const spy = jasmine.createSpy('sanitizeHook', override);

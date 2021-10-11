@@ -1,8 +1,16 @@
-import { createElement, setSanitizeHtmlContentHookForTest } from 'lwc';
+import { createElement, OverridableHooks, setHooksForTest } from 'lwc';
 
 import XInnerHtml from 'x/innerHtml';
 
 let originalSanitizeHtmlContent;
+
+function setSanitizeHtmlContentHookForTest(impl) {
+    const originalHooks = setHooksForTest({
+        [OverridableHooks.SanitizeHtmlContent]: impl,
+    });
+
+    return originalHooks[OverridableHooks.SanitizeHtmlContent];
+}
 
 beforeAll(() => {
     originalSanitizeHtmlContent = setSanitizeHtmlContentHookForTest((content) => content);

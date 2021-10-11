@@ -93,7 +93,11 @@ describe('fixtures', () => {
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, true);
             });
-            lwcEngineServer!.setSanitizeHtmlContentHook((content: unknown) => content as string);
+
+            lwcEngineServer!.setHooksForTest({
+                [lwcEngineServer!.OverridableHooks.SanitizeHtmlContent]: (content: unknown) =>
+                    content as string,
+            });
 
             const result = lwcEngineServer!.renderComponent(
                 module!.tagName,

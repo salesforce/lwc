@@ -745,8 +745,7 @@ export function sc(vnodes: VNodes): VNodes {
  * lwc:inner-html directive.
  * It is meant to be overridden with setSanitizeHtmlContentHook
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let sanitizeHtmlContentHook = (content: unknown): string => {
+let sanitizeHtmlContentHook: SanitizeHtmlContentHook = (): string => {
     // locker-service patches this function during runtime to sanitize HTML content.
     throw new Error('sanitizeHtmlContent hook must be implemented.');
 };
@@ -755,18 +754,20 @@ export function shc(content: unknown): string {
     return sanitizeHtmlContentHook(content);
 }
 
-export function setSanitizeHtmlContentHook(hookImpl: (content: unknown) => string): void {
-    sanitizeHtmlContentHook = hookImpl;
-}
+export type SanitizeHtmlContentHook = (content: unknown) => string;
 
-export function setSanitizeHtmlContentHookForTest(
-    hookImpl: (content: unknown) => string
-): ((content: unknown) => string) | undefined {
-    if (process.env.NODE_ENV !== 'production') {
-        const currentHook = sanitizeHtmlContentHook;
+/**
+ * Sets the sanitizeHtmlContentHook.
+ *
+ * @param newHookImpl
+ * @returns oldHookImplementation.
+ */
+export function setSanitizeHtmlContentHook(
+    newHookImpl: SanitizeHtmlContentHook
+): SanitizeHtmlContentHook {
+    const currentHook = sanitizeHtmlContentHook;
 
-        setSanitizeHtmlContentHook(hookImpl);
+    sanitizeHtmlContentHook = newHookImpl;
 
-        return currentHook;
-    }
+    return currentHook;
 }
