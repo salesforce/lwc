@@ -8,10 +8,10 @@ import { isUndefined, forEach, defineProperty, isTrue } from '@lwc/shared';
 import { childNodesGetter, compareDocumentPosition, Node } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
 import {
+    getShadowRootResolver,
+    isSyntheticShadowHost,
     setShadowRootResolver,
     ShadowRootResolver,
-    getShadowRootResolver,
-    isHostElement,
 } from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
 
@@ -39,7 +39,7 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
     if (node instanceof Element) {
         setShadowToken(node, shadowToken);
 
-        if (isHostElement(node)) {
+        if (isSyntheticShadowHost(node)) {
             // Root LWC elements can't get content slotted into them, therefore we don't observe their children.
             return;
         }

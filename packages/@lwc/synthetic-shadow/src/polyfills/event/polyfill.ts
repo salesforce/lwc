@@ -18,7 +18,7 @@ import {
     eventToShadowRootMap,
     getShadowRoot,
     hasInternalSlot,
-    isHostElement,
+    isSyntheticShadowHost,
 } from '../../faux-shadow/shadow-root';
 import { EventListenerContext, eventToContextMap } from '../../faux-shadow/events';
 import { getNodeOwnerKey } from '../../shared/node-ownership';
@@ -67,7 +67,7 @@ function patchedTargetGetter(this: Event): EventTarget | null {
     let actualPath = composedPath;
 
     // Address the possibility that `currentTarget` is a shadow root
-    if (isHostElement(originalCurrentTarget)) {
+    if (isSyntheticShadowHost(originalCurrentTarget)) {
         const context = eventToContextMap.get(this);
         if (context === EventListenerContext.SHADOW_ROOT_LISTENER) {
             actualCurrentTarget = getShadowRoot(originalCurrentTarget);
@@ -75,7 +75,7 @@ function patchedTargetGetter(this: Event): EventTarget | null {
     }
 
     // Address the possibility that `target` is a shadow root
-    if (isHostElement(originalTarget) && eventToShadowRootMap.has(this)) {
+    if (isSyntheticShadowHost(originalTarget) && eventToShadowRootMap.has(this)) {
         actualPath = pathComposer(getShadowRoot(originalTarget), this.composed);
     }
 
@@ -112,7 +112,7 @@ function patchedComposedPathValue(this: Event): EventTarget[] {
 
     // Address the possibility that `target` is a shadow root
     let actualTarget = originalTarget;
-    if (isHostElement(originalTarget) && eventToShadowRootMap.has(this)) {
+    if (isSyntheticShadowHost(originalTarget) && eventToShadowRootMap.has(this)) {
         actualTarget = getShadowRoot(originalTarget);
     }
 

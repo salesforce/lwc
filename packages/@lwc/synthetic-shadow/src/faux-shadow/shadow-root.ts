@@ -123,7 +123,7 @@ export function getShadowRoot(elm: Element): SyntheticShadowRootInterface {
 
 // Intentionally adding `Node` here in addition to `Element` since this check is harmless for nodes
 // and we can avoid having to cast the type before calling this method in a few places.
-export function isHostElement(node: unknown): node is HTMLElement {
+export function isSyntheticShadowHost(node: unknown): node is HTMLElement {
     const shadowRootRecord = InternalSlot.get(node);
     return !isUndefined(shadowRootRecord) && node === shadowRootRecord.host;
 }
@@ -135,7 +135,7 @@ export function containsHost(node: Node) {
     const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false);
     let descendant;
     while (!isNull((descendant = walker.nextNode()))) {
-        if (isHostElement(descendant)) {
+        if (isSyntheticShadowHost(descendant)) {
             return true;
         }
     }

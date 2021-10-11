@@ -8,7 +8,7 @@ import featureFlags from '@lwc/features';
 import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
 import { getActualTarget } from '../faux-shadow/events';
-import { eventToShadowRootMap, isHostElement } from '../faux-shadow/shadow-root';
+import { eventToShadowRootMap, isSyntheticShadowHost } from '../faux-shadow/shadow-root';
 
 const EventListenerMap: WeakMap<EventListenerOrEventListenerObject, EventListener> = new WeakMap();
 const ComposedPathMap: WeakMap<Event, EventTarget[]> = new WeakMap();
@@ -58,7 +58,7 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
 
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
-                    isFalse(isHostElement(currentTarget)),
+                    isFalse(isSyntheticShadowHost(currentTarget)),
                     'This routine should not be used to wrap event listeners for host elements and shadow roots.'
                 );
             }

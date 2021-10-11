@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayFilter, ArraySlice, isNull, isUndefined } from '@lwc/shared';
-import { isHostElement } from './shadow-root';
+import { isSyntheticShadowHost } from './shadow-root';
 import { getAllMatches, getNodeOwner, getAllSlottedMatches } from './traverse';
 import { getNodeKey, getNodeNearestOwnerKey, getNodeOwnerKey } from '../shared/node-ownership';
 import { isGlobalPatchingSkipped } from '../shared/utils';
@@ -24,7 +24,7 @@ export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
 
     // a node inside a shadow.
     if (!isUndefined(ownerKey)) {
-        if (isHostElement(context)) {
+        if (isSyntheticShadowHost(context)) {
             // element with shadowRoot attached
             const owner = getNodeOwner(context);
             if (isNull(owner)) {

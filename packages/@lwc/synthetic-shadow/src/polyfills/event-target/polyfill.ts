@@ -14,7 +14,7 @@ import {
     addCustomElementEventListener,
     removeCustomElementEventListener,
 } from '../../faux-shadow/events';
-import { isHostElement } from '../../faux-shadow/shadow-root';
+import { isSyntheticShadowHost } from '../../faux-shadow/shadow-root';
 import { getEventListenerWrapper } from '../../shared/event-target';
 
 function patchedAddEventListener(
@@ -23,7 +23,7 @@ function patchedAddEventListener(
     listener: EventListenerOrEventListenerObject,
     optionsOrCapture?: boolean | AddEventListenerOptions
 ) {
-    if (isHostElement(this)) {
+    if (isSyntheticShadowHost(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
         return addCustomElementEventListener.apply(this, arguments);
@@ -53,7 +53,7 @@ function patchedRemoveEventListener(
     _listener: EventListenerOrEventListenerObject,
     _optionsOrCapture?: boolean | EventListenerOptions
 ) {
-    if (isHostElement(this)) {
+    if (isSyntheticShadowHost(this)) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-ignore type-mismatch
         return removeCustomElementEventListener.apply(this, arguments);

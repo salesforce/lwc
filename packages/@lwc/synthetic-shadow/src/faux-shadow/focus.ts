@@ -15,7 +15,7 @@ import {
     toString,
 } from '@lwc/shared';
 
-import { isDelegatingFocus, isHostElement } from './shadow-root';
+import { isDelegatingFocus, isSyntheticShadowHost } from './shadow-root';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
 import {
     DocumentPrototypeActiveElement,
@@ -97,7 +97,7 @@ function isVisible(element: HTMLElement): boolean {
 // Determines if a particular element is tabbable, as opposed to simply focusable
 
 function isTabbable(element: HTMLElement): boolean {
-    if (isHostElement(element) && isDelegatingFocus(element)) {
+    if (isSyntheticShadowHost(element) && isDelegatingFocus(element)) {
         return false;
     }
     return matches.call(element, FocusableSelector) && isVisible(element);

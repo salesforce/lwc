@@ -44,7 +44,11 @@ import {
     isSyntheticSlotElement,
 } from './traverse';
 import { getTextContent } from '../3rdparty/polymer/text-content';
-import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from './shadow-root';
+import {
+    getShadowRoot,
+    isSyntheticShadowHost,
+    getIE11FakeShadowRootPlaceholder,
+} from './shadow-root';
 import {
     getNodeNearestOwnerKey,
     getNodeOwnerKey,
@@ -61,7 +65,7 @@ import { isGlobalPatchingSkipped } from '../shared/utils';
  * because we don't want to patch the children getters for those elements.
  */
 export function hasMountedChildren(node: Node): boolean {
-    return isSyntheticSlotElement(node) || isHostElement(node);
+    return isSyntheticSlotElement(node) || isSyntheticShadowHost(node);
 }
 
 function getShadowParent(node: Node, value: ParentNode & Node): (Node & ParentNode) | null {
@@ -173,7 +177,7 @@ function cloneNodePatched(this: Node, deep?: boolean): Node {
  * This method only applies to elements with a shadow or slots
  */
 function childNodesGetterPatched(this: Node): NodeListOf<Node> {
-    if (isHostElement(this)) {
+    if (isSyntheticShadowHost(this)) {
         const owner = getNodeOwner(this);
         const childNodes = isNull(owner)
             ? getFilteredChildNodes(this)
@@ -391,7 +395,7 @@ defineProperties(Node.prototype, {
                     return false;
                 }
 
-                if (isNodeShadowed(this) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                     return containsPatched.call(this, otherNode);
                 }
 
@@ -411,7 +415,7 @@ defineProperties(Node.prototype, {
     cloneNode: {
         value(this: Node, deep?: boolean): Node {
             if (!featureFlags.ENABLE_NODE_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                     return cloneNodePatched.call(this, deep);
                 }
 
