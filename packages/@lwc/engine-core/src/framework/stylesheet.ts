@@ -134,7 +134,6 @@ function evaluateStylesheetsContent(
             if (vm.renderMode === RenderMode.Shadow) {
                 useNativeDirPseudoclass = vm.shadowMode === ShadowMode.Native;
             } else {
-                // light DOM
                 // Light DOM components should only render `[dir]` if they're inside of a synthetic shadow root.
                 // At the top level (root is null) or inside of a native shadow root, they should use `:dir()`.
                 if (isUndefined(root)) {
