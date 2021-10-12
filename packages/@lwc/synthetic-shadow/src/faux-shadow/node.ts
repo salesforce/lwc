@@ -46,8 +46,8 @@ import {
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import {
     getShadowRoot,
-    isSyntheticShadowHost,
     getIE11FakeShadowRootPlaceholder,
+    isSyntheticShadowHost,
 } from './shadow-root';
 import {
     getNodeNearestOwnerKey,

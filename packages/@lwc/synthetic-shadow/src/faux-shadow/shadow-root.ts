@@ -67,7 +67,7 @@ interface ShadowRootRecord {
 }
 
 export function hasInternalSlot(root: unknown): boolean {
-    return Boolean(InternalSlot.get(root));
+    return InternalSlot.has(root);
 }
 
 function getInternalSlot(root: SyntheticShadowRootInterface | Element): ShadowRootRecord {
