@@ -93,10 +93,9 @@ describe(':dir() pseudoclass', () => {
             const elm = createElement('x-light', { is: Light });
             document.body.appendChild(elm);
 
-            elm.setAttribute('dir', 'ltr');
-
             return Promise.resolve()
                 .then(() => {
+                    // Unlike [dir], :dir(ltr) matches even when there is no dir attribute anywhere
                     expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
                         'rgb(0, 0, 1)'
                     );
@@ -105,6 +104,12 @@ describe(':dir() pseudoclass', () => {
                 .then(() => {
                     expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
                         'rgb(0, 0, 2)'
+                    );
+                    elm.setAttribute('dir', 'ltr');
+                })
+                .then(() => {
+                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
+                        'rgb(0, 0, 1)'
                     );
                 });
         });
