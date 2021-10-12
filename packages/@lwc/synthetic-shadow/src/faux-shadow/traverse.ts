@@ -10,7 +10,6 @@ import {
     getShadowRoot,
     getShadowRootResolver,
     isSyntheticShadowHost,
-    SyntheticShadowRootInterface,
 } from './shadow-root';
 import { querySelectorAll } from '../env/element';
 import {
@@ -150,7 +149,7 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
     return isUndefined(ownerKey) || getNodeKey(owner) === ownerKey;
 }
 
-export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<Element & Node> {
+export function shadowRootChildNodes(root: ShadowRoot): Array<Element & Node> {
     const elm = getHost(root);
     return getAllMatches(elm, arrayFromCollection(childNodesGetter.call(elm)));
 }
@@ -202,19 +201,13 @@ export function getFirstMatch(owner: Element, nodeList: Element[]): Element | nu
     return null;
 }
 
-export function shadowRootQuerySelector(
-    root: SyntheticShadowRootInterface,
-    selector: string
-): Element | null {
+export function shadowRootQuerySelector(root: ShadowRoot, selector: string): Element | null {
     const elm = getHost(root);
     const nodeList = arrayFromCollection(querySelectorAll.call(elm, selector));
     return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(
-    root: SyntheticShadowRootInterface,
-    selector: string
-): Element[] {
+export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): Element[] {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
     return getAllMatches(elm, arrayFromCollection(nodeList));

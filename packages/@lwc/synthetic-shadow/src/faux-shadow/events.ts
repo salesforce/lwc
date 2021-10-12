@@ -19,12 +19,7 @@ import {
     isUndefined,
     toString,
 } from '@lwc/shared';
-import {
-    eventToShadowRootMap,
-    getHost,
-    getShadowRoot,
-    SyntheticShadowRootInterface,
-} from './shadow-root';
+import { eventToShadowRootMap, getHost, getShadowRoot, isSyntheticShadowRoot } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
@@ -53,9 +48,8 @@ const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 function getRootNodeHost(node: Node, options: GetRootNodeOptions): Node {
     let rootNode: Node = node.getRootNode(options);
 
-    // is SyntheticShadowRootInterface
-    if ('mode' in rootNode && 'delegatesFocus' in rootNode) {
-        rootNode = getHost(rootNode as SyntheticShadowRootInterface);
+    if (isSyntheticShadowRoot(rootNode)) {
+        rootNode = getHost(rootNode);
     }
 
     return rootNode;
@@ -335,7 +329,7 @@ export function removeCustomElementEventListener(
 }
 
 export function addShadowRootEventListener(
-    sr: SyntheticShadowRootInterface,
+    sr: ShadowRoot,
     type: string,
     listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
@@ -358,7 +352,7 @@ export function addShadowRootEventListener(
 }
 
 export function removeShadowRootEventListener(
-    sr: SyntheticShadowRootInterface,
+    sr: ShadowRoot,
     type: string,
     listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
