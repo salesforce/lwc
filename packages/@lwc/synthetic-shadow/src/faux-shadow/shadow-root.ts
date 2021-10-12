@@ -128,6 +128,11 @@ export function isSyntheticShadowHost(node: unknown): node is HTMLElement {
     return !isUndefined(shadowRootRecord) && node === shadowRootRecord.host;
 }
 
+export function isSyntheticShadowRoot(node: unknown): node is SyntheticShadowRootInterface {
+    const shadowRootRecord = InternalSlot.get(node);
+    return !isUndefined(shadowRootRecord) && node === shadowRootRecord.shadowRoot;
+}
+
 // Return true if any descendant is a host element
 export function containsHost(node: Node) {
     // IE requires all arguments

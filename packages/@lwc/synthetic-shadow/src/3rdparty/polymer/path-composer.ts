@@ -19,7 +19,7 @@ import { isNull } from '@lwc/shared';
 import { getOwnerDocument } from '../../shared/utils';
 import { Node } from '../../env/node';
 import { isInstanceOfNativeShadowRoot } from '../../env/shadow-root';
-import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
+import { isSyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
     const composedPath: EventTarget[] = [];
@@ -45,7 +45,7 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
                 current = current.parentNode;
             }
         } else if (
-            (current instanceof SyntheticShadowRoot || isInstanceOfNativeShadowRoot(current)) &&
+            (isSyntheticShadowRoot(current) || isInstanceOfNativeShadowRoot(current)) &&
             (composed || current !== startRoot)
         ) {
             current = (current as ShadowRoot).host;
