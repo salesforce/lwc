@@ -33,6 +33,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
+// This check for constructable stylesheets is similar to Fast's:
+// https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
+// See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
 const supportsConstructableStyleSheets =
     isFunction((CSSStyleSheet.prototype as any).replaceSync) &&
     isArray((document as any).adoptedStyleSheets);
