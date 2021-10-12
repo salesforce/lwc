@@ -68,10 +68,10 @@ export default function (root: Root) {
             node.replaceWith(nativeAttribute);
 
             // If the selector is not empty and if the first node in the selector is not already a
-            // " " combinator, we need to use the ancestor selector format
-            const shouldInsertSpace =
+            // " " combinator, we need to use the descendant selector format
+            const shouldAddDescendantCombinator =
                 selector.first && !isCombinator(selector.first) && selector.first.value !== ' ';
-            if (shouldInsertSpace) {
+            if (shouldAddDescendantCombinator) {
                 selector.insertBefore(
                     selector.first,
                     combinator({
@@ -81,7 +81,7 @@ export default function (root: Root) {
                 // Add the [dir] attribute in front of the " " combinator, i.e. as an ancestor
                 selector.insertBefore(selector.first, syntheticAttribute);
             } else {
-                // Otherwise there's no need for the ancestor selector, so we can skip adding the
+                // Otherwise there's no need for the descendant selector, so we can skip adding the
                 // space combinator and just put the synthetic placeholder next to the native one
                 selector.insertBefore(nativeAttribute, syntheticAttribute);
             }
