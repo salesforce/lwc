@@ -7,10 +7,10 @@
 import { ArrayReduce, ArrayPush, assert, isNull, isUndefined, ArrayFilter } from '@lwc/shared';
 import {
     getHost,
-    SyntheticShadowRootInterface,
-    isHostElement,
-    getShadowRootResolver,
     getShadowRoot,
+    getShadowRootResolver,
+    isSyntheticShadowHost,
+    SyntheticShadowRootInterface,
 } from './shadow-root';
 import { querySelectorAll } from '../env/element';
 import {
@@ -221,12 +221,12 @@ export function shadowRootQuerySelectorAll(
 }
 
 export function getFilteredChildNodes(node: Node): Element[] {
-    if (!isHostElement(node) && !isSlotElement(node)) {
+    if (!isSyntheticShadowHost(node) && !isSlotElement(node)) {
         // regular element - fast path
         const children = childNodesGetter.call(node);
         return arrayFromCollection(children);
     }
-    if (isHostElement(node)) {
+    if (isSyntheticShadowHost(node)) {
         // we need to get only the nodes that were slotted
         const slots = arrayFromCollection(querySelectorAll.call(node, 'slot'));
         const resolver = getShadowRootResolver(getShadowRoot(node));

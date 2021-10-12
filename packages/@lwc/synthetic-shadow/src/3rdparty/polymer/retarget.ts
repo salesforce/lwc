@@ -6,7 +6,7 @@
  */
 import { isNull, isUndefined } from '@lwc/shared';
 import { pathComposer } from './path-composer';
-import { SyntheticShadowRoot } from './../../faux-shadow/shadow-root';
+import { isSyntheticShadowRoot } from './../../faux-shadow/shadow-root';
 
 /**
 @license
@@ -32,7 +32,7 @@ export function retarget(refNode: EventTarget | null, path: EventTarget[]): Even
             rootIdx = refNodePath.indexOf(root);
             lastRoot = root;
         }
-        if (!(root instanceof SyntheticShadowRoot) || (!isUndefined(rootIdx) && rootIdx > -1)) {
+        if (!isSyntheticShadowRoot(root) || (!isUndefined(rootIdx) && rootIdx > -1)) {
             return ancestor;
         }
     }

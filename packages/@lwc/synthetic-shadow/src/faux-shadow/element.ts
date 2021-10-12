@@ -17,7 +17,7 @@ import {
     KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
-import { attachShadow, getShadowRoot, isHostElement } from './shadow-root';
+import { attachShadow, getShadowRoot, isSyntheticShadowHost } from './shadow-root';
 import {
     getNodeOwner,
     getAllMatches,
@@ -84,7 +84,7 @@ function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot
 }
 
 function shadowRootGetterPatched(this: Element): ShadowRoot | null {
-    if (isHostElement(this)) {
+    if (isSyntheticShadowHost(this)) {
         const shadow = getShadowRoot(this);
         if (shadow.mode === 'open') {
             return shadow;
@@ -252,7 +252,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     const nodeList = arrayFromCollection(
         elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
     );
-    if (isHostElement(this)) {
+    if (isSyntheticShadowHost(this)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(this);
         if (isNull(owner)) {
@@ -310,7 +310,7 @@ function getFilteredArrayOfNodes<T extends Node>(
     shadowDomSemantic: ShadowDomSemantic
 ): T[] {
     let filtered: T[];
-    if (isHostElement(context)) {
+    if (isSyntheticShadowHost(context)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(context);
         if (isNull(owner)) {

@@ -6,7 +6,7 @@
  */
 import { defineProperty, isNull, isUndefined } from '@lwc/shared';
 import { parentNodeGetter } from '../env/node';
-import { containsHost, isHostElement } from '../faux-shadow/shadow-root';
+import { containsHost, isSyntheticShadowHost } from '../faux-shadow/shadow-root';
 
 // Used as a back reference to identify the host element
 const HostElementKey = '$$HostElementKey$$';
@@ -84,5 +84,5 @@ export function isNodeDeepShadowed(node: Node): boolean {
  * anywhere in its tree.
  */
 export function isNodeOrDescendantsShadowed(node: Node): boolean {
-    return isNodeShadowed(node) || isHostElement(node) || containsHost(node);
+    return isNodeShadowed(node) || isSyntheticShadowHost(node) || containsHost(node);
 }

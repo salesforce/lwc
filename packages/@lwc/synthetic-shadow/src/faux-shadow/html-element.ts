@@ -6,7 +6,7 @@
  */
 import featureFlags from '@lwc/features';
 import { isNull, isFalse, defineProperties, defineProperty } from '@lwc/shared';
-import { isDelegatingFocus, isHostElement } from './shadow-root';
+import { isDelegatingFocus, isSyntheticShadowHost } from './shadow-root';
 import {
     hasAttribute,
     innerTextGetter,
@@ -136,7 +136,7 @@ function focusPatched(this: HTMLElement) {
         disableKeyboardFocusNavigationRoutines();
     }
 
-    if (isHostElement(this) && isDelegatingFocus(this)) {
+    if (isSyntheticShadowHost(this) && isDelegatingFocus(this)) {
         hostElementFocus.call(this);
         return;
     }
@@ -156,13 +156,13 @@ function focusPatched(this: HTMLElement) {
 defineProperties(HTMLElement.prototype, {
     tabIndex: {
         get(this: HTMLElement): number {
-            if (isHostElement(this)) {
+            if (isSyntheticShadowHost(this)) {
                 return tabIndexGetterPatched.call(this);
             }
             return tabIndexGetter.call(this);
         },
         set(this: HTMLElement, v: any) {
-            if (isHostElement(this)) {
+            if (isSyntheticShadowHost(this)) {
                 return tabIndexSetterPatched.call(this, v);
             }
             return tabIndexSetter.call(this, v);
@@ -172,7 +172,7 @@ defineProperties(HTMLElement.prototype, {
     },
     blur: {
         value(this: HTMLElement) {
-            if (isHostElement(this)) {
+            if (isSyntheticShadowHost(this)) {
                 return blurPatched.call(this);
             }
             blur.call(this);
@@ -202,7 +202,7 @@ if (innerTextGetter !== null && innerTextSetter !== null) {
             }
 
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                     return getInnerText(this);
                 }
 
@@ -235,7 +235,7 @@ if (outerTextGetter !== null && outerTextSetter !== null) {
             }
 
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                     return getInnerText(this);
                 }
 

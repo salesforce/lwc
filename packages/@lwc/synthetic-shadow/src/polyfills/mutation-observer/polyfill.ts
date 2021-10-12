@@ -16,7 +16,7 @@ import {
     isNull,
     isUndefined,
 } from '@lwc/shared';
-import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
+import { isSyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 import { getNodeKey, getNodeNearestOwnerKey } from '../../shared/node-ownership';
 
 const OriginalMutationObserver = MutationObserver;
@@ -255,8 +255,8 @@ function patchedObserve(
         ArrayPush.call(targetObservers, this);
     } // else There is more bookkeeping to do here https://dom.spec.whatwg.org/#dom-mutationobserver-observe Step #7
 
-    // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment
-    if (target instanceof SyntheticShadowRoot) {
+    // SyntheticShadowRoot instances are not actually a part of the DOM so observe the host instead.
+    if (isSyntheticShadowRoot(target)) {
         target = (target as ShadowRoot).host;
     }
 
