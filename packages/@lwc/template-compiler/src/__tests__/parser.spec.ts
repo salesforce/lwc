@@ -184,7 +184,7 @@ describe('for:of directives', () => {
 describe('if directive', () => {
     it('if directive', () => {
         const { root } = parseTemplate(`<template><h1 if:true={visible}></h1></template>`);
-        expect(root.children[0]).toMatchObject({ type: 'IfBlock' });
+        expect(root.children[0]).toMatchObject({ type: 'If' });
         expect(root.children[0].condition).toMatchObject(TEMPLATE_IDENTIFIER);
         expect(root.children[0].modifier).toBe('true');
     });
@@ -222,7 +222,7 @@ describe('forBlock with if directive', () => {
             `<template><section for:each={items} for:item="item" key={item} if:true={visible}></section></template>`
         );
         expect(root.children[0]).toMatchObject({ type: 'ForEach' });
-        expect(root.children[0].children[0]).toMatchObject({ type: 'IfBlock' });
+        expect(root.children[0].children[0]).toMatchObject({ type: 'If' });
     });
 
     it('forOf with if directive', () => {
@@ -230,7 +230,7 @@ describe('forBlock with if directive', () => {
             `<template><section iterator:it={items} if:true={visible}></section></template>`
         );
         expect(root.children[0]).toMatchObject({ type: 'ForOf' });
-        expect(root.children[0].children[0]).toMatchObject({ type: 'IfBlock' });
+        expect(root.children[0].children[0]).toMatchObject({ type: 'If' });
     });
 });
 

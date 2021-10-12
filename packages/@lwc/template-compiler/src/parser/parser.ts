@@ -82,11 +82,10 @@ export default class ParserCtx {
     }
 
     setRootDirective(root: Root): void {
-        this.renderMode = (root.directives?.find(isRenderModeDirective)?.value.value ??
-            this.renderMode) as LWCDirectiveRenderMode;
+        this.renderMode =
+            root.directives.find(isRenderModeDirective)?.value.value ?? this.renderMode;
         this.preserveComments =
-            root.directives?.find(isPreserveCommentsDirective)?.value.value ||
-            this.preserveComments;
+            root.directives.find(isPreserveCommentsDirective)?.value.value || this.preserveComments;
     }
 
     /**

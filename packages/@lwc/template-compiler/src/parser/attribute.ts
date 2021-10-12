@@ -17,7 +17,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import { Attribute, BaseElement, Component, Element, Slot, SourceLocation } from '../shared/types';
+import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
 import {
     ATTR_NAME,
@@ -35,7 +35,7 @@ import {
     PROPS_ATTRS_TRANSFORMS,
 } from './constants';
 
-import { isComponent, isSlot } from '../shared/ast';
+import { isComponent } from '../shared/ast';
 import ParserCtx from './parser';
 
 function isQuotedAttribute(rawAttribute: string) {
@@ -194,7 +194,7 @@ function isFmkAttribute(attrName: string): boolean {
     return attrName === 'key' || attrName === 'slot';
 }
 
-export function isAttribute(element: Element | Component | Slot, attrName: string): boolean {
+export function isAttribute(element: BaseElement, attrName: string): boolean {
     if (isComponent(element)) {
         return (
             attrName === 'style' ||
@@ -251,10 +251,6 @@ export function attributeToPropertyName(attrName: string): string {
  */
 export function propertyToAttributeName(propName: string): string {
     return PROPS_ATTRS_TRANSFORMS[propName] || propName.toLowerCase();
-}
-
-export function parseTagName(element: BaseElement): string {
-    return isSlot(element) ? 'slot' : element.name;
 }
 
 export class ParsedAttribute {

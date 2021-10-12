@@ -108,7 +108,7 @@ export interface InnerHTMLDirective extends Directive {
 
 export interface RenderModeDirective extends Directive {
     name: 'RenderMode';
-    value: Literal<'shadow'> | Literal<'light'>;
+    value: Literal<LWCDirectiveRenderMode>;
 }
 
 export interface PreserveCommentsDirective extends Directive {
@@ -133,7 +133,7 @@ export interface BaseParentNode extends BaseNode {
     children: ChildNode[];
 }
 
-export interface BaseElement extends BaseParentNode {
+export interface AbstractBaseElement extends BaseParentNode {
     name: string;
     location: ElementSourceLocation;
     properties: Property[];
@@ -143,26 +143,30 @@ export interface BaseElement extends BaseParentNode {
     namespace?: string;
 }
 
-export interface Element extends BaseElement {
+export interface Element extends AbstractBaseElement {
     type: 'Element';
 }
 
-export interface Component extends BaseElement {
+export interface Component extends AbstractBaseElement {
     type: 'Component';
 }
 
-export interface Slot extends BaseElement {
+export interface Slot extends AbstractBaseElement {
     type: 'Slot';
+    /** Specifies slot element name. An empty string value maps to the default slot.  */
+    slotName: string;
 }
+
+export type BaseElement = Element | Component | Slot;
 
 export interface Root extends BaseParentNode {
     type: 'Root';
     location: ElementSourceLocation;
-    directives?: RootDirective[];
+    directives: RootDirective[];
 }
 
-export interface IfBlock extends BaseParentNode {
-    type: 'IfBlock';
+export interface If extends BaseParentNode {
+    type: 'If';
     modifier: string;
     condition: Expression;
 }
@@ -182,8 +186,8 @@ export interface ForOf extends BaseParentNode {
 
 export type ForBlock = ForEach | ForOf;
 
-export type ParentNode = ForBlock | IfBlock | Element | Component | Slot | Root;
+export type ParentNode = ForBlock | If | Element | Component | Slot | Root;
 
-export type ChildNode = ForBlock | IfBlock | Element | Component | Slot | Comment | Text;
+export type ChildNode = ForBlock | If | Element | Component | Slot | Comment | Text;
 
-export type Node = Root | ForBlock | IfBlock | Element | Component | Slot | Comment | Text;
+export type Node = Root | ForBlock | If | Element | Component | Slot | Comment | Text;

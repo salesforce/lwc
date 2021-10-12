@@ -106,17 +106,15 @@ export default class CodeGen {
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        this.renderMode = (root.directives?.find(isRenderModeDirective)?.value.value ??
-            LWCDirectiveRenderMode.shadow) as LWCDirectiveRenderMode;
+        this.renderMode =
+            root.directives.find(isRenderModeDirective)?.value.value ??
+            LWCDirectiveRenderMode.shadow;
         this.preserveComments =
-            root.directives?.find(isPreserveCommentsDirective)?.value.value ??
+            root.directives.find(isPreserveCommentsDirective)?.value.value ??
             config.preserveHtmlComments;
 
         this.scopeFragmentId = scopeFragmentId;
-        this.scope = {
-            parent: null,
-            declaration: new Set(),
-        };
+        this.scope = this.createScope();
     }
 
     generateKey() {
@@ -325,8 +323,12 @@ export default class CodeGen {
     }
 
     beginScope(): void {
-        this.scope = {
-            parent: this.scope,
+        this.scope = this.createScope(this.scope);
+    }
+
+    createScope(parent: Scope | null = null): Scope {
+        return {
+            parent,
             declaration: new Set(),
         };
     }
@@ -346,13 +348,15 @@ export default class CodeGen {
     /**
      * Searches the scopes to find an identifier with a matching name.
      */
-    isLocalIdentifier(identifier: t.Identifier, current = this.scope): boolean {
-        if (current.declaration.has(identifier.name)) {
-            return true;
-        }
+    isLocalIdentifier(identifier: t.Identifier): boolean {
+        let scope: Scope | null = this.scope;
 
-        if (current.parent) {
-            return this.isLocalIdentifier(identifier, current.parent);
+        while (scope !== null) {
+            if (scope.declaration.has(identifier.name)) {
+                return true;
+            }
+
+            scope = scope.parent;
         }
 
         return false;

@@ -16,7 +16,6 @@ import {
     Text,
     ForEach,
     ForBlock,
-    IfBlock,
     Slot,
     Identifier,
     Root,
@@ -31,25 +30,32 @@ import {
     ParentNode,
     BaseNode,
     ForOf,
+    LWCDirectiveRenderMode,
+    If,
+    ElementSourceLocation,
     InnerHTMLDirective,
     Directive,
-    ElementSourceLocation,
+    BaseElement,
 } from './types';
 
 export function root(parse5ElementLocation: parse5.ElementLocation): Root {
     return {
         type: 'Root',
         location: elementSourceLocation(parse5ElementLocation),
+        directives: [],
         children: [],
     };
 }
 
-export function element(parse5Elm: parse5.Element, parse5ElementLocation: parse5.ElementLocation): Element {
+export function element(
+    parse5Elm: parse5.Element,
+    parse5ElmLocation: parse5.ElementLocation
+): Element {
     return {
         type: 'Element',
         name: parse5Elm.nodeName,
         namespace: parse5Elm.namespaceURI,
-        location: elementSourceLocation(parse5ElementLocation),
+        location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
         properties: [],
         directives: [],
@@ -58,11 +64,14 @@ export function element(parse5Elm: parse5.Element, parse5ElementLocation: parse5
     };
 }
 
-export function component(parse5Elm: parse5.Element, parse5ElementLocation: parse5.ElementLocation): Component {
+export function component(
+    parse5Elm: parse5.Element,
+    parse5ElmLocation: parse5.ElementLocation
+): Component {
     return {
         type: 'Component',
         name: parse5Elm.nodeName,
-        location: elementSourceLocation(parse5ElementLocation),
+        location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
         properties: [],
         directives: [],
@@ -71,10 +80,11 @@ export function component(parse5Elm: parse5.Element, parse5ElementLocation: pars
     };
 }
 
-export function slot(name: string, location: ElementSourceLocation): Slot {
+export function slot(slotName: string, location: ElementSourceLocation): Slot {
     return {
         type: 'Slot',
-        name,
+        name: 'slot',
+        slotName,
         location,
         attributes: [],
         properties: [],
@@ -160,13 +170,9 @@ export function forOf(
     };
 }
 
-export function ifBlock(
-    location: SourceLocation,
-    modifier: string,
-    condition: Expression
-): IfBlock {
+export function ifNode(location: SourceLocation, modifier: string, condition: Expression): If {
     return {
-        type: 'IfBlock',
+        type: 'If',
         modifier,
         condition,
         location,
@@ -241,8 +247,8 @@ export function preserveCommentsDirective(
     };
 }
 
-export function renderModeDirective<T extends 'light', K extends 'shadow'>(
-    renderMode: T | K,
+export function renderModeDirective(
+    renderMode: LWCDirectiveRenderMode,
     location: SourceLocation
 ): RenderModeDirective {
     return {
@@ -295,7 +301,7 @@ export function isSlot(node: BaseNode): node is Slot {
     return node.type === 'Slot';
 }
 
-export function isBaseElement(node: BaseNode): node is Element | Component | Slot {
+export function isBaseElement(node: BaseNode): node is BaseElement {
     return isElement(node) || isComponent(node) || isSlot(node);
 }
 
@@ -331,12 +337,12 @@ export function isForBlock(node: BaseNode): node is ForBlock {
     return isForOf(node) || isForEach(node);
 }
 
-export function isIfBlock(node: BaseNode): node is IfBlock {
-    return node.type === 'IfBlock';
+export function isIf(node: BaseNode): node is If {
+    return node.type === 'If';
 }
 
 export function isParentNode(node: BaseNode): node is ParentNode {
-    return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIfBlock(node);
+    return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIf(node);
 }
 
 export function isDynamicDirective(directive: Directive): directive is DynamicDirective {

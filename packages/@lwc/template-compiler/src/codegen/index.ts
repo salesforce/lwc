@@ -17,7 +17,7 @@ import {
     isSlot,
     isStringLiteral,
     isForBlock,
-    isIfBlock,
+    isIf,
     isForEach,
     isBaseElement,
     isExpression,
@@ -34,16 +34,14 @@ import {
     ParentNode,
     ChildNode,
     Text,
-    IfBlock,
+    If,
     ForBlock,
     ForEach,
-    Slot,
-    Component,
-    Element,
     Attribute,
     Property,
     Comment,
     ForOf,
+    BaseElement,
 } from '../shared/types';
 
 import CodeGen from './codegen';
@@ -74,7 +72,7 @@ import {
 import { SVG_NAMESPACE_URI } from '../parser/constants';
 
 function transform(codeGen: CodeGen): t.Expression {
-    function transformElement(element: Element | Component | Slot): t.Expression {
+    function transformElement(element: BaseElement): t.Expression {
         const databag = elementDataBag(element);
         let res: t.Expression;
 
@@ -100,7 +98,7 @@ function transform(codeGen: CodeGen): t.Expression {
         } else if (isSlot(element)) {
             const defaultSlot = children;
 
-            res = codeGen.getSlot(name, databag, defaultSlot);
+            res = codeGen.getSlot(element.slotName, databag, defaultSlot);
         } else {
             res = codeGen.genElement(name, databag, children);
         }
@@ -153,11 +151,9 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformForBlock(child));
             }
 
-            if (isIfBlock(child)) {
-                const ifBlockChildren = transformIfBlock(child);
-                Array.isArray(ifBlockChildren)
-                    ? res.push(...ifBlockChildren)
-                    : res.push(ifBlockChildren);
+            if (isIf(child)) {
+                const children = transformIf(child);
+                Array.isArray(children) ? res.push(...children) : res.push(children);
             }
 
             if (isBaseElement(child)) {
@@ -180,24 +176,24 @@ function transform(codeGen: CodeGen): t.Expression {
         }
     }
 
-    function transformIfBlock(ifBlock: IfBlock): t.Expression | t.Expression[] {
-        const children = transformChildren(ifBlock);
+    function transformIf(ifNode: If): t.Expression | t.Expression[] {
+        const children = transformChildren(ifNode);
         let res: t.Expression | t.Expression[];
 
         if (t.isArrayExpression(children)) {
             // Bind the expression once for all the template children
-            const testExpression = codeGen.bindExpression(ifBlock.condition);
+            const testExpression = codeGen.bindExpression(ifNode.condition);
 
             res = t.arrayExpression(
                 children.elements.map((child) =>
                     child !== null
-                        ? applyInlineIf(ifBlock, child as t.Expression, testExpression)
+                        ? applyInlineIf(ifNode, child as t.Expression, testExpression)
                         : null
                 )
             );
         } else {
             // If the template has a single children, make sure the ternary expression returns an array
-            res = applyInlineIf(ifBlock, children, undefined, t.arrayExpression([]));
+            res = applyInlineIf(ifNode, children, undefined, t.arrayExpression([]));
         }
 
         if (t.isArrayExpression(res)) {
@@ -210,17 +206,17 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function applyInlineIf(
-        ifBlock: IfBlock,
+        ifNode: If,
         node: t.Expression,
         testExpression?: t.Expression,
         falseValue?: t.Expression
     ): t.Expression {
         if (!testExpression) {
-            testExpression = codeGen.bindExpression(ifBlock.condition);
+            testExpression = codeGen.bindExpression(ifNode.condition);
         }
 
         let leftExpression: t.Expression;
-        const modifier = ifBlock.modifier!;
+        const modifier = ifNode.modifier!;
         if (modifier === 'true') {
             leftExpression = testExpression;
         } else if (modifier === 'false') {
@@ -325,10 +321,7 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function computeAttrValue(
-        attr: Attribute | Property,
-        element: Element | Component | Slot
-    ): t.Expression {
+    function computeAttrValue(attr: Attribute | Property, element: BaseElement): t.Expression {
         const { name: elmName, namespace = '' } = element;
         const { name, value: attrValue } = attr;
         // Evaluate properties based on their attribute name
@@ -416,7 +409,7 @@ function transform(codeGen: CodeGen): t.Expression {
         }
     }
 
-    function elementDataBag(element: Element | Component | Slot): t.ObjectExpression {
+    function elementDataBag(element: BaseElement): t.ObjectExpression {
         const data: t.Property[] = [];
 
         const { attributes, properties, listeners } = element;
@@ -424,7 +417,6 @@ function transform(codeGen: CodeGen): t.Expression {
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
-
 
         // Attributes
         if (attributes.length) {

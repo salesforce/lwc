@@ -12,7 +12,7 @@ import {
     isSlot,
     isForBlock,
     isBaseElement,
-    isIfBlock,
+    isIf,
     isDynamicDirective,
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
@@ -48,7 +48,7 @@ function isDynamic(element: BaseElement): boolean {
 
 export function containsDynamicChildren(children: ChildNode[]): boolean {
     return children.some((child) => {
-        if (isForBlock(child) || isIfBlock(child)) {
+        if (isForBlock(child) || isIf(child)) {
             return containsDynamicChildren(child.children);
         }
 
@@ -66,7 +66,7 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
             isForBlock(child) ||
             (isParentNode(child) &&
                 ((isBaseElement(child) && isDynamic(child)) ||
-                    (isIfBlock(child) && shouldFlatten(codeGen, child.children)) ||
+                    (isIf(child) && shouldFlatten(codeGen, child.children)) ||
                     (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child))))
     );
 }
