@@ -32,7 +32,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
-const supportsConstructableStyleSheets = isFunction((CSSStyleSheet.prototype as any).replaceSync);
+const supportsConstructableStyleSheets =
+    isFunction((CSSStyleSheet.prototype as any).replaceSync) &&
+    !isUndefined((document as any).adoptedStyleSheets);
 const styleElements: { [content: string]: HTMLStyleElement } = create(null);
 const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
 const nodesToStyleSheets = new WeakMap<Node, { [content: string]: true }>();
