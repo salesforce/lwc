@@ -1,6 +1,8 @@
 import { createElement } from 'lwc';
 
 import Component from 'x/component';
+import ShadowContainer from 'x/shadowContainer';
+import Light from 'x/light';
 
 describe(':dir() pseudoclass', () => {
     function supportsDirPseudoclass() {
@@ -62,6 +64,48 @@ describe(':dir() pseudoclass', () => {
                     expect(
                         getComputedStyle(elm.shadowRoot.querySelector('.baz button')).color
                     ).toEqual('rgb(0, 0, 10)');
+                });
+        });
+
+        it('can apply styles based on :dir() for light-within-shadow', () => {
+            const elm = createElement('x-shadow-container', { is: ShadowContainer });
+            document.body.appendChild(elm);
+
+            elm.setAttribute('dir', 'ltr');
+
+            return Promise.resolve()
+                .then(() => {
+                    expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
+                        'rgb(0, 0, 1)'
+                    );
+                    elm.setAttribute('dir', 'rtl');
+                })
+                .then(() => {
+                    expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
+                        'rgb(0, 0, 2)'
+                    );
+                });
+        });
+    }
+
+    if (process.env.NATIVE_SHADOW && supportsDirPseudoclass()) {
+        it('can apply styles based on :dir() for light-at-root', () => {
+            const elm = createElement('x-light', { is: Light });
+            document.body.appendChild(elm);
+
+            elm.setAttribute('dir', 'ltr');
+
+            return Promise.resolve()
+                .then(() => {
+                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
+                        'rgb(0, 0, 1)'
+                    );
+                    elm.setAttribute('dir', 'rtl');
+                })
+                .then(() => {
+                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
+                        'rgb(0, 0, 2)'
+                    );
                 });
         });
     }
