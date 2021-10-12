@@ -1,28 +1,28 @@
 ## Details
 
 
-## Does this PR introduce breaking changes?
+## Does this pull request introduce a breaking change?
 
 <!--
-    A change qualifies a breaking changes that will certainly cause downstream consumers to fail.
+    Any change that can cause downstream consumers to fail qualifies as a breaking change.
     
     Examples:
         - Removing the code for a deprecated API.
-        - Adding new restrictions to the compiler leading to compilation failure.
-        - Changing the return type of function in a non backward compatible fashion.
+        - Adding a new restriction to the compiler which might result in a compilation failure for existing code.
+        - Changing the return type of a function in a non-backward compatible fashion.
 
     Remove the incorrect item for the list. 
 -->
-* ✅ No, it does not introduce breaking changes.
-* 🚨 Yes, it does introduce breaking changes.
+* ✅ No, it does not introduce a breaking change.
+* 🚨 Yes, it does introduce a breaking change.
 
 <!-- If yes, please describe the impact and migration path for existing applications. -->
 
-## Does this PR introduces potential observable changes?
+## Does this pull request introduce an observable change?
 
 <!--
-    Observable changes are internal changes that can be observed observed by downstream consumers. 
-    Those changes don't qualify as breaking changes because they don't impact any publicly defined 
+    Observable changes are internal changes that can be observed by downstream consumers. 
+    Such changes don't qualify as breaking changes because they don't impact any publicly defined 
     APIs.
 
     Examples:
@@ -32,8 +32,8 @@
 
     Remove the incorrect item from the list. 
 -->
-* ✅ No, it does not introduce observable changes.
-* ⚠️ Yes, it does include potential observable changes.
+* ✅ No, it does not introduce an observable change.
+* ⚠️ Yes, it does include an observable change.
 
 <!-- If yes, please describe the anticipated observable changes. -->
 
