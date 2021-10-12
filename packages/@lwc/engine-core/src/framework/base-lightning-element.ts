@@ -41,6 +41,7 @@ import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { lockerLivePropertyKey } from './membrane';
+import { Renderer } from './renderer';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -135,10 +136,14 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         HTMLElement,
         | 'accessKey'
         | 'addEventListener'
+        | 'children'
+        | 'childNodes'
         | 'classList'
         | 'dir'
         | 'dispatchEvent'
         | 'draggable'
+        | 'firstChild'
+        | 'firstElementChild'
         | 'getAttribute'
         | 'getAttributeNS'
         | 'getBoundingClientRect'
@@ -150,6 +155,8 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'id'
         | 'isConnected'
         | 'lang'
+        | 'lastChild'
+        | 'lastElementChild'
         | 'querySelector'
         | 'querySelectorAll'
         | 'removeAttribute'
@@ -254,10 +261,10 @@ function attachShadow(vm: VM) {
     }
 }
 
-function warnIfInvokedDuringConstruction(vm: VM, methodName: string) {
+function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     if (isBeingConstructed(vm)) {
         logError(
-            `this.${methodName}() should not be called during the construction of the custom element for ${getComponentTag(
+            `this.${methodOrPropName} should not be called during the construction of the custom element for ${getComponentTag(
                 vm
             )} because the element is not yet in the DOM or has no children yet.`
         );
@@ -422,66 +429,10 @@ LightningElement.prototype = {
         } = vm;
 
         if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'getBoundingClientRect');
+            warnIfInvokedDuringConstruction(vm, 'getBoundingClientRect()');
         }
 
         return getBoundingClientRect(elm);
-    },
-
-    querySelector(selectors: string): Element | null {
-        const vm = getAssociatedVM(this);
-        const {
-            elm,
-            renderer: { querySelector },
-        } = vm;
-
-        if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'querySelector');
-        }
-
-        return querySelector(elm, selectors);
-    },
-
-    querySelectorAll(selectors: string): NodeList {
-        const vm = getAssociatedVM(this);
-        const {
-            elm,
-            renderer: { querySelectorAll },
-        } = vm;
-
-        if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'querySelectorAll');
-        }
-
-        return querySelectorAll(elm, selectors);
-    },
-
-    getElementsByTagName(tagNameOrWildCard: string): HTMLCollection {
-        const vm = getAssociatedVM(this);
-        const {
-            elm,
-            renderer: { getElementsByTagName },
-        } = vm;
-
-        if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'getElementsByTagName');
-        }
-
-        return getElementsByTagName(elm, tagNameOrWildCard);
-    },
-
-    getElementsByClassName(names: string): HTMLCollection {
-        const vm = getAssociatedVM(this);
-        const {
-            elm,
-            renderer: { getElementsByClassName },
-        } = vm;
-
-        if (process.env.NODE_ENV !== 'production') {
-            warnIfInvokedDuringConstruction(vm, 'getElementsByClassName');
-        }
-
-        return getElementsByClassName(elm, names);
     },
 
     get isConnected(): boolean {
@@ -541,6 +492,71 @@ LightningElement.prototype = {
         return `[object ${vm.def.name}]`;
     },
 };
+
+const queryAndChildGetterDescriptors: PropertyDescriptorMap = create(null);
+
+const childGetters: Array<
+    [
+        keyof HTMLElement,
+        keyof Pick<
+            Renderer,
+            | 'getChildren'
+            | 'getChildNodes'
+            | 'getFirstChild'
+            | 'getFirstElementChild'
+            | 'getLastChild'
+            | 'getLastElementChild'
+        >
+    ]
+> = [
+    ['children', 'getChildren'],
+    ['childNodes', 'getChildNodes'],
+    ['firstChild', 'getFirstChild'],
+    ['firstElementChild', 'getFirstElementChild'],
+    ['lastChild', 'getLastChild'],
+    ['lastElementChild', 'getLastElementChild'],
+];
+
+// Generic passthrough for child getters on HTMLElement to the relevant Renderer APIs
+for (const [elementProp, rendererMethod] of childGetters) {
+    queryAndChildGetterDescriptors[elementProp] = {
+        get(this: LightningElement) {
+            const vm = getAssociatedVM(this);
+            const { elm, renderer } = vm;
+
+            if (process.env.NODE_ENV !== 'production') {
+                warnIfInvokedDuringConstruction(vm, elementProp);
+            }
+
+            return renderer[rendererMethod](elm);
+        },
+    };
+}
+
+const queryMethods: Array<
+    keyof Pick<
+        Renderer,
+        'getElementsByClassName' | 'getElementsByTagName' | 'querySelector' | 'querySelectorAll'
+    >
+> = ['getElementsByClassName', 'getElementsByTagName', 'querySelector', 'querySelectorAll'];
+
+// Generic passthrough for query APIs on HTMLElement to the relevant Renderer APIs
+for (const queryMethod of queryMethods) {
+    queryAndChildGetterDescriptors[queryMethod] = {
+        value(this: LightningElement, arg: string) {
+            const vm = getAssociatedVM(this);
+            const { elm, renderer } = vm;
+
+            if (process.env.NODE_ENV !== 'production') {
+                warnIfInvokedDuringConstruction(vm, `${queryMethod}()`);
+            }
+
+            return renderer[queryMethod](elm, arg);
+        },
+    };
+}
+
+defineProperties(LightningElement.prototype, queryAndChildGetterDescriptors);
 
 export const lightningBasedDescriptors: PropertyDescriptorMap = create(null);
 for (const propName in HTMLElementOriginalDescriptors) {

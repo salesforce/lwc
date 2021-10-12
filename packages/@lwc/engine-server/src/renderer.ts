@@ -318,6 +318,12 @@ export const renderer: Renderer<HostNode, HostElement> = {
     querySelectorAll: unsupportedMethod('querySelectorAll'),
     getElementsByTagName: unsupportedMethod('getElementsByTagName'),
     getElementsByClassName: unsupportedMethod('getElementsByClassName'),
+    getChildren: unsupportedMethod('getChildren'),
+    getChildNodes: unsupportedMethod('getChildNodes'),
+    getFirstChild: unsupportedMethod('getFirstChild'),
+    getFirstElementChild: unsupportedMethod('getFirstElementChild'),
+    getLastChild: unsupportedMethod('getLastChild'),
+    getLastElementChild: unsupportedMethod('getLastElementChild'),
 
     defineCustomElement(
         name: string,

@@ -20,4 +20,34 @@ export default class Child extends LightningElement {
     componentGetElementsByClassName(...args) {
         return this.getElementsByClassName(...args);
     }
+
+    @api
+    componentChildren() {
+        return this.children;
+    }
+
+    @api
+    componentChildNodes() {
+        return this.childNodes;
+    }
+
+    @api
+    componentFirstChild() {
+        return this.firstChild;
+    }
+
+    @api
+    componentFirstElementChild() {
+        return this.firstElementChild;
+    }
+
+    @api
+    componentLastChild() {
+        return this.lastChild;
+    }
+
+    @api
+    componentLastElementChild() {
+        return this.lastElementChild;
+    }
 }

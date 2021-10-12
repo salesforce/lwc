@@ -274,6 +274,30 @@ export const renderer: Renderer<Node, Element> = {
         return element.getElementsByClassName(names);
     },
 
+    getChildren(element: Element): HTMLCollection {
+        return element.children;
+    },
+
+    getChildNodes(element: Element): NodeList {
+        return element.childNodes;
+    },
+
+    getFirstChild(element: Element): Node | null {
+        return element.firstChild;
+    },
+
+    getFirstElementChild(element: Element): Element | null {
+        return element.firstElementChild;
+    },
+
+    getLastChild(element: Element): Node | null {
+        return element.lastChild;
+    },
+
+    getLastElementChild(element: Element): Element | null {
+        return element.lastElementChild;
+    },
+
     isConnected(node: Node): boolean {
         return node.isConnected;
     },
