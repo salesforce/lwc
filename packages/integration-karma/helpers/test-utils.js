@@ -344,12 +344,23 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             return !(n.nodeType === Node.COMMENT_NODE && n.tagName.startsWith('#shadow-root'));
         });
     }
+
+    function isSyntheticShadowRootInstance(sr) {
+        return Boolean(sr && /function SyntheticShadowRoot/.test(sr.constructor.toString()));
+    }
+
+    function isNativeShadowRootInstance(sr) {
+        return Boolean(sr && !isSyntheticShadowRootInstance(sr));
+    }
+
     return {
-        registerForLoad: registerForLoad,
         clearRegister: clearRegister,
-        load: load,
         extractDataIds: extractDataIds,
         extractShadowDataIds: extractShadowDataIds,
         getHostChildNodes: getHostChildNodes,
+        isNativeShadowRootInstance: isNativeShadowRootInstance,
+        isSyntheticShadowRootInstance: isSyntheticShadowRootInstance,
+        load: load,
+        registerForLoad: registerForLoad,
     };
 })(LWC, jasmine, beforeAll);

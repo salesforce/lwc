@@ -1,4 +1,5 @@
 import { createElement, LightningElement } from 'lwc';
+import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
 import Test from 'x/test';
 import ShadowRootGetter from 'x/shadowRootGetter';
@@ -50,7 +51,7 @@ it('returns an HTMLElement', () => {
 if (!process.env.NATIVE_SHADOW) {
     it('should create an element with a synthetic shadow root by default', () => {
         const elm = createElement('x-component', { is: Test });
-        expect(elm.shadowRoot.constructor.name).toBe('SyntheticShadowRoot');
+        expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
     });
 }
 
@@ -66,12 +67,8 @@ it('supports component constructors in circular dependency', () => {
 
 if (process.env.NATIVE_SHADOW) {
     it('should create an element with a native shadow root if fallback is false', () => {
-        const elm = createElement('x-component', {
-            is: Test,
-        });
-
-        expect(elm.shadowRoot).toBeInstanceOf(ShadowRoot);
-        expect(elm.shadowRoot.constructor.name).toBe('ShadowRoot');
+        const elm = createElement('x-component', { is: Test });
+        expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
     });
 
     it('should create a shadowRoot in open mode when mode in not specified', () => {

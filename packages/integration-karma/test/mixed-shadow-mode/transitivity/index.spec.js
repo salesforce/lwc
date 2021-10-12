@@ -1,16 +1,9 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
+import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
 import DefaultExtendsNative from 'x/defaultExtendsNative';
 import LightContainer from 'x/lightContainer';
 import NativeContainer from 'x/nativeContainer';
-
-function isSyntheticShadowRootInstance(sr) {
-    return Boolean(sr && /function SyntheticShadowRoot/.test(sr.constructor.toString()));
-}
-
-function isNativeShadowRootInstance(sr) {
-    return Boolean(sr && !isSyntheticShadowRootInstance(sr));
-}
 
 function assertNativeShadowRootWhenPossible(elm) {
     if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
