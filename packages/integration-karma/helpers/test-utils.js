@@ -350,7 +350,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     }
 
     function isNativeShadowRootInstance(sr) {
-        return Boolean(sr && !isSyntheticShadowRootInstance(sr));
+        return Boolean(sr && /function ShadowRoot/.test(sr.constructor.toString()));
     }
 
     return {
