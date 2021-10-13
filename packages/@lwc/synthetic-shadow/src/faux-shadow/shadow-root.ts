@@ -388,7 +388,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: ShadowRoot, otherNode: Node | ShadowRoot): number {
+        value(this: ShadowRoot, otherNode: Node): number {
             const host = getHost(this);
 
             if (this === otherNode) {
