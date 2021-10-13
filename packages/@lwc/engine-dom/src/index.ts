@@ -23,7 +23,6 @@ export {
     registerComponent,
     registerDecorators,
     sanitizeAttribute,
-    OverridableHooks,
     setHooks,
     setHooksForTest,
     getComponentDef,

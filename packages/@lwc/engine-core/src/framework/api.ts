@@ -69,6 +69,7 @@ import {
 } from './hooks';
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
+import { sanitizeHtmlContentHook } from './api-helpers';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -739,35 +740,7 @@ export function sc(vnodes: VNodes): VNodes {
     return vnodes;
 }
 
-/**
- * EXPERIMENTAL: This function acts like a hook for Lightning Locker Service and other similar
- * libraries to sanitize HTML content. This hook process the content passed via the template to
- * lwc:inner-html directive.
- * It is meant to be overridden with setSanitizeHtmlContentHook
- */
-let sanitizeHtmlContentHook: SanitizeHtmlContentHook = (): string => {
-    // locker-service patches this function during runtime to sanitize HTML content.
-    throw new Error('sanitizeHtmlContent hook must be implemented.');
-};
-
+// [s]anitize [h]tml [c]ontent
 export function shc(content: unknown): string {
     return sanitizeHtmlContentHook(content);
-}
-
-export type SanitizeHtmlContentHook = (content: unknown) => string;
-
-/**
- * Sets the sanitizeHtmlContentHook.
- *
- * @param newHookImpl
- * @returns oldHookImplementation.
- */
-export function setSanitizeHtmlContentHook(
-    newHookImpl: SanitizeHtmlContentHook
-): SanitizeHtmlContentHook {
-    const currentHook = sanitizeHtmlContentHook;
-
-    sanitizeHtmlContentHook = newHookImpl;
-
-    return currentHook;
 }

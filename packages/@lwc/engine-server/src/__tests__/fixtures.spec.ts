@@ -95,8 +95,9 @@ describe('fixtures', () => {
             });
 
             lwcEngineServer!.setHooksForTest({
-                [lwcEngineServer!.OverridableHooks.SanitizeHtmlContent]: (content: unknown) =>
-                    content as string,
+                sanitizeHtmlContent(content: unknown) {
+                    return content as string;
+                },
             });
 
             const result = lwcEngineServer!.renderComponent(

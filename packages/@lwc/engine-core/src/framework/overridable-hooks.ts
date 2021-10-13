@@ -5,14 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isUndefined } from '@lwc/shared';
-import { setSanitizeHtmlContentHook, SanitizeHtmlContentHook } from './api';
-
-export enum OverridableHooks {
-    SanitizeHtmlContent = 'sanitizeHtmlContent',
-}
+import { setSanitizeHtmlContentHook, SanitizeHtmlContentHook } from './api-helpers';
 
 interface OverridableHooksDef {
-    [OverridableHooks.SanitizeHtmlContent]: SanitizeHtmlContentHook;
+    sanitizeHtmlContent: SanitizeHtmlContentHook;
 }
 
 let hooksAreSet = false;
@@ -20,10 +16,8 @@ let hooksAreSet = false;
 function overrideHooks(hooks: Partial<OverridableHooksDef>): Partial<OverridableHooksDef> {
     const oldHooks: Partial<OverridableHooksDef> = {};
 
-    if (!isUndefined(hooks[OverridableHooks.SanitizeHtmlContent])) {
-        oldHooks[OverridableHooks.SanitizeHtmlContent] = setSanitizeHtmlContentHook(
-            hooks[OverridableHooks.SanitizeHtmlContent]!
-        );
+    if (!isUndefined(hooks.sanitizeHtmlContent)) {
+        oldHooks.sanitizeHtmlContent = setSanitizeHtmlContentHook(hooks.sanitizeHtmlContent);
     }
 
     return oldHooks;

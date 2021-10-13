@@ -1,4 +1,4 @@
-import { createElement, OverridableHooks, setHooksForTest } from 'lwc';
+import { createElement, setHooksForTest } from 'lwc';
 
 import XInnerHtml from 'x/innerHtml';
 
@@ -17,10 +17,10 @@ it('throws when not overridden', () => {
 
 function setSanitizeHtmlContentHookForTest(impl) {
     const originalHooks = setHooksForTest({
-        [OverridableHooks.SanitizeHtmlContent]: impl,
+        sanitizeHtmlContent: impl,
     });
 
-    return originalHooks[OverridableHooks.SanitizeHtmlContent];
+    return originalHooks.sanitizeHtmlContent;
 }
 
 it('receives the right parameters', () => {
