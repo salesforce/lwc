@@ -63,14 +63,14 @@ interface ShadowRootRecord {
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
     host: Element;
-    shadowRoot: SyntheticShadowRootInterface;
+    shadowRoot: ShadowRoot;
 }
 
 export function hasInternalSlot(root: unknown): boolean {
     return InternalSlot.has(root);
 }
 
-function getInternalSlot(root: SyntheticShadowRootInterface | Element): ShadowRootRecord {
+function getInternalSlot(root: ShadowRoot | Element): ShadowRootRecord {
     const record = InternalSlot.get(root);
     if (isUndefined(record)) {
         throw new TypeError();
@@ -113,11 +113,11 @@ export function isDelegatingFocus(host: HTMLElement): boolean {
     return getInternalSlot(host).delegatesFocus;
 }
 
-export function getHost(root: SyntheticShadowRootInterface): Element {
+export function getHost(root: ShadowRoot): Element {
     return getInternalSlot(root).host;
 }
 
-export function getShadowRoot(elm: Element): SyntheticShadowRootInterface {
+export function getShadowRoot(elm: Element): ShadowRoot {
     return getInternalSlot(elm).shadowRoot;
 }
 
@@ -128,7 +128,7 @@ export function isSyntheticShadowHost(node: unknown): node is HTMLElement {
     return !isUndefined(shadowRootRecord) && node === shadowRootRecord.host;
 }
 
-export function isSyntheticShadowRoot(node: unknown): node is SyntheticShadowRootInterface {
+export function isSyntheticShadowRoot(node: unknown): node is ShadowRoot {
     const shadowRootRecord = InternalSlot.get(node);
     return !isUndefined(shadowRootRecord) && node === shadowRootRecord.shadowRoot;
 }
@@ -149,7 +149,7 @@ export function containsHost(node: Node) {
 
 let uid = 0;
 
-export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
+export function attachShadow(elm: Element, options: ShadowRootInit): ShadowRoot {
     if (InternalSlot.has(elm)) {
         throw new Error(
             `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`
@@ -158,7 +158,7 @@ export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticSh
     const { mode, delegatesFocus } = options;
     // creating a real fragment for shadowRoot instance
     const doc = getOwnerDocument(elm);
-    const sr = createDocumentFragment.call(doc) as SyntheticShadowRootInterface;
+    const sr = createDocumentFragment.call(doc) as ShadowRoot;
     // creating shadow internal record
     const record: ShadowRootRecord = {
         mode,
@@ -175,11 +175,6 @@ export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticSh
     // correcting the proto chain
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
     return sr;
-}
-
-export interface SyntheticShadowRootInterface extends ShadowRoot {
-    // Remove this interface once TS supports delegatesFocus
-    delegatesFocus: boolean;
 }
 
 const SyntheticShadowRootDescriptors = {
@@ -201,7 +196,7 @@ const ShadowRootDescriptors = {
     activeElement: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface): Element | null {
+        get(this: ShadowRoot): Element | null {
             const host = getHost(this);
             const doc = getOwnerDocument(host);
             const activeElement = DocumentPrototypeActiveElement.call(doc);
@@ -237,7 +232,7 @@ const ShadowRootDescriptors = {
     },
     delegatesFocus: {
         configurable: true,
-        get(this: SyntheticShadowRootInterface): boolean {
+        get(this: ShadowRoot): boolean {
             return getInternalSlot(this).delegatesFocus;
         },
     },
@@ -245,7 +240,7 @@ const ShadowRootDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, left: number, top: number) {
+        value(this: ShadowRoot, left: number, top: number) {
             const host = getHost(this);
             const doc = getOwnerDocument(host);
             return fauxElementFromPoint(this, doc, left, top);
@@ -255,7 +250,7 @@ const ShadowRootDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, left: number, top: number): Element[] {
+        value(this: ShadowRoot, left: number, top: number): Element[] {
             const host = getHost(this);
             const doc = getOwnerDocument(host);
             return fauxElementsFromPoint(this, doc, left, top);
@@ -265,20 +260,20 @@ const ShadowRootDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface): Selection | null {
+        value(this: ShadowRoot): Selection | null {
             throw new Error('Disallowed method "getSelection" on ShadowRoot.');
         },
     },
     host: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface): Element {
+        get(this: ShadowRoot): Element {
             return getHost(this);
         },
     },
     mode: {
         configurable: true,
-        get(this: SyntheticShadowRootInterface) {
+        get(this: ShadowRoot) {
             return getInternalSlot(this).mode;
         },
     },
@@ -291,18 +286,14 @@ const ShadowRootDescriptors = {
     },
 };
 
-export const eventToShadowRootMap = new WeakMap<Event, SyntheticShadowRootInterface>();
+export const eventToShadowRootMap = new WeakMap<Event, ShadowRoot>();
 
 const NodePatchDescriptors = {
     insertBefore: {
         writable: true,
         enumerable: true,
         configurable: true,
-        value<T extends Node>(
-            this: SyntheticShadowRootInterface,
-            newChild: T,
-            refChild: Node | null
-        ): T {
+        value<T extends Node>(this: ShadowRoot, newChild: T, refChild: Node | null): T {
             insertBefore.call(getHost(this), newChild, refChild);
             return newChild;
         },
@@ -311,7 +302,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value<T extends Node>(this: SyntheticShadowRootInterface, oldChild: T): T {
+        value<T extends Node>(this: ShadowRoot, oldChild: T): T {
             removeChild.call(getHost(this), oldChild);
             return oldChild;
         },
@@ -320,7 +311,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value<T extends Node>(this: SyntheticShadowRootInterface, newChild: T): T {
+        value<T extends Node>(this: ShadowRoot, newChild: T): T {
             appendChild.call(getHost(this), newChild);
             return newChild;
         },
@@ -329,7 +320,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value<T extends Node>(this: SyntheticShadowRootInterface, newChild: Node, oldChild: T): T {
+        value<T extends Node>(this: ShadowRoot, newChild: Node, oldChild: T): T {
             replaceChild.call(getHost(this), newChild, oldChild);
             return oldChild;
         },
@@ -339,7 +330,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(
-            this: SyntheticShadowRootInterface,
+            this: ShadowRoot,
             type: string,
             listener: EventListener,
             options?: boolean | AddEventListenerOptions
@@ -351,7 +342,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, evt: Event): boolean {
+        value(this: ShadowRoot, evt: Event): boolean {
             eventToShadowRootMap.set(evt, this);
             // Typescript does not like it when you treat the `arguments` object as an array
             // @ts-ignore type-mismatch
@@ -363,7 +354,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(
-            this: SyntheticShadowRootInterface,
+            this: ShadowRoot,
             type: string,
             listener: EventListener,
             options?: boolean | AddEventListenerOptions
@@ -374,14 +365,14 @@ const NodePatchDescriptors = {
     baseURI: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface) {
+        get(this: ShadowRoot) {
             return getHost(this).baseURI;
         },
     },
     childNodes: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface): NodeListOf<Node & Element> {
+        get(this: ShadowRoot): NodeListOf<Node & Element> {
             return createStaticNodeList(shadowRootChildNodes(this));
         },
     },
@@ -389,7 +380,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface): Selection | null {
+        value(this: ShadowRoot): Selection | null {
             throw new Error('Disallowed method "cloneNode" on ShadowRoot.');
         },
     },
@@ -397,10 +388,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(
-            this: SyntheticShadowRootInterface,
-            otherNode: Node | SyntheticShadowRootInterface
-        ): number {
+        value(this: ShadowRoot, otherNode: Node): number {
             const host = getHost(this);
 
             if (this === otherNode) {
@@ -424,7 +412,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, otherNode: Node) {
+        value(this: ShadowRoot, otherNode: Node) {
             if (this === otherNode) {
                 return true;
             }
@@ -439,7 +427,7 @@ const NodePatchDescriptors = {
     firstChild: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface): ChildNode | null {
+        get(this: ShadowRoot): ChildNode | null {
             const childNodes = getInternalChildNodes(this);
             return childNodes[0] || null;
         },
@@ -447,7 +435,7 @@ const NodePatchDescriptors = {
     lastChild: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface): ChildNode | null {
+        get(this: ShadowRoot): ChildNode | null {
             const childNodes = getInternalChildNodes(this);
             return childNodes[childNodes.length - 1] || null;
         },
@@ -456,7 +444,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface): boolean {
+        value(this: ShadowRoot): boolean {
             const childNodes = getInternalChildNodes(this);
             return childNodes.length > 0;
         },
@@ -464,7 +452,7 @@ const NodePatchDescriptors = {
     isConnected: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface) {
+        get(this: ShadowRoot) {
             return isConnected.call(getHost(this));
         },
     },
@@ -506,7 +494,7 @@ const NodePatchDescriptors = {
     ownerDocument: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface): Document | null {
+        get(this: ShadowRoot): Document | null {
             return getHost(this).ownerDocument;
         },
     },
@@ -527,7 +515,7 @@ const NodePatchDescriptors = {
     textContent: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface): string {
+        get(this: ShadowRoot): string {
             const childNodes = getInternalChildNodes(this);
             let textContent = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
@@ -539,7 +527,7 @@ const NodePatchDescriptors = {
             }
             return textContent;
         },
-        set(this: SyntheticShadowRootInterface, v: string) {
+        set(this: ShadowRoot, v: string) {
             const host = getHost(this);
             textContextSetter.call(host, v);
         },
@@ -549,7 +537,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, options?: GetRootNodeOptions): Node {
+        value(this: ShadowRoot, options?: GetRootNodeOptions): Node {
             return !isUndefined(options) && isTrue(options.composed)
                 ? getHost(this).getRootNode(options)
                 : this;
@@ -561,7 +549,7 @@ const ElementPatchDescriptors = {
     innerHTML: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface): string {
+        get(this: ShadowRoot): string {
             const childNodes = getInternalChildNodes(this);
             let innerHTML = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
@@ -569,7 +557,7 @@ const ElementPatchDescriptors = {
             }
             return innerHTML;
         },
-        set(this: SyntheticShadowRootInterface, v: string) {
+        set(this: ShadowRoot, v: string) {
             const host = getHost(this);
             innerHTMLSetter.call(host, v);
         },
@@ -580,14 +568,14 @@ const ParentNodePatchDescriptors = {
     childElementCount: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface): number {
+        get(this: ShadowRoot): number {
             return this.children.length;
         },
     },
     children: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface) {
+        get(this: ShadowRoot) {
             return createStaticHTMLCollection(
                 ArrayFilter.call(
                     shadowRootChildNodes(this),
@@ -615,7 +603,7 @@ const ParentNodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface): Selection | null {
+        value(this: ShadowRoot): Selection | null {
             throw new Error('Disallowed method "getElementById" on ShadowRoot.');
         },
     },
@@ -623,7 +611,7 @@ const ParentNodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, selectors: string): Element | null {
+        value(this: ShadowRoot, selectors: string): Element | null {
             return shadowRootQuerySelector(this, selectors);
         },
     },
@@ -631,7 +619,7 @@ const ParentNodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, selectors: string): NodeListOf<Element> {
+        value(this: ShadowRoot, selectors: string): NodeListOf<Element> {
             return createStaticNodeList(shadowRootQuerySelectorAll(this, selectors));
         },
     },
