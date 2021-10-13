@@ -60,17 +60,15 @@ import {
     IF_RE,
     ITERATOR_RE,
     KNOWN_HTML_ELEMENTS,
-    LWC_DIRECTIVE_SET,
     LWC_DIRECTIVES,
+    LWC_DIRECTIVE_SET,
     LWC_RE,
     MATHML_NAMESPACE_URI,
     ROOT_TEMPLATE_DIRECTIVES,
-    ROOT_TEMPLATE_DIRECTIVES_SET,
     SUPPORTED_SVG_TAGS,
     SVG_NAMESPACE_URI,
     VALID_IF_MODIFIER,
     VOID_ELEMENT_SET,
-    FOR_DIRECTIVES,
 } from './constants';
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
@@ -176,59 +174,6 @@ function parseElement(
     }
 }
 
-function parseElementDirectives(
-    ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
-    parent: ParentNode,
-    parse5ElmLocation: parse5.ElementLocation
-): ParentNode | undefined {
-    let current: ParentNode | undefined;
-
-    const parsers = [parseForEach, parseForOf, parseIf];
-    for (const parser of parsers) {
-        const prev = current || parent;
-        const node = parser(ctx, parsedAttr, parse5ElmLocation);
-        if (node) {
-            ctx.addNodeCurrentScope(node);
-            prev.children.push(node);
-            current = node;
-        }
-    }
-
-    return current;
-}
-
-function parseBaseElement(
-    ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
-    parse5Elm: parse5.Element,
-    parent: ParentNode,
-    parse5ElmLocation: parse5.ElementLocation
-): BaseElement | undefined {
-    const { tagName: tag } = parse5Elm;
-
-    let element: BaseElement | undefined;
-    if (tag === 'slot') {
-        element = parseSlot(ctx, parsedAttr, parse5ElmLocation);
-        // Skip creating template nodes
-    } else if (tag !== 'template') {
-        // Check if the element tag is a valid custom element name and is not part of known standard
-        // element name containing a dash.
-        if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
-            element = ast.element(parse5Elm, parse5ElmLocation);
-        } else {
-            element = ast.component(parse5Elm, parse5ElmLocation);
-        }
-    }
-
-    if (element) {
-        ctx.addNodeCurrentScope(element);
-        parent.children.push(element);
-    }
-
-    return element;
-}
-
 function parseElementLocation(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
@@ -283,6 +228,59 @@ function parseElementLocation(
             ...defaultParse5Location(),
         };
     }
+}
+
+function parseElementDirectives(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parent: ParentNode,
+    parse5ElmLocation: parse5.ElementLocation
+): ParentNode | undefined {
+    let current: ParentNode | undefined;
+
+    const parsers = [parseForEach, parseForOf, parseIf];
+    for (const parser of parsers) {
+        const prev = current || parent;
+        const node = parser(ctx, parsedAttr, parse5ElmLocation);
+        if (node) {
+            ctx.addNodeCurrentScope(node);
+            prev.children.push(node);
+            current = node;
+        }
+    }
+
+    return current;
+}
+
+function parseBaseElement(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parse5Elm: parse5.Element,
+    parent: ParentNode,
+    parse5ElmLocation: parse5.ElementLocation
+): BaseElement | undefined {
+    const { tagName: tag } = parse5Elm;
+
+    let element: BaseElement | undefined;
+    if (tag === 'slot') {
+        element = parseSlot(ctx, parsedAttr, parse5ElmLocation);
+        // Skip creating template nodes
+    } else if (tag !== 'template') {
+        // Check if the element tag is a valid custom element name and is not part of known standard
+        // element name containing a dash.
+        if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+            element = ast.element(parse5Elm, parse5ElmLocation);
+        } else {
+            element = ast.component(parse5Elm, parse5ElmLocation);
+        }
+    }
+
+    if (element) {
+        ctx.addNodeCurrentScope(element);
+        parent.children.push(element);
+    }
+
+    return element;
 }
 
 function parseChildren(ctx: ParserCtx, parent: ParentNode, parse5Parent: parse5.Element): void {
@@ -505,10 +503,7 @@ function applyLwcDirectives(
         return;
     }
 
-    if (
-        !LWC_DIRECTIVE_SET.has(lwcAttribute.name) &&
-        !ROOT_TEMPLATE_DIRECTIVES_SET.has(lwcAttribute.name)
-    ) {
+    if (!LWC_DIRECTIVE_SET.has(lwcAttribute.name)) {
         ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
             lwcAttribute.name,
             `<${element.name}>`,
@@ -542,7 +537,7 @@ function applyLwcDynamicDirective(
 ): void {
     const { name: tag } = element;
 
-    const lwcDynamicAttribute = parsedAttr.pick(LWC_DIRECTIVES.DYNAMIC);
+    const lwcDynamicAttribute = parsedAttr.pick('lwc:dynamic');
     if (!lwcDynamicAttribute) {
         return;
     }
@@ -572,7 +567,7 @@ function applyLwcDomDirective(
 ): void {
     const { name: tag } = element;
 
-    const lwcDomAttribute = parsedAttr.pick(LWC_DIRECTIVES.DOM);
+    const lwcDomAttribute = parsedAttr.pick('lwc:dom');
     if (!lwcDomAttribute) {
         return;
     }
@@ -640,9 +635,9 @@ function parseForEach(
     parsedAttr: ParsedAttribute,
     parse5ElmLocation: parse5.ElementLocation
 ): ForEach | undefined {
-    const forEachAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_EACH);
-    const forItemAttribute = parsedAttr.pick(FOR_DIRECTIVES.FOR_ITEM);
-    const forIndex = parsedAttr.pick(FOR_DIRECTIVES.FOR_INDEX);
+    const forEachAttribute = parsedAttr.pick('for:each');
+    const forItemAttribute = parsedAttr.pick('for:item');
+    const forIndex = parsedAttr.pick('for:index');
 
     if (forEachAttribute && forItemAttribute) {
         if (!ast.isExpression(forEachAttribute.value)) {

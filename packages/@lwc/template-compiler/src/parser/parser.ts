@@ -57,7 +57,7 @@ export default class ParserCtx {
     /**
      * Scopes keep track of the hierarchy of ParentNodes as the parser traverses the parse5 AST.
      * Each scope is represented by an array where each node in the array correspond to either
-     * a ForEach, ForOf, IfBlock, Element, Component, or Slot.
+     * a ForEach, ForOf, If, Element, Component, or Slot.
      *
      * Currently, each scope has a hierarchy of ForBlock > IfBlock > Element | Component | Slot.
      * Note: Not all scopes will have all three, but when they do, they will appear in this order.

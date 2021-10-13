@@ -36,6 +36,7 @@ import {
     InnerHTMLDirective,
     Directive,
     BaseElement,
+    LWCDirectiveDomMode,
 } from './types';
 
 export function root(parse5ElementLocation: parse5.ElementLocation): Root {
@@ -211,8 +212,8 @@ export function dynamicDirective(value: Expression, location: SourceLocation): D
     };
 }
 
-export function domDirective<T extends 'manual'>(
-    lwcDomAttr: T,
+export function domDirective(
+    lwcDomAttr: LWCDirectiveDomMode,
     location: SourceLocation
 ): DomDirective {
     return {

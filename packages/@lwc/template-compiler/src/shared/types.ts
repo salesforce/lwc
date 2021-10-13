@@ -186,8 +186,8 @@ export interface ForOf extends BaseParentNode {
 
 export type ForBlock = ForEach | ForOf;
 
-export type ParentNode = ForBlock | If | Element | Component | Slot | Root;
+export type ParentNode = Root | ForBlock | If | BaseElement;
 
-export type ChildNode = ForBlock | If | Element | Component | Slot | Comment | Text;
+export type ChildNode = ForBlock | If | BaseElement | Comment | Text;
 
-export type Node = Root | ForBlock | If | Element | Component | Slot | Comment | Text;
+export type Node = Root | ForBlock | If | BaseElement | Comment | Text;
