@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+
 /**
  * EXPERIMENTAL: This function acts like a hook for Lightning Locker Service and other similar
  * libraries to sanitize HTML content. This hook process the content passed via the template to
