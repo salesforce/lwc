@@ -11,6 +11,7 @@ describe('restrictions', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             class Invalid extends LightningElement {
                 @wire(adapter) showFeatures;
+                // eslint-disable-next-line no-dupe-class-members
                 showFeatures() {}
             }
         }).toThrowError(
@@ -26,6 +27,7 @@ describe('regression [W-9927596] - wired field with duplicate observed field', (
         expect(() => {
             class DuplicateProperty extends LightningElement {
                 foo = 'observed';
+                // eslint-disable-next-line no-dupe-class-members
                 @wire(adapter) foo = 'wired';
 
                 render() {

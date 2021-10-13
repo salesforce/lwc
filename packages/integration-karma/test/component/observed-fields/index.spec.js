@@ -141,6 +141,7 @@ describe('observed-fields', () => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 class Invalid extends LightningElement {
                     showFeatures;
+                    // eslint-disable-next-line no-dupe-class-members
                     showFeatures() {}
                 }
             }).toThrowError(
@@ -159,10 +160,12 @@ describe('regression [W-9927596] - observed field with duplicate accessor', () =
             class DuplicateAccessor extends LightningElement {
                 foo = 'default';
 
+                // eslint-disable-next-line no-dupe-class-members
                 set foo(value) {
                     accessors.push(`setter ${value}`);
                     this._foo = value;
                 }
+                // eslint-disable-next-line no-dupe-class-members
                 get foo() {
                     accessors.push('getter');
                     return this._foo;

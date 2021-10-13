@@ -50,6 +50,7 @@ describe('restrictions', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             class Invalid extends LightningElement {
                 @track showFeatures;
+                // eslint-disable-next-line no-dupe-class-members
                 showFeatures() {}
             }
         }).toThrowError(
@@ -64,9 +65,11 @@ describe('restrictions', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             class Invalid extends LightningElement {
                 @track showFeatures;
+                // eslint-disable-next-line no-dupe-class-members
                 get showFeatures() {
                     return 1;
                 }
+                // eslint-disable-next-line no-dupe-class-members
                 set showFeatures(v) {}
             }
         }).toThrowError(
@@ -183,6 +186,7 @@ describe('regression [W-9927596] - track field with duplicate observed field', (
         expect(() => {
             class DuplicateProperty extends LightningElement {
                 foo;
+                // eslint-disable-next-line no-dupe-class-members
                 @track foo = { name: 'track' };
 
                 @api updateProperty(name) {
