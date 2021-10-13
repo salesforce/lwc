@@ -122,6 +122,7 @@ describe('restrictions', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             class Invalid extends LightningElement {
                 @api showFeatures;
+                // eslint-disable-next-line no-dupe-class-members
                 showFeatures() {}
             }
         }).toThrowError(
@@ -138,6 +139,7 @@ describe('regression [W-9927596]', () => {
             expect(() => {
                 class DuplicateProperty extends LightningElement {
                     foo = 'observed';
+                    // eslint-disable-next-line no-dupe-class-members
                     @api foo = 'public';
 
                     render() {
@@ -171,10 +173,12 @@ describe('regression [W-9927596]', () => {
                 class DuplicateProperty extends LightningElement {
                     @api foo = 'default';
 
+                    // eslint-disable-next-line no-dupe-class-members
                     get foo() {
                         accessors.push('getter');
                         return this._foo;
                     }
+                    // eslint-disable-next-line no-dupe-class-members
                     set foo(value) {
                         accessors.push(`setter ${value}`);
                         this._foo = value;
@@ -210,11 +214,13 @@ describe('regression [W-9927596]', () => {
                     class DuplicateAccessor extends LightningElement {
                         foo = 'default';
 
+                        // eslint-disable-next-line no-dupe-class-members
                         @api
                         get foo() {
                             accessors.push('getter');
                             return this._foo;
                         }
+                        // eslint-disable-next-line no-dupe-class-members
                         set foo(value) {
                             accessors.push(`setter ${value}`);
                             this._foo = value;
@@ -249,11 +255,13 @@ describe('regression [W-9927596]', () => {
                     class DuplicateAccessor extends LightningElement {
                         foo = 'default';
 
+                        // eslint-disable-next-line no-dupe-class-members
                         @api
                         set foo(value) {
                             accessors.push(`setter ${value}`);
                             this._foo = value;
                         }
+                        // eslint-disable-next-line no-dupe-class-members
                         get foo() {
                             accessors.push('getter');
                             return this._foo;
