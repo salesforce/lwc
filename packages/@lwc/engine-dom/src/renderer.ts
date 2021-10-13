@@ -13,6 +13,7 @@ import {
     globalThis,
     isFunction,
     isUndefined,
+    isArray,
     KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
@@ -32,7 +33,12 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
-const supportsConstructableStyleSheets = isFunction((CSSStyleSheet.prototype as any).replaceSync);
+// This check for constructable stylesheets is similar to Fast's:
+// https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
+// See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
+const supportsConstructableStyleSheets =
+    isFunction((CSSStyleSheet.prototype as any).replaceSync) &&
+    isArray((document as any).adoptedStyleSheets);
 const styleElements: { [content: string]: HTMLStyleElement } = create(null);
 const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
 const nodesToStyleSheets = new WeakMap<Node, { [content: string]: true }>();
