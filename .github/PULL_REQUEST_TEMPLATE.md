@@ -27,7 +27,7 @@
 
     Examples:
         - Fixing a bug.
-        - Changing the invocation timing of a callback, for a callback that as now invocation timing
+        - Changing the invocation timing of a callback, for a callback that has no invocation timing
           guarantee.
 
     Remove the incorrect item from the list. 
