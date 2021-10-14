@@ -101,7 +101,7 @@ export default class ParserCtx {
     }
 
     /**
-     * This method searches the ancestors and returns the corresponding ParentNode that satisfies the predicate.
+     * This method returns an iterator over ancestor nodes, starting at the parent and ending at the root node.
      *
      * Note: There are instances when we want to terminate the traversal early, such as searching for a ForBlock parent.
      *

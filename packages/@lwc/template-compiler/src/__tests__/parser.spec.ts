@@ -9,9 +9,6 @@ import { mergeConfig } from '../config';
 import State from '../state';
 import parse from '../parser';
 
-const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
-const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
-
 const EXPECTED_LOCATION = expect.objectContaining({
     line: expect.any(Number),
     column: expect.any(Number),
@@ -55,9 +52,9 @@ describe('parsing', () => {
     it('text identifier in text block', () => {
         const { root } = parseTemplate(`<template>Hello {name}, from {location}</template>`);
         expect(root.children[0].value.value).toBe('Hello ');
-        expect(root.children[1].value).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(root.children[1].value).toMatchObject({ type: 'Identifier' });
         expect(root.children[2].value.value).toBe(', from ');
-        expect(root.children[3].value).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(root.children[3].value).toMatchObject({ type: 'Identifier' });
     });
 
     it('child elements', () => {
@@ -185,13 +182,13 @@ describe('if directive', () => {
     it('if directive', () => {
         const { root } = parseTemplate(`<template><h1 if:true={visible}></h1></template>`);
         expect(root.children[0]).toMatchObject({ type: 'If' });
-        expect(root.children[0].condition).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(root.children[0].condition).toMatchObject({ type: 'Identifier' });
         expect(root.children[0].modifier).toBe('true');
     });
 
     it('if directive with false modifier', () => {
         const { root } = parseTemplate(`<template><h1 if:false={visible}></h1></template>`);
-        expect(root.children[0].condition).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(root.children[0].condition).toMatchObject({ type: 'Identifier' });
         expect(root.children[0].modifier).toBe('false');
     });
 
@@ -506,11 +503,11 @@ describe('props and attributes', () => {
         expect(root.children[0].attributes).toMatchObject([
             {
                 name: 'minlength',
-                value: { value: '1' },
+                value: { type: 'Literal', value: '1' },
             },
             {
                 name: 'maxlength',
-                value: { value: '5' },
+                value: { type: 'Literal', value: '5' },
             },
         ]);
     });
@@ -522,11 +519,11 @@ describe('props and attributes', () => {
         expect(root.children[0].attributes).toMatchObject([
             {
                 name: 'title',
-                value: { value: 'title' },
+                value: { type: 'Literal', value: 'title' },
             },
             {
                 name: 'aria-hidden',
-                value: { value: 'true' },
+                value: { type: 'Literal', value: 'true' },
             },
         ]);
     });
@@ -535,7 +532,7 @@ describe('props and attributes', () => {
         const { root } = parseTemplate(
             `<template><x-button prop={state.prop}></x-button></template>`
         );
-        expect(root.children[0].properties[0].value).toMatchObject(TEMPLATE_EXPRESSION);
+        expect(root.children[0].properties[0].value).toMatchObject({ type: 'MemberExpression' });
     });
 
     it('custom element attribute / props mix', () => {
@@ -568,7 +565,7 @@ describe('props and attributes', () => {
         ]);
         expect(root.children[0].attributes[1]).toMatchObject({
             name: 'data-xx',
-            value: { value: 'foo' },
+            value: { type: 'Literal', value: 'foo' },
         });
     });
 
@@ -646,7 +643,7 @@ describe('props and attributes', () => {
             expect(root.children[0].properties).toMatchObject([
                 {
                     name: 'under_score',
-                    value: { value: 'bar' },
+                    value: { type: 'Literal', value: 'bar' },
                 },
             ]);
         });
@@ -659,7 +656,7 @@ describe('props and attributes', () => {
             expect(root.children[0].properties).toMatchObject([
                 {
                     name: 'under_1',
-                    value: { value: 'bar' },
+                    value: { type: 'Literal', value: 'bar' },
                 },
             ]);
         });
@@ -672,7 +669,7 @@ describe('props and attributes', () => {
             expect(root.children[0].properties).toMatchObject([
                 {
                     name: 'under_scoreHyphen',
-                    value: { value: 'bar' },
+                    value: { type: 'Literal', value: 'bar' },
                 },
             ]);
         });
@@ -685,7 +682,7 @@ describe('props and attributes', () => {
             expect(root.children[0].properties).toMatchObject([
                 {
                     name: 'under_scoreSecond_underScore',
-                    value: { value: 'bar' },
+                    value: { type: 'Literal', value: 'bar' },
                 },
             ]);
         });

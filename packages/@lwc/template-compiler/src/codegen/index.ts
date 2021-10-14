@@ -86,12 +86,9 @@ function transform(codeGen: CodeGen): t.Expression {
             const expression = codeGen.bindExpression(dynamic.value);
             res = codeGen.genDynamicElement(name, expression, databag, children);
         } else if (isComponent(element)) {
-            // Make sure to register the component
-            const componentClassName = name;
-
             res = codeGen.genCustomElement(
                 name,
-                identifierFromComponentName(componentClassName),
+                identifierFromComponentName(name),
                 databag,
                 children
             );
@@ -108,9 +105,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
     function transformText(consecutiveText: Text[]): t.Expression {
         return codeGen.genText(
-            consecutiveText.map((text) => {
-                const { value } = text;
-
+            consecutiveText.map(({ value }) => {
                 return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
             })
         );
@@ -149,18 +144,12 @@ function transform(codeGen: CodeGen): t.Expression {
 
             if (isForBlock(child)) {
                 res.push(transformForBlock(child));
-            }
-
-            if (isIf(child)) {
+            } else if (isIf(child)) {
                 const children = transformIf(child);
                 Array.isArray(children) ? res.push(...children) : res.push(children);
-            }
-
-            if (isBaseElement(child)) {
+            } else if (isBaseElement(child)) {
                 res.push(transformElement(child));
-            }
-
-            if (isComment(child) && codeGen.preserveComments) {
+            } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
             }
         }
@@ -177,23 +166,23 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformIf(ifNode: If): t.Expression | t.Expression[] {
-        const children = transformChildren(ifNode);
+        const expression = transformChildren(ifNode);
         let res: t.Expression | t.Expression[];
 
-        if (t.isArrayExpression(children)) {
+        if (t.isArrayExpression(expression)) {
             // Bind the expression once for all the template children
             const testExpression = codeGen.bindExpression(ifNode.condition);
 
             res = t.arrayExpression(
-                children.elements.map((child) =>
-                    child !== null
-                        ? applyInlineIf(ifNode, child as t.Expression, testExpression)
+                expression.elements.map((element) =>
+                    element !== null
+                        ? applyInlineIf(ifNode, element as t.Expression, testExpression)
                         : null
                 )
             );
         } else {
             // If the template has a single children, make sure the ternary expression returns an array
-            res = applyInlineIf(ifNode, children, undefined, t.arrayExpression([]));
+            res = applyInlineIf(ifNode, expression, undefined, t.arrayExpression([]));
         }
 
         if (t.isArrayExpression(res)) {
@@ -234,9 +223,8 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformForBlock(forBlock: ForBlock): t.Expression {
-        const children = transformForChildren(forBlock);
+        let expression = transformForChildren(forBlock);
 
-        let expression = children;
         if (t.isArrayExpression(expression) && expression.elements.length === 1) {
             expression = expression.elements[0] as t.Expression;
         }
@@ -300,7 +288,7 @@ function transform(codeGen: CodeGen): t.Expression {
         };
 
         const iteratorArgs = Object.values(argsMapping).map((arg) => t.identifier(arg));
-        const iteratorObjet = t.objectExpression(
+        const iteratorObject = t.objectExpression(
             Object.entries(argsMapping).map(([prop, arg]) =>
                 t.property(t.identifier(prop), t.identifier(arg))
             )
@@ -312,7 +300,7 @@ function transform(codeGen: CodeGen): t.Expression {
             iteratorArgs,
             t.blockStatement([
                 t.variableDeclaration('const', [
-                    t.variableDeclarator(t.identifier(iteratorName), iteratorObjet),
+                    t.variableDeclarator(t.identifier(iteratorName), iteratorObject),
                 ]),
                 t.returnStatement(node),
             ])
