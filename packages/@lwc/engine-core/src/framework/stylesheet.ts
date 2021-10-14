@@ -6,7 +6,7 @@
  */
 import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
-import * as api from './api';
+import api from './api';
 import { VNode } from '../3rdparty/snabbdom/types';
 import { RenderMode, ShadowMode, VM } from './vm';
 import { Template } from './template';

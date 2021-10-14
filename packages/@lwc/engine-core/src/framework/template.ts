@@ -19,8 +19,7 @@ import {
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
-import * as api from './api';
-import { RenderAPI } from './api';
+import api, { RenderAPI } from './api';
 import {
     resetComponentRoot,
     runWithBoundaryProtection,
