@@ -32,11 +32,11 @@ export function fauxElementsFromPoint(
 
     const findAppropriateHost = (rootNode: Node) => {
         // Keep searching up the host tree until we find an element that is within the context node's
-        // shadow root and isn't already in the elements or result arrays
+        // immediate shadow root and isn't already in the elements or result arrays
         let host;
         while (!isUndefined((host = (rootNode as any).host))) {
             if (
-                rootNodes.indexOf(host.getRootNode()) !== -1 &&
+                rootNodes[0] === host.getRootNode() &&
                 elements.indexOf(host) === -1 &&
                 result.indexOf(host) === -1
             ) {
