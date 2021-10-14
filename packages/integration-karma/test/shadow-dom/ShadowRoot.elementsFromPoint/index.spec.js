@@ -1,5 +1,6 @@
 import { createElement } from 'lwc';
 import Container from 'x/container';
+import Grandparent from 'x/grandparent';
 import { extractShadowDataIds } from 'test-utils';
 
 describe('elementsFromPoint', () => {
@@ -44,14 +45,11 @@ describe('elementsFromPoint', () => {
         };
     })();
 
-    function test(element, expectedElements) {
-        const { left, top, width, height } = element.getBoundingClientRect();
-        const rootNode = element.getRootNode();
-        const elementsFromPoint = rootNode.elementsFromPoint(left + width / 2, top + height / 2);
+    function testElementsFromPoint(rootNode, x, y, expectedElements) {
+        const elementsFromPoint = rootNode.elementsFromPoint(x, y);
 
         if (onlyIncludesElementsInImmediateShadowRoot()) {
-            const mainRootNode = element.getRootNode();
-            expectedElements = expectedElements.filter((el) => el.getRootNode() === mainRootNode);
+            expectedElements = expectedElements.filter((el) => el.getRootNode() === rootNode);
         }
 
         expect(elementsFromPoint).toEqual(expectedElements);
@@ -91,6 +89,14 @@ describe('elementsFromPoint', () => {
                 inSlottable,
                 inSlottableInner,
             } = nodes;
+
+            function test(element, expectedElements) {
+                const { left, top, width, height } = element.getBoundingClientRect();
+                const rootNode = element.getRootNode();
+                const x = left + width / 2;
+                const y = top + height / 2;
+                testElementsFromPoint(rootNode, x, y, expectedElements);
+            }
 
             test(elm, [elm, body, html]);
             test(aboveContainer, [aboveContainer, elm, body, html]);
@@ -136,6 +142,90 @@ describe('elementsFromPoint', () => {
                 body,
                 html,
             ]);
+        });
+
+        it('host elements are not all visible', () => {
+            const grandparent = createElement('x-grandparent', { is: Grandparent });
+            document.body.appendChild(grandparent);
+            const nodes = extractShadowDataIds(grandparent.shadowRoot);
+            const { child, childDiv, parent, parentDiv, grandparentDiv } = nodes;
+            const html = document.documentElement;
+
+            const resetStyles = () => {
+                [child, childDiv, parent, parentDiv, grandparent, grandparentDiv].forEach((el) => {
+                    el.style = '';
+                });
+            };
+
+            function test(element, expectedElements) {
+                testElementsFromPoint(element.getRootNode(), 50, 50, expectedElements);
+            }
+
+            test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, grandparent, html]);
+            test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent, html]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+
+            grandparent.style = 'width: 0px; height: 0px;';
+
+            test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, html]);
+            test(parentDiv, [child, parentDiv, parent, grandparentDiv, html]);
+            test(grandparentDiv, [parent, grandparentDiv, html]);
+
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
+
+            test(childDiv, [childDiv, child, parentDiv, grandparentDiv, grandparent, html]);
+            test(parentDiv, [child, parentDiv, grandparentDiv, grandparent, html]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+
+            resetStyles();
+            child.style = 'width: 0px; height: 0px;';
+
+            test(childDiv, [childDiv, parentDiv, parent, grandparentDiv, grandparent, html]);
+            test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent, html]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
+            parentDiv.style = 'width: 0px; height: 0px;';
+
+            test(childDiv, [childDiv, child, grandparentDiv, grandparent, html]);
+            test(parentDiv, [child, grandparentDiv, grandparent, html]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
+            parentDiv.style = 'width: 0px; height: 0px;';
+            child.style = 'width: 0px; height: 0px;';
+
+            test(childDiv, [childDiv, grandparentDiv, grandparent, html]);
+            test(parentDiv, [child, grandparentDiv, grandparent, html]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
+            child.style = 'width: 0px; height: 0px;';
+            test(childDiv, [childDiv, parentDiv, grandparentDiv, grandparent, html]);
+            test(parentDiv, [child, parentDiv, grandparentDiv, grandparent, html]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+
+            resetStyles();
+            parent.style = 'width: 0px; height: 0px;';
+            parentDiv.style = 'width: 0px; height: 0px;';
+            child.style = 'width: 0px; height: 0px;';
+            childDiv.style = 'width: 0px; height: 0px;';
+
+            test(childDiv, [grandparentDiv, grandparent, html]);
+            test(parentDiv, [grandparentDiv, grandparent, html]);
+            test(grandparentDiv, [grandparentDiv, grandparent, html]);
+
+            resetStyles();
+            parentDiv.style = 'width: 0px; height: 0px;';
+            child.style = 'width: 0px; height: 0px;';
+
+            test(childDiv, [childDiv, parent, grandparentDiv, grandparent, html]);
+            test(parentDiv, [child, parent, grandparentDiv, grandparent, html]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
         });
     }
 });
