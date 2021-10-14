@@ -41,6 +41,7 @@ export interface VNode {
 
 export interface VElement extends VNode {
     sel: string;
+    data: VElementData;
     children: VNodes;
     elm: Element | undefined;
     text: undefined;
@@ -81,6 +82,10 @@ export interface VNodeData {
     context?: CustomElementContext;
     on?: On;
     svg?: boolean;
+}
+
+export interface VElementData extends VNodeData {
+    key: Key;
 }
 
 export interface Hooks<N extends VNode> {

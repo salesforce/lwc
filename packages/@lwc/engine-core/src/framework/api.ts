@@ -41,14 +41,13 @@ import {
 } from './vm';
 import {
     VNode,
-    VNodeData,
     VNodes,
     VElement,
     VText,
     Hooks,
-    Key,
     VCustomElement,
     VComment,
+    VElementData,
 } from '../3rdparty/snabbdom/types';
 import { LightningElementConstructor } from './base-lightning-element';
 import {
@@ -71,26 +70,13 @@ import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
 import { sanitizeHtmlContentHook } from './api-helpers';
 
-export interface ElementCompilerData extends VNodeData {
-    key: Key;
-}
-
-export interface CustomElementCompilerData extends ElementCompilerData {
-    ns: undefined; // for SVGs
-}
-
 export interface RenderAPI {
-    s(
-        slotName: string,
-        data: ElementCompilerData,
-        children: VNodes,
-        slotset: SlotSet
-    ): VNode | VNodes;
-    h(tagName: string, data: ElementCompilerData, children: VNodes): VNode;
+    s(slotName: string, data: VElementData, children: VNodes, slotset: SlotSet): VNode | VNodes;
+    h(tagName: string, data: VElementData, children: VNodes): VNode;
     c(
         tagName: string,
         Ctor: LightningElementConstructor,
-        data: CustomElementCompilerData,
+        data: VElementData,
         children?: VNodes
     ): VNode;
     i(items: any[], factory: () => VNode | VNode): VNodes;
@@ -104,7 +90,7 @@ export interface RenderAPI {
 }
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
-const SymbolIterator = Symbol.iterator;
+const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
 const TextHook: Hooks<VText> = {
     create: (vnode) => {
@@ -270,7 +256,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-export function h(sel: string, data: ElementCompilerData, children: VNodes): VElement {
+export function h(sel: string, data: VElementData, children: VNodes): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -349,7 +335,7 @@ export function ti(value: any): number {
 // [s]lot element node
 export function s(
     slotName: string,
-    data: ElementCompilerData,
+    data: VElementData,
     children: VNodes,
     slotset: SlotSet | undefined
 ): VElement | VNodes {
@@ -383,7 +369,7 @@ export function s(
 export function c(
     sel: string,
     Ctor: LightningElementConstructor,
-    data: CustomElementCompilerData,
+    data: VElementData,
     children: VNodes = EmptyArray
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
@@ -469,13 +455,13 @@ export function i(
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(
-            isUndefined((iterable as any)[SymbolIterator]),
+            isUndefined(iterable[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
                 iterable
             )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`
         );
     }
-    const iterator = (iterable as any)[SymbolIterator]();
+    const iterator = iterable[SymbolIterator]();
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
@@ -499,7 +485,7 @@ export function i(
         last = next.done;
 
         // template factory logic based on the previous collected value
-        const vnode = factory(value, j, j === 0, last);
+        const vnode = factory(value, j, j === 0, last === true);
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {
@@ -686,7 +672,7 @@ let dynamicImportedComponentCounter = 0;
 export function dc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
-    data: CustomElementCompilerData,
+    data: VElementData,
     children?: VNodes
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
