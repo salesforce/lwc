@@ -17,7 +17,7 @@ if (process.env.NATIVE_SHADOW) {
             document.body.appendChild(parent);
 
             const childElm = parent.shadowRoot.querySelector('x-child');
-            expect(childElm.shadowRoot.querySelector('slot').children.length).toBe(1);
+            expect(childElm.shadowRoot.querySelector('.default-slot')).toBeDefined();
         });
     });
 }
