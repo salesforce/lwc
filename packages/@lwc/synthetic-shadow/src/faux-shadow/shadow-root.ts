@@ -135,6 +135,12 @@ export function isSyntheticShadowRoot(node: unknown): node is ShadowRoot {
 
 // Return true if any descendant is a host element
 export function containsHost(node: Node) {
+    // IE11 complains with "Unexpected call to method or property access." when calling walker.nextNode().
+    // The fix for this is to only walk trees for nodes that are Node.ELEMENT_NODE.
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+        return false;
+    }
+
     // IE requires all arguments
     // https://developer.mozilla.org/en-US/docs/Web/API/Document/createTreeWalker#browser_compatibility
     const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false);
