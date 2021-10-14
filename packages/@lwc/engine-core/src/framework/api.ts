@@ -88,7 +88,7 @@ export interface RenderAPI {
 }
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
-const SymbolIterator = Symbol.iterator;
+const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
 const TextHook: Hooks<VText> = {
     create: (vnode) => {
@@ -453,13 +453,13 @@ export function i(
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(
-            isUndefined((iterable as any)[SymbolIterator]),
+            isUndefined(iterable[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
                 iterable
             )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`
         );
     }
-    const iterator = (iterable as any)[SymbolIterator]();
+    const iterator = iterable[SymbolIterator]();
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
@@ -483,7 +483,7 @@ export function i(
         last = next.done;
 
         // template factory logic based on the previous collected value
-        const vnode = factory(value, j, j === 0, last);
+        const vnode = factory(value, j, j === 0, last === true);
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {
