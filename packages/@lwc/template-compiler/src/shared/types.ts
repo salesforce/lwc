@@ -58,6 +58,7 @@ export interface LWCDirectives {
     dynamic?: TemplateExpression;
     renderMode?: LWCDirectiveRenderMode;
     preserveComments?: IRBooleanAttribute;
+    innerHTML?: TemplateExpression | string;
 }
 
 export interface IRBaseNode<N extends parse5.Node> {

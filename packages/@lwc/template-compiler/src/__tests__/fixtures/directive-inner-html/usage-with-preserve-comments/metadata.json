@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1142,
+            "message": "LWC1142: Invalid lwc:inner-html usage on element \"<div>\". The directive can't be used on an element with content.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 91,
+                "length": 57
+            }
+        }
+    ]
+}

@@ -10,6 +10,7 @@ import { ResolvedConfig } from '../config';
 import * as t from '../shared/estree';
 import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
 import { toPropertyName } from '../shared/utils';
+import { TEMPLATE_PARAMS } from '../shared/constants';
 
 type RenderPrimitive =
     | 'iterator'
@@ -25,7 +26,8 @@ type RenderPrimitive =
     | 'tabindex'
     | 'scopedId'
     | 'scopedFragId'
-    | 'comment';
+    | 'comment'
+    | 'sanitizeHtmlContent';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -47,6 +49,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     scopedId: { name: 'gid', alias: 'api_scoped_id' },
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
     comment: { name: 'co', alias: 'api_comment' },
+    sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
 };
 
 export default class CodeGen {
@@ -70,6 +73,7 @@ export default class CodeGen {
 
     currentId = 0;
     currentKey = 0;
+    innerHtmlInstances = 0;
 
     usedApis: { [name: string]: t.Identifier } = {};
     usedSlots: { [name: string]: t.Identifier } = {};
@@ -151,6 +155,10 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
     }
 
+    genSanitizeHtmlContent(content: t.Expression): t.Expression {
+        return this._renderApiCall(RENDER_APIS.sanitizeHtmlContent, [content]);
+    }
+
     genIterator(iterable: t.Expression, callback: t.FunctionExpression) {
         return this._renderApiCall(RENDER_APIS.iterator, [iterable, callback]);
     }
@@ -205,6 +213,78 @@ export default class CodeGen {
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
         return t.conditionalExpression(bindExpr, t.literal(''), t.literal(null));
+    }
+
+    /**
+     * This routine generates an expression that avoids
+     * computing the sanitized html of a raw html if it does not change
+     * between renders.
+     *
+     * @param expr
+     * @returns sanitizedHtmlExpr
+     */
+    genSanitizedHtmlExpr(expr: t.Expression) {
+        const instance = this.innerHtmlInstances++;
+
+        // Optimization for static html.
+        // Example input: <div lwc:inner-html="foo">
+        // Output: $ctx._sanitizedHtml$0 || ($ctx._sanitizedHtml$0 = api_sanitize_html_content("foo"))
+        if (t.isLiteral(expr)) {
+            return t.logicalExpression(
+                '||',
+                t.memberExpression(
+                    t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                    t.identifier(`_sanitizedHtml$${instance}`)
+                ),
+                t.assignmentExpression(
+                    '=',
+                    t.memberExpression(
+                        t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                        t.identifier(`_sanitizedHtml$${instance}`)
+                    ),
+                    this.genSanitizeHtmlContent(expr)
+                )
+            );
+        }
+
+        // Example input: <div lwc:inner-html={foo}>
+        // Output: $ctx._rawHtml$0 !== ($ctx._rawHtml$0 = $cmp.foo)
+        //             ? ($ctx._sanitizedHtml$0 = api_sanitize_html_content($cmp.foo))
+        //             : $ctx._sanitizedHtml$0
+        //
+        // Note: In the case of iterations, when the lwc:inner-html bound value depends on the
+        //       iteration item, the generated expression won't be enough, and `sanitizeHtmlContent`
+        //       will be called every time because this expression is based on the specific template
+        //       usage of the lwc:inner-html, and in an iteration, usages are dynamically generated.
+        return t.conditionalExpression(
+            t.binaryExpression(
+                '!==',
+                t.memberExpression(
+                    t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                    t.identifier(`_rawHtml$${instance}`)
+                ),
+                t.assignmentExpression(
+                    '=',
+                    t.memberExpression(
+                        t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                        t.identifier(`_rawHtml$${instance}`)
+                    ),
+                    expr
+                )
+            ),
+            t.assignmentExpression(
+                '=',
+                t.memberExpression(
+                    t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                    t.identifier(`_sanitizedHtml$${instance}`)
+                ),
+                this.genSanitizeHtmlContent(expr)
+            ),
+            t.memberExpression(
+                t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                t.identifier(`_sanitizedHtml$${instance}`)
+            )
+        );
     }
 
     private _genUniqueIdentifier(name: string) {

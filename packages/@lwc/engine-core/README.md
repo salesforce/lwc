@@ -101,9 +101,21 @@ value.
 This experimental API enables the registration of 'services' in LWC by exposing hooks into the
 component life-cycle.
 
+### setHooks()
+
+This experimental API allows setting overridable hooks with an application specific implementation.
+
+List of overridable hooks:
+
+1. `sanitizeHtmlContent`, see [sanitizeHtmlContent](#sanitizeHtmlContent).
+
 ### sanitizeAttribute()
 
-This experimental API enables the sanitization of attribute values by external services.
+This experimental API enables the sanitization of HTML attribute values by external services.
+
+### sanitizeHtmlContent()
+
+This experimental API enables the sanitization of HTML content by external services. The `lwc:inner-html` binding relies on this hook. This hook must be overridden (see [setHooks](#setHooks) ) as the default implementation is to throw an error.
 
 ### unwrap()
 

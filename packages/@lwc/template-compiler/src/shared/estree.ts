@@ -26,6 +26,10 @@ export function identifier(name: string, config?: Partial<t.Identifier>): t.Iden
     };
 }
 
+export function isLiteral(node: t.BaseNode): node is t.Literal {
+    return node.type === 'Literal';
+}
+
 export function memberExpression(
     object: t.MemberExpression['object'],
     property: t.MemberExpression['property'],

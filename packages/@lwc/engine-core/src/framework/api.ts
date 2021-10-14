@@ -69,6 +69,7 @@ import {
 } from './hooks';
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
+import { sanitizeHtmlContentHook } from './api-helpers';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -99,6 +100,7 @@ export interface RenderAPI {
     b(fn: EventListener): EventListener;
     k(compilerKey: number, iteratorValue: any): string | void;
     co(text: string): VComment;
+    shc(content: unknown): string;
 }
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
@@ -736,4 +738,9 @@ export function sc(vnodes: VNodes): VNodes {
     // static dummy algo.
     markAsDynamicChildren(vnodes);
     return vnodes;
+}
+
+// [s]anitize [h]tml [c]ontent
+export function shc(content: unknown): string {
+    return sanitizeHtmlContentHook(content);
 }

@@ -23,6 +23,7 @@ export const EVENT_HANDLER_NAME_RE = /^on[a-z][a-z0-9_]*$/;
 export const LWC_DIRECTIVES = {
     DOM: 'lwc:dom',
     DYNAMIC: 'lwc:dynamic',
+    INNER_HTML: 'lwc:inner-html',
 };
 
 export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(LWC_DIRECTIVES));
