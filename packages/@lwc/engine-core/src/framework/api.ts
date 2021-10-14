@@ -41,14 +41,13 @@ import {
 } from './vm';
 import {
     VNode,
-    VNodeData,
     VNodes,
     VElement,
     VText,
     Hooks,
-    Key,
     VCustomElement,
     VComment,
+    VElementData,
 } from '../3rdparty/snabbdom/types';
 import { LightningElementConstructor } from './base-lightning-element';
 import {
@@ -70,26 +69,13 @@ import {
 import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
 
-export interface ElementCompilerData extends VNodeData {
-    key: Key;
-}
-
-export interface CustomElementCompilerData extends ElementCompilerData {
-    ns: undefined; // for SVGs
-}
-
 export interface RenderAPI {
-    s(
-        slotName: string,
-        data: ElementCompilerData,
-        children: VNodes,
-        slotset: SlotSet
-    ): VNode | VNodes;
-    h(tagName: string, data: ElementCompilerData, children: VNodes): VNode;
+    s(slotName: string, data: VElementData, children: VNodes, slotset: SlotSet): VNode | VNodes;
+    h(tagName: string, data: VElementData, children: VNodes): VNode;
     c(
         tagName: string,
         Ctor: LightningElementConstructor,
-        data: CustomElementCompilerData,
+        data: VElementData,
         children?: VNodes
     ): VNode;
     i(items: any[], factory: () => VNode | VNode): VNodes;
@@ -268,7 +254,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-export function h(sel: string, data: ElementCompilerData, children: VNodes): VElement {
+export function h(sel: string, data: VElementData, children: VNodes): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -347,7 +333,7 @@ export function ti(value: any): number {
 // [s]lot element node
 export function s(
     slotName: string,
-    data: ElementCompilerData,
+    data: VElementData,
     children: VNodes,
     slotset: SlotSet | undefined
 ): VElement | VNodes {
@@ -381,7 +367,7 @@ export function s(
 export function c(
     sel: string,
     Ctor: LightningElementConstructor,
-    data: CustomElementCompilerData,
+    data: VElementData,
     children: VNodes = EmptyArray
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
@@ -684,7 +670,7 @@ let dynamicImportedComponentCounter = 0;
 export function dc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
-    data: CustomElementCompilerData,
+    data: VElementData,
     children?: VNodes
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
