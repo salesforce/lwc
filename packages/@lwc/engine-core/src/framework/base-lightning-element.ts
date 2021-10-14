@@ -557,6 +557,7 @@ for (const queryMethod of queryMethods) {
         },
         configurable: true,
         enumerable: true,
+        writable: true,
     };
 }
 

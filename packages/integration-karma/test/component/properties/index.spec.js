@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import Component from 'x/component';
 
 // This list can grow as we add more properties to the base LightningElement
-const expectedEnumerableProperties = [
+const expectedEnumerableProps = [
     'accessKey',
     'accessKeyLabel',
     'addEventListener',
@@ -105,14 +105,50 @@ const expectedEnumerableProperties = [
     'translate',
 ];
 
+const expectedEnumerableAndWritableProps = [
+    'addEventListener',
+    'dispatchEvent',
+    'getAttribute',
+    'getAttributeNS',
+    'getBoundingClientRect',
+    'getElementsByClassName',
+    'getElementsByTagName',
+    'hasAttribute',
+    'hasAttributeNS',
+    'querySelector',
+    'querySelectorAll',
+    'removeAttribute',
+    'removeAttributeNS',
+    'removeEventListener',
+    'render',
+    'setAttribute',
+    'setAttributeNS',
+    'toString',
+];
+
 describe('properties', () => {
     // IE11 and old Safari are buggy, return 'constructor' along with the other properties
     if (!process.env.COMPAT) {
-        it('has expected enumerable properties', () => {
-            const elm = createElement('x-component', { is: Component });
+        let elm;
+
+        beforeEach(() => {
+            elm = createElement('x-component', { is: Component });
             document.body.appendChild(elm);
+        });
+
+        it('has expected enumerable properties', () => {
             const props = elm.getEnumerableProps();
-            expect(props).toEqual(expectedEnumerableProperties);
+            expect(props).toEqual(expectedEnumerableProps);
+        });
+
+        it('has expected writable properties', () => {
+            const props = elm.getEnumerableAndWritableProps();
+            expect(props).toEqual(expectedEnumerableAndWritableProps);
+        });
+
+        it('has expected configurable properties', () => {
+            const props = elm.getEnumerableAndConfigurableProps();
+            expect(props).toEqual([]);
         });
     }
 });
