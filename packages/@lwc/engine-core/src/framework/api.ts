@@ -732,4 +732,4 @@ const api = ObjectFreeze({
 
 export default api;
 
-export type RenderApi = typeof api;
+export type RenderAPI = typeof api;
