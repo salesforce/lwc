@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isUndefined } from '@lwc/shared';
-import { setSanitizeHtmlContentHook, SanitizeHtmlContentHook } from './api-helpers';
+import { setSanitizeHtmlContentHook, SanitizeHtmlContentHook } from './api';
 
 interface OverridableHooksDef {
     sanitizeHtmlContent: SanitizeHtmlContentHook;
@@ -13,11 +13,13 @@ interface OverridableHooksDef {
 
 let hooksAreSet = false;
 
-function overrideHooks(hooks: Partial<OverridableHooksDef>): Partial<OverridableHooksDef> {
+function overrideHooks({
+    sanitizeHtmlContent,
+}: Partial<OverridableHooksDef>): Partial<OverridableHooksDef> {
     const oldHooks: Partial<OverridableHooksDef> = {};
 
-    if (!isUndefined(hooks.sanitizeHtmlContent)) {
-        oldHooks.sanitizeHtmlContent = setSanitizeHtmlContentHook(hooks.sanitizeHtmlContent);
+    if (!isUndefined(sanitizeHtmlContent)) {
+        oldHooks.sanitizeHtmlContent = setSanitizeHtmlContentHook(sanitizeHtmlContent);
     }
 
     return oldHooks;
@@ -26,9 +28,8 @@ function overrideHooks(hooks: Partial<OverridableHooksDef>): Partial<Overridable
 export function setHooks(hooks: OverridableHooksDef) {
     assert.isFalse(hooksAreSet, 'Hooks are already overridden, only one definition is allowed.');
 
-    overrideHooks(hooks);
-
     hooksAreSet = true;
+    overrideHooks(hooks);
 }
 
 export function setHooksForTest(hooks: Partial<OverridableHooksDef>) {
