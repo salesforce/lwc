@@ -709,7 +709,7 @@ function sc(vnodes: VNodes): VNodes {
 }
 
 // [s]anitize [h]tml [c]ontent
-export function shc(content: unknown): string {
+function shc(content: unknown): string {
     return sanitizeHtmlContentHook(content);
 }
 
@@ -728,6 +728,7 @@ const api = ObjectFreeze({
     ti,
     gid,
     fid,
+    shc,
 });
 
 export default api;
