@@ -30,19 +30,16 @@ export function fauxElementsFromPoint(
 
     const rootNodes = getAllRootNodes(context);
 
-    const findAppropriateHost = (rootNode: Node) => {
-        // Keep searching up the host tree until we find an element that is within the context node's
-        // immediate shadow root and isn't already in the elements or result arrays
+    // Keep searching up the host tree until we find an element that is within the context node's
+    // immediate shadow root
+    const findAncestorHostInImmediateShadowRoot = (rootNode: Node) => {
         let host;
         while (!isUndefined((host = (rootNode as any).host))) {
-            if (
-                rootNodes[0] === host.getRootNode() &&
-                elements.indexOf(host) === -1 &&
-                result.indexOf(host) === -1
-            ) {
+            const thisRootNode = host.getRootNode();
+            if (thisRootNode === rootNodes[0]) {
                 return host;
             }
-            rootNode = host.getRootNode();
+            rootNode = thisRootNode;
         }
     };
 
@@ -69,9 +66,13 @@ export function fauxElementsFromPoint(
             // the child. So we need to detect if this shadow element's host is accessible from
             // the context's shadow root. Note we also need to be careful not to add the host
             // multiple times.
-            const appropriateHost = findAppropriateHost(elementRootNode);
-            if (!isUndefined(appropriateHost)) {
-                result.push(appropriateHost);
+            const ancestorHost = findAncestorHostInImmediateShadowRoot(elementRootNode);
+            if (
+                !isUndefined(ancestorHost) &&
+                elements.indexOf(ancestorHost) === -1 &&
+                result.indexOf(ancestorHost) === -1
+            ) {
+                result.push(ancestorHost);
             }
         }
     }
