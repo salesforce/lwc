@@ -95,53 +95,19 @@ describe('elementsFromPoint', () => {
                 const rootNode = element.getRootNode();
                 const x = left + width / 2;
                 const y = top + height / 2;
-                testElementsFromPoint(rootNode, x, y, expectedElements);
+                testElementsFromPoint(rootNode, x, y, [...expectedElements, elm, body, html]);
             }
 
-            test(elm, [elm, body, html]);
-            test(aboveContainer, [aboveContainer, elm, body, html]);
-            test(inContainer, [slottable, inContainer, elm, body, html]);
-            test(slottable, [slottable, inContainer, elm, body, html]);
-            test(aroundSlotted, [slotted, aroundSlotted, slottable, inContainer, elm, body, html]);
-            test(slotted, [slotted, aroundSlotted, slottable, inContainer, elm, body, html]);
-            test(inSlotted, [
-                inSlotted,
-                slotted,
-                aroundSlotted,
-                slottable,
-                inContainer,
-                elm,
-                body,
-                html,
-            ]);
-            test(slotWrapper, [
-                slotted,
-                aroundSlotted,
-                slotWrapper,
-                slottable,
-                inContainer,
-                elm,
-                body,
-                html,
-            ]);
-            test(inSlottable, [
-                inSlottableInner,
-                inSlottable,
-                slottable,
-                inContainer,
-                elm,
-                body,
-                html,
-            ]);
-            test(inSlottableInner, [
-                inSlottableInner,
-                inSlottable,
-                slottable,
-                inContainer,
-                elm,
-                body,
-                html,
-            ]);
+            test(elm, []);
+            test(aboveContainer, [aboveContainer]);
+            test(inContainer, [slottable, inContainer]);
+            test(slottable, [slottable, inContainer]);
+            test(aroundSlotted, [slotted, aroundSlotted, slottable, inContainer]);
+            test(slotted, [slotted, aroundSlotted, slottable, inContainer]);
+            test(inSlotted, [inSlotted, slotted, aroundSlotted, slottable, inContainer]);
+            test(slotWrapper, [slotted, aroundSlotted, slotWrapper, slottable, inContainer]);
+            test(inSlottable, [inSlottableInner, inSlottable, slottable, inContainer]);
+            test(inSlottableInner, [inSlottableInner, inSlottable, slottable, inContainer]);
         });
 
         it('host elements are not all visible', () => {
