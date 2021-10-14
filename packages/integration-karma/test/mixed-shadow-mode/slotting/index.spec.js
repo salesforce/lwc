@@ -1,7 +1,6 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 
-import NativeParent from 'x/nativeParent';
-import SyntheticParent from 'x/syntheticParent';
+import Parent from 'x/parent';
 
 if (!process.env.COMPAT) {
     describe('slotting in mixed shadow mode', () => {
@@ -14,25 +13,13 @@ if (!process.env.COMPAT) {
         });
 
         it('should keep default slotting content in native shadow mode', () => {
-            const nativeParent = createElement('x-native-parent', { is: NativeParent });
-            document.body.appendChild(nativeParent);
+            const parent = createElement('x-parent', { is: Parent });
+            document.body.appendChild(parent);
 
-            const childElm = nativeParent.shadowRoot.querySelector('x-child');
+            const childElm = parent.shadowRoot.querySelector('x-child');
             expect(childElm.shadowRoot.querySelector('slot').innerHTML).toBe(
                 '<span>default text</span>'
             );
         });
-
-        if (!process.env.NATIVE_SHADOW) {
-            it('should not have default slotting content in synthetic shadow mode', () => {
-                const syntheticParent = createElement('x-synthetic-parent', {
-                    is: SyntheticParent,
-                });
-                document.body.appendChild(syntheticParent);
-
-                const childElm = syntheticParent.shadowRoot.querySelector('x-child');
-                expect(childElm.shadowRoot.querySelector('slot').innerHTML).toBe('');
-            });
-        }
     });
 }
