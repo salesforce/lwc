@@ -146,10 +146,14 @@ describe('elementsFromPoint', () => {
 
         it('host elements are not all visible', () => {
             const grandparent = createElement('x-grandparent', { is: Grandparent });
-            document.body.appendChild(grandparent);
+            const container = document.createElement('div');
+            container.style = 'position: relative; width: 100px; height: 100px;';
+            document.body.appendChild(container);
+            container.appendChild(grandparent);
             const nodes = extractShadowDataIds(grandparent.shadowRoot);
             const { child, childDiv, parent, parentDiv, grandparentDiv } = nodes;
             const html = document.documentElement;
+            const { body } = document;
 
             const resetStyles = () => {
                 [child, childDiv, parent, parentDiv, grandparent, grandparentDiv].forEach((el) => {
@@ -158,56 +162,61 @@ describe('elementsFromPoint', () => {
             };
 
             function test(element, expectedElements) {
-                testElementsFromPoint(element.getRootNode(), 50, 50, expectedElements);
+                testElementsFromPoint(element.getRootNode(), 50, 50, [
+                    ...expectedElements,
+                    container,
+                    body,
+                    html,
+                ]);
             }
 
-            test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, grandparent, html]);
-            test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent, html]);
-            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+            test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
             grandparent.style = 'width: 0px; height: 0px;';
 
-            test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, html]);
-            test(parentDiv, [child, parentDiv, parent, grandparentDiv, html]);
-            test(grandparentDiv, [parent, grandparentDiv, html]);
+            test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv]);
+            test(parentDiv, [child, parentDiv, parent, grandparentDiv]);
+            test(grandparentDiv, [parent, grandparentDiv]);
 
             resetStyles();
             parent.style = 'width: 0px; height: 0px;';
 
-            test(childDiv, [childDiv, child, parentDiv, grandparentDiv, grandparent, html]);
-            test(parentDiv, [child, parentDiv, grandparentDiv, grandparent, html]);
-            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+            test(childDiv, [childDiv, child, parentDiv, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
             resetStyles();
             child.style = 'width: 0px; height: 0px;';
 
-            test(childDiv, [childDiv, parentDiv, parent, grandparentDiv, grandparent, html]);
-            test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent, html]);
-            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+            test(childDiv, [childDiv, parentDiv, parent, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
             resetStyles();
             parent.style = 'width: 0px; height: 0px;';
             parentDiv.style = 'width: 0px; height: 0px;';
 
-            test(childDiv, [childDiv, child, grandparentDiv, grandparent, html]);
-            test(parentDiv, [child, grandparentDiv, grandparent, html]);
-            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+            test(childDiv, [childDiv, child, grandparentDiv, grandparent]);
+            test(parentDiv, [child, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
             resetStyles();
             parent.style = 'width: 0px; height: 0px;';
             parentDiv.style = 'width: 0px; height: 0px;';
             child.style = 'width: 0px; height: 0px;';
 
-            test(childDiv, [childDiv, grandparentDiv, grandparent, html]);
-            test(parentDiv, [child, grandparentDiv, grandparent, html]);
-            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+            test(childDiv, [childDiv, grandparentDiv, grandparent]);
+            test(parentDiv, [child, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
             resetStyles();
             parent.style = 'width: 0px; height: 0px;';
             child.style = 'width: 0px; height: 0px;';
-            test(childDiv, [childDiv, parentDiv, grandparentDiv, grandparent, html]);
-            test(parentDiv, [child, parentDiv, grandparentDiv, grandparent, html]);
-            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+            test(childDiv, [childDiv, parentDiv, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
             resetStyles();
             parent.style = 'width: 0px; height: 0px;';
@@ -215,17 +224,17 @@ describe('elementsFromPoint', () => {
             child.style = 'width: 0px; height: 0px;';
             childDiv.style = 'width: 0px; height: 0px;';
 
-            test(childDiv, [grandparentDiv, grandparent, html]);
-            test(parentDiv, [grandparentDiv, grandparent, html]);
-            test(grandparentDiv, [grandparentDiv, grandparent, html]);
+            test(childDiv, [grandparentDiv, grandparent]);
+            test(parentDiv, [grandparentDiv, grandparent]);
+            test(grandparentDiv, [grandparentDiv, grandparent]);
 
             resetStyles();
             parentDiv.style = 'width: 0px; height: 0px;';
             child.style = 'width: 0px; height: 0px;';
 
-            test(childDiv, [childDiv, parent, grandparentDiv, grandparent, html]);
-            test(parentDiv, [child, parent, grandparentDiv, grandparent, html]);
-            test(grandparentDiv, [parent, grandparentDiv, grandparent, html]);
+            test(childDiv, [childDiv, parent, grandparentDiv, grandparent]);
+            test(parentDiv, [child, parent, grandparentDiv, grandparent]);
+            test(grandparentDiv, [parent, grandparentDiv, grandparent]);
         });
     }
 });
