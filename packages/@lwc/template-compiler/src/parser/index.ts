@@ -770,7 +770,7 @@ function parseSlot(
             .filter(({ name }) => name !== 'name')
             .map(({ name }) => name);
 
-        if (invalidAttrs.length > 0) {
+        if (invalidAttrs.length) {
             // Light DOM slots cannot have events because there's no actual `<slot>` element
             const eventHandler = invalidAttrs.find((name) => name.match(EVENT_HANDLER_NAME_RE));
             if (eventHandler) {
@@ -981,13 +981,14 @@ function validateChildren(ctx: ParserCtx, element?: BaseElement): void {
     const effectiveChildren = ctx.preserveComments
         ? element.children
         : element.children.filter((child) => !ast.isComment(child));
+
     const hasDomDirective = element.directives.find(ast.isDomDirective);
-    if (hasDomDirective && effectiveChildren.length > 0) {
+    if (hasDomDirective && effectiveChildren.length) {
         ctx.throwOnNode(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element);
     }
 
     // prevents lwc:inner-html to be used in an element with content
-    if (element.directives?.find(ast.isInnerHTMLDirective) && effectiveChildren.length) {
+    if (element.directives.find(ast.isInnerHTMLDirective) && effectiveChildren.length) {
         ctx.throwOnNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_CONTENTS, element, [
             `<${element.name}>`,
         ]);

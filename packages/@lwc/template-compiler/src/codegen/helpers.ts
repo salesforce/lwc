@@ -85,7 +85,7 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
 export function hasIdAttribute(node: Node): boolean {
     if (isBaseElement(node)) {
         const hasIdAttr = [...node.attributes, ...node.properties].some(
-            (attr) => attr.name === 'id'
+            ({ name }) => name === 'id'
         );
 
         if (hasIdAttr) {

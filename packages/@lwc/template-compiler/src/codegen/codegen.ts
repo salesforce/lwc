@@ -326,7 +326,7 @@ export default class CodeGen {
         this.scope = this.createScope(this.scope);
     }
 
-    createScope(parent: Scope | null = null): Scope {
+    private createScope(parent: Scope | null = null): Scope {
         return {
             parent,
             declaration: new Set(),

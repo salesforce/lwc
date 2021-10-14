@@ -3,11 +3,11 @@
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
+*/
 import * as astring from 'astring';
 
 import { isBooleanAttribute } from '@lwc/shared';
-import { TemplateErrors, generateCompilerError } from '@lwc/errors';
+import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import { ResolvedConfig } from '../config';
 
@@ -458,10 +458,9 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Properties
         if (properties.length) {
-            const props = Object.fromEntries(properties.map((prop) => [prop.name, prop]));
-            for (const [key, value] of Object.entries(props)) {
+            for (const prop of properties) {
                 propsObj.properties.push(
-                    t.property(t.literal(key), computeAttrValue(value, element))
+                    t.property(t.literal(prop.name), computeAttrValue(prop, element))
                 );
             }
         }
