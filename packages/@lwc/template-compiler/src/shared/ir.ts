@@ -22,7 +22,7 @@ import {
     IRBooleanAttribute,
 } from './types';
 
-export function createElement(original: parse5.Element): IRElement {
+export function createElement(original: parse5.Element, parent?: IRElement): IRElement {
     let location = original.sourceCodeLocation;
 
     // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
@@ -39,7 +39,8 @@ export function createElement(original: parse5.Element): IRElement {
     }
 
     if (!location) {
-        throw new Error('Invalid element AST node. Missing source code location.');
+        // eslint-disable-next-line no-console
+        console.warn('Invalid element AST node. Missing source code location.');
     }
 
     return {
@@ -47,32 +48,44 @@ export function createElement(original: parse5.Element): IRElement {
         tag: original.tagName,
         namespace: original.namespaceURI,
         children: [],
-        location,
+        // Parent's location is used as the fallback in case the current node's location cannot be found.
+        // If parent is not supplied, ie when the current node is the root, use an empty parse5.ElementLocation instead.
+        location: location ?? parent?.location ?? parse5Utils.createEmptyElementLocation(),
         __original: original,
     };
 }
 
-export function createText(original: parse5.TextNode, value: string | TemplateExpression): IRText {
+export function createText(
+    original: parse5.TextNode,
+    value: string | TemplateExpression,
+    parent: IRElement
+): IRText {
     if (!original.sourceCodeLocation) {
-        throw new Error('Invalid text AST node. Missing source code location.');
+        // eslint-disable-next-line no-console
+        console.warn('Invalid text AST node. Missing source code location.');
     }
 
     return {
         type: 'text',
         value,
-        location: original.sourceCodeLocation,
+        location: original.sourceCodeLocation ?? parent.location,
     };
 }
 
-export function createComment(original: parse5.CommentNode, value: string): IRComment {
+export function createComment(
+    original: parse5.CommentNode,
+    value: string,
+    parent: IRElement
+): IRComment {
     if (!original.sourceCodeLocation) {
-        throw new Error('Invalid comment AST node. Missing source code location.');
+        // eslint-disable-next-line no-console
+        console.warn('Invalid comment AST node. Missing source code location.');
     }
 
     return {
         type: 'comment',
         value,
-        location: original.sourceCodeLocation,
+        location: original.sourceCodeLocation ?? parent.location,
     };
 }
 

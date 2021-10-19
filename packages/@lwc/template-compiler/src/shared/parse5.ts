@@ -23,3 +23,20 @@ export function getTemplateContent(
 ): parse5.DocumentFragment | undefined {
     return (templateElement as any).content;
 }
+
+// Creates a parse5.ElementLocation where all values are set to 0.
+export function createEmptyElementLocation(): parse5.ElementLocation {
+    const startTag = createEmptyStartTagLocation();
+    const endTag = createEmptyLocation();
+    const elementLocation = createEmptyStartTagLocation();
+
+    return { ...elementLocation, startTag, endTag };
+}
+
+function createEmptyLocation(): parse5.Location {
+    return { endCol: 0, endOffset: 0, endLine: 0, startCol: 0, startOffset: 0, startLine: 0 };
+}
+
+function createEmptyStartTagLocation(): parse5.StartTagLocation {
+    return { attrs: {}, ...createEmptyLocation() };
+}

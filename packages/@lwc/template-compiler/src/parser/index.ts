@@ -134,8 +134,8 @@ export default function parse(source: string, state: State): TemplateParseResult
     return { root, warnings: ctx.warnings };
 }
 
-function parseElement(ctx: ParserCtx, elementNode: parse5.Element): IRElement {
-    const element = createElement(elementNode);
+function parseElement(ctx: ParserCtx, elementNode: parse5.Element, parent?: IRElement): IRElement {
+    const element = createElement(elementNode, parent);
     const parsedAttr = parseAttributes(ctx, element, elementNode);
 
     applyForEach(ctx, element, parsedAttr);
@@ -151,13 +151,13 @@ function parseElement(ctx: ParserCtx, elementNode: parse5.Element): IRElement {
     validateAttributes(ctx, element, parsedAttr);
     validateProperties(ctx, element);
 
-    parseChildren(ctx, element, elementNode);
+    parseChildren(ctx, elementNode, element);
     validateChildren(ctx, element);
 
     return element;
 }
 
-function parseChildren(ctx: ParserCtx, parent: IRElement, parse5Parent: parse5.Element): void {
+function parseChildren(ctx: ParserCtx, parse5Parent: parse5.Element, parent: IRElement): void {
     const parsedChildren: IRNode[] = [];
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
@@ -166,13 +166,13 @@ function parseChildren(ctx: ParserCtx, parent: IRElement, parse5Parent: parse5.E
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
-                const elmNode = parseElement(ctx, child);
+                const elmNode = parseElement(ctx, child, parent);
                 parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
-                const textNodes = parseText(ctx, child);
+                const textNodes = parseText(ctx, child, parent);
                 parsedChildren.push(...textNodes);
             } else if (parse5Utils.isCommentNode(child)) {
-                const commentNode = parseComment(child);
+                const commentNode = parseComment(child, parent);
                 parsedChildren.push(commentNode);
             }
         });
@@ -183,7 +183,7 @@ function parseChildren(ctx: ParserCtx, parent: IRElement, parse5Parent: parse5.E
     parent.children = parsedChildren;
 }
 
-function parseText(ctx: ParserCtx, node: parse5.TextNode): IRText[] {
+function parseText(ctx: ParserCtx, node: parse5.TextNode, parent: IRElement): IRText[] {
     const parsedTextNodes: IRText[] = [];
 
     // Extract the raw source to avoid HTML entity decoding done by parse5
@@ -210,15 +210,15 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): IRText[] {
             value = decodeTextContent(token);
         }
 
-        parsedTextNodes.push(createText(node, value));
+        parsedTextNodes.push(createText(node, value, parent));
     }
 
     return parsedTextNodes;
 }
 
-function parseComment(node: parse5.CommentNode): IRComment {
+function parseComment(node: parse5.CommentNode, parent: IRElement): IRComment {
     const value = decodeTextContent(node.data);
-    return createComment(node, value);
+    return createComment(node, value, parent);
 }
 
 function getTemplateRoot(
