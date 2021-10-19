@@ -7,10 +7,10 @@
 
 'use strict';
 
-const localConfig = require('./base');
 const {
     COMPAT,
     DISABLE_SYNTHETIC,
+    TEST_HYDRATION,
     TAGS,
     SAUCE_USERNAME,
     SAUCE_ACCESS_KEY,
@@ -22,6 +22,8 @@ const {
     CIRCLE_SHA1,
 } = require('../shared/options');
 
+const localConfig = TEST_HYDRATION ? require('./hydration-base') : require('./base');
+
 const SAUCE_BROWSERS = [
     // Standard browsers
     {
@@ -30,6 +32,7 @@ const SAUCE_BROWSERS = [
         version: 'latest',
         compat: false,
         nativeShadowCompatible: true,
+        test_hydration: true,
     },
     {
         label: 'sl_firefox_latest',
@@ -37,6 +40,7 @@ const SAUCE_BROWSERS = [
         version: 'latest',
         compat: false,
         nativeShadowCompatible: true,
+        test_hydration: true,
     },
     {
         label: 'sl_safari_latest',
@@ -44,6 +48,7 @@ const SAUCE_BROWSERS = [
         version: 'latest',
         compat: false,
         nativeShadowCompatible: true,
+        test_hydration: true,
     },
 
     // Compat browsers
@@ -126,6 +131,7 @@ function getSauceConfig() {
 function getMatchingBrowsers() {
     return SAUCE_BROWSERS.filter((browser) => {
         return (
+            (!TEST_HYDRATION || browser.test_hydration === TEST_HYDRATION) &&
             browser.compat === COMPAT &&
             (!DISABLE_SYNTHETIC || browser.nativeShadowCompatible === DISABLE_SYNTHETIC)
         );
