@@ -119,7 +119,7 @@ defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                     return innerHTMLGetterPatched.call(this);
                 }
 
@@ -141,7 +141,7 @@ defineProperties(Element.prototype, {
     outerHTML: {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
+                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                     return outerHTMLGetterPatched.call(this);
                 }
                 return outerHTMLGetter.call(this);
