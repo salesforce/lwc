@@ -1,6 +1,6 @@
 <x-if-conditional-slot>
   <template shadowroot="open">
-    <div class=" active-if-blocks">
+    <div class="active-if-blocks">
       <x-parent>
         <template shadowroot="open">
           <x-slotted>
@@ -12,14 +12,14 @@
               <slot name="falseslot">
               </slot>
             </template>
-            <x-child slot="trueslot" class=" slotted-child">
+            <x-child slot="trueslot" class="slotted-child">
               <template shadowroot="open">
                 <slot>
                 </slot>
               </template>
               Testing if:true
             </x-child>
-            <x-child slot="falseslot" class=" slotted-child">
+            <x-child slot="falseslot" class="slotted-child">
               <template shadowroot="open">
                 <slot>
                 </slot>
@@ -30,20 +30,20 @@
         </template>
       </x-parent>
     </div>
-    <div class=" inactive-if-blocks">
+    <div class="inactive-if-blocks">
       <x-parent>
         <template shadowroot="open">
           <x-slotted>
             <template shadowroot="open">
             </template>
-            <x-child slot="trueslot" class=" slotted-child">
+            <x-child slot="trueslot" class="slotted-child">
               <template shadowroot="open">
                 <slot>
                 </slot>
               </template>
               Testing if:true
             </x-child>
-            <x-child slot="falseslot" class=" slotted-child">
+            <x-child slot="falseslot" class="slotted-child">
               <template shadowroot="open">
                 <slot>
                 </slot>

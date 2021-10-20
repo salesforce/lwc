@@ -8,7 +8,12 @@
 const CLASSNAMES_SEPARATOR = /\s+/g;
 
 export function classNameToTokenList(value: string): Set<string> {
-    return new Set(value.trim().split(CLASSNAMES_SEPARATOR));
+    return new Set(
+        value
+            .trim()
+            .split(CLASSNAMES_SEPARATOR)
+            .filter((str) => str.length)
+    );
 }
 
 export function tokenListToClassName(values: Set<string>): string {
