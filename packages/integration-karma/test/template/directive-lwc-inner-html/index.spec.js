@@ -5,22 +5,17 @@ import XInnerHtml from 'x/innerHtml';
 
 let originalSanitizeHtmlContent;
 
-function setSanitizeHtmlContentHookForTest(impl) {
-    const { sanitizeHtmlContent } = getHooks();
-
-    setHooks({
-        sanitizeHtmlContent: impl,
-    });
-
-    return sanitizeHtmlContent;
-}
-
 beforeAll(() => {
-    originalSanitizeHtmlContent = setSanitizeHtmlContentHookForTest((content) => content);
+    originalSanitizeHtmlContent = getHooks().sanitizeHtmlContent;
+    setHooks({
+        sanitizeHtmlContent: (content) => content,
+    });
 });
 
 afterAll(() => {
-    setSanitizeHtmlContentHookForTest(originalSanitizeHtmlContent);
+    setHooks({
+        sanitizeHtmlContent: originalSanitizeHtmlContent,
+    });
 });
 
 it('renders the content as HTML', () => {
