@@ -615,35 +615,3 @@ describe('props and attributes', () => {
         });
     });
 });
-
-describe('missing elements sourceCodeLocation', () => {
-    beforeEach(() => {
-        jest.spyOn(console, 'warn').mockImplementation(() => jest.fn());
-    });
-
-    afterEach(() => {
-        jest.restoreAllMocks();
-    });
-
-    it('parser should log a warning indicating sourceCodeLocation is missing.', () => {
-        parseTemplate(`<template><h1>Hello</h1></br></template>`);
-        // eslint-disable-next-line no-console
-        expect(console.warn).toHaveBeenCalledWith(
-            'Invalid element AST node. Missing source code location.'
-        );
-    });
-
-    it('parser is able to recover from missing sourceCodeLocation and produce expected output.', () => {
-        const { root, warnings } = parseTemplate(`<template><h1>Hello</h1></br></template>`);
-
-        expect(root.tag).toBe('template');
-        expect(root.children[0].tag).toBe('h1');
-        expect(root.children[0].children[0].value).toBe('Hello');
-        expect(root.children[1].tag).toBe('br');
-        expect(warnings.length).toBe(0);
-        // eslint-disable-next-line no-console
-        expect(console.warn).toHaveBeenCalledWith(
-            'Invalid element AST node. Missing source code location.'
-        );
-    });
-});

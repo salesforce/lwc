@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1144,
-            "message": "LWC1144: Invalid HTML detected, \"<tbody>\" was automatically inserted within \"<table>\"; the compiled template may not match the template source.",
+            "message": "LWC1144: Invalid HTML detected, \"<br>\" was automatically inserted within \"<template>\"; the compiled template may not match the template source.",
             "level": 2,
             "location": {
                 "line": 0,

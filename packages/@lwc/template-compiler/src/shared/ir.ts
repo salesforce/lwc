@@ -6,8 +6,6 @@
  */
 import * as parse5 from 'parse5';
 
-import * as parse5Utils from './parse5';
-
 import {
     TemplateIdentifier,
     TemplateExpression,
@@ -22,70 +20,33 @@ import {
     IRBooleanAttribute,
 } from './types';
 
-export function createElement(original: parse5.Element, parent?: IRElement): IRElement {
-    let location = original.sourceCodeLocation;
-
-    // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
-    // location information. For example when a <table> element has a <tr> child element, parse5
-    // creates a <tbody> element in the middle without location information. In this case, we
-    // can safely skip the closing tag validation.
-    //
-    // TODO [#248]: Report a warning when location is not available indicating the original HTML
-    // template is not valid.
-    let current = original;
-    while (!location && parse5Utils.isElementNode(original.parentNode)) {
-        current = original.parentNode;
-        location = current.sourceCodeLocation;
-    }
-
-    if (!location) {
-        // eslint-disable-next-line no-console
-        console.warn('Invalid element AST node. Missing source code location.');
-    }
-
+export function createElement(
+    original: parse5.Element,
+    location: parse5.ElementLocation
+): IRElement {
     return {
         type: 'element',
         tag: original.tagName,
         namespace: original.namespaceURI,
         children: [],
-        // Parent's location is used as the fallback in case the current node's location cannot be found.
-        // If parent is not supplied, ie when the current node is the root, use an empty parse5.ElementLocation instead.
-        location: location ?? parent?.location ?? parse5Utils.createEmptyElementLocation(),
+        location,
         __original: original,
     };
 }
 
-export function createText(
-    original: parse5.TextNode,
-    value: string | TemplateExpression,
-    parent: IRElement
-): IRText {
-    if (!original.sourceCodeLocation) {
-        // eslint-disable-next-line no-console
-        console.warn('Invalid text AST node. Missing source code location.');
-    }
-
+export function createText(value: string | TemplateExpression, location: parse5.Location): IRText {
     return {
         type: 'text',
         value,
-        location: original.sourceCodeLocation ?? parent.location,
+        location,
     };
 }
 
-export function createComment(
-    original: parse5.CommentNode,
-    value: string,
-    parent: IRElement
-): IRComment {
-    if (!original.sourceCodeLocation) {
-        // eslint-disable-next-line no-console
-        console.warn('Invalid comment AST node. Missing source code location.');
-    }
-
+export function createComment(value: string, location: parse5.Location): IRComment {
     return {
         type: 'comment',
         value,
-        location: original.sourceCodeLocation ?? parent.location,
+        location,
     };
 }
 
