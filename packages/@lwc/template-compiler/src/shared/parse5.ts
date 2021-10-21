@@ -33,10 +33,10 @@ export function createEmptyElementLocation(): parse5.ElementLocation {
     return { ...elementLocation, startTag, endTag };
 }
 
-function createEmptyLocation(): parse5.Location {
-    return { endCol: 0, endOffset: 0, endLine: 0, startCol: 0, startOffset: 0, startLine: 0 };
-}
-
 function createEmptyStartTagLocation(): parse5.StartTagLocation {
     return { attrs: {}, ...createEmptyLocation() };
+}
+
+function createEmptyLocation(): parse5.Location {
+    return { endCol: 0, endOffset: 0, endLine: 0, startCol: 0, startOffset: 0, startLine: 0 };
 }

@@ -166,8 +166,7 @@ function parseElementLocation(
     let location = parse5Elm.sourceCodeLocation;
 
     if (!location) {
-        // Parse5's tree correction algorithm will recover from invalid HTML.
-        // When this happens the element's sourceCodeLocation will be undefined.
+        // Parse5 will recover from invalid HTML. When this happens the element's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_RECOVERY, [
             parse5Elm.tagName,
@@ -179,13 +178,10 @@ function parseElementLocation(
     // location information. For example when a <table> element has a <tr> child element, parse5
     // creates a <tbody> element in the middle without location information. In this case, we
     // can safely skip the closing tag validation.
-    //
-    // TODO [#248]: Report a warning when location is not available indicating the original HTML
-    // template is not valid.
     let current = parse5Elm;
 
-    while (!location && parse5Utils.isElementNode(parse5Elm.parentNode)) {
-        current = parse5Elm.parentNode;
+    while (!location && parse5Utils.isElementNode(current.parentNode)) {
+        current = current.parentNode;
         location = current.sourceCodeLocation;
     }
 
@@ -206,10 +202,10 @@ function parseChildren(ctx: ParserCtx, parse5Parent: parse5.Element, parent: IRE
                 const elmNode = parseElement(ctx, child, parent);
                 parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
-                const textNodes = parseText(ctx, child, parent);
+                const textNodes = parseText(ctx, child);
                 parsedChildren.push(...textNodes);
             } else if (parse5Utils.isCommentNode(child)) {
-                const commentNode = parseComment(ctx, child, parent);
+                const commentNode = parseComment(ctx, child);
                 parsedChildren.push(commentNode);
             }
         });
@@ -220,24 +216,15 @@ function parseChildren(ctx: ParserCtx, parse5Parent: parse5.Element, parent: IRE
     parent.children = parsedChildren;
 }
 
-function parseText(
-    ctx: ParserCtx,
-    parse5Text: parse5.TextNode,
-    parentIRElement: IRElement
-): IRText[] {
+function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): IRText[] {
     const parsedTextNodes: IRText[] = [];
-
-    let location = parse5Text.sourceCodeLocation;
+    const location = parse5Text.sourceCodeLocation;
 
     if (!location) {
-        // Parse5's tree correction algorithm will recover from invalid HTML.
-        // When this happens the node's sourceCodeLocation will be undefined.
+        // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
-        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_RECOVERY, [
-            parse5Text.nodeName,
-            parse5Text.parentNode.nodeName,
-        ]);
-        location = parentIRElement.location;
+        // This is a defensive check as this should never happen for TextNode.
+        ctx.throw(ParserDiagnostics.MISSING_SOURCE_CODE_LOCATION, [parse5Text.nodeName]);
     }
 
     // Extract the raw source to avoid HTML entity decoding done by parse5
@@ -270,22 +257,14 @@ function parseText(
     return parsedTextNodes;
 }
 
-function parseComment(
-    ctx: ParserCtx,
-    parse5Comment: parse5.CommentNode,
-    parentIRElement: IRElement
-): IRComment {
-    let location = parse5Comment.sourceCodeLocation;
+function parseComment(ctx: ParserCtx, parse5Comment: parse5.CommentNode): IRComment {
+    const location = parse5Comment.sourceCodeLocation;
 
     if (!location) {
-        // Parse5's tree correction algorithm will recover from invalid HTML.
-        // When this happens the node's sourceCodeLocation will be undefined.
+        // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
-        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_RECOVERY, [
-            parse5Comment.nodeName,
-            parse5Comment.parentNode.nodeName,
-        ]);
-        location = parentIRElement.location;
+        // This is a defensive check as this should never happen for CommentNode.
+        ctx.throw(ParserDiagnostics.MISSING_SOURCE_CODE_LOCATION, [parse5Comment.nodeName]);
     }
 
     return createComment(decodeTextContent(parse5Comment.data), location);
@@ -310,7 +289,7 @@ function getTemplateRoot(
     const [root] = validRoots;
 
     if (!root || !parse5Utils.isElementNode(root)) {
-        ctx.throwAtLocation(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
+        ctx.throw(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
     }
 
     return root;
