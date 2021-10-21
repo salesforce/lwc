@@ -24,7 +24,6 @@ export {
     registerDecorators,
     sanitizeAttribute,
     setHooks,
-    setHooksForTest,
     getComponentDef,
     isComponentConstructor,
     swapComponent,

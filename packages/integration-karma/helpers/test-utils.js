@@ -353,6 +353,30 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         return Boolean(sr && /function ShadowRoot/.test(sr.constructor.toString()));
     }
 
+    // Providing overridable hooks for tests
+    var sanitizeHtmlContentHook = function () {
+        throw new Error('sanitizeHtmlContent hook must be implemented.');
+    };
+
+    LWC.setHooks({
+        sanitizeHtmlContent: function (content) {
+            return sanitizeHtmlContentHook(content);
+        },
+    });
+
+    function getHooks() {
+        return {
+            sanitizeHtmlContent: sanitizeHtmlContentHook,
+        };
+    }
+
+    function setHooks(hooks) {
+        if (hooks.sanitizeHtmlContent) {
+            sanitizeHtmlContentHook = hooks.sanitizeHtmlContent;
+        }
+    }
+    // eof: Providing overridable hooks for tests
+
     return {
         clearRegister: clearRegister,
         extractDataIds: extractDataIds,
@@ -362,5 +386,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         isSyntheticShadowRootInstance: isSyntheticShadowRootInstance,
         load: load,
         registerForLoad: registerForLoad,
+        getHooks: getHooks,
+        setHooks: setHooks,
     };
 })(LWC, jasmine, beforeAll);

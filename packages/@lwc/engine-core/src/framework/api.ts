@@ -711,7 +711,7 @@ function sc(vnodes: VNodes): VNodes {
  * EXPERIMENTAL: This function acts like a hook for Lightning Locker Service and other similar
  * libraries to sanitize HTML content. This hook process the content passed via the template to
  * lwc:inner-html directive.
- * It is meant to be overridden with setSanitizeHtmlContentHook
+ * It is meant to be overridden with setSanitizeHtmlContentHook, it throws an error by default.
  */
 let sanitizeHtmlContentHook: SanitizeHtmlContentHook = (): string => {
     // locker-service patches this function during runtime to sanitize HTML content.
@@ -726,14 +726,8 @@ export type SanitizeHtmlContentHook = (content: unknown) => string;
  * @param newHookImpl
  * @returns oldHookImplementation.
  */
-export function setSanitizeHtmlContentHook(
-    newHookImpl: SanitizeHtmlContentHook
-): SanitizeHtmlContentHook {
-    const currentHook = sanitizeHtmlContentHook;
-
+export function setSanitizeHtmlContentHook(newHookImpl: SanitizeHtmlContentHook) {
     sanitizeHtmlContentHook = newHookImpl;
-
-    return currentHook;
 }
 
 // [s]anitize [h]tml [c]ontent

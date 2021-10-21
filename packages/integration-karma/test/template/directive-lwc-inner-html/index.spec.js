@@ -1,15 +1,18 @@
-import { createElement, setHooksForTest } from 'lwc';
+import { createElement } from 'lwc';
+import { getHooks, setHooks } from 'test-utils';
 
 import XInnerHtml from 'x/innerHtml';
 
 let originalSanitizeHtmlContent;
 
 function setSanitizeHtmlContentHookForTest(impl) {
-    const originalHooks = setHooksForTest({
+    const { sanitizeHtmlContent } = getHooks();
+
+    setHooks({
         sanitizeHtmlContent: impl,
     });
 
-    return originalHooks.sanitizeHtmlContent;
+    return sanitizeHtmlContent;
 }
 
 beforeAll(() => {
