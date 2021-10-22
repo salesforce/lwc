@@ -338,7 +338,6 @@ export function installWireAdapters(vm: VM) {
                 wireDef
             );
             const hasDynamicParams = wireDef.dynamic.length > 0;
-
             ArrayPush.call(wiredConnecting, () => {
                 connector.connect();
                 if (!featureFlags.ENABLE_WIRE_SYNC_EMIT) {

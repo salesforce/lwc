@@ -91,7 +91,6 @@ const TextHook: Hooks<VText> = {
     move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
     hydrate: (vNode: VNode, node: Node) => {
-        // @todo tests.
         if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line lwc-internal/no-global-node
             if (node.nodeType !== Node.TEXT_NODE) {
@@ -185,7 +184,6 @@ const ElementHook: Hooks<VElement> = {
 
         hydrateElmHook(vnode);
 
-        // hydrate children hook
         hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vnode.owner);
     },
 };

@@ -205,15 +205,8 @@ export function connectRootElement(elm: any) {
 export function hydrateRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
 
-    // Usually means moving the element from one place to another, which is observable via
-    // life-cycle hooks.
-    if (vm.state === VMState.connected) {
-        disconnectRootElement(elm);
-    }
-
     runConnectedCallback(vm);
     hydrateVM(vm);
-    // should we hydrate the root children? light dom case.
 }
 
 export function disconnectRootElement(elm: any) {
