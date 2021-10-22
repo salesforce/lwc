@@ -722,9 +722,6 @@ export type SanitizeHtmlContentHook = (content: unknown) => string;
 
 /**
  * Sets the sanitizeHtmlContentHook.
- *
- * @param newHookImpl
- * @returns oldHookImplementation.
  */
 export function setSanitizeHtmlContentHook(newHookImpl: SanitizeHtmlContentHook) {
     sanitizeHtmlContentHook = newHookImpl;

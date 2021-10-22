@@ -375,7 +375,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             sanitizeHtmlContentHook = hooks.sanitizeHtmlContent;
         }
     }
-    // eof: Providing overridable hooks for tests
 
     return {
         clearRegister: clearRegister,
