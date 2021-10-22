@@ -184,7 +184,12 @@ const ElementHook: Hooks<VElement> = {
 
         hydrateElmHook(vnode);
 
-        hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vnode.owner);
+        const { context } = vnode.data;
+        const isDomManual = Boolean(context && context.lwc && context.lwc.dom === 'manual');
+
+        if (!isDomManual) {
+            hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vnode.owner);
+        }
     },
 };
 
