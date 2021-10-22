@@ -403,3 +403,23 @@ if (!process.env.NATIVE_SHADOW) {
         });
     });
 }
+
+describe('synthetic shadow for mixed mode', () => {
+    describe('Element.prototype API', () => {
+        it('should preseve assignedSlot behavior', () => {
+            const div = document.createElement('div');
+            document.body.appendChild(div);
+
+            div.attachShadow({ mode: 'open' }).innerHTML = `
+	            <slot></slot>
+            `;
+
+            const slotted = document.createElement('div');
+            slotted.textContent = 'slotted';
+            div.appendChild(slotted);
+
+            const assignedSlot = div.shadowRoot.querySelector('slot');
+            expect(slotted.assignedSlot).toBe(assignedSlot);
+        });
+    });
+});
