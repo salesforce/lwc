@@ -208,6 +208,7 @@ function transform(codeGen: CodeGen): t.Expression {
         } else if (modifier === 'strict-true') {
             leftExpression = t.binaryExpression('===', testExpression, t.literal(true));
         } else {
+            // This is a defensive check, should be taken care of during parsing.
             throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, {
                 messageArgs: [modifier],
             });
@@ -546,23 +547,6 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
             ),
         ]),
     ];
-
-    if (Object.keys(codeGen.usedSlots).length) {
-        body.push(
-            t.variableDeclaration('const', [
-                t.variableDeclarator(
-                    t.objectPattern(
-                        Object.keys(codeGen.usedApis).map((name) =>
-                            t.assignmentProperty(t.literal(name), codeGen.usedSlots[name], {
-                                computed: true,
-                            })
-                        )
-                    ),
-                    t.identifier(TEMPLATE_PARAMS.SLOT_SET)
-                ),
-            ])
-        );
-    }
 
     if (codeGen.memorizedIds.length) {
         body.push(

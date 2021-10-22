@@ -23,11 +23,6 @@ export function parseHTML(ctx: ParserCtx, source: string) {
     });
 }
 
-export function getSource(source: string, location: parse5.Location): string {
-    const { startOffset, endOffset } = location;
-    return source.slice(startOffset, endOffset);
-}
-
 // https://github.com/babel/babel/blob/d33d02359474296402b1577ef53f20d94e9085c4/packages/babel-types/src/react.js#L9-L55
 export function cleanTextNode(value: string): string {
     const lines = value.split(/\r\n|\n|\r/);

@@ -361,9 +361,14 @@ function applyLwcPreserveCommentsDirective(
         return;
     }
 
-    if (ctx.parentStack.length > 0 || !isIRBooleanAttribute(lwcPreserveCommentAttribute)) {
+    if (ctx.parentStack.length) {
         ctx.throwOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
-            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+            ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS,
+            `<${element.tag}>`,
+        ]);
+    } else if (!isIRBooleanAttribute(lwcPreserveCommentAttribute)) {
+        ctx.throwOnIRNode(ParserDiagnostics.PRESERVE_COMMENTS_MUST_BE_BOOLEAN, element, [
+            ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS,
             `<${element.tag}>`,
         ]);
     }
@@ -764,9 +769,15 @@ function validateElement(ctx: ParserCtx, element: IRElement, node: parse5.Elemen
         //      - Unexpected template element
         //
         // Checking if the original HTMLElement has some attributes applied is a good enough for now.
-        const hasAttributes = node.attrs.length !== 0;
-        if (!isRoot && !hasAttributes) {
-            ctx.throwOnIRNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
+        if (!isRoot) {
+            if (!node.attrs.length) {
+                ctx.throwOnIRNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
+            }
+
+            // Non root templates only support for:each, iterator and if directives
+            if (element.on || element.attrs || element.props || element.forKey || element.lwc) {
+                ctx.warnOnIRNode(ParserDiagnostics.UNKNOWN_TEMPLATE_ATTRIBUTE, element);
+            }
         }
     } else {
         const isNotAllowedHtmlTag = DISALLOWED_HTML_TAGS.has(tag);
