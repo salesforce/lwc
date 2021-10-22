@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1129,
+            "message": "LWC1129: Invalid lwc:dynamic usage on element \"<div>\". This directive can only be used in a custom element.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 41
+            }
+        }
+    ]
+}

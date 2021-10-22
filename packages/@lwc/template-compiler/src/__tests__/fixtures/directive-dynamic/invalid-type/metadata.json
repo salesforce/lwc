@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1130,
+            "message": "LWC1130: Invalid lwc:dynamic usage on element \"<x-foo>\". The directive binding must be an expression.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 45
+            }
+        }
+    ]
+}
