@@ -1,7 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
-import DefaultExtendsNative from 'x/defaultExtendsNative';
+import ResetExtendsAny from 'x/resetExtendsAny';
 import LightContainer from 'x/lightContainer';
 import NativeContainer from 'x/nativeContainer';
 
@@ -42,9 +42,9 @@ if (!process.env.NATIVE_SHADOW) {
             assertNativeShadowRootWhenPossible(synthetic);
         });
 
-        it('should attach a native shadow root when possible for child synthetic component with shadowSupportMode="default"', () => {
+        it('should attach a native shadow root when possible for child synthetic component with shadowSupportMode="reset"', () => {
             const light = elm.shadowRoot.querySelector('x-light-container');
-            const synthetic = light.querySelector('x-synthetic-default');
+            const synthetic = light.querySelector('x-synthetic-reset');
             assertNativeShadowRootWhenPossible(synthetic);
         });
 
@@ -88,13 +88,13 @@ if (!process.env.NATIVE_SHADOW) {
         });
     });
 
-    describe('when overriding with shadowSupportMode="default"', () => {
+    describe('when overriding with shadowSupportMode="reset"', () => {
         let elm;
 
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
-            elm = createElement('x-default-extends-native', {
-                is: DefaultExtendsNative,
+            elm = createElement('x-reset-extends-any', {
+                is: ResetExtendsAny,
             });
             document.body.appendChild(elm);
         });
