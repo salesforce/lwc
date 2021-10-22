@@ -134,10 +134,14 @@ export default function parse(source: string, state: State): TemplateParseResult
     return { root, warnings: ctx.warnings };
 }
 
-function parseElement(ctx: ParserCtx, elementNode: parse5.Element, parent?: IRElement): IRElement {
-    const location = parseElementLocation(ctx, elementNode, parent);
-    const element = createElement(elementNode, location);
-    const parsedAttr = parseAttributes(ctx, element, elementNode);
+function parseElement(
+    ctx: ParserCtx,
+    parse5Elm: parse5.Element,
+    parentIRElement?: IRElement
+): IRElement {
+    const location = parseElementLocation(ctx, parse5Elm, parentIRElement);
+    const element = createElement(parse5Elm, location);
+    const parsedAttr = parseAttributes(ctx, element, parse5Elm);
 
     applyForEach(ctx, element, parsedAttr);
     applyIterator(ctx, element, parsedAttr);
@@ -148,11 +152,11 @@ function parseElement(ctx: ParserCtx, elementNode: parse5.Element, parent?: IREl
     applyKey(ctx, element, parsedAttr);
     applyLwcDirectives(ctx, element, parsedAttr);
     applyAttributes(ctx, element, parsedAttr);
-    validateElement(ctx, element, elementNode);
+    validateElement(ctx, element, parse5Elm);
     validateAttributes(ctx, element, parsedAttr);
     validateProperties(ctx, element);
 
-    parseChildren(ctx, elementNode, element);
+    parseChildren(ctx, parse5Elm, element);
     validateChildren(ctx, element);
 
     return element;
@@ -190,16 +194,20 @@ function parseElementLocation(
     return location ?? parentIRElement?.location ?? parse5Utils.createEmptyElementLocation();
 }
 
-function parseChildren(ctx: ParserCtx, parse5Parent: parse5.Element, parent: IRElement): void {
+function parseChildren(
+    ctx: ParserCtx,
+    parse5Parent: parse5.Element,
+    parentIRElement: IRElement
+): void {
     const parsedChildren: IRNode[] = [];
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
-    ctx.parentStack.push(parent);
+    ctx.parentStack.push(parentIRElement);
 
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
-                const elmNode = parseElement(ctx, child, parent);
+                const elmNode = parseElement(ctx, child, parentIRElement);
                 parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
@@ -213,7 +221,7 @@ function parseChildren(ctx: ParserCtx, parse5Parent: parse5.Element, parent: IRE
 
     ctx.parentStack.pop();
 
-    parent.children = parsedChildren;
+    parentIRElement.children = parsedChildren;
 }
 
 function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): IRText[] {

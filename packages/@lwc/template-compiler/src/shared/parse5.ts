@@ -38,5 +38,5 @@ function createEmptyStartTagLocation(): parse5.StartTagLocation {
 }
 
 function createEmptyLocation(): parse5.Location {
-    return { endCol: 0, endOffset: 0, endLine: 0, startCol: 0, startOffset: 0, startLine: 0 };
+    return { startCol: 0, startOffset: 0, startLine: 0, endCol: 0, endOffset: 0, endLine: 0 };
 }
