@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1127,
+            "message": "LWC1127: Invalid directive \"lwc:preserve-comments\" on element <p>.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 33
+            }
+        }
+    ]
+}
