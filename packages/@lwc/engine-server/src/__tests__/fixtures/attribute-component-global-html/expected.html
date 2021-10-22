@@ -1,23 +1,15 @@
 <x-attribute-component-global-html>
   <template shadowroot="open">
-    <x-child
-      data-test="test"
-      accesskey="A"
-      contenteditable="true"
-      draggable="true"
-      hidden
-      id="foo"
-      itemprop="foo"
-      spellcheck="true"
-      tabindex="-1"
-      class="foo bar"
-      style="color: red; background: blue"
-    >
+    <x-child data-test="test" accesskey="A" contenteditable="true" draggable="true" hidden id="foo" itemprop="foo" spellcheck="true" tabindex="-1" class="foo bar" style="color: red; background: blue">
       <template shadowroot="open">
         Passthrough properties:
         <ul>
-          <li>Title: foo</li>
-          <li>Lang: fr</li>
+          <li>
+            Title: foo
+          </li>
+          <li>
+            Lang: fr
+          </li>
         </ul>
       </template>
     </x-child>

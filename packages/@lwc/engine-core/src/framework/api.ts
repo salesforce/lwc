@@ -8,6 +8,7 @@ import {
     ArrayPush,
     assert,
     create as ObjectCreate,
+    freeze as ObjectFreeze,
     forEach,
     isArray,
     isFalse,
@@ -41,14 +42,13 @@ import {
 } from './vm';
 import {
     VNode,
-    VNodeData,
     VNodes,
     VElement,
     VText,
     Hooks,
-    Key,
     VCustomElement,
     VComment,
+    VElementData,
 } from '../3rdparty/snabbdom/types';
 import { LightningElementConstructor } from './base-lightning-element';
 import {
@@ -71,40 +71,8 @@ import { isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
 import { sanitizeHtmlContentHook } from './api-helpers';
 
-export interface ElementCompilerData extends VNodeData {
-    key: Key;
-}
-
-export interface CustomElementCompilerData extends ElementCompilerData {
-    ns: undefined; // for SVGs
-}
-
-export interface RenderAPI {
-    s(
-        slotName: string,
-        data: ElementCompilerData,
-        children: VNodes,
-        slotset: SlotSet
-    ): VNode | VNodes;
-    h(tagName: string, data: ElementCompilerData, children: VNodes): VNode;
-    c(
-        tagName: string,
-        Ctor: LightningElementConstructor,
-        data: CustomElementCompilerData,
-        children?: VNodes
-    ): VNode;
-    i(items: any[], factory: () => VNode | VNode): VNodes;
-    f(items: any[]): any[];
-    t(text: string): VText;
-    d(value: any): VNode | null;
-    b(fn: EventListener): EventListener;
-    k(compilerKey: number, iteratorValue: any): string | void;
-    co(text: string): VComment;
-    shc(content: unknown): string;
-}
-
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
-const SymbolIterator = Symbol.iterator;
+const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
 const TextHook: Hooks<VText> = {
     create: (vnode) => {
@@ -270,7 +238,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-export function h(sel: string, data: ElementCompilerData, children: VNodes): VElement {
+function h(sel: string, data: VElementData, children: VNodes): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -327,7 +295,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
 }
 
 // [t]ab[i]ndex function
-export function ti(value: any): number {
+function ti(value: any): number {
     // if value is greater than 0, we normalize to 0
     // If value is an invalid tabIndex value (null, undefined, string, etc), we let that value pass through
     // If value is less than -1, we don't care
@@ -347,9 +315,9 @@ export function ti(value: any): number {
 }
 
 // [s]lot element node
-export function s(
+function s(
     slotName: string,
-    data: ElementCompilerData,
+    data: VElementData,
     children: VNodes,
     slotset: SlotSet | undefined
 ): VElement | VNodes {
@@ -380,10 +348,10 @@ export function s(
 }
 
 // [c]ustom element node
-export function c(
+function c(
     sel: string,
     Ctor: LightningElementConstructor,
-    data: CustomElementCompilerData,
+    data: VElementData,
     children: VNodes = EmptyArray
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
@@ -447,7 +415,7 @@ export function c(
 }
 
 // [i]terable node
-export function i(
+function i(
     iterable: Iterable<any>,
     factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
 ): VNodes {
@@ -469,13 +437,13 @@ export function i(
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(
-            isUndefined((iterable as any)[SymbolIterator]),
+            isUndefined(iterable[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
                 iterable
             )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`
         );
     }
-    const iterator = (iterable as any)[SymbolIterator]();
+    const iterator = iterable[SymbolIterator]();
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
@@ -499,7 +467,7 @@ export function i(
         last = next.done;
 
         // template factory logic based on the previous collected value
-        const vnode = factory(value, j, j === 0, last);
+        const vnode = factory(value, j, j === 0, last === true);
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {
@@ -538,7 +506,7 @@ export function i(
 /**
  * [f]lattening
  */
-export function f(items: any[]): any[] {
+function f(items: any[]): any[] {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     }
@@ -558,7 +526,7 @@ export function f(items: any[]): any[] {
 }
 
 // [t]ext node
-export function t(text: string): VText {
+function t(text: string): VText {
     const data = EmptyObject;
     let sel, children, key, elm;
     return {
@@ -575,7 +543,7 @@ export function t(text: string): VText {
 }
 
 // [co]mment node
-export function co(text: string): VComment {
+function co(text: string): VComment {
     const data = EmptyObject;
     let sel, children, key, elm;
     return {
@@ -592,12 +560,12 @@ export function co(text: string): VComment {
 }
 
 // [d]ynamic text
-export function d(value: any): string | any {
+function d(value: any): string | any {
     return value == null ? '' : value;
 }
 
 // [b]ind function
-export function b(fn: EventListener): EventListener {
+function b(fn: EventListener): EventListener {
     const vmBeingRendered = getVMBeingRendered();
     if (isNull(vmBeingRendered)) {
         throw new Error();
@@ -609,7 +577,7 @@ export function b(fn: EventListener): EventListener {
 }
 
 // [k]ey function
-export function k(compilerKey: number, obj: any): string | void {
+function k(compilerKey: number, obj: any): string | void {
     switch (typeof obj) {
         case 'number':
         case 'string':
@@ -624,7 +592,7 @@ export function k(compilerKey: number, obj: any): string | void {
 }
 
 // [g]lobal [id] function
-export function gid(id: string | undefined | null): string | null | undefined {
+function gid(id: string | undefined | null): string | null | undefined {
     const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(id) || id === '') {
         if (process.env.NODE_ENV !== 'production') {
@@ -647,7 +615,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
 }
 
 // [f]ragment [id] function
-export function fid(url: string | undefined | null): string | null | undefined {
+function fid(url: string | undefined | null): string | null | undefined {
     const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
@@ -683,10 +651,10 @@ let dynamicImportedComponentCounter = 0;
 /**
  * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
  */
-export function dc(
+function dc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
-    data: CustomElementCompilerData,
+    data: VElementData,
     children?: VNodes
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
@@ -729,7 +697,7 @@ export function dc(
  *   - children that are produced by iteration
  *
  */
-export function sc(vnodes: VNodes): VNodes {
+function sc(vnodes: VNodes): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(vnodes), 'sc() api can only work with arrays.');
     }
@@ -741,6 +709,28 @@ export function sc(vnodes: VNodes): VNodes {
 }
 
 // [s]anitize [h]tml [c]ontent
-export function shc(content: unknown): string {
+function shc(content: unknown): string {
     return sanitizeHtmlContentHook(content);
 }
+
+const api = ObjectFreeze({
+    s,
+    h,
+    c,
+    i,
+    f,
+    t,
+    d,
+    b,
+    k,
+    co,
+    dc,
+    ti,
+    gid,
+    fid,
+    shc,
+});
+
+export default api;
+
+export type RenderAPI = typeof api;

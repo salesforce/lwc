@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperty, isNull, isUndefined } from '@lwc/shared';
-import { parentNodeGetter } from '../env/node';
-import { containsHost, isSyntheticShadowHost } from '../faux-shadow/shadow-root';
+import { Node, parentNodeGetter } from '../env/node';
 
 // Used as a back reference to identify the host element
 const HostElementKey = '$$HostElementKey$$';
@@ -77,12 +76,4 @@ export function isNodeShadowed(node: Node): boolean {
  */
 export function isNodeDeepShadowed(node: Node): boolean {
     return !isUndefined(getNodeNearestOwnerKey(node));
-}
-
-/**
- * Returns true if this node is a shadow host, is in a shadow host, or contains a shadow host
- * anywhere in its tree.
- */
-export function isNodeOrDescendantsShadowed(node: Node): boolean {
-    return isNodeShadowed(node) || isSyntheticShadowHost(node) || containsHost(node);
 }

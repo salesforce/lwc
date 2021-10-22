@@ -133,20 +133,6 @@ export function isSyntheticShadowRoot(node: unknown): node is ShadowRoot {
     return !isUndefined(shadowRootRecord) && node === shadowRootRecord.shadowRoot;
 }
 
-// Return true if any descendant is a host element
-export function containsHost(node: Node) {
-    // IE requires all arguments
-    // https://developer.mozilla.org/en-US/docs/Web/API/Document/createTreeWalker#browser_compatibility
-    const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false);
-    let descendant;
-    while (!isNull((descendant = walker.nextNode()))) {
-        if (isSyntheticShadowHost(descendant)) {
-            return true;
-        }
-    }
-    return false;
-}
-
 let uid = 0;
 
 export function attachShadow(elm: Element, options: ShadowRootInit): ShadowRoot {
