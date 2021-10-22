@@ -4,18 +4,30 @@
       <x-conditional-slot-content>
         <template shadowroot="open">
           <x-slotted>
-            <template shadowroot="open"><slot></slot></template>
+            <template shadowroot="open">
+              <slot>
+              </slot>
+            </template>
             Testing if:true
             <x-child>
-              <template shadowroot="open"><slot></slot></template>
+              <template shadowroot="open">
+                <slot>
+                </slot>
+              </template>
               Should be slotted when true === true
             </x-child>
           </x-slotted>
           <x-slotted>
-            <template shadowroot="open"><slot></slot></template>
+            <template shadowroot="open">
+              <slot>
+              </slot>
+            </template>
             Testing if:false
             <x-child>
-              <template shadowroot="open"><slot></slot></template>
+              <template shadowroot="open">
+                <slot>
+                </slot>
+              </template>
               Should be slotted when false === false
             </x-child>
           </x-slotted>
@@ -26,10 +38,16 @@
       <x-conditional-slot-content>
         <template shadowroot="open">
           <x-slotted>
-            <template shadowroot="open"><slot></slot></template>
+            <template shadowroot="open">
+              <slot>
+              </slot>
+            </template>
           </x-slotted>
           <x-slotted>
-            <template shadowroot="open"><slot></slot></template>
+            <template shadowroot="open">
+              <slot>
+              </slot>
+            </template>
           </x-slotted>
         </template>
       </x-conditional-slot-content>

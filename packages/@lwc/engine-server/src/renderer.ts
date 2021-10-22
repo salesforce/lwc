@@ -271,21 +271,21 @@ export const renderer: Renderer<HostNode, HostElement> = {
     },
 
     setCSSStyleProperty(element, name, value) {
-        let styleAttribute = element.attributes.find(
+        const styleAttribute = element.attributes.find(
             (attr) => attr.name === 'style' && isNull(attr.namespace)
         );
 
+        const serializedProperty = `${name}: ${value}`;
+
         if (isUndefined(styleAttribute)) {
-            styleAttribute = {
+            element.attributes.push({
                 name: 'style',
                 namespace: null,
-                value: '',
-            };
-
-            element.attributes.push(styleAttribute);
+                value: serializedProperty,
+            });
+        } else {
+            styleAttribute.value += `; ${serializedProperty}`;
         }
-
-        styleAttribute.value = `${styleAttribute.value}; ${name}: ${value}`;
     },
 
     isConnected(node: HostNode) {
