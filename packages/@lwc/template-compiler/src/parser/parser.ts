@@ -123,13 +123,9 @@ export default class ParserCtx {
 
     throwAtLocation(
         errorInfo: LWCErrorInfo,
-        location: parse5.Location,
+        location?: parse5.Location,
         messageArgs?: any[]
     ): never {
-        this.throw(errorInfo, messageArgs, location);
-    }
-
-    throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): never {
         throw generateCompilerError(errorInfo, {
             messageArgs,
             origin: {

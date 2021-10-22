@@ -205,7 +205,7 @@ function parseChildren(ctx: ParserCtx, parse5Parent: parse5.Element, parent: IRE
                 const textNodes = parseText(ctx, child);
                 parsedChildren.push(...textNodes);
             } else if (parse5Utils.isCommentNode(child)) {
-                const commentNode = parseComment(ctx, child);
+                const commentNode = parseComment(child);
                 parsedChildren.push(commentNode);
             }
         });
@@ -224,7 +224,9 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): IRText[] {
         // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         // This is a defensive check as this should never happen for TextNode.
-        ctx.throw(ParserDiagnostics.MISSING_SOURCE_CODE_LOCATION, [parse5Text.nodeName]);
+        throw new Error(
+            `An internal parsing error occurred during node creation; a "<${parse5Text.nodeName}>" node was found without a sourceCodeLocation.`
+        );
     }
 
     // Extract the raw source to avoid HTML entity decoding done by parse5
@@ -257,14 +259,16 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): IRText[] {
     return parsedTextNodes;
 }
 
-function parseComment(ctx: ParserCtx, parse5Comment: parse5.CommentNode): IRComment {
+function parseComment(parse5Comment: parse5.CommentNode): IRComment {
     const location = parse5Comment.sourceCodeLocation;
 
     if (!location) {
         // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         // This is a defensive check as this should never happen for CommentNode.
-        ctx.throw(ParserDiagnostics.MISSING_SOURCE_CODE_LOCATION, [parse5Comment.nodeName]);
+        throw new Error(
+            `An internal parsing error occurred during node creation; a "<${parse5Comment.nodeName}>" node was found without a sourceCodeLocation.`
+        );
     }
 
     return createComment(decodeTextContent(parse5Comment.data), location);
@@ -289,7 +293,7 @@ function getTemplateRoot(
     const [root] = validRoots;
 
     if (!root || !parse5Utils.isElementNode(root)) {
-        ctx.throw(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
+        ctx.throwAtLocation(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
     }
 
     return root;

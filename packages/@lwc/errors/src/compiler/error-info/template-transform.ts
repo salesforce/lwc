@@ -567,12 +567,4 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
-    MISSING_SOURCE_CODE_LOCATION: {
-        code: 1145,
-        message:
-            'An internal parsing error occurred during node creation; a "<{0}>" node was found without a sourceCodeLocation. ' +
-            'Please contact Salesforce support if you run into this issue.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
 };
