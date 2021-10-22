@@ -35,7 +35,8 @@ export function hydrateComponent(
     const def = getComponentInternalDef(Ctor);
 
     try {
-        // For now, an honest hack so it does not replace the existing shadowRoot in renderer.attachShadow
+        // Let the renderer know we are hydrating, so it does not replace the existing shadowRoot
+        // and uses the same algo to create the stylesheets as in SSR.
         setIsHydrating(true);
 
         createVM(element, def, {
