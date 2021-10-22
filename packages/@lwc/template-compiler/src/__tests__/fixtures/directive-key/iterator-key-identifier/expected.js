@@ -1,0 +1,35 @@
+import { registerTemplate } from "lwc";
+function tmpl($api, $cmp, $slotset, $ctx) {
+  const {
+    k: api_key,
+    d: api_dynamic_text,
+    t: api_text,
+    h: api_element,
+    i: api_iterator,
+  } = $api;
+  return [
+    api_element(
+      "section",
+      {
+        key: 0,
+      },
+      api_iterator($cmp.items, function (xValue, xIndex, xFirst, xLast) {
+        const x = {
+          value: xValue,
+          index: xIndex,
+          first: xFirst,
+          last: xLast,
+        };
+        return api_element(
+          "p",
+          {
+            key: api_key(1, $cmp.foo),
+          },
+          [api_text(api_dynamic_text(x.value))]
+        );
+      })
+    ),
+  ];
+}
+export default registerTemplate(tmpl);
+tmpl.stylesheets = [];
