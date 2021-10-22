@@ -1,23 +1,21 @@
-import { createElement, setHooksForTest } from 'lwc';
+import { createElement } from 'lwc';
+import { getHooks, setHooks } from 'test-utils';
 
 import XInnerHtml from 'x/innerHtml';
 
 let originalSanitizeHtmlContent;
 
-function setSanitizeHtmlContentHookForTest(impl) {
-    const originalHooks = setHooksForTest({
-        sanitizeHtmlContent: impl,
-    });
-
-    return originalHooks.sanitizeHtmlContent;
-}
-
 beforeAll(() => {
-    originalSanitizeHtmlContent = setSanitizeHtmlContentHookForTest((content) => content);
+    originalSanitizeHtmlContent = getHooks().sanitizeHtmlContent;
+    setHooks({
+        sanitizeHtmlContent: (content) => content,
+    });
 });
 
 afterAll(() => {
-    setSanitizeHtmlContentHookForTest(originalSanitizeHtmlContent);
+    setHooks({
+        sanitizeHtmlContent: originalSanitizeHtmlContent,
+    });
 });
 
 it('renders the content as HTML', () => {
