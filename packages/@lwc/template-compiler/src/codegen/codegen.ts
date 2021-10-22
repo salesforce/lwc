@@ -202,10 +202,12 @@ export default class CodeGen {
     }
 
     getMemorizationId() {
-        const id = this._genUniqueIdentifier('_m');
-        this.memorizedIds.push(id);
+        const currentId = this.currentId++;
+        const memorizationId = t.identifier(`_m${currentId}`);
 
-        return id;
+        this.memorizedIds.push(memorizationId);
+
+        return memorizationId;
     }
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
@@ -282,12 +284,6 @@ export default class CodeGen {
                 t.identifier(`_sanitizedHtml$${instance}`)
             )
         );
-    }
-
-    private _genUniqueIdentifier(name: string) {
-        const id = this.currentId++;
-
-        return t.identifier(name + id);
     }
 
     private _renderApiCall(
