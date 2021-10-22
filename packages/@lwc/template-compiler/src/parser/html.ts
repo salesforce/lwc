@@ -14,7 +14,7 @@ import ParserCtx from './parser';
 export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {
         const { code, ...location } = err;
-        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_SYNTAX, [code], location);
+        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_SYNTAX, location, [code]);
     };
 
     return parse5.parseFragment(source, {

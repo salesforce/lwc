@@ -240,7 +240,7 @@ function getTemplateRoot(
     const [root] = validRoots;
 
     if (!root || !parse5Utils.isElementNode(root)) {
-        ctx.throwAtLocation(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
+        ctx.throw(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
     }
 
     return root;

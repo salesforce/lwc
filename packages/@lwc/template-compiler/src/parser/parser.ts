@@ -118,14 +118,18 @@ export default class ParserCtx {
         irNode: IRNode | IRBaseAttribute,
         messageArgs?: any[]
     ): never {
-        this.throwAtLocation(errorInfo, irNode.location, messageArgs);
+        this.throw(errorInfo, messageArgs, irNode.location);
     }
 
     throwAtLocation(
         errorInfo: LWCErrorInfo,
-        location?: parse5.Location,
+        location: parse5.Location,
         messageArgs?: any[]
     ): never {
+        this.throw(errorInfo, messageArgs, location);
+    }
+
+    throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): never {
         throw generateCompilerError(errorInfo, {
             messageArgs,
             origin: {
@@ -139,10 +143,14 @@ export default class ParserCtx {
         irNode: IRNode | IRBaseAttribute,
         messageArgs?: any[]
     ): void {
-        this.warnAtLocation(errorInfo, messageArgs, irNode.location);
+        this.warn(errorInfo, messageArgs, irNode.location);
     }
 
-    warnAtLocation(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): void {
+    warnAtLocation(errorInfo: LWCErrorInfo, location: parse5.Location, messageArgs?: any[]): void {
+        this.warn(errorInfo, messageArgs, location);
+    }
+
+    warn(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.Location): void {
         this.addDiagnostic(
             generateCompilerDiagnostic(errorInfo, {
                 messageArgs,
