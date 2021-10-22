@@ -34,8 +34,8 @@ function getFiles() {
     return [
         createPattern(LWC_ENGINE),
         createPattern(TEST_SETUP),
-        createPattern(TEST_HYDRATE),
         createPattern(TEST_UTILS),
+        createPattern(TEST_HYDRATE),
         createPattern('**/*.spec.js', { watched: false }),
     ];
 }

@@ -17,6 +17,12 @@ const context = {
     moduleOutput: null,
 };
 
+ssr.setHooks({
+    sanitizeHtmlContent(content) {
+        return content;
+    },
+});
+
 const COMPONENT_UNDER_TEST = 'main';
 
 const TEMPLATE = `

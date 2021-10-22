@@ -5,7 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-window.HydrateTest = (function (lwc) {
+window.HydrateTest = (function (lwc, testUtils) {
+    testUtils.setHooks({
+        sanitizeHtmlContent: (content) => content,
+    });
+
     const browserSupportsDeclarativeShadowDOM = Object.prototype.hasOwnProperty.call(
         HTMLTemplateElement.prototype,
         'shadowRoot'
@@ -57,4 +61,4 @@ window.HydrateTest = (function (lwc) {
     return {
         runTest,
     };
-})(LWC);
+})(window.LWC, window.TestUtils);
