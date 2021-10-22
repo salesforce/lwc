@@ -17,7 +17,12 @@ import {
     isTrue,
     isUndefined,
 } from '@lwc/shared';
-import { getAttribute, setAttribute } from '../env/element';
+import {
+    getAttribute,
+    setAttribute,
+    assignedSlotGetter as originalElementAssignedSlotGetter,
+} from '../env/element';
+import { assignedSlotGetter as originalTextAssignedSlotGetter } from '../env/text';
 import { dispatchEvent } from '../env/event-target';
 import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import { childNodesGetter, parentNodeGetter } from '../env/node';
@@ -83,8 +88,19 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     );
 }
 
-export function assignedSlotGetterPatched(this: Element): HTMLSlotElement | null {
+export function assignedSlotGetterPatched(this: Element | Text): HTMLSlotElement | null {
     const parentNode = parentNodeGetter.call(this);
+
+    // use original assignedSlot if parent has a native shdow root
+    if (parentNode instanceof Element) {
+        const sr = parentNode.shadowRoot;
+        if (sr && /function ShadowRoot/.test(sr.constructor.toString())) {
+            if (this instanceof Text) {
+                return originalTextAssignedSlotGetter.call(this);
+            }
+            return originalElementAssignedSlotGetter.call(this);
+        }
+    }
 
     /**
      * The node is assigned to a slot if:
