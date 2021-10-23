@@ -367,10 +367,7 @@ function applyLwcPreserveCommentsDirective(
             `<${element.tag}>`,
         ]);
     } else if (!isIRBooleanAttribute(lwcPreserveCommentAttribute)) {
-        ctx.throwOnIRNode(ParserDiagnostics.PRESERVE_COMMENTS_MUST_BE_BOOLEAN, element, [
-            ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS,
-            `<${element.tag}>`,
-        ]);
+        ctx.throwOnIRNode(ParserDiagnostics.PRESERVE_COMMENTS_MUST_BE_BOOLEAN, element);
     }
 
     lwcOpts.preserveComments = lwcPreserveCommentAttribute;
@@ -423,7 +420,7 @@ function applyLwcDynamicDirective(
     }
 
     if (!ctx.config.experimentalDynamicDirective) {
-        ctx.throwOnIRNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element, [`<${tag}>`]);
+        ctx.throwOnIRNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element);
     }
 
     if (!isCustomElement(element)) {
@@ -699,9 +696,7 @@ function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedA
                 }
 
                 if (isInIteration(ctx, element)) {
-                    ctx.throwOnIRNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr, [
-                        value,
-                    ]);
+                    ctx.throwOnIRNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr);
                 }
 
                 if (ctx.seenIds.has(value)) {
@@ -835,10 +830,7 @@ function validateAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: Pars
         const { name: attrName } = attr;
 
         if (isProhibitedIsAttribute(attrName)) {
-            ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [
-                attrName,
-                tag,
-            ]);
+            ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element);
         }
 
         if (isTabIndexAttribute(attrName)) {
@@ -857,7 +849,7 @@ function validateAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: Pars
 }
 
 function validateProperties(ctx: ParserCtx, element: IRElement) {
-    const { tag, props } = element;
+    const { props } = element;
 
     if (props !== undefined) {
         for (const propName in props) {
@@ -865,10 +857,7 @@ function validateProperties(ctx: ParserCtx, element: IRElement) {
             const { name: attrName, value } = propAttr;
 
             if (isProhibitedIsAttribute(attrName)) {
-                ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [
-                    attrName,
-                    tag,
-                ]);
+                ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element);
             }
 
             if (
