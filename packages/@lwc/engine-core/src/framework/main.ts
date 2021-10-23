@@ -38,7 +38,7 @@ export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
 export { getUpgradableConstructor } from './upgradable-element';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
-export { setHooks, setHooksForTest } from './overridable-hooks';
+export { setHooks } from './overridable-hooks';
 
 // Types -------------------------------------------------------------------------------------------
 export type { Renderer } from './renderer';

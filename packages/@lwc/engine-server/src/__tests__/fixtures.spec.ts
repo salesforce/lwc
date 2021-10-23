@@ -151,7 +151,7 @@ describe('fixtures', () => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, true);
             });
 
-            lwcEngineServer!.setHooksForTest({
+            lwcEngineServer!.setHooks({
                 sanitizeHtmlContent(content: unknown) {
                     return content as string;
                 },

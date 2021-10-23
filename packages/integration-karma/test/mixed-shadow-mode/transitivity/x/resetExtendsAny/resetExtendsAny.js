@@ -1,5 +1,5 @@
 import NativeContainer from 'x/nativeContainer';
 
 export default class extends NativeContainer {
-    static shadowSupportMode = 'default';
+    static shadowSupportMode = 'reset';
 }

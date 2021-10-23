@@ -73,7 +73,7 @@ export const enum ShadowMode {
 
 export const enum ShadowSupportMode {
     Any = 'any',
-    Default = 'default',
+    Default = 'reset',
 }
 
 export interface Context {
