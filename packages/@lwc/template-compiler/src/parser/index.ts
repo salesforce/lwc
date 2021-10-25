@@ -172,7 +172,7 @@ function parseElementLocation(
     if (!location) {
         // Parse5 will recover from invalid HTML. When this happens the element's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
-        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_RECOVERY, [
+        ctx.warn(ParserDiagnostics.INVALID_HTML_RECOVERY, [
             parse5Elm.tagName,
             parentIRElement?.tag,
         ]);
@@ -301,7 +301,7 @@ function getTemplateRoot(
     const [root] = validRoots;
 
     if (!root || !parse5Utils.isElementNode(root)) {
-        ctx.throwAtLocation(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
+        ctx.throw(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
     }
 
     return root;
@@ -422,11 +422,13 @@ function applyLwcPreserveCommentsDirective(
         return;
     }
 
-    if (ctx.parentStack.length > 0 || !isIRBooleanAttribute(lwcPreserveCommentAttribute)) {
+    if (ctx.parentStack.length) {
         ctx.throwOnIRNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element, [
-            ROOT_TEMPLATE_DIRECTIVES.RENDER_MODE,
+            ROOT_TEMPLATE_DIRECTIVES.PRESERVE_COMMENTS,
             `<${element.tag}>`,
         ]);
+    } else if (!isIRBooleanAttribute(lwcPreserveCommentAttribute)) {
+        ctx.throwOnIRNode(ParserDiagnostics.PRESERVE_COMMENTS_MUST_BE_BOOLEAN, element);
     }
 
     lwcOpts.preserveComments = lwcPreserveCommentAttribute;
@@ -479,7 +481,7 @@ function applyLwcDynamicDirective(
     }
 
     if (!ctx.config.experimentalDynamicDirective) {
-        ctx.throwOnIRNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element, [`<${tag}>`]);
+        ctx.throwOnIRNode(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element);
     }
 
     if (!isCustomElement(element)) {
@@ -755,9 +757,7 @@ function applyAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: ParsedA
                 }
 
                 if (isInIteration(ctx, element)) {
-                    ctx.throwOnIRNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr, [
-                        value,
-                    ]);
+                    ctx.throwOnIRNode(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, attr);
                 }
 
                 if (ctx.seenIds.has(value)) {
@@ -825,9 +825,15 @@ function validateElement(ctx: ParserCtx, element: IRElement, node: parse5.Elemen
         //      - Unexpected template element
         //
         // Checking if the original HTMLElement has some attributes applied is a good enough for now.
-        const hasAttributes = node.attrs.length !== 0;
-        if (!isRoot && !hasAttributes) {
-            ctx.throwOnIRNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
+        if (!isRoot) {
+            if (!node.attrs.length) {
+                ctx.throwOnIRNode(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, element);
+            }
+
+            // Non root templates only support for:each, iterator and if directives
+            if (element.on || element.attrs || element.props || element.forKey || element.lwc) {
+                ctx.warnOnIRNode(ParserDiagnostics.UNKNOWN_TEMPLATE_ATTRIBUTE, element);
+            }
         }
     } else {
         const isNotAllowedHtmlTag = DISALLOWED_HTML_TAGS.has(tag);
@@ -885,10 +891,7 @@ function validateAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: Pars
         const { name: attrName } = attr;
 
         if (isProhibitedIsAttribute(attrName)) {
-            ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [
-                attrName,
-                tag,
-            ]);
+            ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element);
         }
 
         if (isTabIndexAttribute(attrName)) {
@@ -907,7 +910,7 @@ function validateAttributes(ctx: ParserCtx, element: IRElement, parsedAttr: Pars
 }
 
 function validateProperties(ctx: ParserCtx, element: IRElement) {
-    const { tag, props } = element;
+    const { props } = element;
 
     if (props !== undefined) {
         for (const propName in props) {
@@ -915,10 +918,7 @@ function validateProperties(ctx: ParserCtx, element: IRElement) {
             const { name: attrName, value } = propAttr;
 
             if (isProhibitedIsAttribute(attrName)) {
-                ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element, [
-                    attrName,
-                    tag,
-                ]);
+                ctx.throwOnIRNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element);
             }
 
             if (

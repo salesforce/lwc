@@ -14,18 +14,13 @@ import ParserCtx from './parser';
 export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {
         const { code, ...location } = err;
-        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_SYNTAX, [code], location);
+        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_SYNTAX, location, [code]);
     };
 
     return parse5.parseFragment(source, {
         sourceCodeLocationInfo: true,
         onParseError,
     });
-}
-
-export function getSource(source: string, location: parse5.Location): string {
-    const { startOffset, endOffset } = location;
-    return source.slice(startOffset, endOffset);
 }
 
 // https://github.com/babel/babel/blob/d33d02359474296402b1577ef53f20d94e9085c4/packages/babel-types/src/react.js#L9-L55

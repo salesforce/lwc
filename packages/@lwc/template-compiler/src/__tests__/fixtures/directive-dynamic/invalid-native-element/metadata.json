@@ -1,14 +1,14 @@
 {
     "warnings": [
         {
-            "code": 1127,
-            "message": "LWC1127: Invalid directive \"lwc:render-mode\" on element <p>.",
+            "code": 1129,
+            "message": "LWC1129: Invalid lwc:dynamic usage on element \"<div>\". This directive can only be used in a custom element.",
             "level": 1,
             "location": {
                 "line": 2,
                 "column": 5,
                 "start": 15,
-                "length": 35
+                "length": 41
             }
         }
     ]

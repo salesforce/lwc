@@ -300,32 +300,6 @@ export function variableDeclaration(
     };
 }
 
-export function templateLiteral(
-    quasis: t.TemplateLiteral['quasis'],
-    expressions: t.TemplateLiteral['expressions'],
-    config?: Partial<t.TemplateLiteral>
-): t.TemplateLiteral {
-    return {
-        type: 'TemplateLiteral',
-        quasis,
-        expressions,
-        ...config,
-    };
-}
-
-export function templateElement(
-    tail: t.TemplateElement['tail'],
-    value: t.TemplateElement['value'],
-    config?: Partial<t.TemplateElement>
-): t.TemplateElement {
-    return {
-        type: 'TemplateElement',
-        tail,
-        value,
-        ...config,
-    };
-}
-
 export function importDeclaration(
     specifiers: t.ImportDeclaration['specifiers'],
     source: t.ImportDeclaration['source'],

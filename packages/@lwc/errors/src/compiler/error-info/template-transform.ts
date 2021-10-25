@@ -460,7 +460,7 @@ export const ParserDiagnostics = {
     },
     UNKNOWN_LWC_DIRECTIVE: {
         code: 1127,
-        message: 'Invalid directive "${0}" on element {1}.',
+        message: 'Invalid directive "{0}" on element {1}.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -565,6 +565,19 @@ export const ParserDiagnostics = {
         message:
             'Invalid HTML detected, "<{0}>" was automatically inserted within "<{1}>"; the compiled template may not match the template source.',
         level: DiagnosticLevel.Warning,
+        url: '',
+    },
+    UNKNOWN_TEMPLATE_ATTRIBUTE: {
+        code: 1145,
+        message:
+            'Non root templates only support for:each, iterator and if directives. All other attributes will be ignored.',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+    PRESERVE_COMMENTS_MUST_BE_BOOLEAN: {
+        code: 1146,
+        message: 'lwc:preserve-comments must be a boolean attribute.',
+        level: DiagnosticLevel.Error,
         url: '',
     },
 };

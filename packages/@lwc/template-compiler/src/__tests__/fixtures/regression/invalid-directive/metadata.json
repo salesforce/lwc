@@ -2,13 +2,13 @@
     "warnings": [
         {
             "code": 1127,
-            "message": "LWC1127: Invalid directive \"lwc:render-mode\" on element <p>.",
+            "message": "LWC1127: Invalid directive \"lwc:makeitup\" on element <span>.",
             "level": 1,
             "location": {
                 "line": 2,
                 "column": 5,
                 "start": 15,
-                "length": 35
+                "length": 26
             }
         }
     ]

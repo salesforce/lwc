@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as esutils from 'esutils';
 import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
 import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
-import { toPropertyName } from '../shared/utils';
 import { TEMPLATE_PARAMS } from '../shared/constants';
 
 type RenderPrimitive =
@@ -76,7 +74,6 @@ export default class CodeGen {
     innerHtmlInstances = 0;
 
     usedApis: { [name: string]: t.Identifier } = {};
-    usedSlots: { [name: string]: t.Identifier } = {};
     usedLwcApis: Set<string> = new Set();
 
     slotNames: Set<string> = new Set();
@@ -205,10 +202,12 @@ export default class CodeGen {
     }
 
     getMemorizationId() {
-        const id = this._genUniqueIdentifier('_m');
-        this.memorizedIds.push(id);
+        const currentId = this.currentId++;
+        const memorizationId = t.identifier(`_m${currentId}`);
 
-        return id;
+        this.memorizedIds.push(memorizationId);
+
+        return memorizationId;
     }
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
@@ -285,17 +284,6 @@ export default class CodeGen {
                 t.identifier(`_sanitizedHtml$${instance}`)
             )
         );
-    }
-
-    private _genUniqueIdentifier(name: string) {
-        const id = this.currentId++;
-        const prefix = this._toValidIdentifier(name);
-
-        return t.identifier(prefix + id);
-    }
-
-    private _toValidIdentifier(name: string) {
-        return esutils.keyword.isIdentifierES6(name) ? name : toPropertyName(name);
     }
 
     private _renderApiCall(
