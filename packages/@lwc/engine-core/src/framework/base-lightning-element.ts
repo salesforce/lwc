@@ -530,6 +530,8 @@ for (const [elementProp, rendererMethod] of childGetters) {
 
             return renderer[rendererMethod](elm);
         },
+        configurable: true,
+        enumerable: true,
     };
 }
 
@@ -553,6 +555,9 @@ for (const queryMethod of queryMethods) {
 
             return renderer[queryMethod](elm, arg);
         },
+        configurable: true,
+        enumerable: true,
+        writable: true,
     };
 }
 
