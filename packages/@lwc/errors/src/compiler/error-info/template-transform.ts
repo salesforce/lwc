@@ -560,15 +560,22 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-    UNKNOWN_TEMPLATE_ATTRIBUTE: {
+    INVALID_HTML_RECOVERY: {
         code: 1144,
+        message:
+            'Invalid HTML detected, "<{0}>" was automatically inserted within "<{1}>"; the compiled template may not match the template source.',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+    UNKNOWN_TEMPLATE_ATTRIBUTE: {
+        code: 1145,
         message:
             'Non root templates only support for:each, iterator and if directives. All other attributes will be ignored.',
         level: DiagnosticLevel.Warning,
         url: '',
     },
     PRESERVE_COMMENTS_MUST_BE_BOOLEAN: {
-        code: 1145,
+        code: 1146,
         message: 'lwc:preserve-comments must be a boolean attribute.',
         level: DiagnosticLevel.Error,
         url: '',

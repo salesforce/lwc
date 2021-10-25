@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1145,
-            "message": "LWC1145: lwc:preserve-comments must be a boolean attribute.",
+            "code": 1146,
+            "message": "LWC1146: lwc:preserve-comments must be a boolean attribute.",
             "level": 1,
             "location": {
                 "line": 1,

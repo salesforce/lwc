@@ -134,9 +134,14 @@ export default function parse(source: string, state: State): TemplateParseResult
     return { root, warnings: ctx.warnings };
 }
 
-function parseElement(ctx: ParserCtx, elementNode: parse5.Element): IRElement {
-    const element = createElement(elementNode);
-    const parsedAttr = parseAttributes(ctx, element, elementNode);
+function parseElement(
+    ctx: ParserCtx,
+    parse5Elm: parse5.Element,
+    parentIRElement?: IRElement
+): IRElement {
+    const location = parseElementLocation(ctx, parse5Elm, parentIRElement);
+    const element = createElement(parse5Elm, location);
+    const parsedAttr = parseAttributes(ctx, element, parse5Elm);
 
     applyForEach(ctx, element, parsedAttr);
     applyIterator(ctx, element, parsedAttr);
@@ -147,26 +152,62 @@ function parseElement(ctx: ParserCtx, elementNode: parse5.Element): IRElement {
     applyKey(ctx, element, parsedAttr);
     applyLwcDirectives(ctx, element, parsedAttr);
     applyAttributes(ctx, element, parsedAttr);
-    validateElement(ctx, element, elementNode);
+    validateElement(ctx, element, parse5Elm);
     validateAttributes(ctx, element, parsedAttr);
     validateProperties(ctx, element);
 
-    parseChildren(ctx, element, elementNode);
+    parseChildren(ctx, parse5Elm, element);
     validateChildren(ctx, element);
 
     return element;
 }
 
-function parseChildren(ctx: ParserCtx, parent: IRElement, parse5Parent: parse5.Element): void {
+function parseElementLocation(
+    ctx: ParserCtx,
+    parse5Elm: parse5.Element,
+    parentIRElement?: IRElement
+): parse5.ElementLocation {
+    let location = parse5Elm.sourceCodeLocation;
+
+    if (!location) {
+        // Parse5 will recover from invalid HTML. When this happens the element's sourceCodeLocation will be undefined.
+        // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
+        ctx.warn(ParserDiagnostics.INVALID_HTML_RECOVERY, [
+            parse5Elm.tagName,
+            parentIRElement?.tag,
+        ]);
+    }
+
+    // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
+    // location information. For example when a <table> element has a <tr> child element, parse5
+    // creates a <tbody> element in the middle without location information. In this case, we
+    // can safely skip the closing tag validation.
+    let current = parse5Elm;
+
+    while (!location && parse5Utils.isElementNode(current.parentNode)) {
+        current = current.parentNode;
+        location = current.sourceCodeLocation;
+    }
+
+    // Parent's location is used as the fallback in case the current node's location cannot be found.
+    // If there is no parent, use an empty parse5.ElementLocation instead.
+    return location ?? parentIRElement?.location ?? parse5Utils.createEmptyElementLocation();
+}
+
+function parseChildren(
+    ctx: ParserCtx,
+    parse5Parent: parse5.Element,
+    parentIRElement: IRElement
+): void {
     const parsedChildren: IRNode[] = [];
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
-    ctx.parentStack.push(parent);
+    ctx.parentStack.push(parentIRElement);
 
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
-                const elmNode = parseElement(ctx, child);
+                const elmNode = parseElement(ctx, child, parentIRElement);
                 parsedChildren.push(elmNode);
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
@@ -180,14 +221,23 @@ function parseChildren(ctx: ParserCtx, parent: IRElement, parse5Parent: parse5.E
 
     ctx.parentStack.pop();
 
-    parent.children = parsedChildren;
+    parentIRElement.children = parsedChildren;
 }
 
-function parseText(ctx: ParserCtx, node: parse5.TextNode): IRText[] {
+function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): IRText[] {
     const parsedTextNodes: IRText[] = [];
+    const location = parse5Text.sourceCodeLocation;
+
+    if (!location) {
+        // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
+        // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
+        // This is a defensive check as this should never happen for TextNode.
+        throw new Error(
+            `An internal parsing error occurred during node creation; a text node was found without a sourceCodeLocation.`
+        );
+    }
 
     // Extract the raw source to avoid HTML entity decoding done by parse5
-    const location = node.sourceCodeLocation!;
     const rawText = cleanTextNode(ctx.getSource(location.startOffset, location.endOffset));
 
     if (!rawText.trim().length) {
@@ -204,21 +254,32 @@ function parseText(ctx: ParserCtx, node: parse5.TextNode): IRText[] {
         }
 
         let value: TemplateExpression | string;
+
         if (isExpression(token)) {
             value = parseExpression(ctx, token, location);
         } else {
             value = decodeTextContent(token);
         }
 
-        parsedTextNodes.push(createText(node, value));
+        parsedTextNodes.push(createText(value, location));
     }
 
     return parsedTextNodes;
 }
 
-function parseComment(node: parse5.CommentNode): IRComment {
-    const value = decodeTextContent(node.data);
-    return createComment(node, value);
+function parseComment(parse5Comment: parse5.CommentNode): IRComment {
+    const location = parse5Comment.sourceCodeLocation;
+
+    if (!location) {
+        // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
+        // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
+        // This is a defensive check as this should never happen for CommentNode.
+        throw new Error(
+            `An internal parsing error occurred during node creation; a comment node was found without a sourceCodeLocation.`
+        );
+    }
+
+    return createComment(decodeTextContent(parse5Comment.data), location);
 }
 
 function getTemplateRoot(

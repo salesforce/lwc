@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1144,
-            "message": "LWC1144: Non root templates only support for:each, iterator and if directives. All other attributes will be ignored.",
+            "code": 1145,
+            "message": "LWC1145: Non root templates only support for:each, iterator and if directives. All other attributes will be ignored.",
             "level": 2,
             "location": {
                 "line": 3,
