@@ -233,7 +233,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): IRText[] {
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         // This is a defensive check as this should never happen for TextNode.
         throw new Error(
-            `An internal parsing error occurred during node creation; a "<${parse5Text.nodeName}>" node was found without a sourceCodeLocation.`
+            `An internal parsing error occurred during node creation; a text node was found without a sourceCodeLocation.`
         );
     }
 
@@ -275,7 +275,7 @@ function parseComment(parse5Comment: parse5.CommentNode): IRComment {
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         // This is a defensive check as this should never happen for CommentNode.
         throw new Error(
-            `An internal parsing error occurred during node creation; a "<${parse5Comment.nodeName}>" node was found without a sourceCodeLocation.`
+            `An internal parsing error occurred during node creation; a comment node was found without a sourceCodeLocation.`
         );
     }
 
