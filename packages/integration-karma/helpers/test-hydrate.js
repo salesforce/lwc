@@ -51,11 +51,14 @@ window.HydrateTest = (function (lwc, testUtils) {
 
         const props = testConfig.props || {};
         const clientProps = testConfig.clientProps || props;
+
+        const consoleSpy = testUtils.spyConsole();
         lwc.hydrateComponent(target, Component, clientProps);
+        consoleSpy.reset();
 
         // let's select again the target, it should be the same elements as in the snapshot
         target = container.querySelector('x-main');
-        return testConfig.test(target, snapshot);
+        return testConfig.test(target, snapshot, consoleSpy.calls);
     }
 
     return {

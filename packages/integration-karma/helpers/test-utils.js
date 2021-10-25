@@ -387,5 +387,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         registerForLoad: registerForLoad,
         getHooks: getHooks,
         setHooks: setHooks,
+        spyConsole: spyConsole,
     };
 })(LWC, jasmine, beforeAll);

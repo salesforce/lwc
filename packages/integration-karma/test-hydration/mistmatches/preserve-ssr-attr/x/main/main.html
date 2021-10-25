@@ -1,0 +1,15 @@
+<template>
+    <template if:true={ssr}>
+        <p
+            title="title"
+            data-ssr-only="same-value"
+        >text</p>
+    </template>
+    <template if:false={ssr}>
+        <p
+            title="title"
+        >text</p>
+    </template>
+
+
+</template>
