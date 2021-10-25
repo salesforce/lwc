@@ -6,8 +6,6 @@
  */
 import * as parse5 from 'parse5';
 
-import * as parse5Utils from './parse5';
-
 import {
     TemplateIdentifier,
     TemplateExpression,
@@ -22,26 +20,10 @@ import {
     IRBooleanAttribute,
 } from './types';
 
-export function createElement(original: parse5.Element): IRElement {
-    let location = original.sourceCodeLocation;
-
-    // With parse5 automatically recovering from invalid HTML, some AST nodes might not have
-    // location information. For example when a <table> element has a <tr> child element, parse5
-    // creates a <tbody> element in the middle without location information. In this case, we
-    // can safely skip the closing tag validation.
-    //
-    // TODO [#248]: Report a warning when location is not available indicating the original HTML
-    // template is not valid.
-    let current = original;
-    while (!location && parse5Utils.isElementNode(original.parentNode)) {
-        current = original.parentNode;
-        location = current.sourceCodeLocation;
-    }
-
-    if (!location) {
-        throw new Error('Invalid element AST node. Missing source code location.');
-    }
-
+export function createElement(
+    original: parse5.Element,
+    location: parse5.ElementLocation
+): IRElement {
     return {
         type: 'element',
         tag: original.tagName,
@@ -52,27 +34,19 @@ export function createElement(original: parse5.Element): IRElement {
     };
 }
 
-export function createText(original: parse5.TextNode, value: string | TemplateExpression): IRText {
-    if (!original.sourceCodeLocation) {
-        throw new Error('Invalid text AST node. Missing source code location.');
-    }
-
+export function createText(value: string | TemplateExpression, location: parse5.Location): IRText {
     return {
         type: 'text',
         value,
-        location: original.sourceCodeLocation,
+        location,
     };
 }
 
-export function createComment(original: parse5.CommentNode, value: string): IRComment {
-    if (!original.sourceCodeLocation) {
-        throw new Error('Invalid comment AST node. Missing source code location.');
-    }
-
+export function createComment(value: string, location: parse5.Location): IRComment {
     return {
         type: 'comment',
         value,
-        location: original.sourceCodeLocation,
+        location,
     };
 }
 

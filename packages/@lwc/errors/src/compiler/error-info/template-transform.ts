@@ -560,4 +560,11 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+    INVALID_HTML_RECOVERY: {
+        code: 1144,
+        message:
+            'Invalid HTML detected, "<{0}>" was automatically inserted within "<{1}>"; the compiled template may not match the template source.',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
 };
