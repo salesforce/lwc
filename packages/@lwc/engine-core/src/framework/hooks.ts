@@ -421,10 +421,11 @@ export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children
                     }
 
                     // Note: props are not yet set
+                    const hasIncompatibleAttrs = vnodesAndElementHaveCompatibleAttrs(ch, childNode);
+                    const hasIncompatibleClass = vnodesAndElementHaveCompatibleClass(ch, childNode);
+                    const hasIncompatibleStyle = vnodesAndElementHaveCompatibleStyle(ch, childNode);
                     const isVNodeAndElementCompatible =
-                        vnodesAndElementHaveCompatibleAttrs(ch, childNode) &&
-                        vnodesAndElementHaveCompatibleClass(ch, childNode) &&
-                        vnodesAndElementHaveCompatibleStyle(ch, childNode);
+                        hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
 
                     if (!isVNodeAndElementCompatible) {
                         throwHydrationError();
