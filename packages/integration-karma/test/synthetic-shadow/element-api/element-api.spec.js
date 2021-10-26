@@ -404,22 +404,24 @@ if (!process.env.NATIVE_SHADOW) {
     });
 }
 
-describe('synthetic shadow for mixed mode', () => {
-    describe('Element.prototype API', () => {
-        it('should preseve assignedSlot behavior', () => {
-            const div = document.createElement('div');
-            document.body.appendChild(div);
+if (!process.env.COMPAT) {
+    describe('synthetic shadow for mixed mode', () => {
+        describe('Element.prototype API', () => {
+            it('should preseve assignedSlot behavior', () => {
+                const div = document.createElement('div');
+                document.body.appendChild(div);
 
-            div.attachShadow({ mode: 'open' }).innerHTML = `
-	            <slot></slot>
-            `;
+                div.attachShadow({ mode: 'open' }).innerHTML = `
+                    <slot></slot>
+                `;
 
-            const slotted = document.createElement('div');
-            slotted.textContent = 'slotted';
-            div.appendChild(slotted);
+                const slotted = document.createElement('div');
+                slotted.textContent = 'slotted';
+                div.appendChild(slotted);
 
-            const assignedSlot = div.shadowRoot.querySelector('slot');
-            expect(slotted.assignedSlot).toBe(assignedSlot);
+                const assignedSlot = div.shadowRoot.querySelector('slot');
+                expect(slotted.assignedSlot).toBe(assignedSlot);
+            });
         });
     });
-});
+}

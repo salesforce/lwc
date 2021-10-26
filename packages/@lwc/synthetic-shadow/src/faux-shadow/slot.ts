@@ -94,7 +94,7 @@ export function assignedSlotGetterPatched(this: Element | Text): HTMLSlotElement
     // use original assignedSlot if parent has a native shdow root
     if (parentNode instanceof Element) {
         const sr = parentNode.shadowRoot;
-        if (sr && /function ShadowRoot/.test(sr.constructor.toString())) {
+        if (sr && /[native code]/.test(sr.constructor.toString())) {
             if (this instanceof Text) {
                 return originalTextAssignedSlotGetter.call(this);
             }
