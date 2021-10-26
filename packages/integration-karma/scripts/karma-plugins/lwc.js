@@ -13,12 +13,12 @@
 
 const path = require('path');
 
-const chokidar = require('chokidar');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 const compatRollupPlugin = require('rollup-plugin-compat');
 
 const { COMPAT } = require('../shared/options');
+const Watcher = require('./Watcher');
 
 function createPreprocessor(config, emitter, logger) {
     const { basePath } = config;
@@ -108,35 +108,6 @@ function createPreprocessor(config, emitter, logger) {
             done(error, null);
         }
     };
-}
-
-class Watcher {
-    constructor(config, emitter, logger) {
-        const { basePath } = config;
-
-        this._suiteDependencyLookup = {};
-
-        this._watcher = chokidar.watch(basePath, {
-            ignoreInitial: true,
-        });
-
-        this._watcher.on('all', (_type, filename) => {
-            logger.info(`Change detected ${path.relative(basePath, filename)}`);
-
-            for (const [input, dependencies] of Object.entries(this._suiteDependencyLookup)) {
-                if (dependencies.includes(filename)) {
-                    // This is not a Karma public API, but it does the trick. This internal API has
-                    // been pretty stable for a while now, so the probability it break is fairly
-                    // low.
-                    emitter._fileList.changeFile(input, true);
-                }
-            }
-        });
-    }
-
-    watchSuite(input, dependencies) {
-        this._suiteDependencyLookup[input] = dependencies;
-    }
 }
 
 createPreprocessor.$inject = ['config', 'emitter', 'logger'];

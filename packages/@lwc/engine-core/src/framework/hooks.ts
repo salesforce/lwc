@@ -4,8 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayFilter, assert, isArray, isNull, isUndefined, noop } from '@lwc/shared';
-import { EmptyArray } from './utils';
+import {
+    ArrayFilter,
+    ArrayJoin,
+    assert,
+    isArray,
+    isNull,
+    isUndefined,
+    keys,
+    noop,
+} from '@lwc/shared';
+import { EmptyArray, parseStyleText } from './utils';
 import {
     createVM,
     allocateInSlot,
@@ -43,10 +52,6 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     if (!isUndefined(token) && context.hasScopedStyles) {
         owner.renderer.getClassList(elm).add(token);
     }
-}
-
-export function hydrateNodeHook(vNode: VNode, node: Node) {
-    vNode.elm = node;
 }
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
@@ -104,7 +109,7 @@ export function createElmHook(vnode: VElement) {
     modComputedStyle.create(vnode);
 }
 
-const enum LWCDOMMode {
+export const enum LWCDOMMode {
     manual = 'manual',
 }
 
@@ -258,7 +263,6 @@ export function createChildrenHook(vnode: VElement) {
 }
 
 function isElementNode(node: ChildNode): node is Element {
-    // @todo: should the hydrate be part of engine-dom? can we move hydrate out of the hooks?
     // eslint-disable-next-line lwc-internal/no-global-node
     return node.nodeType === Node.ELEMENT_NODE;
 }
@@ -277,7 +281,7 @@ function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolea
         const elmAttrValue = renderer.getAttribute(elm, attrName);
         if (attrValue !== elmAttrValue) {
             logError(
-                `Error hydrating element: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
+                `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
                 vnode.owner
             );
             nodesAreCompatible = false;
@@ -294,20 +298,15 @@ function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolea
     } = vnode;
 
     let nodesAreCompatible = true;
+    let vnodeClassName;
 
     if (!isUndefined(className) && className !== elm.className) {
-        // @todo: not sure if the above comparison is correct, maybe we should normalize to classlist
         // className is used when class is bound to an expr.
-        logError(
-            `Mismatch hydrating element: attribute "class" has different values, expected "${className}" but found "${elm.className}"`,
-            vnode.owner
-        );
         nodesAreCompatible = false;
+        vnodeClassName = className;
     } else if (!isUndefined(classMap)) {
         // classMap is used when class is set to static value.
-        // @todo: there might be a simpler method to do this.
         const classList = renderer.getClassList(elm);
-        let hasClassMismatch = false;
         let computedClassName = '';
 
         // all classes from the vnode should be in the element.classList
@@ -315,26 +314,23 @@ function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolea
             computedClassName += ' ' + name;
             if (!classList.contains(name)) {
                 nodesAreCompatible = false;
-                hasClassMismatch = true;
             }
         }
 
-        // all classes from element.classList should be in the vnode classMap
-        classList.forEach((name) => {
-            if (!classMap[name]) {
-                nodesAreCompatible = false;
-                hasClassMismatch = true;
-            }
-        });
+        vnodeClassName = computedClassName.trim();
 
-        if (hasClassMismatch) {
-            logError(
-                `Mismatch hydrating element: attribute "class" has different values, expected "${computedClassName.trim()}" but found "${
-                    elm.className
-                }"`,
-                vnode.owner
-            );
+        if (classList.length > keys(classMap).length) {
+            nodesAreCompatible = false;
         }
+    }
+
+    if (!nodesAreCompatible) {
+        logError(
+            `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "class" has different values, expected "${vnodeClassName}" but found "${
+                elm.className
+            }"`,
+            vnode.owner
+        );
     }
 
     return nodesAreCompatible;
@@ -345,39 +341,51 @@ function vnodesAndElementHaveCompatibleStyle(vnode: VNode, elm: Element): boolea
         data: { style, styleDecls },
         owner: { renderer },
     } = vnode;
-    const elmStyle = renderer.getAttribute(elm, 'style');
+    const elmStyle = renderer.getAttribute(elm, 'style') || '';
+    let vnodeStyle;
     let nodesAreCompatible = true;
 
-    // @todo: question: would it be the same or is there a chance that the browser tweak the result of elm.setAttribute('style', ...)?
-    //        ex: such "str" exist that after elm.setAttribute('style', str), elm.getAttribute('style') !== str.
     if (!isUndefined(style) && style !== elmStyle) {
-        // style is used when class is bound to an expr.
-        logError(
-            `Mismatch hydrating element: attribute "style" has different values, expected "${style}" but found "${elmStyle}".`,
-            vnode.owner
-        );
         nodesAreCompatible = false;
+        vnodeStyle = style;
     } else if (!isUndefined(styleDecls)) {
-        // styleMap is used when class is set to static value.
-        for (let i = 0; i < styleDecls.length; i++) {
+        const parsedVnodeStyle = parseStyleText(elmStyle);
+        const expectedStyle = [];
+        // styleMap is used when style is set to static value.
+        for (let i = 0, n = styleDecls.length; i < n; i++) {
             const [prop, value, important] = styleDecls[i];
-            const elmPropValue = (elm as HTMLElement).style.getPropertyValue(prop);
-            const elmPropPriority = (elm as HTMLElement).style.getPropertyPriority(prop);
-            if (value !== elmPropValue || important !== (elmPropPriority === 'important')) {
+            expectedStyle.push(`${prop}: ${value + (important ? ' important!' : '')}`);
+
+            const parsedPropValue = parsedVnodeStyle[prop];
+
+            if (isUndefined(parsedPropValue)) {
+                nodesAreCompatible = false;
+            } else if (!parsedPropValue.startsWith(value)) {
+                nodesAreCompatible = false;
+            } else if (important && !parsedPropValue.endsWith('!important')) {
                 nodesAreCompatible = false;
             }
         }
 
-        // questions: is there a way to check that only those props in styleMap are set in the element?
-        //            how to generate the style?
-        logError('Error hydrating element: attribute "style" has different values.', vnode.owner);
+        if (keys(parsedVnodeStyle).length > styleDecls.length) {
+            nodesAreCompatible = false;
+        }
+
+        vnodeStyle = ArrayJoin.call(expectedStyle, ';');
+    }
+
+    if (!nodesAreCompatible) {
+        // style is used when class is bound to an expr.
+        logError(
+            `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
+            vnode.owner
+        );
     }
 
     return nodesAreCompatible;
 }
 
 function throwHydrationError() {
-    // @todo: maybe create a type for these type of hydration errors
     assert.fail('Server rendered elements do not match client side generated elements');
 }
 
@@ -387,7 +395,7 @@ export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children
 
         if (elmChildren.length !== filteredVNodes.length) {
             logError(
-                `Hydration mismatch: incorrect number of rendered elements, expected ${filteredVNodes.length} but found ${elmChildren.length}.`,
+                `Hydration mismatch: incorrect number of rendered nodes, expected ${filteredVNodes.length} but found ${elmChildren.length}.`,
                 vm
             );
             throwHydrationError();
@@ -405,7 +413,7 @@ export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children
                 if (isElementNode(childNode)) {
                     if (ch.sel?.toLowerCase() !== childNode.tagName.toLowerCase()) {
                         logError(
-                            `Hydration mismatch: expecting element with tag "${ch.sel}" but found "${childNode.tagName}".`,
+                            `Hydration mismatch: expecting element with tag "${ch.sel?.toLowerCase()}" but found "${childNode.tagName.toLowerCase()}".`,
                             vm
                         );
 
@@ -413,17 +421,13 @@ export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children
                     }
 
                     // Note: props are not yet set
+                    const hasIncompatibleAttrs = vnodesAndElementHaveCompatibleAttrs(ch, childNode);
+                    const hasIncompatibleClass = vnodesAndElementHaveCompatibleClass(ch, childNode);
+                    const hasIncompatibleStyle = vnodesAndElementHaveCompatibleStyle(ch, childNode);
                     const isVNodeAndElementCompatible =
-                        vnodesAndElementHaveCompatibleAttrs(ch, childNode) &&
-                        vnodesAndElementHaveCompatibleClass(ch, childNode) &&
-                        vnodesAndElementHaveCompatibleStyle(ch, childNode);
+                        hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
 
                     if (!isVNodeAndElementCompatible) {
-                        logError(
-                            `Hydration mismatch: incompatible attributes for element with tag "${childNode.tagName}".`,
-                            vm
-                        );
-
                         throwHydrationError();
                     }
                 }

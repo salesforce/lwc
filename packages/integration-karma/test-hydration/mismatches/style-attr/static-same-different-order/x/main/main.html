@@ -1,0 +1,8 @@
+<template>
+    <template if:true={ssr}>
+        <p style="background-color: red; border-color: red; margin: 1px;">txt</p>
+    </template>
+    <template if:false={ssr}>
+        <p style="margin: 1px; border-color: red; background-color: red;">txt</p>
+    </template>
+</template>

@@ -108,6 +108,7 @@ const CUSTOM_IGNORED_PATTERNS = [
     '/fixtures/',
     '/integration-tests/src/(.(?!.*.spec.js$))*$',
     '/integration-karma/test/.*$',
+    '/integration-karma/test-hydration/.*$',
 ].map(createRegExp);
 
 const IGNORED_PATTERNS = [
