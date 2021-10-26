@@ -9,18 +9,21 @@ export default {
         const p = target.shadowRoot.querySelector('p');
         return {
             p,
-            classes: p.className,
+            style: p.getAttribute('style'),
         };
     },
     test(target, snapshots, consoleCalls) {
         const p = target.shadowRoot.querySelector('p');
 
         expect(p).not.toBe(snapshots.p);
-        expect(p.className).not.toBe(snapshots.classes);
+        expect(p.getAttribute('style')).not.toBe(snapshots.style);
+        expect(p.getAttribute('style')).toBe(
+            'background-color: red; border-color: red; margin: 1px;'
+        );
 
         expect(consoleCalls.error).toHaveSize(3);
         expect(consoleCalls.error[0][0].message).toContain(
-            'Mismatch hydrating element: attribute "class" has different values, expected "c1 c3" but found "c1 c2 c3"'
+            'Error hydrating element: attribute "style" has different values'
         );
         expect(consoleCalls.error[1][0].message).toContain(
             'Hydration mismatch: incompatible attributes for element with tag "P"'

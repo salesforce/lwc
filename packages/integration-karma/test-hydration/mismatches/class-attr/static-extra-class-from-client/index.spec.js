@@ -17,6 +17,7 @@ export default {
 
         expect(p).not.toBe(snapshots.p);
         expect(p.className).not.toBe(snapshots.classes);
+        expect(p.className).toBe('c1 c2 c3');
 
         expect(consoleCalls.error).toHaveSize(3);
         expect(consoleCalls.error[0][0].message).toContain(
