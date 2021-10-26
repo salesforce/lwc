@@ -7,6 +7,8 @@
         "test": "karma start ./scripts/karma-configs/local.js --single-run --browsers Chrome",
         "test:compat": "COMPAT=1 yarn test",
         "test:native": "DISABLE_SYNTHETIC=1 yarn test",
+        "test:hydration": "TEST_HYDRATION=1 yarn test",
+        "start:hydration": "TEST_HYDRATION=1 yarn start",
         "sauce": "karma start ./scripts/karma-configs/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js"
     },
@@ -15,6 +17,7 @@
         "@lwc/engine-dom": "2.5.7",
         "@lwc/rollup-plugin": "2.5.7",
         "@lwc/synthetic-shadow": "2.5.7",
+        "@lwc/engine-server": "2.5.7",
         "chokidar": "^3.5.2",
         "istanbul-lib-coverage": "^3.0.1",
         "istanbul-lib-report": "^3.0.0",

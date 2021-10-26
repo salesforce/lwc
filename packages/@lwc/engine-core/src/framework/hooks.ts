@@ -4,8 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isNull, isUndefined, noop } from '@lwc/shared';
-import { EmptyArray } from './utils';
+import {
+    ArrayFilter,
+    ArrayJoin,
+    assert,
+    isArray,
+    isNull,
+    isUndefined,
+    keys,
+    noop,
+} from '@lwc/shared';
+import { EmptyArray, parseStyleText } from './utils';
 import {
     createVM,
     allocateInSlot,
@@ -26,6 +35,7 @@ import modStaticStyle from './modules/static-style-attr';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
+import { logError } from '../shared/logger';
 
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
@@ -99,8 +109,20 @@ export function createElmHook(vnode: VElement) {
     modComputedStyle.create(vnode);
 }
 
-const enum LWCDOMMode {
+export const enum LWCDOMMode {
     manual = 'manual',
+}
+
+export function hydrateElmHook(vnode: VElement) {
+    modEvents.create(vnode);
+    // Attrs are already on the element.
+    // modAttrs.create(vnode);
+    modProps.create(vnode);
+    // Already set.
+    // modStaticClassName.create(vnode);
+    // modStaticStyle.create(vnode);
+    // modComputedClassName.create(vnode);
+    // modComputedStyle.create(vnode);
 }
 
 export function fallbackElmHook(elm: Element, vnode: VElement) {
@@ -236,6 +258,183 @@ export function createChildrenHook(vnode: VElement) {
         if (ch != null) {
             ch.hook.create(ch);
             ch.hook.insert(ch, elm!, null);
+        }
+    }
+}
+
+function isElementNode(node: ChildNode): node is Element {
+    // eslint-disable-next-line lwc-internal/no-global-node
+    return node.nodeType === Node.ELEMENT_NODE;
+}
+
+function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolean {
+    const {
+        data: { attrs = {} },
+        owner: { renderer },
+    } = vnode;
+
+    let nodesAreCompatible = true;
+
+    // Validate attributes, though we could always recovery from those by running the update mods.
+    // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
+    for (const [attrName, attrValue] of Object.entries(attrs)) {
+        const elmAttrValue = renderer.getAttribute(elm, attrName);
+        if (attrValue !== elmAttrValue) {
+            logError(
+                `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
+                vnode.owner
+            );
+            nodesAreCompatible = false;
+        }
+    }
+
+    return nodesAreCompatible;
+}
+
+function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolean {
+    const {
+        data: { className, classMap },
+        owner: { renderer },
+    } = vnode;
+
+    let nodesAreCompatible = true;
+    let vnodeClassName;
+
+    if (!isUndefined(className) && className !== elm.className) {
+        // className is used when class is bound to an expr.
+        nodesAreCompatible = false;
+        vnodeClassName = className;
+    } else if (!isUndefined(classMap)) {
+        // classMap is used when class is set to static value.
+        const classList = renderer.getClassList(elm);
+        let computedClassName = '';
+
+        // all classes from the vnode should be in the element.classList
+        for (const name in classMap) {
+            computedClassName += ' ' + name;
+            if (!classList.contains(name)) {
+                nodesAreCompatible = false;
+            }
+        }
+
+        vnodeClassName = computedClassName.trim();
+
+        if (classList.length > keys(classMap).length) {
+            nodesAreCompatible = false;
+        }
+    }
+
+    if (!nodesAreCompatible) {
+        logError(
+            `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "class" has different values, expected "${vnodeClassName}" but found "${
+                elm.className
+            }"`,
+            vnode.owner
+        );
+    }
+
+    return nodesAreCompatible;
+}
+
+function vnodesAndElementHaveCompatibleStyle(vnode: VNode, elm: Element): boolean {
+    const {
+        data: { style, styleDecls },
+        owner: { renderer },
+    } = vnode;
+    const elmStyle = renderer.getAttribute(elm, 'style') || '';
+    let vnodeStyle;
+    let nodesAreCompatible = true;
+
+    if (!isUndefined(style) && style !== elmStyle) {
+        nodesAreCompatible = false;
+        vnodeStyle = style;
+    } else if (!isUndefined(styleDecls)) {
+        const parsedVnodeStyle = parseStyleText(elmStyle);
+        const expectedStyle = [];
+        // styleMap is used when style is set to static value.
+        for (let i = 0, n = styleDecls.length; i < n; i++) {
+            const [prop, value, important] = styleDecls[i];
+            expectedStyle.push(`${prop}: ${value + (important ? ' important!' : '')}`);
+
+            const parsedPropValue = parsedVnodeStyle[prop];
+
+            if (isUndefined(parsedPropValue)) {
+                nodesAreCompatible = false;
+            } else if (!parsedPropValue.startsWith(value)) {
+                nodesAreCompatible = false;
+            } else if (important && !parsedPropValue.endsWith('!important')) {
+                nodesAreCompatible = false;
+            }
+        }
+
+        if (keys(parsedVnodeStyle).length > styleDecls.length) {
+            nodesAreCompatible = false;
+        }
+
+        vnodeStyle = ArrayJoin.call(expectedStyle, ';');
+    }
+
+    if (!nodesAreCompatible) {
+        // style is used when class is bound to an expr.
+        logError(
+            `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
+            vnode.owner
+        );
+    }
+
+    return nodesAreCompatible;
+}
+
+function throwHydrationError() {
+    assert.fail('Server rendered elements do not match client side generated elements');
+}
+
+export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children: VNodes, vm?: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        const filteredVNodes = ArrayFilter.call(children, (vnode) => !!vnode);
+
+        if (elmChildren.length !== filteredVNodes.length) {
+            logError(
+                `Hydration mismatch: incorrect number of rendered nodes, expected ${filteredVNodes.length} but found ${elmChildren.length}.`,
+                vm
+            );
+            throwHydrationError();
+        }
+    }
+
+    let elmCurrentChildIdx = 0;
+    for (let j = 0, n = children.length; j < n; j++) {
+        const ch = children[j];
+        if (ch != null) {
+            const childNode = elmChildren[elmCurrentChildIdx];
+
+            if (process.env.NODE_ENV !== 'production') {
+                // VComments and VTexts validation is handled in their hooks
+                if (isElementNode(childNode)) {
+                    if (ch.sel?.toLowerCase() !== childNode.tagName.toLowerCase()) {
+                        logError(
+                            `Hydration mismatch: expecting element with tag "${ch.sel?.toLowerCase()}" but found "${childNode.tagName.toLowerCase()}".`,
+                            vm
+                        );
+
+                        throwHydrationError();
+                    }
+
+                    // Note: props are not yet set
+                    const hasIncompatibleAttrs = vnodesAndElementHaveCompatibleAttrs(ch, childNode);
+                    const hasIncompatibleClass = vnodesAndElementHaveCompatibleClass(ch, childNode);
+                    const hasIncompatibleStyle = vnodesAndElementHaveCompatibleStyle(ch, childNode);
+                    const isVNodeAndElementCompatible =
+                        hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
+
+                    if (!isVNodeAndElementCompatible) {
+                        throwHydrationError();
+                    }
+                }
+            }
+
+            ch.hook.hydrate(ch, childNode);
+            elmCurrentChildIdx++;
         }
     }
 }

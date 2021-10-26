@@ -94,6 +94,7 @@ export interface Hooks<N extends VNode> {
     move: (vNode: N, parentNode: Node, referenceNode: Node | null) => void;
     update: (oldVNode: N, vNode: N) => void;
     remove: (vNode: N, parentNode: Node) => void;
+    hydrate: (vNode: N, node: Node) => void;
 }
 
 export interface Module<N extends VNode> {

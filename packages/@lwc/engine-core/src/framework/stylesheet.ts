@@ -164,7 +164,11 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
         for (let i = 0; i < stylesheets.length; i++) {
             renderer.insertGlobalStylesheet(stylesheets[i]);
         }
-    } else if (renderer.ssr) {
+    } else if (renderer.ssr || renderer.isHydrating) {
+        // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
+        //       This works in the client, because the stylesheets are created, and cached in the VM
+        //       the first time the VM renders.
+
         // native shadow or light DOM, SSR
         const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
         return createInlineStyleVNode(combinedStylesheetContent);

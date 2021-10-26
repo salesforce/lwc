@@ -33,6 +33,7 @@ export {
 } from '@lwc/engine-core';
 
 // Engine-dom public APIs --------------------------------------------------------------------------
+export { hydrateComponent } from './apis/hydrate-component';
 export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './apis/build-custom-element-constructor';
 export { createElement } from './apis/create-element';
 export { getComponentConstructor } from './apis/get-component-constructor';

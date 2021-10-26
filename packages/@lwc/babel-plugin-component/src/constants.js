@@ -47,6 +47,7 @@ const LWC_SUPPORTED_APIS = new Set([
     'unwrap',
 
     // From "@lwc/engine-dom"
+    'hydrateComponent',
     'buildCustomElementConstructor',
     'createElement',
 

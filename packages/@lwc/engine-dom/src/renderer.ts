@@ -143,8 +143,17 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
+let isHydrating = false;
+
+export function setIsHydrating(v: boolean) {
+    isHydrating = v;
+}
+
 export const renderer: Renderer<Node, Element> = {
     ssr: false,
+    get isHydrating(): boolean {
+        return isHydrating;
+    },
 
     isNativeShadowDefined: globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED],
     isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
@@ -176,6 +185,9 @@ export const renderer: Renderer<Node, Element> = {
     },
 
     attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
+        if (isHydrating) {
+            return element.shadowRoot!;
+        }
         return element.attachShadow(options);
     },
 

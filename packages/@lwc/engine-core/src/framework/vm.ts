@@ -34,7 +34,7 @@ import {
     logGlobalOperationEnd,
     logGlobalOperationStart,
 } from './profiler';
-import { hasDynamicChildren } from './hooks';
+import { hasDynamicChildren, hydrateChildrenHook } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
@@ -202,6 +202,13 @@ export function connectRootElement(elm: any) {
     logGlobalOperationEnd(OperationId.GlobalHydrate, vm);
 }
 
+export function hydrateRootElement(elm: any) {
+    const vm = getAssociatedVM(elm);
+
+    runConnectedCallback(vm);
+    hydrateVM(vm);
+}
+
 export function disconnectRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
     resetComponentStateWhenRemoved(vm);
@@ -209,6 +216,10 @@ export function disconnectRootElement(elm: any) {
 
 export function appendVM(vm: VM) {
     rehydrate(vm);
+}
+
+export function hydrateVM(vm: VM) {
+    hydrate(vm);
 }
 
 // just in case the component comes back, with this we guarantee re-rendering it
@@ -406,6 +417,23 @@ function rehydrate(vm: VM) {
     if (isTrue(vm.isDirty)) {
         const children = renderComponent(vm);
         patchShadowRoot(vm, children);
+    }
+}
+
+function hydrate(vm: VM) {
+    if (isTrue(vm.isDirty)) {
+        // manually diffing/patching here.
+        // This routine is:
+        // patchShadowRoot(vm, children);
+        //  -> addVnodes.
+        const children = renderComponent(vm);
+        vm.children = children;
+
+        const vmChildren =
+            vm.renderMode === RenderMode.Light ? vm.elm.childNodes : vm.elm.shadowRoot.childNodes;
+        hydrateChildrenHook(vmChildren, children, vm);
+
+        runRenderedCallback(vm);
     }
 }
 
