@@ -30,6 +30,7 @@ import {
     assignedNodes as originalAssignedNodes,
     assignedElements as originalAssignedElements,
 } from '../env/slot';
+import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import {
     isSlotElement,
     getNodeOwner,
@@ -94,7 +95,7 @@ export function assignedSlotGetterPatched(this: Element | Text): HTMLSlotElement
     // use original assignedSlot if parent has a native shdow root
     if (parentNode instanceof Element) {
         const sr = parentNode.shadowRoot;
-        if (sr && /[native code]/.test(sr.constructor.toString())) {
+        if (sr && isInstanceOfNativeShadowRoot(sr)) {
             if (this instanceof Text) {
                 return originalTextAssignedSlotGetter.call(this);
             }
