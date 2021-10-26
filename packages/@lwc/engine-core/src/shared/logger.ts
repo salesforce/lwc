@@ -9,8 +9,8 @@ import { isUndefined } from '@lwc/shared';
 import { VM } from '../framework/vm';
 import { getComponentStack } from './format';
 
-export function logError(message: string, vm?: VM) {
-    let msg = `[LWC error]: ${message}`;
+function log(method: 'warn' | 'error', message: string, vm?: VM) {
+    let msg = `[LWC ${method}]: ${message}`;
 
     if (!isUndefined(vm)) {
         msg = `${msg}\n${getComponentStack(vm)}`;
@@ -18,7 +18,7 @@ export function logError(message: string, vm?: VM) {
 
     if (process.env.NODE_ENV === 'test') {
         /* eslint-disable-next-line no-console */
-        console.error(msg);
+        console[method](msg);
         return;
     }
 
@@ -26,6 +26,14 @@ export function logError(message: string, vm?: VM) {
         throw new Error(msg);
     } catch (e) {
         /* eslint-disable-next-line no-console */
-        console.error(e);
+        console[method](e);
     }
+}
+
+export function logError(message: string, vm?: VM) {
+    log('error', message, vm);
+}
+
+export function logWarn(message: string, vm?: VM) {
+    log('warn', message, vm);
 }

@@ -23,7 +23,7 @@ import {
     StringReplace,
     toString,
 } from '@lwc/shared';
-import { logError } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
@@ -70,6 +70,7 @@ import {
     markAsDynamicChildren,
     hydrateChildrenHook,
     hydrateElmHook,
+    LWCDOMMode,
 } from './hooks';
 import { getComponentInternalDef, isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -180,12 +181,33 @@ const ElementHook: Hooks<VElement> = {
         removeElmHook(vnode);
     },
     hydrate: (vnode, node) => {
-        vnode.elm = node as Element;
-
-        hydrateElmHook(vnode);
+        const elm = node as Element;
+        vnode.elm = elm;
 
         const { context } = vnode.data;
-        const isDomManual = Boolean(context && context.lwc && context.lwc.dom === 'manual');
+        const isDomManual = Boolean(
+            !isUndefined(context) &&
+                !isUndefined(context.lwc) &&
+                context.lwc.dom === LWCDOMMode.manual
+        );
+
+        if (isDomManual) {
+            // it may be that this element has lwc:inner-html, we need to diff and in case are the same,
+            // remove the innerHTML from props so it reuses the existing dom elements.
+            const { props } = vnode.data;
+            if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
+                if (elm.innerHTML === props.innerHTML) {
+                    delete props.innerHTML;
+                } else {
+                    logWarn(
+                        `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
+                        vnode.owner
+                    );
+                }
+            }
+        }
+
+        hydrateElmHook(vnode);
 
         if (!isDomManual) {
             hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vnode.owner);

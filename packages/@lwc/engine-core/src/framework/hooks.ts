@@ -45,10 +45,6 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     }
 }
 
-export function hydrateNodeHook(vNode: VNode, node: Node) {
-    vNode.elm = node;
-}
-
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     const {
         elm,
@@ -104,7 +100,7 @@ export function createElmHook(vnode: VElement) {
     modComputedStyle.create(vnode);
 }
 
-const enum LWCDOMMode {
+export const enum LWCDOMMode {
     manual = 'manual',
 }
 

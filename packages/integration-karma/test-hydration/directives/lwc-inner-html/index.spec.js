@@ -4,9 +4,11 @@ export default {
     },
     snapshot(target) {
         const div = target.shadowRoot.querySelector('div');
+        const p = div.querySelector('p');
         return {
             div,
-            p: div.querySelector('p'),
+            p,
+            text: p.textContent,
         };
     },
     test(target, snapshot) {
@@ -14,8 +16,7 @@ export default {
         const p = div.querySelector('p');
 
         expect(div).toBe(snapshot.div);
-        expect(p).not.toBe(snapshot.p); // this paragraph is added as .innerHtml
-
-        expect(p.textContent).toBe('test-content');
+        expect(p).toBe(snapshot.p);
+        expect(p.textContent).toBe(snapshot.text);
     },
 };
