@@ -18,8 +18,8 @@ export default {
         expect(comment.nodeValue).not.toBe(snapshots.commentText);
         expect(comment.nodeValue).toBe('second');
 
-        expect(consoleCalls.error).toHaveSize(1);
-        expect(consoleCalls.error[0][0].message).toContain(
+        expect(consoleCalls.warn).toHaveSize(1);
+        expect(consoleCalls.warn[0][0].message).toContain(
             'Hydration mismatch: comment values do not match, will recover from the difference'
         );
     },

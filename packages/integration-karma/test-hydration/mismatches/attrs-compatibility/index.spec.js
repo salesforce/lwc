@@ -18,16 +18,13 @@ export default {
         expect(p.getAttribute('data-same')).toBe('same-value');
         expect(p.getAttribute('data-another-diff')).toBe('client-val');
 
-        expect(consoleCalls.error).toHaveSize(4);
+        expect(consoleCalls.error).toHaveSize(3);
         expect(consoleCalls.error[0][0].message).toContain(
-            'Error hydrating element: attribute "title" has different values, expected "client-title" but found "ssr-title"'
+            'Mismatch hydrating element <p>: attribute "title" has different values, expected "client-title" but found "ssr-title"'
         );
         expect(consoleCalls.error[1][0].message).toContain(
-            'Error hydrating element: attribute "data-another-diff" has different values, expected "client-val" but found "ssr-val"'
+            'Mismatch hydrating element <p>: attribute "data-another-diff" has different values, expected "client-val" but found "ssr-val"'
         );
-        expect(consoleCalls.error[2][0].message).toContain(
-            'Hydration mismatch: incompatible attributes for element with tag "P"'
-        );
-        expect(consoleCalls.error[3][0]).toContain('Recovering from error while hydrating');
+        expect(consoleCalls.error[2][0]).toContain('Recovering from error while hydrating');
     },
 };

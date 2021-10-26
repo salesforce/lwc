@@ -18,8 +18,8 @@ export default {
         expect(p.firstChild).toBe(snapshots.text);
         expect(p.textContent).toBe('bye!');
 
-        expect(consoleCalls.error).toHaveSize(1);
-        expect(consoleCalls.error[0][0].message).toContain(
+        expect(consoleCalls.warn).toHaveSize(1);
+        expect(consoleCalls.warn[0][0].message).toContain(
             'Hydration mismatch: text values do not match, will recover from the difference'
         );
     },

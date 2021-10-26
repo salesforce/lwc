@@ -34,8 +34,8 @@ const TEMPLATE = `
         %s;
         
         describe(%s, () => {
-            it('test', async () => {
-                return await hydrateTest.runTest(ssrRendered, Main, config);
+            it('test', () => {
+                return hydrateTest.runTest(ssrRendered, Main, config);
             })
         });
     })(window.HydrateTest);
@@ -76,9 +76,9 @@ async function getCompiledModule(dirName) {
         },
     });
 
-    const { code, map } = output[0];
+    const { code } = output[0];
 
-    return { code, map, watchFiles };
+    return { code, watchFiles };
 }
 
 function getSsrCode(moduleCode, testConfig) {
@@ -114,10 +114,9 @@ async function getTestModuleCode(input) {
         name: 'config',
     });
 
-    // @todo: sourcemaps
-    const { code, map } = output[0];
+    const { code } = output[0];
 
-    return { code, map, watchFiles };
+    return { code, watchFiles };
 }
 
 function createHCONFIG2JSPreprocessor(config, logger, emitter) {
@@ -142,7 +141,6 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
             const ssrOutput = getSsrCode(componentDef, testCode);
 
             watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFiles));
-            // @todo: sourcemaps!
             const newContent = format(
                 TEMPLATE,
                 JSON.stringify(ssrOutput),
