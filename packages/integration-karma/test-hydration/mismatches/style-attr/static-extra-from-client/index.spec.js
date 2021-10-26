@@ -23,7 +23,7 @@ export default {
 
         expect(consoleCalls.error).toHaveSize(2);
         expect(consoleCalls.error[0][0].message).toContain(
-            'Mismatch hydrating element <p>: attribute "style" has different values'
+            'Mismatch hydrating element <p>: attribute "style" has different values, expected "background-color: red;border-color: red;margin: 1px" but found "background-color: red; border-color: red"'
         );
         expect(consoleCalls.error[1][0]).toContain('Recovering from error while hydrating');
     },
