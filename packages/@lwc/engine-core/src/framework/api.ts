@@ -30,6 +30,7 @@ import { EmptyArray, EmptyObject } from './utils';
 import {
     appendVM,
     getAssociatedVMIfPresent,
+    getAssociatedVM,
     removeVM,
     rerenderVM,
     runConnectedCallback,
@@ -312,30 +313,24 @@ const CustomElementHook: Hooks<VCustomElement> = {
 
         vnode.elm = elm as Element;
 
-        const vm = getAssociatedVMIfPresent(elm);
-        if (vm) {
-            allocateChildrenHook(vnode, vm);
-        }
+        const vm = getAssociatedVM(elm);
+        allocateChildrenHook(vnode, vm);
 
         hydrateElmHook(vnode);
 
         // Insert hook section:
-        if (vm) {
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
-            }
-            runConnectedCallback(vm);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
         }
+        runConnectedCallback(vm);
 
-        if (!(vm && vm.renderMode === RenderMode.Light)) {
+        if (vm.renderMode !== RenderMode.Light) {
             // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
             // Note: for Light DOM, this is handled while hydrating the VM
             hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vm);
         }
 
-        if (vm) {
-            hydrateVM(vm);
-        }
+        hydrateVM(vm);
     },
 };
 
