@@ -19,6 +19,18 @@ function getAllRootNodes(node: Node) {
     return rootNodes;
 }
 
+// Keep searching up the host tree until we find an element that is within the immediate shadow root
+const findAncestorHostInImmediateShadowRoot = (rootNode: Node, targetRootNode: Node) => {
+    let host;
+    while (!isUndefined((host = (rootNode as any).host))) {
+        const thisRootNode = host.getRootNode();
+        if (thisRootNode === targetRootNode) {
+            return host;
+        }
+        rootNode = thisRootNode;
+    }
+};
+
 export function fauxElementsFromPoint(
     context: Node,
     doc: Document,
@@ -29,19 +41,6 @@ export function fauxElementsFromPoint(
     const result: Element[] = [];
 
     const rootNodes = getAllRootNodes(context);
-
-    // Keep searching up the host tree until we find an element that is within the context node's
-    // immediate shadow root
-    const findAncestorHostInImmediateShadowRoot = (rootNode: Node) => {
-        let host;
-        while (!isUndefined((host = (rootNode as any).host))) {
-            const thisRootNode = host.getRootNode();
-            if (thisRootNode === rootNodes[0]) {
-                return host;
-            }
-            rootNode = thisRootNode;
-        }
-    };
 
     // Filter the elements array to only include those elements that are in this shadow root or in one of its
     // ancestor roots. This matches Chrome and Safari's implementation (but not Firefox's, which only includes
@@ -66,7 +65,10 @@ export function fauxElementsFromPoint(
             // the child. So we need to detect if this shadow element's host is accessible from
             // the context's shadow root. Note we also need to be careful not to add the host
             // multiple times.
-            const ancestorHost = findAncestorHostInImmediateShadowRoot(elementRootNode);
+            const ancestorHost = findAncestorHostInImmediateShadowRoot(
+                elementRootNode,
+                rootNodes[0]
+            );
             if (
                 !isUndefined(ancestorHost) &&
                 ArrayIndexOf.call(elements, ancestorHost) === -1 &&
