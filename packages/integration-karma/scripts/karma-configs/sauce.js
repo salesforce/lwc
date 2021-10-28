@@ -9,7 +9,7 @@
 
 const {
     COMPAT,
-    DISABLE_SYNTHETIC,
+    SYNTHETIC_SHADOW_ENABLED,
     TEST_HYDRATION,
     TAGS,
     SAUCE_USERNAME,
@@ -111,7 +111,7 @@ function getSauceConfig() {
         customData: {
             lwc: {
                 COMPAT,
-                DISABLE_SYNTHETIC,
+                DISABLE_SYNTHETIC: !SYNTHETIC_SHADOW_ENABLED,
             },
 
             ci: IS_CI,
@@ -133,7 +133,8 @@ function getMatchingBrowsers() {
         return (
             (!TEST_HYDRATION || browser.test_hydration === TEST_HYDRATION) &&
             browser.compat === COMPAT &&
-            (!DISABLE_SYNTHETIC || browser.nativeShadowCompatible === DISABLE_SYNTHETIC)
+            (SYNTHETIC_SHADOW_ENABLED ||
+                browser.nativeShadowCompatible !== SYNTHETIC_SHADOW_ENABLED)
         );
     });
 }
