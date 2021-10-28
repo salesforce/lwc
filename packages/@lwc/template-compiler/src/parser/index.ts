@@ -122,23 +122,32 @@ export default function parse(source: string, state: State): TemplateParseResult
 }
 
 function parseRoot(ctx: ParserCtx, parse5Elm: parse5.Element): Root {
-    const parse5ElmLocation = parseElementLocation(ctx, parse5Elm);
+    const { sourceCodeLocation: rootLocation } = parse5Elm;
 
-    if (parse5Elm.tagName !== 'template') {
-        ctx.throwAtLocation(
-            ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE,
-            ast.elementSourceLocation(parse5ElmLocation),
-            [parse5Elm.tagName]
+    if (!rootLocation) {
+        // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
+        // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
+        // This is a defensive check as this should never happen for the root template.
+        throw new Error(
+            'An internal parsing error occurred during node creation; the root template node does not have a sourceCodeLocation.'
         );
     }
 
-    const parsedAttr = parseAttributes(ctx, parse5Elm, parse5ElmLocation);
-    const root = ast.root(parse5ElmLocation);
+    if (parse5Elm.tagName !== 'template') {
+        ctx.throw(
+            ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE,
+            [parse5Elm.tagName],
+            ast.sourceLocation(rootLocation)
+        );
+    }
 
-    applyRootLwcDirectives(ctx, root, parsedAttr);
+    const parsedAttr = parseAttributes(ctx, parse5Elm, rootLocation);
+    const root = ast.root(rootLocation);
+
+    applyRootLwcDirectives(ctx, parsedAttr, root);
     ctx.setRootDirective(root);
-    validateRoot(ctx, root, parsedAttr);
-    parseChildren(ctx, root, parse5Elm);
+    validateRoot(ctx, parsedAttr, root);
+    parseChildren(ctx, parse5Elm, root, rootLocation);
 
     return root;
 }
@@ -146,17 +155,23 @@ function parseRoot(ctx: ParserCtx, parse5Elm: parse5.Element): Root {
 function parseElement(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
-    parse5Parent: parse5.Element,
-    parent: ParentNode
+    parentNode: ParentNode,
+    parse5ParentLocation: parse5.ElementLocation
 ): void {
-    const parse5ElmLocation = parseElementLocation(ctx, parse5Elm, parse5Parent);
+    const parse5ElmLocation = parseElementLocation(ctx, parse5Elm, parse5ParentLocation);
     const parsedAttr = parseAttributes(ctx, parse5Elm, parse5ElmLocation);
-    const directive = parseElementDirectives(ctx, parsedAttr, parent, parse5ElmLocation);
-    const element = parseBaseElement(ctx, parsedAttr, parse5Elm, directive || parent, parse5ElmLocation);
+    const directive = parseElementDirectives(ctx, parsedAttr, parentNode, parse5ElmLocation);
+    const element = parseBaseElement(
+        ctx,
+        parsedAttr,
+        parse5Elm,
+        directive || parentNode,
+        parse5ElmLocation
+    );
 
     if (element) {
         applyHandlers(ctx, parsedAttr, element);
-        applyKey(ctx, parsedAttr, element, parent);
+        applyKey(ctx, parsedAttr, element, parentNode);
         applyLwcDirectives(ctx, parsedAttr, element);
         applyAttributes(ctx, parsedAttr, element);
 
@@ -169,7 +184,7 @@ function parseElement(
 
     const currentNode = element || directive;
     if (currentNode) {
-        parseChildren(ctx, currentNode, parse5Elm);
+        parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
         validateChildren(ctx, element);
     }
 }
@@ -177,16 +192,19 @@ function parseElement(
 function parseElementLocation(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
-    parse5Parent?: parse5.Element
+    parse5ParentLocation: parse5.ElementLocation
 ): parse5.ElementLocation {
     let location = parse5Elm.sourceCodeLocation;
+
+    // AST hierarchy is ForBlock > If > BaseElement, if immediate parent is not a BaseElement it is a template.
+    const parentNode = ctx.findAncestor(ast.isBaseElement, () => false);
 
     if (!location) {
         // Parse5 will recover from invalid HTML. When this happens the element's sourceCodeLocation will be undefined.
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         ctx.warn(ParserDiagnostics.INVALID_HTML_RECOVERY, [
             parse5Elm.tagName,
-            parse5Parent?.tagName,
+            parentNode?.name ?? 'template',
         ]);
     }
 
@@ -201,33 +219,7 @@ function parseElementLocation(
         location = current.sourceCodeLocation;
     }
 
-    if (location) {
-        return location;
-    } else if (parse5Parent?.sourceCodeLocation) {
-        // Parent's location is used as the fallback in case the current node's location cannot be found.
-        return parse5Parent.sourceCodeLocation;
-    } else {
-        // If there is no parent, use a default parse5.ElementLocation instead.
-        const defaultParse5Location = () => ({
-            endCol: 0,
-            endOffset: 0,
-            endLine: 0,
-            startCol: 0,
-            startOffset: 0,
-            startLine: 0,
-        });
-
-        const attrs = Object.fromEntries(
-            parse5Elm.attrs.map((attr) => [attributeName(attr), defaultParse5Location()])
-        );
-
-        return {
-            startTag: { attrs: {}, ...defaultParse5Location() },
-            endTag: defaultParse5Location(),
-            attrs,
-            ...defaultParse5Location(),
-        };
-    }
+    return location ?? parse5ParentLocation;
 }
 
 function parseElementDirectives(
@@ -283,14 +275,19 @@ function parseBaseElement(
     return element;
 }
 
-function parseChildren(ctx: ParserCtx, parent: ParentNode, parse5Parent: parse5.Element): void {
+function parseChildren(
+    ctx: ParserCtx,
+    parse5Parent: parse5.Element,
+    parent: ParentNode,
+    parse5ParentLocation: parse5.ElementLocation
+): void {
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
                 ctx.beginScope();
-                parseElement(ctx, child, parse5Parent, parent);
+                parseElement(ctx, child, parent, parse5ParentLocation);
                 ctx.endScope();
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
@@ -312,7 +309,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         // This is a defensive check as this should never happen for TextNode.
         throw new Error(
-            `An internal parsing error occurred during node creation; a text node was found without a sourceCodeLocation.`
+            'An internal parsing error occurred during node creation; a text node was found without a sourceCodeLocation.'
         );
     }
 
@@ -353,7 +350,7 @@ function parseComment(parse5Comment: parse5.CommentNode): Comment {
         // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
         // This is a defensive check as this should never happen for CommentNode.
         throw new Error(
-            `An internal parsing error occurred during node creation; a comment node was found without a sourceCodeLocation.`
+            'An internal parsing error occurred during node creation; a comment node was found without a sourceCodeLocation.'
         );
     }
 
@@ -373,9 +370,10 @@ function getTemplateRoot(
 
     if (validRoots.length > 1) {
         const duplicateRoot = validRoots[1].sourceCodeLocation;
-        ctx.throwAtLocation(
+        ctx.throw(
             ParserDiagnostics.MULTIPLE_ROOTS_FOUND,
-            ast.sourceLocation(duplicateRoot)
+            [],
+            duplicateRoot ? ast.sourceLocation(duplicateRoot) : duplicateRoot
         );
     }
 
@@ -434,7 +432,7 @@ function parseIf(ctx: ParserCtx, parsedAttr: ParsedAttribute): If | undefined {
     return ast.ifNode(ifAttribute.location, modifier, ifAttribute.value);
 }
 
-function applyRootLwcDirectives(ctx: ParserCtx, root: Root, parsedAttr: ParsedAttribute): void {
+function applyRootLwcDirectives(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): void {
     const lwcAttribute = parsedAttr.get(LWC_RE);
     if (!lwcAttribute) {
         return;
@@ -671,7 +669,7 @@ function parseForEach(
     } else if (forEachAttribute || forItemAttribute) {
         ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
-            ast.elementSourceLocation(parse5ElmLocation)
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 }
@@ -690,7 +688,7 @@ function parseForOf(
     if (hasForEach) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR,
-            ast.elementSourceLocation(parse5ElmLocation),
+            ast.sourceLocation(parse5ElmLocation),
             [iteratorExpression.name]
         );
     }
@@ -756,7 +754,7 @@ function parseSlot(
     parsedAttr: ParsedAttribute,
     parse5ElmLocation: parse5.ElementLocation
 ): Slot {
-    const location = ast.elementSourceLocation(parse5ElmLocation);
+    const location = ast.sourceLocation(parse5ElmLocation);
 
     const hasDirectives = ctx.findSibling(ast.isForBlock) || ctx.findSibling(ast.isIf);
     if (hasDirectives) {
@@ -812,7 +810,7 @@ function parseSlot(
         ]);
     }
 
-    return ast.slot(name, location);
+    return ast.slot(name, parse5ElmLocation);
 }
 
 function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElement): void {
@@ -891,7 +889,7 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
     }
 }
 
-function validateRoot(ctx: ParserCtx, root: Root, parsedAttr: ParsedAttribute): void {
+function validateRoot(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): void {
     if (parsedAttr.getAttributes().length) {
         ctx.throwOnNode(ParserDiagnostics.ROOT_TEMPLATE_HAS_UNKNOWN_ATTRIBUTES, root);
     }
@@ -953,7 +951,7 @@ function validateTemplate(
     parse5ElmLocation: parse5.ElementLocation
 ): void {
     if (parse5Elm.tagName === 'template') {
-        const location = ast.elementSourceLocation(parse5ElmLocation);
+        const location = ast.sourceLocation(parse5ElmLocation);
 
         // Empty templates not allowed outside of root
         if (!parse5Elm.attrs.length) {
@@ -1045,7 +1043,11 @@ function validateProperties(ctx: ParserCtx, element: BaseElement): void {
     }
 }
 
-function parseAttributes(ctx: ParserCtx, parse5Elm: parse5.Element, parse5ElmLocation: parse5.ElementLocation): ParsedAttribute {
+function parseAttributes(
+    ctx: ParserCtx,
+    parse5Elm: parse5.Element,
+    parse5ElmLocation: parse5.ElementLocation
+): ParsedAttribute {
     const parsedAttrs = new ParsedAttribute();
     const { attrs: attributes, tagName } = parse5Elm;
     const { attrs: attrLocations } = parse5ElmLocation;

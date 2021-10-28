@@ -3,7 +3,7 @@
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
-*/
+ */
 import * as astring from 'astring';
 
 import { isBooleanAttribute } from '@lwc/shared';
@@ -507,13 +507,13 @@ function transform(codeGen: CodeGen): t.Expression {
             const listenerObj = Object.fromEntries(
                 listeners.map((listener) => [listener.name, listener])
             );
-            const onlistenerObjAST = objectToAST(listenerObj, (key) => {
+            const listenerObjAST = objectToAST(listenerObj, (key) => {
                 const componentHandler = codeGen.bindExpression(listenerObj[key].handler);
                 const handler = codeGen.genBind(componentHandler);
 
                 return memorizeHandler(codeGen, componentHandler, handler);
             });
-            data.push(t.property(t.identifier('on'), onlistenerObjAST));
+            data.push(t.property(t.identifier('on'), listenerObjAST));
         }
 
         // SVG handling

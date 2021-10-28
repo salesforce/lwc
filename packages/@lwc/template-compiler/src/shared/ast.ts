@@ -39,10 +39,10 @@ import {
     LWCDirectiveDomMode,
 } from './types';
 
-export function root(parse5ElementLocation: parse5.ElementLocation): Root {
+export function root(parse5ElmLocation: parse5.ElementLocation): Root {
     return {
         type: 'Root',
-        location: elementSourceLocation(parse5ElementLocation),
+        location: elementSourceLocation(parse5ElmLocation),
         directives: [],
         children: [],
     };
@@ -81,12 +81,12 @@ export function component(
     };
 }
 
-export function slot(slotName: string, location: ElementSourceLocation): Slot {
+export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation): Slot {
     return {
         type: 'Slot',
         name: 'slot',
         slotName,
-        location,
+        location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
         properties: [],
         directives: [],
@@ -112,25 +112,27 @@ export function comment(value: string, parse5Location: parse5.Location): Comment
 }
 
 export function elementSourceLocation(
-    parse5ElmLocation?: parse5.ElementLocation
+    parse5ElmLocation: parse5.ElementLocation
 ): ElementSourceLocation {
     const elementLocation = sourceLocation(parse5ElmLocation);
-    const startTag = sourceLocation(parse5ElmLocation?.startTag);
+    const startTag = sourceLocation(parse5ElmLocation.startTag);
     // endTag must be optional because Parse5 currently fails to collect end tag location for element with a tag name
     // containing an upper case character (inikulin/parse5#352).
-    const endTag = parse5ElmLocation?.endTag ? sourceLocation(parse5ElmLocation.endTag) : undefined;
+    const endTag = parse5ElmLocation.endTag
+        ? sourceLocation(parse5ElmLocation.endTag)
+        : parse5ElmLocation.endTag;
 
     return { ...elementLocation, startTag, endTag };
 }
 
-export function sourceLocation(location?: parse5.Location): SourceLocation {
+export function sourceLocation(location: parse5.Location): SourceLocation {
     return {
-        startLine: location?.startLine ?? 0,
-        startColumn: location?.startCol ?? 0,
-        endLine: location?.endLine ?? 0,
-        endColumn: location?.endCol ?? 0,
-        start: location?.startOffset ?? 0,
-        end: location?.endOffset ?? 0,
+        startLine: location.startLine,
+        startColumn: location.startCol,
+        endLine: location.endLine,
+        endColumn: location.endCol,
+        start: location.startOffset,
+        end: location.endOffset,
     };
 }
 
