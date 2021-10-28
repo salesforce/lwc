@@ -279,7 +279,7 @@ function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolea
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
         const elmAttrValue = renderer.getAttribute(elm, attrName);
-        if (attrValue !== elmAttrValue) {
+        if (String(attrValue) !== elmAttrValue) {
             logError(
                 `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
                 vnode.owner
@@ -300,7 +300,7 @@ function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolea
     let nodesAreCompatible = true;
     let vnodeClassName;
 
-    if (!isUndefined(className) && className !== elm.className) {
+    if (!isUndefined(className) && String(className) !== elm.className) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
         vnodeClassName = className;

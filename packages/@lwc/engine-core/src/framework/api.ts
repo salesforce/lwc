@@ -100,7 +100,7 @@ const TextHook: Hooks<VText> = {
                 assert.fail('Hydration mismatch: incorrect node type received.');
             }
 
-            if (node.nodeValue !== vNode.text) {
+            if (node.nodeValue !== String(vNode.text)) {
                 logWarn(
                     'Hydration mismatch: text values do not match, will recover from the difference',
                     vNode.owner
