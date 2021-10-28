@@ -17,8 +17,9 @@ import { getStyleOrSwappedStyle } from './hot-swaps';
  * the engine with different values depending on the mode that the component is running on.
  */
 export type StylesheetFactory = (
+    stylesheetToken: string | undefined,
     useActualHostSelector: boolean,
-    stylesheetToken: string | undefined
+    useNativeDirPseudoclass: boolean
 ) => string;
 
 /**
@@ -100,6 +101,8 @@ function evaluateStylesheetsContent(
 ): string[] {
     const content: string[] = [];
 
+    let root: VM | null | undefined;
+
     for (let i = 0; i < stylesheets.length; i++) {
         let stylesheet = stylesheets[i];
 
@@ -112,20 +115,37 @@ function evaluateStylesheetsContent(
                 // the stylesheet, while internally, we have a replacement for it.
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
-            // Use the actual `:host` selector if we're rendering global CSS for light DOM, or if we're rendering
-            // native shadow DOM. Synthetic shadow DOM never uses `:host`.
             const isScopedCss = (stylesheet as any)[KEY__SCOPED_CSS];
-            const useActualHostSelector =
-                vm.renderMode === RenderMode.Light
-                    ? !isScopedCss
-                    : vm.shadowMode === ShadowMode.Native;
             // Apply the scope token only if the stylesheet itself is scoped, or if we're rendering synthetic shadow.
             const scopeToken =
                 isScopedCss ||
                 (vm.shadowMode === ShadowMode.Synthetic && vm.renderMode === RenderMode.Shadow)
                     ? stylesheetToken
                     : undefined;
-            ArrayPush.call(content, stylesheet(useActualHostSelector, scopeToken));
+            // Use the actual `:host` selector if we're rendering global CSS for light DOM, or if we're rendering
+            // native shadow DOM. Synthetic shadow DOM never uses `:host`.
+            const useActualHostSelector =
+                vm.renderMode === RenderMode.Light
+                    ? !isScopedCss
+                    : vm.shadowMode === ShadowMode.Native;
+            // Use the native :dir() pseudoclass only in native shadow DOM. Otherwise, in synthetic shadow,
+            // we use an attribute selector on the host to simulate :dir().
+            let useNativeDirPseudoclass;
+            if (vm.renderMode === RenderMode.Shadow) {
+                useNativeDirPseudoclass = vm.shadowMode === ShadowMode.Native;
+            } else {
+                // Light DOM components should only render `[dir]` if they're inside of a synthetic shadow root.
+                // At the top level (root is null) or inside of a native shadow root, they should use `:dir()`.
+                if (isUndefined(root)) {
+                    // Only calculate the root once as necessary
+                    root = getNearestShadowComponent(vm);
+                }
+                useNativeDirPseudoclass = isNull(root) || root.shadowMode === ShadowMode.Native;
+            }
+            ArrayPush.call(
+                content,
+                stylesheet(scopeToken, useActualHostSelector, useNativeDirPseudoclass)
+            );
         }
     }
 
@@ -147,13 +167,23 @@ export function getStylesheetsContent(vm: VM, template: Template): string[] {
 // It might be worth caching this to avoid doing the lookup repeatedly, but
 // perf testing has not shown it to be a huge improvement yet:
 // https://github.com/salesforce/lwc/pull/2460#discussion_r691208892
-function getNearestNativeShadowComponent(vm: VM): VM | null {
+function getNearestShadowComponent(vm: VM): VM | null {
     let owner: VM | null = vm;
     while (!isNull(owner)) {
-        if (owner.renderMode === RenderMode.Shadow && owner.shadowMode === ShadowMode.Native) {
+        if (owner.renderMode === RenderMode.Shadow) {
             return owner;
         }
         owner = owner.owner;
+    }
+    return owner;
+}
+
+function getNearestNativeShadowComponent(vm: VM): VM | null {
+    const owner = getNearestShadowComponent(vm);
+    if (!isNull(owner) && owner.shadowMode === ShadowMode.Synthetic) {
+        // Synthetic-within-native is impossible. So if the nearest shadow component is
+        // synthetic, we know we won't find a native component if we go any further.
+        return null;
     }
     return owner;
 }

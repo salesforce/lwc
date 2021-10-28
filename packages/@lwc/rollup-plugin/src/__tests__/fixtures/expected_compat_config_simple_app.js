@@ -68,7 +68,7 @@
 
   var __concat = Proxy.concat;
 
-  function stylesheet(useActualHostSelector, token) {
+  function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
     var hostSelector = token ? "[" + token + "-host]" : "";
     return useActualHostSelector ? ":host {color: var(--lwc-my-color);}" : __callKey1([hostSelector, " {color: var(--lwc-my-color);}"], "join", '');
   }

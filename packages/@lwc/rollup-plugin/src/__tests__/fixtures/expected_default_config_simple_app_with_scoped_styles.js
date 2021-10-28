@@ -1,7 +1,7 @@
 (function (lwc) {
   'use strict';
 
-  function stylesheet(useActualHostSelector, token) {
+  function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
     var shadowSelector = token ? ("." + token) : "";
     return ["div", shadowSelector, " {color: blue;}"].join('');
   }
