@@ -53,6 +53,12 @@ export default function templateTransform(
     };
 }
 
+function escapeScopeToken(input: string) {
+    // Minimal escape for strings containing the "@" character, which is disallowed in CSS selectors
+    // and at the beginning of attribute names
+    return input.replace(/@/g, '___at___');
+}
+
 function serialize(
     code: string,
     filename: string,
@@ -60,7 +66,9 @@ function serialize(
 ): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopedCssRelPath = `./${path.basename(filename, path.extname(filename))}.scoped.css`;
-    const scopeToken = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
+    const scopeToken = escapeScopeToken(
+        `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`
+    );
     let buffer = '';
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
     buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scoped=true";\n\n`;
