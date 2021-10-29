@@ -1,0 +1,7 @@
+<template>
+  <ul>
+    <template for:each={rows} for:item="row">
+      <benchmark-tracked-component-row key={row.id} row={row}></benchmark-tracked-component-row>
+    </template>
+  </ul>
+</template>
