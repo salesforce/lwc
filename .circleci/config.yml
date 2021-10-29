@@ -105,9 +105,6 @@ commands:
         type: boolean
       compat:
         type: boolean
-      test_hydrate:
-        type: boolean
-        default: false
       coverage:
         type: boolean
         default: true
@@ -119,7 +116,6 @@ commands:
               <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >>
               <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >>
               <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
-              <<# parameters.test_hydrate >> TEST_HYDRATION=1 <</ parameters.test_hydrate >>
               <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
               yarn sauce
 
@@ -194,11 +190,12 @@ jobs:
           disable_synthetic: false
           compat: false
           force_native_shadow_mode: true
-      - run_karma:
-          disable_synthetic: true
-          compat: false
-          force_native_shadow_mode: false
-          test_hydrate: true
+      - run:
+          name: Run karma hydration tests
+          command: yarn hydration:sauce
+          working_directory: packages/integration-karma
+          environment:
+            COVERAGE: 1
       - run:
           name: Compute karma coverage
           command: yarn coverage
