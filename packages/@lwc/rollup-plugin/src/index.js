@@ -9,8 +9,6 @@ const path = require('path');
 const pluginUtils = require('@rollup/pluginutils');
 const compiler = require('@lwc/compiler');
 const { resolveModule } = require('@lwc/module-resolver');
-const semver = require('semver');
-const pkg = require('../package.json');
 
 const DEFAULT_MODULES = [
     { npm: '@lwc/engine-dom' },
@@ -55,14 +53,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
             customRootDir = rootDir ? path.resolve(rootDir) : path.dirname(path.resolve(input));
             customResolvedModules = [...userModules, ...DEFAULT_MODULES, { dir: customRootDir }];
-        },
-
-        buildStart() {
-            if (!semver.satisfies(this.meta.rollupVersion, pkg.peerDependencies.rollup)) {
-                throw new Error(
-                    `@lwc/rollup-plugin requires Rollup version ${pkg.peerDependencies.rollup} (found: ${this.meta.rollupVersion}). Please update Rollup.`
-                );
-            }
         },
 
         resolveId(importee, importer) {
