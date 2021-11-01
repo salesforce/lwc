@@ -76,7 +76,7 @@ module.exports = (config) => {
         config.plugins.push('karma-coverage');
 
         config.coverageReporter = {
-            dir: path.resolve(COVERAGE_DIR, ['hydration'].join('_')),
+            dir: path.resolve(COVERAGE_DIR, 'hydration'),
             reporters: [{ type: 'html' }, { type: 'json' }],
         };
     }
