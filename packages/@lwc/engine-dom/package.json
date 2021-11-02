@@ -25,6 +25,7 @@
     ],
     "devDependencies": {
         "@lwc/engine-core": "2.7.0",
+        "@lwc/renderer-abstract": "2.7.0",
         "@lwc/shared": "2.7.0"
     },
     "lwc": {

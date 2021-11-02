@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { setAttribute, removeAttribute } from '@lwc/renderer-abstract';
 import { isString } from '@lwc/shared';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
@@ -12,9 +13,7 @@ function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
     const {
         elm,
         data: { style: newStyle },
-        owner: { renderer },
     } = vnode;
-    const { setAttribute, removeAttribute } = renderer;
     if (oldVnode.data.style === newStyle) {
         return;
     }

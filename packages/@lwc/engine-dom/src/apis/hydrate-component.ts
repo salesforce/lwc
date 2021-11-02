@@ -12,7 +12,7 @@ import {
     hydrateRootElement,
 } from '@lwc/engine-core';
 import { isFunction, isNull, isObject } from '@lwc/shared';
-import { renderer, setIsHydrating } from '../renderer';
+import { setIsHydrating } from '../renderer';
 import { createElement } from './create-element';
 
 export function hydrateComponent(
@@ -42,7 +42,6 @@ export function hydrateComponent(
         createVM(element, def, {
             mode: 'open',
             owner: null,
-            renderer,
             tagName: element.tagName.toLowerCase(),
         });
 

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { setProperty, getProperty } from '@lwc/renderer-abstract';
 import { assert, isUndefined, keys } from '@lwc/shared';
 import { VElement } from '../../3rdparty/snabbdom/types';
 
@@ -32,11 +33,7 @@ function update(oldVnode: VElement, vnode: VElement) {
     }
 
     const isFirstPatch = isUndefined(oldProps);
-    const {
-        elm,
-        sel,
-        owner: { renderer },
-    } = vnode;
+    const { elm, sel } = vnode;
 
     for (const key in props) {
         const cur = props[key];
@@ -44,12 +41,9 @@ function update(oldVnode: VElement, vnode: VElement) {
         // if it is the first time this element is patched, or the current value is different to the previous value...
         if (
             isFirstPatch ||
-            cur !==
-                (isLiveBindingProp(sel, key)
-                    ? renderer.getProperty(elm!, key)
-                    : (oldProps as any)[key])
+            cur !== (isLiveBindingProp(sel, key) ? getProperty(elm!, key) : (oldProps as any)[key])
         ) {
-            renderer.setProperty(elm!, key, cur);
+            setProperty(elm!, key, cur);
         }
     }
 }

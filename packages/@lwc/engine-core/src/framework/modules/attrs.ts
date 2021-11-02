@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { setAttribute, removeAttribute } from '@lwc/renderer-abstract';
 import { assert, isNull, isUndefined, keys, StringCharCodeAt } from '@lwc/shared';
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
@@ -16,7 +17,6 @@ const ColonCharCode = 58;
 function updateAttrs(oldVnode: VElement, vnode: VElement) {
     const {
         data: { attrs },
-        owner: { renderer },
     } = vnode;
 
     if (isUndefined(attrs)) {
@@ -37,7 +37,6 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
     }
 
     const elm = vnode.elm!;
-    const { setAttribute, removeAttribute } = renderer;
 
     let key: string;
     oldAttrs = isUndefined(oldAttrs) ? EmptyObject : oldAttrs;

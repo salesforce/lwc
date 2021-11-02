@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { setCSSStyleProperty } from '@lwc/renderer-abstract';
 import { isUndefined } from '@lwc/shared';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
@@ -14,7 +15,6 @@ function createStyleAttribute(vnode: VNode) {
     const {
         elm,
         data: { styleDecls },
-        owner: { renderer },
     } = vnode;
 
     if (isUndefined(styleDecls)) {
@@ -23,7 +23,7 @@ function createStyleAttribute(vnode: VNode) {
 
     for (let i = 0; i < styleDecls.length; i++) {
         const [prop, value, important] = styleDecls[i];
-        renderer.setCSSStyleProperty(elm, prop, value, important);
+        setCSSStyleProperty(elm, prop, value, important);
     }
 }
 

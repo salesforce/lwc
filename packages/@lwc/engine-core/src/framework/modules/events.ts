@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { addEventListener } from '@lwc/renderer-abstract';
 import { isUndefined } from '@lwc/shared';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
@@ -46,7 +47,6 @@ function createAllEventListeners(vnode: VNode) {
     const {
         elm,
         data: { on },
-        owner: { renderer },
     } = vnode;
 
     if (isUndefined(on)) {
@@ -58,7 +58,7 @@ function createAllEventListeners(vnode: VNode) {
 
     let name;
     for (name in on) {
-        renderer.addEventListener(elm, name, listener);
+        addEventListener(elm, name, listener);
     }
 }
 

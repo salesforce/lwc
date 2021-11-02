@@ -19,7 +19,6 @@ import {
     setPrototypeOf,
     StringToLowerCase,
 } from '@lwc/shared';
-import { Renderer } from '@lwc/engine-core';
 
 const globalStylesheets: { [content: string]: true } = create(null);
 
@@ -43,7 +42,9 @@ const styleElements: { [content: string]: HTMLStyleElement } = create(null);
 const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
 const nodesToStyleSheets = new WeakMap<Node, { [content: string]: true }>();
 
-let getCustomElement, defineCustomElement, HTMLElementConstructor;
+export let getCustomElement: any;
+export let defineCustomElement: any;
+let HTMLElementConstructor;
 
 function isCustomElementRegistryAvailable() {
     if (typeof customElements === 'undefined') {
@@ -59,6 +60,7 @@ function isCustomElementRegistryAvailable() {
         // invokes the DOM api with an .apply() or .call() to initialize any DOM api sub-classing,
         // which are not equipped to be initialized that way.
         class clazz extends HTMLElementAlias {}
+
         customElements.define('lwc-test-' + Math.floor(Math.random() * 1000000), clazz);
         new clazz();
         return true;
@@ -143,211 +145,225 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
-let isHydrating = false;
+let hydrating = false;
 
-export function setIsHydrating(v: boolean) {
-    isHydrating = v;
+export function setIsHydrating(value: boolean) {
+    hydrating = value;
 }
 
-export const renderer: Renderer<Node, Element> = {
-    ssr: false,
-    isHydrating(): boolean {
-        return isHydrating;
-    },
+export const ssr: boolean = false;
 
-    isNativeShadowDefined: globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED],
-    isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
+export function isHydrating(): boolean {
+    return hydrating;
+}
 
-    createElement(tagName: string, namespace: string): Element {
-        return isUndefined(namespace)
-            ? document.createElement(tagName)
-            : document.createElementNS(namespace, tagName);
-    },
+export const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
+export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
+    Element.prototype,
+    KEY__SHADOW_TOKEN
+);
 
-    createText(content: string): Node {
-        return document.createTextNode(content);
-    },
+export function createElement(tagName: string, namespace?: string): Element {
+    return isUndefined(namespace)
+        ? document.createElement(tagName)
+        : document.createElementNS(namespace, tagName);
+}
 
-    createComment(content: string): Node {
-        return document.createComment(content);
-    },
+export function createText(content: string): Node {
+    return document.createTextNode(content);
+}
 
-    insert(node: Node, parent: Node, anchor: Node): void {
-        parent.insertBefore(node, anchor);
-    },
+export function createComment(content: string): Node {
+    return document.createComment(content);
+}
 
-    remove(node: Node, parent: Node): void {
-        parent.removeChild(node);
-    },
+export function insert(node: Node, parent: Node, anchor: Node): void {
+    parent.insertBefore(node, anchor);
+}
 
-    nextSibling(node: Node): Node | null {
-        return node.nextSibling;
-    },
+export function remove(node: Node, parent: Node): void {
+    parent.removeChild(node);
+}
 
-    attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
-        if (isHydrating) {
-            return element.shadowRoot!;
+export function nextSibling(node: Node): Node | null {
+    return node.nextSibling;
+}
+
+export function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
+    if (hydrating) {
+        return element.shadowRoot!;
+    }
+    return element.attachShadow(options);
+}
+
+export function setText(node: Node, content: string): void {
+    node.nodeValue = content;
+}
+
+export function getProperty(node: Node, key: string): any {
+    return (node as any)[key];
+}
+
+export function setProperty(node: Node, key: string, value: any): void {
+    if (process.env.NODE_ENV !== 'production') {
+        if (node instanceof Element && !(key in node)) {
+            // TODO [#1297]: Move this validation to the compiler
+            assert.fail(
+                `Unknown public property "${key}" of element <${
+                    node.tagName
+                }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
+                    key
+                )}".`
+            );
         }
-        return element.attachShadow(options);
-    },
+    }
 
-    setText(node: Node, content: string): void {
-        node.nodeValue = content;
-    },
+    (node as any)[key] = value;
+}
 
-    getProperty(node: Node, key: string): any {
-        return (node as any)[key];
-    },
+export function getAttribute(
+    element: Element,
+    name: string,
+    namespace?: string | null
+): string | null {
+    return isUndefined(namespace)
+        ? element.getAttribute(name)
+        : element.getAttributeNS(namespace, name);
+}
 
-    setProperty(node: Node, key: string, value: any): void {
-        if (process.env.NODE_ENV !== 'production') {
-            if (node instanceof Element && !(key in node)) {
-                // TODO [#1297]: Move this validation to the compiler
-                assert.fail(
-                    `Unknown public property "${key}" of element <${
-                        node.tagName
-                    }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
-                        key
-                    )}".`
-                );
-            }
-        }
+export function setAttribute(
+    element: Element,
+    name: string,
+    value: string,
+    namespace?: string | null
+): void {
+    return isUndefined(namespace)
+        ? element.setAttribute(name, value)
+        : element.setAttributeNS(namespace, name, value);
+}
 
-        (node as any)[key] = value;
-    },
+export function removeAttribute(element: Element, name: string, namespace?: string | null): void {
+    if (isUndefined(namespace)) {
+        element.removeAttribute(name);
+    } else {
+        element.removeAttributeNS(namespace, name);
+    }
+}
 
-    getAttribute(element: Element, name: string, namespace?: string): string | null {
-        return isUndefined(namespace)
-            ? element.getAttribute(name)
-            : element.getAttributeNS(namespace, name);
-    },
+export function addEventListener(
+    target: Node,
+    type: string,
+    callback: EventListener,
+    options?: AddEventListenerOptions | boolean
+): void {
+    target.addEventListener(type, callback, options);
+}
 
-    setAttribute(element: Element, name: string, value: string, namespace?: string): void {
-        return isUndefined(namespace)
-            ? element.setAttribute(name, value)
-            : element.setAttributeNS(namespace, name, value);
-    },
+export function removeEventListener(
+    target: Node,
+    type: string,
+    callback: EventListener,
+    options?: EventListenerOptions | boolean
+): void {
+    target.removeEventListener(type, callback, options);
+}
 
-    removeAttribute(element: Element, name: string, namespace?: string): void {
-        if (isUndefined(namespace)) {
-            element.removeAttribute(name);
-        } else {
-            element.removeAttributeNS(namespace, name);
-        }
-    },
+export function dispatchEvent(target: Node, event: Event): boolean {
+    return target.dispatchEvent(event);
+}
 
-    addEventListener(
-        target: Node,
-        type: string,
-        callback: EventListener,
-        options: AddEventListenerOptions | boolean
-    ): void {
-        target.addEventListener(type, callback, options);
-    },
+export function getClassList(element: Element): DOMTokenList {
+    return element.classList;
+}
 
-    removeEventListener(
-        target: Node,
-        type: string,
-        callback: EventListener,
-        options: EventListenerOptions | boolean
-    ): void {
-        target.removeEventListener(type, callback, options);
-    },
+export function setCSSStyleProperty(
+    element: Element,
+    name: string,
+    value: string,
+    important: boolean
+): void {
+    // TODO [#0]: How to avoid this type casting? Shall we use a different type interface to
+    // represent elements in the engine?
+    (element as HTMLElement | SVGElement).style.setProperty(
+        name,
+        value,
+        important ? 'important' : ''
+    );
+}
 
-    dispatchEvent(target: Node, event: Event): boolean {
-        return target.dispatchEvent(event);
-    },
+export function getBoundingClientRect(element: Element): DOMRect {
+    return element.getBoundingClientRect();
+}
 
-    getClassList(element: Element): DOMTokenList {
-        return element.classList;
-    },
+export function querySelector(element: Element, selectors: string): Element | null {
+    return element.querySelector(selectors);
+}
 
-    setCSSStyleProperty(element: Element, name: string, value: string, important: boolean): void {
-        // TODO [#0]: How to avoid this type casting? Shall we use a different type interface to
-        // represent elements in the engine?
-        (element as HTMLElement | SVGElement).style.setProperty(
-            name,
-            value,
-            important ? 'important' : ''
-        );
-    },
+export function querySelectorAll(element: Element, selectors: string): NodeList {
+    return element.querySelectorAll(selectors);
+}
 
-    getBoundingClientRect(element: Element): DOMRect {
-        return element.getBoundingClientRect();
-    },
+export function getElementsByTagName(element: Element, tagNameOrWildCard: string): HTMLCollection {
+    return element.getElementsByTagName(tagNameOrWildCard);
+}
 
-    querySelector(element: Element, selectors: string): Element | null {
-        return element.querySelector(selectors);
-    },
+export function getElementsByClassName(element: Element, names: string): HTMLCollection {
+    return element.getElementsByClassName(names);
+}
 
-    querySelectorAll(element: Element, selectors: string): NodeList {
-        return element.querySelectorAll(selectors);
-    },
+export function getChildren(element: Element): HTMLCollection {
+    return element.children;
+}
 
-    getElementsByTagName(element: Element, tagNameOrWildCard: string): HTMLCollection {
-        return element.getElementsByTagName(tagNameOrWildCard);
-    },
+export function getChildNodes(element: Element): NodeList {
+    return element.childNodes;
+}
 
-    getElementsByClassName(element: Element, names: string): HTMLCollection {
-        return element.getElementsByClassName(names);
-    },
+export function getFirstChild(element: Element): Node | null {
+    return element.firstChild;
+}
 
-    getChildren(element: Element): HTMLCollection {
-        return element.children;
-    },
+export function getFirstElementChild(element: Element): Element | null {
+    return element.firstElementChild;
+}
 
-    getChildNodes(element: Element): NodeList {
-        return element.childNodes;
-    },
+export function getLastChild(element: Element): Node | null {
+    return element.lastChild;
+}
 
-    getFirstChild(element: Element): Node | null {
-        return element.firstChild;
-    },
+export function getLastElementChild(element: Element): Element | null {
+    return element.lastElementChild;
+}
 
-    getFirstElementChild(element: Element): Element | null {
-        return element.firstElementChild;
-    },
+export function isConnected(node: Node): boolean {
+    return node.isConnected;
+}
 
-    getLastChild(element: Element): Node | null {
-        return element.lastChild;
-    },
+export function insertGlobalStylesheet(content: string): void {
+    if (!isUndefined(globalStylesheets[content])) {
+        return;
+    }
 
-    getLastElementChild(element: Element): Element | null {
-        return element.lastElementChild;
-    },
+    globalStylesheets[content] = true;
 
-    isConnected(node: Node): boolean {
-        return node.isConnected;
-    },
+    const elm = document.createElement('style');
+    elm.type = 'text/css';
+    elm.textContent = content;
 
-    insertGlobalStylesheet(content: string): void {
-        if (!isUndefined(globalStylesheets[content])) {
-            return;
-        }
+    globalStylesheetsParentElement.appendChild(elm);
+}
 
-        globalStylesheets[content] = true;
+export function insertStylesheet(content: string, target: Node): void {
+    if (supportsConstructableStyleSheets) {
+        insertConstructableStyleSheet(content, target);
+    } else {
+        // Fall back to <style> element
+        insertStyleElement(content, target);
+    }
+}
 
-        const elm = document.createElement('style');
-        elm.type = 'text/css';
-        elm.textContent = content;
+export function assertInstanceOfHTMLElement(elm: any, msg: string) {
+    assert.invariant(elm instanceof HTMLElement, msg);
+}
 
-        globalStylesheetsParentElement.appendChild(elm);
-    },
-
-    insertStylesheet(content: string, target: Node): void {
-        if (supportsConstructableStyleSheets) {
-            insertConstructableStyleSheet(content, target);
-        } else {
-            // Fall back to <style> element
-            insertStyleElement(content, target);
-        }
-    },
-
-    assertInstanceOfHTMLElement(elm: any, msg: string) {
-        assert.invariant(elm instanceof HTMLElement, msg);
-    },
-
-    defineCustomElement,
-    getCustomElement,
-    HTMLElement: HTMLElementConstructor as any,
-};
+export { HTMLElementConstructor as HTMLElement };

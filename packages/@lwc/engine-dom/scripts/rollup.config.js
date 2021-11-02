@@ -8,7 +8,6 @@
 /* eslint-env node */
 
 const path = require('path');
-
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescriptPlugin = require('@rollup/plugin-typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
@@ -31,6 +30,14 @@ module.exports = {
     }),
 
     plugins: [
+        {
+            resolveId(importee) {
+                if (importee === '@lwc/renderer-abstract') {
+                    return path.join(__dirname, '../src/renderer.ts');
+                }
+                return null;
+            },
+        },
         nodeResolve({
             resolveOnly: [/^@lwc\//],
         }),

@@ -5,6 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    createText,
+    createComment,
+    createElement,
+    isSyntheticShadowDefined,
+} from '@lwc/renderer-abstract';
+import {
     ArrayPush,
     assert,
     create as ObjectCreate,
@@ -82,9 +88,8 @@ const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 const TextHook: Hooks<VText> = {
     create: (vnode) => {
         const { owner } = vnode;
-        const { renderer } = owner;
 
-        const elm = renderer.createText(vnode.text!);
+        const elm = createText(vnode.text!);
         linkNodeToShadow(elm, owner);
         vnode.elm = elm;
     },
@@ -117,9 +122,8 @@ const TextHook: Hooks<VText> = {
 const CommentHook: Hooks<VComment> = {
     create: (vnode) => {
         const { owner, text } = vnode;
-        const { renderer } = owner;
 
-        const elm = renderer.createComment(text);
+        const elm = createComment(text);
         linkNodeToShadow(elm, owner);
         vnode.elm = elm;
     },
@@ -161,10 +165,9 @@ const ElementHook: Hooks<VElement> = {
             owner,
             data: { svg },
         } = vnode;
-        const { renderer } = owner;
 
         const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
-        const elm = renderer.createElement(sel, namespace);
+        const elm = createElement(sel, namespace);
 
         linkNodeToShadow(elm, owner);
         fallbackElmHook(elm, vnode);
@@ -225,8 +228,7 @@ const ElementHook: Hooks<VElement> = {
 const CustomElementHook: Hooks<VCustomElement> = {
     create: (vnode) => {
         const { sel, owner } = vnode;
-        const { renderer } = owner;
-        const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
+        const UpgradableConstructor = getUpgradableConstructor(sel);
         /**
          * Note: if the upgradable constructor does not expect, or throw when we new it
          * with a callback as the first argument, we could implement a more advanced
@@ -307,7 +309,6 @@ const CustomElementHook: Hooks<VCustomElement> = {
             mode,
             owner,
             tagName: sel,
-            renderer: owner.renderer,
         });
 
         vnode.elm = elm as Element;
@@ -334,10 +335,10 @@ const CustomElementHook: Hooks<VCustomElement> = {
 };
 
 function linkNodeToShadow(elm: Node, owner: VM) {
-    const { renderer, renderMode, shadowMode } = owner;
+    const { renderMode, shadowMode } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (renderer.isSyntheticShadowDefined) {
+    if (isSyntheticShadowDefined) {
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
             (elm as any)[KEY__SHADOW_RESOLVER] = getRenderRoot(owner)[KEY__SHADOW_RESOLVER];
         }

@@ -4,8 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import {
+    getCustomElement,
+    defineCustomElement,
+    HTMLElement as RendererHTMLElement,
+} from '@lwc/renderer-abstract';
 import { isUndefined, isFunction } from '@lwc/shared';
-import { Renderer } from './renderer';
 
 type UpgradeCallback = (elm: HTMLElement) => void;
 
@@ -14,14 +18,13 @@ interface UpgradableCustomElementConstructor extends CustomElementConstructor {
 }
 
 export function getUpgradableConstructor(
-    tagName: string,
-    renderer: Renderer
+    tagName: string
 ): CustomElementConstructor | UpgradableCustomElementConstructor {
     // Should never get a tag with upper case letter at this point, the compiler should
     // produce only tags with lowercase letters
     // But, for backwards compatibility, we will lower case the tagName
     tagName = tagName.toLowerCase();
-    let CE = renderer.getCustomElement(tagName);
+    let CE = getCustomElement(tagName);
     if (!isUndefined(CE)) {
         return CE;
     }
@@ -29,7 +32,7 @@ export function getUpgradableConstructor(
      * LWC Upgradable Element reference to an element that was created
      * via the scoped registry mechanism, and that is ready to be upgraded.
      */
-    CE = class LWCUpgradableElement extends renderer.HTMLElement {
+    CE = class LWCUpgradableElement extends RendererHTMLElement {
         constructor(upgradeCallback?: UpgradeCallback) {
             super();
             if (isFunction(upgradeCallback)) {
@@ -37,6 +40,6 @@ export function getUpgradableConstructor(
             }
         }
     };
-    renderer.defineCustomElement(tagName, CE);
+    defineCustomElement(tagName, CE);
     return CE;
 }

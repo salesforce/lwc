@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { dispatchEvent } from '@lwc/renderer-abstract';
 import {
     assert,
     isUndefined,
@@ -126,7 +127,6 @@ function createContextWatcher(
     }
     const {
         elm,
-        renderer,
         context: { wiredConnecting, wiredDisconnecting },
     } = vm;
     // waiting for the component to be connected to formally request the context via the token
@@ -148,7 +148,7 @@ function createContextWatcher(
                 ArrayPush.call(wiredDisconnecting, disconnectCallback);
             },
         });
-        renderer.dispatchEvent(elm, contextRegistrationEvent);
+        dispatchEvent(elm, contextRegistrationEvent);
     });
 }
 

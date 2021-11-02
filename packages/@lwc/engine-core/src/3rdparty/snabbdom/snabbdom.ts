@@ -13,6 +13,7 @@ Code distributed by Snabbdom as part of the Snabbdom project at
 https://github.com/snabbdom/snabbdom/
 */
 
+import { nextSibling } from '@lwc/renderer-abstract';
 import { VNode, VNodes, Key } from './types';
 
 function isUndef(s: any): s is undefined {
@@ -107,11 +108,7 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
         } else if (sameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patchVnode(oldStartVnode, newEndVnode);
-            newEndVnode.hook.move(
-                oldStartVnode,
-                parentElm,
-                oldEndVnode.owner.renderer.nextSibling(oldEndVnode.elm!)
-            );
+            newEndVnode.hook.move(oldStartVnode, parentElm, nextSibling(oldEndVnode.elm!));
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (sameVnode(oldEndVnode, newStartVnode)) {

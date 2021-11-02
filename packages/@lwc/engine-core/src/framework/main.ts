@@ -42,7 +42,6 @@ export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 export { setHooks } from './overridable-hooks';
 
 // Types -------------------------------------------------------------------------------------------
-export type { Renderer } from './renderer';
 export type {
     ConfigValue as WireConfigValue,
     ContextValue as WireContextValue,

@@ -4,6 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import {
+    getClassList,
+    removeAttribute,
+    setAttribute,
+    insertGlobalStylesheet,
+    ssr,
+    isHydrating,
+    insertStylesheet,
+} from '@lwc/renderer-abstract';
 import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
 import api from './api';
@@ -47,7 +56,7 @@ function createInlineStyleVNode(content: string): VNode {
 }
 
 export function updateStylesheetToken(vm: VM, template: Template) {
-    const { elm, context, renderer, renderMode, shadowMode } = vm;
+    const { elm, context, renderMode, shadowMode } = vm;
     const { stylesheets: newStylesheets, stylesheetToken: newStylesheetToken } = template;
     const isSyntheticShadow =
         renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic;
@@ -64,10 +73,10 @@ export function updateStylesheetToken(vm: VM, template: Template) {
         hasTokenInAttribute: oldHasTokenInAttribute,
     } = context;
     if (oldHasTokenInClass) {
-        renderer.getClassList(elm).remove(makeHostToken(oldToken!));
+        getClassList(elm).remove(makeHostToken(oldToken!));
     }
     if (oldHasTokenInAttribute) {
-        renderer.removeAttribute(elm, makeHostToken(oldToken!));
+        removeAttribute(elm, makeHostToken(oldToken!));
     }
 
     // Apply the new template styling token to the host element, if the new template has any
@@ -79,11 +88,11 @@ export function updateStylesheetToken(vm: VM, template: Template) {
     // Set the new styling token on the host element
     if (!isUndefined(newToken)) {
         if (hasScopedStyles) {
-            renderer.getClassList(elm).add(makeHostToken(newToken));
+            getClassList(elm).add(makeHostToken(newToken));
             newHasTokenInClass = true;
         }
         if (isSyntheticShadow) {
-            renderer.setAttribute(elm, makeHostToken(newToken), '');
+            setAttribute(elm, makeHostToken(newToken), '');
             newHasTokenInAttribute = true;
         }
     }
@@ -189,12 +198,12 @@ function getNearestNativeShadowComponent(vm: VM): VM | null {
 }
 
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    const { renderer, renderMode, shadowMode } = vm;
+    const { renderMode, shadowMode } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
-            renderer.insertGlobalStylesheet(stylesheets[i]);
+            insertGlobalStylesheet(stylesheets[i]);
         }
-    } else if (renderer.ssr || renderer.isHydrating()) {
+    } else if (ssr || isHydrating()) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
         //       This works in the client, because the stylesheets are created, and cached in the VM
         //       the first time the VM renders.
@@ -208,10 +217,10 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
         const isGlobal = isNull(root);
         for (let i = 0; i < stylesheets.length; i++) {
             if (isGlobal) {
-                renderer.insertGlobalStylesheet(stylesheets[i]);
+                insertGlobalStylesheet(stylesheets[i]);
             } else {
                 // local level
-                renderer.insertStylesheet(stylesheets[i], root!.cmpRoot);
+                insertStylesheet(stylesheets[i], root!.cmpRoot);
             }
         }
     }
