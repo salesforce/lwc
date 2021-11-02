@@ -13,6 +13,7 @@ const { getModulePath } = require('lwc');
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const { GREP, COVERAGE } = require('../../shared/options');
+const { createPattern } = require('../utils');
 
 const BASE_DIR = path.resolve(__dirname, '../../../test-hydration');
 const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
@@ -22,8 +23,6 @@ const LWC_ENGINE = getModulePath('engine-dom', 'iife', 'es2017', 'dev');
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 const TEST_HYDRATE = require.resolve('../../../helpers/test-hydrate');
-
-const { createPattern } = require('../utils');
 
 function getFiles() {
     return [

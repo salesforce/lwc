@@ -13,6 +13,7 @@ const { getModulePath } = require('lwc');
 const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const { COMPAT, SYNTHETIC_SHADOW_ENABLED, GREP, COVERAGE } = require('../../shared/options');
+const { createPattern } = require('../utils');
 const TAGS = require('./tags');
 
 const BASE_DIR = path.resolve(__dirname, '../../../test');
@@ -29,8 +30,6 @@ const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const WIRE_SETUP = require.resolve('../../../helpers/wire-setup');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
-
-const { createPattern } = require('../utils');
 
 function getFiles() {
     const frameworkFiles = [];
