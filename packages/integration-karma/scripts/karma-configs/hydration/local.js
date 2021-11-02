@@ -6,8 +6,7 @@
  */
 
 'use strict';
-const { TEST_HYDRATION } = require('../shared/options');
-const loadBaseConfig = TEST_HYDRATION ? require('./hydration-base') : require('./base');
+const loadBaseConfig = require('./base');
 
 module.exports = (config) => {
     loadBaseConfig(config);

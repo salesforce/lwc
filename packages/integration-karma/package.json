@@ -3,13 +3,14 @@
     "private": true,
     "version": "2.5.8",
     "scripts": {
-        "start": "karma start ./scripts/karma-configs/local.js",
-        "test": "karma start ./scripts/karma-configs/local.js --single-run --browsers Chrome",
+        "start": "karma start ./scripts/karma-configs/test/local.js",
+        "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers Chrome",
         "test:compat": "COMPAT=1 yarn test",
         "test:native": "DISABLE_SYNTHETIC=1 yarn test",
-        "test:hydration": "TEST_HYDRATION=1 yarn test",
-        "start:hydration": "TEST_HYDRATION=1 yarn start",
-        "sauce": "karma start ./scripts/karma-configs/sauce.js --single-run",
+        "hydration:start": "karma start ./scripts/karma-configs/hydration/local.js",
+        "hydration:test": "karma start ./scripts/karma-configs/hydration/local.js --single-run --browsers Chrome",
+        "hydration:sauce": "karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
+        "sauce": "karma start ./scripts/karma-configs/test/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js"
     },
     "devDependencies": {

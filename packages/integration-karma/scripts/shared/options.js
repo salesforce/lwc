@@ -15,20 +15,12 @@ if (process.env.NATIVE_SHADOW) {
 const COMPAT = Boolean(process.env.COMPAT);
 const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
 const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST);
-const TAGS = [
-    `${DISABLE_SYNTHETIC ? 'native' : 'synthetic'}-shadow`,
-    FORCE_NATIVE_SHADOW_MODE_FOR_TEST && 'force-native-shadow-mode',
-    COMPAT && 'compat',
-].filter(Boolean);
-const TEST_HYDRATION = Boolean(process.env.TEST_HYDRATION);
 
 module.exports = {
     // Test configuration
     COMPAT,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     SYNTHETIC_SHADOW_ENABLED: !DISABLE_SYNTHETIC,
-    TEST_HYDRATION,
-    TAGS,
     GREP: process.env.GREP,
     COVERAGE: Boolean(process.env.COVERAGE),
 

@@ -10,12 +10,14 @@
 const path = require('path');
 const { getModulePath } = require('lwc');
 
-const karmaPluginLwc = require('../karma-plugins/lwc');
-const karmaPluginEnv = require('../karma-plugins/env');
-const { COMPAT, SYNTHETIC_SHADOW_ENABLED, TAGS, GREP, COVERAGE } = require('../shared/options');
+const karmaPluginLwc = require('../../karma-plugins/lwc');
+const karmaPluginEnv = require('../../karma-plugins/env');
+const { COMPAT, SYNTHETIC_SHADOW_ENABLED, GREP, COVERAGE } = require('../../shared/options');
+const { createPattern } = require('../utils');
+const TAGS = require('./tags');
 
-const BASE_DIR = path.resolve(__dirname, '../../test');
-const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
+const BASE_DIR = path.resolve(__dirname, '../../../test');
+const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 
 const SYNTHETIC_SHADOW = getModulePath('synthetic-shadow', 'iife', 'es2017', 'dev');
 const SYNTHETIC_SHADOW_COMPAT = getModulePath('synthetic-shadow', 'iife', 'es5', 'dev');
@@ -25,16 +27,9 @@ const WIRE_SERVICE = getModulePath('wire-service', 'iife', 'es2017', 'dev');
 const WIRE_SERVICE_COMPAT = getModulePath('wire-service', 'iife', 'es5', 'dev');
 
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
-const TEST_UTILS = require.resolve('../../helpers/test-utils');
-const WIRE_SETUP = require.resolve('../../helpers/wire-setup');
-const TEST_SETUP = require.resolve('../../helpers/test-setup');
-
-function createPattern(location, config = {}) {
-    return {
-        ...config,
-        pattern: location,
-    };
-}
+const TEST_UTILS = require.resolve('../../../helpers/test-utils');
+const WIRE_SETUP = require.resolve('../../../helpers/wire-setup');
+const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 
 function getFiles() {
     const frameworkFiles = [];

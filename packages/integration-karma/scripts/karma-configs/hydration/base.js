@@ -10,25 +10,19 @@
 const path = require('path');
 const { getModulePath } = require('lwc');
 
-const karmaPluginEnv = require('../karma-plugins/env');
-const karmaPluginHydrationTests = require('../karma-plugins/hydration-tests');
-const { TAGS, GREP, COVERAGE } = require('../shared/options');
+const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
+const karmaPluginEnv = require('../../karma-plugins/env');
+const { GREP, COVERAGE } = require('../../shared/options');
+const { createPattern } = require('../utils');
 
-const BASE_DIR = path.resolve(__dirname, '../../test-hydration');
-const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
+const BASE_DIR = path.resolve(__dirname, '../../../test-hydration');
+const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 
 const LWC_ENGINE = getModulePath('engine-dom', 'iife', 'es2017', 'dev');
 
-const TEST_UTILS = require.resolve('../../helpers/test-utils');
-const TEST_SETUP = require.resolve('../../helpers/test-setup');
-const TEST_HYDRATE = require.resolve('../../helpers/test-hydrate');
-
-function createPattern(location, config = {}) {
-    return {
-        ...config,
-        pattern: location,
-    };
-}
+const TEST_UTILS = require.resolve('../../../helpers/test-utils');
+const TEST_SETUP = require.resolve('../../../helpers/test-setup');
+const TEST_HYDRATE = require.resolve('../../../helpers/test-hydrate');
 
 function getFiles() {
     return [
@@ -81,7 +75,7 @@ module.exports = (config) => {
         config.plugins.push('karma-coverage');
 
         config.coverageReporter = {
-            dir: path.resolve(COVERAGE_DIR, TAGS.join('_')),
+            dir: path.resolve(COVERAGE_DIR, 'hydration'),
             reporters: [{ type: 'html' }, { type: 'json' }],
         };
     }
