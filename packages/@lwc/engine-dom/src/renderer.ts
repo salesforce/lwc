@@ -151,7 +151,7 @@ export function setIsHydrating(v: boolean) {
 
 export const renderer: Renderer<Node, Element> = {
     ssr: false,
-    get isHydrating(): boolean {
+    isHydrating(): boolean {
         return isHydrating;
     },
 
