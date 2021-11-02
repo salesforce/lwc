@@ -100,7 +100,7 @@ const TextHook: Hooks<VText> = {
                 assert.fail('Hydration mismatch: incorrect node type received.');
             }
 
-            if (node.nodeValue !== String(vNode.text)) {
+            if (node.nodeValue !== vNode.text) {
                 logWarn(
                     'Hydration mismatch: text values do not match, will recover from the difference',
                     vNode.owner
@@ -671,8 +671,8 @@ function co(text: string): VComment {
 }
 
 // [d]ynamic text
-function d(value: any): string | any {
-    return value == null ? '' : value;
+function d(value: any): string {
+    return value == null ? '' : String(value);
 }
 
 // [b]ind function
