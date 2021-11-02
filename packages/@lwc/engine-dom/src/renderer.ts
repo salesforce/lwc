@@ -11,10 +11,10 @@ import {
     isUndefined,
     create,
     isFunction,
-    setPrototypeOf,
     htmlPropertyToAttribute,
 } from '@lwc/shared';
 import { Renderer } from '@lwc/engine-core';
+import { patchCustomElementRegistry } from './patches/global-registry';
 
 type UpgradeCallback = (elm: HTMLElement) => void;
 interface UpgradableCustomElementConstructor extends CustomElementConstructor {
@@ -24,9 +24,6 @@ interface UpgradableCustomElementConstructor extends CustomElementConstructor {
 const globalStylesheets: { [content: string]: true } = create(null);
 const globalStylesheetsParentElement: Element = document.head || document.body || document;
 
-const localRegistryRecord: Record<string, UpgradableCustomElementConstructor> = create(null);
-
-let getGlobalCustomElement: (name: string) => CustomElementConstructor | undefined;
 let getUpgradableConstructor: (name: string) => CustomElementConstructor;
 
 function isCustomElementRegistryAvailable() {
@@ -52,35 +49,25 @@ function isCustomElementRegistryAvailable() {
 }
 
 if (isCustomElementRegistryAvailable()) {
-    const { get, define } = customElements;
-    let iframeWindow: Window & typeof globalThis;
-    let cacheIframeWindow = () => {
-        cacheIframeWindow = () => iframeWindow;
-        // headless iframe used for local registry for LWC components
-        const localRegistryIframe = document.createElement('iframe');
-        localRegistryIframe.hidden = true;
-        (document.body || document).appendChild(localRegistryIframe);
-        iframeWindow = localRegistryIframe.contentWindow! as Window & typeof globalThis;
-        return iframeWindow;
-    };
-    getGlobalCustomElement = get.bind(customElements);
+    const getPivotCustomElement = patchCustomElementRegistry();
+    const cachedConstructor: Record<string, CustomElementConstructor> = create(null);
     getUpgradableConstructor = (name: string) => {
-        class LWCUpgradableElement extends cacheIframeWindow().HTMLElement {
-            constructor(upgradeCallback?: UpgradeCallback) {
-                super();
-                // correcting the proto chain to avoid leaking internals of the iframe
-                setPrototypeOf(this, HTMLElement.prototype);
-                if (isFunction(upgradeCallback)) {
-                    upgradeCallback(this); // nothing to do with the result for now
+        let Ctor = cachedConstructor[name];
+        if (!Ctor) {
+            class LWCUpgradableElement extends HTMLElement {
+                constructor(upgradeCallback?: UpgradeCallback) {
+                    super();
+                    if (isFunction(upgradeCallback)) {
+                        upgradeCallback(this); // nothing to do with the result for now
+                    }
                 }
             }
+            Ctor = getPivotCustomElement(name, LWCUpgradableElement);
         }
-        define.call(cacheIframeWindow().customElements, name, LWCUpgradableElement);
-        return LWCUpgradableElement;
+        return Ctor;
     };
 } else {
     // no registry available here
-    getGlobalCustomElement = () => undefined;
     getUpgradableConstructor = (name: string): UpgradableCustomElementConstructor => {
         return (function (upgradeCallback?: UpgradeCallback) {
             const elm = document.createElement(name);
@@ -246,15 +233,6 @@ export const renderer: Renderer<Node, Element> = {
     },
 
     getUpgradableElement(name: string): UpgradableCustomElementConstructor {
-        let ctor = getGlobalCustomElement(name);
-        if (!isUndefined(ctor)) {
-            return ctor;
-        }
-        ctor = localRegistryRecord[name];
-        if (!isUndefined(ctor)) {
-            return ctor;
-        }
-        ctor = localRegistryRecord[name] = getUpgradableConstructor(name);
-        return ctor;
+        return getUpgradableConstructor(name);
     },
 };
