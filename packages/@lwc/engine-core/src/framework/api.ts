@@ -671,8 +671,8 @@ function co(text: string): VComment {
 }
 
 // [d]ynamic text
-function d(value: any): string | any {
-    return value == null ? '' : value;
+function d(value: any): string {
+    return value == null ? '' : String(value);
 }
 
 // [b]ind function
