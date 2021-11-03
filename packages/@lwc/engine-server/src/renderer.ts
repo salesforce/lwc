@@ -61,7 +61,7 @@ class HTMLElement {
 
 export const renderer: Renderer<HostNode, HostElement> = {
     ssr: true,
-    get isHydrating(): boolean {
+    isHydrating(): boolean {
         return false;
     },
 
