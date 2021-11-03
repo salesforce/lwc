@@ -81,7 +81,7 @@ describe('LightningElement.focus', () => {
         });
 
         // TODO [#2566]: Firefox behaves differently from Chrome/Safari in this test
-        if (!(process.env.NATIVE_SHADOW && delegatesFocus && window.mozInnerScreenX)) {
+        if (!(process.env.NATIVE_SHADOW && delegatesFocus)) {
             it(`should not move focus if an internal element is already focused ${category}`, () => {
                 const elm = createElement('x-focus', { is: Ctor });
                 document.body.appendChild(elm);
