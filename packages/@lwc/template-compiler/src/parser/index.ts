@@ -956,7 +956,7 @@ function getTemplateAttribute(
 
     // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
     // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state
-    const location = element.location.attrs[name.toLowerCase()];
+    const location = element.location.attrs![name.toLowerCase()];
     const rawAttribute = ctx.getSource(location.startOffset, location.endOffset);
 
     const { tag } = element;
