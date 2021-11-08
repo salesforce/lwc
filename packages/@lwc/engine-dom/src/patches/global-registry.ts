@@ -1,3 +1,5 @@
+import { setPrototypeOf } from '@lwc/shared';
+
 const NativeHTMLElement = window.HTMLElement;
 const { defineProperties } = Object;
 
@@ -78,7 +80,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
                 // We need to install the minimum HTMLElement prototype so that
                 // this instance works like a regular element without a registered
                 // definition; internalUpgrade will eventually install the full CE prototype
-                Object.setPrototypeOf(this, HTMLElement.prototype);
+                setPrototypeOf(this, HTMLElement.prototype);
             }
         }
         connectedCallback(this: HTMLElement) {
@@ -197,7 +199,7 @@ function internalUpgrade(
     registeredDefinition: Definition,
     instancedDefinition: Definition
 ) {
-    Object.setPrototypeOf(instance, instancedDefinition.UserCtor.prototype);
+    setPrototypeOf(instance, instancedDefinition.UserCtor.prototype);
     definitionForElement.set(instance, instancedDefinition);
     // attributes patches when needed
     if (instancedDefinition !== registeredDefinition) {
