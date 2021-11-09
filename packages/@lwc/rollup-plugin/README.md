@@ -24,6 +24,6 @@ export default {
 
 -   `rootDir` (string, optional, default: `input directory`) - set the LWC module directory
 -   `sourcemap` (boolean, optional, default: `false`) - make the LWC compiler produce source maps
--   `modules` Mapping of module specifiers.
+-   `modules` Mapping of module specifiers (for details, see [Module Resolution](https://lwc.dev/guide/es_modules#module-resolution))
 -   `stylesheetConfig` (object, optional, default: `{}`) - the configuration to pass to the `@lwc/style-compiler`
 -   `preserveHtmlComments` (boolean, optional, default: `false`) - the configuration to pass to the `@lwc/template-compiler`
