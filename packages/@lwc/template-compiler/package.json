@@ -21,9 +21,9 @@
     "devDependencies": {
         "@types/estree": "0.0.50",
         "@types/he": "^1.1.1",
-        "@types/parse5": "^6.0.1"
+        "@types/parse5": "^6.0.2"
     },
-    "//": "Currently can't upgrade TypeScript to v4.4.2 because it breaks Rollup: https://git.io/JuCcs",
+    "//": "Currently can't upgrade estree-walker to v3.0.0 because it dropped CommonJS support: https://git.io/JXguS",
     "dependencies": {
         "@lwc/errors": "2.5.9",
         "@lwc/shared": "2.5.9",
