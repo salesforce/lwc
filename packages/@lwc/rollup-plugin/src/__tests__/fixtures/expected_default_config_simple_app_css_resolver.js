@@ -5,7 +5,7 @@
 
     var varResolver__default = /*#__PURE__*/_interopDefaultLegacy(varResolver);
 
-    function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
+    function stylesheet(useActualHostSelector, token) {
       var hostSelector = token ? ("[" + token + "-host]") : "";
       return (useActualHostSelector ? [":host {color: ", varResolver__default["default"]("--lwc-my-color"), ";}"].join('') : [hostSelector, " {color: ", varResolver__default["default"]("--lwc-my-color"), ";}"].join(''));
     }
