@@ -1,7 +1,7 @@
 (function (lwc) {
     'use strict';
 
-    function stylesheet(useActualHostSelector, token) {
+    function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
       var hostSelector = token ? ("[" + token + "-host]") : "";
       return (useActualHostSelector ? ":host {color: var(--lwc-my-color);}" : [hostSelector, " {color: var(--lwc-my-color);}"].join(''));
     }

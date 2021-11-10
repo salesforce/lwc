@@ -1,0 +1,7 @@
+div:dir(ltr) {
+  color: #000001;
+}
+
+div:dir(rtl) {
+  color: #000002;
+}
