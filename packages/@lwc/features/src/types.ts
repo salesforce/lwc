@@ -81,13 +81,6 @@ export interface FeatureFlagMap {
     ENABLE_HTML_COLLECTIONS_PATCH: FeatureFlagValue;
 
     /**
-     * Synthetic shadow DOM flag to enable strict shadow DOM semantic related to non-composed and
-     * bubbling event propagation. It ensures that such events don't propagate past the immediate
-     * shadow root. More details in #2121.
-     */
-    ENABLE_NON_COMPOSED_EVENTS_LEAKAGE: FeatureFlagValue;
-
-    /**
      * Flag to invoke the wire adapter update method right after the component is connected, instead
      * of next tick. It only affects wire configurations that depend on component values.
      */
