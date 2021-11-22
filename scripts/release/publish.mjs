@@ -7,8 +7,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const execa = require('execa');
-const isCI = require('is-ci');
+import isCI from 'is-ci';
+import { execaSync } from 'execa';
 
 const ARGS = [
     // https://github.com/lerna/lerna/tree/master/commands/publish
@@ -37,14 +37,14 @@ try {
     // All branches that contain the current commit. Since we only deal with release commits, the
     // only scenario where this might be an issue is if we try to publish a release commit from
     // master after CLCO because the commit will show up in two branches.
-    const branches = execa.commandSync('git branch --all --contains').stdout;
+    const branches = execaSync('git branch --all --contains').stdout;
 
     // Restrict the regex to remote branches to avoid assumptions about local branches.
     const REMOTE_RELEASE_BRANCH_RE = /origin\/(master|((winter|spring|summer)\d+))/;
 
     const result = REMOTE_RELEASE_BRANCH_RE.exec(branches);
     if (result === null) {
-        const tag = execa.commandSync('git tag --points-at HEAD').stdout;
+        const tag = execaSync('git tag --points-at HEAD').stdout;
         console.error(`The commit referenced by "${tag}" is not contained by any release branch.`);
         process.exit(1);
     }
@@ -57,7 +57,7 @@ try {
         `Attempting to release from branch "${releaseBranch}" using dist-tag "${distTag}".`
     );
 
-    execa.sync('lerna', ARGS, {
+    execaSync('lerna', ARGS, {
         // Prioritize locally installed binaries (node_modules/.bin)
         preferLocal: true,
         stderr,
