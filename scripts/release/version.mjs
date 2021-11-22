@@ -18,6 +18,8 @@ const ARGS = [
     '--force-publish',
     // Skip git commit and tag push
     '--no-push',
+    // Don't add a git tag
+    '--no-git-tag-version',
 ];
 
 const { stderr, stdin, stdout } = process;
