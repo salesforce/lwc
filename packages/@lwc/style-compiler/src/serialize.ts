@@ -11,6 +11,12 @@ import { KEY__SCOPED_CSS } from '@lwc/shared';
 import { Config } from './index';
 import { isImportMessage, isVarFunctionMessage } from './utils/message';
 import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
+import {
+    DIR_ATTRIBUTE_NATIVE_RTL,
+    DIR_ATTRIBUTE_NATIVE_LTR,
+    DIR_ATTRIBUTE_SYNTHETIC_RTL,
+    DIR_ATTRIBUTE_SYNTHETIC_LTR,
+} from './utils/dir-pseudoclass';
 
 enum TokenType {
     text = 'text',
@@ -27,6 +33,7 @@ interface Token {
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
 const USE_ACTUAL_HOST_SELECTOR = 'useActualHostSelector';
+const USE_NATIVE_DIR_PSEUDOCLASS = 'useNativeDirPseudoclass';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
@@ -58,7 +65,7 @@ export default function serialize(result: Result, config: Config): string {
 
     if (serializedStyle) {
         // inline function
-        buffer += `function stylesheet(${USE_ACTUAL_HOST_SELECTOR}, token) {\n`;
+        buffer += `function stylesheet(token, ${USE_ACTUAL_HOST_SELECTOR}, ${USE_NATIVE_DIR_PSEUDOCLASS}) {\n`;
         // For scoped stylesheets, we use classes, but for synthetic shadow DOM, we use attributes
         if (config.scoped) {
             buffer += `  var ${SHADOW_SELECTOR_IDENTIFIER} = token ? ("." + token) : "";\n`;
@@ -193,7 +200,15 @@ function tokenizeCss(data: string): Token[] {
     data = data.replace(/( {2,})/gm, ' '); // remove when there are more than two spaces
 
     const tokens: Token[] = [];
-    const regex = new RegExp(`[[-](${SHADOW_ATTRIBUTE}|${HOST_ATTRIBUTE})]?`, 'g');
+    const attributes = [
+        SHADOW_ATTRIBUTE,
+        HOST_ATTRIBUTE,
+        DIR_ATTRIBUTE_NATIVE_LTR,
+        DIR_ATTRIBUTE_NATIVE_RTL,
+        DIR_ATTRIBUTE_SYNTHETIC_LTR,
+        DIR_ATTRIBUTE_SYNTHETIC_RTL,
+    ];
+    const regex = new RegExp(`[[-](${attributes.join('|')})]?`, 'g');
 
     let lastIndex = 0;
     for (const match of matchAll(data, regex)) {
@@ -208,11 +223,30 @@ function tokenizeCss(data: string): Token[] {
             substring === SHADOW_ATTRIBUTE ? SHADOW_SELECTOR_IDENTIFIER : HOST_SELECTOR_IDENTIFIER;
 
         if (matchString.startsWith('[')) {
-            // attribute in a selector, e.g. `foo[__shadowAttribute__]`
-            tokens.push({
-                type: TokenType.identifier,
-                value: identifier,
-            });
+            if (substring === SHADOW_ATTRIBUTE || substring === HOST_ATTRIBUTE) {
+                // attribute in a selector, e.g. `[__shadowAttribute__]` or `[__hostAttribute__]`
+                tokens.push({
+                    type: TokenType.identifier,
+                    value: identifier,
+                });
+            } else {
+                // :dir pseudoclass placeholder, e.g. `[__dirAttributeNativeLtr__]` or `[__dirAttributeSyntheticRtl__]`
+                const native =
+                    substring === DIR_ATTRIBUTE_NATIVE_LTR ||
+                    substring === DIR_ATTRIBUTE_NATIVE_RTL;
+                const dirValue =
+                    substring === DIR_ATTRIBUTE_NATIVE_LTR ||
+                    substring === DIR_ATTRIBUTE_SYNTHETIC_LTR
+                        ? 'ltr'
+                        : 'rtl';
+                tokens.push({
+                    type: TokenType.expression,
+                    // use the native :dir() pseudoclass for native shadow, the [dir] attribute otherwise
+                    value: native
+                        ? `${USE_NATIVE_DIR_PSEUDOCLASS} ? ':dir(${dirValue})' : ''`
+                        : `${USE_NATIVE_DIR_PSEUDOCLASS} ? '' : '[dir="${dirValue}"]'`,
+                });
+            }
         } else {
             // suffix for an at-rule, e.g. `@keyframes spin-__shadowAttribute__`
             tokens.push({

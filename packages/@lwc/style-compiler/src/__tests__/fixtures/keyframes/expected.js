@@ -1,4 +1,4 @@
-function stylesheet(useActualHostSelector, token) {
+function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
   var shadowSelector = token ? ("[" + token + "]") : "";
   var hostSelector = token ? ("[" + token + "-host]") : "";
   return ["@keyframes slidein", shadowSelector ? ('-' + shadowSelector.substring(1, shadowSelector.length - 1)) : '', " {from {margin-left: 100%;}to {margin-left: 0%;}}div", shadowSelector, " {animation: 3s ease-in 1s 2 reverse both paused slidein", shadowSelector ? ('-' + shadowSelector.substring(1, shadowSelector.length - 1)) : '', ";}span", shadowSelector, " {animation: slidein", shadowSelector ? ('-' + shadowSelector.substring(1, shadowSelector.length - 1)) : '', " 3s;}button", shadowSelector, " {animation: spin 1s;}p", shadowSelector, " {animation-name: slidein", shadowSelector ? ('-' + shadowSelector.substring(1, shadowSelector.length - 1)) : '', ";animation-delay: 1s;}input", shadowSelector, " {animation-name: spin;}form", shadowSelector, " {animation: 2s linear 1s reverse slidein", shadowSelector ? ('-' + shadowSelector.substring(1, shadowSelector.length - 1)) : '', "}"].join('');
