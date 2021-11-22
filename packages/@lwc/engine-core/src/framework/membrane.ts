@@ -20,4 +20,6 @@ export const reactiveMembrane = new ObservableMembrane({
  * works for observable membrane objects. This API is subject to
  * change or being removed.
  */
-export const unwrap = reactiveMembrane.unwrapProxy;
+export function unwrap(value: any): any {
+    return reactiveMembrane.unwrapProxy(value);
+}
