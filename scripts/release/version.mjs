@@ -7,7 +7,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const execa = require('execa');
+import { execaSync } from 'execa';
 
 const ARGS = [
     // https://github.com/lerna/lerna/tree/master/commands/version
@@ -23,7 +23,7 @@ const ARGS = [
 const { stderr, stdin, stdout } = process;
 
 try {
-    execa.sync('lerna', ARGS, {
+    execaSync('lerna', ARGS, {
         // Prioritize locally installed binaries (node_modules/.bin)
         preferLocal: true,
         stderr,
