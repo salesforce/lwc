@@ -1,6 +1,6 @@
 {
     "name": "@lwc/errors",
-    "version": "2.6.0",
+    "version": "2.6.1",
     "description": "LWC Error Utilities",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -26,5 +26,6 @@
     ],
     "publishConfig": {
         "access": "public"
-    }
+    },
+    "gitHead": "94040389ab8fc717b8753e503f659489480a327d"
 }
