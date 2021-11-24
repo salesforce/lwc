@@ -52,6 +52,13 @@ describe('Slotting', () => {
         ]);
     });
 
+    it('should return null for assignedSlot of default slotted content', () => {
+        const nodes = createTestElement('x-dynamic-children', DynamicChildren);
+
+        expect(nodes['container-upper-slot-default'].assignedSlot).toBeNull();
+        expect(nodes['container-lower-slot-default'].assignedSlot).toBeNull();
+    });
+
     it('shadow container, light consumer', () => {
         const nodes = createTestElement('x-light-consumer', LightConsumer);
 
