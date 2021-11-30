@@ -6,7 +6,7 @@
  */
 import { isUndefined, noop } from '@lwc/shared';
 
-import { VM } from './vm';
+import { RenderMode, ShadowMode, VM } from './vm';
 import { getComponentTag } from '../shared/format';
 
 export const enum OperationId {
@@ -28,7 +28,14 @@ const enum Phase {
     Stop = 1,
 }
 
-type LogDispatcher = (opId: OperationId, phase: Phase, cmpName?: string, vmIndex?: number) => void;
+type LogDispatcher = (
+    opId: OperationId,
+    phase: Phase,
+    cmpName?: string,
+    vmIndex?: number,
+    renderMode?: RenderMode,
+    shadowMode?: ShadowMode
+) => void;
 
 const operationIdNameMapping = [
     'constructor',
@@ -120,7 +127,7 @@ export function logOperationStart(opId: OperationId, vm: VM) {
     }
 
     if (isProfilerEnabled) {
-        currentDispatcher(opId, Phase.Start, vm.tagName, vm.idx);
+        currentDispatcher(opId, Phase.Start, vm.tagName, vm.idx, vm.renderMode, vm.shadowMode);
     }
 }
 
@@ -132,7 +139,7 @@ export function logOperationEnd(opId: OperationId, vm: VM) {
     }
 
     if (isProfilerEnabled) {
-        currentDispatcher(opId, Phase.Stop, vm.tagName, vm.idx);
+        currentDispatcher(opId, Phase.Stop, vm.tagName, vm.idx, vm.renderMode, vm.shadowMode);
     }
 }
 
@@ -144,7 +151,7 @@ export function logGlobalOperationStart(opId: GlobalOperationId, vm?: VM) {
     }
 
     if (isProfilerEnabled) {
-        currentDispatcher(opId, Phase.Start, vm?.tagName, vm?.idx);
+        currentDispatcher(opId, Phase.Start, vm?.tagName, vm?.idx, vm?.renderMode, vm?.shadowMode);
     }
 }
 
@@ -156,6 +163,6 @@ export function logGlobalOperationEnd(opId: GlobalOperationId, vm?: VM) {
     }
 
     if (isProfilerEnabled) {
-        currentDispatcher(opId, Phase.Stop, vm?.tagName, vm?.idx);
+        currentDispatcher(opId, Phase.Stop, vm?.tagName, vm?.idx, vm?.renderMode, vm?.shadowMode);
     }
 }

@@ -49,6 +49,18 @@ describe('Profiler Sanity Test', () => {
         Stop: 1,
     };
 
+    const RenderMode = {
+        Light: 0,
+        Shadow: 1,
+    };
+
+    const ShadowMode = {
+        Native: 0,
+        Synthetic: 1,
+    };
+
+    const expectedShadowMode = process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic;
+
     async function generateContainer() {
         const elm = createElement(X_CONTAINER.toLowerCase(), { is: Container });
         document.body.appendChild(elm);
@@ -60,9 +72,9 @@ describe('Profiler Sanity Test', () => {
         const profilerControl = LWC.__unstable__ProfilerControl;
         const events = [];
         profilerControl.enableProfiler();
-        profilerControl.attachDispatcher((opId, phase, name) => {
+        profilerControl.attachDispatcher((opId, phase, name, id, renderMode, shadowMode) => {
             name = name ? name.toUpperCase() : name;
-            events.push({ opId, phase, name });
+            events.push({ opId, phase, name, renderMode, shadowMode });
         });
         return events;
     }
@@ -70,8 +82,20 @@ describe('Profiler Sanity Test', () => {
     function matchEventsOfTypeFor(opId, name, profilerEvents) {
         const filteredEvents = profilerEvents.filter((e) => e.name === name && e.opId === opId);
         const expectedEvents = [
-            { opId, phase: Phase.Start, name },
-            { opId, phase: Phase.Stop, name },
+            {
+                opId,
+                phase: Phase.Start,
+                name,
+                renderMode: name && RenderMode.Shadow,
+                shadowMode: name && expectedShadowMode,
+            },
+            {
+                opId,
+                phase: Phase.Stop,
+                name,
+                renderMode: name && RenderMode.Shadow,
+                shadowMode: name && expectedShadowMode,
+            },
         ];
         expect(filteredEvents).toEqual(expectedEvents);
     }
@@ -117,8 +141,20 @@ describe('Profiler Sanity Test', () => {
         }
 
         const expectedEvents = [
-            { opId: OperationId.errorCallback, phase: Phase.Start, name: X_ERROR_CHILD },
-            { opId: OperationId.errorCallback, phase: Phase.Stop, name: X_ERROR_CHILD },
+            {
+                opId: OperationId.errorCallback,
+                phase: Phase.Start,
+                name: X_ERROR_CHILD,
+                renderMode: RenderMode.Shadow,
+                shadowMode: expectedShadowMode,
+            },
+            {
+                opId: OperationId.errorCallback,
+                phase: Phase.Stop,
+                name: X_ERROR_CHILD,
+                renderMode: RenderMode.Shadow,
+                shadowMode: expectedShadowMode,
+            },
         ];
         expect(profilerEvents).toEqual(expectedEvents);
     });
