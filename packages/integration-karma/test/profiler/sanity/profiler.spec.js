@@ -31,6 +31,7 @@ describe('Profiler Sanity Test', () => {
     const X_CONTAINER = 'X-CONTAINER';
     const X_ERROR_CHILD = 'X-ERROR-CHILD';
     const X_ITEM = 'X-ITEM';
+    const X_LIGHT = 'X-LIGHT';
 
     const OperationId = {
         constructor: 0,
@@ -59,7 +60,21 @@ describe('Profiler Sanity Test', () => {
         Synthetic: 1,
     };
 
-    const expectedShadowMode = process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic;
+    const getExpectedShadowMode = (name) => {
+        if (!name) {
+            return undefined;
+        }
+        if (name === X_LIGHT) {
+            return ShadowMode.Native;
+        }
+        return process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic;
+    };
+    const getExpectedRenderMode = (name) => {
+        if (!name) {
+            return undefined;
+        }
+        return name === X_LIGHT ? RenderMode.Light : RenderMode.Shadow;
+    };
 
     async function generateContainer() {
         const elm = createElement(X_CONTAINER.toLowerCase(), { is: Container });
@@ -86,15 +101,15 @@ describe('Profiler Sanity Test', () => {
                 opId,
                 phase: Phase.Start,
                 name,
-                renderMode: name && RenderMode.Shadow,
-                shadowMode: name && expectedShadowMode,
+                renderMode: getExpectedRenderMode(name),
+                shadowMode: getExpectedShadowMode(name),
             },
             {
                 opId,
                 phase: Phase.Stop,
                 name,
-                renderMode: name && RenderMode.Shadow,
-                shadowMode: name && expectedShadowMode,
+                renderMode: getExpectedRenderMode(name),
+                shadowMode: getExpectedShadowMode(name),
             },
         ];
         expect(filteredEvents).toEqual(expectedEvents);
@@ -110,6 +125,9 @@ describe('Profiler Sanity Test', () => {
         matchEventsOfTypeFor(OperationId.connectedCallback, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.renderedCallback, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.globalHydrate, X_CONTAINER, profilerEvents);
+
+        matchEventsOfTypeFor(OperationId.constructor, X_LIGHT, profilerEvents);
+        matchEventsOfTypeFor(OperationId.render, X_LIGHT, profilerEvents);
     });
 
     it('activate children in iteration in container', async () => {
@@ -140,20 +158,21 @@ describe('Profiler Sanity Test', () => {
             // do nothing
         }
 
+        const name = X_ERROR_CHILD;
         const expectedEvents = [
             {
                 opId: OperationId.errorCallback,
                 phase: Phase.Start,
-                name: X_ERROR_CHILD,
-                renderMode: RenderMode.Shadow,
-                shadowMode: expectedShadowMode,
+                name,
+                renderMode: getExpectedRenderMode(name),
+                shadowMode: getExpectedShadowMode(name),
             },
             {
                 opId: OperationId.errorCallback,
                 phase: Phase.Stop,
-                name: X_ERROR_CHILD,
-                renderMode: RenderMode.Shadow,
-                shadowMode: expectedShadowMode,
+                name,
+                renderMode: getExpectedRenderMode(name),
+                shadowMode: getExpectedShadowMode(name),
             },
         ];
         expect(profilerEvents).toEqual(expectedEvents);
