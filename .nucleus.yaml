@@ -24,7 +24,7 @@ branches:
 #        - salesforce/builder-framework
 #        - salesforce/lds-lightning-platform
 #        - salesforce/lightning-components
-#        - salesforce/luvio
+        - salesforce/luvio
         - salesforce/lwr
 #        - salesforce/lwr-everywhere
 #        - salesforce/lwr-recipes
