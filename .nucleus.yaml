@@ -17,16 +17,16 @@ branches:
         - communities/ui-dxp-components
         - communities/ui-feeds-components
         - communities/ui-lightning-community
-        - communities/webruntime
-        - lds/lds-container-tests
+#        - communities/webruntime
+#        - lds/lds-container-tests
         - lwc/lwc-platform
         - salesforce/bentobox
         - salesforce/builder-framework
         - salesforce/lds-lightning-platform
-        - salesforce/lightning-components
+#        - salesforce/lightning-components
         - salesforce/luvio
         - salesforce/lwr
-        - salesforce/lwr-everywhere
+#        - salesforce/lwr-everywhere
         - salesforce/lwr-recipes
         - salesforce/utam-docs
         - salesforcedevs/developer-website
