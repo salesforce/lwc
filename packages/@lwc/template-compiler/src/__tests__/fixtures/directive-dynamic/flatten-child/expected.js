@@ -1,4 +1,11 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
+const stc1 = {
+  key: 1,
+};
+const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
@@ -7,21 +14,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     f: api_flatten,
   } = $api;
   return api_flatten([
-    api_element(
-      "div",
-      {
-        key: 0,
-      },
-      [api_text("sibling")]
-    ),
-    api_dynamic_component(
-      "x-foo",
-      $cmp.trackedProp.foo,
-      {
-        key: 1,
-      },
-      []
-    ),
+    api_element("div", stc0, [api_text("sibling")]),
+    api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc1, stc2),
   ]);
 }
 export default registerTemplate(tmpl);

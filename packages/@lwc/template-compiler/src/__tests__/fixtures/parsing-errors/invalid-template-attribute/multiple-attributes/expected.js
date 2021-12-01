@@ -1,4 +1,7 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
@@ -10,9 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "section",
-      {
-        key: 0,
-      },
+      stc0,
       api_iterator($cmp.items, function (item) {
         return $cmp.showItems
           ? api_element(

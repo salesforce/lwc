@@ -1,4 +1,16 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
+const stc1 = {
+  "my-list": true,
+};
+const stc2 = {
+  key: 2,
+};
+const stc3 = {
+  key: 3,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
@@ -10,33 +22,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "section",
-      {
-        key: 0,
-      },
+      stc0,
       api_iterator($cmp.items, function (item) {
         return api_element(
           "div",
           {
-            classMap: {
-              "my-list": true,
-            },
+            classMap: stc1,
             key: api_key(1, item.id),
           },
           [
-            api_element(
-              "p",
-              {
-                key: 2,
-              },
-              [api_text(api_dynamic_text(item))]
-            ),
-            api_element(
-              "p",
-              {
-                key: 3,
-              },
-              [api_text(api_dynamic_text($cmp.item2))]
-            ),
+            api_element("p", stc2, [api_text(api_dynamic_text(item))]),
+            api_element("p", stc3, [api_text(api_dynamic_text($cmp.item2))]),
           ]
         );
       })

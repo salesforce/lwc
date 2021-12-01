@@ -75,13 +75,15 @@
 
   var _implicitStylesheets = [stylesheet];
 
+  var stc0$1 = {
+    key: 0
+  };
+
   function tmpl$1($api, $cmp, $slotset, $ctx) {
     var api_dynamic_text = $api._ES5ProxyType ? $api.get("d") : $api.d,
         api_text = $api._ES5ProxyType ? $api.get("t") : $api.t,
         api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
-    return [api_element("div", {
-      key: 0
-    }, [api_text(api_dynamic_text($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x))])];
+    return [api_element("div", stc0$1, [api_text(api_dynamic_text($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x))])];
   }
 
   var _tmpl$1 = lwc.registerTemplate(tmpl$1);
@@ -134,20 +136,24 @@
     tmpl: _tmpl$1
   });
 
+  var stc0 = {
+    classMap: {
+      "container": true
+    },
+    key: 0
+  };
+  var stc1 = {
+    props: {
+      "x": "1"
+    },
+    key: 1
+  };
+  var stc2 = [];
+
   function tmpl($api, $cmp, $slotset, $ctx) {
     var api_custom_element = $api._ES5ProxyType ? $api.get("c") : $api.c,
         api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
-    return [api_element("div", {
-      classMap: {
-        "container": true
-      },
-      key: 0
-    }, [api_custom_element("x-foo", _xFoo, {
-      props: {
-        "x": "1"
-      },
-      key: 1
-    }, [])])];
+    return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1, stc2)])];
   }
 
   var _tmpl = lwc.registerTemplate(tmpl);

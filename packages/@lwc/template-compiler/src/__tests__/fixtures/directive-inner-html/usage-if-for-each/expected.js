@@ -1,5 +1,17 @@
 import _aB from "a/b";
 import { registerTemplate } from "lwc";
+const stc0 = {
+  classMap: {
+    s2: true,
+  },
+  key: 0,
+};
+const stc1 = {
+  lwc: {
+    dom: "manual",
+  },
+};
+const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     shc: api_sanitize_html_content,
@@ -13,12 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_custom_element(
       "a-b",
       _aB,
-      {
-        classMap: {
-          s2: true,
-        },
-        key: 0,
-      },
+      stc0,
       api_flatten([
         $cmp.isTrue
           ? api_element(
@@ -32,14 +39,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                         ))
                       : $ctx._sanitizedHtml$0,
                 },
-                context: {
-                  lwc: {
-                    dom: "manual",
-                  },
-                },
+                context: stc1,
                 key: 1,
               },
-              []
+              stc2
             )
           : null,
         api_iterator($cmp.items, function (item) {
@@ -54,14 +57,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                       ))
                     : $ctx._sanitizedHtml$1,
               },
-              context: {
-                lwc: {
-                  dom: "manual",
-                },
-              },
+              context: stc1,
               key: api_key(2, item.id),
             },
-            []
+            stc2
           );
         }),
       ])
