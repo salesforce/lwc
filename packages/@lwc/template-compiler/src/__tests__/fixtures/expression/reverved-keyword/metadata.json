@@ -21,6 +21,28 @@
                 "start": 65,
                 "length": 16
             }
+        },
+        {
+            "code": 1059,
+            "message": "LWC1059: -foo is not a valid identifier",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 32,
+                "start": 125,
+                "length": 15
+            }
+        },
+        {
+            "code": 1059,
+            "message": "LWC1059: foo-bar is not a valid identifier",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 32,
+                "start": 184,
+                "length": 18
+            }
         }
     ]
 }
