@@ -1,4 +1,5 @@
 import { registerTemplate } from "lwc";
+const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
@@ -8,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         styleDecls: [["color", "blue", false]],
         key: 0,
       },
-      []
+      stc0
     ),
     api_element(
       "div",
@@ -16,7 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         styleDecls: [["color", "blue", false]],
         key: 1,
       },
-      []
+      stc0
     ),
     api_element(
       "div",
@@ -24,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         styleDecls: [["color", "blue", false]],
         key: 2,
       },
-      []
+      stc0
     ),
     api_element(
       "div",
@@ -32,7 +33,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         styleDecls: [["box-shadow", "10px 5px 5px black", false]],
         key: 3,
       },
-      []
+      stc0
     ),
     api_element(
       "div",
@@ -44,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         ],
         key: 4,
       },
-      []
+      stc0
     ),
     api_element(
       "div",
@@ -56,7 +57,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         ],
         key: 5,
       },
-      []
+      stc0
     ),
     api_element(
       "div",
@@ -64,7 +65,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         styleDecls: [["background-color", "rgba(255,0,0,0.3)", false]],
         key: 6,
       },
-      []
+      stc0
     ),
   ];
 }

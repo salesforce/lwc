@@ -9,7 +9,6 @@ import { toPropertyName } from '../shared/utils';
 import { IRElement, IRNode, LWCDirectiveRenderMode } from '../shared/types';
 import { isElement, isTemplate, isComponentProp } from '../shared/ir';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
-
 import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {

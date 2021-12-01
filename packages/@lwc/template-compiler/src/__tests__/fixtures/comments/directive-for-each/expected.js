@@ -1,4 +1,7 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     co: api_comment,
@@ -11,9 +14,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "ul",
-      {
-        key: 0,
-      },
+      stc0,
       api_iterator($cmp.colors, function (color) {
         return [
           api_comment(" color "),

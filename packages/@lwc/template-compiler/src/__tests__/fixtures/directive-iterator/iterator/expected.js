@@ -1,4 +1,10 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
+const stc1 = {
+  key: 2,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
@@ -10,9 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "section",
-      {
-        key: 0,
-      },
+      stc0,
       api_iterator($cmp.items, function (xValue, xIndex, xFirst, xLast) {
         const x = {
           value: xValue,
@@ -30,13 +34,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: api_key(1, x.value.id),
           },
           [
-            api_element(
-              "span",
-              {
-                key: 2,
-              },
-              [api_text("Row: " + api_dynamic_text(x.index))]
-            ),
+            api_element("span", stc1, [
+              api_text("Row: " + api_dynamic_text(x.index)),
+            ]),
             api_text(". Value: " + api_dynamic_text(x.value)),
           ]
         );

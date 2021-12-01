@@ -14,6 +14,7 @@ import {
 
 import CodeGen from '../codegen';
 import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
+import { optimizeStaticObjects } from '../optimize';
 
 function generateComponentImports(codeGen: CodeGen): t.ImportDeclaration[] {
     return Array.from(codeGen.referencedComponents).map((name) => {
@@ -62,8 +63,10 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
 
     const metadata = generateTemplateMetadata(codeGen);
 
+    const staticVariablesAndFunction = optimizeStaticObjects(templateFn);
+
     const templateBody = [
-        templateFn,
+        ...staticVariablesAndFunction,
         t.exportDefaultDeclaration(
             t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [
                 t.identifier(TEMPLATE_FUNCTION_NAME),
