@@ -5,4 +5,9 @@ core-deploy:
 branches:
   ~DEFAULT~:
     pull-request:
-      auto-start: false
+      auto-start: true
+      auto-start-from-forks: false
+      required-downstream-deps:
+        - lwc/lwc-platform
+        - salesforce/luvio
+        - salesforce/lwr
