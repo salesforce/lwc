@@ -12,6 +12,7 @@ import * as t from '../shared/estree';
 import { TemplateExpression, TemplateIdentifier } from '../shared/types';
 
 import ParserCtx from './parser';
+import { isReservedES6Keyword } from './utils/javascript';
 
 import { ResolvedConfig } from '../config';
 
@@ -125,7 +126,7 @@ export function parseIdentifier(
         isValid = isIdentifierChar(source.charCodeAt(i));
     }
 
-    if (isValid) {
+    if (isValid && !isReservedES6Keyword(source)) {
         return t.identifier(source);
     } else {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_IDENTIFIER, location, [source]);
