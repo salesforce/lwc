@@ -1,34 +1,27 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
+const stc1 = {
+  attrs: {
+    name: "test",
+  },
+  key: 1,
+};
+const stc2 = {
+  key: 2,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, s: api_slot } = $api;
   return [
-    api_element(
-      "section",
-      {
-        key: 0,
-      },
-      [
-        api_slot(
-          "test",
-          {
-            attrs: {
-              name: "test",
-            },
-            key: 1,
-          },
-          [
-            api_element(
-              "p",
-              {
-                key: 2,
-              },
-              [api_text("Test slot content")]
-            ),
-          ],
-          $slotset
-        ),
-      ]
-    ),
+    api_element("section", stc0, [
+      api_slot(
+        "test",
+        stc1,
+        [api_element("p", stc2, [api_text("Test slot content")])],
+        $slotset
+      ),
+    ]),
   ];
 }
 export default registerTemplate(tmpl);

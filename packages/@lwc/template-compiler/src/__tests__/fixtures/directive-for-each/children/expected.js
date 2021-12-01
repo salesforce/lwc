@@ -1,4 +1,41 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  classMap: {
+    s1: true,
+  },
+  key: 0,
+};
+const stc1 = {
+  key: 1,
+};
+const stc2 = {
+  classMap: {
+    s2: true,
+  },
+  key: 2,
+};
+const stc3 = [];
+const stc4 = {
+  classMap: {
+    s3: true,
+  },
+  key: 5,
+};
+const stc5 = {
+  key: 6,
+};
+const stc6 = {
+  classMap: {
+    s4: true,
+  },
+  key: 8,
+};
+const stc7 = {
+  key: 9,
+};
+const stc8 = {
+  key: 10,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
@@ -10,34 +47,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "section",
-      {
-        classMap: {
-          s1: true,
-        },
-        key: 0,
-      },
+      stc0,
       api_flatten([
         api_text("Other Child"),
         api_iterator($cmp.items, function (item) {
           return api_text("X");
         }),
-        api_element(
-          "p",
-          {
-            key: 1,
-          },
-          [api_text("Last child")]
-        ),
+        api_element("p", stc1, [api_text("Last child")]),
       ])
     ),
     api_element(
       "section",
-      {
-        classMap: {
-          s2: true,
-        },
-        key: 2,
-      },
+      stc2,
       api_flatten([
         api_text("Other Child"),
         $cmp.isTrue
@@ -59,61 +80,29 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 ),
               ];
             })
-          : [],
+          : stc3,
       ])
     ),
     api_element(
       "section",
-      {
-        classMap: {
-          s3: true,
-        },
-        key: 5,
-      },
+      stc4,
       api_flatten([
-        api_element(
-          "p",
-          {
-            key: 6,
-          },
-          [api_text("Last child")]
-        ),
+        api_element("p", stc5, [api_text("Last child")]),
         api_iterator($cmp.items, function (item) {
           return api_element(
             "div",
             {
               key: api_key(7, item.id),
             },
-            []
+            stc3
           );
         }),
       ])
     ),
-    api_element(
-      "section",
-      {
-        classMap: {
-          s4: true,
-        },
-        key: 8,
-      },
-      [
-        api_element(
-          "p",
-          {
-            key: 9,
-          },
-          [api_text("Other child1")]
-        ),
-        api_element(
-          "p",
-          {
-            key: 10,
-          },
-          [api_text("Other child2")]
-        ),
-      ]
-    ),
+    api_element("section", stc6, [
+      api_element("p", stc7, [api_text("Other child1")]),
+      api_element("p", stc8, [api_text("Other child2")]),
+    ]),
   ];
 }
 export default registerTemplate(tmpl);

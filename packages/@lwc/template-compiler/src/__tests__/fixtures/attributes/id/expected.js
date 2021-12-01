@@ -2,6 +2,7 @@ import _xSubject from "x/subject";
 import _xDescription from "x/description";
 import _xTextarea from "x/textarea";
 import { registerTemplate } from "lwc";
+const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     gid: api_scoped_id,
@@ -22,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 0,
       },
-      []
+      stc0
     ),
     api_custom_element(
       "x-description",
@@ -33,7 +34,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 1,
       },
-      []
+      stc0
     ),
     api_custom_element(
       "x-description",
@@ -44,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 2,
       },
-      []
+      stc0
     ),
     api_custom_element(
       "x-textarea",
@@ -56,7 +57,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 3,
       },
-      []
+      stc0
     ),
     api_element(
       "label",
@@ -76,7 +77,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 5,
       },
-      []
+      stc0
     ),
     api_iterator($cmp.things, function (thing) {
       return [
@@ -98,7 +99,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             },
             key: api_key(7, thing.key),
           },
-          []
+          stc0
         ),
       ];
     }),
