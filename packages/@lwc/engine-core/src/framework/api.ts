@@ -791,8 +791,11 @@ function dc(
     // the new vnode key is a mix of idx and compiler key, this is required by the diffing algo
     // to identify different constructors as vnodes with different keys to avoid reusing the
     // element used for previous constructors.
-    data.key = `dc:${idx}:${data.key}`;
-    return c(sel, Ctor, data, children);
+    // Because this `data` object may be shared across vnodes due to optimizations (hoisting),
+    // we need to create a shallow clone here.
+    const newData = { ...data };
+    newData.key = `dc:${idx}:${data.key}`;
+    return c(sel, Ctor, newData, children);
 }
 
 /**
