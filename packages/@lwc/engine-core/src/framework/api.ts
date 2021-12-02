@@ -26,7 +26,7 @@ import {
 import { logError, logWarn } from '../shared/logger';
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
-import { EmptyArray, EmptyObject } from './utils';
+import { cloneAndOmitKey, EmptyArray, EmptyObject } from './utils';
 import {
     appendVM,
     getAssociatedVMIfPresent,
@@ -203,16 +203,12 @@ const ElementHook: Hooks<VElement> = {
             // remove the innerHTML from props so it reuses the existing dom elements.
             const { props } = vnode.data;
             if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
-                // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
                 if (elm.innerHTML === props.innerHTML) {
-                    const newData = {
+                    // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
+                    vnode.data = {
                         ...vnode.data,
-                        props: {
-                            ...vnode.data.props,
-                            innerHTML: undefined,
-                        },
+                        props: cloneAndOmitKey(props, 'innerHTML'),
                     };
-                    vnode.data = newData;
                 } else {
                     logWarn(
                         `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
