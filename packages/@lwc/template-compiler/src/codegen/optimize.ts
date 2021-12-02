@@ -46,7 +46,9 @@ export function optimizeStaticExpressions(
     const keysToVariableNames = new Map();
 
     // Return true if this node is an object/array that is fully static
-    function isStaticObjectOrArray(node: t.BaseNode): boolean {
+    function isStaticObjectOrArray(
+        node: t.BaseNode
+    ): node is t.ObjectExpression | t.ArrayExpression {
         if (t.isObjectExpression(node)) {
             return node.properties.every((prop) => {
                 return (
