@@ -203,8 +203,16 @@ const ElementHook: Hooks<VElement> = {
             // remove the innerHTML from props so it reuses the existing dom elements.
             const { props } = vnode.data;
             if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
+                // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
                 if (elm.innerHTML === props.innerHTML) {
-                    delete props.innerHTML;
+                    const newData = {
+                        ...vnode.data,
+                        props: {
+                            ...vnode.data.props,
+                            innerHTML: undefined,
+                        },
+                    };
+                    vnode.data = newData;
                 } else {
                     logWarn(
                         `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,

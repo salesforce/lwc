@@ -63,13 +63,15 @@ export interface VComment extends VNode {
 }
 
 export interface VNodeData {
-    readonly props?: Record<string, any>;
-    readonly attrs?: Record<string, string | number | boolean>;
+    // All props are readonly because VElementData may be shared across VNodes
+    // due to hoisting optimizations
+    readonly props?: Readonly<Record<string, any>>;
+    readonly attrs?: Readonly<Record<string, string | number | boolean>>;
     readonly className?: string;
     readonly style?: string;
-    readonly classMap?: Record<string, boolean>;
-    readonly styleDecls?: Array<[string, string, boolean]>;
-    readonly context?: Record<string, Record<string, any>>;
+    readonly classMap?: Readonly<Record<string, boolean>>;
+    readonly styleDecls?: Readonly<Array<[string, string, boolean]>>;
+    readonly context?: Readonly<Record<string, Record<string, any>>>;
     readonly on?: Record<string, Function>;
     readonly svg?: boolean;
 }
