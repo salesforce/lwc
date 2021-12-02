@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as esutils from 'esutils';
-import { Node, parseExpressionAt } from 'acorn';
+import { Node, parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'acorn';
 import { Location } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
@@ -13,6 +12,7 @@ import * as t from '../shared/estree';
 import { TemplateExpression, TemplateIdentifier } from '../shared/types';
 
 import ParserCtx from './parser';
+import { isReservedES6Keyword } from './utils/javascript';
 
 import { ResolvedConfig } from '../config';
 
@@ -119,7 +119,14 @@ export function parseIdentifier(
     source: string,
     location: Location
 ): TemplateIdentifier {
-    if (esutils.keyword.isIdentifierES6(source)) {
+    let isValid = true;
+
+    isValid = isIdentifierStart(source.charCodeAt(0));
+    for (let i = 1; i < source.length && isValid; i++) {
+        isValid = isIdentifierChar(source.charCodeAt(i));
+    }
+
+    if (isValid && !isReservedES6Keyword(source)) {
         return t.identifier(source);
     } else {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_IDENTIFIER, location, [source]);

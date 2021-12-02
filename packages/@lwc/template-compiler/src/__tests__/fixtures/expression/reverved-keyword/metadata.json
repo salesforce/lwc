@@ -1,0 +1,48 @@
+{
+    "warnings": [
+        {
+            "code": 1083,
+            "message": "LWC1083: Error parsing template expression: Invalid expression {class} - Unexpected token (1:6)",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 10,
+                "start": 20,
+                "length": 7
+            }
+        },
+        {
+            "code": 1059,
+            "message": "LWC1059: const is not a valid identifier",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 32,
+                "start": 65,
+                "length": 16
+            }
+        },
+        {
+            "code": 1059,
+            "message": "LWC1059: -foo is not a valid identifier",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 32,
+                "start": 125,
+                "length": 15
+            }
+        },
+        {
+            "code": 1059,
+            "message": "LWC1059: foo-bar is not a valid identifier",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 32,
+                "start": 184,
+                "length": 18
+            }
+        }
+    ]
+}
