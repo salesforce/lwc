@@ -85,7 +85,8 @@ export interface VNodeData {
 }
 
 export interface VElementData extends VNodeData {
-    key: Key;
+    // readonly because VElementData may be shared across VNodes due to hoisting optimizations
+    readonly key: Key;
 }
 
 export interface Hooks<N extends VNode> {
