@@ -72,7 +72,7 @@ export interface VNodeData {
     readonly classMap?: Readonly<Record<string, boolean>>;
     readonly styleDecls?: Readonly<Array<[string, string, boolean]>>;
     readonly context?: Readonly<Record<string, Record<string, any>>>;
-    readonly on?: Record<string, Function>;
+    readonly on?: Readonly<Record<string, Function>>;
     readonly svg?: boolean;
 }
 
