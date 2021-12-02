@@ -73,19 +73,20 @@ export interface VComment extends VNode {
 export type CustomElementContext = Record<string, Record<string, any>>;
 
 export interface VNodeData {
-    props?: Props;
-    attrs?: Attrs;
-    className?: any;
-    style?: any;
-    classMap?: Classes;
-    styleDecls?: VNodeStyleDecls;
-    context?: CustomElementContext;
-    on?: On;
-    svg?: boolean;
+    // All props are readonly because VElementData may be shared across VNodes
+    // due to hoisting optimizations
+    readonly props?: Props;
+    readonly attrs?: Attrs;
+    readonly className?: any;
+    readonly style?: any;
+    readonly classMap?: Classes;
+    readonly styleDecls?: VNodeStyleDecls;
+    readonly context?: CustomElementContext;
+    readonly on?: On;
+    readonly svg?: boolean;
 }
 
 export interface VElementData extends VNodeData {
-    // readonly because VElementData may be shared across VNodes due to hoisting optimizations
     readonly key: Key;
 }
 
