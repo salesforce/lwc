@@ -5,27 +5,28 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { defineProperties, globalThis } from '@lwc/shared';
+import { defineProperty, globalThis } from '@lwc/shared';
 
 /**
  * The following constructor might be used in either the constructor or the connectedCallback. In
  * order to ensure that the component evaluates, we attach those mock constructors to the global
  * object.
  */
-if (typeof Event !== 'function' && typeof CustomEvent !== 'function') {
+if (typeof Event !== 'function') {
     class Event {}
+
+    defineProperty(globalThis, 'Event', {
+        value: Event,
+        configurable: true,
+        writable: true,
+    });
+}
+if (typeof CustomEvent !== 'function') {
     class CustomEvent extends Event {}
 
-    defineProperties(globalThis, {
-        Event: {
-            value: Event,
-            configurable: true,
-            writable: true,
-        },
-        CustomEvent: {
-            value: CustomEvent,
-            configurable: true,
-            writable: true,
-        },
+    defineProperty(globalThis, 'CustomEvent', {
+        value: CustomEvent,
+        configurable: true,
+        writable: true,
     });
 }
