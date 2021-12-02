@@ -12,11 +12,27 @@ const stc1 = {
   svg: true,
 };
 const stc2 = {
-  offset: "0%",
+  styleDecls: [
+    ["stop-color", "rgb(255,255,0)", false],
+    ["stop-opacity", "1", false],
+  ],
+  attrs: {
+    offset: "0%",
+  },
+  key: 3,
+  svg: true,
 };
 const stc3 = [];
 const stc4 = {
-  offset: "100%",
+  styleDecls: [
+    ["stop-color", "rgb(255,0,0)", false],
+    ["stop-opacity", "1", false],
+  ],
+  attrs: {
+    offset: "100%",
+  },
+  key: 4,
+  svg: true,
 };
 const stc5 = {
   attrs: {
@@ -47,34 +63,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
             svg: true,
           },
-          [
-            api_element(
-              "stop",
-              {
-                styleDecls: [
-                  ["stop-color", "rgb(255,255,0)", false],
-                  ["stop-opacity", "1", false],
-                ],
-                attrs: stc2,
-                key: 3,
-                svg: true,
-              },
-              stc3
-            ),
-            api_element(
-              "stop",
-              {
-                styleDecls: [
-                  ["stop-color", "rgb(255,0,0)", false],
-                  ["stop-opacity", "1", false],
-                ],
-                attrs: stc4,
-                key: 4,
-                svg: true,
-              },
-              stc3
-            ),
-          ]
+          [api_element("stop", stc2, stc3), api_element("stop", stc4, stc3)]
         ),
       ]),
       api_element("ellipse", stc5, stc3),

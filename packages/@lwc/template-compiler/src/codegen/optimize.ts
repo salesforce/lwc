@@ -59,11 +59,7 @@ export function optimizeStaticExpressions(
             });
         } else if (t.isArrayExpression(node)) {
             return node.elements.every((element) => {
-                return (
-                    element !== null &&
-                    t.isExpression(element) &&
-                    (t.isLiteral(element) || isStaticObjectOrArray(element))
-                );
+                return element !== null && (t.isLiteral(element) || isStaticObjectOrArray(element));
             });
         }
         return false;

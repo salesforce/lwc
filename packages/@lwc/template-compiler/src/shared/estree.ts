@@ -22,10 +22,6 @@ export function isObjectExpression(node: t.BaseNode): node is t.ObjectExpression
     return node.type === 'ObjectExpression';
 }
 
-export function isExpression(node: t.BaseNode): node is t.Expression {
-    return node.type === 'Expression';
-}
-
 export function isProperty(node: t.BaseNode): node is t.Property {
     return node.type === 'Property';
 }
