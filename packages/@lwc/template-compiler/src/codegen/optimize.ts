@@ -45,8 +45,6 @@ export function optimizeStaticExpressions(
     const result: Array<t.FunctionDeclaration | t.VariableDeclaration> = [];
     const keysToVariableNames = new Map();
 
-    let identifierCount = 0;
-
     // Return true if this node is an object/array that is fully static
     function isStaticObjectOrArray(node: t.BaseNode): boolean {
         if (t.isObjectExpression(node)) {
@@ -79,7 +77,7 @@ export function optimizeStaticExpressions(
         // Check for duplicates to avoid re-declaring the same object/array multiple times
         // Especially for the empty array (`[]`), which is very common in templates
         if (!keysToVariableNames.has(key)) {
-            const variableName = `stc${identifierCount++}`;
+            const variableName = `stc${keysToVariableNames.size}`;
             // e.g. `const stc0 = { /* original object */ };
             const declaration = t.variableDeclaration('const', [
                 t.variableDeclarator(
