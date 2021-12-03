@@ -10,14 +10,14 @@ import { destroyComponent } from './utils.js';
 import { benchmark, run, after } from './benchmark-framework.js';
 
 // Generic benchmark for styled components
-export function styledComponentBenchmark(name, componentOrComponents) {
+export function styledComponentBenchmark(name, numComponents, componentOrComponents) {
     benchmark(name, () => {
         const elms = [];
 
         const isArray = Array.isArray(componentOrComponents);
 
         run(async () => {
-            for (let i = 0; i < 1000; i++) {
+            for (let i = 0; i < numComponents; i++) {
                 const elm = createElement(isArray ? `styled-component${i}` : 'styled-component', {
                     is: isArray ? componentOrComponents[i] : componentOrComponents,
                 });

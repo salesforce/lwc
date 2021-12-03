@@ -16,20 +16,6 @@ const componentModules = glob
     .sync(path.join(__dirname, '../perf-benchmarks-components/dist/**/*.js'))
     .map((filename) => path.relative(path.join(__dirname, '..'), filename).replace(/^\.\//, ''));
 
-// these benchmarks are too fast (<~50ms) to give us consistent, usable results
-const disabledBenchmarks = [
-    'tablecmp-update-10th-1k',
-    'tablecmp-clear-1k',
-    'wc-clear-1k',
-    'wc-update-10th-1k',
-    'ss-slot-update-container-template',
-    'ss-slot-update-component-with-slot',
-    'table-append-1k',
-    'table-create-1k',
-    'table-update-10th-1k',
-    'table-clear-1k',
-];
-
 function createConfig(benchmarkFile) {
     const isServer = benchmarkFile.includes('/engine-server/');
     const lwcImportModule = isServer ? '@lwc/engine-server' : '@lwc/engine-dom';
@@ -63,11 +49,7 @@ function createConfig(benchmarkFile) {
     };
 }
 
-const benchmarkFiles = glob
-    .sync(path.join(__dirname, 'src/__benchmarks__/**/*.js'))
-    .filter(
-        (file) => !disabledBenchmarks.some((disabledBenchmark) => file.includes(disabledBenchmark))
-    );
+const benchmarkFiles = glob.sync(path.join(__dirname, 'src/__benchmarks__/**/*.js'));
 
 const config = benchmarkFiles.map(createConfig);
 
