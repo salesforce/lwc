@@ -117,9 +117,9 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The component connection state. */
     state: VMState;
     /** The list of VNodes associated with the shadow tree. */
-    children: VNodes;
+    children: Readonly<VNodes>;
     /** The list of adopted children VNodes. */
-    aChildren: VNodes;
+    aChildren: Readonly<VNodes>;
     /** The list of custom elements VNodes currently rendered in the shadow tree. We keep track of
      * those elements to efficiently unmount them when the parent component is disconnected without
      * having to traverse the VNode tree. */
@@ -634,7 +634,7 @@ function runLightChildNodesDisconnectedCallback(vm: VM) {
  * custom element itself will trigger the removal of anything slotted or anything
  * defined on its shadow.
  */
-function recursivelyDisconnectChildren(vnodes: VNodes) {
+function recursivelyDisconnectChildren(vnodes: Readonly<VNodes>) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {
         const vnode: VCustomElement | VNode | null = vnodes[i];
         if (!isNull(vnode) && isArray(vnode.children) && !isUndefined(vnode.elm)) {
@@ -699,7 +699,7 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
 // slow path routine
 // NOTE: we should probably more this routine to the synthetic shadow folder
 // and get the allocation to be cached by in the elm instead of in the VM
-export function allocateInSlot(vm: VM, children: VNodes) {
+export function allocateInSlot(vm: VM, children: Readonly<VNodes>) {
     const { cmpSlots: oldSlots } = vm;
     const cmpSlots = (vm.cmpSlots = create(null));
     for (let i = 0, len = children.length; i < len; i += 1) {

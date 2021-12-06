@@ -353,7 +353,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-function h(sel: string, data: VElementData, children: VNodes): VElement {
+function h(sel: string, data: Readonly<VElementData>, children: Readonly<VNodes>): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -432,10 +432,10 @@ function ti(value: any): number {
 // [s]lot element node
 function s(
     slotName: string,
-    data: VElementData,
-    children: VNodes,
+    data: Readonly<VElementData>,
+    children: Readonly<VNodes>,
     slotset: SlotSet | undefined
-): VElement | VNodes {
+): VElement | Readonly<VNodes> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -814,7 +814,7 @@ function dc(
  *   - children that are produced by iteration
  *
  */
-function sc(vnodes: VNodes): VNodes {
+function sc(vnodes: Readonly<VNodes>): Readonly<VNodes> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(vnodes), 'sc() api can only work with arrays.');
     }
