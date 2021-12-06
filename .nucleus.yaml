@@ -8,6 +8,21 @@ branches:
       auto-start: true
       auto-start-from-forks: false
       required-downstream-deps:
+        - LCT/Lightning-container-testing
+        - automation-platform/ui-interaction-explorer-components
+        - communities/microsite-template-marketing
+        - communities/shared-experience-components
+        - communities/ui-b2b-components
+        - communities/ui-cms-components
+        - communities/ui-dxp-components
+        - communities/ui-feeds-components
+        - communities/ui-lightning-community
         - lwc/lwc-platform
+        - salesforce/lds-lightning-platform
         - salesforce/luvio
         - salesforce/lwr
+        - salesforce/lwr-recipes
+        - salesforce/utam-docs
+        - salesforcedevs/developer-website
+        - uiplatform/nucleus
+
