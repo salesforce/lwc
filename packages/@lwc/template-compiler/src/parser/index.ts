@@ -1053,7 +1053,14 @@ function parseAttributes(
     const { attrs: attrLocations } = parse5ElmLocation;
 
     for (const attr of attributes) {
-        parsedAttrs.append(getTemplateAttribute(ctx, tagName, attrLocations, attr));
+        const attrLocation = attrLocations?.[attributeName(attr).toLowerCase()];
+        if (!attrLocation) {
+            throw new Error(
+                'An internal parsing error occurred while parsing attributes; attributes were found without a location.'
+            );
+        }
+
+        parsedAttrs.append(getTemplateAttribute(ctx, tagName, attr, attrLocation));
     }
 
     return parsedAttrs;
@@ -1062,20 +1069,18 @@ function parseAttributes(
 function getTemplateAttribute(
     ctx: ParserCtx,
     tag: string,
-    attrLocations: parse5.AttributesLocation,
-    attribute: parse5.Attribute
+    attribute: parse5.Attribute,
+    attributeLocation: parse5.Location
 ): Attribute {
-    const name = attributeName(attribute);
-
     // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
     // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state
-    const rawLocation = attrLocations[name.toLowerCase()];
-    const rawAttribute = ctx.getSource(rawLocation.startOffset, rawLocation.endOffset);
+    const rawAttribute = ctx.getSource(attributeLocation.startOffset, attributeLocation.endOffset);
+    const location = ast.sourceLocation(attributeLocation);
 
-    const location = ast.sourceLocation(rawLocation);
     // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
     // is not the same before and after the parsing, then the attribute name contains capital letters
-    if (!rawAttribute.startsWith(name)) {
+    const attrName = attributeName(attribute);
+    if (!rawAttribute.startsWith(attrName)) {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, location, [
             rawAttribute,
             tag,
@@ -1100,7 +1105,7 @@ function getTemplateAttribute(
         attrValue = ast.literal(value);
     }
 
-    return ast.attribute(name, attrValue, location);
+    return ast.attribute(attrName, attrValue, location);
 }
 
 function isInIteration(ctx: ParserCtx): boolean {
