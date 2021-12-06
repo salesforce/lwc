@@ -37,6 +37,7 @@ module.exports = {
         typescriptPlugin({
             target: 'es2017',
             tsconfig: path.join(__dirname, '../tsconfig.json'),
+            noEmitOnError: true,
         }),
         writeDistAndTypes(),
     ],
