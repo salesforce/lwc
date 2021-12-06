@@ -11,6 +11,8 @@ import { defineProperty, globalThis } from '@lwc/shared';
  * The following constructor might be used in either the constructor or the connectedCallback. In
  * order to ensure that the component evaluates, we attach those mock constructors to the global
  * object.
+ * Also note that Event is defined in Node 16+, but CustomEvent is not, so they have to be
+ * polyfilled separately.
  */
 if (typeof Event !== 'function') {
     class Event {}
