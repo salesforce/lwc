@@ -54,6 +54,7 @@ function rollupConfig({ wrap } = {}) {
             rollupTypescript({
                 target: 'es2017',
                 tsconfig: path.join(__dirname, '../../tsconfig.json'),
+                noEmitOnError: true,
             }),
             rollupFeaturesPlugin(),
         ].filter(Boolean),

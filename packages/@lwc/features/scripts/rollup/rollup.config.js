@@ -35,6 +35,7 @@ function rollupConfig({ format }) {
             typescript({
                 target: 'es2017',
                 tsconfig: path.join(__dirname, '../../tsconfig.json'),
+                noEmitOnError: true,
             }),
             writeDistAndTypes(),
         ],
