@@ -8,7 +8,6 @@ branches:
       auto-start: true
       auto-start-from-forks: false
       required-downstream-deps:
-        - LCT/Lightning-container-testing
         - automation-platform/ui-interaction-explorer-components
         - communities/microsite-template-marketing
         - communities/shared-experience-components
