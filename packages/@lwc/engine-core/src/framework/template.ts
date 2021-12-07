@@ -222,7 +222,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     return vnodes;
 }
 
-export function computeHasScopedStyles(template: Template): boolean {
+function computeHasScopedStyles(template: Template): boolean {
     const { stylesheets } = template;
     if (!isUndefined(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {
