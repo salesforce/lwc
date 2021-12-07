@@ -30,11 +30,7 @@ function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
     });
 }
 
-export interface PostCssLwcPluginOptions {
-    scoped: boolean;
-}
-
-export default function postCssLwcPlugin(options: PostCssLwcPluginOptions): TransformCallback {
+export default function postCssLwcPlugin(options: { scoped: boolean }): TransformCallback {
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
     const nativeShadowSelectorProcessor = selectorProcessorFactory({

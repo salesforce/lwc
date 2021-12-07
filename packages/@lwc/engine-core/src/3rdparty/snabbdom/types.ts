@@ -15,14 +15,6 @@
 
 import { VM } from '../../framework/vm';
 
-export type VNodeStyleDecls = Array<[string, string, boolean]>;
-export interface On {
-    [event: string]: EventListener;
-}
-export type Attrs = Record<string, string | number | boolean>;
-export type Classes = Record<string, boolean>;
-export type Props = Record<string, any>;
-
 export type Key = string | number;
 
 export type VNodes = Array<VNode | null>;
@@ -70,17 +62,15 @@ export interface VComment extends VNode {
     key: undefined;
 }
 
-export type CustomElementContext = Record<string, Record<string, any>>;
-
 export interface VNodeData {
-    props?: Props;
-    attrs?: Attrs;
-    className?: any;
-    style?: any;
-    classMap?: Classes;
-    styleDecls?: VNodeStyleDecls;
-    context?: CustomElementContext;
-    on?: On;
+    props?: Record<string, any>;
+    attrs?: Record<string, string | number | boolean>;
+    className?: string;
+    style?: string;
+    classMap?: Record<string, boolean>;
+    styleDecls?: Array<[string, string, boolean]>;
+    context?: Record<string, Record<string, any>>;
+    on?: Record<string, Function>;
     svg?: boolean;
 }
 
@@ -95,9 +85,4 @@ export interface Hooks<N extends VNode> {
     update: (oldVNode: N, vNode: N) => void;
     remove: (vNode: N, parentNode: Node) => void;
     hydrate: (vNode: N, node: Node) => void;
-}
-
-export interface Module<N extends VNode> {
-    create?: (vNode: N) => void;
-    update?: (oldVNode: N, vNode: N) => void;
 }
