@@ -176,6 +176,11 @@ const SyntheticShadowRootDescriptors = {
             return `[object ShadowRoot]`;
         },
     },
+    synthetic: {
+        writable: false,
+        configurable: false,
+        value: true,
+    },
 };
 
 const ShadowRootDescriptors = {

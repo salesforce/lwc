@@ -346,11 +346,11 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     }
 
     function isSyntheticShadowRootInstance(sr) {
-        return Boolean(sr && /function SyntheticShadowRoot/.test(sr.constructor.toString()));
+        return Boolean(sr && sr.synthetic);
     }
 
     function isNativeShadowRootInstance(sr) {
-        return Boolean(sr && /function ShadowRoot/.test(sr.constructor.toString()));
+        return Boolean(sr && !sr.synthetic);
     }
 
     // Providing overridable hooks for tests
