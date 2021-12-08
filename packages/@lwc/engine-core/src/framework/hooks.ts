@@ -4,21 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayFilter,
-    ArrayJoin,
-    assert,
-    isArray,
-    isNull,
-    isUndefined,
-    keys,
-    noop,
-} from '@lwc/shared';
+import { ArrayFilter, ArrayJoin, assert, isArray, isNull, isUndefined, keys } from '@lwc/shared';
 import { EmptyArray, parseStyleText } from './utils';
 import {
     createVM,
     allocateInSlot,
-    runWithBoundaryProtection,
     getAssociatedVMIfPresent,
     VM,
     ShadowMode,
@@ -169,17 +159,12 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
 }
 
 export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
-    const { children, owner } = vnode;
-    const fn = hasDynamicChildren(children) ? updateDynamicChildren : updateStaticChildren;
-    runWithBoundaryProtection(
-        owner,
-        owner.owner,
-        noop,
-        () => {
-            fn(vnode.elm!, oldVnode.children, children);
-        },
-        noop
-    );
+    const { elm, children } = vnode;
+    if (hasDynamicChildren(children)) {
+        updateDynamicChildren(elm!, oldVnode.children, children);
+    } else {
+        updateStaticChildren(elm!, oldVnode.children, children);
+    }
 }
 
 export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
