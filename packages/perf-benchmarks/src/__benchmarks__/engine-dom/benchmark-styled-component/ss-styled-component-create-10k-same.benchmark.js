@@ -8,5 +8,11 @@
 import StyledComponent from 'perf-benchmarks-components/dist/dom/benchmark/shadow/styledComponent.js';
 import { styledComponentBenchmark } from '../../../utils/styledComponentBenchmark';
 
-// Create 1k components with the same CSS in each component
-styledComponentBenchmark(`benchmark-styled-component/create/1k/same`, StyledComponent);
+const NUM_COMPONENTS = 10000;
+
+// Create 10k components with the same CSS in each component
+styledComponentBenchmark(
+    `ss-benchmark-styled-component/create/10k/same`,
+    NUM_COMPONENTS,
+    StyledComponent
+);
