@@ -178,6 +178,7 @@ const SyntheticShadowRootDescriptors = {
     },
     synthetic: {
         writable: false,
+        enumerable: false,
         configurable: false,
         value: true,
     },
