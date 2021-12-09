@@ -74,16 +74,17 @@ describe('Table diffing', () => {
             );
         };
 
-        const [, e2, e3] = elm.shadowRoot.querySelectorAll('x-row');
+        const [, e2, e3, e4] = elm.shadowRoot.querySelectorAll('x-row');
         expect(getRowContents()).toEqual([0, 1, 2, 3]);
         elm.rows = [{ id: 3 }, { id: 1 }, { id: 2 }, { id: 4 }];
 
         return Promise.resolve().then(() => {
             expect(getRowContents()).toEqual([3, 1, 2, 4]);
             expect(elm.shadowRoot.querySelectorAll('x-row').length).toBe(4);
-            const [, r2, r3] = elm.shadowRoot.querySelectorAll('x-row');
+            const [r1, r2, r3] = elm.shadowRoot.querySelectorAll('x-row');
             expect(r2).toBe(e2);
             expect(r3).toBe(e3);
+            expect(r1).toBe(e4);
         });
     });
 });
