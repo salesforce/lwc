@@ -62,4 +62,29 @@ describe('Table diffing', () => {
             expect(r2).toBe(e2);
         });
     });
+
+    it('should reuse the elements when moving the end to the start and adding new to the end', () => {
+        const elm = createElement('x-table', { is: Table });
+        elm.rows = [{ id: 0 }, { id: 1 }, { id: 2 }, { id: 3 }];
+        document.body.appendChild(elm);
+
+        const getRowContents = () => {
+            return [...elm.shadowRoot.querySelectorAll('x-row')].map((row) =>
+                parseInt(row.shadowRoot.querySelector('span').textContent, 10)
+            );
+        };
+
+        const [, e2, e3, e4] = elm.shadowRoot.querySelectorAll('x-row');
+        expect(getRowContents()).toEqual([0, 1, 2, 3]);
+        elm.rows = [{ id: 3 }, { id: 1 }, { id: 2 }, { id: 4 }];
+
+        return Promise.resolve().then(() => {
+            expect(getRowContents()).toEqual([3, 1, 2, 4]);
+            expect(elm.shadowRoot.querySelectorAll('x-row').length).toBe(4);
+            const [r1, r2, r3] = elm.shadowRoot.querySelectorAll('x-row');
+            expect(r2).toBe(e2);
+            expect(r3).toBe(e3);
+            expect(r1).toBe(e4);
+        });
+    });
 });
