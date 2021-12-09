@@ -152,6 +152,12 @@ export function updateDynamicChildren(
                         newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm!);
                     } else {
                         patchVnode(elmToMove, newStartVnode);
+                        // Delete the old child, but copy the array since it is read-only.
+                        // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
+                        // so we only care about the `oldCh` object inside this function.
+                        const oldChClone = [...oldCh];
+                        oldChClone[idxInOld] = undefined as any;
+                        oldCh = oldChClone;
                         newStartVnode.hook.move(elmToMove, parentElm, oldStartVnode.elm!);
                     }
                 }
