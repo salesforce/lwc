@@ -85,7 +85,6 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
     let newEndVnode = newCh[newEndIdx];
     let oldKeyToIdx: any;
     let idxInOld: number;
-    let elmToMove: VNode | null | undefined;
     let before: any;
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
         if (!isVNode(oldStartVnode)) {
@@ -131,19 +130,7 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
                 newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm!);
                 newStartVnode = newCh[++newStartIdx];
             } else {
-                elmToMove = oldCh[idxInOld];
-                if (isVNode(elmToMove)) {
-                    if (elmToMove.sel !== newStartVnode.sel) {
-                        // New element
-                        newStartVnode.hook.create(newStartVnode);
-                        newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm!);
-                    } else {
-                        patchVnode(elmToMove, newStartVnode);
-                        oldCh[idxInOld] = undefined as any;
-                        newStartVnode.hook.move(elmToMove, parentElm, oldStartVnode.elm!);
-                    }
-                }
-                newStartVnode = newCh[++newStartIdx];
+                throw new Error('This line of code should never be hit!');
             }
         }
     }
