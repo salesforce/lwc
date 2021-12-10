@@ -39,9 +39,16 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             expect(nodes.p.parentElement).toEqual(nodes.consumer);
             expect(nodes.consumer.parentElement).toEqual(elm);
         });
-        // TODO [#2424]: Fails because the <p> doesn't have an owner key.
-        xit('getRootNode', () => {
-            expect(nodes.p.getRootNode()).toEqual(document);
+
+        // Issue [#2424]: Synthetic shadow returns an incorrect root node because the <p>
+        // doesn't have an owner key. However, synthetic shadow is no longer being changed.
+        // This test verifies that the existing behavior in synthetic shadow does not regress.
+        it('getRootNode', () => {
+            const expectedRootNode = process.env.NATIVE_SHADOW
+                ? document // native, correct behavior
+                : nodes['consumer.shadowRoot']; // incorrect, existing behavior
+
+            expect(nodes.p.getRootNode()).toEqual(expectedRootNode);
             expect(nodes.consumer.getRootNode()).toEqual(document);
         });
         // TODO [#2425]: Incorrect serialization
