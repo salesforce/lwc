@@ -4,17 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayFilter, ArrayJoin, assert, isArray, isNull, isUndefined, keys } from '@lwc/shared';
-import { EmptyArray, parseStyleText } from './utils';
 import {
-    createVM,
-    allocateInSlot,
-    getAssociatedVMIfPresent,
-    VM,
-    ShadowMode,
-    RenderMode,
-} from './vm';
-import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
+    ArrayFilter,
+    ArrayJoin,
+    ArrayPush,
+    assert,
+    create,
+    isArray,
+    isNull,
+    isUndefined,
+    keys,
+} from '@lwc/shared';
+import { EmptyArray, parseStyleText } from './utils';
+import { createVM, getAssociatedVMIfPresent, VM, ShadowMode, RenderMode } from './vm';
+import { VNode, VCustomElement, VElement, VNodes, Key } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
 import modProps from './modules/props';
@@ -22,10 +25,10 @@ import modComputedClassName from './modules/computed-class-attr';
 import modComputedStyle from './modules/computed-style-attr';
 import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
-import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
 import { logError } from '../shared/logger';
+import { markComponentAsDirty } from './component';
 
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
@@ -447,6 +450,257 @@ export function removeElmHook(vnode: VElement) {
     }
 }
 
+interface KeyToIndexMap {
+    [key: string]: number;
+}
+
+function sameVnode(vnode1: VNode, vnode2: VNode): boolean {
+    return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
+}
+
+function isVNode(vnode: any): vnode is VNode {
+    return vnode != null;
+}
+
+function createKeyToOldIdx(children: VNodes, beginIdx: number, endIdx: number): KeyToIndexMap {
+    const map: KeyToIndexMap = {};
+    let j: number, key: Key | undefined, ch;
+    // TODO [#1637]: simplify this by assuming that all vnodes has keys
+    for (j = beginIdx; j <= endIdx; ++j) {
+        ch = children[j];
+        if (isVNode(ch)) {
+            key = ch.key;
+            if (key !== undefined) {
+                map[key] = j;
+            }
+        }
+    }
+    return map;
+}
+
+function addVnodes(
+    parentElm: Node,
+    before: Node | null,
+    vnodes: VNodes,
+    startIdx: number,
+    endIdx: number
+) {
+    for (; startIdx <= endIdx; ++startIdx) {
+        const ch = vnodes[startIdx];
+        if (isVNode(ch)) {
+            ch.hook.create(ch);
+            ch.hook.insert(ch, parentElm, before);
+        }
+    }
+}
+
+function removeVnodes(parentElm: Node, vnodes: VNodes, startIdx: number, endIdx: number): void {
+    for (; startIdx <= endIdx; ++startIdx) {
+        const ch = vnodes[startIdx];
+        // text nodes do not have logic associated to them
+        if (isVNode(ch)) {
+            ch.hook.remove(ch, parentElm);
+        }
+    }
+}
+
+function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
+    let oldStartIdx = 0;
+    let newStartIdx = 0;
+    let oldEndIdx = oldCh.length - 1;
+    let oldStartVnode = oldCh[0];
+    let oldEndVnode = oldCh[oldEndIdx];
+    const newChEnd = newCh.length - 1;
+    let newEndIdx = newChEnd;
+    let newStartVnode = newCh[0];
+    let newEndVnode = newCh[newEndIdx];
+    let oldKeyToIdx: any;
+    let idxInOld: number;
+    let elmToMove: VNode | null | undefined;
+    let before: any;
+    while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+        if (!isVNode(oldStartVnode)) {
+            oldStartVnode = oldCh[++oldStartIdx]; // Vnode might have been moved left
+        } else if (!isVNode(oldEndVnode)) {
+            oldEndVnode = oldCh[--oldEndIdx];
+        } else if (!isVNode(newStartVnode)) {
+            newStartVnode = newCh[++newStartIdx];
+        } else if (!isVNode(newEndVnode)) {
+            newEndVnode = newCh[--newEndIdx];
+        } else if (sameVnode(oldStartVnode, newStartVnode)) {
+            patchVnode(oldStartVnode, newStartVnode);
+            oldStartVnode = oldCh[++oldStartIdx];
+            newStartVnode = newCh[++newStartIdx];
+        } else if (sameVnode(oldEndVnode, newEndVnode)) {
+            patchVnode(oldEndVnode, newEndVnode);
+            oldEndVnode = oldCh[--oldEndIdx];
+            newEndVnode = newCh[--newEndIdx];
+        } else if (sameVnode(oldStartVnode, newEndVnode)) {
+            // Vnode moved right
+            patchVnode(oldStartVnode, newEndVnode);
+            newEndVnode.hook.move(
+                oldStartVnode,
+                parentElm,
+                oldEndVnode.owner.renderer.nextSibling(oldEndVnode.elm!)
+            );
+            oldStartVnode = oldCh[++oldStartIdx];
+            newEndVnode = newCh[--newEndIdx];
+        } else if (sameVnode(oldEndVnode, newStartVnode)) {
+            // Vnode moved left
+            patchVnode(oldEndVnode, newStartVnode);
+            newStartVnode.hook.move(oldEndVnode, parentElm, oldStartVnode.elm!);
+            oldEndVnode = oldCh[--oldEndIdx];
+            newStartVnode = newCh[++newStartIdx];
+        } else {
+            if (oldKeyToIdx === undefined) {
+                oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
+            }
+            idxInOld = oldKeyToIdx[newStartVnode.key!];
+            if (isUndefined(idxInOld)) {
+                // New element
+                newStartVnode.hook.create(newStartVnode);
+                newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm!);
+                newStartVnode = newCh[++newStartIdx];
+            } else {
+                elmToMove = oldCh[idxInOld];
+                if (isVNode(elmToMove)) {
+                    if (elmToMove.sel !== newStartVnode.sel) {
+                        // New element
+                        newStartVnode.hook.create(newStartVnode);
+                        newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm!);
+                    } else {
+                        patchVnode(elmToMove, newStartVnode);
+                        oldCh[idxInOld] = undefined as any;
+                        newStartVnode.hook.move(elmToMove, parentElm, oldStartVnode.elm!);
+                    }
+                }
+                newStartVnode = newCh[++newStartIdx];
+            }
+        }
+    }
+    if (oldStartIdx <= oldEndIdx || newStartIdx <= newEndIdx) {
+        if (oldStartIdx > oldEndIdx) {
+            // There's some cases in which the sub array of vnodes to be inserted is followed by null(s) and an
+            // already processed vnode, in such cases the vnodes to be inserted should be before that processed vnode.
+            let i = newEndIdx;
+            let n;
+            do {
+                n = newCh[++i];
+            } while (!isVNode(n) && i < newChEnd);
+            before = isVNode(n) ? n.elm : null;
+            addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx);
+        } else {
+            removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
+        }
+    }
+}
+
+function updateStaticChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
+    const oldChLength = oldCh.length;
+    const newChLength = newCh.length;
+
+    if (oldChLength === 0) {
+        // the old list is empty, we can directly insert anything new
+        addVnodes(parentElm, null, newCh, 0, newChLength);
+        return;
+    }
+    if (newChLength === 0) {
+        // the old list is nonempty and the new list is empty so we can directly remove all old nodes
+        // this is the case in which the dynamic children of an if-directive should be removed
+        removeVnodes(parentElm, oldCh, 0, oldChLength);
+        return;
+    }
+    // if the old list is not empty, the new list MUST have the same
+    // amount of nodes, that's why we call this static children
+    let referenceElm: Node | null = null;
+    for (let i = newChLength - 1; i >= 0; i -= 1) {
+        const vnode = newCh[i];
+        const oldVNode = oldCh[i];
+        if (vnode !== oldVNode) {
+            if (isVNode(oldVNode)) {
+                if (isVNode(vnode)) {
+                    // both vnodes must be equivalent, and se just need to patch them
+                    patchVnode(oldVNode, vnode);
+                    referenceElm = vnode.elm!;
+                } else {
+                    // removing the old vnode since the new one is null
+                    oldVNode.hook.remove(oldVNode, parentElm);
+                }
+            } else if (isVNode(vnode)) {
+                // this condition is unnecessary
+                vnode.hook.create(vnode);
+                // insert the new node one since the old one is null
+                vnode.hook.insert(vnode, parentElm, referenceElm);
+                referenceElm = vnode.elm!;
+            }
+        }
+    }
+}
+
+export function patchChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes): void {
+    if (hasDynamicChildren(newCh)) {
+        updateDynamicChildren(parentElm, oldCh, newCh);
+    } else {
+        updateStaticChildren(parentElm, oldCh, newCh);
+    }
+}
+
+function patchVnode(oldVnode: VNode, vnode: VNode) {
+    if (oldVnode !== vnode) {
+        vnode.elm = oldVnode.elm;
+        vnode.hook.update(oldVnode, vnode);
+    }
+}
+
+// slow path routine
+// NOTE: we should probably more this routine to the synthetic shadow folder
+// and get the allocation to be cached by in the elm instead of in the VM
+function allocateInSlot(vm: VM, children: VNodes) {
+    const { cmpSlots: oldSlots } = vm;
+    const cmpSlots = (vm.cmpSlots = create(null));
+    for (let i = 0, len = children.length; i < len; i += 1) {
+        const vnode = children[i];
+        if (isNull(vnode)) {
+            continue;
+        }
+        const { data } = vnode;
+        const slotName = (data.attrs?.slot ?? '') as string;
+        const vnodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
+        // re-keying the vnodes is necessary to avoid conflicts with default content for the slot
+        // which might have similar keys. Each vnode will always have a key that
+        // starts with a numeric character from compiler. In this case, we add a unique
+        // notation for slotted vnodes keys, e.g.: `@foo:1:1`
+        if (!isUndefined(vnode.key)) {
+            vnode.key = `@${slotName}:${vnode.key}`;
+        }
+        ArrayPush.call(vnodes, vnode);
+    }
+    if (!vm.isDirty) {
+        // We need to determine if the old allocation is really different from the new one
+        // and mark the vm as dirty
+        const oldKeys = keys(oldSlots);
+        if (oldKeys.length !== keys(cmpSlots).length) {
+            markComponentAsDirty(vm);
+            return;
+        }
+        for (let i = 0, len = oldKeys.length; i < len; i += 1) {
+            const key = oldKeys[i];
+            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
+                markComponentAsDirty(vm);
+                return;
+            }
+            const oldVNodes = oldSlots[key];
+            const vnodes = cmpSlots[key];
+            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
+                if (oldVNodes[j] !== vnodes[j]) {
+                    markComponentAsDirty(vm);
+                    return;
+                }
+            }
+        }
+    }
+}
+
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();
 
@@ -456,6 +710,6 @@ export function markAsDynamicChildren(children: VNodes) {
     FromIteration.set(children, 1);
 }
 
-export function hasDynamicChildren(children: VNodes): boolean {
+function hasDynamicChildren(children: VNodes): boolean {
     return FromIteration.has(children);
 }
