@@ -12,12 +12,37 @@ import {
     create,
     isArray,
     isNull,
+    isTrue,
     isUndefined,
     keys,
+    KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 import { EmptyArray, parseStyleText } from './utils';
-import { createVM, getAssociatedVMIfPresent, VM, ShadowMode, RenderMode } from './vm';
-import { VNode, VCustomElement, VElement, VNodes, Key } from '../3rdparty/snabbdom/types';
+import {
+    createVM,
+    getAssociatedVMIfPresent,
+    VM,
+    ShadowMode,
+    RenderMode,
+    rerenderVM,
+    VMState,
+    runConnectedCallback,
+    appendVM,
+    removeVM,
+    getAssociatedVM,
+    hydrateVM,
+    getRenderRoot,
+} from './vm';
+import {
+    VNode,
+    VCustomElement,
+    VElement,
+    VNodes,
+    Key,
+    Hooks,
+    VText,
+    VComment,
+} from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
 import modProps from './modules/props';
@@ -27,8 +52,276 @@ import modStaticClassName from './modules/static-class-attr';
 import modStaticStyle from './modules/static-style-attr';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
-import { logError } from '../shared/logger';
+import { logError, logWarn } from '../shared/logger';
 import { markComponentAsDirty } from './component';
+import { getUpgradableConstructor } from './upgradable-element';
+
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+
+export const TextHook: Hooks<VText> = {
+    create: (vnode) => {
+        const { owner } = vnode;
+        const { renderer } = owner;
+
+        const elm = renderer.createText(vnode.text!);
+        linkNodeToShadow(elm, owner);
+        vnode.elm = elm;
+    },
+    update: updateNodeHook,
+    insert: insertNodeHook,
+    move: insertNodeHook, // same as insert for text nodes
+    remove: removeNodeHook,
+    hydrate: (vNode: VNode, node: Node) => {
+        if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line lwc-internal/no-global-node
+            if (node.nodeType !== Node.TEXT_NODE) {
+                logError('Hydration mismatch: incorrect node type received', vNode.owner);
+                assert.fail('Hydration mismatch: incorrect node type received.');
+            }
+
+            if (node.nodeValue !== vNode.text) {
+                logWarn(
+                    'Hydration mismatch: text values do not match, will recover from the difference',
+                    vNode.owner
+                );
+            }
+        }
+
+        // always set the text value to the one from the vnode.
+        node.nodeValue = vNode.text ?? null;
+        vNode.elm = node;
+    },
+};
+
+export const CommentHook: Hooks<VComment> = {
+    create: (vnode) => {
+        const { owner, text } = vnode;
+        const { renderer } = owner;
+
+        const elm = renderer.createComment(text);
+        linkNodeToShadow(elm, owner);
+        vnode.elm = elm;
+    },
+    update: updateNodeHook,
+    insert: insertNodeHook,
+    move: insertNodeHook, // same as insert for text nodes
+    remove: removeNodeHook,
+    hydrate: (vNode: VNode, node: Node) => {
+        if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line lwc-internal/no-global-node
+            if (node.nodeType !== Node.COMMENT_NODE) {
+                logError('Hydration mismatch: incorrect node type received', vNode.owner);
+                assert.fail('Hydration mismatch: incorrect node type received.');
+            }
+
+            if (node.nodeValue !== vNode.text) {
+                logWarn(
+                    'Hydration mismatch: comment values do not match, will recover from the difference',
+                    vNode.owner
+                );
+            }
+        }
+
+        // always set the text value to the one from the vnode.
+        node.nodeValue = vNode.text ?? null;
+        vNode.elm = node;
+    },
+};
+
+// insert is called after update, which is used somewhere else (via a module)
+// to mark the vm as inserted, that means we cannot use update as the main channel
+// to rehydrate when dirty, because sometimes the element is not inserted just yet,
+// which breaks some invariants. For that reason, we have the following for any
+// Custom Element that is inserted via a template.
+export const ElementHook: Hooks<VElement> = {
+    create: (vnode) => {
+        const {
+            sel,
+            owner,
+            data: { svg },
+        } = vnode;
+        const { renderer } = owner;
+
+        const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
+        const elm = renderer.createElement(sel, namespace);
+
+        linkNodeToShadow(elm, owner);
+        fallbackElmHook(elm, vnode);
+        vnode.elm = elm;
+
+        createElmHook(vnode);
+    },
+    update: (oldVnode, vnode) => {
+        updateElmHook(oldVnode, vnode);
+        patchChildren(vnode.elm!, oldVnode.children, vnode.children);
+    },
+    insert: (vnode, parentNode, referenceNode) => {
+        insertNodeHook(vnode, parentNode, referenceNode);
+        createChildrenHook(vnode);
+    },
+    move: (vnode, parentNode, referenceNode) => {
+        insertNodeHook(vnode, parentNode, referenceNode);
+    },
+    remove: (vnode, parentNode) => {
+        removeNodeHook(vnode, parentNode);
+        removeElmHook(vnode);
+    },
+    hydrate: (vnode, node) => {
+        const elm = node as Element;
+        vnode.elm = elm;
+
+        const { context } = vnode.data;
+        const isDomManual = Boolean(
+            !isUndefined(context) &&
+                !isUndefined(context.lwc) &&
+                context.lwc.dom === LWCDOMMode.manual
+        );
+
+        if (isDomManual) {
+            // it may be that this element has lwc:inner-html, we need to diff and in case are the same,
+            // remove the innerHTML from props so it reuses the existing dom elements.
+            const { props } = vnode.data;
+            if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
+                if (elm.innerHTML === props.innerHTML) {
+                    delete props.innerHTML;
+                } else {
+                    logWarn(
+                        `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
+                        vnode.owner
+                    );
+                }
+            }
+        }
+
+        hydrateElmHook(vnode);
+
+        if (!isDomManual) {
+            hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vnode.owner);
+        }
+    },
+};
+
+export const CustomElementHook: Hooks<VCustomElement> = {
+    create: (vnode) => {
+        const { sel, owner } = vnode;
+        const { renderer } = owner;
+        const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
+        /**
+         * Note: if the upgradable constructor does not expect, or throw when we new it
+         * with a callback as the first argument, we could implement a more advanced
+         * mechanism that only passes that argument if the constructor is known to be
+         * an upgradable custom element.
+         */
+        const elm = new UpgradableConstructor((elm: HTMLElement) => {
+            // the custom element from the registry is expecting an upgrade callback
+            createViewModelHook(elm, vnode);
+        });
+
+        linkNodeToShadow(elm, owner);
+        vnode.elm = elm;
+
+        const vm = getAssociatedVMIfPresent(elm);
+        if (vm) {
+            allocateChildrenHook(vnode, vm);
+        } else if (vnode.ctor !== UpgradableConstructor) {
+            throw new TypeError(`Incorrect Component Constructor`);
+        }
+        createCustomElmHook(vnode);
+    },
+    update: (oldVnode, vnode) => {
+        updateCustomElmHook(oldVnode, vnode);
+        const vm = getAssociatedVMIfPresent(vnode.elm);
+        if (vm) {
+            // in fallback mode, the allocation will always set children to
+            // empty and delegate the real allocation to the slot elements
+            allocateChildrenHook(vnode, vm);
+        }
+        // in fallback mode, the children will be always empty, so, nothing
+        // will happen, but in native, it does allocate the light dom
+        patchChildren(vnode.elm!, oldVnode.children, vnode.children);
+        if (vm) {
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(
+                    isArray(vnode.children),
+                    `Invalid vnode for a custom element, it must have children defined.`
+                );
+            }
+            // this will probably update the shadowRoot, but only if the vm is in a dirty state
+            // this is important to preserve the top to bottom synchronous rendering phase.
+            rerenderVM(vm);
+        }
+    },
+    insert: (vnode, parentNode, referenceNode) => {
+        insertNodeHook(vnode, parentNode, referenceNode);
+        const vm = getAssociatedVMIfPresent(vnode.elm);
+        if (vm) {
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+            }
+            runConnectedCallback(vm);
+        }
+        createChildrenHook(vnode);
+        if (vm) {
+            appendVM(vm);
+        }
+    },
+    move: (vnode, parentNode, referenceNode) => {
+        insertNodeHook(vnode, parentNode, referenceNode);
+    },
+    remove: (vnode, parentNode) => {
+        removeNodeHook(vnode, parentNode);
+        const vm = getAssociatedVMIfPresent(vnode.elm);
+        if (vm) {
+            // for custom elements we don't have to go recursively because the removeVM routine
+            // will take care of disconnecting any child VM attached to its shadow as well.
+            removeVM(vm);
+        }
+    },
+    hydrate: (vnode, elm) => {
+        // the element is created, but the vm is not
+        const { sel, mode, ctor, owner } = vnode;
+
+        const def = getComponentInternalDef(ctor);
+        createVM(elm, def, {
+            mode,
+            owner,
+            tagName: sel,
+            renderer: owner.renderer,
+        });
+
+        vnode.elm = elm as Element;
+
+        const vm = getAssociatedVM(elm);
+        allocateChildrenHook(vnode, vm);
+
+        hydrateElmHook(vnode);
+
+        // Insert hook section:
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+        }
+        runConnectedCallback(vm);
+
+        if (vm.renderMode !== RenderMode.Light) {
+            // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
+            // Note: for Light DOM, this is handled while hydrating the VM
+            hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vm);
+        }
+
+        hydrateVM(vm);
+    },
+};
+
+function linkNodeToShadow(elm: Node, owner: VM) {
+    const { renderer, renderMode, shadowMode } = owner;
+
+    // TODO [#1164]: this should eventually be done by the polyfill directly
+    if (renderer.isSyntheticShadowDefined) {
+        if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
+            (elm as any)[KEY__SHADOW_RESOLVER] = getRenderRoot(owner)[KEY__SHADOW_RESOLVER];
+        }
+    }
+}
 
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
@@ -47,7 +340,7 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     }
 }
 
-export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
+function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     const {
         elm,
         text,
@@ -65,7 +358,7 @@ export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     }
 }
 
-export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: Node | null) {
+function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: Node | null) {
     const { renderer } = vnode.owner;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -77,7 +370,7 @@ export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: No
     }
 }
 
-export function removeNodeHook(vnode: VNode, parentNode: Node) {
+function removeNodeHook(vnode: VNode, parentNode: Node) {
     const { renderer } = vnode.owner;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -89,7 +382,7 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
     }
 }
 
-export function createElmHook(vnode: VElement) {
+function createElmHook(vnode: VElement) {
     modEvents.create(vnode);
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
@@ -102,11 +395,11 @@ export function createElmHook(vnode: VElement) {
     modComputedStyle.create(vnode);
 }
 
-export const enum LWCDOMMode {
+const enum LWCDOMMode {
     manual = 'manual',
 }
 
-export function hydrateElmHook(vnode: VElement) {
+function hydrateElmHook(vnode: VElement) {
     modEvents.create(vnode);
     // Attrs are already on the element.
     // modAttrs.create(vnode);
@@ -118,7 +411,7 @@ export function hydrateElmHook(vnode: VElement) {
     // modComputedStyle.create(vnode);
 }
 
-export function fallbackElmHook(elm: Element, vnode: VElement) {
+function fallbackElmHook(elm: Element, vnode: VElement) {
     const { owner } = vnode;
     setScopeTokenClassIfNecessary(elm, owner);
     if (owner.shadowMode === ShadowMode.Synthetic) {
@@ -151,7 +444,7 @@ export function fallbackElmHook(elm: Element, vnode: VElement) {
     }
 }
 
-export function updateElmHook(oldVnode: VElement, vnode: VElement) {
+function updateElmHook(oldVnode: VElement, vnode: VElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
@@ -161,7 +454,7 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     modComputedStyle.update(oldVnode, vnode);
 }
 
-export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
+function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.
     // 2- There is a change on the external api (ex: slots)
@@ -187,7 +480,7 @@ export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     }
 }
 
-export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
+function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     if (!isUndefined(getAssociatedVMIfPresent(elm))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
@@ -217,7 +510,7 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     }
 }
 
-export function createCustomElmHook(vnode: VCustomElement) {
+function createCustomElmHook(vnode: VCustomElement) {
     modEvents.create(vnode);
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
@@ -230,7 +523,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
     modComputedStyle.create(vnode);
 }
 
-export function createChildrenHook(vnode: VElement) {
+function createChildrenHook(vnode: VElement) {
     const { elm, children } = vnode;
     for (let j = 0; j < children.length; ++j) {
         const ch = children[j];
@@ -418,7 +711,7 @@ export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children
     }
 }
 
-export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
+function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
@@ -428,7 +721,7 @@ export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElem
     modComputedStyle.update(oldVnode, vnode);
 }
 
-export function removeElmHook(vnode: VElement) {
+function removeElmHook(vnode: VElement) {
     // this method only needs to search on child vnodes from template
     // to trigger the remove hook just in case some of those children
     // are custom elements.
