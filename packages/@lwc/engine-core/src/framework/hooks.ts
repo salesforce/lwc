@@ -161,15 +161,6 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     modComputedStyle.update(oldVnode, vnode);
 }
 
-export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
-    const { elm, children } = vnode;
-    if (hasDynamicChildren(children)) {
-        updateDynamicChildren(elm!, oldVnode.children, children);
-    } else {
-        updateStaticChildren(elm!, oldVnode.children, children);
-    }
-}
-
 export function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.

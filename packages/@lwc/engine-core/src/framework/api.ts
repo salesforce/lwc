@@ -66,7 +66,7 @@ import {
     updateElmHook,
     createCustomElmHook,
     updateCustomElmHook,
-    updateChildrenHook,
+    patchChildren,
     allocateChildrenHook,
     markAsDynamicChildren,
     hydrateChildrenHook,
@@ -174,7 +174,7 @@ const ElementHook: Hooks<VElement> = {
     },
     update: (oldVnode, vnode) => {
         updateElmHook(oldVnode, vnode);
-        updateChildrenHook(oldVnode, vnode);
+        patchChildren(vnode.elm!, oldVnode.children, vnode.children);
     },
     insert: (vnode, parentNode, referenceNode) => {
         insertNodeHook(vnode, parentNode, referenceNode);
@@ -259,7 +259,7 @@ const CustomElementHook: Hooks<VCustomElement> = {
         }
         // in fallback mode, the children will be always empty, so, nothing
         // will happen, but in native, it does allocate the light dom
-        updateChildrenHook(oldVnode, vnode);
+        patchChildren(vnode.elm!, oldVnode.children, vnode.children);
         if (vm) {
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(
