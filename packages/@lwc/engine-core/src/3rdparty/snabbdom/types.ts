@@ -35,7 +35,6 @@ export interface VBaseNode {
     elm: Node | undefined;
     text: string | undefined;
     key: Key | undefined;
-    // hook: Hooks<any>;
     owner: VM;
     type: VNodeType;
 }
@@ -91,12 +90,3 @@ export interface VNodeData {
 export interface VElementData extends VNodeData {
     key: Key;
 }
-
-// export interface Hooks<N extends VNode> {
-//     create: (vNode: N) => void;
-//     insert: (vNode: N, parentNode: Node, referenceNode: Node | null) => void;
-//     move: (vNode: N, parentNode: Node, referenceNode: Node | null) => void;
-//     update: (oldVNode: N, vNode: N) => void;
-//     remove: (vNode: N, parentNode: Node) => void;
-//     hydrate: (vNode: N, node: Node) => void;
-// }
