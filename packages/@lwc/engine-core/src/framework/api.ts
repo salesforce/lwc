@@ -766,7 +766,7 @@ type LightningElementConfig = {
     constructor: LightningElementConstructor;
     props: Record<string, any>;
 };
-function isConfig(obj: any): obj is LightningElementConfig {
+function isLightningElementConfig(obj: any): obj is LightningElementConfig {
     return !!obj.props;
 }
 export function dc(
@@ -788,9 +788,10 @@ export function dc(
         return null;
     }
     let props = {};
-    if (isConfig(Ctor)) {
+    if (isLightningElementConfig(Ctor)) {
         props = Ctor.props;
         Ctor = Ctor.constructor;
+        data.props = { ...data.props, ...props };
     }
     if (!isComponentConstructor(Ctor)) {
         throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
@@ -804,7 +805,6 @@ export function dc(
     // to identify different constructors as vnodes with different keys to avoid reusing the
     // element used for previous constructors.
     data.key = `dc:${idx}:${data.key}`;
-    data.props = { ...data.props, ...props };
     return c(sel, Ctor, data, children);
 }
 

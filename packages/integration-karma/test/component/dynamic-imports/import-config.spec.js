@@ -1,22 +1,10 @@
 import { createElement } from 'lwc';
-import { registerForLoad, clearRegister } from 'test-utils';
-import ConfigOne from 'x/configone';
-import ConfigTwo from 'x/configtwo';
 
 import PropContainer from 'x/props';
-
-beforeEach(() => {
-    clearRegister();
-});
 
 const macroTask = () => new Promise((resolve) => setTimeout(resolve));
 
 it('should pass props passed as config', async () => {
-    // note, using `x-` prefix instead of `x/` because these are
-    // handled by `registerForLoad`
-    registerForLoad('x-configone', ConfigOne);
-    registerForLoad('x-configtwo', ConfigTwo);
-
     const elm = createElement('x-dynamic', { is: PropContainer });
     document.body.appendChild(elm);
 
