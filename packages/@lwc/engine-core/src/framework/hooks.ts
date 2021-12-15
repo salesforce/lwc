@@ -60,6 +60,14 @@ import { logError, logWarn } from '../shared/logger';
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
 
+const enum LWCDOMMode {
+    manual = 'manual',
+}
+
+interface KeyToIndexMap {
+    [key: string]: number;
+}
+
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 export const TextHook: Hooks<VText> = {
@@ -153,10 +161,10 @@ export const ElementHook: Hooks<VElement> = {
         fallbackElmHook(elm, vnode);
         vnode.elm = elm;
 
-        createElmHook(vnode);
+        patchElementAttrsAndProps(null, vnode);
     },
     update: (oldVnode, vnode) => {
-        updateElmHook(oldVnode, vnode);
+        patchElementAttrsAndProps(oldVnode, vnode);
         patchChildren(vnode.elm!, oldVnode.children, vnode.children);
     },
     insert: (vnode, parentNode, referenceNode) => {
@@ -230,10 +238,10 @@ export const CustomElementHook: Hooks<VCustomElement> = {
         } else if (vnode.ctor !== UpgradableConstructor) {
             throw new TypeError(`Incorrect Component Constructor`);
         }
-        createCustomElmHook(vnode);
+        patchElementAttrsAndProps(null, vnode);
     },
     update: (oldVnode, vnode) => {
-        updateCustomElmHook(oldVnode, vnode);
+        patchElementAttrsAndProps(oldVnode, vnode);
         const vm = getAssociatedVMIfPresent(vnode.elm);
         if (vm) {
             // in fallback mode, the allocation will always set children to
@@ -386,21 +394,19 @@ function removeNodeHook(vnode: VNode, parentNode: Node) {
     }
 }
 
-function createElmHook(vnode: VElement) {
-    applyEventListeners(vnode);
-    // Attrs need to be applied to element before props
-    // IE11 will wipe out value on radio inputs if value
-    // is set before type=radio.
-    patchAttributes(null, vnode);
-    patchProps(null, vnode);
-    applyStaticClassAttribute(vnode);
-    applyStaticStyleAttribute(vnode);
-    patchClassAttribute(null, vnode);
-    patchStyleAttribute(null, vnode);
-}
+function patchElementAttrsAndProps(oldVnode: VBaseElement | null, vnode: VBaseElement) {
+    if (isNull(oldVnode)) {
+        applyEventListeners(vnode);
+        applyStaticClassAttribute(vnode);
+        applyStaticStyleAttribute(vnode);
+    }
 
-const enum LWCDOMMode {
-    manual = 'manual',
+    // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
+    // value is set before type=radio.
+    patchAttributes(oldVnode, vnode);
+    patchProps(oldVnode, vnode);
+    patchClassAttribute(oldVnode, vnode);
+    patchStyleAttribute(oldVnode, vnode);
 }
 
 function hydrateElmHook(vnode: VBaseElement) {
@@ -446,16 +452,6 @@ function fallbackElmHook(elm: Element, vnode: VElement) {
         const isLight = owner.renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, { isPortal, isLight });
     }
-}
-
-function updateElmHook(oldVnode: VElement, vnode: VElement) {
-    // Attrs need to be applied to element before props
-    // IE11 will wipe out value on radio inputs if value
-    // is set before type=radio.
-    patchAttributes(oldVnode, vnode);
-    patchProps(oldVnode, vnode);
-    patchClassAttribute(oldVnode, vnode);
-    patchStyleAttribute(oldVnode, vnode);
 }
 
 function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
@@ -512,19 +508,6 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
             `Invalid vnode for a custom element, it must have children defined.`
         );
     }
-}
-
-function createCustomElmHook(vnode: VCustomElement) {
-    applyEventListeners(vnode);
-    // Attrs need to be applied to element before props
-    // IE11 will wipe out value on radio inputs if value
-    // is set before type=radio.
-    patchAttributes(null, vnode);
-    patchProps(null, vnode);
-    applyStaticClassAttribute(vnode);
-    applyStaticStyleAttribute(vnode);
-    patchClassAttribute(null, vnode);
-    patchStyleAttribute(null, vnode);
 }
 
 function createChildrenHook(vnode: VParentElement) {
@@ -715,16 +698,6 @@ export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children
     }
 }
 
-function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
-    // Attrs need to be applied to element before props
-    // IE11 will wipe out value on radio inputs if value
-    // is set before type=radio.
-    patchAttributes(oldVnode, vnode);
-    patchProps(oldVnode, vnode);
-    patchClassAttribute(oldVnode, vnode);
-    patchStyleAttribute(oldVnode, vnode);
-}
-
 function removeElmHook(vnode: VElement) {
     // this method only needs to search on child vnodes from template
     // to trigger the remove hook just in case some of those children
@@ -736,10 +709,6 @@ function removeElmHook(vnode: VElement) {
             ch.hook.remove(ch, elm!);
         }
     }
-}
-
-interface KeyToIndexMap {
-    [key: string]: number;
 }
 
 function sameVnode(vnode1: VNode, vnode2: VNode): boolean {
