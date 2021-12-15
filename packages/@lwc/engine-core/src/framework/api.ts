@@ -40,10 +40,10 @@ import {
 import { LightningElementConstructor } from './base-lightning-element';
 import {
     markAsDynamicChildren,
-    TextHook,
-    CommentHook,
-    ElementHook,
-    CustomElementHook,
+    // TextHook,
+    // CommentHook,
+    // ElementHook,
+    // CustomElementHook,
 } from './hooks';
 import { isComponentConstructor } from './def';
 
@@ -102,7 +102,7 @@ function h(sel: string, data: VElementData, children: VNodes): VElement {
         text,
         elm,
         key,
-        hook: ElementHook,
+        // hook: ElementHook,
         owner: vmBeingRendered,
     };
 }
@@ -219,7 +219,7 @@ function c(
         elm,
         key,
 
-        hook: CustomElementHook,
+        // hook: CustomElementHook,
         ctor: Ctor,
         owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
@@ -354,7 +354,7 @@ function t(text: string): VText {
         elm,
         key,
 
-        hook: TextHook,
+        // hook: TextHook,
         owner: getVMBeingRendered()!,
     };
 }
@@ -372,7 +372,7 @@ function co(text: string): VComment {
         elm,
         key,
 
-        hook: CommentHook,
+        // hook: CommentHook,
         owner: getVMBeingRendered()!,
     };
 }
