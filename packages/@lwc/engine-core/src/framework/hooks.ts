@@ -45,13 +45,15 @@ import {
     VParentElement,
     VBaseElement,
 } from '../3rdparty/snabbdom/types';
-import modEvents from './modules/events';
-import modAttrs from './modules/attrs';
-import modProps from './modules/props';
-import modComputedClassName from './modules/computed-class-attr';
-import modComputedStyle from './modules/computed-style-attr';
-import modStaticClassName from './modules/static-class-attr';
-import modStaticStyle from './modules/static-style-attr';
+
+import { applyEventListeners } from './modules/events';
+import { patchAttributes } from './modules/attrs';
+import { patchProps } from './modules/props';
+import { patchClassAttribute } from './modules/computed-class-attr';
+import { patchStyleAttribute } from './modules/computed-style-attr';
+import { applyStaticClassAttribute } from './modules/static-class-attr';
+import { applyStaticStyleAttribute } from './modules/static-style-attr';
+
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
 import { logError, logWarn } from '../shared/logger';
@@ -385,16 +387,16 @@ function removeNodeHook(vnode: VNode, parentNode: Node) {
 }
 
 function createElmHook(vnode: VElement) {
-    modEvents.create(vnode);
+    applyEventListeners(vnode);
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
-    modAttrs.create(vnode);
-    modProps.create(vnode);
-    modStaticClassName.create(vnode);
-    modStaticStyle.create(vnode);
-    modComputedClassName.create(vnode);
-    modComputedStyle.create(vnode);
+    patchAttributes(null, vnode);
+    patchProps(null, vnode);
+    applyStaticClassAttribute(vnode);
+    applyStaticStyleAttribute(vnode);
+    patchClassAttribute(null, vnode);
+    patchStyleAttribute(null, vnode);
 }
 
 const enum LWCDOMMode {
@@ -402,13 +404,13 @@ const enum LWCDOMMode {
 }
 
 function hydrateElmHook(vnode: VBaseElement) {
-    modEvents.create(vnode);
+    applyEventListeners(vnode);
     // Attrs are already on the element.
     // modAttrs.create(vnode);
-    modProps.create(vnode);
+    patchProps(null, vnode);
     // Already set.
-    // modStaticClassName.create(vnode);
-    // modStaticStyle.create(vnode);
+    // applyStaticClassAttribute(vnode);
+    // applyStaticStyleAttribute(vnode);
     // modComputedClassName.create(vnode);
     // modComputedStyle.create(vnode);
 }
@@ -450,10 +452,10 @@ function updateElmHook(oldVnode: VElement, vnode: VElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
-    modAttrs.update(oldVnode, vnode);
-    modProps.update(oldVnode, vnode);
-    modComputedClassName.update(oldVnode, vnode);
-    modComputedStyle.update(oldVnode, vnode);
+    patchAttributes(oldVnode, vnode);
+    patchProps(oldVnode, vnode);
+    patchClassAttribute(oldVnode, vnode);
+    patchStyleAttribute(oldVnode, vnode);
 }
 
 function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
@@ -513,16 +515,16 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
 }
 
 function createCustomElmHook(vnode: VCustomElement) {
-    modEvents.create(vnode);
+    applyEventListeners(vnode);
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
-    modAttrs.create(vnode);
-    modProps.create(vnode);
-    modStaticClassName.create(vnode);
-    modStaticStyle.create(vnode);
-    modComputedClassName.create(vnode);
-    modComputedStyle.create(vnode);
+    patchAttributes(null, vnode);
+    patchProps(null, vnode);
+    applyStaticClassAttribute(vnode);
+    applyStaticStyleAttribute(vnode);
+    patchClassAttribute(null, vnode);
+    patchStyleAttribute(null, vnode);
 }
 
 function createChildrenHook(vnode: VParentElement) {
@@ -717,10 +719,10 @@ function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
-    modAttrs.update(oldVnode, vnode);
-    modProps.update(oldVnode, vnode);
-    modComputedClassName.update(oldVnode, vnode);
-    modComputedStyle.update(oldVnode, vnode);
+    patchAttributes(oldVnode, vnode);
+    patchProps(oldVnode, vnode);
+    patchClassAttribute(oldVnode, vnode);
+    patchStyleAttribute(oldVnode, vnode);
 }
 
 function removeElmHook(vnode: VElement) {

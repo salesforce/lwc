@@ -10,7 +10,7 @@ import { VBaseElement } from '../../3rdparty/snabbdom/types';
 // The HTML style property becomes the vnode.data.styleDecls object when defined as a string in the template.
 // The compiler takes care of transforming the inline style into an object. It's faster to set the
 // different style properties individually instead of via a string.
-function createStyleAttribute(vnode: VBaseElement) {
+export function applyStaticStyleAttribute(vnode: VBaseElement) {
     const {
         elm,
         data: { styleDecls },
@@ -26,7 +26,3 @@ function createStyleAttribute(vnode: VBaseElement) {
         renderer.setCSSStyleProperty(elm, prop, value, important);
     }
 }
-
-export default {
-    create: createStyleAttribute,
-};

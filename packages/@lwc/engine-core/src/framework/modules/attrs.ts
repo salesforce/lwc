@@ -13,7 +13,7 @@ const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';
 const ColonCharCode = 58;
 
-function updateAttrs(oldVnode: VBaseElement, vnode: VBaseElement) {
+export function patchAttributes(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     const {
         data: { attrs },
         owner: { renderer },
@@ -22,9 +22,9 @@ function updateAttrs(oldVnode: VBaseElement, vnode: VBaseElement) {
     if (isUndefined(attrs)) {
         return;
     }
-    let {
-        data: { attrs: oldAttrs },
-    } = oldVnode;
+
+    let oldAttrs = isNull(oldVnode) ? undefined : oldVnode.data.attrs;
+
     if (oldAttrs === attrs) {
         return;
     }
@@ -65,10 +65,3 @@ function updateAttrs(oldVnode: VBaseElement, vnode: VBaseElement) {
         }
     }
 }
-
-const emptyVNode = { data: {} } as VBaseElement;
-
-export default {
-    create: (vnode: VBaseElement) => updateAttrs(emptyVNode, vnode),
-    update: updateAttrs,
-};

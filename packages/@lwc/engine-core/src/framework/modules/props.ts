@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isUndefined, keys } from '@lwc/shared';
+import { assert, isNull, isUndefined, keys } from '@lwc/shared';
 import { VBaseElement } from '../../3rdparty/snabbdom/types';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
@@ -13,13 +13,13 @@ function isLiveBindingProp(sel: string, key: string): boolean {
     return sel === 'input' && (key === 'value' || key === 'checked');
 }
 
-function update(oldVnode: VBaseElement, vnode: VBaseElement) {
+export function patchProps(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     const props = vnode.data.props;
-
     if (isUndefined(props)) {
         return;
     }
-    const oldProps = oldVnode.data.props;
+
+    const oldProps = isNull(oldVnode) ? undefined : oldVnode.data.props;
     if (oldProps === props) {
         return;
     }
@@ -53,10 +53,3 @@ function update(oldVnode: VBaseElement, vnode: VBaseElement) {
         }
     }
 }
-
-const emptyVNode = { data: {} } as VBaseElement;
-
-export default {
-    create: (vnode: VBaseElement) => update(emptyVNode, vnode),
-    update,
-};

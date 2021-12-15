@@ -10,7 +10,7 @@ import { VBaseElement } from '../../3rdparty/snabbdom/types';
 // The HTML class property becomes the vnode.data.classMap object when defined as a string in the template.
 // The compiler takes care of transforming the inline classnames into an object. It's faster to set the
 // different classnames properties individually instead of via a string.
-function createClassAttribute(vnode: VBaseElement) {
+export function applyStaticClassAttribute(vnode: VBaseElement) {
     const {
         elm,
         data: { classMap },
@@ -26,7 +26,3 @@ function createClassAttribute(vnode: VBaseElement) {
         classList.add(name);
     }
 }
-
-export default {
-    create: createClassAttribute,
-};

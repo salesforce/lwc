@@ -33,16 +33,7 @@ function createListener(): EventListener {
     };
 }
 
-function updateAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveVNode) {
-    if (isUndefined(oldVnode.listener)) {
-        createAllEventListeners(vnode);
-    } else {
-        vnode.listener = oldVnode.listener;
-        vnode.listener.vnode = vnode;
-    }
-}
-
-function createAllEventListeners(vnode: VBaseElement) {
+export function applyEventListeners(vnode: VBaseElement) {
     const {
         elm,
         data: { on },
@@ -61,8 +52,3 @@ function createAllEventListeners(vnode: VBaseElement) {
         renderer.addEventListener(elm, name, listener);
     }
 }
-
-export default {
-    update: updateAllEventListeners,
-    create: createAllEventListeners,
-};
