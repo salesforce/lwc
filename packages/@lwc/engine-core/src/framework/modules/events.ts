@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-import { VNode } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../../3rdparty/snabbdom/types';
 
-function handleEvent(event: Event, vnode: VNode) {
+function handleEvent(event: Event, vnode: VBaseElement) {
     const { type } = event;
     const {
         data: { on },
@@ -20,16 +20,16 @@ function handleEvent(event: Event, vnode: VNode) {
 }
 
 interface VNodeEventListener extends EventListener {
-    vnode?: VNode;
+    vnode?: VBaseElement;
 }
 
-interface InteractiveVNode extends VNode {
+interface InteractiveVNode extends VBaseElement {
     listener: VNodeEventListener | undefined;
 }
 
 function createListener(): EventListener {
     return function handler(event: Event) {
-        handleEvent(event, (handler as VNodeEventListener).vnode as VNode);
+        handleEvent(event, (handler as VNodeEventListener).vnode as VBaseElement);
     };
 }
 
@@ -42,7 +42,7 @@ function updateAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveV
     }
 }
 
-function createAllEventListeners(vnode: VNode) {
+function createAllEventListeners(vnode: VBaseElement) {
     const {
         elm,
         data: { on },

@@ -17,21 +17,30 @@ import { VM } from '../../framework/vm';
 
 export type Key = string | number;
 
+export const enum VNodeType {
+    Text,
+    Comment,
+    Element,
+    CustomElement,
+}
+
+export type VNode = VText | VComment | VElement | VCustomElement;
+export type VParentElement = VElement | VCustomElement;
 export type VNodes = Array<VNode | null>;
 
-export interface VNode {
+export interface VBaseNode {
     sel: string | undefined;
     data: VNodeData;
     children: VNodes | undefined;
     elm: Node | undefined;
-    parentElm?: Element;
     text: string | undefined;
     key: Key | undefined;
     hook: Hooks<any>;
     owner: VM;
+    type: VNodeType;
 }
 
-export interface VElement extends VNode {
+export interface VBaseElement extends VBaseNode {
     sel: string;
     data: VElementData;
     children: VNodes;
@@ -40,26 +49,31 @@ export interface VElement extends VNode {
     key: Key;
 }
 
-export interface VCustomElement extends VElement {
+export interface VElement extends VBaseElement {
+    type: VNodeType.Element;
+}
+
+export interface VCustomElement extends VBaseElement {
     mode: 'closed' | 'open';
     ctor: any;
     // copy of the last allocated children.
     aChildren?: VNodes;
+    type: VNodeType.CustomElement;
 }
 
-export interface VText extends VNode {
+export interface VText extends VBaseNode {
     sel: undefined;
     children: undefined;
     elm: Node | undefined;
     text: string;
-    key: undefined;
+    type: VNodeType.Text;
 }
 
-export interface VComment extends VNode {
+export interface VComment extends VBaseNode {
     sel: undefined;
     children: undefined;
     text: string;
-    key: undefined;
+    type: VNodeType.Comment;
 }
 
 export interface VNodeData {

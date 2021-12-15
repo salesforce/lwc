@@ -7,13 +7,13 @@
 import { assert, isNull, isUndefined, keys, StringCharCodeAt } from '@lwc/shared';
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
-import { VElement } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../../3rdparty/snabbdom/types';
 
 const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';
 const ColonCharCode = 58;
 
-function updateAttrs(oldVnode: VElement, vnode: VElement) {
+function updateAttrs(oldVnode: VBaseElement, vnode: VBaseElement) {
     const {
         data: { attrs },
         owner: { renderer },
@@ -66,9 +66,9 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
     }
 }
 
-const emptyVNode = { data: {} } as VElement;
+const emptyVNode = { data: {} } as VBaseElement;
 
 export default {
-    create: (vnode: VElement) => updateAttrs(emptyVNode, vnode),
+    create: (vnode: VBaseElement) => updateAttrs(emptyVNode, vnode),
     update: updateAttrs,
 };

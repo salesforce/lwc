@@ -6,7 +6,7 @@
  */
 import { create, freeze, isString, isUndefined, StringCharCodeAt, StringSlice } from '@lwc/shared';
 import { EmptyObject, SPACE_CHAR } from '../utils';
-import { VElement } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../../3rdparty/snabbdom/types';
 
 const classNameToClassMap = create(null);
 
@@ -46,7 +46,7 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
     return map;
 }
 
-function updateClassAttribute(oldVnode: VElement, vnode: VElement) {
+function updateClassAttribute(oldVnode: VBaseElement, vnode: VBaseElement) {
     const {
         elm,
         data: { className: newClass },
@@ -77,9 +77,9 @@ function updateClassAttribute(oldVnode: VElement, vnode: VElement) {
     }
 }
 
-const emptyVNode = { data: {} } as VElement;
+const emptyVNode = { data: {} } as VBaseElement;
 
 export default {
-    create: (vnode: VElement) => updateClassAttribute(emptyVNode, vnode),
+    create: (vnode: VBaseElement) => updateClassAttribute(emptyVNode, vnode),
     update: updateClassAttribute,
 };

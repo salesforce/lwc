@@ -42,6 +42,8 @@ import {
     Hooks,
     VText,
     VComment,
+    VParentElement,
+    VBaseElement,
 } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
@@ -399,7 +401,7 @@ const enum LWCDOMMode {
     manual = 'manual',
 }
 
-function hydrateElmHook(vnode: VElement) {
+function hydrateElmHook(vnode: VBaseElement) {
     modEvents.create(vnode);
     // Attrs are already on the element.
     // modAttrs.create(vnode);
@@ -523,7 +525,7 @@ function createCustomElmHook(vnode: VCustomElement) {
     modComputedStyle.create(vnode);
 }
 
-function createChildrenHook(vnode: VElement) {
+function createChildrenHook(vnode: VParentElement) {
     const { elm, children } = vnode;
     for (let j = 0; j < children.length; ++j) {
         const ch = children[j];

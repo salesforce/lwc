@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isUndefined, keys } from '@lwc/shared';
-import { VElement } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../../3rdparty/snabbdom/types';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For properties with live bindings, we read values from the DOM element
@@ -13,7 +13,7 @@ function isLiveBindingProp(sel: string, key: string): boolean {
     return sel === 'input' && (key === 'value' || key === 'checked');
 }
 
-function update(oldVnode: VElement, vnode: VElement) {
+function update(oldVnode: VBaseElement, vnode: VBaseElement) {
     const props = vnode.data.props;
 
     if (isUndefined(props)) {
@@ -54,9 +54,9 @@ function update(oldVnode: VElement, vnode: VElement) {
     }
 }
 
-const emptyVNode = { data: {} } as VElement;
+const emptyVNode = { data: {} } as VBaseElement;
 
 export default {
-    create: (vnode: VElement) => update(emptyVNode, vnode),
+    create: (vnode: VBaseElement) => update(emptyVNode, vnode),
     update,
 };

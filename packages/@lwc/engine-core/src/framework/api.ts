@@ -35,6 +35,7 @@ import {
     VCustomElement,
     VComment,
     VElementData,
+    VNodeType,
 } from '../3rdparty/snabbdom/types';
 import { LightningElementConstructor } from './base-lightning-element';
 import {
@@ -94,6 +95,7 @@ function h(sel: string, data: VElementData, children: VNodes): VElement {
     const { key } = data;
 
     return {
+        type: VNodeType.Element,
         sel,
         data,
         children,
@@ -209,6 +211,7 @@ function c(
     const { key } = data;
     let text, elm;
     const vnode: VCustomElement = {
+        type: VNodeType.CustomElement,
         sel,
         data,
         children,
@@ -343,6 +346,7 @@ function t(text: string): VText {
     const data = EmptyObject;
     let sel, children, key, elm;
     return {
+        type: VNodeType.Text,
         sel,
         data,
         children,
@@ -360,6 +364,7 @@ function co(text: string): VComment {
     const data = EmptyObject;
     let sel, children, key, elm;
     return {
+        type: VNodeType.Comment,
         sel,
         data,
         children,

@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isString } from '@lwc/shared';
-import { VNode } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../../3rdparty/snabbdom/types';
 
 // The style property is a string when defined via an expression in the template.
-function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
+function updateStyleAttribute(oldVnode: VBaseElement, vnode: VBaseElement) {
     const {
         elm,
         data: { style: newStyle },
@@ -26,9 +26,9 @@ function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
     }
 }
 
-const emptyVNode = { data: {} } as VNode;
+const emptyVNode = { data: {} } as VBaseElement;
 
 export default {
-    create: (vnode: VNode) => updateStyleAttribute(emptyVNode, vnode),
+    create: (vnode: VBaseElement) => updateStyleAttribute(emptyVNode, vnode),
     update: updateStyleAttribute,
 };
