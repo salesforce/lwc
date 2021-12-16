@@ -414,7 +414,11 @@ function applyHandlers(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: Bas
     }
 }
 
-function parseIf(ctx: ParserCtx, parsedAttr: ParsedAttribute): If | undefined {
+function parseIf(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parse5ElmLocation: parse5.ElementLocation
+): If | undefined {
     const ifAttribute = parsedAttr.pick(IF_RE);
     if (!ifAttribute) {
         return;
@@ -429,7 +433,12 @@ function parseIf(ctx: ParserCtx, parsedAttr: ParsedAttribute): If | undefined {
         ctx.throwOnNode(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, ifAttribute, [modifier]);
     }
 
-    return ast.ifNode(ifAttribute.location, modifier, ifAttribute.value);
+    return ast.ifNode(
+        modifier,
+        ifAttribute.value,
+        ast.sourceLocation(parse5ElmLocation),
+        ifAttribute.location
+    );
 }
 
 function applyRootLwcDirectives(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): void {
@@ -665,7 +674,13 @@ function parseForEach(
             index = parseIdentifier(ctx, forIndexValue.value, forIndex.location);
         }
 
-        return ast.forEach(forEachAttribute.value, forEachAttribute.location, item, index);
+        return ast.forEach(
+            forEachAttribute.value,
+            ast.sourceLocation(parse5ElmLocation),
+            forEachAttribute.location,
+            item,
+            index
+        );
     } else if (forEachAttribute || forItemAttribute) {
         ctx.throwAtLocation(
             ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
@@ -704,7 +719,12 @@ function parseForOf(
 
     const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
 
-    return ast.forOf(iteratorExpression.value, iterator, iteratorExpression.location);
+    return ast.forOf(
+        iteratorExpression.value,
+        iterator,
+        ast.sourceLocation(parse5ElmLocation),
+        iteratorExpression.location
+    );
 }
 
 function applyKey(

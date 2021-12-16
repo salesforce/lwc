@@ -165,20 +165,24 @@ export interface Root extends BaseParentNode {
     directives: RootDirective[];
 }
 
-export interface If extends BaseParentNode {
+interface DirectiveParentNode extends BaseParentNode {
+    directiveLocation: SourceLocation;
+}
+
+export interface If extends DirectiveParentNode {
     type: 'If';
     modifier: string;
     condition: Expression;
 }
 
-export interface ForEach extends BaseParentNode {
+export interface ForEach extends DirectiveParentNode {
     type: 'ForEach';
     expression: Expression;
     item: Identifier;
     index?: Identifier;
 }
 
-export interface ForOf extends BaseParentNode {
+export interface ForOf extends DirectiveParentNode {
     type: 'ForOf';
     expression: Expression;
     iterator: Identifier;

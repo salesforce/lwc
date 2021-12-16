@@ -145,7 +145,8 @@ export function literal<T extends string | boolean>(value: T): Literal<T> {
 
 export function forEach(
     expression: Expression,
-    location: SourceLocation,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation,
     item: Identifier,
     index?: Identifier
 ): ForEach {
@@ -154,7 +155,8 @@ export function forEach(
         expression,
         item,
         index,
-        location,
+        location: elementLocation,
+        directiveLocation,
         children: [],
     };
 }
@@ -162,23 +164,31 @@ export function forEach(
 export function forOf(
     expression: Expression,
     iterator: Identifier,
-    location: SourceLocation
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
 ): ForOf {
     return {
         type: 'ForOf',
         expression,
         iterator,
-        location,
+        location: elementLocation,
+        directiveLocation,
         children: [],
     };
 }
 
-export function ifNode(location: SourceLocation, modifier: string, condition: Expression): If {
+export function ifNode(
+    modifier: string,
+    condition: Expression,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
+): If {
     return {
         type: 'If',
         modifier,
         condition,
-        location,
+        location: elementLocation,
+        directiveLocation,
         children: [],
     };
 }
