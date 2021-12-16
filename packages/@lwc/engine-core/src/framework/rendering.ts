@@ -132,8 +132,13 @@ function processComment(n1: VComment, n2: VComment, parent: ParentNode, anchor: 
 
         insertNodeHook(n2, parent, anchor);
     } else {
-        // No need to patch the comment text, as it is static.
         n2.elm = n1.elm;
+
+        // FIXME: Comment nodes should be static, we shouldn't need to diff them together. However
+        // it is the case today.
+        if (n2.text !== n1.text) {
+            updateNodeHook(n1, n2);
+        }
     }
 }
 
