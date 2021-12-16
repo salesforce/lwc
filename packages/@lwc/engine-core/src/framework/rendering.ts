@@ -203,20 +203,32 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
     const { sel, owner } = vnode;
     const { renderer } = owner;
 
+    let vm: VM | undefined;
     const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
-    /**
-     * Note: if the upgradable constructor does not expect, or throw when we new it
-     * with a callback as the first argument, we could implement a more advanced
-     * mechanism that only passes that argument if the constructor is known to be
-     * an upgradable custom element.
-     */
-    const elm = (vnode.elm = new UpgradableConstructor((elm: HTMLElement) => {
-        // the custom element from the registry is expecting an upgrade callback
-        createViewModelHook(elm, vnode);
-    }));
-    linkNodeToShadow(elm, owner);
 
-    const vm = getAssociatedVMIfPresent(elm);
+    // Note: if the upgradable constructor does not expect, or throw when we new it with a callback
+    // as the first argument, we could implement a more advanced mechanism that only passes that
+    // argument if the constructor is known to be an upgradable custom element.
+    const elm = (vnode.elm = new UpgradableConstructor((elm: HTMLElement) => {
+        if (!isUndefined(getAssociatedVMIfPresent(elm))) {
+            // There is a possibility that a custom element is registered under tagName, in which
+            // case, the initialization is already carry on, and there is nothing else to do here
+            // since this hook is called right after invoking `document.createElement`.
+            return;
+        }
+
+        const { mode, ctor } = vnode;
+        const def = getComponentInternalDef(ctor);
+
+        vm = createVM(elm, def, {
+            mode,
+            owner,
+            tagName: sel,
+            renderer,
+        });
+    }));
+
+    linkNodeToShadow(elm, owner);
 
     if (!isUndefined(vm)) {
         allocateCustomElementChildren(vnode, vm);
@@ -414,23 +426,6 @@ function allocateInSlot(vm: VM, children: VNodes) {
             }
         }
     }
-}
-
-function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
-    if (!isUndefined(getAssociatedVMIfPresent(elm))) {
-        // There is a possibility that a custom element is registered under tagName,
-        // in which case, the initialization is already carry on, and there is nothing else
-        // to do here since this hook is called right after invoking `document.createElement`.
-        return;
-    }
-    const { sel, mode, ctor, owner } = vnode;
-    const def = getComponentInternalDef(ctor);
-    createVM(elm, def, {
-        mode,
-        owner,
-        tagName: sel,
-        renderer: owner.renderer,
-    });
 }
 
 function mountChildren(children: VNodes, parent: Element) {
