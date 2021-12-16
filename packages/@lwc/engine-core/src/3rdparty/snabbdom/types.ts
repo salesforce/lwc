@@ -58,6 +58,7 @@ export interface VCustomElement extends VBaseElement {
     // copy of the last allocated children.
     aChildren?: VNodes;
     type: VNodeType.CustomElement;
+    vm: VM | undefined;
 }
 
 export interface VText extends VBaseNode {

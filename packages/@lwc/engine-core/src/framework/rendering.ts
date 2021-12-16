@@ -220,7 +220,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
         const { mode, ctor } = vnode;
         const def = getComponentInternalDef(ctor);
 
-        vm = createVM(elm, def, {
+        vm = vnode.vm = createVM(elm, def, {
             mode,
             owner,
             tagName: sel,
@@ -257,7 +257,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
 
 function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
     const elm = (n2.elm = n1.elm!);
-    const vm = getAssociatedVMIfPresent(elm);
+    const vm = (n2.vm = n1.vm);
 
     patchElementAttrsAndProps(n1, n2);
 
@@ -293,7 +293,7 @@ function unmount(vnode: VNode, parent: ParentNode) {
             break;
 
         case VNodeType.CustomElement: {
-            const vm = getAssociatedVMIfPresent(vnode.elm);
+            const { vm } = vnode;
 
             // No need to unmount the children here, `removeVM` will take care of removing the
             // children.
