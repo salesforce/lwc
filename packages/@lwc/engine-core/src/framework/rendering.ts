@@ -111,13 +111,12 @@ function processText(n1: VText, n2: VText, parent: ParentNode, anchor: Node | nu
         const textNode = (n2.elm = renderer.createText(n2.text));
         linkNodeToShadow(textNode, owner);
 
-        insertNodeHook(n2, parent, anchor);
+        insertVNode(n2, parent, anchor);
     } else {
         n2.elm = n1.elm;
 
-        // FIXME: We shouldn't need compare the node content in `updateNodeHook`.
         if (n2.text !== n1.text) {
-            updateNodeHook(n1, n2);
+            updateTextContent(n2);
         }
     }
 }
@@ -130,14 +129,14 @@ function processComment(n1: VComment, n2: VComment, parent: ParentNode, anchor: 
         const textNode = (n2.elm = renderer.createComment(n2.text));
         linkNodeToShadow(textNode, owner);
 
-        insertNodeHook(n2, parent, anchor);
+        insertVNode(n2, parent, anchor);
     } else {
         n2.elm = n1.elm;
 
         // FIXME: Comment nodes should be static, we shouldn't need to diff them together. However
         // it is the case today.
         if (n2.text !== n1.text) {
-            updateNodeHook(n1, n2);
+            updateTextContent(n2);
         }
     }
 }
@@ -151,22 +150,32 @@ function processElement(n1: VElement, n2: VElement, parent: ParentNode, anchor: 
 }
 
 function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) {
-    const {
-        sel,
-        owner,
-        data: { svg },
-    } = vnode;
+    const { sel, owner, data } = vnode;
     const { renderer } = owner;
 
-    const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
+    const namespace = isTrue(data.svg) ? SVG_NAMESPACE : undefined;
     const elm = (vnode.elm = renderer.createElement(sel, namespace));
     linkNodeToShadow(elm, owner);
 
-    fallbackElmHook(elm, vnode);
+    // Handle dom:manual template directive.
+    const isDomManual = data.context?.lwc?.dom === LWCDOMMode.manual;
+    if (isDomManual) {
+        elm.$domManual$ = true;
+    }
+
+    applyStyleScoping(elm, vnode);
     patchElementAttrsAndProps(null, vnode);
 
-    insertNodeHook(vnode, parent, anchor);
+    // Apply guardrails to the element in dev mode.
+    if (process.env.NODE_ENV !== 'production') {
+        patchElementWithRestrictions(elm, {
+            isPortal: isDomManual,
+            isLight: owner.renderMode === RenderMode.Light,
+        });
+    }
 
+    // Insert node and recursively mount the children tree.
+    insertVNode(vnode, parent, anchor);
     mountChildren(vnode.children, elm);
 }
 
@@ -215,9 +224,10 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
         throw new TypeError(`Incorrect Component Constructor`);
     }
 
+    applyStyleScoping(elm, vnode);
     patchElementAttrsAndProps(null, vnode);
 
-    insertNodeHook(vnode, parent, anchor);
+    insertVNode(vnode, parent, anchor);
 
     if (!isUndefined(vm)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -263,7 +273,7 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
 }
 
 function unmount(vnode: VNode, parent: ParentNode) {
-    removeNodeHook(vnode, parent);
+    removeVNode(vnode, parent);
 
     switch (vnode.type) {
         case VNodeType.Element:
@@ -303,65 +313,6 @@ function linkNodeToShadow(elm: Node, owner: VM) {
     }
 }
 
-function observeElementChildNodes(elm: Element) {
-    (elm as any).$domManual$ = true;
-}
-
-function setElementShadowToken(elm: Element, token: string | undefined) {
-    (elm as any).$shadowToken$ = token;
-}
-
-// Set the scope token class for *.scoped.css styles
-function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
-    const { cmpTemplate, context } = owner;
-    const token = cmpTemplate?.stylesheetToken;
-    if (!isUndefined(token) && context.hasScopedStyles) {
-        owner.renderer.getClassList(elm).add(token);
-    }
-}
-
-function updateNodeHook(oldVnode: VNode, vnode: VNode) {
-    const {
-        elm,
-        text,
-        owner: { renderer },
-    } = vnode;
-
-    if (oldVnode.text !== text) {
-        if (process.env.NODE_ENV !== 'production') {
-            unlockDomMutation();
-        }
-        renderer.setText(elm, text!);
-        if (process.env.NODE_ENV !== 'production') {
-            lockDomMutation();
-        }
-    }
-}
-
-function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: Node | null) {
-    const { renderer } = vnode.owner;
-
-    if (process.env.NODE_ENV !== 'production') {
-        unlockDomMutation();
-    }
-    renderer.insert(vnode.elm!, parentNode, referenceNode);
-    if (process.env.NODE_ENV !== 'production') {
-        lockDomMutation();
-    }
-}
-
-function removeNodeHook(vnode: VNode, parentNode: Node) {
-    const { renderer } = vnode.owner;
-
-    if (process.env.NODE_ENV !== 'production') {
-        unlockDomMutation();
-    }
-    renderer.remove(vnode.elm!, parentNode);
-    if (process.env.NODE_ENV !== 'production') {
-        lockDomMutation();
-    }
-}
-
 function patchElementAttrsAndProps(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     if (isNull(oldVnode)) {
         applyEventListeners(vnode);
@@ -377,36 +328,18 @@ function patchElementAttrsAndProps(oldVnode: VBaseElement | null, vnode: VBaseEl
     patchStyleAttribute(oldVnode, vnode);
 }
 
-function fallbackElmHook(elm: Element, vnode: VElement) {
-    const { owner } = vnode;
-    setScopeTokenClassIfNecessary(elm, owner);
-    if (owner.shadowMode === ShadowMode.Synthetic) {
-        const {
-            data: { context },
-        } = vnode;
-        const { stylesheetToken } = owner.context;
-        if (
-            !isUndefined(context) &&
-            !isUndefined(context.lwc) &&
-            context.lwc.dom === LWCDOMMode.manual
-        ) {
-            // this element will now accept any manual content inserted into it
-            observeElementChildNodes(elm);
-        }
-        // when running in synthetic shadow mode, we need to set the shadowToken value
-        // into each element from the template, so they can be styled accordingly.
-        setElementShadowToken(elm, stylesheetToken);
+function applyStyleScoping(elm: Element, vnode: VBaseElement) {
+    const { cmpTemplate, context, renderer, shadowMode } = vnode.owner;
+
+    // Apply synthetic shadow dom style scoping.
+    if (shadowMode === ShadowMode.Synthetic) {
+        (elm as any).$shadowToken$ = context.stylesheetToken;
     }
-    if (process.env.NODE_ENV !== 'production') {
-        const {
-            data: { context },
-        } = vnode;
-        const isPortal =
-            !isUndefined(context) &&
-            !isUndefined(context.lwc) &&
-            context.lwc.dom === LWCDOMMode.manual;
-        const isLight = owner.renderMode === RenderMode.Light;
-        patchElementWithRestrictions(elm, { isPortal, isLight });
+
+    // Apply light DOM style scoping.
+    const scopedStyleToken = cmpTemplate!.stylesheetToken;
+    if (context.hasScopedStyles && !isUndefined(scopedStyleToken)) {
+        renderer.getClassList(elm).add(scopedStyleToken);
     }
 }
 
@@ -491,13 +424,6 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
         return;
     }
     const { sel, mode, ctor, owner } = vnode;
-    setScopeTokenClassIfNecessary(elm, owner);
-    if (owner.shadowMode === ShadowMode.Synthetic) {
-        const { stylesheetToken } = owner.context;
-        // when running in synthetic shadow mode, we need to set the shadowToken value
-        // into each element from the template, so they can be styled accordingly.
-        setElementShadowToken(elm, stylesheetToken);
-    }
     const def = getComponentInternalDef(ctor);
     createVM(elm, def, {
         mode,
@@ -505,12 +431,6 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
         tagName: sel,
         renderer: owner.renderer,
     });
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isArray(vnode.children),
-            `Invalid vnode for a custom element, it must have children defined.`
-        );
-    }
 }
 
 function mountChildren(children: VNodes, parent: Element) {
@@ -610,7 +530,7 @@ function updateDynamicChildren(parentElm: ParentNode, oldCh: VNodes, newCh: VNod
         } else if (sameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patch(oldStartVnode, newEndVnode, parentElm, null);
-            insertNodeHook(
+            insertVNode(
                 oldStartVnode,
                 parentElm,
                 oldEndVnode.owner.renderer.nextSibling(oldEndVnode.elm!)
@@ -620,7 +540,7 @@ function updateDynamicChildren(parentElm: ParentNode, oldCh: VNodes, newCh: VNod
         } else if (sameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
             patch(oldEndVnode, newStartVnode, parentElm, null);
-            insertNodeHook(oldEndVnode, parentElm, oldStartVnode.elm!);
+            insertVNode(oldEndVnode, parentElm, oldStartVnode.elm!);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
         } else {
@@ -641,7 +561,7 @@ function updateDynamicChildren(parentElm: ParentNode, oldCh: VNodes, newCh: VNod
                     } else {
                         patch(elmToMove, newStartVnode, parentElm, null);
                         oldCh[idxInOld] = undefined as any;
-                        insertNodeHook(elmToMove, parentElm, oldStartVnode.elm!);
+                        insertVNode(elmToMove, parentElm, oldStartVnode.elm!);
                     }
                 }
                 newStartVnode = newCh[++newStartIdx];
@@ -703,5 +623,45 @@ function updateStaticChildren(parentElm: ParentNode, oldCh: VNodes, newCh: VNode
                 referenceElm = vnode.elm!;
             }
         }
+    }
+}
+
+function updateTextContent(vnode: VNode) {
+    const {
+        elm,
+        text,
+        owner: { renderer },
+    } = vnode;
+
+    if (process.env.NODE_ENV !== 'production') {
+        unlockDomMutation();
+    }
+    renderer.setText(elm, text!);
+    if (process.env.NODE_ENV !== 'production') {
+        lockDomMutation();
+    }
+}
+
+function insertVNode(vnode: VNode, parentNode: Node, referenceNode: Node | null) {
+    const { renderer } = vnode.owner;
+
+    if (process.env.NODE_ENV !== 'production') {
+        unlockDomMutation();
+    }
+    renderer.insert(vnode.elm!, parentNode, referenceNode);
+    if (process.env.NODE_ENV !== 'production') {
+        lockDomMutation();
+    }
+}
+
+function removeVNode(vnode: VNode, parentNode: Node) {
+    const { renderer } = vnode.owner;
+
+    if (process.env.NODE_ENV !== 'production') {
+        unlockDomMutation();
+    }
+    renderer.remove(vnode.elm!, parentNode);
+    if (process.env.NODE_ENV !== 'production') {
+        lockDomMutation();
     }
 }
