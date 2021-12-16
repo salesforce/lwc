@@ -11,7 +11,7 @@ import { VM, runWithBoundaryProtection } from './vm';
 import { LightningElement, LightningElementConstructor } from './base-lightning-element';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 
-import { VNodes } from '../3rdparty/snabbdom/types';
+import { VNodes } from './vnode';
 import { addErrorComponentStack } from '../shared/error';
 
 export let isInvokingRender: boolean = false;

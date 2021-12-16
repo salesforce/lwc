@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, isString } from '@lwc/shared';
-import { VBaseElement } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../vnode';
 
 // The style property is a string when defined via an expression in the template.
 export function patchStyleAttribute(oldVnode: VBaseElement | null, vnode: VBaseElement) {

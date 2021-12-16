@@ -8,16 +8,6 @@
 import { ArrayFilter, ArrayJoin, assert, isUndefined, keys } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
-import {
-    VBaseElement,
-    VComment,
-    VCustomElement,
-    VElement,
-    VNode,
-    VNodes,
-    VNodeType,
-    VText,
-} from '../3rdparty/snabbdom/types';
 
 import { parseStyleText } from './utils';
 import { getComponentInternalDef } from './def';
@@ -34,6 +24,16 @@ import {
     VM,
     VMState,
 } from './vm';
+import {
+    VBaseElement,
+    VComment,
+    VCustomElement,
+    VElement,
+    VNode,
+    VNodes,
+    VNodeType,
+    VText,
+} from './vnode';
 
 function hydrate(vnode: VNode, node: Node) {
     switch (vnode.type) {

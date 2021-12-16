@@ -13,7 +13,7 @@
  https://github.com/snabbdom/snabbdom/
  */
 
-import { VM } from '../../framework/vm';
+import { VM } from './vm';
 
 export type Key = string | number;
 

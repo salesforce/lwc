@@ -22,11 +22,15 @@ import {
     StringReplace,
     toString,
 } from '@lwc/shared';
+
 import { logError } from '../shared/logger';
+
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
 import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
+import { LightningElementConstructor } from './base-lightning-element';
+import { isComponentConstructor } from './def';
 import {
     VNode,
     VNodes,
@@ -36,9 +40,7 @@ import {
     VComment,
     VElementData,
     VNodeType,
-} from '../3rdparty/snabbdom/types';
-import { LightningElementConstructor } from './base-lightning-element';
-import { isComponentConstructor } from './def';
+} from './vnode';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 

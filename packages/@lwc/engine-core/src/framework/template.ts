@@ -18,7 +18,7 @@ import {
     KEY__SCOPED_CSS,
 } from '@lwc/shared';
 import { logError } from '../shared/logger';
-import { VNode, VNodes } from '../3rdparty/snabbdom/types';
+import { VNode, VNodes } from './vnode';
 import api, { RenderAPI } from './api';
 import {
     resetComponentRoot,

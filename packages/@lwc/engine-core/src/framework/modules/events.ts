@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-import { VBaseElement } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../vnode';
 
 export function applyEventListeners(vnode: VBaseElement) {
     const {

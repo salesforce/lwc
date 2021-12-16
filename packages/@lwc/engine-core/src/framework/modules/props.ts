@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isNull, isUndefined, keys } from '@lwc/shared';
-import { VBaseElement } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../vnode';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For properties with live bindings, we read values from the DOM element

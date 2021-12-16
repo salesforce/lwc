@@ -7,7 +7,7 @@
 import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
 import api from './api';
-import { VNode } from '../3rdparty/snabbdom/types';
+import { VNode } from './vnode';
 import { RenderMode, ShadowMode, VM } from './vm';
 import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';

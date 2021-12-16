@@ -5,9 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isNull, isUndefined, keys, StringCharCodeAt } from '@lwc/shared';
+
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
-import { VBaseElement } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../vnode';
 
 const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';

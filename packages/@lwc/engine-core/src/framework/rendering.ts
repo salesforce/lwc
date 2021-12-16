@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    // ArrayFilter,
-    // ArrayJoin,
     ArrayPush,
     assert,
     create,
@@ -17,6 +15,12 @@ import {
     keys,
     KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
+
+import { hasDynamicChildren } from './api';
+import { getComponentInternalDef } from './def';
+import { markComponentAsDirty } from './component';
+import { getUpgradableConstructor } from './upgradable-element';
+import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { EmptyArray } from './utils';
 import {
     createVM,
@@ -42,7 +46,7 @@ import {
     VComment,
     VBaseElement,
     VNodeType,
-} from '../3rdparty/snabbdom/types';
+} from './vnode';
 
 import { applyEventListeners } from './modules/events';
 import { patchAttributes } from './modules/attrs';
@@ -51,12 +55,6 @@ import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
-
-import { hasDynamicChildren } from './api';
-import { getComponentInternalDef } from './def';
-import { markComponentAsDirty } from './component';
-import { getUpgradableConstructor } from './upgradable-element';
-import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 
 interface KeyToIndexMap {
     [key: string]: number;

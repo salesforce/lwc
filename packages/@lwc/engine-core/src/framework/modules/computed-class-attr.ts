@@ -14,7 +14,7 @@ import {
     StringSlice,
 } from '@lwc/shared';
 import { EmptyObject, SPACE_CHAR } from '../utils';
-import { VBaseElement } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../vnode';
 
 const classNameToClassMap = create(null);
 

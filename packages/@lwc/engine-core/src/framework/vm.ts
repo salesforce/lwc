@@ -40,8 +40,8 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 import { AccessorReactiveObserver } from './decorators/api';
 import { Renderer, HostNode, HostElement } from './renderer';
 import { removeActiveVM } from './hot-swaps';
+import { VNodes, VCustomElement, VNode } from './vnode';
 
-import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
 type ShadowRootMode = 'open' | 'closed';

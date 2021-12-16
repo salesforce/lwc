@@ -6,7 +6,7 @@
  */
 import { ArrayPush, assert, create, isArray, isObject, isUndefined } from '@lwc/shared';
 
-import { VNodeData } from '../3rdparty/snabbdom/types';
+import { VNodeData } from './vnode';
 import { ComponentDef } from './def';
 import { VM, Context } from './vm';
 

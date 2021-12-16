@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-import { VBaseElement } from '../../3rdparty/snabbdom/types';
+import { VBaseElement } from '../vnode';
 
 // The HTML style property becomes the vnode.data.styleDecls object when defined as a string in the template.
 // The compiler takes care of transforming the inline style into an object. It's faster to set the
