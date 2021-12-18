@@ -22,11 +22,9 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
             expect(nodes.slot.assignedElements()).toEqual([nodes.p]);
         });
 
-        if (!process.env.MIXED_SHADOW) {
-            it('assignedSlot', () => {
-                expect(nodes.p.assignedSlot).toEqual(nodes.slot);
-            });
-        }
+        it('assignedSlot', () => {
+            expect(nodes.p.assignedSlot).toEqual(nodes.slot);
+        });
 
         it('childNodes', () => {
             expect(Array.from(nodes.slot.childNodes)).toEqual([]);
@@ -97,13 +95,9 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
         it('assignedElements', () => {
             expect(nodes.slot.assignedElements()).toEqual([nodes.p]);
         });
-
-        if (!process.env.MIXED_SHADOW) {
-            it('assignedSlot', () => {
-                expect(nodes.p.assignedSlot).toEqual(nodes.slot);
-            });
-        }
-
+        it('assignedSlot', () => {
+            expect(nodes.p.assignedSlot).toEqual(nodes.slot);
+        });
         it('childNodes', () => {
             expect(Array.from(nodes.slot.childNodes)).toEqual([]);
         });
