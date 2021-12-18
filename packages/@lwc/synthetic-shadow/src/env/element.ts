@@ -110,6 +110,13 @@ const shadowRootGetter: (this: Element) => ShadowRoot | null = hasOwnProperty.ca
     ? getOwnPropertyDescriptor(Element.prototype, 'shadowRoot')!.get!
     : () => null;
 
+const assignedSlotGetter: (this: Element) => HTMLSlotElement | null = hasOwnProperty.call(
+    Element.prototype,
+    'assignedSlot'
+)
+    ? getOwnPropertyDescriptor(Element.prototype, 'assignedSlot')!.get!
+    : () => null;
+
 export {
     attachShadow,
     childrenGetter,
@@ -139,4 +146,5 @@ export {
     tagNameGetter,
     tabIndexGetter,
     tabIndexSetter,
+    assignedSlotGetter,
 };
