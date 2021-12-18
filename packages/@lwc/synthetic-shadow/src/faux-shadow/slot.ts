@@ -17,7 +17,13 @@ import {
     isTrue,
     isUndefined,
 } from '@lwc/shared';
-import { getAttribute, setAttribute } from '../env/element';
+import {
+    getAttribute,
+    setAttribute,
+    assignedSlotGetter as originalElementAssignedSlotGetter,
+    shadowRootGetter,
+} from '../env/element';
+import { assignedSlotGetter as originalTextAssignedSlotGetter } from '../env/text';
 import { dispatchEvent } from '../env/event-target';
 import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import { childNodesGetter, parentNodeGetter } from '../env/node';
@@ -25,6 +31,7 @@ import {
     assignedNodes as originalAssignedNodes,
     assignedElements as originalAssignedElements,
 } from '../env/slot';
+import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import {
     isSlotElement,
     getNodeOwner,
@@ -83,12 +90,23 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     );
 }
 
-export function assignedSlotGetterPatched(this: Element): HTMLSlotElement | null {
+export function assignedSlotGetterPatched(this: Element | Text): HTMLSlotElement | null {
     const parentNode = parentNodeGetter.call(this);
+
+    // use original assignedSlot if parent has a native shdow root
+    if (parentNode instanceof Element) {
+        const sr = shadowRootGetter.call(parentNode);
+        if (isInstanceOfNativeShadowRoot(sr)) {
+            if (this instanceof Text) {
+                return originalTextAssignedSlotGetter.call(this);
+            }
+            return originalElementAssignedSlotGetter.call(this);
+        }
+    }
 
     /**
      * The node is assigned to a slot if:
-     *  - it has a parent and it parent its parent is a slot element
+     *  - it has a parent and its parent is a slot element
      *  - and if the slot owner key is different than the node owner key.
      *
      * When the slot and the slotted node are 2 different shadow trees, the owner keys will be
