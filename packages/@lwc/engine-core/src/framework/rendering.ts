@@ -267,7 +267,7 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
 
     // in fallback mode, the children will be always empty, so, nothing
     // will happen, but in native, it does allocate the light dom
-    patchChildren(elm, n1.children, n1.children);
+    patchChildren(elm, n1.children, n2.children);
 
     if (!isUndefined(vm)) {
         if (process.env.NODE_ENV !== 'production') {
