@@ -141,8 +141,9 @@ export function containsHost(node: Node) {
         return false;
     }
 
-    // IE requires all arguments
+    // IE requires all four arguments, even though the fourth is deprecated
     // https://developer.mozilla.org/en-US/docs/Web/API/Document/createTreeWalker#browser_compatibility
+    // @ts-ignore
     const walker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false);
     let descendant;
     while (!isNull((descendant = walker.nextNode()))) {
