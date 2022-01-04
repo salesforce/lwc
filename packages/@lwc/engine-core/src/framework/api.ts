@@ -8,8 +8,8 @@ import {
     ArrayPush,
     assert,
     create as ObjectCreate,
-    freeze as ObjectFreeze,
     forEach,
+    freeze as ObjectFreeze,
     isArray,
     isFalse,
     isFunction,
@@ -29,52 +29,53 @@ import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
 import {
     appendVM,
-    getAssociatedVMIfPresent,
+    createVM,
     getAssociatedVM,
+    getAssociatedVMIfPresent,
+    getRenderRoot,
+    hydrateVM,
     removeVM,
+    RenderMode,
     rerenderVM,
     runConnectedCallback,
     ShadowMode,
     SlotSet,
     VM,
     VMState,
-    getRenderRoot,
-    createVM,
-    hydrateVM,
-    RenderMode,
 } from './vm';
 import {
+    Hooks,
+    VComment,
+    VCustomElement,
+    VElement,
+    VElementData,
     VNode,
     VNodes,
-    VElement,
     VText,
-    Hooks,
-    VCustomElement,
-    VComment,
-    VElementData,
 } from '../3rdparty/snabbdom/types';
 import { LightningElementConstructor } from './base-lightning-element';
 import {
+    allocateChildrenHook,
+    createChildrenHook,
+    createCustomElmHook,
+    createElmHook,
     createViewModelHook,
     fallbackElmHook,
-    removeElmHook,
-    createChildrenHook,
-    updateNodeHook,
-    insertNodeHook,
-    removeNodeHook,
-    createElmHook,
-    updateElmHook,
-    createCustomElmHook,
-    updateCustomElmHook,
-    updateChildrenHook,
-    allocateChildrenHook,
-    markAsDynamicChildren,
     hydrateChildrenHook,
     hydrateElmHook,
+    insertNodeHook,
     LWCDOMMode,
+    markAsDynamicChildren,
+    removeElmHook,
+    removeNodeHook,
+    updateChildrenHook,
+    updateCustomElmHook,
+    updateElmHook,
+    updateNodeHook,
 } from './hooks';
 import { getComponentInternalDef, isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
+import { unwrap } from './membrane';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
@@ -763,12 +764,14 @@ let dynamicImportedComponentCounter = 0;
  * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
  */
 type LightningElementConfig = {
-    constructor: LightningElementConstructor;
+    ctor: LightningElementConstructor;
     props: Record<string, any>;
 };
+
 function isLightningElementConfig(obj: any): obj is LightningElementConfig {
-    return !!obj.props;
+    return isComponentConstructor(obj?.ctor);
 }
+
 export function dc(
     sel: string,
     Ctor: LightningElementConstructor | LightningElementConfig | null | undefined,
@@ -787,14 +790,16 @@ export function dc(
     if (Ctor == null) {
         return null;
     }
-    let props = {};
-    if (isLightningElementConfig(Ctor)) {
-        props = Ctor.props;
-        Ctor = Ctor.constructor;
-        data.props = { ...data.props, ...props };
-    }
     if (!isComponentConstructor(Ctor)) {
-        throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
+        const unwrapped = unwrap(Ctor);
+        if (isLightningElementConfig(unwrapped)) {
+            data.props = { ...data.props, ...unwrapped.props };
+            Ctor = unwrapped.ctor;
+        } else {
+            throw new Error(
+                `Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`
+            );
+        }
     }
     let idx = DynamicImportedComponentMap.get(Ctor);
     if (isUndefined(idx)) {
