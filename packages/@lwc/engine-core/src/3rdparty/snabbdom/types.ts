@@ -21,8 +21,8 @@ export type VNodes = Array<VNode | null>;
 
 export interface VNode {
     sel: string | undefined;
-    data: VNodeData;
-    children: VNodes | undefined;
+    data: Readonly<VNodeData>;
+    children: Readonly<VNodes> | undefined;
     elm: Node | undefined;
     parentElm?: Element;
     text: string | undefined;
@@ -33,8 +33,8 @@ export interface VNode {
 
 export interface VElement extends VNode {
     sel: string;
-    data: VElementData;
-    children: VNodes;
+    data: Readonly<VElementData>;
+    children: Readonly<VNodes>;
     elm: Element | undefined;
     text: undefined;
     key: Key;
@@ -44,7 +44,7 @@ export interface VCustomElement extends VElement {
     mode: 'closed' | 'open';
     ctor: any;
     // copy of the last allocated children.
-    aChildren?: VNodes;
+    aChildren?: Readonly<VNodes>;
 }
 
 export interface VText extends VNode {
@@ -63,19 +63,21 @@ export interface VComment extends VNode {
 }
 
 export interface VNodeData {
-    props?: Record<string, any>;
-    attrs?: Record<string, string | number | boolean>;
-    className?: string;
-    style?: string;
-    classMap?: Record<string, boolean>;
-    styleDecls?: Array<[string, string, boolean]>;
-    context?: Record<string, Record<string, any>>;
-    on?: Record<string, Function>;
-    svg?: boolean;
+    // All props are readonly because VElementData may be shared across VNodes
+    // due to hoisting optimizations
+    readonly props?: Readonly<Record<string, any>>;
+    readonly attrs?: Readonly<Record<string, string | number | boolean>>;
+    readonly className?: string;
+    readonly style?: string;
+    readonly classMap?: Readonly<Record<string, boolean>>;
+    readonly styleDecls?: Readonly<Array<[string, string, boolean]>>;
+    readonly context?: Readonly<Record<string, Record<string, any>>>;
+    readonly on?: Readonly<Record<string, Function>>;
+    readonly svg?: boolean;
 }
 
 export interface VElementData extends VNodeData {
-    key: Key;
+    readonly key: Key;
 }
 
 export interface Hooks<N extends VNode> {

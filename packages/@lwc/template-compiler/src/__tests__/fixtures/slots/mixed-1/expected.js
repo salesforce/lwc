@@ -1,82 +1,58 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
+const stc1 = {
+  key: 1,
+};
+const stc2 = {
+  attrs: {
+    name: "header",
+  },
+  key: 2,
+};
+const stc3 = {
+  key: 3,
+};
+const stc4 = {
+  key: 4,
+};
+const stc5 = {
+  key: 5,
+};
+const stc6 = {
+  key: 6,
+};
+const stc7 = {
+  attrs: {
+    name: "footer",
+  },
+  key: 7,
+};
+const stc8 = {
+  key: 8,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, s: api_slot } = $api;
   return [
-    api_element(
-      "section",
-      {
-        key: 0,
-      },
-      [
-        api_element(
-          "p",
-          {
-            key: 1,
-          },
-          [api_text("Before header")]
-        ),
-        api_slot(
-          "header",
-          {
-            attrs: {
-              name: "header",
-            },
-            key: 2,
-          },
-          [api_text("Default header")],
-          $slotset
-        ),
-        api_element(
-          "p",
-          {
-            key: 3,
-          },
-          [api_text("In")]
-        ),
-        api_element(
-          "p",
-          {
-            key: 4,
-          },
-          [api_text("between")]
-        ),
-        api_slot(
-          "",
-          {
-            key: 5,
-          },
-          [
-            api_element(
-              "p",
-              {
-                key: 6,
-              },
-              [api_text("Default body")]
-            ),
-          ],
-          $slotset
-        ),
-        api_slot(
-          "footer",
-          {
-            attrs: {
-              name: "footer",
-            },
-            key: 7,
-          },
-          [
-            api_element(
-              "p",
-              {
-                key: 8,
-              },
-              [api_text("Default footer")]
-            ),
-          ],
-          $slotset
-        ),
-      ]
-    ),
+    api_element("section", stc0, [
+      api_element("p", stc1, [api_text("Before header")]),
+      api_slot("header", stc2, [api_text("Default header")], $slotset),
+      api_element("p", stc3, [api_text("In")]),
+      api_element("p", stc4, [api_text("between")]),
+      api_slot(
+        "",
+        stc5,
+        [api_element("p", stc6, [api_text("Default body")])],
+        $slotset
+      ),
+      api_slot(
+        "footer",
+        stc7,
+        [api_element("p", stc8, [api_text("Default footer")])],
+        $slotset
+      ),
+    ]),
   ];
 }
 export default registerTemplate(tmpl);

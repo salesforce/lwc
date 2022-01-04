@@ -1,4 +1,10 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
+const stc1 = {
+  key: 2,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
@@ -11,9 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "ul",
-      {
-        key: 0,
-      },
+      stc0,
       api_flatten([
         api_iterator($cmp.items, function (item) {
           return api_element(
@@ -25,13 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             [api_text(api_dynamic_text(item))]
           );
         }),
-        api_element(
-          "li",
-          {
-            key: 2,
-          },
-          [api_text("Last")]
-        ),
+        api_element("li", stc1, [api_text("Last")]),
       ])
     ),
   ];
