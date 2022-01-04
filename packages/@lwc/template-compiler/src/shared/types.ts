@@ -71,6 +71,7 @@ export interface Attribute extends BaseNode {
 export interface Property extends BaseNode {
     type: 'Property';
     name: string;
+    attributeName: string;
     value: Literal | Expression;
 }
 

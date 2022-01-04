@@ -67,7 +67,6 @@ import {
     isFragmentOnlyUrl,
     isIdReferencingAttribute,
     isSvgUseHref,
-    propertyToAttributeName,
 } from '../parser/attribute';
 import { SVG_NAMESPACE_URI } from '../parser/constants';
 
@@ -311,9 +310,9 @@ function transform(codeGen: CodeGen): t.Expression {
 
     function computeAttrValue(attr: Attribute | Property, element: BaseElement): t.Expression {
         const { name: elmName, namespace = '' } = element;
-        const { name, value: attrValue } = attr;
+        const { value: attrValue } = attr;
         // Evaluate properties based on their attribute name
-        const attrName = isProperty(attr) ? propertyToAttributeName(name) : name;
+        const attrName = isProperty(attr) ? attr.attributeName : attr.name;
         const isUsedAsAttribute = isAttribute(element, attrName);
 
         if (isExpression(attrValue)) {

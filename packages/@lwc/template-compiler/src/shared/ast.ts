@@ -287,12 +287,14 @@ export function attribute(
 
 export function property(
     name: string,
+    attributeName: string,
     value: Expression | Literal,
     location: SourceLocation
 ): Property {
     return {
         type: 'Property',
         name,
+        attributeName,
         value,
         location,
     };
