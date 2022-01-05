@@ -1,13 +1,7 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import Component from 'x/component';
 
 describe('restrictions', () => {
-    beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
-    });
-    afterEach(() => {
-        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
-    });
     let elm;
     beforeEach(() => {
         elm = createElement('x-component', { is: Component });

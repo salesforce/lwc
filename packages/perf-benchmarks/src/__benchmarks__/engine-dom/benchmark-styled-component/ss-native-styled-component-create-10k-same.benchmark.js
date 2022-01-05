@@ -12,7 +12,6 @@ const NUM_COMPONENTS = 10000;
 
 // Create 10k components with the same CSS in each component
 // These components are native, but run with synthetic shadow loaded (mixed mode)
-window.lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE = true;
 StyledComponent.shadowSupportMode = 'any';
 styledComponentBenchmark(
     `ss-benchmark-styled-component/create/10k/same`,

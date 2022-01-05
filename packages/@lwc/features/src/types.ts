@@ -29,11 +29,6 @@ export interface FeatureFlagMap {
     ENABLE_HMR: FeatureFlagValue;
 
     /**
-     * LWC engine flag to toggle LWC mixed shadow DOM support.
-     */
-    ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
-
-    /**
      * Synthetic shadow DOM flag to enable strict `HTMLElement.prototype.innerText` and
      * `HTMLElement.prototype.outerText` shadow dom semantic.
      */
