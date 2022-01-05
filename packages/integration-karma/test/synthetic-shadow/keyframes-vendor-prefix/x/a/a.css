@@ -1,0 +1,12 @@
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 0.9;
+    }
+}
+
+div {
+    -webkit-animation: 1s alternate linear fade;
+}

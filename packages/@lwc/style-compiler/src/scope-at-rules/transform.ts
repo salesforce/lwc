@@ -7,9 +7,25 @@
 import { Root } from 'postcss';
 import { SHADOW_ATTRIBUTE } from '../utils/selectors-scoping';
 
+// Based on a subset from https://github.com/wooorm/vendors/blob/2f489ad/index.js
+// Subset of prefixes for animation-related names that we expect people might be using.
+// The most important is -webkit, which is actually part of the spec now. All -webkit prefixes
+// are listed here: https://developer.mozilla.org/en-US/docs/Web/CSS/Webkit_Extensions
+const VENDOR_PREFIXES = ['moz', 'ms', 'o', 'webkit'];
+
+// create a list like ['animation', '-webkit-animation', ...]
+function getAllNames(name: string) {
+    return new Set([name, ...VENDOR_PREFIXES.map((prefix) => `-${prefix}-${name}`)]);
+}
+
+const ANIMATION = getAllNames('animation');
+const ANIMATION_NAME = getAllNames('animation-name');
+
 export default function process(root: Root) {
     const knownNames: Set<string> = new Set();
     root.walkAtRules((atRule) => {
+        // Note that @-webkit-keyframes, @-moz-keyframes, etc. are not actually a thing supported
+        // in any browser, even though you'll see it on some StackOverflow answers.
         if (atRule.name === 'keyframes') {
             const { params } = atRule;
             knownNames.add(params);
@@ -18,7 +34,7 @@ export default function process(root: Root) {
     });
     root.walkRules((rule) => {
         rule.walkDecls((decl) => {
-            if (decl.prop === 'animation') {
+            if (ANIMATION.has(decl.prop)) {
                 // Use a simple heuristic of breaking up the tokens by whitespace. We could use
                 // a dedicated animation prop parser (e.g.
                 // https://github.com/hookhookun/parse-animation-shorthand) but it's
@@ -30,7 +46,7 @@ export default function process(root: Root) {
                         knownNames.has(token) ? `${token}-${SHADOW_ATTRIBUTE}` : token
                     );
                 decl.value = tokens.join(' ');
-            } else if (decl.prop === 'animation-name') {
+            } else if (ANIMATION_NAME.has(decl.prop)) {
                 if (knownNames.has(decl.value)) {
                     decl.value = `${decl.value}-${SHADOW_ATTRIBUTE}`;
                 }
