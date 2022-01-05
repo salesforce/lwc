@@ -26,7 +26,6 @@ import {
     isUndefined,
     keys,
 } from '@lwc/shared';
-import features from '@lwc/features';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
@@ -104,15 +103,6 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
             Ctor.constructor,
             `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
         );
-
-        if (!features.ENABLE_MIXED_SHADOW_MODE) {
-            assert.isFalse(
-                'shadowSupportMode' in Ctor,
-                `${
-                    ctorName || 'Anonymous class'
-                } is an invalid LWC component. The shadowSupportMode static property is not available in this environment.`
-            );
-        }
 
         if (!isUndefined(ctorShadowSupportMode)) {
             assert.invariant(
