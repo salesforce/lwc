@@ -13,6 +13,18 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 import {
+    AccessibleElementProperties,
+    assert,
+    create,
+    defineProperties,
+    defineProperty,
+    isFunction,
+    isNull,
+    isObject,
+    KEY__SYNTHETIC_MODE,
+    setPrototypeOf,
+} from '@lwc/shared';
+import {
     getChildren,
     getChildNodes,
     getFirstChild,
@@ -34,19 +46,7 @@ import {
     getElementsByTagName,
     querySelector,
     querySelectorAll,
-} from '@lwc/renderer-abstract';
-import {
-    AccessibleElementProperties,
-    assert,
-    create,
-    defineProperties,
-    defineProperty,
-    isFunction,
-    isNull,
-    isObject,
-    KEY__SYNTHETIC_MODE,
-    setPrototypeOf,
-} from '@lwc/shared';
+} from '../renderer';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
@@ -474,68 +474,75 @@ LightningElement.prototype = {
 
 const queryAndChildGetterDescriptors: PropertyDescriptorMap = create(null);
 
-// The reason we don't just use `import * as queryApis from '@lwc/renderer-abstract` here
-// is that doing so would create an object with _all_ of the APIs exposed by the renderer,
-// when really we only need a subset. So the bundled code is smaller this way.
-const queryApis = {
-    getChildren,
-    getChildNodes,
-    getFirstChild,
-    getFirstElementChild,
-    getLastChild,
-    getLastElementChild,
-    getElementsByClassName,
-    getElementsByTagName,
-    querySelector,
-    querySelectorAll,
-};
-
-const childGetters: Array<
-    [
-        keyof HTMLElement,
-        keyof Pick<
-            typeof queryApis,
-            | 'getChildren'
-            | 'getChildNodes'
-            | 'getFirstChild'
-            | 'getFirstElementChild'
-            | 'getLastChild'
-            | 'getLastElementChild'
-        >
-    ]
-> = [
-    ['children', 'getChildren'],
-    ['childNodes', 'getChildNodes'],
-    ['firstChild', 'getFirstChild'],
-    ['firstElementChild', 'getFirstElementChild'],
-    ['lastChild', 'getLastChild'],
-    ['lastElementChild', 'getLastElementChild'],
+// The reason we don't just call `import * as renderer from '../renderer'` here is that the bundle size
+// is smaller if we reference each function individually. Otherwise Rollup will create one big frozen
+// object representing the renderer, with a lot of methods we don't actually need.
+const childGetters = <const>[
+    'children',
+    'childNodes',
+    'firstChild',
+    'firstElementChild',
+    'lastChild',
+    'lastElementChild',
 ];
 
+function getChildGetter(methodName: typeof childGetters[number]) {
+    switch (methodName) {
+        case 'children':
+            return getChildren;
+        case 'childNodes':
+            return getChildNodes;
+        case 'firstChild':
+            return getFirstChild;
+        case 'firstElementChild':
+            return getFirstElementChild;
+        case 'lastChild':
+            return getLastChild;
+        case 'lastElementChild':
+            return getLastElementChild;
+    }
+}
+
 // Generic passthrough for child getters on HTMLElement to the relevant Renderer APIs
-for (const [elementProp, rendererMethod] of childGetters) {
-    queryAndChildGetterDescriptors[elementProp] = {
+for (const childGetter of childGetters) {
+    queryAndChildGetterDescriptors[childGetter] = {
         get(this: LightningElement) {
             const vm = getAssociatedVM(this);
             const { elm } = vm;
 
             if (process.env.NODE_ENV !== 'production') {
-                warnIfInvokedDuringConstruction(vm, elementProp);
+                // On the renderer itself, the name always starts with "get", e.g. "getChildren"
+                const propName = `get${childGetter.charAt(0).toUpperCase()}${childGetter.substring(
+                    1
+                )}`;
+                warnIfInvokedDuringConstruction(vm, propName);
             }
 
-            return queryApis[rendererMethod](elm);
+            return getChildGetter(childGetter)(elm);
         },
         configurable: true,
         enumerable: true,
     };
 }
 
-const queryMethods: Array<
-    keyof Pick<
-        typeof queryApis,
-        'getElementsByClassName' | 'getElementsByTagName' | 'querySelector' | 'querySelectorAll'
-    >
-> = ['getElementsByClassName', 'getElementsByTagName', 'querySelector', 'querySelectorAll'];
+const queryMethods = <const>[
+    'getElementsByClassName',
+    'getElementsByTagName',
+    'querySelector',
+    'querySelectorAll',
+];
+function getQueryMethod(methodName: typeof queryMethods[number]) {
+    switch (methodName) {
+        case 'getElementsByClassName':
+            return getElementsByClassName;
+        case 'getElementsByTagName':
+            return getElementsByTagName;
+        case 'querySelector':
+            return querySelector;
+        case 'querySelectorAll':
+            return querySelectorAll;
+    }
+}
 
 // Generic passthrough for query APIs on HTMLElement to the relevant Renderer APIs
 for (const queryMethod of queryMethods) {
@@ -548,7 +555,7 @@ for (const queryMethod of queryMethods) {
                 warnIfInvokedDuringConstruction(vm, `${queryMethod}()`);
             }
 
-            return queryApis[queryMethod](elm, arg);
+            return getQueryMethod(queryMethod)(elm, arg);
         },
         configurable: true,
         enumerable: true,

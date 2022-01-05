@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { setProperty, getProperty } from '@lwc/renderer-abstract';
 import { assert, isUndefined, keys } from '@lwc/shared';
+import { setProperty, getProperty } from '../../renderer';
 import { VElement } from '../../3rdparty/snabbdom/types';
 
 function isLiveBindingProp(sel: string, key: string): boolean {

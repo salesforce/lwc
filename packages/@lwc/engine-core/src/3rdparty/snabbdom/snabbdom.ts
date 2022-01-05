@@ -13,7 +13,7 @@ Code distributed by Snabbdom as part of the Snabbdom project at
 https://github.com/snabbdom/snabbdom/
 */
 
-import { nextSibling } from '@lwc/renderer-abstract';
+import { nextSibling } from '../../renderer';
 import { VNode, VNodes, Key } from './types';
 
 function isUndef(s: any): s is undefined {

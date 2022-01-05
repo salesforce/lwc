@@ -30,14 +30,6 @@ module.exports = {
     }),
 
     plugins: [
-        {
-            resolveId(importee) {
-                if (importee === '@lwc/renderer-abstract') {
-                    return path.join(__dirname, '../src/renderer.ts');
-                }
-                return null;
-            },
-        },
         nodeResolve({
             resolveOnly: [/^@lwc\//],
         }),

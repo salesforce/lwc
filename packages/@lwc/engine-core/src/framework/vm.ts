@@ -4,13 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    isSyntheticShadowDefined,
-    ssr,
-    remove,
-    isNativeShadowDefined,
-} from '@lwc/renderer-abstract';
-import { HostNode, HostElement } from '@lwc/renderer-abstract';
 import features from '@lwc/features';
 import {
     ArrayPush,
@@ -27,6 +20,8 @@ import {
     isUndefined,
     keys,
 } from '@lwc/shared';
+import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
+import type { HostNode, HostElement } from '../renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';

@@ -48,7 +48,7 @@ function registerCustomElement(name: string, ctor: CustomElementConstructor) {
     reverseRegistry.set(ctor, name);
 }
 
-class HTMLElement {
+class HTMLElementImpl {
     constructor() {
         const { constructor } = this;
         const name = reverseRegistry.get(constructor as CustomElementConstructor);
@@ -350,7 +350,7 @@ export const removeEventListener = noop as (
 export const dispatchEvent = unsupportedMethod('dispatchEvent') as (
     target: any,
     event: Event
-) => void;
+) => boolean;
 export const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
     element: HostElement
 ) => DOMRect;
@@ -401,7 +401,8 @@ export function getCustomElement(name: string): CustomElementConstructor | undef
     return registry[name];
 }
 
-export { HTMLElement };
+const HTMLElementExported = HTMLElementImpl as typeof HTMLElement;
+export { HTMLElementExported as HTMLElement };
 
 /* noop */
 export const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;

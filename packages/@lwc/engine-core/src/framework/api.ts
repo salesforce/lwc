@@ -5,12 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    createText,
-    createComment,
-    createElement,
-    isSyntheticShadowDefined,
-} from '@lwc/renderer-abstract';
-import {
     ArrayPush,
     assert,
     create as ObjectCreate,
@@ -29,6 +23,7 @@ import {
     StringReplace,
     toString,
 } from '@lwc/shared';
+import { createText, createComment, createElement, isSyntheticShadowDefined } from '../renderer';
 import { logError, logWarn } from '../shared/logger';
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';

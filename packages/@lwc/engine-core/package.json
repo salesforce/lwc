@@ -30,9 +30,6 @@
     "devDependencies": {
         "observable-membrane": "2.0.0"
     },
-    "peerDependencies": {
-        "@lwc/renderer-abstract": "2.7.0"
-    },
     "publishConfig": {
         "access": "public"
     },

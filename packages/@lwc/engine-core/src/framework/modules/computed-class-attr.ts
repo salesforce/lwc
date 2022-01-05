@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getClassList } from '@lwc/renderer-abstract';
 import { create, freeze, isString, isUndefined, StringCharCodeAt, StringSlice } from '@lwc/shared';
+import { getClassList } from '../../renderer';
 import { EmptyObject, SPACE_CHAR } from '../utils';
 import { VElement } from '../../3rdparty/snabbdom/types';
 

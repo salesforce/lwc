@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getClassList } from '@lwc/renderer-abstract';
 import { isUndefined } from '@lwc/shared';
+import { getClassList } from '../../renderer';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
 // The HTML class property becomes the vnode.data.classMap object when defined as a string in the template.

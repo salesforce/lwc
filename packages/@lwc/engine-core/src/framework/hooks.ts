@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getClassList, setText, getAttribute, remove, insert } from '@lwc/renderer-abstract';
 import { ArrayFilter, ArrayJoin, assert, isArray, isNull, isUndefined, keys } from '@lwc/shared';
+import { getClassList, setText, getAttribute, remove, insert } from '../renderer';
 import { EmptyArray, parseStyleText } from './utils';
 import {
     createVM,

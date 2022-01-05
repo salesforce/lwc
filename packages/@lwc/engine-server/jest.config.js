@@ -12,7 +12,6 @@ module.exports = {
     roots: ['<rootDir>/src'],
     testEnvironment: 'node',
     moduleNameMapper: {
-        '^@lwc/renderer-abstract$': '<rootDir>/src/renderer.ts',
         '^lwc$': '<rootDir>/src/index.ts',
     },
 };

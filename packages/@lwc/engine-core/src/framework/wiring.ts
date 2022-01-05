@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { dispatchEvent } from '@lwc/renderer-abstract';
 import {
     assert,
     isUndefined,
@@ -14,6 +13,7 @@ import {
     noop,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
+import { dispatchEvent } from '../renderer';
 import { LightningElement } from './base-lightning-element';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';

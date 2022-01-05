@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { isUndefined, isFunction } from '@lwc/shared';
 import {
     getCustomElement,
     defineCustomElement,
     HTMLElement as RendererHTMLElement,
-} from '@lwc/renderer-abstract';
-import { isUndefined, isFunction } from '@lwc/shared';
+} from '../renderer';
 
 type UpgradeCallback = (elm: HTMLElement) => void;
 

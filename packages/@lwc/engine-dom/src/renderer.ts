@@ -366,4 +366,5 @@ export function assertInstanceOfHTMLElement(elm: any, msg: string) {
     assert.invariant(elm instanceof HTMLElement, msg);
 }
 
-export { HTMLElementConstructor as HTMLElement };
+const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
+export { HTMLElementExported as HTMLElement };

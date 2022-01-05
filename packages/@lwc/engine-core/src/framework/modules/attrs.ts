@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { setAttribute, removeAttribute } from '@lwc/renderer-abstract';
 import { assert, isNull, isUndefined, keys, StringCharCodeAt } from '@lwc/shared';
+import { setAttribute, removeAttribute } from '../../renderer';
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
 import { VElement } from '../../3rdparty/snabbdom/types';
