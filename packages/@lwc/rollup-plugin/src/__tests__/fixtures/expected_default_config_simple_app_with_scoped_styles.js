@@ -8,13 +8,11 @@
   stylesheet.$scoped$ = true;
   var _implicitScopedStylesheets = [stylesheet];
 
-  const stc0 = {
-    key: 0
-  };
-  const stc1 = [];
   function tmpl($api, $cmp, $slotset, $ctx) {
     const {h: api_element} = $api;
-    return [api_element("div", stc0, stc1)];
+    return [api_element("div", {
+      key: 0
+    }, [])];
   }
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];

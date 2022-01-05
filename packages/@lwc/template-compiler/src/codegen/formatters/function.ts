@@ -10,7 +10,6 @@ import { TEMPLATE_FUNCTION_NAME, TEMPLATE_MODULES_PARAMETER } from '../../shared
 
 import CodeGen from '../codegen';
 import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
-import { optimizeStaticExpressions } from '../optimize';
 
 /**
  * Generate a function body AST from a template ESTree AST. This function can then be instantiated
@@ -47,13 +46,11 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
             ]);
         });
 
-    const optimizedTemplateDeclarations = optimizeStaticExpressions(templateFn);
-
     const metadata = generateTemplateMetadata(codeGen);
 
     return t.program([
         ...lookups,
-        ...optimizedTemplateDeclarations,
+        templateFn,
         ...metadata,
         t.returnStatement(t.identifier(TEMPLATE_FUNCTION_NAME)),
     ]);

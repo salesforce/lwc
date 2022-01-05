@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
@@ -9,7 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         style: $cmp.customStyle,
         key: 0,
       },
-      stc0
+      []
     ),
   ];
 }

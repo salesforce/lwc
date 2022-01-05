@@ -1,6 +1,5 @@
 import _xFoo from "x/foo";
 import { registerTemplate } from "lwc";
-const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     ti: api_tab_index,
@@ -28,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 1,
       },
-      stc0
+      []
     ),
   ];
 }
