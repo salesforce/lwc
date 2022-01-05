@@ -12,7 +12,6 @@ const NUM_COMPONENTS = 1000;
 
 // Create 1k components with different CSS in each component
 // These components are native, but run with synthetic shadow loaded (mixed mode)
-window.lwcRuntimeFlags.ENABLE_MIXED_SHADOW_MODE = true;
 for (const component of components) {
     component.shadowSupportMode = 'any';
 }
