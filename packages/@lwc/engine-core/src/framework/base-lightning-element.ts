@@ -512,10 +512,7 @@ for (const childGetter of childGetters) {
 
             if (process.env.NODE_ENV !== 'production') {
                 // On the renderer itself, the name always starts with "get", e.g. "getChildren"
-                const propName = `get${childGetter.charAt(0).toUpperCase()}${childGetter.substring(
-                    1
-                )}`;
-                warnIfInvokedDuringConstruction(vm, propName);
+                warnIfInvokedDuringConstruction(vm, childGetter);
             }
 
             return getChildGetter(childGetter)(elm);
