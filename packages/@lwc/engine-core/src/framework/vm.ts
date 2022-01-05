@@ -120,9 +120,9 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The component connection state. */
     state: VMState;
     /** The list of VNodes associated with the shadow tree. */
-    children: VNodes;
+    children: Readonly<VNodes>;
     /** The list of adopted children VNodes. */
-    aChildren: VNodes;
+    aChildren: Readonly<VNodes>;
     /** The list of custom elements VNodes currently rendered in the shadow tree. We keep track of
      * those elements to efficiently unmount them when the parent component is disconnected without
      * having to traverse the VNode tree. */
@@ -639,7 +639,7 @@ function runLightChildNodesDisconnectedCallback(vm: VM) {
  * custom element itself will trigger the removal of anything slotted or anything
  * defined on its shadow.
  */
-function recursivelyDisconnectChildren(vnodes: VNodes) {
+function recursivelyDisconnectChildren(vnodes: Readonly<VNodes>) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {
         const vnode = vnodes[i];
 

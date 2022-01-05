@@ -1,5 +1,15 @@
 import _xB from "x/b";
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
+const stc1 = {
+  key: 1,
+};
+const stc2 = {
+  key: 2,
+};
+const stc3 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     h: api_element,
@@ -9,37 +19,21 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
   } = $api;
   return [
-    api_element(
-      "div",
-      {
-        key: 0,
-      },
-      [
-        api_custom_element(
-          "x-b",
-          _xB,
-          {
-            key: 1,
-          },
-          api_flatten([
-            $cmp.isLoading
-              ? api_element(
-                  "div",
-                  {
-                    key: 2,
-                  },
-                  []
-                )
-              : null,
-            $cmp.haveLoadedItems
-              ? api_iterator($cmp.menuItems, function (item) {
-                  return api_text("x");
-                })
-              : [],
-          ])
-        ),
-      ]
-    ),
+    api_element("div", stc0, [
+      api_custom_element(
+        "x-b",
+        _xB,
+        stc1,
+        api_flatten([
+          $cmp.isLoading ? api_element("div", stc2, stc3) : null,
+          $cmp.haveLoadedItems
+            ? api_iterator($cmp.menuItems, function (item) {
+                return api_text("x");
+              })
+            : stc3,
+        ])
+      ),
+    ]),
   ];
 }
 export default registerTemplate(tmpl);

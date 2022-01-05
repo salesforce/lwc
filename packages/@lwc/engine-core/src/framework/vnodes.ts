@@ -21,7 +21,7 @@ export type VParentElement = VElement | VCustomElement;
 export type VNodes = Array<VNode | null>;
 
 export interface BaseVNode {
-    type: VNodeType;
+    type: Readonly<VNodeType>;
     elm: Node | undefined;
     sel: string | undefined;
     key: Key | undefined;
@@ -45,8 +45,8 @@ export interface VComment extends BaseVNode {
 
 export interface VBaseElement extends BaseVNode {
     sel: string;
-    data: VElementData;
-    children: VNodes;
+    data: Readonly<VElementData>;
+    children: Readonly<VNodes>;
     elm: Element | undefined;
     key: Key;
 }
@@ -60,23 +60,25 @@ export interface VCustomElement extends VBaseElement {
     mode: 'closed' | 'open';
     ctor: any;
     // copy of the last allocated children.
-    aChildren?: VNodes;
+    aChildren?: Readonly<VNodes>;
 }
 
 export interface VNodeData {
-    props?: Record<string, any>;
-    attrs?: Record<string, string | number | boolean>;
-    className?: string;
-    style?: string;
-    classMap?: Record<string, boolean>;
-    styleDecls?: Array<[string, string, boolean]>;
-    context?: Record<string, Record<string, any>>;
-    on?: Record<string, (event: Event) => any>;
-    svg?: boolean;
+    // All props are readonly because VElementData may be shared across VNodes
+    // due to hoisting optimizations
+    readonly props?: Readonly<Record<string, any>>;
+    readonly attrs?: Readonly<Record<string, string | number | boolean>>;
+    readonly className?: string;
+    readonly style?: string;
+    readonly classMap?: Readonly<Record<string, boolean>>;
+    readonly styleDecls?: Readonly<Array<[string, string, boolean]>>;
+    readonly context?: Readonly<Record<string, Record<string, any>>>;
+    readonly on?: Readonly<Record<string, (event: Event) => any>>;
+    readonly svg?: boolean;
 }
 
 export interface VElementData extends VNodeData {
-    key: Key;
+    readonly key: Key;
 }
 
 export interface Hooks<N extends VNode> {

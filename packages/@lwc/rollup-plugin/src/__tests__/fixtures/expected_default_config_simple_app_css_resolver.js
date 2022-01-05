@@ -11,11 +11,12 @@
     }
     var _implicitStylesheets = [stylesheet];
 
+    const stc0$1 = {
+      key: 0
+    };
     function tmpl$1($api, $cmp, $slotset, $ctx) {
       const {d: api_dynamic_text, t: api_text, h: api_element} = $api;
-      return [api_element("div", {
-        key: 0
-      }, [api_text(api_dynamic_text($cmp.x))])];
+      return [api_element("div", stc0$1, [api_text(api_dynamic_text($cmp.x))])];
     }
     var _tmpl$1 = lwc.registerTemplate(tmpl$1);
     tmpl$1.stylesheets = [];
@@ -46,19 +47,22 @@
       tmpl: _tmpl$1
     });
 
+    const stc0 = {
+      classMap: {
+        "container": true
+      },
+      key: 0
+    };
+    const stc1 = {
+      props: {
+        "x": "1"
+      },
+      key: 1
+    };
+    const stc2 = [];
     function tmpl($api, $cmp, $slotset, $ctx) {
       const {c: api_custom_element, h: api_element} = $api;
-      return [api_element("div", {
-        classMap: {
-          "container": true
-        },
-        key: 0
-      }, [api_custom_element("x-foo", _xFoo, {
-        props: {
-          "x": "1"
-        },
-        key: 1
-      }, [])])];
+      return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1, stc2)])];
     }
     var _tmpl = lwc.registerTemplate(tmpl);
     tmpl.stylesheets = [];

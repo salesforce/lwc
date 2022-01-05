@@ -56,7 +56,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-function h(sel: string, data: VElementData, children: VNodes): VElement {
+function h(sel: string, data: Readonly<VElementData>, children: Readonly<VNodes>): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -132,10 +132,10 @@ function ti(value: any): number {
 // [s]lot element node
 function s(
     slotName: string,
-    data: VElementData,
-    children: VNodes,
+    data: Readonly<VElementData>,
+    children: Readonly<VNodes>,
     slotset: SlotSet | undefined
-): VElement | VNodes {
+): VElement | Readonly<VNodes> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -166,8 +166,8 @@ function s(
 function c(
     sel: string,
     Ctor: LightningElementConstructor,
-    data: VElementData,
-    children: VNodes = EmptyArray
+    data: Readonly<VElementData>,
+    children: Readonly<VNodes> = EmptyArray
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
@@ -229,8 +229,8 @@ function c(
 // [i]terable node
 function i(
     iterable: Iterable<any>,
-    factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
-): VNodes {
+    factory: (value: any, index: number, first: boolean, last: boolean) => Readonly<VNodes> | VNode
+): Readonly<VNodes> {
     const list: VNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
@@ -318,7 +318,7 @@ function i(
 /**
  * [f]lattening
  */
-function f(items: any[]): any[] {
+function f(items: Readonly<any[]>): Readonly<any[]> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     }
@@ -462,8 +462,8 @@ let dynamicImportedComponentCounter = 0;
 function dc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
-    data: VElementData,
-    children?: VNodes
+    data: Readonly<VElementData>,
+    children?: Readonly<VNodes>
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `dc() 1st argument sel must be a string.`);
@@ -488,8 +488,10 @@ function dc(
     // the new vnode key is a mix of idx and compiler key, this is required by the diffing algo
     // to identify different constructors as vnodes with different keys to avoid reusing the
     // element used for previous constructors.
-    data.key = `dc:${idx}:${data.key}`;
-    return c(sel, Ctor, data, children);
+    // Shallow clone is necessary here becuase VElementData may be shared across VNodes due to
+    // hoisting optimization.
+    const newData = { ...data, key: `dc:${idx}:${data.key}` };
+    return c(sel, Ctor, newData, children);
 }
 
 /**
@@ -505,7 +507,7 @@ function dc(
  *   - children that are produced by iteration
  *
  */
-function sc(vnodes: VNodes): VNodes {
+function sc(vnodes: Readonly<VNodes>): Readonly<VNodes> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(vnodes), 'sc() api can only work with arrays.');
     }

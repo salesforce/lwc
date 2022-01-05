@@ -1,13 +1,15 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+  svg: true,
+};
+const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { k: api_key, h: api_element, i: api_iterator } = $api;
   return [
     api_element(
       "svg",
-      {
-        key: 0,
-        svg: true,
-      },
+      stc0,
       api_iterator($cmp.lines, function (line) {
         return api_element(
           "line",
@@ -21,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: api_key(1, line.key),
             svg: true,
           },
-          []
+          stc1
         );
       })
     ),

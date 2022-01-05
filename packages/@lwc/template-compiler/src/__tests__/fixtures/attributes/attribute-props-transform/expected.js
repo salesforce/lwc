@@ -1,5 +1,6 @@
 import _xFoo from "x/foo";
 import { registerTemplate } from "lwc";
+const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, c: api_custom_element } = $api;
   return [
@@ -74,7 +75,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 0,
       },
-      []
+      stc0
     ),
   ];
 }

@@ -9,7 +9,7 @@ import { isUndefined, ArrayFilter, ArrayJoin, assert, keys, isNull } from '@lwc/
 import { logError, logWarn } from '../shared/logger';
 import { getAttribute, getClassList } from '../renderer';
 
-import { parseStyleText } from './utils';
+import { cloneAndOmitKey, parseStyleText } from './utils';
 import { allocateChildren } from './rendering';
 import {
     createVM,
@@ -111,7 +111,11 @@ function hydrateElement(vnode: VElement, node: Node) {
         const { props } = vnode.data;
         if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
             if (elm.innerHTML === props.innerHTML) {
-                delete props.innerHTML;
+                // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
+                vnode.data = {
+                    ...vnode.data,
+                    props: cloneAndOmitKey(props, 'innerHTML'),
+                };
             } else {
                 logWarn(
                     `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
@@ -164,7 +168,11 @@ function hydrateCustomElement(vnode: VCustomElement, node: Node) {
     hydrateVM(vm);
 }
 
-export function hydrateChildren(elmChildren: NodeListOf<ChildNode>, children: VNodes, vm: VM) {
+export function hydrateChildren(
+    elmChildren: NodeListOf<ChildNode>,
+    children: Readonly<VNodes>,
+    vm: VM
+) {
     if (process.env.NODE_ENV !== 'production') {
         const filteredVNodes = ArrayFilter.call(children, (vnode) => !!vnode);
 

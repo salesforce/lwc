@@ -1,4 +1,10 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  lwc: {
+    dom: "manual",
+  },
+};
+const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { shc: api_sanitize_html_content, h: api_element } = $api;
   return [
@@ -12,14 +18,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "Hello <b>world</b>!"
             )),
         },
-        context: {
-          lwc: {
-            dom: "manual",
-          },
-        },
+        context: stc0,
         key: 0,
       },
-      []
+      stc1
     ),
     api_element(
       "div",
@@ -32,14 +34,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 ))
               : $ctx._sanitizedHtml$1,
         },
-        context: {
-          lwc: {
-            dom: "manual",
-          },
-        },
+        context: stc0,
         key: 1,
       },
-      []
+      stc1
     ),
   ];
 }
