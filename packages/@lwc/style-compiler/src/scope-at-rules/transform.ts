@@ -7,10 +7,15 @@
 import { Root } from 'postcss';
 import { SHADOW_ATTRIBUTE } from '../utils/selectors-scoping';
 
-// Based on a subset from https://github.com/wooorm/vendors/blob/2f489ad/index.js
 // Subset of prefixes for animation-related names that we expect people might be using.
 // The most important is -webkit, which is actually part of the spec now. All -webkit prefixes
 // are listed here: https://developer.mozilla.org/en-US/docs/Web/CSS/Webkit_Extensions
+// -moz is also still supported as of Firefox 95.
+// We could probably get away with just doing -webkit and -moz (since -ms never seems
+// to have existed for keyframes/animations, and Opera has used Blink since 2013), but
+// covering all the popular ones will at least make the compiled code more consistent
+// for developers who are using all the variants.
+// List based on a subset from https://github.com/wooorm/vendors/blob/2f489ad/index.js
 const VENDOR_PREFIXES = ['moz', 'ms', 'o', 'webkit'];
 
 // create a list like ['animation', '-webkit-animation', ...]
