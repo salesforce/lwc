@@ -42,6 +42,7 @@ import {
     LWCDirectiveRenderMode,
     LWCDirectiveDomMode,
     If,
+    Property,
 } from '../shared/types';
 
 import ParserCtx from './parser';
@@ -835,6 +836,7 @@ function parseSlot(
 function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElement): void {
     const { name: tag } = element;
     const attributes = parsedAttr.getAttributes();
+    const props: Map<string, Property> = new Map();
 
     for (const attr of attributes) {
         const { name } = attr;
@@ -901,11 +903,13 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
             element.attributes.push(attr);
         } else {
             const propName = attributeToPropertyName(name);
-            element.properties.push(ast.property(propName, attr.name, attr.value, attr.location));
+            props.set(propName, ast.property(propName, name, attr.value, attr.location));
 
             parsedAttr.pick(name);
         }
     }
+
+    element.properties.push(...props.values());
 }
 
 function validateRoot(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): void {
