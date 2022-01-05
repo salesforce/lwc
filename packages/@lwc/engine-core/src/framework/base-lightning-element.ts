@@ -511,7 +511,6 @@ for (const childGetter of childGetters) {
             const { elm } = vm;
 
             if (process.env.NODE_ENV !== 'production') {
-                // On the renderer itself, the name always starts with "get", e.g. "getChildren"
                 warnIfInvokedDuringConstruction(vm, childGetter);
             }
 
