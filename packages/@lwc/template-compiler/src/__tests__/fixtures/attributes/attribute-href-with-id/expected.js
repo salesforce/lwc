@@ -1,8 +1,4 @@
 import { registerTemplate } from "lwc";
-const stc0 = {
-  key: 1,
-};
-const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     fid: api_scoped_frag_id,
@@ -21,28 +17,34 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       [api_text("KIX")]
     ),
-    api_element("map", stc0, [
-      api_element(
-        "area",
-        {
-          attrs: {
-            href: api_scoped_frag_id("#eneos-gas"),
+    api_element(
+      "map",
+      {
+        key: 1,
+      },
+      [
+        api_element(
+          "area",
+          {
+            attrs: {
+              href: api_scoped_frag_id("#eneos-gas"),
+            },
+            key: 2,
           },
-          key: 2,
-        },
-        stc1
-      ),
-      api_element(
-        "area",
-        {
-          attrs: {
-            href: api_scoped_frag_id("#kawaramachi"),
+          []
+        ),
+        api_element(
+          "area",
+          {
+            attrs: {
+              href: api_scoped_frag_id("#kawaramachi"),
+            },
+            key: 3,
           },
-          key: 3,
-        },
-        stc1
-      ),
-    ]),
+          []
+        ),
+      ]
+    ),
     api_element(
       "h1",
       {

@@ -1,5 +1,4 @@
 import { registerTemplate } from "lwc";
-const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
@@ -21,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           );
         }),
       ])
-    : stc0;
+    : [];
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

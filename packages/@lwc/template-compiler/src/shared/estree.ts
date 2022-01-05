@@ -18,14 +18,6 @@ export function isArrayExpression(node: t.BaseNode): node is t.ArrayExpression {
     return node.type === 'ArrayExpression';
 }
 
-export function isObjectExpression(node: t.BaseNode): node is t.ObjectExpression {
-    return node.type === 'ObjectExpression';
-}
-
-export function isProperty(node: t.BaseNode): node is t.Property {
-    return node.type === 'Property';
-}
-
 export function identifier(name: string, config?: Partial<t.Identifier>): t.Identifier {
     return {
         type: 'Identifier',

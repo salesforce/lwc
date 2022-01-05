@@ -1,8 +1,5 @@
 import _nsItem from "ns/item";
 import { registerTemplate } from "lwc";
-const stc0 = {
-  key: 0,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
@@ -15,7 +12,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "ul",
-      stc0,
+      {
+        key: 0,
+      },
       api_iterator($cmp.items, function (item) {
         return api_custom_element(
           "ns-item",

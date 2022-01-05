@@ -31,11 +31,7 @@ function isVNode(vnode: any): vnode is VNode {
     return vnode != null;
 }
 
-function createKeyToOldIdx(
-    children: Readonly<VNodes>,
-    beginIdx: number,
-    endIdx: number
-): KeyToIndexMap {
+function createKeyToOldIdx(children: VNodes, beginIdx: number, endIdx: number): KeyToIndexMap {
     const map: KeyToIndexMap = {};
     let j: number, key: Key | undefined, ch;
     // TODO [#1637]: simplify this by assuming that all vnodes has keys
@@ -54,7 +50,7 @@ function createKeyToOldIdx(
 function addVnodes(
     parentElm: Node,
     before: Node | null,
-    vnodes: Readonly<VNodes>,
+    vnodes: VNodes,
     startIdx: number,
     endIdx: number
 ) {
@@ -67,12 +63,7 @@ function addVnodes(
     }
 }
 
-function removeVnodes(
-    parentElm: Node,
-    vnodes: Readonly<VNodes>,
-    startIdx: number,
-    endIdx: number
-): void {
+function removeVnodes(parentElm: Node, vnodes: VNodes, startIdx: number, endIdx: number): void {
     for (; startIdx <= endIdx; ++startIdx) {
         const ch = vnodes[startIdx];
         // text nodes do not have logic associated to them
@@ -82,11 +73,7 @@ function removeVnodes(
     }
 }
 
-export function updateDynamicChildren(
-    parentElm: Node,
-    oldCh: Readonly<VNodes>,
-    newCh: Readonly<VNodes>
-) {
+export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
     let oldStartIdx = 0;
     let newStartIdx = 0;
     let oldEndIdx = oldCh.length - 1;
@@ -152,12 +139,7 @@ export function updateDynamicChildren(
                         newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm!);
                     } else {
                         patchVnode(elmToMove, newStartVnode);
-                        // Delete the old child, but copy the array since it is read-only.
-                        // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
-                        // so we only care about the `oldCh` object inside this function.
-                        const oldChClone = [...oldCh];
-                        oldChClone[idxInOld] = undefined as any;
-                        oldCh = oldChClone;
+                        oldCh[idxInOld] = undefined as any;
                         newStartVnode.hook.move(elmToMove, parentElm, oldStartVnode.elm!);
                     }
                 }
@@ -182,11 +164,7 @@ export function updateDynamicChildren(
     }
 }
 
-export function updateStaticChildren(
-    parentElm: Node,
-    oldCh: Readonly<VNodes>,
-    newCh: Readonly<VNodes>
-) {
+export function updateStaticChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
     const oldChLength = oldCh.length;
     const newChLength = newCh.length;
 

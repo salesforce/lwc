@@ -26,7 +26,7 @@ import {
 import { logError, logWarn } from '../shared/logger';
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
-import { cloneAndOmitKey, EmptyArray, EmptyObject } from './utils';
+import { EmptyArray, EmptyObject } from './utils';
 import {
     appendVM,
     getAssociatedVMIfPresent,
@@ -204,11 +204,7 @@ const ElementHook: Hooks<VElement> = {
             const { props } = vnode.data;
             if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
                 if (elm.innerHTML === props.innerHTML) {
-                    // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
-                    vnode.data = {
-                        ...vnode.data,
-                        props: cloneAndOmitKey(props, 'innerHTML'),
-                    };
+                    delete props.innerHTML;
                 } else {
                     logWarn(
                         `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
@@ -353,7 +349,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-function h(sel: string, data: Readonly<VElementData>, children: Readonly<VNodes>): VElement {
+function h(sel: string, data: VElementData, children: VNodes): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -432,10 +428,10 @@ function ti(value: any): number {
 // [s]lot element node
 function s(
     slotName: string,
-    data: Readonly<VElementData>,
-    children: Readonly<VNodes>,
+    data: VElementData,
+    children: VNodes,
     slotset: SlotSet | undefined
-): VElement | Readonly<VNodes> {
+): VElement | VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -795,10 +791,8 @@ function dc(
     // the new vnode key is a mix of idx and compiler key, this is required by the diffing algo
     // to identify different constructors as vnodes with different keys to avoid reusing the
     // element used for previous constructors.
-    // Shallow clone is necessary here becuase VElementData may be shared across VNodes due to
-    // hoisting optimization.
-    const newData = { ...data, key: `dc:${idx}:${data.key}` };
-    return c(sel, Ctor, newData, children);
+    data.key = `dc:${idx}:${data.key}`;
+    return c(sel, Ctor, data, children);
 }
 
 /**
@@ -814,7 +808,7 @@ function dc(
  *   - children that are produced by iteration
  *
  */
-function sc(vnodes: Readonly<VNodes>): Readonly<VNodes> {
+function sc(vnodes: VNodes): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(vnodes), 'sc() api can only work with arrays.');
     }
