@@ -1,0 +1,14 @@
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 0.9;
+    }
+}
+
+div {
+    /* Deliberately putting the non-prefixed one first, so the prefixed version wins */
+            animation: 1s alternate linear fade;
+    -webkit-animation: 1s alternate linear fade;
+}
