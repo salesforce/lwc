@@ -12,7 +12,9 @@ div {
 }
 
 span {
-    animation: slidein 3s;
+    -webkit-animation: 3s ease-in 1s 2 reverse both paused slidein;
+       -moz-animation: 3s ease-in 1s 2 reverse both paused slidein;
+            animation: slidein 3s;
 }
 
 button {
@@ -20,8 +22,12 @@ button {
 }
 
 p {
-    animation-name: slidein;
-    animation-delay: 1s;
+    -webkit-animation-name: slidein;
+       -moz-animation-name: slidein;
+            animation-name: slidein;
+    -webkit-animation-delay: 1s;
+       -moz-animation-delay: 1s;
+            animation-delay: 1s;
 }
 
 input {
