@@ -51,6 +51,7 @@ export type {
     WireAdapterSchemaValue,
 } from './wiring';
 
+// Initialization APIs for the renderer, to be used by engine implementations ----------------------
 export {
     setAssertInstanceOfHTMLElement,
     setAttachShadow,
