@@ -836,7 +836,7 @@ function parseSlot(
 function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElement): void {
     const { name: tag } = element;
     const attributes = parsedAttr.getAttributes();
-    const props: Map<string, Property> = new Map();
+    const properties: Map<string, Property> = new Map();
 
     for (const attr of attributes) {
         const { name } = attr;
@@ -903,13 +903,13 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
             element.attributes.push(attr);
         } else {
             const propName = attributeToPropertyName(name);
-            props.set(propName, ast.property(propName, name, attr.value, attr.location));
+            properties.set(propName, ast.property(propName, name, attr.value, attr.location));
 
             parsedAttr.pick(name);
         }
     }
 
-    element.properties.push(...props.values());
+    element.properties.push(...properties.values());
 }
 
 function validateRoot(ctx: ParserCtx, parsedAttr: ParsedAttribute, root: Root): void {
