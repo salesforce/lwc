@@ -291,7 +291,7 @@ function unmount(vnode: VNode, parent: ParentNode) {
             break;
 
         case VNodeType.CustomElement: {
-            const { vm } = vnode;
+            const vm = getAssociatedVMIfPresent(vnode.elm);
 
             // No need to unmount the children here, `removeVM` will take care of removing the
             // children.
