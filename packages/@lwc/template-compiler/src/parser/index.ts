@@ -903,6 +903,14 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
             element.attributes.push(attr);
         } else {
             const propName = attributeToPropertyName(name);
+            const existingProp = properties.get(propName);
+            if (existingProp) {
+                ctx.warnOnNode(ParserDiagnostics.DUPLICATE_ATTR_PROP_TRANSFORM, attr, [
+                    existingProp.attributeName,
+                    name,
+                    propName,
+                ]);
+            }
             properties.set(propName, ast.property(propName, name, attr.value, attr.location));
 
             parsedAttr.pick(name);

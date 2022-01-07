@@ -1,3 +1,26 @@
 {
-    "warnings": []
+    "warnings": [
+        {
+            "code": 1147,
+            "message": "LWC1147: Duplicate HTML attribute to JavaScript property mapping, \"accesskey\" and \"access-key\" both map to \"accessKey\", using the value for \"access-key\".",
+            "level": 2,
+            "location": {
+                "line": 4,
+                "column": 9,
+                "start": 69,
+                "length": 24
+            }
+        },
+        {
+            "code": 1147,
+            "message": "LWC1147: Duplicate HTML attribute to JavaScript property mapping, \"access-key\" and \"accesskey\" both map to \"accessKey\", using the value for \"accesskey\".",
+            "level": 2,
+            "location": {
+                "line": 8,
+                "column": 9,
+                "start": 166,
+                "length": 26
+            }
+        }
+    ]
 }
