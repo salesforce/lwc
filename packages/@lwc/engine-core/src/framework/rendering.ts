@@ -157,7 +157,7 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
 
     // Handle dom:manual template directive.
     const isDomManual = data.context?.lwc?.dom === LWCDOMMode.manual;
-    if (isDomManual) {
+    if (owner.shadowMode === ShadowMode.Synthetic && isDomManual) {
         elm.$domManual$ = true;
     }
 
