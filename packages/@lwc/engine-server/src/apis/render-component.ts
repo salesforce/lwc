@@ -12,7 +12,7 @@ import {
 } from '@lwc/engine-core';
 import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
-import { renderer } from '../renderer';
+import { createElement } from '../renderer';
 import { serializeElement } from '../serializer';
 import { HostElement, HostNodeType } from '../types';
 
@@ -49,14 +49,13 @@ export function renderComponent(
         );
     }
 
-    const element = renderer.createElement(tagName);
+    const element = createElement(tagName);
 
     const def = getComponentInternalDef(Ctor);
 
     createVM(element, def, {
         mode: 'open',
         owner: null,
-        renderer,
         tagName,
     });
 

@@ -7,6 +7,9 @@
 // Polyfills ---------------------------------------------------------------------------------------
 import './polyfills';
 
+// Renderer initialization -------------------------------------------------------------------------
+import './initializeRenderer';
+
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
     createContextProvider,

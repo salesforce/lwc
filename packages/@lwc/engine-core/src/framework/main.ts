@@ -42,7 +42,6 @@ export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 export { setHooks } from './overridable-hooks';
 
 // Types -------------------------------------------------------------------------------------------
-export type { Renderer } from './renderer';
 export type {
     ConfigValue as WireConfigValue,
     ContextValue as WireContextValue,
@@ -51,3 +50,47 @@ export type {
     WireAdapterConstructor,
     WireAdapterSchemaValue,
 } from './wiring';
+
+// Initialization APIs for the renderer, to be used by engine implementations ----------------------
+export {
+    setAssertInstanceOfHTMLElement,
+    setAttachShadow,
+    setCreateComment,
+    setCreateElement,
+    setCreateText,
+    setDefineCustomElement,
+    setDispatchEvent,
+    setGetAttribute,
+    setGetBoundingClientRect,
+    setGetChildNodes,
+    setGetChildren,
+    setGetClassList,
+    setGetCustomElement,
+    setGetElementsByClassName,
+    setGetElementsByTagName,
+    setGetFirstChild,
+    setGetFirstElementChild,
+    setGetLastChild,
+    setGetLastElementChild,
+    setGetProperty,
+    setHTMLElement,
+    setInsert,
+    setInsertGlobalStylesheet,
+    setInsertStylesheet,
+    setIsConnected,
+    setIsHydrating,
+    setIsNativeShadowDefined,
+    setIsSyntheticShadowDefined,
+    setNextSibling,
+    setQuerySelector,
+    setQuerySelectorAll,
+    setRemove,
+    setRemoveAttribute,
+    setRemoveEventListener,
+    setSetAttribute,
+    setSetCSSStyleProperty,
+    setSetProperty,
+    setSetText,
+    setSsr,
+    setAddEventListener,
+} from '../renderer';

@@ -8,6 +8,9 @@
 // Polyfills ---------------------------------------------------------------------------------------
 import './polyfills/aria-properties/main';
 
+// Renderer initialization -------------------------------------------------------------------------
+import './initializeRenderer';
+
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
     createContextProvider,

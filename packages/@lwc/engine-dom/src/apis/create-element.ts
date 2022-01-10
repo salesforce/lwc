@@ -14,8 +14,6 @@ import {
     getUpgradableConstructor,
 } from '@lwc/engine-core';
 
-import { renderer } from '../renderer';
-
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
 const _Node = Node;
@@ -96,7 +94,7 @@ export function createElement(
         );
     }
 
-    const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
+    const UpgradableConstructor = getUpgradableConstructor(sel);
     let wasComponentUpgraded: boolean = false;
     // the custom element from the registry is expecting an upgrade callback
     /**
@@ -111,7 +109,6 @@ export function createElement(
             tagName: sel,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
-            renderer,
         });
         ConnectingSlot.set(elm, connectRootElement);
         DisconnectingSlot.set(elm, disconnectRootElement);

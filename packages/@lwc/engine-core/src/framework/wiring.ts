@@ -13,6 +13,7 @@ import {
     noop,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
+import { dispatchEvent } from '../renderer';
 import { LightningElement } from './base-lightning-element';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';
@@ -126,7 +127,6 @@ function createContextWatcher(
     }
     const {
         elm,
-        renderer,
         context: { wiredConnecting, wiredDisconnecting },
     } = vm;
     // waiting for the component to be connected to formally request the context via the token
@@ -148,7 +148,7 @@ function createContextWatcher(
                 ArrayPush.call(wiredDisconnecting, disconnectCallback);
             },
         });
-        renderer.dispatchEvent(elm, contextRegistrationEvent);
+        dispatchEvent(elm, contextRegistrationEvent);
     });
 }
 
