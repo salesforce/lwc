@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayFilter, ArrayJoin, assert, isArray, isNull, isUndefined, keys } from '@lwc/shared';
+import { getClassList, setText, getAttribute, remove, insert } from '../renderer';
 import { EmptyArray, parseStyleText } from './utils';
 import {
     createVM,
@@ -40,22 +41,18 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     const { cmpTemplate, context } = owner;
     const token = cmpTemplate?.stylesheetToken;
     if (!isUndefined(token) && context.hasScopedStyles) {
-        owner.renderer.getClassList(elm).add(token);
+        getClassList(elm).add(token);
     }
 }
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
-    const {
-        elm,
-        text,
-        owner: { renderer },
-    } = vnode;
+    const { elm, text } = vnode;
 
     if (oldVnode.text !== text) {
         if (process.env.NODE_ENV !== 'production') {
             unlockDomMutation();
         }
-        renderer.setText(elm, text!);
+        setText(elm, text!);
         if (process.env.NODE_ENV !== 'production') {
             lockDomMutation();
         }
@@ -63,24 +60,20 @@ export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
 }
 
 export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: Node | null) {
-    const { renderer } = vnode.owner;
-
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    renderer.insert(vnode.elm!, parentNode, referenceNode);
+    insert(vnode.elm!, parentNode, referenceNode);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
 }
 
 export function removeNodeHook(vnode: VNode, parentNode: Node) {
-    const { renderer } = vnode.owner;
-
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    renderer.remove(vnode.elm!, parentNode);
+    remove(vnode.elm!, parentNode);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
@@ -213,7 +206,6 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
         mode,
         owner,
         tagName: sel,
-        renderer: owner.renderer,
     });
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
@@ -255,7 +247,6 @@ function isElementNode(node: ChildNode): node is Element {
 function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolean {
     const {
         data: { attrs = {} },
-        owner: { renderer },
     } = vnode;
 
     let nodesAreCompatible = true;
@@ -263,7 +254,7 @@ function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolea
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
-        const elmAttrValue = renderer.getAttribute(elm, attrName);
+        const elmAttrValue = getAttribute(elm, attrName);
         if (String(attrValue) !== elmAttrValue) {
             logError(
                 `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
@@ -279,7 +270,6 @@ function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolea
 function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolean {
     const {
         data: { className, classMap },
-        owner: { renderer },
     } = vnode;
 
     let nodesAreCompatible = true;
@@ -291,7 +281,7 @@ function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolea
         vnodeClassName = className;
     } else if (!isUndefined(classMap)) {
         // classMap is used when class is set to static value.
-        const classList = renderer.getClassList(elm);
+        const classList = getClassList(elm);
         let computedClassName = '';
 
         // all classes from the vnode should be in the element.classList
@@ -324,9 +314,8 @@ function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolea
 function vnodesAndElementHaveCompatibleStyle(vnode: VNode, elm: Element): boolean {
     const {
         data: { style, styleDecls },
-        owner: { renderer },
     } = vnode;
-    const elmStyle = renderer.getAttribute(elm, 'style') || '';
+    const elmStyle = getAttribute(elm, 'style') || '';
     let vnodeStyle;
     let nodesAreCompatible = true;
 

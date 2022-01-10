@@ -13,7 +13,7 @@ import {
     AriaPropNameToAttrNameMap,
 } from '@lwc/shared';
 
-import { HTMLElementPrototype } from './renderer';
+import { HTMLElementPrototype } from './html-element';
 import { defaultDefHTMLPropertyNames } from './attributes';
 
 /**

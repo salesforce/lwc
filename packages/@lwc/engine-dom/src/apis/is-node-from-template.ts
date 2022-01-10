@@ -6,8 +6,7 @@
  */
 
 import { isFalse, isUndefined, KEY__SHADOW_RESOLVER } from '@lwc/shared';
-
-import { renderer } from '../renderer';
+import { isSyntheticShadowDefined } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
@@ -26,7 +25,7 @@ export function isNodeFromTemplate(node: Node): boolean {
     if (node instanceof ShadowRoot) {
         return false;
     }
-    if (renderer.isSyntheticShadowDefined) {
+    if (isSyntheticShadowDefined) {
         // TODO [#1252]: old behavior that is still used by some pieces of the platform,
         // specifically, nodes inserted manually on places where `lwc:dom="manual"` directive is not
         // used, will be considered global elements.

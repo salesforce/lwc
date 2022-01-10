@@ -25,7 +25,7 @@ import {
 
 import { getAssociatedVM } from './vm';
 import { reactiveMembrane } from './membrane';
-import { HTMLElementConstructor } from './renderer';
+import { HTMLElementConstructor } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { isAttributeLocked } from './attributes';
 

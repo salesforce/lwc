@@ -8,7 +8,6 @@
 /* eslint-env node */
 
 const path = require('path');
-
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescriptPlugin = require('@rollup/plugin-typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
