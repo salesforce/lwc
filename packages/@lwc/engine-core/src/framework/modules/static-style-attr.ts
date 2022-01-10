@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
+import { setCSSStyleProperty } from '../../renderer';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
 // The HTML style property becomes the vnode.data.styleDecls object when defined as a string in the template.
@@ -14,7 +15,6 @@ function createStyleAttribute(vnode: VNode) {
     const {
         elm,
         data: { styleDecls },
-        owner: { renderer },
     } = vnode;
 
     if (isUndefined(styleDecls)) {
@@ -23,7 +23,7 @@ function createStyleAttribute(vnode: VNode) {
 
     for (let i = 0; i < styleDecls.length; i++) {
         const [prop, value, important] = styleDecls[i];
-        renderer.setCSSStyleProperty(elm, prop, value, important);
+        setCSSStyleProperty(elm, prop, value, important);
     }
 }
 

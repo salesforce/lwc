@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
+import { getClassList } from '../../renderer';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
 // The HTML class property becomes the vnode.data.classMap object when defined as a string in the template.
@@ -14,14 +15,13 @@ function createClassAttribute(vnode: VNode) {
     const {
         elm,
         data: { classMap },
-        owner: { renderer },
     } = vnode;
 
     if (isUndefined(classMap)) {
         return;
     }
 
-    const classList = renderer.getClassList(elm);
+    const classList = getClassList(elm);
     for (const name in classMap) {
         classList.add(name);
     }
