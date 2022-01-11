@@ -4,17 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isString } from '@lwc/shared';
+import { isNull, isString } from '@lwc/shared';
+
 import { setAttribute, removeAttribute } from '../../renderer';
-import { VNode } from '../../3rdparty/snabbdom/types';
+import { VElement } from '../../3rdparty/snabbdom/types';
 
 // The style property is a string when defined via an expression in the template.
-function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
+export function patchStyleAttribute(oldVnode: VElement | null, vnode: VElement) {
     const {
         elm,
         data: { style: newStyle },
     } = vnode;
-    if (oldVnode.data.style === newStyle) {
+
+    const oldStyle = isNull(oldVnode) ? undefined : oldVnode.data.style;
+    if (oldStyle === newStyle) {
         return;
     }
 
@@ -24,10 +27,3 @@ function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
         setAttribute(elm, 'style', newStyle);
     }
 }
-
-const emptyVNode = { data: {} } as VNode;
-
-export default {
-    create: (vnode: VNode) => updateStyleAttribute(emptyVNode, vnode),
-    update: updateStyleAttribute,
-};

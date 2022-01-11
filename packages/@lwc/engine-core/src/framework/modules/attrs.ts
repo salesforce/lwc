@@ -5,16 +5,18 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert, isNull, isUndefined, keys, StringCharCodeAt } from '@lwc/shared';
+
 import { setAttribute, removeAttribute } from '../../renderer';
+import { VElement } from '../../3rdparty/snabbdom/types';
+
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
-import { VElement } from '../../3rdparty/snabbdom/types';
 
 const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';
 const ColonCharCode = 58;
 
-function updateAttrs(oldVnode: VElement, vnode: VElement) {
+export function patchAttributes(oldVnode: VElement | null, vnode: VElement) {
     const {
         data: { attrs },
     } = vnode;
@@ -22,9 +24,9 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
     if (isUndefined(attrs)) {
         return;
     }
-    let {
-        data: { attrs: oldAttrs },
-    } = oldVnode;
+
+    let oldAttrs = isNull(oldVnode) ? undefined : oldVnode.data.attrs;
+
     if (oldAttrs === attrs) {
         return;
     }
@@ -64,10 +66,3 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
         }
     }
 }
-
-const emptyVNode = { data: {} } as VElement;
-
-export default {
-    create: (vnode: VElement) => updateAttrs(emptyVNode, vnode),
-    update: updateAttrs,
-};

@@ -5,13 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
+
 import { setCSSStyleProperty } from '../../renderer';
-import { VNode } from '../../3rdparty/snabbdom/types';
+import { VElement } from '../../3rdparty/snabbdom/types';
 
 // The HTML style property becomes the vnode.data.styleDecls object when defined as a string in the template.
 // The compiler takes care of transforming the inline style into an object. It's faster to set the
 // different style properties individually instead of via a string.
-function createStyleAttribute(vnode: VNode) {
+export function applyStaticStyleAttribute(vnode: VElement) {
     const {
         elm,
         data: { styleDecls },
@@ -26,7 +27,3 @@ function createStyleAttribute(vnode: VNode) {
         setCSSStyleProperty(elm, prop, value, important);
     }
 }
-
-export default {
-    create: createStyleAttribute,
-};
