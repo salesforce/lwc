@@ -8,7 +8,7 @@ export default {
         return Promise.resolve().then(() => {
             expect(
                 getComputedStyle(target.shadowRoot.querySelector('x-light-child div')).color
-            ).toEqual('rgb(255, 0, 0)');
+            ).not.toEqual('rgb(255, 0, 0)');
         });
     },
 };
