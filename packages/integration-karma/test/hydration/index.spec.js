@@ -15,6 +15,6 @@ it('should log an error when passing an invalid LightningElement constructor.', 
     expect(() => {
         hydrateComponent(anElement, anElement.constructor, {});
     }).toThrowError(
-        'function HTMLDivElement() { [native code] } is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.'
+        /is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
     );
 });
