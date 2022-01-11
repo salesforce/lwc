@@ -67,11 +67,11 @@ if (!process.env.NATIVE_SHADOW) {
 
         describe('Element.prototype API', () => {
             it('should keep behavior for innerHTML', () => {
-                expect(elementOutsideLWC.innerHTML.length).toBe(455);
+                expect(elementOutsideLWC.innerHTML.length).toBe(27);
                 expect(rootLwcElement.innerHTML.length).toBe(0);
                 expect(lwcElementInsideShadow.innerHTML.length).toBe(0);
 
-                expect(divManuallyApendedToShadow.innerHTML.length).toBe(176); // <x-manually-inserted><p>slot-container text</p><x-with-slot><p>with
+                expect(divManuallyApendedToShadow.innerHTML.length).toBe(43); // <x-manually-inserted><p>slot-container text</p><x-with-slot><p>with
 
                 expect(cmpShadow.innerHTML.length).toBe(99);
 
@@ -80,11 +80,11 @@ if (!process.env.NATIVE_SHADOW) {
             });
 
             it('should keep behavior for outerHTML', () => {
-                expect(elementOutsideLWC.outerHTML.length).toBe(466);
+                expect(elementOutsideLWC.outerHTML.length).toBe(38);
                 expect(rootLwcElement.outerHTML.length).toBe(27);
                 expect(lwcElementInsideShadow.outerHTML.length).toBe(27);
 
-                expect(divManuallyApendedToShadow.outerHTML.length).toBe(206); // <div class="manual-ctx"><x-manually-inserted><p>slot-container text</p><x-with-slot><p>wi ....
+                expect(divManuallyApendedToShadow.outerHTML.length).toBe(73); // <div class="manual-ctx"><x-manually-inserted><p>slot-container text</p><x-with-slot><p>wi ....
 
                 expect(cmpShadow.outerHTML).toBe(undefined);
 
@@ -257,12 +257,12 @@ if (!process.env.NATIVE_SHADOW) {
             });
 
             it('should preserve behaviour for textContent', () => {
-                expect(elementOutsideLWC.textContent.length).toBe(117);
+                expect(elementOutsideLWC.textContent.length).toBe(0);
                 expect(rootLwcElement.textContent.length).toBe(0);
                 expect(lwcElementInsideShadow.textContent.length).toBe(0);
 
                 expect(elementInShadow.textContent.length).toBe(0);
-                expect(divManuallyApendedToShadow.textContent.length).toBe(45);
+                expect(divManuallyApendedToShadow.textContent.length).toBe(0);
 
                 expect(cmpShadow.textContent.length).toBe(31);
 
