@@ -20,6 +20,12 @@ export function hydrateComponent(
     Ctor: typeof LightningElement,
     props: { [name: string]: any } = {}
 ) {
+    if (!(element instanceof Element)) {
+        throw new TypeError(
+            `"hydrateComponent" expects a valid DOM element as the first parameter but instead received ${element}.`
+        );
+    }
+
     if (!isFunction(Ctor)) {
         throw new TypeError(
             `"hydrateComponent" expects a valid component constructor as the second parameter but instead received ${Ctor}.`
