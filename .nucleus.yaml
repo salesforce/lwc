@@ -52,7 +52,7 @@ branches:
     pull-request:
       auto-start: true
       auto-start-from-forks: false
-      merge-method: disabled
+      merge-method: disabled # do not auto-merge; we'll do it ourselves
       required-downstream-deps:
         - automation-platform/ui-interaction-explorer-components
         - communities/microsite-template-marketing
