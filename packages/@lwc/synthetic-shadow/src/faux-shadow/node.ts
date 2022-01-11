@@ -49,7 +49,12 @@ import {
     getIE11FakeShadowRootPlaceholder,
     isSyntheticShadowHost,
 } from './shadow-root';
-import { getNodeNearestOwnerKey, getNodeOwnerKey, isNodeShadowed } from '../shared/node-ownership';
+import {
+    getNodeNearestOwnerKey,
+    getNodeOwnerKey,
+    isNodeOrDescendantsShadowed,
+    isNodeShadowed,
+} from '../shared/node-ownership';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
@@ -176,7 +181,9 @@ function cloneNodePatched(this: Node, deep?: boolean): Node {
 function childNodesGetterPatched(this: Node): NodeListOf<Node> {
     if (isSyntheticShadowHost(this)) {
         const owner = getNodeOwner(this);
-        const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+        const childNodes = isNull(owner)
+            ? getFilteredChildNodes(this)
+            : getAllMatches(owner, getFilteredChildNodes(this));
         if (
             process.env.NODE_ENV !== 'production' &&
             isFalse(hasNativeSymbolSupport) &&
@@ -285,7 +292,8 @@ defineProperties(Node.prototype, {
     textContent: {
         get(this: Node): string {
             if (!featureFlags.ENABLE_NODE_PATCH) {
-                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
+                // See note on get innerHTML in faux-shadow/element.ts
+                if (isNodeOrDescendantsShadowed(this)) {
                     return textContentGetterPatched.call(this);
                 }
 
