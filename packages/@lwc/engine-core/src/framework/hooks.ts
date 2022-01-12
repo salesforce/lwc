@@ -85,18 +85,19 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
     }
 }
 
-export function createElmHook(vnode: VElement) {
-    applyEventListeners(vnode);
+export function patchElementPropsAndAttributes(oldVnode: VElement | null, vnode: VElement) {
+    if (isNull(oldVnode)) {
+        applyEventListeners(vnode);
+        applyStaticClassAttribute(vnode);
+        applyStaticStyleAttribute(vnode);
+    }
 
-    // Attrs need to be applied to element before props
-    // IE11 will wipe out value on radio inputs if value
-    // is set before type=radio.
-    patchAttributes(null, vnode);
-    patchProps(null, vnode);
-    applyStaticClassAttribute(vnode);
-    patchClassAttribute(null, vnode);
-    applyStaticStyleAttribute(vnode);
-    patchStyleAttribute(null, vnode);
+    // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
+    // value is set before type=radio.
+    patchClassAttribute(oldVnode, vnode);
+    patchStyleAttribute(oldVnode, vnode);
+    patchAttributes(oldVnode, vnode);
+    patchProps(oldVnode, vnode);
 }
 
 export const enum LWCDOMMode {
@@ -139,16 +140,6 @@ export function fallbackElmHook(elm: Element, vnode: VElement) {
         const isLight = owner.renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, { isPortal, isLight });
     }
-}
-
-export function updateElmHook(oldVnode: VElement, vnode: VElement) {
-    // Attrs need to be applied to element before props
-    // IE11 will wipe out value on radio inputs if value
-    // is set before type=radio.
-    patchAttributes(oldVnode, vnode);
-    patchProps(oldVnode, vnode);
-    patchClassAttribute(oldVnode, vnode);
-    patchStyleAttribute(oldVnode, vnode);
 }
 
 export function patchChildren(parent: ParentNode, oldCh: VNodes, newCh: VNodes) {
