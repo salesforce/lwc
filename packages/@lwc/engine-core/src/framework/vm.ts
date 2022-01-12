@@ -36,13 +36,12 @@ import {
     logGlobalOperationEnd,
     logGlobalOperationStart,
 } from './profiler';
-import { hasDynamicChildren, hydrateChildrenHook } from './hooks';
+import { hydrateChildrenHook, patchChildren } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
 
-import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
@@ -444,7 +443,6 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
         if (oldCh !== newCh) {
-            const fn = hasDynamicChildren(newCh) ? updateDynamicChildren : updateStaticChildren;
             runWithBoundaryProtection(
                 vm,
                 vm,
@@ -454,8 +452,8 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    const elementToRenderTo = getRenderRoot(vm);
-                    fn(elementToRenderTo, oldCh, newCh);
+                    const renderRoot = getRenderRoot(vm);
+                    patchChildren(renderRoot, oldCh, newCh);
                 },
                 () => {
                     // post

@@ -151,12 +151,11 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     modComputedStyle.update(oldVnode, vnode);
 }
 
-export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
-    const { elm, children } = vnode;
-    if (hasDynamicChildren(children)) {
-        updateDynamicChildren(elm!, oldVnode.children, children);
+export function patchChildren(parent: ParentNode, oldCh: VNodes, newCh: VNodes) {
+    if (hasDynamicChildren(newCh)) {
+        updateDynamicChildren(parent, oldCh, newCh);
     } else {
-        updateStaticChildren(elm!, oldVnode.children, children);
+        updateStaticChildren(parent, oldCh, newCh);
     }
 }
 
@@ -445,6 +444,6 @@ export function markAsDynamicChildren(children: VNodes) {
     FromIteration.set(children, 1);
 }
 
-export function hasDynamicChildren(children: VNodes): boolean {
+function hasDynamicChildren(children: VNodes): boolean {
     return FromIteration.has(children);
 }
