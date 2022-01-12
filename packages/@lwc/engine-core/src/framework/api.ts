@@ -64,7 +64,7 @@ import {
     insertNodeHook,
     removeNodeHook,
     patchChildren,
-    patchElementPropsAndAttributes,
+    patchElementPropsAndAttrs,
     allocateChildrenHook,
     markAsDynamicChildren,
     hydrateChildrenHook,
@@ -165,10 +165,10 @@ const ElementHook: Hooks<VElement> = {
         fallbackElmHook(elm, vnode);
         vnode.elm = elm;
 
-        patchElementPropsAndAttributes(null, vnode);
+        patchElementPropsAndAttrs(null, vnode);
     },
     update: (oldVnode, vnode) => {
-        patchElementPropsAndAttributes(oldVnode, vnode);
+        patchElementPropsAndAttrs(oldVnode, vnode);
         patchChildren(vnode.elm!, oldVnode.children, vnode.children);
     },
     insert: (vnode, parentNode, referenceNode) => {
@@ -241,10 +241,10 @@ const CustomElementHook: Hooks<VCustomElement> = {
         } else if (vnode.ctor !== UpgradableConstructor) {
             throw new TypeError(`Incorrect Component Constructor`);
         }
-        patchElementPropsAndAttributes(null, vnode);
+        patchElementPropsAndAttrs(null, vnode);
     },
     update: (oldVnode, vnode) => {
-        patchElementPropsAndAttributes(oldVnode, vnode);
+        patchElementPropsAndAttrs(oldVnode, vnode);
         const vm = getAssociatedVMIfPresent(vnode.elm);
         if (vm) {
             // in fallback mode, the allocation will always set children to

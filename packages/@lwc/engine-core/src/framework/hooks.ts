@@ -85,7 +85,7 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
     }
 }
 
-export function patchElementPropsAndAttributes(oldVnode: VElement | null, vnode: VElement) {
+export function patchElementPropsAndAttrs(oldVnode: VElement | null, vnode: VElement) {
     if (isNull(oldVnode)) {
         applyEventListeners(vnode);
         applyStaticClassAttribute(vnode);
