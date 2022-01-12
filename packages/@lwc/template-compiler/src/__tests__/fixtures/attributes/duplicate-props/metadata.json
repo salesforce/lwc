@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1147,
+            "message": "LWC1147: Found multiple HTML attributes mapping to the same JavaScript property. \"accesskey\" and \"access-key\" both map to \"accessKey\".",
+            "level": 2,
+            "location": {
+                "line": 4,
+                "column": 9,
+                "start": 69,
+                "length": 24
+            }
+        },
+        {
+            "code": 1147,
+            "message": "LWC1147: Found multiple HTML attributes mapping to the same JavaScript property. \"access-key\" and \"accesskey\" both map to \"accessKey\".",
+            "level": 2,
+            "location": {
+                "line": 8,
+                "column": 9,
+                "start": 166,
+                "length": 26
+            }
+        }
+    ]
+}
