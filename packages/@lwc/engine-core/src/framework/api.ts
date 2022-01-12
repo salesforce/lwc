@@ -65,8 +65,6 @@ import {
     removeNodeHook,
     createElmHook,
     updateElmHook,
-    createCustomElmHook,
-    updateCustomElmHook,
     patchChildren,
     allocateChildrenHook,
     markAsDynamicChildren,
@@ -244,10 +242,10 @@ const CustomElementHook: Hooks<VCustomElement> = {
         } else if (vnode.ctor !== UpgradableConstructor) {
             throw new TypeError(`Incorrect Component Constructor`);
         }
-        createCustomElmHook(vnode);
+        createElmHook(vnode);
     },
     update: (oldVnode, vnode) => {
-        updateCustomElmHook(oldVnode, vnode);
+        updateElmHook(oldVnode, vnode);
         const vm = getAssociatedVMIfPresent(vnode.elm);
         if (vm) {
             // in fallback mode, the allocation will always set children to

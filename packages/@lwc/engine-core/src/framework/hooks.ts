@@ -214,20 +214,6 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
     }
 }
 
-export function createCustomElmHook(vnode: VCustomElement) {
-    applyEventListeners(vnode);
-
-    // Attrs need to be applied to element before props
-    // IE11 will wipe out value on radio inputs if value
-    // is set before type=radio.
-    patchAttributes(null, vnode);
-    patchProps(null, vnode);
-    applyStaticClassAttribute(vnode);
-    patchClassAttribute(null, vnode);
-    applyStaticStyleAttribute(vnode);
-    patchStyleAttribute(null, vnode);
-}
-
 export function createChildrenHook(vnode: VElement) {
     const { elm, children } = vnode;
     for (let j = 0; j < children.length; ++j) {
@@ -411,16 +397,6 @@ export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children
             elmCurrentChildIdx++;
         }
     }
-}
-
-export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
-    // Attrs need to be applied to element before props
-    // IE11 will wipe out value on radio inputs if value
-    // is set before type=radio.
-    patchAttributes(oldVnode, vnode);
-    patchProps(oldVnode, vnode);
-    patchClassAttribute(oldVnode, vnode);
-    patchStyleAttribute(oldVnode, vnode);
 }
 
 export function removeElmHook(vnode: VElement) {
