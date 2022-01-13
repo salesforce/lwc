@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { walk } from 'estree-walker';
 import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
-import { Expression, Literal, LWCDirectiveRenderMode, Root } from '../shared/types';
+import { IRElement, LWCDirectiveRenderMode } from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
-import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 
 type RenderPrimitive =
     | 'iterator'
@@ -52,14 +50,9 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
 };
 
-interface Scope {
-    parent: Scope | null;
-    declaration: Set<string>;
-}
-
 export default class CodeGen {
     /** The AST root. */
-    readonly root: Root;
+    readonly root: IRElement;
 
     /** The template render mode. */
     readonly renderMode: LWCDirectiveRenderMode;
@@ -75,15 +68,6 @@ export default class CodeGen {
      * fashion.
      */
     readonly scopeFragmentId: boolean;
-
-    /**
-     * The scope keeps track of the identifiers that have been seen while traversing the AST.
-     * Currently, we are keeping track of item, index and iterator on the ForEach and ForOf nodes respectively.
-     *
-     * Scope is used in bindExpression to determine if the expression is a known identifier.
-     * A known identifier exists if it exists in the scope chain.
-     */
-    private scope: Scope;
 
     currentId = 0;
     currentKey = 0;
@@ -101,20 +85,14 @@ export default class CodeGen {
         config,
         scopeFragmentId,
     }: {
-        root: Root;
+        root: IRElement;
         config: ResolvedConfig;
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        this.renderMode =
-            root.directives.find(isRenderModeDirective)?.value.value ??
-            LWCDirectiveRenderMode.shadow;
-        this.preserveComments =
-            root.directives.find(isPreserveCommentsDirective)?.value.value ??
-            config.preserveHtmlComments;
-
+        this.renderMode = root.lwc?.renderMode ?? LWCDirectiveRenderMode.shadow;
+        this.preserveComments = root.lwc?.preserveComments?.value ?? config.preserveHtmlComments;
         this.scopeFragmentId = scopeFragmentId;
-        this.scope = this.createScope();
     }
 
     generateKey() {
@@ -320,77 +298,5 @@ export default class CodeGen {
         }
 
         return t.callExpression(identifier, params);
-    }
-
-    beginScope(): void {
-        this.scope = this.createScope(this.scope);
-    }
-
-    private createScope(parent: Scope | null = null): Scope {
-        return {
-            parent,
-            declaration: new Set(),
-        };
-    }
-
-    endScope(): void {
-        if (!this.scope.parent) {
-            throw new Error("Can't invoke endScope if the current scope has no parent");
-        }
-
-        this.scope = this.scope.parent;
-    }
-
-    declareIdentifier(identifier: t.Identifier): void {
-        this.scope.declaration.add(identifier.name);
-    }
-
-    /**
-     * Searches the scopes to find an identifier with a matching name.
-     */
-    isLocalIdentifier(identifier: t.Identifier): boolean {
-        let scope: Scope | null = this.scope;
-
-        while (scope !== null) {
-            if (scope.declaration.has(identifier.name)) {
-                return true;
-            }
-
-            scope = scope.parent;
-        }
-
-        return false;
-    }
-
-    /**
-     * Bind the passed expression to the component instance. It applies the following transformation to the expression:
-     * - {value} --> {$cmp.value}
-     * - {value[index]} --> {$cmp.value[$cmp.index]}
-     */
-    bindExpression(expression: Expression | Literal): t.Expression {
-        if (t.isIdentifier(expression)) {
-            if (!this.isLocalIdentifier(expression)) {
-                return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
-            } else {
-                return expression;
-            }
-        }
-
-        const scope = this;
-        walk(expression, {
-            leave(node, parent) {
-                if (
-                    parent !== null &&
-                    t.isIdentifier(node) &&
-                    t.isMemberExpression(parent) &&
-                    parent.object === node &&
-                    !scope.isLocalIdentifier(node)
-                ) {
-                    this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
-                }
-            },
-        });
-
-        return expression as t.Expression;
     }
 }

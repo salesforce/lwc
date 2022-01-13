@@ -1,7 +1,7 @@
 import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {} = $api;
-  return [];
+  return [[]];
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

@@ -4,7 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as parse5 from 'parse5';
 import { CompilerDiagnostic } from '@lwc/errors';
+
+export type TemplateIdentifier = { type: 'Identifier'; name: string };
+export type TemplateExpression =
+    | {
+          type: 'MemberExpression';
+          object: TemplateExpression;
+          property: TemplateExpression;
+          computed: boolean;
+          optional: boolean;
+      }
+    | { type: 'Literal'; value: string | number | boolean | null }
+    | TemplateIdentifier;
 
 export type TemplateCompileResult = {
     code: string;
@@ -12,9 +25,20 @@ export type TemplateCompileResult = {
 };
 
 export type TemplateParseResult = {
-    root?: Root;
+    root?: IRElement | undefined;
     warnings: CompilerDiagnostic[];
 };
+
+export interface ForEach {
+    expression: TemplateExpression;
+    item: TemplateIdentifier;
+    index?: TemplateIdentifier;
+}
+
+export interface ForIterator {
+    expression: TemplateExpression;
+    iterator: TemplateIdentifier;
+}
 
 export enum LWCDirectiveDomMode {
     manual = 'manual',
@@ -25,173 +49,88 @@ export enum LWCDirectiveRenderMode {
     light = 'light',
 }
 
-export interface BaseNode {
+export interface LWCDirectiveDynamic {
+    prop: string;
+}
+
+export interface LWCDirectives {
+    dom?: LWCDirectiveDomMode;
+    dynamic?: TemplateExpression;
+    renderMode?: LWCDirectiveRenderMode;
+    preserveComments?: IRBooleanAttribute;
+    innerHTML?: TemplateExpression | string;
+}
+
+export interface IRBaseNode<N extends parse5.Node> {
     type: string;
-    location: SourceLocation;
+    location: parse5.Location;
+
+    // TODO [#2432]: Remove `__original` property on the `IRBaseNode`.
+    __original?: N;
 }
 
-export interface SourceLocation {
-    startLine: number;
-    startColumn: number;
-    endLine: number;
-    endColumn: number;
-    start: number;
-    end: number;
+export interface IRElement extends IRBaseNode<parse5.Element> {
+    type: 'element';
+    tag: string;
+    namespace: string;
+    children: IRNode[];
+    location: parse5.ElementLocation;
+
+    component?: string;
+
+    on?: { [name: string]: TemplateExpression };
+    attrs?: { [name: string]: IRAttribute };
+    props?: { [name: string]: IRAttribute };
+
+    if?: TemplateExpression;
+    ifModifier?: string;
+
+    forEach?: ForEach;
+    forOf?: ForIterator;
+    forKey?: TemplateExpression;
+
+    lwc?: LWCDirectives;
+
+    slotName?: string;
 }
 
-export interface ElementSourceLocation extends SourceLocation {
-    startTag: SourceLocation;
-    endTag?: SourceLocation;
+export interface IRText extends IRBaseNode<parse5.TextNode> {
+    type: 'text';
+    value: string | TemplateExpression;
 }
 
-export interface Literal<Value = string | boolean> {
-    type: 'Literal';
-    value: Value;
-}
-
-export interface Identifier extends BaseNode {
-    type: 'Identifier';
-    name: string;
-}
-
-export interface MemberExpression extends BaseNode {
-    type: 'MemberExpression';
-    object: Expression;
-    property: Identifier;
-}
-
-export type Expression = Identifier | MemberExpression;
-
-export interface Attribute extends BaseNode {
-    type: 'Attribute';
-    name: string;
-    value: Literal | Expression;
-}
-
-export interface Property extends BaseNode {
-    type: 'Property';
-    name: string;
-    value: Literal | Expression;
-}
-
-export interface EventListener extends BaseNode {
-    type: 'EventListener';
-    name: string;
-    handler: Expression;
-}
-
-export interface Directive extends BaseNode {
-    type: 'Directive';
-    name: string;
-    value: Expression | Literal;
-}
-
-export interface KeyDirective extends Directive {
-    name: 'Key';
-    value: Expression;
-}
-
-export interface DynamicDirective extends Directive {
-    name: 'Dynamic';
-    value: Expression;
-}
-
-export interface DomDirective extends Directive {
-    name: 'Dom';
-    value: Literal<'manual'>;
-}
-
-export interface InnerHTMLDirective extends Directive {
-    name: `InnerHTML`;
-    value: Expression | Literal<string>;
-}
-
-export interface RenderModeDirective extends Directive {
-    name: 'RenderMode';
-    value: Literal<LWCDirectiveRenderMode>;
-}
-
-export interface PreserveCommentsDirective extends Directive {
-    name: 'PreserveComments';
-    value: Literal<boolean>;
-}
-
-export type ElementDirective = KeyDirective | DynamicDirective | DomDirective | InnerHTMLDirective;
-export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
-
-export interface Text extends BaseNode {
-    type: 'Text';
-    value: Literal | Expression;
-}
-
-export interface Comment extends BaseNode {
-    type: 'Comment';
+export interface IRComment extends IRBaseNode<parse5.CommentNode> {
+    type: 'comment';
     value: string;
 }
 
-export interface BaseParentNode extends BaseNode {
-    children: ChildNode[];
+export type IRNode = IRComment | IRElement | IRText;
+
+export enum IRAttributeType {
+    Expression,
+    String,
+    Boolean,
 }
 
-export interface AbstractBaseElement extends BaseParentNode {
+export interface IRBaseAttribute {
     name: string;
-    location: ElementSourceLocation;
-    properties: Property[];
-    attributes: Attribute[];
-    listeners: EventListener[];
-    directives: ElementDirective[];
-    namespace?: string;
+    location: parse5.Location;
+    type: IRAttributeType;
 }
 
-export interface Element extends AbstractBaseElement {
-    type: 'Element';
+export interface IRExpressionAttribute extends IRBaseAttribute {
+    type: IRAttributeType.Expression;
+    value: TemplateExpression;
 }
 
-export interface Component extends AbstractBaseElement {
-    type: 'Component';
+export interface IRStringAttribute extends IRBaseAttribute {
+    type: IRAttributeType.String;
+    value: string;
 }
 
-export interface Slot extends AbstractBaseElement {
-    type: 'Slot';
-    /** Specifies slot element name. An empty string value maps to the default slot.  */
-    slotName: string;
+export interface IRBooleanAttribute extends IRBaseAttribute {
+    type: IRAttributeType.Boolean;
+    value: true;
 }
 
-export type BaseElement = Element | Component | Slot;
-
-export interface Root extends BaseParentNode {
-    type: 'Root';
-    location: ElementSourceLocation;
-    directives: RootDirective[];
-}
-
-interface DirectiveParentNode extends BaseParentNode {
-    directiveLocation: SourceLocation;
-}
-
-export interface If extends DirectiveParentNode {
-    type: 'If';
-    modifier: string;
-    condition: Expression;
-}
-
-export interface ForEach extends DirectiveParentNode {
-    type: 'ForEach';
-    expression: Expression;
-    item: Identifier;
-    index?: Identifier;
-}
-
-export interface ForOf extends DirectiveParentNode {
-    type: 'ForOf';
-    expression: Expression;
-    iterator: Identifier;
-}
-
-export type ForBlock = ForEach | ForOf;
-
-export type ParentNode = Root | ForBlock | If | BaseElement;
-
-export type ChildNode = ForBlock | If | BaseElement | Comment | Text;
-
-export type Node = Root | ForBlock | If | BaseElement | Comment | Text;
+export type IRAttribute = IRStringAttribute | IRExpressionAttribute | IRBooleanAttribute;

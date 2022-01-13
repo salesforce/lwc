@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from '@lwc/shared';
+import { AriaAttrNameToPropNameMap } from '@lwc/shared';
 
 import { HTML_ATTRIBUTE_ELEMENT_MAP } from './utils/html-element-attributes';
 import { HTML_ELEMENTS, HTML_VOID_ELEMENTS } from './utils/html-elements';
@@ -28,10 +28,19 @@ export const LWC_DIRECTIVES = {
 
 export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(LWC_DIRECTIVES));
 
+export const FOR_DIRECTIVES = {
+    FOR_EACH: 'for:each',
+    FOR_ITEM: 'for:item',
+    FOR_INDEX: 'for:index',
+};
+
 export const ROOT_TEMPLATE_DIRECTIVES = {
     PRESERVE_COMMENTS: 'lwc:preserve-comments',
     RENDER_MODE: 'lwc:render-mode',
 };
+export const ROOT_TEMPLATE_DIRECTIVES_SET: Set<string> = new Set(
+    Object.values(ROOT_TEMPLATE_DIRECTIVES)
+);
 
 // These attributes take either an ID or a list of IDs as values.
 export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([
@@ -166,26 +175,6 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     usemap: 'useMap',
     for: 'htmlFor',
     ...AriaAttrNameToPropNameMap,
-};
-
-export const PROPS_ATTRS_TRANSFORMS: { [name: string]: string } = {
-    accessKey: 'accesskey',
-    readOnly: 'readonly',
-    tabIndex: 'tabindex',
-    bgColor: 'bgcolor',
-    colSpan: 'colspan',
-    rowSpan: 'rowspan',
-    contentEditable: 'contenteditable',
-    crossOrigin: 'crossorigin',
-    dateTime: 'datetime',
-    formAction: 'formaction',
-    isMap: 'ismap',
-    maxLength: 'maxlength',
-    minLength: 'minlength',
-    noValidate: 'novalidate',
-    useMap: 'usemap',
-    htmlFor: 'for',
-    ...AriaPropNameToAttrNameMap,
 };
 
 export const DISALLOWED_HTML_TAGS = new Set(['base', 'link', 'meta', 'script', 'title']);

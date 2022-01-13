@@ -17,7 +17,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import { Attribute, BaseElement, SourceLocation } from '../shared/types';
+import { IRAttribute, IRElement } from '../shared/types';
 
 import {
     ATTR_NAME,
@@ -32,10 +32,9 @@ import {
     ID_REFERENCING_ATTRIBUTES_SET,
     KNOWN_HTML_ELEMENTS,
     TEMPLATE_DIRECTIVES,
-    PROPS_ATTRS_TRANSFORMS,
 } from './constants';
 
-import { isComponent } from '../shared/ast';
+import { isCustomElement } from '../shared/ir';
 import ParserCtx from './parser';
 
 function isQuotedAttribute(rawAttribute: string) {
@@ -87,7 +86,7 @@ export function normalizeAttributeValue(
     raw: string,
     tag: string,
     attr: parse5.Attribute,
-    location: SourceLocation
+    location: parse5.Location
 ): {
     value: string;
     escapedExpression: boolean;
@@ -194,8 +193,8 @@ function isFmkAttribute(attrName: string): boolean {
     return attrName === 'key' || attrName === 'slot';
 }
 
-export function isAttribute(element: BaseElement, attrName: string): boolean {
-    if (isComponent(element)) {
+export function isAttribute(element: IRElement, attrName: string): boolean {
+    if (isCustomElement(element)) {
         return (
             attrName === 'style' ||
             attrName === 'class' ||
@@ -207,7 +206,7 @@ export function isAttribute(element: BaseElement, attrName: string): boolean {
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
-    if (element.name === 'input' && (attrName === 'value' || attrName === 'checked')) {
+    if (element.tag === 'input' && (attrName === 'value' || attrName === 'checked')) {
         return false;
     }
 
@@ -245,29 +244,21 @@ export function attributeToPropertyName(attrName: string): string {
     return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);
 }
 
-/**
- * Retrieve the attribute name from property.
- * Note, this does not convert from camel back to kebab case.
- */
-export function propertyToAttributeName(propName: string): string {
-    return PROPS_ATTRS_TRANSFORMS[propName] || propName.toLowerCase();
-}
-
 export class ParsedAttribute {
-    private readonly attributes: Map<string, Attribute> = new Map();
+    private readonly attributes: Map<string, IRAttribute> = new Map();
 
-    append(attr: Attribute): void {
+    append(attr: IRAttribute): void {
         this.attributes.set(attr.name, attr);
     }
 
-    get(pattern: string | RegExp): Attribute | undefined {
+    get(pattern: string | RegExp): IRAttribute | undefined {
         const key = this.getKey(pattern);
         if (key) {
             return this.attributes.get(key);
         }
     }
 
-    pick(pattern: string | RegExp): Attribute | undefined {
+    pick(pattern: string | RegExp): IRAttribute | undefined {
         const attr = this.get(pattern);
         if (attr) {
             this.attributes.delete(attr.name);
@@ -285,7 +276,7 @@ export class ParsedAttribute {
         return match;
     }
 
-    getAttributes(): Attribute[] {
+    getAttributes(): IRAttribute[] {
         return Array.from(this.attributes.values());
     }
 }

@@ -23,7 +23,14 @@ import generate from './codegen';
 import { TemplateCompileResult, TemplateParseResult } from './shared/types';
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 
-export * from './shared/types';
+export {
+    IRAttributeType,
+    IRElement,
+    IRNode,
+    TemplateExpression,
+    TemplateIdentifier,
+} from './shared/types';
+export { isElement } from './shared/ir';
 export { Config } from './config';
 
 export function parse(source: string, config: Config = {}): TemplateParseResult {
