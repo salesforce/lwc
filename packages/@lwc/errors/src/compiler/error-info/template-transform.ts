@@ -580,11 +580,4 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-    DUPLICATE_ATTR_PROP_TRANSFORM: {
-        code: 1147,
-        message:
-            'Found multiple HTML attributes mapping to the same JavaScript property. "{0}" and "{1}" both map to "{2}".',
-        level: DiagnosticLevel.Warning,
-        url: '',
-    },
 };

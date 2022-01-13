@@ -6,15 +6,8 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
-import {
-    isParentNode,
-    isSlot,
-    isForBlock,
-    isBaseElement,
-    isIf,
-    isDynamicDirective,
-} from '../shared/ast';
+import { IRElement, IRNode, LWCDirectiveRenderMode } from '../shared/types';
+import { isElement, isTemplate, isComponentProp } from '../shared/ir';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
@@ -42,59 +35,38 @@ export function objectToAST(
     );
 }
 
-function isDynamic(element: BaseElement): boolean {
-    return element.directives.some(isDynamicDirective);
+function isDynamic(element: IRElement): boolean {
+    return element.lwc?.dynamic !== undefined;
 }
 
-export function containsDynamicChildren(children: ChildNode[]): boolean {
-    return children.some((child) => {
-        if (isForBlock(child) || isIf(child)) {
-            return containsDynamicChildren(child.children);
-        }
-
-        if (isBaseElement(child)) {
-            return isDynamic(child);
-        }
-
-        return false;
-    });
+export function containsDynamicChildren(children: IRNode[]): boolean {
+    return children.some((child) => isElement(child) && isDynamic(child));
 }
 
-/**
- * Returns true if the children should be flattened.
- *
- * Children should be flattened if they contain an iterator,
- * a dynamic directive or a slot inside a light dom element.
- */
-export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
+export function shouldFlatten(children: IRNode[], codeGen: CodeGen): boolean {
     return children.some(
         (child) =>
-            isForBlock(child) ||
-            (isParentNode(child) &&
-                ((isBaseElement(child) && isDynamic(child)) ||
-                    // If node is only a control flow node and does not map to a stand alone element.
-                    // Search children to determine if it should be flattened.
-                    (isIf(child) && shouldFlatten(codeGen, child.children)) ||
-                    (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child))))
+            isElement(child) &&
+            (isDynamic(child) ||
+                !!child.forEach ||
+                !!child.forOf ||
+                (codeGen.renderMode === LWCDirectiveRenderMode.light && child.tag === 'slot') ||
+                (isTemplate(child) && shouldFlatten(child.children, codeGen)))
     );
 }
 
 /**
  * Returns true if the AST element or any of its descendants use an id attribute.
  */
-export function hasIdAttribute(node: Node): boolean {
-    if (isBaseElement(node)) {
-        const hasIdAttr = [...node.attributes, ...node.properties].some(
-            ({ name }) => name === 'id'
-        );
-
-        if (hasIdAttr) {
-            return true;
-        }
+export function hasIdAttribute(element: IRElement): boolean {
+    if (element.attrs?.id || element.props?.id) {
+        return true;
     }
 
-    if (isParentNode(node)) {
-        return node.children.some((child) => hasIdAttribute(child));
+    for (const child of element.children) {
+        if (child.type === 'element' && hasIdAttribute(child)) {
+            return true;
+        }
     }
 
     return false;
@@ -102,12 +74,14 @@ export function hasIdAttribute(node: Node): boolean {
 
 export function memorizeHandler(
     codeGen: CodeGen,
+    element: IRElement,
+    parentStack: IRNode[],
     componentHandler: t.Expression,
     handler: t.Expression
 ): t.Expression {
     // #439 - The handler can only be memorized if it is bound to component instance
     const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-    const shouldMemorizeHandler = !codeGen.isLocalIdentifier(id);
+    const shouldMemorizeHandler = isComponentProp(id, element, parentStack);
 
     // Apply memorization if the handler is memorizable.
     //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
