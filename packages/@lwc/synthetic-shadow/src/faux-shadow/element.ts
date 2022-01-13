@@ -50,7 +50,6 @@ import {
     getNodeKey,
     getNodeNearestOwnerKey,
     getNodeOwnerKey,
-    isNodeOrDescendantsShadowed,
     isNodeShadowed,
 } from '../shared/node-ownership';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
@@ -120,10 +119,7 @@ defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                // If this element is in synthetic shadow, if it's a synthetic shadow host,
-                // or if any of its descendants are synthetic shadow hosts, then we can't
-                // use the native innerHTML because it would expose private node internals.
-                if (isNodeOrDescendantsShadowed(this)) {
+                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                     return innerHTMLGetterPatched.call(this);
                 }
 
@@ -145,8 +141,7 @@ defineProperties(Element.prototype, {
     outerHTML: {
         get(this: Element): string {
             if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                // See notes above on get innerHTML
-                if (isNodeOrDescendantsShadowed(this)) {
+                if (isNodeShadowed(this) || isSyntheticShadowHost(this)) {
                     return outerHTMLGetterPatched.call(this);
                 }
                 return outerHTMLGetter.call(this);
