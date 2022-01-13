@@ -6,7 +6,6 @@
  */
 import { defineProperty, isNull, isUndefined } from '@lwc/shared';
 import { parentNodeGetter } from '../env/node';
-import { containsHost, isSyntheticShadowHost } from '../faux-shadow/shadow-root';
 
 // Used as a back reference to identify the host element
 const HostElementKey = '$$HostElementKey$$';
@@ -69,20 +68,4 @@ export function getNodeKey(node: Node): number | undefined {
  */
 export function isNodeShadowed(node: Node): boolean {
     return !isUndefined(getNodeOwnerKey(node));
-}
-
-/**
- * This function verifies if a node (with or without owner key) is contained in a shadow root.
- * Use with care since has high computational cost.
- */
-export function isNodeDeepShadowed(node: Node): boolean {
-    return !isUndefined(getNodeNearestOwnerKey(node));
-}
-
-/**
- * Returns true if this node is a shadow host, is in a shadow host, or contains a shadow host
- * anywhere in its tree.
- */
-export function isNodeOrDescendantsShadowed(node: Node): boolean {
-    return isNodeShadowed(node) || isSyntheticShadowHost(node) || containsHost(node);
 }
