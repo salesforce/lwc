@@ -70,7 +70,7 @@ export interface VNodeData {
     classMap?: Record<string, boolean>;
     styleDecls?: Array<[string, string, boolean]>;
     context?: Record<string, Record<string, any>>;
-    on?: Record<string, Function>;
+    on?: Record<string, (event: Event) => any>;
     svg?: boolean;
 }
 

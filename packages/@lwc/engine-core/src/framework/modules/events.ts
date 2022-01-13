@@ -21,8 +21,6 @@ export function applyEventListeners(vnode: VElement) {
 
     for (const name in on) {
         const handler = on[name];
-        addEventListener(elm, name, (event: Event) => {
-            handler(event);
-        });
+        addEventListener(elm, name, handler);
     }
 }
