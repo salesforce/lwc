@@ -440,9 +440,6 @@ export function removeElmHook(vnode: VElement) {
     }
 }
 
-// slow path routine
-// NOTE: we should probably more this routine to the synthetic shadow folder
-// and get the allocation to be cached by in the elm instead of in the VM
 function allocateInSlot(vm: VM, children: VNodes) {
     const { cmpSlots: oldSlots } = vm;
     const cmpSlots = (vm.cmpSlots = create(null));
