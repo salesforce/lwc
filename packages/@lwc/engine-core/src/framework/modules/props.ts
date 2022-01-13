@@ -9,6 +9,8 @@ import { assert, isNull, isUndefined, keys } from '@lwc/shared';
 import { getProperty, setProperty } from '../../renderer';
 import { VElement } from '../../3rdparty/snabbdom/types';
 
+import { EmptyObject } from '../utils';
+
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For properties with live bindings, we read values from the DOM element
     // instead of relying on internally tracked values.
@@ -16,33 +18,34 @@ function isLiveBindingProp(sel: string, key: string): boolean {
 }
 
 export function patchProps(oldVnode: VElement | null, vnode: VElement) {
-    const props = vnode.data.props;
+    const { props } = vnode.data;
     if (isUndefined(props)) {
         return;
     }
 
-    const oldProps = isNull(oldVnode) ? undefined : oldVnode.data.props;
+    const oldProps = isNull(oldVnode) ? EmptyObject : oldVnode.data.props;
     if (oldProps === props) {
         return;
     }
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
-            isUndefined(oldProps) || keys(oldProps).join(',') === keys(props).join(','),
+            oldProps === EmptyObject || keys(oldProps).join(',') === keys(props).join(','),
             'vnode.data.props cannot change shape.'
         );
     }
 
-    const isFirstPatch = isUndefined(oldProps);
+    const isFirstPatch = isNull(oldVnode);
     const { elm, sel } = vnode;
 
     for (const key in props) {
         const cur = props[key];
 
-        // if it is the first time this element is patched, or the current value is different to the previous value...
+        // Set the property if it's the first time is is patched or if the previous property is
+        // different than the one previously set.
         if (
             isFirstPatch ||
-            cur !== (isLiveBindingProp(sel, key) ? getProperty(elm!, key) : (oldProps as any)[key])
+            cur !== (isLiveBindingProp(sel, key) ? getProperty(elm!, key) : oldProps[key])
         ) {
             setProperty(elm!, key, cur);
         }
