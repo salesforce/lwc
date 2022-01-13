@@ -18,7 +18,6 @@ import {
     isObject,
     isTrue,
     isUndefined,
-    keys,
 } from '@lwc/shared';
 import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
 import type { HostNode, HostElement } from '../renderer';
@@ -687,55 +686,6 @@ function getErrorBoundaryVM(vm: VM): VM | undefined {
         }
 
         currentVm = currentVm.owner;
-    }
-}
-
-// slow path routine
-// NOTE: we should probably more this routine to the synthetic shadow folder
-// and get the allocation to be cached by in the elm instead of in the VM
-export function allocateInSlot(vm: VM, children: VNodes) {
-    const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null));
-    for (let i = 0, len = children.length; i < len; i += 1) {
-        const vnode = children[i];
-        if (isNull(vnode)) {
-            continue;
-        }
-        const { data } = vnode;
-        const slotName = ((data.attrs && data.attrs.slot) || '') as string;
-        const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
-        // re-keying the vnodes is necessary to avoid conflicts with default content for the slot
-        // which might have similar keys. Each vnode will always have a key that
-        // starts with a numeric character from compiler. In this case, we add a unique
-        // notation for slotted vnodes keys, e.g.: `@foo:1:1`
-        if (!isUndefined(vnode.key)) {
-            vnode.key = `@${slotName}:${vnode.key}`;
-        }
-        ArrayPush.call(vnodes, vnode);
-    }
-    if (isFalse(vm.isDirty)) {
-        // We need to determine if the old allocation is really different from the new one
-        // and mark the vm as dirty
-        const oldKeys = keys(oldSlots);
-        if (oldKeys.length !== keys(cmpSlots).length) {
-            markComponentAsDirty(vm);
-            return;
-        }
-        for (let i = 0, len = oldKeys.length; i < len; i += 1) {
-            const key = oldKeys[i];
-            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
-                markComponentAsDirty(vm);
-                return;
-            }
-            const oldVNodes = oldSlots[key];
-            const vnodes = cmpSlots[key];
-            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
-                if (oldVNodes[j] !== vnodes[j]) {
-                    markComponentAsDirty(vm);
-                    return;
-                }
-            }
-        }
     }
 }
 
