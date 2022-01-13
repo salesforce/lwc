@@ -18,6 +18,7 @@ import {
     isValidTabIndexAttributeValue,
     normalizeAttributeValue,
     ParsedAttribute,
+    propertyToAttributeName,
 } from './attribute';
 
 import { isExpression, parseExpression, parseIdentifier } from './expression';
@@ -901,7 +902,7 @@ function applyAttributes(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: B
             element.attributes.push(attr);
         } else {
             const propName = attributeToPropertyName(name);
-            element.properties.push(ast.property(propName, attr.name, attr.value, attr.location));
+            element.properties.push(ast.property(propName, attr.value, attr.location));
 
             parsedAttr.pick(name);
         }
@@ -1044,7 +1045,8 @@ function validateAttributes(
 
 function validateProperties(ctx: ParserCtx, element: BaseElement): void {
     for (const prop of element.properties) {
-        const { attributeName: attrName, value } = prop;
+        const { name, value } = prop;
+        const attrName = propertyToAttributeName(name);
 
         if (isProhibitedIsAttribute(attrName)) {
             ctx.throwOnNode(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, element);

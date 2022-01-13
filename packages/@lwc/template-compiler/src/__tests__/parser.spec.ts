@@ -548,12 +548,10 @@ describe('props and attributes', () => {
         expect(root.children[0].properties).toMatchObject([
             {
                 name: 'ariaHidden',
-                attributeName: 'aria-hidden',
                 value: { type: 'Literal', value: 'hidden' },
             },
             {
                 name: 'fooBar',
-                attributeName: 'foo-bar',
                 value: { type: 'Literal', value: 'x' },
             },
             {
@@ -645,7 +643,6 @@ describe('props and attributes', () => {
             expect(root.children[0].properties).toMatchObject([
                 {
                     name: 'under_score',
-                    attributeName: 'under_score',
                     value: { type: 'Literal', value: 'bar' },
                 },
             ]);
@@ -659,7 +656,6 @@ describe('props and attributes', () => {
             expect(root.children[0].properties).toMatchObject([
                 {
                     name: 'under_1',
-                    attributeName: 'under_1',
                     value: { type: 'Literal', value: 'bar' },
                 },
             ]);
@@ -673,7 +669,6 @@ describe('props and attributes', () => {
             expect(root.children[0].properties).toMatchObject([
                 {
                     name: 'under_scoreHyphen',
-                    attributeName: 'under_score-hyphen',
                     value: { type: 'Literal', value: 'bar' },
                 },
             ]);
@@ -687,7 +682,6 @@ describe('props and attributes', () => {
             expect(root.children[0].properties).toMatchObject([
                 {
                     name: 'under_scoreSecond_underScore',
-                    attributeName: 'under_score-second_under-score',
                     value: { type: 'Literal', value: 'bar' },
                 },
             ]);

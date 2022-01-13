@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaAttrNameToPropNameMap } from '@lwc/shared';
+import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from '@lwc/shared';
 
 import { HTML_ATTRIBUTE_ELEMENT_MAP } from './utils/html-element-attributes';
 import { HTML_ELEMENTS, HTML_VOID_ELEMENTS } from './utils/html-elements';
@@ -166,6 +166,26 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     usemap: 'useMap',
     for: 'htmlFor',
     ...AriaAttrNameToPropNameMap,
+};
+
+export const PROPS_ATTRS_TRANSFORMS: { [name: string]: string } = {
+    accessKey: 'accesskey',
+    readOnly: 'readonly',
+    tabIndex: 'tabindex',
+    bgColor: 'bgcolor',
+    colSpan: 'colspan',
+    rowSpan: 'rowspan',
+    contentEditable: 'contenteditable',
+    crossOrigin: 'crossorigin',
+    dateTime: 'datetime',
+    formAction: 'formaction',
+    isMap: 'ismap',
+    maxLength: 'maxlength',
+    minLength: 'minlength',
+    noValidate: 'novalidate',
+    useMap: 'usemap',
+    htmlFor: 'for',
+    ...AriaPropNameToAttrNameMap,
 };
 
 export const DISALLOWED_HTML_TAGS = new Set(['base', 'link', 'meta', 'script', 'title']);
