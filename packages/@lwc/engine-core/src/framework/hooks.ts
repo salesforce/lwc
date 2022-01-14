@@ -22,6 +22,7 @@ import {
 import {
     remove,
     insert,
+    nextSibling,
     createElement,
     createText,
     setText,
@@ -47,13 +48,12 @@ import {
     ShadowMode,
     RenderMode,
 } from './vm';
-import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
 import { EmptyArray, parseStyleText } from './utils';
-import { VNode, VNodes, VCustomElement, VElement, VText, VComment, Hooks } from './vnodes';
+import { VNode, VNodes, VCustomElement, VElement, VText, VComment, Hooks, Key } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
 import { patchProps } from './modules/props';
@@ -62,6 +62,10 @@ import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
+
+const enum LwcDomMode {
+    manual = 'manual',
+}
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
@@ -176,7 +180,7 @@ export const ElementHook: Hooks<VElement> = {
         const isDomManual = Boolean(
             !isUndefined(context) &&
                 !isUndefined(context.lwc) &&
-                context.lwc.dom === LWCDOMMode.manual
+                context.lwc.dom === LwcDomMode.manual
         );
 
         if (isDomManual) {
@@ -310,6 +314,14 @@ export const CustomElementHook: Hooks<VCustomElement> = {
     },
 };
 
+function sameVnode(vnode1: VNode, vnode2: VNode): boolean {
+    return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
+}
+
+function isVNode(vnode: any): vnode is VNode {
+    return vnode != null;
+}
+
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
 }
@@ -387,10 +399,6 @@ function patchElementPropsAndAttrs(oldVnode: VElement | null, vnode: VElement) {
     patchProps(oldVnode, vnode);
 }
 
-export const enum LWCDOMMode {
-    manual = 'manual',
-}
-
 function hydrateElmHook(vnode: VElement) {
     applyEventListeners(vnode);
     patchProps(null, vnode);
@@ -407,7 +415,7 @@ function fallbackElmHook(elm: Element, vnode: VElement) {
         if (
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
-            context.lwc.dom === LWCDOMMode.manual
+            context.lwc.dom === LwcDomMode.manual
         ) {
             // this element will now accept any manual content inserted into it
             observeElementChildNodes(elm);
@@ -423,7 +431,7 @@ function fallbackElmHook(elm: Element, vnode: VElement) {
         const isPortal =
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
-            context.lwc.dom === LWCDOMMode.manual;
+            context.lwc.dom === LwcDomMode.manual;
         const isLight = owner.renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, { isPortal, isLight });
     }
@@ -747,4 +755,186 @@ export function markAsDynamicChildren(children: VNodes) {
 
 function hasDynamicChildren(children: VNodes): boolean {
     return FromIteration.has(children);
+}
+
+function createKeyToOldIdx(
+    children: VNodes,
+    beginIdx: number,
+    endIdx: number
+): Record<Key, number> {
+    const map: Record<Key, number> = {};
+
+    // TODO [#1637]: simplify this by assuming that all vnodes has keys
+    for (let j = beginIdx; j <= endIdx; ++j) {
+        const ch = children[j];
+        if (isVNode(ch)) {
+            const { key } = ch;
+            if (key !== undefined) {
+                map[key] = j;
+            }
+        }
+    }
+    return map;
+}
+
+function addVnodes(
+    parentElm: Node,
+    before: Node | null,
+    vnodes: VNodes,
+    startIdx: number,
+    endIdx: number
+) {
+    for (; startIdx <= endIdx; ++startIdx) {
+        const ch = vnodes[startIdx];
+        if (isVNode(ch)) {
+            ch.hook.create(ch);
+            ch.hook.insert(ch, parentElm, before);
+        }
+    }
+}
+
+function removeVnodes(parentElm: Node, vnodes: VNodes, startIdx: number, endIdx: number): void {
+    for (; startIdx <= endIdx; ++startIdx) {
+        const ch = vnodes[startIdx];
+        // text nodes do not have logic associated to them
+        if (isVNode(ch)) {
+            ch.hook.remove(ch, parentElm);
+        }
+    }
+}
+
+export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
+    let oldStartIdx = 0;
+    let newStartIdx = 0;
+    let oldEndIdx = oldCh.length - 1;
+    let oldStartVnode = oldCh[0];
+    let oldEndVnode = oldCh[oldEndIdx];
+    const newChEnd = newCh.length - 1;
+    let newEndIdx = newChEnd;
+    let newStartVnode = newCh[0];
+    let newEndVnode = newCh[newEndIdx];
+    let oldKeyToIdx: any;
+    let idxInOld: number;
+    let elmToMove: VNode | null | undefined;
+    let before: any;
+    while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+        if (!isVNode(oldStartVnode)) {
+            oldStartVnode = oldCh[++oldStartIdx]; // Vnode might have been moved left
+        } else if (!isVNode(oldEndVnode)) {
+            oldEndVnode = oldCh[--oldEndIdx];
+        } else if (!isVNode(newStartVnode)) {
+            newStartVnode = newCh[++newStartIdx];
+        } else if (!isVNode(newEndVnode)) {
+            newEndVnode = newCh[--newEndIdx];
+        } else if (sameVnode(oldStartVnode, newStartVnode)) {
+            patchVnode(oldStartVnode, newStartVnode);
+            oldStartVnode = oldCh[++oldStartIdx];
+            newStartVnode = newCh[++newStartIdx];
+        } else if (sameVnode(oldEndVnode, newEndVnode)) {
+            patchVnode(oldEndVnode, newEndVnode);
+            oldEndVnode = oldCh[--oldEndIdx];
+            newEndVnode = newCh[--newEndIdx];
+        } else if (sameVnode(oldStartVnode, newEndVnode)) {
+            // Vnode moved right
+            patchVnode(oldStartVnode, newEndVnode);
+            newEndVnode.hook.move(oldStartVnode, parentElm, nextSibling(oldEndVnode.elm!));
+            oldStartVnode = oldCh[++oldStartIdx];
+            newEndVnode = newCh[--newEndIdx];
+        } else if (sameVnode(oldEndVnode, newStartVnode)) {
+            // Vnode moved left
+            patchVnode(oldEndVnode, newStartVnode);
+            newStartVnode.hook.move(oldEndVnode, parentElm, oldStartVnode.elm!);
+            oldEndVnode = oldCh[--oldEndIdx];
+            newStartVnode = newCh[++newStartIdx];
+        } else {
+            if (oldKeyToIdx === undefined) {
+                oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
+            }
+            idxInOld = oldKeyToIdx[newStartVnode.key!];
+            if (isUndefined(idxInOld)) {
+                // New element
+                newStartVnode.hook.create(newStartVnode);
+                newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm!);
+                newStartVnode = newCh[++newStartIdx];
+            } else {
+                elmToMove = oldCh[idxInOld];
+                if (isVNode(elmToMove)) {
+                    if (elmToMove.sel !== newStartVnode.sel) {
+                        // New element
+                        newStartVnode.hook.create(newStartVnode);
+                        newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm!);
+                    } else {
+                        patchVnode(elmToMove, newStartVnode);
+                        oldCh[idxInOld] = undefined as any;
+                        newStartVnode.hook.move(elmToMove, parentElm, oldStartVnode.elm!);
+                    }
+                }
+                newStartVnode = newCh[++newStartIdx];
+            }
+        }
+    }
+    if (oldStartIdx <= oldEndIdx || newStartIdx <= newEndIdx) {
+        if (oldStartIdx > oldEndIdx) {
+            // There's some cases in which the sub array of vnodes to be inserted is followed by null(s) and an
+            // already processed vnode, in such cases the vnodes to be inserted should be before that processed vnode.
+            let i = newEndIdx;
+            let n;
+            do {
+                n = newCh[++i];
+            } while (!isVNode(n) && i < newChEnd);
+            before = isVNode(n) ? n.elm : null;
+            addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx);
+        } else {
+            removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
+        }
+    }
+}
+
+function updateStaticChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
+    const oldChLength = oldCh.length;
+    const newChLength = newCh.length;
+
+    if (oldChLength === 0) {
+        // the old list is empty, we can directly insert anything new
+        addVnodes(parentElm, null, newCh, 0, newChLength);
+        return;
+    }
+    if (newChLength === 0) {
+        // the old list is nonempty and the new list is empty so we can directly remove all old nodes
+        // this is the case in which the dynamic children of an if-directive should be removed
+        removeVnodes(parentElm, oldCh, 0, oldChLength);
+        return;
+    }
+    // if the old list is not empty, the new list MUST have the same
+    // amount of nodes, that's why we call this static children
+    let referenceElm: Node | null = null;
+    for (let i = newChLength - 1; i >= 0; i -= 1) {
+        const vnode = newCh[i];
+        const oldVNode = oldCh[i];
+        if (vnode !== oldVNode) {
+            if (isVNode(oldVNode)) {
+                if (isVNode(vnode)) {
+                    // both vnodes must be equivalent, and se just need to patch them
+                    patchVnode(oldVNode, vnode);
+                    referenceElm = vnode.elm!;
+                } else {
+                    // removing the old vnode since the new one is null
+                    oldVNode.hook.remove(oldVNode, parentElm);
+                }
+            } else if (isVNode(vnode)) {
+                // this condition is unnecessary
+                vnode.hook.create(vnode);
+                // insert the new node one since the old one is null
+                vnode.hook.insert(vnode, parentElm, referenceElm);
+                referenceElm = vnode.elm!;
+            }
+        }
+    }
+}
+
+function patchVnode(oldVnode: VNode, vnode: VNode) {
+    if (oldVnode !== vnode) {
+        vnode.elm = oldVnode.elm;
+        vnode.hook.update(oldVnode, vnode);
+    }
 }
