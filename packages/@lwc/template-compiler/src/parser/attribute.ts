@@ -17,7 +17,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import { IRAttribute, IRElement } from '../shared/types';
+import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
 import {
     ATTR_NAME,
@@ -34,7 +34,7 @@ import {
     TEMPLATE_DIRECTIVES,
 } from './constants';
 
-import { isCustomElement } from '../shared/ir';
+import { isComponent } from '../shared/ast';
 import ParserCtx from './parser';
 
 function isQuotedAttribute(rawAttribute: string) {
@@ -86,7 +86,7 @@ export function normalizeAttributeValue(
     raw: string,
     tag: string,
     attr: parse5.Attribute,
-    location: parse5.Location
+    location: SourceLocation
 ): {
     value: string;
     escapedExpression: boolean;
@@ -193,8 +193,8 @@ function isFmkAttribute(attrName: string): boolean {
     return attrName === 'key' || attrName === 'slot';
 }
 
-export function isAttribute(element: IRElement, attrName: string): boolean {
-    if (isCustomElement(element)) {
+export function isAttribute(element: BaseElement, attrName: string): boolean {
+    if (isComponent(element)) {
         return (
             attrName === 'style' ||
             attrName === 'class' ||
@@ -206,7 +206,7 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
-    if (element.tag === 'input' && (attrName === 'value' || attrName === 'checked')) {
+    if (element.name === 'input' && (attrName === 'value' || attrName === 'checked')) {
         return false;
     }
 
@@ -245,20 +245,20 @@ export function attributeToPropertyName(attrName: string): string {
 }
 
 export class ParsedAttribute {
-    private readonly attributes: Map<string, IRAttribute> = new Map();
+    private readonly attributes: Map<string, Attribute> = new Map();
 
-    append(attr: IRAttribute): void {
+    append(attr: Attribute): void {
         this.attributes.set(attr.name, attr);
     }
 
-    get(pattern: string | RegExp): IRAttribute | undefined {
+    get(pattern: string | RegExp): Attribute | undefined {
         const key = this.getKey(pattern);
         if (key) {
             return this.attributes.get(key);
         }
     }
 
-    pick(pattern: string | RegExp): IRAttribute | undefined {
+    pick(pattern: string | RegExp): Attribute | undefined {
         const attr = this.get(pattern);
         if (attr) {
             this.attributes.delete(attr.name);
@@ -276,7 +276,7 @@ export class ParsedAttribute {
         return match;
     }
 
-    getAttributes(): IRAttribute[] {
+    getAttributes(): Attribute[] {
         return Array.from(this.attributes.values());
     }
 }
