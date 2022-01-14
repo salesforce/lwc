@@ -802,7 +802,7 @@ function removeVnodes(parentElm: Node, vnodes: VNodes, startIdx: number, endIdx:
     }
 }
 
-export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
+function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
     let oldStartIdx = 0;
     let newStartIdx = 0;
     let oldEndIdx = oldCh.length - 1;
