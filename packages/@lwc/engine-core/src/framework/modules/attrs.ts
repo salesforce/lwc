@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isNull, isUndefined, keys, StringCharCodeAt } from '@lwc/shared';
+import { isNull, isUndefined, StringCharCodeAt } from '@lwc/shared';
 
 import { setAttribute, removeAttribute } from '../../renderer';
 import { VElement } from '../../3rdparty/snabbdom/types';
@@ -25,13 +25,6 @@ export function patchAttributes(oldVnode: VElement | null, vnode: VElement) {
     const oldAttrs = isNull(oldVnode) ? EmptyObject : oldVnode.data.attrs;
     if (oldAttrs === attrs) {
         return;
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            oldAttrs === EmptyObject || keys(oldAttrs).join(',') === keys(attrs).join(','),
-            `vnode.data.attrs cannot change shape.`
-        );
     }
 
     const { elm } = vnode;
