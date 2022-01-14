@@ -6,7 +6,7 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute } from '@lwc/shared';
+import { isBooleanAttribute, SVG_NAMESPACE } from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import { ResolvedConfig } from '../config';
@@ -68,7 +68,6 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-import { SVG_NAMESPACE_URI } from '../parser/constants';
 
 function transform(codeGen: CodeGen): t.Expression {
     function transformElement(element: BaseElement): t.Expression {
@@ -516,7 +515,7 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         // SVG handling
-        if (element.namespace === SVG_NAMESPACE_URI) {
+        if (element.namespace === SVG_NAMESPACE) {
             data.push(t.property(t.identifier('svg'), t.literal(true)));
         }
 

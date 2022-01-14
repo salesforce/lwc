@@ -13,5 +13,6 @@ export * from './keys';
 export * from './void-elements';
 export * from './html-attributes';
 export * from './symbol';
+export * from './namespaces';
 
 export { assert };

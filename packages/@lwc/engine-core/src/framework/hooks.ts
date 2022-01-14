@@ -16,6 +16,7 @@ import {
     isNull,
     isUndefined,
     keys,
+    SVG_NAMESPACE,
     KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 
@@ -66,8 +67,6 @@ import { applyStaticStyleAttribute } from './modules/static-style-attr';
 const enum LwcDomMode {
     manual = 'manual',
 }
-
-const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 export const TextHook: Hooks<VText> = {
     create: (vnode) => {

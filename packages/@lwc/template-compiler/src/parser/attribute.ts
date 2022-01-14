@@ -6,7 +6,13 @@
  */
 import * as parse5 from 'parse5';
 import { ParserDiagnostics } from '@lwc/errors';
-import { isAriaAttribute, isBooleanAttribute, isGlobalHtmlAttribute } from '@lwc/shared';
+import {
+    isAriaAttribute,
+    isBooleanAttribute,
+    isGlobalHtmlAttribute,
+    HTML_NAMESPACE,
+    SVG_NAMESPACE,
+} from '@lwc/shared';
 
 import { toPropertyName } from '../shared/utils';
 
@@ -22,11 +28,9 @@ import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 import {
     ATTR_NAME,
     DATA_RE,
-    SVG_NAMESPACE_URI,
     SUPPORTED_SVG_TAGS,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
-    HTML_NAMESPACE_URI,
     HTML_TAG,
     DASHED_TAGNAME_ELEMENT_SET,
     ID_REFERENCING_ATTRIBUTES_SET,
@@ -60,9 +64,7 @@ export function isAllowedFragOnlyUrlsXHTML(
 ): boolean {
     const allowed = [HTML_TAG.A, HTML_TAG.AREA];
     return (
-        attrName === ATTR_NAME.HREF &&
-        allowed.includes(tagName) &&
-        namespaceURI === HTML_NAMESPACE_URI
+        attrName === ATTR_NAME.HREF && allowed.includes(tagName) && namespaceURI === HTML_NAMESPACE
     );
 }
 
@@ -73,7 +75,7 @@ export function isSvgUseHref(tagName: string, attrName: string, namespaceURI: st
         // xlink:href is a deprecated attribute included for backwards compatibility
         [ATTR_NAME.HREF, ATTR_NAME.XLINK_HREF].includes(attrName) &&
         tagName === HTML_TAG.USE &&
-        namespaceURI === SVG_NAMESPACE_URI
+        namespaceURI === SVG_NAMESPACE
     );
 }
 
