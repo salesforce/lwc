@@ -10,8 +10,8 @@ import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } fr
 import { VM, runWithBoundaryProtection } from './vm';
 import { LightningElement, LightningElementConstructor } from './base-lightning-element';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
+import { VNodes } from './vnodes';
 
-import { VNodes } from '../3rdparty/snabbdom/types';
 import { addErrorComponentStack } from '../shared/error';
 
 export let isInvokingRender: boolean = false;

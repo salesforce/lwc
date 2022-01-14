@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
+
 import {
     getClassList,
     removeAttribute,
@@ -14,11 +15,12 @@ import {
     isHydrating,
     insertStylesheet,
 } from '../renderer';
+
 import api from './api';
-import { VNode } from '../3rdparty/snabbdom/types';
 import { RenderMode, ShadowMode, VM } from './vm';
 import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
+import { VNode } from './vnodes';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by

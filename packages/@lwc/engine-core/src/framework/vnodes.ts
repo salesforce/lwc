@@ -13,7 +13,7 @@
  https://github.com/snabbdom/snabbdom/
  */
 
-import { VM } from '../../framework/vm';
+import { VM } from './vm';
 
 export type Key = string | number;
 
@@ -24,7 +24,6 @@ export interface VNode {
     data: VNodeData;
     children: VNodes | undefined;
     elm: Node | undefined;
-    parentElm?: Element;
     text: string | undefined;
     key: Key | undefined;
     hook: Hooks<any>;

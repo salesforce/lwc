@@ -19,8 +19,11 @@ import {
     isTrue,
     isUndefined,
 } from '@lwc/shared';
+
 import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
 import type { HostNode, HostElement } from '../renderer';
+import { addErrorComponentStack } from '../shared/error';
+
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
@@ -40,9 +43,7 @@ import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
-
-import { VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
-import { addErrorComponentStack } from '../shared/error';
+import { VNodes, VCustomElement, VNode } from './vnodes';
 
 type ShadowRootMode = 'open' | 'closed';
 

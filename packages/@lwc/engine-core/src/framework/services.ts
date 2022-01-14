@@ -6,9 +6,9 @@
  */
 import { ArrayPush, assert, create, isArray, isObject, isUndefined } from '@lwc/shared';
 
-import { VNodeData } from '../3rdparty/snabbdom/types';
 import { ComponentDef } from './def';
 import { VM, Context } from './vm';
+import { VNodeData } from './vnodes';
 
 type ServiceCallback = (
     component: object,

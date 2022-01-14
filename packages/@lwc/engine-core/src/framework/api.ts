@@ -23,8 +23,10 @@ import {
     StringReplace,
     toString,
 } from '@lwc/shared';
+
 import { createText, createComment, createElement, isSyntheticShadowDefined } from '../renderer';
 import { logError, logWarn } from '../shared/logger';
+
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
@@ -44,16 +46,6 @@ import {
     hydrateVM,
     RenderMode,
 } from './vm';
-import {
-    VNode,
-    VNodes,
-    VElement,
-    VText,
-    Hooks,
-    VCustomElement,
-    VComment,
-    VElementData,
-} from '../3rdparty/snabbdom/types';
 import { LightningElementConstructor } from './base-lightning-element';
 import {
     createViewModelHook,
@@ -73,6 +65,16 @@ import {
 } from './hooks';
 import { getComponentInternalDef, isComponentConstructor } from './def';
 import { getUpgradableConstructor } from './upgradable-element';
+import {
+    VNode,
+    VNodes,
+    VElement,
+    VText,
+    Hooks,
+    VCustomElement,
+    VComment,
+    VElementData,
+} from './vnodes';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;

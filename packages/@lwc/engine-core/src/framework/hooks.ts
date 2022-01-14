@@ -16,15 +16,17 @@ import {
     isUndefined,
     keys,
 } from '@lwc/shared';
+
 import { getClassList, setText, getAttribute, remove, insert } from '../renderer';
+import { logError } from '../shared/logger';
+
 import { EmptyArray, parseStyleText } from './utils';
 import { createVM, getAssociatedVMIfPresent, VM, ShadowMode, RenderMode } from './vm';
-import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { getComponentInternalDef } from './def';
 import { markComponentAsDirty } from './component';
-import { logError } from '../shared/logger';
+import { VNode, VCustomElement, VElement, VNodes } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
 import { patchProps } from './modules/props';

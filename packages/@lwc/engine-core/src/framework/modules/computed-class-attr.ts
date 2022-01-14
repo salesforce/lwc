@@ -15,9 +15,9 @@ import {
 } from '@lwc/shared';
 
 import { getClassList } from '../../renderer';
-import { VElement } from '../../3rdparty/snabbdom/types';
 
 import { EmptyObject, SPACE_CHAR } from '../utils';
+import { VElement } from '../vnodes';
 
 const classNameToClassMap = create(null);
 

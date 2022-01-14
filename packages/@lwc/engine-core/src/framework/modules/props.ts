@@ -7,9 +7,9 @@
 import { isNull, isUndefined } from '@lwc/shared';
 
 import { getProperty, setProperty } from '../../renderer';
-import { VElement } from '../../3rdparty/snabbdom/types';
 
 import { EmptyObject } from '../utils';
+import { VElement } from '../vnodes';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For properties with live bindings, we read values from the DOM element

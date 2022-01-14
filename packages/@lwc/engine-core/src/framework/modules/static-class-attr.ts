@@ -7,7 +7,7 @@
 import { isUndefined } from '@lwc/shared';
 
 import { getClassList } from '../../renderer';
-import { VElement } from '../../3rdparty/snabbdom/types';
+import { VElement } from '../vnodes';
 
 // The HTML class property becomes the vnode.data.classMap object when defined as a string in the template.
 // The compiler takes care of transforming the inline classnames into an object. It's faster to set the

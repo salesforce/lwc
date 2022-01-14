@@ -7,10 +7,10 @@
 import { isNull, isUndefined, StringCharCodeAt } from '@lwc/shared';
 
 import { setAttribute, removeAttribute } from '../../renderer';
-import { VElement } from '../../3rdparty/snabbdom/types';
 
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
+import { VElement } from '../vnodes';
 
 const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';

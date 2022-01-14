@@ -17,8 +17,10 @@ import {
     toString,
     KEY__SCOPED_CSS,
 } from '@lwc/shared';
+
 import { logError } from '../shared/logger';
-import { VNode, VNodes } from '../3rdparty/snabbdom/types';
+import { getComponentTag } from '../shared/format';
+
 import api, { RenderAPI } from './api';
 import {
     resetComponentRoot,
@@ -38,7 +40,7 @@ import {
 } from './stylesheet';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { getComponentTag } from '../shared/format';
+import { VNode, VNodes } from './vnodes';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;

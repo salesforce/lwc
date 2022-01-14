@@ -14,7 +14,7 @@ https://github.com/snabbdom/snabbdom/
 */
 
 import { nextSibling } from '../../renderer';
-import { VNode, VNodes, Key } from './types';
+import { VNode, VNodes, Key } from '../../framework/vnodes';
 
 function isUndef(s: any): s is undefined {
     return s === undefined;
