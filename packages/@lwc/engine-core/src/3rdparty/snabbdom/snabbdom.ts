@@ -13,12 +13,10 @@ Code distributed by Snabbdom as part of the Snabbdom project at
 https://github.com/snabbdom/snabbdom/
 */
 
+import { isUndefined } from '@lwc/shared';
+
 import { nextSibling } from '../../renderer';
 import { VNode, VNodes, Key } from '../../framework/vnodes';
-
-function isUndef(s: any): s is undefined {
-    return s === undefined;
-}
 
 interface KeyToIndexMap {
     [key: string]: number;
@@ -122,7 +120,7 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
                 oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
             }
             idxInOld = oldKeyToIdx[newStartVnode.key!];
-            if (isUndef(idxInOld)) {
+            if (isUndefined(idxInOld)) {
                 // New element
                 newStartVnode.hook.create(newStartVnode);
                 newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm!);
