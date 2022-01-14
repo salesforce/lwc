@@ -5,16 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { Node, parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'acorn';
-import { Location } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
 import * as t from '../shared/estree';
-import { TemplateExpression, TemplateIdentifier } from '../shared/types';
 
 import ParserCtx from './parser';
 import { isReservedES6Keyword } from './utils/javascript';
 
 import { ResolvedConfig } from '../config';
+import { Expression, Identifier, SourceLocation } from '../shared/types';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -31,10 +30,7 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
-function validateExpression(
-    node: t.BaseNode,
-    config: ResolvedConfig
-): asserts node is TemplateExpression {
+function validateExpression(node: t.BaseNode, config: ResolvedConfig): asserts node is Expression {
     const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
     invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
 
@@ -97,8 +93,8 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
 export function parseExpression(
     ctx: ParserCtx,
     source: string,
-    location: Location
-): TemplateExpression {
+    location: SourceLocation
+): Expression {
     return ctx.withErrorWrapping(
         () => {
             const parsed = parseExpressionAt(source, 1, { ecmaVersion: 2020 });
@@ -106,7 +102,7 @@ export function parseExpression(
             validateSourceIsParsedExpression(source, parsed);
             validateExpression(parsed, ctx.config);
 
-            return parsed;
+            return { ...parsed, location };
         },
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         location,
@@ -117,8 +113,8 @@ export function parseExpression(
 export function parseIdentifier(
     ctx: ParserCtx,
     source: string,
-    location: Location
-): TemplateIdentifier {
+    location: SourceLocation
+): Identifier {
     let isValid = true;
 
     isValid = isIdentifierStart(source.charCodeAt(0));
@@ -127,7 +123,10 @@ export function parseIdentifier(
     }
 
     if (isValid && !isReservedES6Keyword(source)) {
-        return t.identifier(source);
+        return {
+            ...t.identifier(source),
+            location,
+        };
     } else {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_IDENTIFIER, location, [source]);
     }

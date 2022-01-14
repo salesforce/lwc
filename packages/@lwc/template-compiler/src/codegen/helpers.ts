@@ -6,8 +6,15 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { IRElement, IRNode, LWCDirectiveRenderMode } from '../shared/types';
-import { isElement, isTemplate, isComponentProp } from '../shared/ir';
+import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
+import {
+    isParentNode,
+    isSlot,
+    isForBlock,
+    isBaseElement,
+    isIf,
+    isDynamicDirective,
+} from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
@@ -35,38 +42,59 @@ export function objectToAST(
     );
 }
 
-function isDynamic(element: IRElement): boolean {
-    return element.lwc?.dynamic !== undefined;
+function isDynamic(element: BaseElement): boolean {
+    return element.directives.some(isDynamicDirective);
 }
 
-export function containsDynamicChildren(children: IRNode[]): boolean {
-    return children.some((child) => isElement(child) && isDynamic(child));
+export function containsDynamicChildren(children: ChildNode[]): boolean {
+    return children.some((child) => {
+        if (isForBlock(child) || isIf(child)) {
+            return containsDynamicChildren(child.children);
+        }
+
+        if (isBaseElement(child)) {
+            return isDynamic(child);
+        }
+
+        return false;
+    });
 }
 
-export function shouldFlatten(children: IRNode[], codeGen: CodeGen): boolean {
+/**
+ * Returns true if the children should be flattened.
+ *
+ * Children should be flattened if they contain an iterator,
+ * a dynamic directive or a slot inside a light dom element.
+ */
+export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
     return children.some(
         (child) =>
-            isElement(child) &&
-            (isDynamic(child) ||
-                !!child.forEach ||
-                !!child.forOf ||
-                (codeGen.renderMode === LWCDirectiveRenderMode.light && child.tag === 'slot') ||
-                (isTemplate(child) && shouldFlatten(child.children, codeGen)))
+            isForBlock(child) ||
+            (isParentNode(child) &&
+                ((isBaseElement(child) && isDynamic(child)) ||
+                    // If node is only a control flow node and does not map to a stand alone element.
+                    // Search children to determine if it should be flattened.
+                    (isIf(child) && shouldFlatten(codeGen, child.children)) ||
+                    (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child))))
     );
 }
 
 /**
  * Returns true if the AST element or any of its descendants use an id attribute.
  */
-export function hasIdAttribute(element: IRElement): boolean {
-    if (element.attrs?.id || element.props?.id) {
-        return true;
-    }
+export function hasIdAttribute(node: Node): boolean {
+    if (isBaseElement(node)) {
+        const hasIdAttr = [...node.attributes, ...node.properties].some(
+            ({ name }) => name === 'id'
+        );
 
-    for (const child of element.children) {
-        if (child.type === 'element' && hasIdAttribute(child)) {
+        if (hasIdAttr) {
             return true;
         }
+    }
+
+    if (isParentNode(node)) {
+        return node.children.some((child) => hasIdAttribute(child));
     }
 
     return false;
@@ -74,14 +102,12 @@ export function hasIdAttribute(element: IRElement): boolean {
 
 export function memorizeHandler(
     codeGen: CodeGen,
-    element: IRElement,
-    parentStack: IRNode[],
     componentHandler: t.Expression,
     handler: t.Expression
 ): t.Expression {
     // #439 - The handler can only be memorized if it is bound to component instance
     const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-    const shouldMemorizeHandler = isComponentProp(id, element, parentStack);
+    const shouldMemorizeHandler = !codeGen.isLocalIdentifier(id);
 
     // Apply memorization if the handler is memorizable.
     //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
