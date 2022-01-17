@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayFilter,
-    ArrayJoin,
     ArrayPush,
     assert,
     create,
@@ -28,17 +26,14 @@ import {
     createText,
     setText,
     createComment,
-    getAttribute,
     getClassList,
     isSyntheticShadowDefined,
 } from '../renderer';
-import { logError, logWarn } from '../shared/logger';
 
 import {
     createVM,
     appendVM,
     removeVM,
-    hydrateVM,
     rerenderVM,
     getAssociatedVMIfPresent,
     runConnectedCallback,
@@ -46,11 +41,12 @@ import {
     VMState,
     ShadowMode,
     RenderMode,
+    LwcDomMode,
 } from './vm';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
-import { EmptyArray, parseStyleText } from './utils';
+import { EmptyArray } from './utils';
 import {
     VNode,
     VNodes,
@@ -72,10 +68,6 @@ import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 
-const enum LwcDomMode {
-    manual = 'manual',
-}
-
 export const TextHook: Hooks<VText> = {
     create: (vnode) => {
         const { owner } = vnode;
@@ -88,26 +80,6 @@ export const TextHook: Hooks<VText> = {
     insert: insertNode,
     move: insertNode, // same as insert for text nodes
     remove: removeNode,
-    hydrate: (vNode: VText, node: Node) => {
-        if (process.env.NODE_ENV !== 'production') {
-            // eslint-disable-next-line lwc-internal/no-global-node
-            if (node.nodeType !== Node.TEXT_NODE) {
-                logError('Hydration mismatch: incorrect node type received', vNode.owner);
-                assert.fail('Hydration mismatch: incorrect node type received.');
-            }
-
-            if (node.nodeValue !== vNode.text) {
-                logWarn(
-                    'Hydration mismatch: text values do not match, will recover from the difference',
-                    vNode.owner
-                );
-            }
-        }
-
-        // always set the text value to the one from the vnode.
-        node.nodeValue = vNode.text ?? null;
-        vNode.elm = node;
-    },
 };
 
 export const CommentHook: Hooks<VComment> = {
@@ -122,26 +94,6 @@ export const CommentHook: Hooks<VComment> = {
     insert: insertNode,
     move: insertNode,
     remove: removeNode,
-    hydrate: (vNode: VComment, node: Node) => {
-        if (process.env.NODE_ENV !== 'production') {
-            // eslint-disable-next-line lwc-internal/no-global-node
-            if (node.nodeType !== Node.COMMENT_NODE) {
-                logError('Hydration mismatch: incorrect node type received', vNode.owner);
-                assert.fail('Hydration mismatch: incorrect node type received.');
-            }
-
-            if (node.nodeValue !== vNode.text) {
-                logWarn(
-                    'Hydration mismatch: comment values do not match, will recover from the difference',
-                    vNode.owner
-                );
-            }
-        }
-
-        // always set the text value to the one from the vnode.
-        node.nodeValue = vNode.text ?? null;
-        vNode.elm = node;
-    },
 };
 
 // insert is called after update, which is used somewhere else (via a module)
@@ -179,39 +131,6 @@ export const ElementHook: Hooks<VElement> = {
         removeNode(vnode, parentNode);
         removeChildren(vnode);
     },
-    hydrate: (vnode, node) => {
-        const elm = node as Element;
-        vnode.elm = elm;
-
-        const { context } = vnode.data;
-        const isDomManual = Boolean(
-            !isUndefined(context) &&
-                !isUndefined(context.lwc) &&
-                context.lwc.dom === LwcDomMode.manual
-        );
-
-        if (isDomManual) {
-            // it may be that this element has lwc:inner-html, we need to diff and in case are the same,
-            // remove the innerHTML from props so it reuses the existing dom elements.
-            const { props } = vnode.data;
-            if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
-                if (elm.innerHTML === props.innerHTML) {
-                    delete props.innerHTML;
-                } else {
-                    logWarn(
-                        `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
-                        vnode.owner
-                    );
-                }
-            }
-        }
-
-        hydrateElmHook(vnode);
-
-        if (!isDomManual) {
-            hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vnode.owner);
-        }
-    },
 };
 
 export const CustomElementHook: Hooks<VCustomElement> = {
@@ -234,7 +153,7 @@ export const CustomElementHook: Hooks<VCustomElement> = {
         vnode.elm = elm;
 
         if (vm) {
-            allocateChildrenHook(vnode, vm);
+            allocateChildren(vnode, vm);
         } else if (vnode.ctor !== UpgradableConstructor) {
             throw new TypeError(`Incorrect Component Constructor`);
         }
@@ -246,7 +165,7 @@ export const CustomElementHook: Hooks<VCustomElement> = {
         if (vm) {
             // in fallback mode, the allocation will always set children to
             // empty and delegate the real allocation to the slot elements
-            allocateChildrenHook(vnode, vm);
+            allocateChildren(vnode, vm);
         }
         // in fallback mode, the children will be always empty, so, nothing
         // will happen, but in native, it does allocate the light dom
@@ -286,36 +205,7 @@ export const CustomElementHook: Hooks<VCustomElement> = {
             // will take care of disconnecting any child VM attached to its shadow as well.
             removeVM(vm);
         }
-    },
-    hydrate: (vnode, elm) => {
-        // the element is created, but the vm is not
-        const { sel, mode, ctor, owner } = vnode;
-
-        const vm = createVM(elm, ctor, {
-            mode,
-            owner,
-            tagName: sel,
-        });
-
-        vnode.elm = elm as Element;
-        allocateChildrenHook(vnode, vm);
-
-        hydrateElmHook(vnode);
-
-        // Insert hook section:
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
-        }
-        runConnectedCallback(vm);
-
-        if (vm.renderMode !== RenderMode.Light) {
-            // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
-            // Note: for Light DOM, this is handled while hydrating the VM
-            hydrateChildrenHook(vnode.elm.childNodes, vnode.children, vm);
-        }
-
-        hydrateVM(vm);
-    },
+    }
 };
 
 function sameVnode(vnode1: VNode, vnode2: VNode): boolean {
@@ -403,11 +293,6 @@ function patchElementPropsAndAttrs(oldVnode: VBaseElement | null, vnode: VBaseEl
     patchProps(oldVnode, vnode);
 }
 
-function hydrateElmHook(vnode: VBaseElement) {
-    applyEventListeners(vnode);
-    patchProps(null, vnode);
-}
-
 function fallbackElmHook(elm: Element, vnode: VBaseElement) {
     const { owner } = vnode;
     setScopeTokenClassIfNecessary(elm, owner);
@@ -419,7 +304,7 @@ function fallbackElmHook(elm: Element, vnode: VBaseElement) {
         if (
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
-            context.lwc.dom === LwcDomMode.manual
+            context.lwc.dom === LwcDomMode.Manual
         ) {
             // this element will now accept any manual content inserted into it
             observeElementChildNodes(elm);
@@ -435,7 +320,7 @@ function fallbackElmHook(elm: Element, vnode: VBaseElement) {
         const isPortal =
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
-            context.lwc.dom === LwcDomMode.manual;
+            context.lwc.dom === LwcDomMode.Manual;
         const isLight = owner.renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, { isPortal, isLight });
     }
@@ -449,7 +334,7 @@ export function patchChildren(parent: ParentNode, oldCh: VNodes, newCh: VNodes) 
     }
 }
 
-function allocateChildrenHook(vnode: VCustomElement, vm: VM) {
+export function allocateChildren(vnode: VCustomElement, vm: VM) {
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.
     // 2- There is a change on the external api (ex: slots)
@@ -518,185 +403,6 @@ function createChildrenHook(vnode: VBaseElement) {
         if (ch != null) {
             ch.hook.create(ch);
             ch.hook.insert(ch, elm!, null);
-        }
-    }
-}
-
-function isElementNode(node: ChildNode): node is Element {
-    // eslint-disable-next-line lwc-internal/no-global-node
-    return node.nodeType === Node.ELEMENT_NODE;
-}
-
-function vnodesAndElementHaveCompatibleAttrs(vnode: VBaseElement, elm: Element): boolean {
-    const {
-        data: { attrs = {} },
-    } = vnode;
-
-    let nodesAreCompatible = true;
-
-    // Validate attributes, though we could always recovery from those by running the update mods.
-    // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
-    for (const [attrName, attrValue] of Object.entries(attrs)) {
-        const elmAttrValue = getAttribute(elm, attrName);
-        if (String(attrValue) !== elmAttrValue) {
-            logError(
-                `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
-                vnode.owner
-            );
-            nodesAreCompatible = false;
-        }
-    }
-
-    return nodesAreCompatible;
-}
-
-function vnodesAndElementHaveCompatibleClass(vnode: VBaseElement, elm: Element): boolean {
-    const {
-        data: { className, classMap },
-    } = vnode;
-
-    let nodesAreCompatible = true;
-    let vnodeClassName;
-
-    if (!isUndefined(className) && String(className) !== elm.className) {
-        // className is used when class is bound to an expr.
-        nodesAreCompatible = false;
-        vnodeClassName = className;
-    } else if (!isUndefined(classMap)) {
-        // classMap is used when class is set to static value.
-        const classList = getClassList(elm);
-        let computedClassName = '';
-
-        // all classes from the vnode should be in the element.classList
-        for (const name in classMap) {
-            computedClassName += ' ' + name;
-            if (!classList.contains(name)) {
-                nodesAreCompatible = false;
-            }
-        }
-
-        vnodeClassName = computedClassName.trim();
-
-        if (classList.length > keys(classMap).length) {
-            nodesAreCompatible = false;
-        }
-    }
-
-    if (!nodesAreCompatible) {
-        logError(
-            `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "class" has different values, expected "${vnodeClassName}" but found "${
-                elm.className
-            }"`,
-            vnode.owner
-        );
-    }
-
-    return nodesAreCompatible;
-}
-
-function vnodesAndElementHaveCompatibleStyle(vnode: VBaseElement, elm: Element): boolean {
-    const {
-        data: { style, styleDecls },
-    } = vnode;
-    const elmStyle = getAttribute(elm, 'style') || '';
-    let vnodeStyle;
-    let nodesAreCompatible = true;
-
-    if (!isUndefined(style) && style !== elmStyle) {
-        nodesAreCompatible = false;
-        vnodeStyle = style;
-    } else if (!isUndefined(styleDecls)) {
-        const parsedVnodeStyle = parseStyleText(elmStyle);
-        const expectedStyle = [];
-        // styleMap is used when style is set to static value.
-        for (let i = 0, n = styleDecls.length; i < n; i++) {
-            const [prop, value, important] = styleDecls[i];
-            expectedStyle.push(`${prop}: ${value + (important ? ' important!' : '')}`);
-
-            const parsedPropValue = parsedVnodeStyle[prop];
-
-            if (isUndefined(parsedPropValue)) {
-                nodesAreCompatible = false;
-            } else if (!parsedPropValue.startsWith(value)) {
-                nodesAreCompatible = false;
-            } else if (important && !parsedPropValue.endsWith('!important')) {
-                nodesAreCompatible = false;
-            }
-        }
-
-        if (keys(parsedVnodeStyle).length > styleDecls.length) {
-            nodesAreCompatible = false;
-        }
-
-        vnodeStyle = ArrayJoin.call(expectedStyle, ';');
-    }
-
-    if (!nodesAreCompatible) {
-        // style is used when class is bound to an expr.
-        logError(
-            `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
-            vnode.owner
-        );
-    }
-
-    return nodesAreCompatible;
-}
-
-function throwHydrationError(): never {
-    assert.fail('Server rendered elements do not match client side generated elements');
-}
-
-export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children: VNodes, vm?: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        const filteredVNodes = ArrayFilter.call(children, (vnode) => !!vnode);
-
-        if (elmChildren.length !== filteredVNodes.length) {
-            logError(
-                `Hydration mismatch: incorrect number of rendered nodes, expected ${filteredVNodes.length} but found ${elmChildren.length}.`,
-                vm
-            );
-            throwHydrationError();
-        }
-    }
-
-    let elmCurrentChildIdx = 0;
-    for (let j = 0, n = children.length; j < n; j++) {
-        const ch = children[j];
-        if (ch != null) {
-            const childNode = elmChildren[elmCurrentChildIdx];
-
-            if (process.env.NODE_ENV !== 'production') {
-                // VComments and VTexts validation is handled in their hooks
-                if (isElementNode(childNode)) {
-                    if (!isVBaseElement(ch)) {
-                        logError(`Hydration mismatch: Unexpected VNode type.`, vm);
-                        throwHydrationError();
-                    }
-
-                    if (ch.sel.toLowerCase() !== childNode.tagName.toLowerCase()) {
-                        logError(
-                            `Hydration mismatch: expecting element with tag "${ch.sel.toLowerCase()}" but found "${childNode.tagName.toLowerCase()}".`,
-                            vm
-                        );
-
-                        throwHydrationError();
-                    }
-
-                    // Note: props are not yet set
-                    const hasIncompatibleAttrs = vnodesAndElementHaveCompatibleAttrs(ch, childNode);
-                    const hasIncompatibleClass = vnodesAndElementHaveCompatibleClass(ch, childNode);
-                    const hasIncompatibleStyle = vnodesAndElementHaveCompatibleStyle(ch, childNode);
-                    const isVNodeAndElementCompatible =
-                        hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
-
-                    if (!isVNodeAndElementCompatible) {
-                        throwHydrationError();
-                    }
-                }
-            }
-
-            ch.hook.hydrate(ch, childNode);
-            elmCurrentChildIdx++;
         }
     }
 }

@@ -37,7 +37,8 @@ import {
     logGlobalOperationEnd,
     logGlobalOperationStart,
 } from './profiler';
-import { hydrateChildrenHook, patchChildren } from './hooks';
+import { patchChildren } from './hooks';
+import { hydrateChildren } from './hydration';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
@@ -73,6 +74,10 @@ export const enum ShadowMode {
 export const enum ShadowSupportMode {
     Any = 'any',
     Default = 'reset',
+}
+
+export const enum LwcDomMode {
+    Manual = 'manual',
 }
 
 export interface Context {
@@ -434,7 +439,7 @@ function hydrate(vm: VM) {
 
         const vmChildren =
             vm.renderMode === RenderMode.Light ? vm.elm.childNodes : vm.elm.shadowRoot.childNodes;
-        hydrateChildrenHook(vmChildren, children, vm);
+        hydrateChildren(vmChildren, children, vm);
 
         runRenderedCallback(vm);
     }

@@ -89,7 +89,6 @@ export interface Hooks<N extends VNode> {
     move: (vNode: N, parentNode: Node, referenceNode: Node | null) => void;
     update: (oldVNode: N, vNode: N) => void;
     remove: (vNode: N, parentNode: Node) => void;
-    hydrate: (vNode: N, node: Node) => void;
 }
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
