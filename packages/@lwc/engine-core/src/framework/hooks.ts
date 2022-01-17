@@ -73,7 +73,7 @@ export const TextHook: Hooks<VText> = {
         const { owner } = vnode;
 
         const elm = createText(vnode.text!);
-        linkNodeToShadow(elm, owner);
+        applySyntheticShadowResolver(elm, owner);
         vnode.elm = elm;
     },
     update: updateNodeHook,
@@ -107,7 +107,7 @@ export const CommentHook: Hooks<VComment> = {
         const { owner, text } = vnode;
 
         const elm = createComment(text);
-        linkNodeToShadow(elm, owner);
+        applySyntheticShadowResolver(elm, owner);
         vnode.elm = elm;
     },
     update: updateNodeHook,
@@ -152,8 +152,10 @@ export const ElementHook: Hooks<VElement> = {
         const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
         const elm = createElement(sel, namespace);
 
-        linkNodeToShadow(elm, owner);
-        fallbackElmHook(elm, vnode);
+        applySyntheticShadowResolver(elm, owner);
+        applyStyleScoping(elm, owner);
+        applyLwcDomDirective(elm, vnode);
+
         vnode.elm = elm;
 
         patchElementPropsAndAttrs(null, vnode);
@@ -221,7 +223,9 @@ export const CustomElementHook: Hooks<VCustomElement> = {
             createViewModelHook(elm, vnode);
         });
 
-        linkNodeToShadow(elm, owner);
+        applySyntheticShadowResolver(elm, owner);
+        applyStyleScoping(elm, owner);
+
         vnode.elm = elm;
 
         const vm = getAssociatedVMIfPresent(elm);
@@ -321,30 +325,54 @@ function isVNode(vnode: any): vnode is VNode {
     return vnode != null;
 }
 
-function observeElementChildNodes(elm: Element) {
-    (elm as any).$domManual$ = true;
-}
+function applySyntheticShadowResolver(elm: Node, owner: VM) {
+    const { renderMode, shadowMode } = owner;
 
-function setElementShadowToken(elm: Element, token: string | undefined) {
-    (elm as any).$shadowToken$ = token;
-}
-
-// Set the scope token class for *.scoped.css styles
-function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
-    const { cmpTemplate, context } = owner;
-    const token = cmpTemplate?.stylesheetToken;
-    if (!isUndefined(token) && context.hasScopedStyles) {
-        getClassList(elm).add(token);
+    if (
+        isSyntheticShadowDefined &&
+        (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light)
+    ) {
+        (elm as any)[KEY__SHADOW_RESOLVER] = getRenderRoot(owner)[KEY__SHADOW_RESOLVER];
     }
 }
 
-function linkNodeToShadow(elm: Node, owner: VM) {
-    const { renderMode, shadowMode } = owner;
+function applyStyleScoping(elm: Element, owner: VM) {
+    const { cmpTemplate, context, shadowMode } = owner;
 
-    // TODO [#1164]: this should eventually be done by the polyfill directly
-    if (isSyntheticShadowDefined) {
-        if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
-            (elm as any)[KEY__SHADOW_RESOLVER] = getRenderRoot(owner)[KEY__SHADOW_RESOLVER];
+    // Apply synthetic shadow dom style scoping.
+    if (shadowMode === ShadowMode.Synthetic) {
+        (elm as any).$shadowToken$ = context.stylesheetToken;
+    }
+
+    // Apply light DOM style scoping.
+    const scopedStyleToken = cmpTemplate!.stylesheetToken;
+    if (context.hasScopedStyles && !isUndefined(scopedStyleToken)) {
+        getClassList(elm).add(scopedStyleToken);
+    }
+}
+
+function applyLwcDomDirective(elm: Element, vnode: VElement) {
+    const {
+        owner,
+        data: { context },
+    } = vnode;
+
+    // The lwc:dom=manual directive only apply to shadow trees rendered with synthetic shadow DOM.
+    if (owner.shadowMode === ShadowMode.Synthetic) {
+        const isLwcDomManual =
+            !isUndefined(context) &&
+            !isUndefined(context.lwc) &&
+            context.lwc.dom === LwcDomMode.manual;
+
+        if (isLwcDomManual) {
+            (elm as any).$domManual$ = true;
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+            patchElementWithRestrictions(elm, {
+                isLight: owner.renderMode === RenderMode.Light,
+                isPortal: isLwcDomManual,
+            });
         }
     }
 }
@@ -403,39 +431,6 @@ function hydrateElmHook(vnode: VElement) {
     patchProps(null, vnode);
 }
 
-function fallbackElmHook(elm: Element, vnode: VElement) {
-    const { owner } = vnode;
-    setScopeTokenClassIfNecessary(elm, owner);
-    if (owner.shadowMode === ShadowMode.Synthetic) {
-        const {
-            data: { context },
-        } = vnode;
-        const { stylesheetToken } = owner.context;
-        if (
-            !isUndefined(context) &&
-            !isUndefined(context.lwc) &&
-            context.lwc.dom === LwcDomMode.manual
-        ) {
-            // this element will now accept any manual content inserted into it
-            observeElementChildNodes(elm);
-        }
-        // when running in synthetic shadow mode, we need to set the shadowToken value
-        // into each element from the template, so they can be styled accordingly.
-        setElementShadowToken(elm, stylesheetToken);
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        const {
-            data: { context },
-        } = vnode;
-        const isPortal =
-            !isUndefined(context) &&
-            !isUndefined(context.lwc) &&
-            context.lwc.dom === LwcDomMode.manual;
-        const isLight = owner.renderMode === RenderMode.Light;
-        patchElementWithRestrictions(elm, { isPortal, isLight });
-    }
-}
-
 export function patchChildren(parent: ParentNode, oldCh: VNodes, newCh: VNodes) {
     if (hasDynamicChildren(newCh)) {
         updateDynamicChildren(parent, oldCh, newCh);
@@ -478,13 +473,6 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
         return;
     }
     const { sel, mode, ctor, owner } = vnode;
-    setScopeTokenClassIfNecessary(elm, owner);
-    if (owner.shadowMode === ShadowMode.Synthetic) {
-        const { stylesheetToken } = owner.context;
-        // when running in synthetic shadow mode, we need to set the shadowToken value
-        // into each element from the template, so they can be styled accordingly.
-        setElementShadowToken(elm, stylesheetToken);
-    }
     const def = getComponentInternalDef(ctor);
     createVM(elm, def, {
         mode,
