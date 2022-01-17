@@ -255,6 +255,11 @@ export function getComponentInternalDef(Ctor: unknown): ComponentDef {
     return def;
 }
 
+export function getComponentHtmlPrototype(Ctor: unknown): HTMLElementConstructor {
+    const def = getComponentInternalDef(Ctor);
+    return def.bridge;
+}
+
 const lightingElementDef: ComponentDef = {
     ctor: LightningElement,
     name: LightningElement.name,

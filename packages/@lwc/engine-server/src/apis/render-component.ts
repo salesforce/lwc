@@ -4,12 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    createVM,
-    connectRootElement,
-    getComponentInternalDef,
-    LightningElement,
-} from '@lwc/engine-core';
+import { createVM, connectRootElement, LightningElement } from '@lwc/engine-core';
 import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
 import { createElement } from '../renderer';
@@ -50,10 +45,7 @@ export function renderComponent(
     }
 
     const element = createElement(tagName);
-
-    const def = getComponentInternalDef(Ctor);
-
-    createVM(element, def, {
+    createVM(element, Ctor, {
         mode: 'open',
         owner: null,
         tagName,

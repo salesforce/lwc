@@ -9,7 +9,7 @@ import {
     createVM,
     connectRootElement,
     disconnectRootElement,
-    getComponentInternalDef,
+    getComponentHtmlPrototype,
     LightningElement,
 } from '@lwc/engine-core';
 
@@ -46,12 +46,12 @@ export function deprecatedBuildCustomElementConstructor(
 }
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
-    const def = getComponentInternalDef(Ctor);
+    const HtmlPrototype = getComponentHtmlPrototype(Ctor);
 
-    return class extends def.bridge {
+    return class extends HtmlPrototype {
         constructor() {
             super();
-            createVM(this, def, {
+            createVM(this, Ctor, {
                 mode: 'open',
                 owner: null,
                 tagName: this.tagName,

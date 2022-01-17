@@ -6,7 +6,6 @@
  */
 import { assert, assign, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
 import {
-    getComponentInternalDef,
     createVM,
     connectRootElement,
     disconnectRootElement,
@@ -104,8 +103,7 @@ export function createElement(
      * an upgradable custom element.
      */
     const element = new UpgradableConstructor((elm: HTMLElement) => {
-        const def = getComponentInternalDef(Ctor);
-        createVM(elm, def, {
+        createVM(elm, Ctor, {
             tagName: sel,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
