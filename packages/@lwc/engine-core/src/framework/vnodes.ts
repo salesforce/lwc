@@ -23,7 +23,6 @@ export type VNodes = Array<VNode | null>;
 export interface BaseVNode {
     type: VNodeType;
     sel: string | undefined;
-    data: VNodeData;
     elm: Node | undefined;
     key: Key | undefined;
     hook: Hooks<any>;
@@ -33,7 +32,7 @@ export interface BaseVNode {
 export interface VText extends BaseVNode {
     type: VNodeType.Text;
     sel: undefined;
-    elm: Node | undefined;
+    elm: Text | undefined;
     text: string;
     key: undefined;
 }
@@ -41,6 +40,7 @@ export interface VText extends BaseVNode {
 export interface VComment extends BaseVNode {
     type: VNodeType.Comment;
     sel: undefined;
+    elm: Comment | undefined;
     text: string;
     key: undefined;
 }
@@ -88,4 +88,9 @@ export interface Hooks<N extends VNode> {
     update: (oldVNode: N, vNode: N) => void;
     remove: (vNode: N, parentNode: Node) => void;
     hydrate: (vNode: N, node: Node) => void;
+}
+
+export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
+    const { type } = vnode;
+    return type === VNodeType.Element || type === VNodeType.CustomElement;
 }

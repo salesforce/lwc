@@ -27,7 +27,7 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
-import { EmptyArray, EmptyObject } from './utils';
+import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
 import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -315,12 +315,10 @@ function f(items: any[]): any[] {
 
 // [t]ext node
 function t(text: string): VText {
-    const data = EmptyObject;
     let sel, key, elm;
     return {
         type: VNodeType.Text,
         sel,
-        data,
         text,
         elm,
         key,
@@ -332,12 +330,10 @@ function t(text: string): VText {
 
 // [co]mment node
 function co(text: string): VComment {
-    const data = EmptyObject;
     let sel, key, elm;
     return {
         type: VNodeType.Comment,
         sel,
-        data,
         text,
         elm,
         key,

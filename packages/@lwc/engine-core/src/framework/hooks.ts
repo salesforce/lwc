@@ -61,6 +61,7 @@ import {
     Hooks,
     Key,
     VBaseElement,
+    isVBaseElement,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -526,7 +527,7 @@ function isElementNode(node: ChildNode): node is Element {
     return node.nodeType === Node.ELEMENT_NODE;
 }
 
-function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolean {
+function vnodesAndElementHaveCompatibleAttrs(vnode: VBaseElement, elm: Element): boolean {
     const {
         data: { attrs = {} },
     } = vnode;
@@ -549,7 +550,7 @@ function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolea
     return nodesAreCompatible;
 }
 
-function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolean {
+function vnodesAndElementHaveCompatibleClass(vnode: VBaseElement, elm: Element): boolean {
     const {
         data: { className, classMap },
     } = vnode;
@@ -593,7 +594,7 @@ function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolea
     return nodesAreCompatible;
 }
 
-function vnodesAndElementHaveCompatibleStyle(vnode: VNode, elm: Element): boolean {
+function vnodesAndElementHaveCompatibleStyle(vnode: VBaseElement, elm: Element): boolean {
     const {
         data: { style, styleDecls },
     } = vnode;
@@ -641,7 +642,7 @@ function vnodesAndElementHaveCompatibleStyle(vnode: VNode, elm: Element): boolea
     return nodesAreCompatible;
 }
 
-function throwHydrationError() {
+function throwHydrationError(): never {
     assert.fail('Server rendered elements do not match client side generated elements');
 }
 
@@ -667,9 +668,14 @@ export function hydrateChildrenHook(elmChildren: NodeListOf<ChildNode>, children
             if (process.env.NODE_ENV !== 'production') {
                 // VComments and VTexts validation is handled in their hooks
                 if (isElementNode(childNode)) {
-                    if (ch.sel?.toLowerCase() !== childNode.tagName.toLowerCase()) {
+                    if (!isVBaseElement(ch)) {
+                        logError(`Hydration mismatch: Unexpected VNode type.`, vm);
+                        throwHydrationError();
+                    }
+
+                    if (ch.sel.toLowerCase() !== childNode.tagName.toLowerCase()) {
                         logError(
-                            `Hydration mismatch: expecting element with tag "${ch.sel?.toLowerCase()}" but found "${childNode.tagName.toLowerCase()}".`,
+                            `Hydration mismatch: expecting element with tag "${ch.sel.toLowerCase()}" but found "${childNode.tagName.toLowerCase()}".`,
                             vm
                         );
 
@@ -716,8 +722,12 @@ function allocateInSlot(vm: VM, children: VNodes) {
         if (isNull(vnode)) {
             continue;
         }
-        const { data } = vnode;
-        const slotName = ((data.attrs && data.attrs.slot) || '') as string;
+
+        let slotName = '';
+        if (isVBaseElement(vnode)) {
+            slotName = (vnode.data.attrs?.slot as string) || '';
+        }
+
         const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
         // re-keying the vnodes is necessary to avoid conflicts with default content for the slot
         // which might have similar keys. Each vnode will always have a key that
