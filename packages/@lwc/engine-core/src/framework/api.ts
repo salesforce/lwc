@@ -81,23 +81,9 @@ function h(sel: string, data: VElementData, children: VNodes): VElement {
                 vmBeingRendered
             );
         }
-        forEach.call(children, (childVnode: VNode | null | undefined) => {
-            if (childVnode != null) {
-                assert.isTrue(
-                    childVnode &&
-                        'sel' in childVnode &&
-                        'data' in childVnode &&
-                        'children' in childVnode &&
-                        'text' in childVnode &&
-                        'elm' in childVnode &&
-                        'key' in childVnode,
-                    `${childVnode} is not a vnode.`
-                );
-            }
-        });
     }
 
-    let text, elm;
+    let elm;
     const { key } = data;
 
     return {
@@ -105,7 +91,6 @@ function h(sel: string, data: VElementData, children: VNodes): VElement {
         sel,
         data,
         children,
-        text,
         elm,
         key,
         hook: ElementHook,
@@ -197,31 +182,14 @@ function c(
                 vmBeingRendered
             );
         }
-        if (arguments.length === 4) {
-            forEach.call(children, (childVnode: VNode | null | undefined) => {
-                if (childVnode != null) {
-                    assert.isTrue(
-                        childVnode &&
-                            'sel' in childVnode &&
-                            'data' in childVnode &&
-                            'children' in childVnode &&
-                            'text' in childVnode &&
-                            'elm' in childVnode &&
-                            'key' in childVnode,
-                        `${childVnode} is not a vnode.`
-                    );
-                }
-            });
-        }
     }
     const { key } = data;
-    let text, elm;
+    let elm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
         sel,
         data,
         children,
-        text,
         elm,
         key,
 
@@ -348,12 +316,11 @@ function f(items: any[]): any[] {
 // [t]ext node
 function t(text: string): VText {
     const data = EmptyObject;
-    let sel, children, key, elm;
+    let sel, key, elm;
     return {
         type: VNodeType.Text,
         sel,
         data,
-        children,
         text,
         elm,
         key,
@@ -366,12 +333,11 @@ function t(text: string): VText {
 // [co]mment node
 function co(text: string): VComment {
     const data = EmptyObject;
-    let sel, children, key, elm;
+    let sel, key, elm;
     return {
         type: VNodeType.Comment,
         sel,
         data,
-        children,
         text,
         elm,
         key,

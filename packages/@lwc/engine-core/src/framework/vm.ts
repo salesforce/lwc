@@ -12,7 +12,6 @@ import {
     assert,
     create,
     getOwnPropertyNames,
-    isArray,
     isFalse,
     isNull,
     isObject,
@@ -43,7 +42,7 @@ import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode } from './vnodes';
+import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -637,15 +636,19 @@ function runLightChildNodesDisconnectedCallback(vm: VM) {
  */
 function recursivelyDisconnectChildren(vnodes: VNodes) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {
-        const vnode: VCustomElement | VNode | null = vnodes[i];
-        if (!isNull(vnode) && isArray(vnode.children) && !isUndefined(vnode.elm)) {
-            // vnode is a VElement with children
-            if (isUndefined((vnode as any).ctor)) {
-                // it is a VElement, just keep looking (recursively)
-                recursivelyDisconnectChildren(vnode.children);
-            } else {
-                // it is a VCustomElement, disconnect it and ignore its children
-                resetComponentStateWhenRemoved(getAssociatedVM(vnode.elm as HTMLElement));
+        const vnode = vnodes[i];
+
+        if (!isNull(vnode) && !isUndefined(vnode.elm)) {
+            switch (vnode.type) {
+                case VNodeType.Element:
+                    recursivelyDisconnectChildren(vnode.children);
+                    break;
+
+                case VNodeType.CustomElement: {
+                    const vm = getAssociatedVM(vnode.elm);
+                    resetComponentStateWhenRemoved(vm);
+                    break;
+                }
             }
         }
     }

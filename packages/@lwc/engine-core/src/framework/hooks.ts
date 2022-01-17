@@ -87,7 +87,7 @@ export const TextHook: Hooks<VText> = {
     insert: insertNode,
     move: insertNode, // same as insert for text nodes
     remove: removeNode,
-    hydrate: (vNode: VNode, node: Node) => {
+    hydrate: (vNode: VText, node: Node) => {
         if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line lwc-internal/no-global-node
             if (node.nodeType !== Node.TEXT_NODE) {
@@ -121,7 +121,7 @@ export const CommentHook: Hooks<VComment> = {
     insert: insertNode,
     move: insertNode,
     remove: removeNode,
-    hydrate: (vNode: VNode, node: Node) => {
+    hydrate: (vNode: VComment, node: Node) => {
         if (process.env.NODE_ENV !== 'production') {
             // eslint-disable-next-line lwc-internal/no-global-node
             if (node.nodeType !== Node.COMMENT_NODE) {
@@ -353,7 +353,7 @@ function linkNodeToShadow(elm: Node, owner: VM) {
     }
 }
 
-function updateNodeHook(oldVnode: VNode, vnode: VNode) {
+function updateNodeHook(oldVnode: VText | VComment, vnode: VText | VComment) {
     const { elm, text } = vnode;
 
     if (oldVnode.text !== text) {

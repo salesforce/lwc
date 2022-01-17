@@ -17,15 +17,14 @@ export const enum VNodeType {
 }
 
 export type VNode = VText | VComment | VElement | VCustomElement;
+export type VParentElement = VElement | VCustomElement;
 export type VNodes = Array<VNode | null>;
 
 export interface BaseVNode {
     type: VNodeType;
     sel: string | undefined;
     data: VNodeData;
-    children: VNodes | undefined;
     elm: Node | undefined;
-    text: string | undefined;
     key: Key | undefined;
     hook: Hooks<any>;
     owner: VM;
@@ -34,7 +33,6 @@ export interface BaseVNode {
 export interface VText extends BaseVNode {
     type: VNodeType.Text;
     sel: undefined;
-    children: undefined;
     elm: Node | undefined;
     text: string;
     key: undefined;
@@ -43,7 +41,6 @@ export interface VText extends BaseVNode {
 export interface VComment extends BaseVNode {
     type: VNodeType.Comment;
     sel: undefined;
-    children: undefined;
     text: string;
     key: undefined;
 }
@@ -53,7 +50,6 @@ export interface VBaseElement extends BaseVNode {
     data: VElementData;
     children: VNodes;
     elm: Element | undefined;
-    text: undefined;
     key: Key;
 }
 
