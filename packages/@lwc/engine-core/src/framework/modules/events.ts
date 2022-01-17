@@ -7,7 +7,7 @@
 import { isUndefined } from '@lwc/shared';
 
 import { addEventListener } from '../../renderer';
-import { VElement } from '../../3rdparty/snabbdom/types';
+import { VElement } from '../vnodes';
 
 export function applyEventListeners(vnode: VElement) {
     const {

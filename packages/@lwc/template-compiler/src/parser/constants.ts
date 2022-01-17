@@ -185,7 +185,4 @@ export const ATTR_NAME = {
     HREF: 'href',
     XLINK_HREF: 'xlink:href',
 };
-export const HTML_NAMESPACE_URI = 'http://www.w3.org/1999/xhtml';
-export const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';
-export const MATHML_NAMESPACE_URI = 'http://www.w3.org/1998/Math/MathML';
 export const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iterator:*/];

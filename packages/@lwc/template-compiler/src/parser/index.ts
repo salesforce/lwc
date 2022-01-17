@@ -5,7 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
+
+import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE } from '@lwc/shared';
 import { ParserDiagnostics } from '@lwc/errors';
+
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 
 import {
@@ -56,17 +59,14 @@ import {
     EVENT_HANDLER_NAME_RE,
     EVENT_HANDLER_RE,
     EXPRESSION_RE,
-    HTML_NAMESPACE_URI,
     IF_RE,
     ITERATOR_RE,
     KNOWN_HTML_ELEMENTS,
     LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
     LWC_RE,
-    MATHML_NAMESPACE_URI,
     ROOT_TEMPLATE_DIRECTIVES,
     SUPPORTED_SVG_TAGS,
-    SVG_NAMESPACE_URI,
     VALID_IF_MODIFIER,
     VOID_ELEMENT_SET,
 } from './constants';
@@ -943,21 +943,21 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
         ctx.throwOnNode(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, element, [tag]);
     }
 
-    if (tag === 'style' && namespace === HTML_NAMESPACE_URI) {
+    if (tag === 'style' && namespace === HTML_NAMESPACE) {
         ctx.throwOnNode(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element);
     } else {
         const isNotAllowedHtmlTag = DISALLOWED_HTML_TAGS.has(tag);
-        if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
+        if (namespace === HTML_NAMESPACE && isNotAllowedHtmlTag) {
             ctx.throwOnNode(ParserDiagnostics.FORBIDDEN_TAG_ON_TEMPLATE, element, [tag]);
         }
 
         const isNotAllowedSvgTag = !SUPPORTED_SVG_TAGS.has(tag);
-        if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
+        if (namespace === SVG_NAMESPACE && isNotAllowedSvgTag) {
             ctx.throwOnNode(ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE, element, [tag]);
         }
 
         const isNotAllowedMathMlTag = DISALLOWED_MATHML_TAGS.has(tag);
-        if (namespace === MATHML_NAMESPACE_URI && isNotAllowedMathMlTag) {
+        if (namespace === MATHML_NAMESPACE && isNotAllowedMathMlTag) {
             ctx.throwOnNode(ParserDiagnostics.FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE, element, [
                 tag,
             ]);

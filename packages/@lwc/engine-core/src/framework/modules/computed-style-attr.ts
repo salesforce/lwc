@@ -7,7 +7,7 @@
 import { isNull, isString } from '@lwc/shared';
 
 import { setAttribute, removeAttribute } from '../../renderer';
-import { VElement } from '../../3rdparty/snabbdom/types';
+import { VElement } from '../vnodes';
 
 // The style property is a string when defined via an expression in the template.
 export function patchStyleAttribute(oldVnode: VElement | null, vnode: VElement) {
