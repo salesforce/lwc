@@ -17,7 +17,7 @@ import {
 import { getClassList } from '../../renderer';
 
 import { EmptyObject, SPACE_CHAR } from '../utils';
-import { VElement } from '../vnodes';
+import { VBaseElement } from '../vnodes';
 
 const classNameToClassMap = create(null);
 
@@ -57,7 +57,7 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
     return map;
 }
 
-export function patchClassAttribute(oldVnode: VElement | null, vnode: VElement) {
+export function patchClassAttribute(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     const {
         elm,
         data: { className: newClass },

@@ -9,7 +9,7 @@ import { isNull, isUndefined } from '@lwc/shared';
 import { getProperty, setProperty } from '../../renderer';
 
 import { EmptyObject } from '../utils';
-import { VElement } from '../vnodes';
+import { VBaseElement } from '../vnodes';
 
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For properties with live bindings, we read values from the DOM element
@@ -17,7 +17,7 @@ function isLiveBindingProp(sel: string, key: string): boolean {
     return sel === 'input' && (key === 'value' || key === 'checked');
 }
 
-export function patchProps(oldVnode: VElement | null, vnode: VElement) {
+export function patchProps(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     const { props } = vnode.data;
     if (isUndefined(props)) {
         return;

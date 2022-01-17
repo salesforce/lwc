@@ -51,7 +51,17 @@ import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
 import { EmptyArray, parseStyleText } from './utils';
-import { VNode, VNodes, VCustomElement, VElement, VText, VComment, Hooks, Key } from './vnodes';
+import {
+    VNode,
+    VNodes,
+    VCustomElement,
+    VElement,
+    VText,
+    VComment,
+    Hooks,
+    Key,
+    VBaseElement,
+} from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
 import { patchProps } from './modules/props';
@@ -377,7 +387,7 @@ function removeNode(vnode: VNode, parentNode: Node) {
     }
 }
 
-function patchElementPropsAndAttrs(oldVnode: VElement | null, vnode: VElement) {
+function patchElementPropsAndAttrs(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     if (isNull(oldVnode)) {
         applyEventListeners(vnode);
         applyStaticClassAttribute(vnode);
@@ -392,12 +402,12 @@ function patchElementPropsAndAttrs(oldVnode: VElement | null, vnode: VElement) {
     patchProps(oldVnode, vnode);
 }
 
-function hydrateElmHook(vnode: VElement) {
+function hydrateElmHook(vnode: VBaseElement) {
     applyEventListeners(vnode);
     patchProps(null, vnode);
 }
 
-function fallbackElmHook(elm: Element, vnode: VElement) {
+function fallbackElmHook(elm: Element, vnode: VBaseElement) {
     const { owner } = vnode;
     setScopeTokenClassIfNecessary(elm, owner);
     if (owner.shadowMode === ShadowMode.Synthetic) {
@@ -500,7 +510,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
     return vm;
 }
 
-function createChildrenHook(vnode: VElement) {
+function createChildrenHook(vnode: VBaseElement) {
     const { elm, children } = vnode;
     for (let j = 0; j < children.length; ++j) {
         const ch = children[j];

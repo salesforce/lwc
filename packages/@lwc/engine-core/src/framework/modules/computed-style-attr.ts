@@ -7,10 +7,10 @@
 import { isNull, isString } from '@lwc/shared';
 
 import { setAttribute, removeAttribute } from '../../renderer';
-import { VElement } from '../vnodes';
+import { VBaseElement } from '../vnodes';
 
 // The style property is a string when defined via an expression in the template.
-export function patchStyleAttribute(oldVnode: VElement | null, vnode: VElement) {
+export function patchStyleAttribute(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     const {
         elm,
         data: { style: newStyle },
