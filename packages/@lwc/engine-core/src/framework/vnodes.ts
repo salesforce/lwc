@@ -22,17 +22,20 @@ export type VNodes = Array<VNode | null>;
 
 export interface BaseVNode {
     type: VNodeType;
-    sel: string | undefined;
     elm: Node | undefined;
+    // FIXME: Remove unused `sel` property on VText and VComment.
+    sel: string | undefined;
+    // FIXME: Remove unused `key` property on VText and VComment.
     key: Key | undefined;
     hook: Hooks<any>;
+    // FIXME: Remove `owner` property on VNodes. This would enable hoisting VNodes creation outside
+    // render method.
     owner: VM;
 }
 
 export interface VText extends BaseVNode {
     type: VNodeType.Text;
     sel: undefined;
-    elm: Text | undefined;
     text: string;
     key: undefined;
 }
@@ -40,7 +43,6 @@ export interface VText extends BaseVNode {
 export interface VComment extends BaseVNode {
     type: VNodeType.Comment;
     sel: undefined;
-    elm: Comment | undefined;
     text: string;
     key: undefined;
 }
