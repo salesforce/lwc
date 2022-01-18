@@ -37,7 +37,7 @@ import {
     logGlobalOperationEnd,
     logGlobalOperationStart,
 } from './profiler';
-import { patchChildren } from './hooks';
+import { patchChildren } from './rendering';
 import { hydrateChildren } from './hydration';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';

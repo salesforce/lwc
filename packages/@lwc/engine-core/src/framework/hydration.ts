@@ -10,7 +10,7 @@ import { logError, logWarn } from '../shared/logger';
 import { getAttribute, getClassList } from '../renderer';
 
 import { parseStyleText } from './utils';
-import { allocateChildren } from './hooks';
+import { allocateChildren } from './rendering';
 import {
     createVM,
     hydrateVM,
@@ -136,6 +136,8 @@ function hydrateCustomElement(vnode: VCustomElement, node: Node) {
     }
 
     const elm = node as Element;
+    vnode.elm = elm;
+
     const { sel, mode, ctor, owner } = vnode;
 
     const vm = createVM(elm, ctor, {
@@ -144,10 +146,7 @@ function hydrateCustomElement(vnode: VCustomElement, node: Node) {
         tagName: sel,
     });
 
-    vnode.elm = elm;
-
     allocateChildren(vnode, vm);
-
     patchElementPropsAndAttrs(vnode);
 
     // Insert hook section:

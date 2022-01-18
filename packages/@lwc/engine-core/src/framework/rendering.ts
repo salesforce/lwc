@@ -30,6 +30,10 @@ import {
     isSyntheticShadowDefined,
 } from '../renderer';
 
+import { EmptyArray } from './utils';
+import { markComponentAsDirty } from './component';
+import { getUpgradableConstructor } from './upgradable-element';
+import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import {
     createVM,
     appendVM,
@@ -43,10 +47,6 @@ import {
     RenderMode,
     LwcDomMode,
 } from './vm';
-import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
-import { markComponentAsDirty } from './component';
-import { getUpgradableConstructor } from './upgradable-element';
-import { EmptyArray } from './utils';
 import {
     VNode,
     VNodes,
@@ -58,6 +58,7 @@ import {
     Key,
     VBaseElement,
     isVBaseElement,
+    isSameVnode,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -207,10 +208,6 @@ export const CustomElementHook: Hooks<VCustomElement> = {
         }
     }
 };
-
-function sameVnode(vnode1: VNode, vnode2: VNode): boolean {
-    return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
-}
 
 function isVNode(vnode: any): vnode is VNode {
     return vnode != null;
@@ -552,21 +549,21 @@ function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
             newStartVnode = newCh[++newStartIdx];
         } else if (!isVNode(newEndVnode)) {
             newEndVnode = newCh[--newEndIdx];
-        } else if (sameVnode(oldStartVnode, newStartVnode)) {
+        } else if (isSameVnode(oldStartVnode, newStartVnode)) {
             patchVnode(oldStartVnode, newStartVnode);
             oldStartVnode = oldCh[++oldStartIdx];
             newStartVnode = newCh[++newStartIdx];
-        } else if (sameVnode(oldEndVnode, newEndVnode)) {
+        } else if (isSameVnode(oldEndVnode, newEndVnode)) {
             patchVnode(oldEndVnode, newEndVnode);
             oldEndVnode = oldCh[--oldEndIdx];
             newEndVnode = newCh[--newEndIdx];
-        } else if (sameVnode(oldStartVnode, newEndVnode)) {
+        } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patchVnode(oldStartVnode, newEndVnode);
             newEndVnode.hook.move(oldStartVnode, parentElm, nextSibling(oldEndVnode.elm!));
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
-        } else if (sameVnode(oldEndVnode, newStartVnode)) {
+        } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
             patchVnode(oldEndVnode, newStartVnode);
             newStartVnode.hook.move(oldEndVnode, parentElm, oldStartVnode.elm!);

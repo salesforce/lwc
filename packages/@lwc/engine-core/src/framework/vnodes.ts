@@ -23,13 +23,9 @@ export type VNodes = Array<VNode | null>;
 export interface BaseVNode {
     type: VNodeType;
     elm: Node | undefined;
-    // FIXME: Remove unused `sel` property on VText and VComment.
     sel: string | undefined;
-    // FIXME: Remove unused `key` property on VText and VComment.
     key: Key | undefined;
     hook: Hooks<any>;
-    // FIXME: Remove `owner` property on VNodes. This would enable hoisting VNodes creation outside
-    // render method.
     owner: VM;
 }
 
@@ -94,4 +90,8 @@ export interface Hooks<N extends VNode> {
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
     const { type } = vnode;
     return type === VNodeType.Element || type === VNodeType.CustomElement;
+}
+
+export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
+    return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
 }

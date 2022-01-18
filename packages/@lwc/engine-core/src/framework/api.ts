@@ -47,7 +47,7 @@ import {
     ElementHook,
     TextHook,
     markAsDynamicChildren,
-} from './hooks';
+} from './rendering';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
