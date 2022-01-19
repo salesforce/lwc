@@ -81,6 +81,17 @@ function h(sel: string, data: VElementData, children: VNodes): VElement {
                 vmBeingRendered
             );
         }
+        forEach.call(children, (childVnode: VNode | null | undefined) => {
+            if (childVnode != null) {
+                assert.isTrue(
+                    'type' in childVnode &&
+                        'sel' in childVnode &&
+                        'elm' in childVnode &&
+                        'key' in childVnode,
+                    `${childVnode} is not a vnode.`
+                );
+            }
+        });
     }
 
     let elm;
@@ -181,6 +192,19 @@ function c(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered
             );
+        }
+        if (arguments.length === 4) {
+            forEach.call(children, (childVnode: VNode | null | undefined) => {
+                if (childVnode != null) {
+                    assert.isTrue(
+                        'type' in childVnode &&
+                            'sel' in childVnode &&
+                            'elm' in childVnode &&
+                            'key' in childVnode,
+                        `${childVnode} is not a vnode.`
+                    );
+                }
+            });
         }
     }
     const { key } = data;
