@@ -1,5 +1,5 @@
-# shared config. The `__shared-branch-config__` name isn't meaningful.
-__shared-branch-config__: &branch-definition
+# shared config. The `__shared_config__` name isn't meaningful.
+__shared_config__: &branch-definition
   auto-start: true
   auto-start-from-forks: false
   required-downstream-deps:
