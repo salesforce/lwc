@@ -1,29 +1,32 @@
+# shared config. The `__shared-branch-config__` name isn't meaningful.
+__shared-branch-config__: &branch-definition
+  auto-start: true
+  auto-start-from-forks: false
+  required-downstream-deps:
+    - automation-platform/ui-interaction-explorer-components
+    - communities/microsite-template-marketing
+    - communities/shared-experience-components
+    - communities/ui-b2b-components
+    - communities/ui-cms-components
+    - communities/ui-feeds-components
+    - communities/ui-lightning-community
+    - lwc/lwc-platform
+    - salesforce/lds-lightning-platform
+    - salesforce/luvio
+    - salesforce/lwr
+    - salesforce/lwr-recipes
+    - salesforce/utam-docs
+    - salesforcedevs/developer-website
+    - uiplatform/nucleus
 core-deploy:
   enabled: true
   project-modules:
     lwc: lwc.version
 branches:
   ~DEFAULT~:
-    pull-request: &branch-definition
-      auto-start: true
-      auto-start-from-forks: false
+    pull-request:
+      <<: *branch-definition
       merge-method: disabled # do not auto-merge; we'll do it ourselves
-      required-downstream-deps:
-        - automation-platform/ui-interaction-explorer-components
-        - communities/microsite-template-marketing
-        - communities/shared-experience-components
-        - communities/ui-b2b-components
-        - communities/ui-cms-components
-        - communities/ui-feeds-components
-        - communities/ui-lightning-community
-        - lwc/lwc-platform
-        - salesforce/lds-lightning-platform
-        - salesforce/luvio
-        - salesforce/lwr
-        - salesforce/lwr-recipes
-        - salesforce/utam-docs
-        - salesforcedevs/developer-website
-        - uiplatform/nucleus
   release:
     pull-request:
       <<: *branch-definition
@@ -31,9 +34,11 @@ branches:
   winter22:
     pull-request:
       <<: *branch-definition
+      merge-method: disabled # do not auto-merge; we'll do it ourselves
   spring22:
     pull-request:
       <<: *branch-definition
+      merge-method: disabled # do not auto-merge; we'll do it ourselves
 steps:
   node-conformance:
     run:
