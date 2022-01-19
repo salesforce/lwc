@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 // For the full list of parse5 error codes, see:
 // https://github.com/inikulin/parse5/blob/ad2148d/packages/parse5/lib/common/error-codes.js
 export const errorCodesToErrorOn = new Set([
