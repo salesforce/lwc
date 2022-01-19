@@ -140,7 +140,10 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The component instance. */
     component: LightningElement;
     /** The custom element shadow root. */
-    cmpRoot: ShadowRoot | null;
+    shadowRoot: ShadowRoot | null;
+    /** The component render root. If the component is a shadow DOM component, it is its shadow
+     * root. If the component is a light DOM component it the element itself. */
+    renderRoot: ShadowRoot | HostElement;
     /** The template reactive observer. */
     tro: ReactiveObserver;
     /** The accessor reactive observers. Is only used when the ENABLE_REACTIVE_SETTER feature flag
@@ -296,7 +299,6 @@ export function createVM<HostNode, HostElement>(
         cmpTemplate: null,
 
         renderMode: def.renderMode,
-        shadowMode: null!,
 
         context: {
             stylesheetToken: undefined,
@@ -309,9 +311,14 @@ export function createVM<HostNode, HostElement>(
             wiredDisconnecting: EmptyArray,
         },
 
-        tro: null!, // Set synchronously after the VM creation.
-        component: null!, // Set synchronously by the LightningElement constructor.
-        cmpRoot: null!, // Set synchronously by the LightningElement constructor.
+        // Properties set right after VM creation.
+        tro: null!,
+        shadowMode: null!,
+
+        // Properties set by the LightningElement constructor.
+        component: null!,
+        shadowRoot: null!,
+        renderRoot: null!,
 
         callHook,
         setHook,
@@ -378,7 +385,7 @@ function computeShadowMode(vm: VM) {
 }
 
 function assertIsVM(obj: any): asserts obj is VM {
-    if (isNull(obj) || !isObject(obj) || !('cmpRoot' in obj)) {
+    if (isNull(obj) || !isObject(obj) || !('renderRoot' in obj)) {
         throw new TypeError(`${obj} is not a VM.`);
     }
 }
@@ -434,7 +441,7 @@ function hydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { children: oldCh } = vm;
+    const { renderRoot, children: oldCh } = vm;
 
     // caching the new children collection
     vm.children = newCh;
@@ -452,7 +459,6 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    const renderRoot = getRenderRoot(vm);
                     patchChildren(renderRoot, oldCh, newCh);
                 },
                 () => {
@@ -649,14 +655,13 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const { children } = vm;
-    const rootNode = getRenderRoot(vm);
+    const { children, renderRoot } = vm;
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
 
         if (!isNull(child) && !isUndefined(child.elm)) {
-            remove(child.elm, rootNode);
+            remove(child.elm, renderRoot);
         }
     }
     vm.children = EmptyArray;
@@ -741,8 +746,4 @@ export function forceRehydration(vm: VM) {
         markComponentAsDirty(vm);
         scheduleRehydration(vm);
     }
-}
-
-export function getRenderRoot(vm: VM): ShadowRoot | HostElement {
-    return vm.renderMode === RenderMode.Shadow ? vm.cmpRoot : vm.elm;
 }

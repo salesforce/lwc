@@ -248,7 +248,9 @@ export const LightningElement: LightningElementConstructor = function (
     associateVM(elm, vm);
 
     if (vm.renderMode === RenderMode.Shadow) {
-        doAttachShadow(vm);
+        vm.renderRoot = doAttachShadow(vm);
+    } else {
+        vm.renderRoot = elm;
     }
 
     // Adding extra guard rails in DEV mode.
@@ -260,7 +262,7 @@ export const LightningElement: LightningElementConstructor = function (
     return this;
 };
 
-function doAttachShadow(vm: VM) {
+function doAttachShadow(vm: VM): ShadowRoot {
     const {
         elm,
         mode,
@@ -268,18 +270,20 @@ function doAttachShadow(vm: VM) {
         def: { ctor },
     } = vm;
 
-    const cmpRoot = attachShadow(elm, {
+    const shadowRoot = attachShadow(elm, {
         [KEY__SYNTHETIC_MODE]: shadowMode === ShadowMode.Synthetic,
         delegatesFocus: Boolean(ctor.delegatesFocus),
         mode,
     } as any);
 
-    vm.cmpRoot = cmpRoot;
-    associateVM(cmpRoot, vm);
+    vm.shadowRoot = shadowRoot;
+    associateVM(shadowRoot, vm);
 
     if (process.env.NODE_ENV !== 'production') {
-        patchShadowRootWithRestrictions(cmpRoot);
+        patchShadowRootWithRestrictions(shadowRoot);
     }
+
+    return shadowRoot;
 }
 
 function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
@@ -452,7 +456,7 @@ LightningElement.prototype = {
             }
         }
 
-        return vm.cmpRoot;
+        return vm.shadowRoot;
     },
 
     get shadowRoot(): null {

@@ -36,7 +36,6 @@ import { logError, logWarn } from '../shared/logger';
 
 import {
     createVM,
-    getRenderRoot,
     appendVM,
     removeVM,
     hydrateVM,
@@ -339,12 +338,12 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
 }
 
 function linkNodeToShadow(elm: Node, owner: VM) {
-    const { renderMode, shadowMode } = owner;
+    const { renderRoot, renderMode, shadowMode } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
     if (isSyntheticShadowDefined) {
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
-            (elm as any)[KEY__SHADOW_RESOLVER] = getRenderRoot(owner)[KEY__SHADOW_RESOLVER];
+            (elm as any)[KEY__SHADOW_RESOLVER] = renderRoot[KEY__SHADOW_RESOLVER];
         }
     }
 }
