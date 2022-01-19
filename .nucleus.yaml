@@ -3,93 +3,37 @@ core-deploy:
   project-modules:
     lwc: lwc.version
 branches:
+  ~DEFAULT~:
+    pull-request: &branch-definition
+      auto-start: true
+      auto-start-from-forks: false
+      merge-method: disabled # do not auto-merge; we'll do it ourselves
+      required-downstream-deps:
+        - automation-platform/ui-interaction-explorer-components
+        - communities/microsite-template-marketing
+        - communities/shared-experience-components
+        - communities/ui-b2b-components
+        - communities/ui-cms-components
+        - communities/ui-feeds-components
+        - communities/ui-lightning-community
+        - lwc/lwc-platform
+        - salesforce/lds-lightning-platform
+        - salesforce/luvio
+        - salesforce/lwr
+        - salesforce/lwr-recipes
+        - salesforce/utam-docs
+        - salesforcedevs/developer-website
+        - uiplatform/nucleus
   release:
     pull-request:
-      workflow: release
-      auto-start: true
-      auto-start-from-forks: false
-      # release branch should always be exactly in sync with master branch (linear history)
-      merge-method: force-push
-      required-downstream-deps:
-        # sadly these need to be repeated for every branch
-        - automation-platform/ui-interaction-explorer-components
-        - communities/microsite-template-marketing
-        - communities/shared-experience-components
-        - communities/ui-b2b-components
-        - communities/ui-cms-components
-        - communities/ui-feeds-components
-        - communities/ui-lightning-community
-        - lwc/lwc-platform
-        - salesforce/lds-lightning-platform
-        - salesforce/luvio
-        - salesforce/lwr
-        - salesforce/lwr-recipes
-        - salesforce/utam-docs
-        - salesforcedevs/developer-website
-        - uiplatform/nucleus
-  ~DEFAULT~:
-    pull-request:
-      auto-start: true
-      auto-start-from-forks: false
-      merge-method: disabled # do not auto-merge; we'll do it ourselves
-      required-downstream-deps:
-        - automation-platform/ui-interaction-explorer-components
-        - communities/microsite-template-marketing
-        - communities/shared-experience-components
-        - communities/ui-b2b-components
-        - communities/ui-cms-components
-        - communities/ui-feeds-components
-        - communities/ui-lightning-community
-        - lwc/lwc-platform
-        - salesforce/lds-lightning-platform
-        - salesforce/luvio
-        - salesforce/lwr
-        - salesforce/lwr-recipes
-        - salesforce/utam-docs
-        - salesforcedevs/developer-website
-        - uiplatform/nucleus
+      <<: *branch-definition
+      merge-method: force-push # release branch should always be in sync with master branch (linear history)
   winter22:
     pull-request:
-      auto-start: true
-      auto-start-from-forks: false
-      merge-method: disabled # do not auto-merge; we'll do it ourselves
-      required-downstream-deps:
-        - automation-platform/ui-interaction-explorer-components
-        - communities/microsite-template-marketing
-        - communities/shared-experience-components
-        - communities/ui-b2b-components
-        - communities/ui-cms-components
-        - communities/ui-feeds-components
-        - communities/ui-lightning-community
-        - lwc/lwc-platform
-        - salesforce/lds-lightning-platform
-        - salesforce/luvio
-        - salesforce/lwr
-        - salesforce/lwr-recipes
-        - salesforce/utam-docs
-        - salesforcedevs/developer-website
-        - uiplatform/nucleus
+      <<: *branch-definition
   spring22:
     pull-request:
-      auto-start: true
-      auto-start-from-forks: false
-      merge-method: disabled # do not auto-merge; we'll do it ourselves
-      required-downstream-deps:
-        - automation-platform/ui-interaction-explorer-components
-        - communities/microsite-template-marketing
-        - communities/shared-experience-components
-        - communities/ui-b2b-components
-        - communities/ui-cms-components
-        - communities/ui-feeds-components
-        - communities/ui-lightning-community
-        - lwc/lwc-platform
-        - salesforce/lds-lightning-platform
-        - salesforce/luvio
-        - salesforce/lwr
-        - salesforce/lwr-recipes
-        - salesforce/utam-docs
-        - salesforcedevs/developer-website
-        - uiplatform/nucleus
+      <<: *branch-definition
 steps:
   node-conformance:
     run:
