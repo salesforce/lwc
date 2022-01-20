@@ -29,8 +29,8 @@ import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
-import { ComponentDef } from './def';
-import { LightningElement } from './base-lightning-element';
+import { ComponentDef, getComponentInternalDef } from './def';
+import { LightningElement, LightningElementConstructor } from './base-lightning-element';
 import {
     logOperationStart,
     logOperationEnd,
@@ -270,7 +270,7 @@ function getNearestShadowAncestor(vm: VM): VM | null {
 
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
-    def: ComponentDef,
+    ctor: LightningElementConstructor,
     options: {
         mode: ShadowRootMode;
         owner: VM<HostNode, HostElement> | null;
@@ -278,6 +278,7 @@ export function createVM<HostNode, HostElement>(
     }
 ): VM {
     const { mode, owner, tagName } = options;
+    const def = getComponentInternalDef(ctor);
 
     const vm: VM = {
         elm,

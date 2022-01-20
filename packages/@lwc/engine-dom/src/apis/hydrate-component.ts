@@ -5,12 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import {
-    createVM,
-    getComponentInternalDef,
-    LightningElement,
-    hydrateRootElement,
-} from '@lwc/engine-core';
+import { createVM, LightningElement, hydrateRootElement } from '@lwc/engine-core';
 import { isFunction, isNull, isObject } from '@lwc/shared';
 import { setIsHydrating } from '../renderer';
 import { createElement } from './create-element';
@@ -38,14 +33,12 @@ export function hydrateComponent(
         );
     }
 
-    const def = getComponentInternalDef(Ctor);
-
     try {
         // Let the renderer know we are hydrating, so it does not replace the existing shadowRoot
         // and uses the same algo to create the stylesheets as in SSR.
         setIsHydrating(true);
 
-        createVM(element, def, {
+        createVM(element, Ctor, {
             mode: 'open',
             owner: null,
             tagName: element.tagName.toLowerCase(),
