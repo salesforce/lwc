@@ -18,6 +18,7 @@ __shared_config__: &branch-definition
     - salesforce/utam-docs
     - salesforcedevs/developer-website
     - uiplatform/nucleus
+
 core-deploy:
   enabled: true
   project-modules:
