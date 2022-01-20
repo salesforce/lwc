@@ -580,4 +580,12 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+    INVALID_HTML_SYNTAX_WARNING: {
+        code: 1148,
+        message:
+            'Invalid HTML syntax: {0}. This will not be supported in future versions of LWC. For more information, ' +
+            'please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-{0}',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
 };

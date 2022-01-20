@@ -4,10 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/**
- * Next error code: 1149
- */
-
-export * from './compiler';
-export * from './lwc-class';
-export * from './template-transform';
+declare module 'parse5/lib/common/error-codes' {
+    const ERR: { [name: string]: string };
+    export default ERR;
+}
