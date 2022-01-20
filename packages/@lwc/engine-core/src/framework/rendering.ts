@@ -206,7 +206,7 @@ export const CustomElementHook: Hooks<VCustomElement> = {
             // will take care of disconnecting any child VM attached to its shadow as well.
             removeVM(vm);
         }
-    }
+    },
 };
 
 function isVNode(vnode: any): vnode is VNode {
