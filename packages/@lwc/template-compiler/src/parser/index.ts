@@ -7,7 +7,7 @@
 import * as parse5 from 'parse5';
 
 import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE } from '@lwc/shared';
-import { ParserDiagnostics } from '@lwc/errors';
+import { ParserDiagnostics, DiagnosticLevel } from '@lwc/errors';
 
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 
@@ -109,7 +109,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     const ctx = new ParserCtx(source, state.config);
     const fragment = parseHTML(ctx, source);
 
-    if (ctx.warnings.length) {
+    if (ctx.warnings.some((_) => _.level === DiagnosticLevel.Error)) {
         return { warnings: ctx.warnings };
     }
 
