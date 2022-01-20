@@ -22,6 +22,7 @@ function getLwcErrorFromParse5Error(code: string) {
     }
     // It should be impossible to reach here; we have a test in parser.spec.ts to ensure
     // all error codes are accounted for. But just to be safe, make it a warning.
+    // TODO [#2650]: better system for handling unexpected parse5 errors
     // eslint-disable-next-line no-console
     console.warn('Found a Parse5 error that we do not know how to handle:', code);
     return ParserDiagnostics.INVALID_HTML_SYNTAX_WARNING;
