@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayFilter, ArrayJoin, assert, keys } from '@lwc/shared';
+import { isUndefined, ArrayFilter, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 import { getAttribute, getClassList } from '../renderer';
@@ -181,7 +181,7 @@ export function hydrateChildren(elmChildren: NodeListOf<ChildNode>, children: VN
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
 
-        if (childVnode !== null) {
+        if (!isNull(childVnode)) {
             const childNode = elmChildren[childNodeIndex];
             hydrate(childVnode, childNode);
 
