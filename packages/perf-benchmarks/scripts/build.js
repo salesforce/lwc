@@ -20,7 +20,7 @@ const writeFile = promisify(fs.writeFile);
 const {
     BENCHMARK_REPO = 'https://github.com/salesforce/lwc.git',
     BENCHMARK_REF = 'master',
-    BENCHMARK_HORIZON = '25%', // how much difference we want to determine between A and B
+    BENCHMARK_AUTO_SAMPLE_CONDITIONS = '25%', // how much difference we want to determine between A and B
 } = process.env;
 let {
     BENCHMARK_SAMPLE_SIZE = 50, // minimum number of samples to run
@@ -69,7 +69,7 @@ async function createTachometerJson(htmlFilename, benchmarkName) {
     return {
         $schema: 'https://raw.githubusercontent.com/Polymer/tachometer/master/config.schema.json',
         sampleSize: BENCHMARK_SAMPLE_SIZE,
-        horizons: [BENCHMARK_HORIZON],
+        autoSampleConditions: [BENCHMARK_AUTO_SAMPLE_CONDITIONS],
         timeout: BENCHMARK_TIMEOUT,
         benchmarks: [
             {

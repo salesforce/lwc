@@ -54,7 +54,7 @@ You can also use these environment variables to adjust the default benchmark set
 
 ```shell
 BENCHMARK_SAMPLE_SIZE=50
-BENCHMARK_HORIZON=25%
+BENCHMARK_AUTO_SAMPLE_CONDITIONS=25%
 BENCHMARK_TIMEOUT=5
 ```
 
