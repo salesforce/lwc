@@ -10,7 +10,6 @@ import * as he from 'he';
 import { ParserDiagnostics } from '@lwc/errors';
 
 import ParserCtx from './parser';
-import { sourceLocation } from '../shared/ast';
 import { errorCodesToErrorOn, errorCodesToWarnOn } from './parse5Errors';
 
 function getLwcErrorFromParse5Error(code: string) {
@@ -33,7 +32,7 @@ export function parseHTML(ctx: ParserCtx, source: string) {
         const { code, ...location } = err;
 
         const lwcError = getLwcErrorFromParse5Error(code);
-        ctx.warnAtLocation(lwcError, sourceLocation(location), [code]);
+        ctx.warnAtLocation(lwcError, location, [code]);
     };
 
     return parse5.parseFragment(source, {
