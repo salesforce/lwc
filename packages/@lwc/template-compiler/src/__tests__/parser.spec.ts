@@ -5,9 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { DiagnosticLevel } from '@lwc/errors';
+import parse5Errors from 'parse5/lib/common/error-codes';
 import { mergeConfig } from '../config';
 import State from '../state';
 import parse from '../parser';
+import { errorCodesToErrorOn, errorCodesToWarnOn } from '../parser/parse5Errors';
 
 const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
 const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
@@ -613,5 +615,14 @@ describe('props and attributes', () => {
                 under_scoreSecond_underScore: { value: 'bar' },
             });
         });
+    });
+});
+
+describe('error codes', () => {
+    it('all parse5 error codes are accounted for', () => {
+        const allKnownCodes = new Set([...errorCodesToErrorOn, ...errorCodesToWarnOn]);
+        for (const code of Object.values(parse5Errors)) {
+            expect(allKnownCodes.has(code)).toEqual(true);
+        }
     });
 });

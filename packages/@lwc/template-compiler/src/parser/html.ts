@@ -10,11 +10,29 @@ import * as he from 'he';
 import { ParserDiagnostics } from '@lwc/errors';
 
 import ParserCtx from './parser';
+import { errorCodesToErrorOn, errorCodesToWarnOn } from './parse5Errors';
+
+function getLwcErrorFromParse5Error(code: string) {
+    if (errorCodesToErrorOn.has(code)) {
+        return ParserDiagnostics.INVALID_HTML_SYNTAX;
+    }
+    if (errorCodesToWarnOn.has(code)) {
+        return ParserDiagnostics.INVALID_HTML_SYNTAX_WARNING;
+    }
+    // It should be impossible to reach here; we have a test in parser.spec.ts to ensure
+    // all error codes are accounted for. But just to be safe, make it a warning.
+    // TODO [#2650]: better system for handling unexpected parse5 errors
+    // eslint-disable-next-line no-console
+    console.warn('Found a Parse5 error that we do not know how to handle:', code);
+    return ParserDiagnostics.INVALID_HTML_SYNTAX_WARNING;
+}
 
 export function parseHTML(ctx: ParserCtx, source: string) {
     const onParseError = (err: parse5.ParsingError) => {
         const { code, ...location } = err;
-        ctx.warnAtLocation(ParserDiagnostics.INVALID_HTML_SYNTAX, location, [code]);
+
+        const lwcError = getLwcErrorFromParse5Error(code);
+        ctx.warnAtLocation(lwcError, location, [code]);
     };
 
     return parse5.parseFragment(source, {
