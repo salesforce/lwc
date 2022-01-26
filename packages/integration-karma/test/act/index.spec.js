@@ -234,11 +234,28 @@ describe('ACTCompiler', () => {
 
     it('html tags', () => {
         const component = createAndInsertActComponent(testHtmlTags);
-        expect(component.shadowRoot.querySelector('html-tags').innerHTML).toEqual(
-            '<span class="class1" style="color: blue;"></span><div title="test"><h1></h1></div><img ' +
-                'src="data:image/png;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="' +
-                ' alt="Smiley face" height="42">&lt;/img&gt;'
+
+        const htmlTags = component.shadowRoot.querySelector('html-tags');
+
+        expect(htmlTags.childNodes.length).toEqual(4);
+        const span = htmlTags.childNodes[0];
+        const div = htmlTags.childNodes[1];
+        const img = htmlTags.childNodes[2];
+        const text = htmlTags.childNodes[3];
+
+        expect(span.tagName.toLowerCase()).toEqual('span');
+        expect(span.style.color).toEqual('blue');
+        expect(span.className).toEqual('class1');
+
+        expect(div.getAttribute('title')).toEqual('test');
+        expect(div.children.length).toEqual(1);
+        expect(div.children[0].tagName.toLowerCase()).toEqual('h1');
+        expect(img.src).toEqual(
+            'data:image/png;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='
         );
+        expect(img.alt).toEqual('Smiley face');
+        expect(img.getAttribute('height')).toEqual('42');
+        expect(text.textContent).toEqual('</img>');
     });
 
     it('multiple children in slot', () => {
@@ -277,8 +294,19 @@ describe('ACTCompiler', () => {
     it('nested HTML tags', () => {
         const component = createAndInsertActComponent(testNestedHtmlTags);
 
-        expect(component.shadowRoot.querySelector('nested-html-tags').innerHTML).toEqual(
-            '<div><div class="inner"><div></div><h2></h2></div></div>'
+        const nestedHtmlTags = component.shadowRoot.querySelector('nested-html-tags');
+
+        expect(nestedHtmlTags.children.length).toEqual(1);
+        expect(nestedHtmlTags.children[0].tagName.toLowerCase()).toEqual('div');
+        expect(nestedHtmlTags.children[0].children.length).toEqual(1);
+        expect(nestedHtmlTags.children[0].children[0].tagName.toLowerCase()).toEqual('div');
+        expect(nestedHtmlTags.children[0].children[0].className).toEqual('inner');
+        expect(nestedHtmlTags.children[0].children[0].children.length).toEqual(2);
+        expect(nestedHtmlTags.children[0].children[0].children[0].tagName.toLowerCase()).toEqual(
+            'div'
+        );
+        expect(nestedHtmlTags.children[0].children[0].children[1].tagName.toLowerCase()).toEqual(
+            'h2'
         );
     });
 
