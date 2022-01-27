@@ -15,7 +15,7 @@ import Store from 'perf-benchmarks-components/dist/server/benchmark/store/store.
 import { benchmark, run, before } from '../../utils/benchmark-framework.js';
 import { insertComponent } from '../../utils/utils';
 
-benchmark(`benchmark-table-component/hydrate/10k`, () => {
+benchmark(`benchmark-table-component/hydrate/1k`, () => {
     let props;
     let tableElement;
 
