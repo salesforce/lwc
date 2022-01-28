@@ -86,7 +86,11 @@ export default function serialize(result: Result, config: Config): string {
     }
 
     // exports
-    buffer += `export default [${stylesheetList.join(', ')}];`;
+    if (stylesheetList.length) {
+        buffer += `export default [${stylesheetList.join(', ')}];`;
+    } else {
+        buffer += `export default undefined;`;
+    }
 
     return buffer;
 }

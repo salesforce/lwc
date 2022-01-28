@@ -7,6 +7,8 @@
     }
     var _implicitStylesheets = [stylesheet];
 
+    var _implicitScopedStylesheets = undefined;
+
     const stc0$1 = {
       key: 0
     };
@@ -21,7 +23,9 @@
     if (_implicitStylesheets) {
       tmpl$1.stylesheets.push.apply(tmpl$1.stylesheets, _implicitStylesheets);
     }
-    tmpl$1.stylesheetToken = "x-foo_foo";
+    if (_implicitStylesheets || _implicitScopedStylesheets) {
+      tmpl$1.stylesheetToken = "x-foo_foo";
+    }
 
     class Foo extends lwc.LightningElement {
       constructor(...args) {
@@ -62,7 +66,6 @@
     }
     var _tmpl = lwc.registerTemplate(tmpl);
     tmpl.stylesheets = [];
-    tmpl.stylesheetToken = "x-app_app";
 
     class App extends lwc.LightningElement {
       constructor() {

@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 
 import Multi from 'x/multi';
+import MultiNoStyleInFirst from 'x/multiNoStyleInFirst';
 
 describe('multiple templates', () => {
     it('can render multiple templates with different styles', () => {
@@ -22,5 +23,38 @@ describe('multiple templates', () => {
             // element should not be dirty after template change
             expect(element.querySelector('div').hasAttribute('foo')).toEqual(false);
         });
+    });
+
+    it('works when first template has no scoped style but second template does', () => {
+        const element = createElement('x-multi-no-style-in-first', { is: MultiNoStyleInFirst });
+        document.body.appendChild(element);
+        return Promise.resolve()
+            .then(() => {
+                expect(getComputedStyle(element.querySelector('.red')).color).toEqual(
+                    'rgb(0, 0, 0)'
+                );
+                expect(getComputedStyle(element).marginLeft).toEqual('0px');
+                element.next();
+            })
+            .then(() => {
+                expect(getComputedStyle(element.querySelector('.red')).color).toEqual(
+                    'rgb(255, 0, 0)'
+                );
+                expect(getComputedStyle(element).marginLeft).toEqual('5px');
+                element.next();
+            })
+            .then(() => {
+                expect(getComputedStyle(element.querySelector('.red')).color).toEqual(
+                    'rgb(0, 0, 0)'
+                );
+                expect(getComputedStyle(element).marginLeft).toEqual('0px');
+                element.next();
+            })
+            .then(() => {
+                expect(getComputedStyle(element.querySelector('.red')).color).toEqual(
+                    'rgb(255, 0, 0)'
+                );
+                expect(getComputedStyle(element).marginLeft).toEqual('5px');
+            });
     });
 });
