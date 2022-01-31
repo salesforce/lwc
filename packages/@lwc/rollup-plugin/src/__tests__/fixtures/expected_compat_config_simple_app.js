@@ -38,6 +38,9 @@
       }
     }));
 
+    Object.compatDefineProperty(subClass, "prototype", {
+      writable: false
+    });
     if (superClass) _setPrototypeOf(subClass, superClass);
   }
 
