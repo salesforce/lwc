@@ -7,9 +7,9 @@
 import { isUndefined } from '@lwc/shared';
 
 import { addEventListener } from '../../renderer';
-import { VElement } from '../vnodes';
+import { VBaseElement } from '../vnodes';
 
-export function applyEventListeners(vnode: VElement) {
+export function applyEventListeners(vnode: VBaseElement) {
     const {
         elm,
         data: { on },

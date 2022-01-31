@@ -27,18 +27,27 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
-import { EmptyArray, EmptyObject } from './utils';
+import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
 import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
-import { VNode, VNodes, VElement, VText, VCustomElement, VComment, VElementData } from './vnodes';
+import {
+    VNode,
+    VNodes,
+    VElement,
+    VText,
+    VCustomElement,
+    VComment,
+    VElementData,
+    VNodeType,
+} from './vnodes';
 import {
     CommentHook,
     CustomElementHook,
     ElementHook,
     TextHook,
     markAsDynamicChildren,
-} from './hooks';
+} from './rendering';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -75,11 +84,8 @@ function h(sel: string, data: VElementData, children: VNodes): VElement {
         forEach.call(children, (childVnode: VNode | null | undefined) => {
             if (childVnode != null) {
                 assert.isTrue(
-                    childVnode &&
+                    'type' in childVnode &&
                         'sel' in childVnode &&
-                        'data' in childVnode &&
-                        'children' in childVnode &&
-                        'text' in childVnode &&
                         'elm' in childVnode &&
                         'key' in childVnode,
                     `${childVnode} is not a vnode.`
@@ -88,14 +94,14 @@ function h(sel: string, data: VElementData, children: VNodes): VElement {
         });
     }
 
-    let text, elm;
+    let elm;
     const { key } = data;
 
     return {
+        type: VNodeType.Element,
         sel,
         data,
         children,
-        text,
         elm,
         key,
         hook: ElementHook,
@@ -191,11 +197,8 @@ function c(
             forEach.call(children, (childVnode: VNode | null | undefined) => {
                 if (childVnode != null) {
                     assert.isTrue(
-                        childVnode &&
+                        'type' in childVnode &&
                             'sel' in childVnode &&
-                            'data' in childVnode &&
-                            'children' in childVnode &&
-                            'text' in childVnode &&
                             'elm' in childVnode &&
                             'key' in childVnode,
                         `${childVnode} is not a vnode.`
@@ -205,12 +208,12 @@ function c(
         }
     }
     const { key } = data;
-    let text, elm;
+    let elm;
     const vnode: VCustomElement = {
+        type: VNodeType.CustomElement,
         sel,
         data,
         children,
-        text,
         elm,
         key,
 
@@ -336,12 +339,10 @@ function f(items: any[]): any[] {
 
 // [t]ext node
 function t(text: string): VText {
-    const data = EmptyObject;
-    let sel, children, key, elm;
+    let sel, key, elm;
     return {
+        type: VNodeType.Text,
         sel,
-        data,
-        children,
         text,
         elm,
         key,
@@ -353,12 +354,10 @@ function t(text: string): VText {
 
 // [co]mment node
 function co(text: string): VComment {
-    const data = EmptyObject;
-    let sel, children, key, elm;
+    let sel, key, elm;
     return {
+        type: VNodeType.Comment,
         sel,
-        data,
-        children,
         text,
         elm,
         key,

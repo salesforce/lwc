@@ -10,11 +10,11 @@ import { setAttribute, removeAttribute } from '../../renderer';
 
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
-import { VElement } from '../vnodes';
+import { VBaseElement } from '../vnodes';
 
 const ColonCharCode = 58;
 
-export function patchAttributes(oldVnode: VElement | null, vnode: VElement) {
+export function patchAttributes(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     const { attrs } = vnode.data;
     if (isUndefined(attrs)) {
         return;

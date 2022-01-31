@@ -4,61 +4,63 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/**
- @license
- Copyright (c) 2015 Simon Friis Vindum.
- This code may only be used under the MIT License found at
- https://github.com/snabbdom/snabbdom/blob/master/LICENSE
- Code distributed by Snabbdom as part of the Snabbdom project at
- https://github.com/snabbdom/snabbdom/
- */
 
 import { VM } from './vm';
 
 export type Key = string | number;
 
+export const enum VNodeType {
+    Text,
+    Comment,
+    Element,
+    CustomElement,
+}
+
+export type VNode = VText | VComment | VElement | VCustomElement;
+export type VParentElement = VElement | VCustomElement;
 export type VNodes = Array<VNode | null>;
 
-export interface VNode {
-    sel: string | undefined;
-    data: VNodeData;
-    children: VNodes | undefined;
+export interface BaseVNode {
+    type: VNodeType;
     elm: Node | undefined;
-    text: string | undefined;
+    sel: string | undefined;
     key: Key | undefined;
     hook: Hooks<any>;
     owner: VM;
 }
 
-export interface VElement extends VNode {
+export interface VText extends BaseVNode {
+    type: VNodeType.Text;
+    sel: undefined;
+    text: string;
+    key: undefined;
+}
+
+export interface VComment extends BaseVNode {
+    type: VNodeType.Comment;
+    sel: undefined;
+    text: string;
+    key: undefined;
+}
+
+export interface VBaseElement extends BaseVNode {
     sel: string;
     data: VElementData;
     children: VNodes;
     elm: Element | undefined;
-    text: undefined;
     key: Key;
 }
 
-export interface VCustomElement extends VElement {
+export interface VElement extends VBaseElement {
+    type: VNodeType.Element;
+}
+
+export interface VCustomElement extends VBaseElement {
+    type: VNodeType.CustomElement;
     mode: 'closed' | 'open';
     ctor: any;
     // copy of the last allocated children.
     aChildren?: VNodes;
-}
-
-export interface VText extends VNode {
-    sel: undefined;
-    children: undefined;
-    elm: Node | undefined;
-    text: string;
-    key: undefined;
-}
-
-export interface VComment extends VNode {
-    sel: undefined;
-    children: undefined;
-    text: string;
-    key: undefined;
 }
 
 export interface VNodeData {
@@ -83,5 +85,13 @@ export interface Hooks<N extends VNode> {
     move: (vNode: N, parentNode: Node, referenceNode: Node | null) => void;
     update: (oldVNode: N, vNode: N) => void;
     remove: (vNode: N, parentNode: Node) => void;
-    hydrate: (vNode: N, node: Node) => void;
+}
+
+export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
+    const { type } = vnode;
+    return type === VNodeType.Element || type === VNodeType.CustomElement;
+}
+
+export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
+    return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
 }
