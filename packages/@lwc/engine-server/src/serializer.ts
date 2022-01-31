@@ -23,7 +23,7 @@ function serializeChildNodes(children: HostChildNode[]): string {
         .map((child): string => {
             switch (child.type) {
                 case HostNodeType.Text:
-                    return htmlEscape(child.value);
+                    return child.value === '' ? '\u200D' : htmlEscape(child.value);
                 case HostNodeType.Comment:
                     return `<!--${htmlEscape(child.value)}-->`;
                 case HostNodeType.Raw:
