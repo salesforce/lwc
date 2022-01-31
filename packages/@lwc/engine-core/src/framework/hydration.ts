@@ -59,7 +59,7 @@ function hydrateText(vnode: VText, node: Node) {
         // eslint-disable-next-line lwc-internal/no-global-node
         validateNodeType(vnode, node, Node.TEXT_NODE);
 
-        if (node.nodeValue !== vnode.text) {
+        if (node.nodeValue !== vnode.text && !(node.nodeValue === '\u200D' && vnode.text === '')) {
             logWarn(
                 'Hydration mismatch: text values do not match, will recover from the difference',
                 vnode.owner
