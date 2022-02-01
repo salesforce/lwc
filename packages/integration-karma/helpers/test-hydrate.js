@@ -32,7 +32,7 @@ window.HydrateTest = (function (lwc, testUtils) {
             includeShadowRoots: true,
         });
 
-        const testTarget = fragment.querySelector('x-main');
+        const testTarget = fragment.body.firstChild;
         if (!browserSupportsDeclarativeShadowDOM) {
             polyfillDeclarativeShadowDom(testTarget);
         }
@@ -45,7 +45,8 @@ window.HydrateTest = (function (lwc, testUtils) {
 
     function runTest(ssrRendered, Component, testConfig) {
         const container = appendTestTarget(ssrRendered);
-        let target = container.querySelector('x-main');
+        const selector = container.firstChild.tagName;
+        let target = container.querySelector(selector);
 
         const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
 
@@ -57,7 +58,7 @@ window.HydrateTest = (function (lwc, testUtils) {
         consoleSpy.reset();
 
         // let's select again the target, it should be the same elements as in the snapshot
-        target = container.querySelector('x-main');
+        target = container.querySelector(selector);
         return testConfig.test(target, snapshot, consoleSpy.calls);
     }
 
