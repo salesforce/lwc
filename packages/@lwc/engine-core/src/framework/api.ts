@@ -31,6 +31,7 @@ import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
 import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
+import { markAsDynamicChildren } from './rendering';
 import {
     VNode,
     VNodes,
@@ -41,13 +42,6 @@ import {
     VElementData,
     VNodeType,
 } from './vnodes';
-import {
-    CommentHook,
-    CustomElementHook,
-    ElementHook,
-    TextHook,
-    markAsDynamicChildren,
-} from './rendering';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -104,7 +98,6 @@ function h(sel: string, data: VElementData, children: VNodes): VElement {
         children,
         elm,
         key,
-        hook: ElementHook,
         owner: vmBeingRendered,
     };
 }
@@ -217,7 +210,6 @@ function c(
         elm,
         key,
 
-        hook: CustomElementHook,
         ctor: Ctor,
         owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
@@ -346,8 +338,6 @@ function t(text: string): VText {
         text,
         elm,
         key,
-
-        hook: TextHook,
         owner: getVMBeingRendered()!,
     };
 }
@@ -361,8 +351,6 @@ function co(text: string): VComment {
         text,
         elm,
         key,
-
-        hook: CommentHook,
         owner: getVMBeingRendered()!,
     };
 }

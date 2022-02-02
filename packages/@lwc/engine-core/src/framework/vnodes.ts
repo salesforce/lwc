@@ -25,7 +25,6 @@ export interface BaseVNode {
     elm: Node | undefined;
     sel: string | undefined;
     key: Key | undefined;
-    hook: Hooks<any>;
     owner: VM;
 }
 
@@ -80,14 +79,6 @@ export interface VNodeData {
 export interface VElementData extends VNodeData {
     // Similar to above, all props are readonly
     readonly key: Key;
-}
-
-export interface Hooks<N extends VNode> {
-    create: (vNode: N) => void;
-    insert: (vNode: N, parentNode: Node, referenceNode: Node | null) => void;
-    move: (vNode: N, parentNode: Node, referenceNode: Node | null) => void;
-    update: (oldVNode: N, vNode: N) => void;
-    remove: (vNode: N, parentNode: Node) => void;
 }
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
