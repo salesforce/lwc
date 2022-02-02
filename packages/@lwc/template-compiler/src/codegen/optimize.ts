@@ -78,10 +78,7 @@ export function optimizeStaticExpressions(
             const variableName = `stc${keysToVariableNames.size}`;
             // e.g. `const stc0 = { /* original object */ };
             const declaration = t.variableDeclaration('const', [
-                t.variableDeclarator(
-                    t.identifier(variableName),
-                    node
-                ),
+                t.variableDeclarator(t.identifier(variableName), node),
             ]);
             result.push(declaration);
             keysToVariableNames.set(key, variableName);
