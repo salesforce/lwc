@@ -67,7 +67,7 @@ export function optimizeStaticExpressions(
         return false;
     }
 
-    function extractStaticVariable(node: t.Expression): t.Identifier {
+    function extractStaticVariable(node: t.ObjectExpression | t.ArrayExpression): t.Identifier {
         // This key generation can probably be improved using a hash code, but stringification is
         // simplest for finding a unique identifier for an object/array expression
         const key = astring.generate(node);
@@ -80,7 +80,7 @@ export function optimizeStaticExpressions(
             const declaration = t.variableDeclaration('const', [
                 t.variableDeclarator(
                     t.identifier(variableName),
-                    node as t.ArrayExpression | t.ObjectExpression
+                    node
                 ),
             ]);
             result.push(declaration);
