@@ -56,7 +56,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-function h(sel: string, data: Readonly<VElementData>, children: Readonly<VNodes>): VElement {
+function h(sel: string, data: Readonly<VElementData>, children: VNodes): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -133,9 +133,9 @@ function ti(value: any): number {
 function s(
     slotName: string,
     data: Readonly<VElementData>,
-    children: Readonly<VNodes>,
+    children: VNodes,
     slotset: SlotSet | undefined
-): VElement | Readonly<VNodes> {
+): VElement | VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -167,7 +167,7 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: Readonly<VElementData>,
-    children: Readonly<VNodes> = EmptyArray
+    children: VNodes = EmptyArray
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
@@ -229,8 +229,8 @@ function c(
 // [i]terable node
 function i(
     iterable: Iterable<any>,
-    factory: (value: any, index: number, first: boolean, last: boolean) => Readonly<VNodes> | VNode
-): Readonly<VNodes> {
+    factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
+): VNodes {
     const list: VNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
@@ -463,7 +463,7 @@ function dc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: Readonly<VElementData>,
-    children?: Readonly<VNodes>
+    children?: VNodes
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `dc() 1st argument sel must be a string.`);
@@ -507,7 +507,7 @@ function dc(
  *   - children that are produced by iteration
  *
  */
-function sc(vnodes: Readonly<VNodes>): Readonly<VNodes> {
+function sc(vnodes: VNodes): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(vnodes), 'sc() api can only work with arrays.');
     }

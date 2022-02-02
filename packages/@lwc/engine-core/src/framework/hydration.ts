@@ -168,11 +168,7 @@ function hydrateCustomElement(vnode: VCustomElement, node: Node) {
     hydrateVM(vm);
 }
 
-export function hydrateChildren(
-    elmChildren: NodeListOf<ChildNode>,
-    children: Readonly<VNodes>,
-    vm: VM
-) {
+export function hydrateChildren(elmChildren: NodeListOf<ChildNode>, children: VNodes, vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         const filteredVNodes = ArrayFilter.call(children, (vnode) => !!vnode);
 
