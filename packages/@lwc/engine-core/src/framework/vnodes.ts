@@ -21,7 +21,7 @@ export type VParentElement = VElement | VCustomElement;
 export type VNodes = Array<VNode | null>;
 
 export interface BaseVNode {
-    type: Readonly<VNodeType>;
+    type: VNodeType;
     elm: Node | undefined;
     sel: string | undefined;
     key: Key | undefined;
