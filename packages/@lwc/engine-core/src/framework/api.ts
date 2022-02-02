@@ -318,7 +318,7 @@ function i(
 /**
  * [f]lattening
  */
-function f(items: Readonly<any[]>): Readonly<any[]> {
+function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     }
