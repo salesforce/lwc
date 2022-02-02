@@ -45,7 +45,7 @@ export interface VComment extends BaseVNode {
 
 export interface VBaseElement extends BaseVNode {
     sel: string;
-    data: Readonly<VElementData>;
+    data: VElementData;
     children: VNodes;
     elm: Element | undefined;
     key: Key;
@@ -78,6 +78,7 @@ export interface VNodeData {
 }
 
 export interface VElementData extends VNodeData {
+    // Similar to above, all props are readonly
     readonly key: Key;
 }
 

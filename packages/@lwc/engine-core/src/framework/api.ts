@@ -56,7 +56,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-function h(sel: string, data: Readonly<VElementData>, children: VNodes): VElement {
+function h(sel: string, data: VElementData, children: VNodes): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -132,7 +132,7 @@ function ti(value: any): number {
 // [s]lot element node
 function s(
     slotName: string,
-    data: Readonly<VElementData>,
+    data: VElementData,
     children: VNodes,
     slotset: SlotSet | undefined
 ): VElement | VNodes {
@@ -166,7 +166,7 @@ function s(
 function c(
     sel: string,
     Ctor: LightningElementConstructor,
-    data: Readonly<VElementData>,
+    data: VElementData,
     children: VNodes = EmptyArray
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
@@ -462,7 +462,7 @@ let dynamicImportedComponentCounter = 0;
 function dc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
-    data: Readonly<VElementData>,
+    data: VElementData,
     children?: VNodes
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
