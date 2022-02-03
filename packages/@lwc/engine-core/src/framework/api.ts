@@ -201,7 +201,7 @@ function c(
         }
     }
     const { key } = data;
-    let elm;
+    let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
         sel,
@@ -213,6 +213,8 @@ function c(
         ctor: Ctor,
         owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
+        aChildren,
+        vm,
     };
     addVNodeToChildLWC(vnode);
     return vnode;

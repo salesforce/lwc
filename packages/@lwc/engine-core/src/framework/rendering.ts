@@ -83,9 +83,9 @@ function patch(n1: VNode | null, n2: VNode, parent: ParentNode, anchor: Node | n
     }
 
     // FIXME: When does this occurs, is it possible with LWC?
-    if (!isNull(n1) && !sameVnode(n1, n2)) {
-        anchor = n2.owner.renderer.nextSibling(n1.elm);
-        unmount(n1, parent);
+    if (!isNull(n1) && !isSameVnode(n1, n2)) {
+        anchor = nextSibling(n1.elm);
+        unmount(n1, parent, true);
         n1 = null;
     }
 
@@ -169,7 +169,7 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
     patchElementPropsAndAttrs(null, vnode);
 
     insertNode(elm, parent, anchor);
-    mountChildren(vnode.children, elm, null);
+    mountVNodes(vnode.children, elm, null);
 }
 
 function patchElement(n1: VElement, n2: VElement) {
@@ -210,6 +210,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
 
     linkNodeToShadow(elm, owner);
     vnode.elm = elm;
+    vnode.vm = vm;
 
     if (vm) {
         allocateChildren(vnode, vm);
@@ -227,7 +228,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
         runConnectedCallback(vm);
     }
 
-    mountChildren(vnode.children, elm, null);
+    mountVNodes(vnode.children, elm, null);
 
     if (vm) {
         appendVM(vm);
@@ -236,10 +237,10 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
 
 function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
     const elm = (n2.elm = n1.elm!);
-    const vm = getAssociatedVMIfPresent(elm);
+    const vm = (n2.vm = n1.vm);
 
     patchElementPropsAndAttrs(n1, n2);
-    if (vm) {
+    if (!isUndefined(vm)) {
         // in fallback mode, the allocation will always set children to
         // empty and delegate the real allocation to the slot elements
         allocateChildren(n2, vm);
@@ -249,32 +250,44 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
     // will happen, but in native, it does allocate the light dom
     patchChildren(n1.children, n2.children, elm);
 
-    if (vm) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(
-                isArray(n2.children),
-                `Invalid vnode for a custom element, it must have children defined.`
-            );
-        }
+    if (!isUndefined(vm)) {
         // this will probably update the shadowRoot, but only if the vm is in a dirty state
         // this is important to preserve the top to bottom synchronous rendering phase.
         rerenderVM(vm);
     }
 }
 
-function unmount(vnode: VNode, parent: ParentNode) {
-    const { elm } = vnode;
+function mountVNodes(
+    vnodes: VNodes,
+    parent: ParentNode,
+    anchor: Node | null,
+    start: number = 0,
+    end: number = vnodes.length
+) {
+    for (; start < end; ++start) {
+        const vnode = vnodes[start];
+        if (isVNode(vnode)) {
+            patch(null, vnode, parent, anchor);
+        }
+    }
+}
 
-    // FIXME: We only need to do this, to the top level elements. Wrap this in a if block.
-    removeNode(elm!, parent);
+function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
+    const { type, elm } = vnode;
 
-    switch (vnode.type) {
+    // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
+    // subtree root, is the only element worth unmounting from the subtree.
+    if (doRemove) {
+        removeNode(elm!, parent);
+    }
+
+    switch (type) {
         case VNodeType.Element:
-            unmountChildren(vnode.children, elm as ParentNode);
+            unmountVNodes(vnode.children, elm as ParentNode);
             break;
 
         case VNodeType.CustomElement: {
-            const vm = getAssociatedVMIfPresent(vnode.elm);
+            const { vm } = vnode;
 
             // No need to unmount the children here, `removeVM` will take care of removing the
             // children.
@@ -285,22 +298,17 @@ function unmount(vnode: VNode, parent: ParentNode) {
     }
 }
 
-function mountChildren(children: VNodes, parent: ParentNode, anchor: Node | null) {
-    for (let i = 0; i < children.length; ++i) {
-        const child = children[i];
-
-        if (child != null) {
-            patch(null, child, parent, anchor);
-        }
-    }
-}
-
-function unmountChildren(children: VNodes, parent: ParentNode) {
-    for (let i = 0; i < children.length; ++i) {
-        const child = children[i];
-
-        if (child != null) {
-            unmount(child, parent);
+function unmountVNodes(
+    vnodes: VNodes,
+    parent: ParentNode,
+    doRemove: boolean = false,
+    start: number = 0,
+    end: number = vnodes.length
+) {
+    for (; start < end; ++start) {
+        const ch = vnodes[start];
+        if (isVNode(ch)) {
+            unmount(ch, parent, doRemove);
         }
     }
 }
@@ -566,32 +574,6 @@ function createKeyToOldIdx(
     return map;
 }
 
-function addVnodes(
-    parentElm: Node,
-    before: Node | null,
-    vnodes: VNodes,
-    startIdx: number,
-    endIdx: number
-) {
-    for (; startIdx <= endIdx; ++startIdx) {
-        const ch = vnodes[startIdx];
-        if (isVNode(ch)) {
-            ch.hook.create(ch);
-            ch.hook.insert(ch, parentElm, before);
-        }
-    }
-}
-
-function removeVnodes(parentElm: Node, vnodes: VNodes, startIdx: number, endIdx: number): void {
-    for (; startIdx <= endIdx; ++startIdx) {
-        const ch = vnodes[startIdx];
-        // text nodes do not have logic associated to them
-        if (isVNode(ch)) {
-            ch.hook.remove(ch, parentElm);
-        }
-    }
-}
-
 function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode) {
     let oldStartIdx = 0;
     let newStartIdx = 0;
@@ -675,9 +657,9 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
                 n = newCh[++i];
             } while (!isVNode(n) && i < newChEnd);
             before = isVNode(n) ? n.elm : null;
-            addVnodes(parent, before, newCh, newStartIdx, newEndIdx);
+            mountVNodes(newCh, parent, before, newStartIdx, newEndIdx + 1);
         } else {
-            removeVnodes(parent, oldCh, oldStartIdx, oldEndIdx);
+            unmountVNodes(oldCh, parent, true, oldStartIdx, oldEndIdx + 1);
         }
     }
 }
@@ -688,14 +670,14 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
 
     if (c1Length === 0) {
         // the old list is empty, we can directly insert anything new
-        mountChildren(c2, parent, null);
+        mountVNodes(c2, parent, null);
         return;
     }
 
     if (c2Length === 0) {
         // the old list is nonempty and the new list is empty so we can directly remove all old nodes
         // this is the case in which the dynamic children of an if-directive should be removed
-        unmountChildren(c1, parent);
+        unmountVNodes(c1, parent, true);
         return;
     }
 
@@ -705,6 +687,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
     for (let i = c2Length - 1; i >= 0; i -= 1) {
         const n1 = c1[i];
         const n2 = c2[i];
+
         if (n2 !== n1) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
@@ -713,7 +696,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null
-                    unmount(n1, parent);
+                    unmount(n1, parent, true);
                 }
             } else if (isVNode(n2)) {
                 patch(null, n2, parent, anchor);

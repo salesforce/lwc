@@ -58,8 +58,8 @@ export interface VCustomElement extends VBaseElement {
     type: VNodeType.CustomElement;
     mode: 'closed' | 'open';
     ctor: any;
-    // copy of the last allocated children.
-    aChildren?: VNodes;
+    aChildren: VNodes | undefined;
+    vm: VM | undefined;
 }
 
 export interface VNodeData {
