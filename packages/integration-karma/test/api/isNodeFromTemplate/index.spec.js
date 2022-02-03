@@ -72,7 +72,9 @@ if (!process.env.NATIVE_SHADOW) {
         const span = document.createElement('span');
         elm.shadowRoot.querySelector('h2').appendChild(span);
 
-        return new Promise(setTimeout).then(() => {
+        return new Promise((resolve) => {
+            setTimeout(resolve);
+        }).then(() => {
             expect(isNodeFromTemplate(span)).toBe(false);
         });
     });
