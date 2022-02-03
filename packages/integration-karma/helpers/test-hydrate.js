@@ -48,23 +48,35 @@ window.HydrateTest = (function (lwc, testUtils) {
         const selector = container.firstChild.tagName.toLowerCase();
         let target = container.querySelector(selector);
 
-        const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
-
-        const props = testConfig.props || {};
-        const clientProps = testConfig.clientProps || props;
-
+        let testResult;
         const consoleSpy = testUtils.spyConsole();
 
-        if (testConfig.useCustomElementRegistry) {
-            customElements.define(selector, Component.CustomElementConstructor);
-        } else {
-            lwc.hydrateComponent(target, Component, clientProps);
+        if (testConfig.test) {
+            const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
+
+            const props = testConfig.props || {};
+            const clientProps = testConfig.clientProps || props;
+
+            if (testConfig.useCustomElementRegistry) {
+                customElements.define(selector, Component.CustomElementConstructor);
+            } else {
+                lwc.hydrateComponent(target, Component, clientProps);
+            }
+
+            // let's select again the target, it should be the same elements as in the snapshot
+            target = container.querySelector(selector);
+            testResult = testConfig.test(target, snapshot, consoleSpy.calls);
+        } else if (testConfig.advancedTest) {
+            testResult = testConfig.advancedTest(target, {
+                Component,
+                hydrateComponent: lwc.hydrateComponent.bind(lwc),
+                consoleSpy,
+            });
         }
+
         consoleSpy.reset();
 
-        // let's select again the target, it should be the same elements as in the snapshot
-        target = container.querySelector(selector);
-        return testConfig.test(target, snapshot, consoleSpy.calls);
+        return testResult;
     }
 
     return {

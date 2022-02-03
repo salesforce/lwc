@@ -4,16 +4,18 @@ export default {
     },
     useCustomElementRegistry: true,
     snapshot(target) {
-        const p = target.querySelector('p');
         return {
-            p,
-            text: p.firstChild,
+            p: target.querySelector('p'),
+            span: target.querySelector('span'),
         };
     },
     test(target, snapshots) {
-        const p = target.querySelector('p');
-        expect(p).toBe(snapshots.p);
-        expect(p.firstChild).toBe(snapshots.text);
-        expect(p.textContent).toBe('Hello world');
+        const hydratedSnapshots = this.snapshot(target);
+
+        expect(snapshots.p.textContent).toBe('hello from the server');
+        expect(snapshots.span).toBeNull();
+
+        expect(hydratedSnapshots.p).toBeNull();
+        expect(hydratedSnapshots.span.textContent).toBe('hello from the client');
     },
 };

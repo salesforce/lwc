@@ -12,6 +12,7 @@ import {
     getComponentHtmlPrototype,
     LightningElement,
 } from '@lwc/engine-core';
+import { hydrateComponent } from './hydrate-component';
 
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;
@@ -49,16 +50,26 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
     const HtmlPrototype = getComponentHtmlPrototype(Ctor);
 
     return class extends HtmlPrototype {
+        isHydrated = false;
         constructor() {
             super();
-            createVM(this, Ctor, {
-                mode: 'open',
-                owner: null,
-                tagName: this.tagName,
-            });
+            if (this.isConnected) {
+                hydrateComponent(this, Ctor, {});
+                this.isHydrated = true;
+            } else {
+                createVM(this, Ctor, {
+                    mode: 'open',
+                    owner: null,
+                    tagName: this.tagName,
+                });
+            }
         }
         connectedCallback() {
-            connectRootElement(this);
+            if (this.isHydrated) {
+                this.isHydrated = false;
+            } else {
+                connectRootElement(this);
+            }
         }
         disconnectedCallback() {
             disconnectRootElement(this);

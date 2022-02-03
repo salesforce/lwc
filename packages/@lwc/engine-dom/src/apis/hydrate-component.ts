@@ -10,6 +10,7 @@ import {
     LightningElement,
     hydrateRootElement,
     connectRootElement,
+    getAssociatedVMIfPresent,
 } from '@lwc/engine-core';
 import { isFunction, isNull, isObject } from '@lwc/shared';
 import { setIsHydrating } from '../renderer';
@@ -35,6 +36,15 @@ export function hydrateComponent(
         throw new TypeError(
             `"hydrateComponent" expects an object as the third parameter but instead received ${props}.`
         );
+    }
+
+    if (getAssociatedVMIfPresent(element)) {
+        /* eslint-disable-next-line no-console */
+        console.warn(
+            `"hydrateComponent" expects an element that is not hydrated, instead received %o.`,
+            element
+        );
+        return;
     }
 
     try {
