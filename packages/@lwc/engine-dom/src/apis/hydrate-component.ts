@@ -5,10 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { createVM, LightningElement, hydrateRootElement } from '@lwc/engine-core';
+import {
+    createVM,
+    LightningElement,
+    hydrateRootElement,
+    connectRootElement,
+} from '@lwc/engine-core';
 import { isFunction, isNull, isObject } from '@lwc/shared';
 import { setIsHydrating } from '../renderer';
-import { createElement } from './create-element';
 
 export function hydrateComponent(
     element: Element,
@@ -60,15 +64,24 @@ export function hydrateComponent(
         console.error('Recovering from error while hydrating: ', e);
 
         setIsHydrating(false);
-        const newElem = createElement(element.tagName, {
-            is: Ctor,
+
+        // Re-create the element content.
+        createVM(element, Ctor, {
             mode: 'open',
+            owner: null,
+            tagName: element.tagName.toLowerCase(),
         });
 
-        for (const [key, value] of Object.entries(props)) {
-            (newElem as any)[key] = value;
+        if (Ctor.renderMode === 'light') {
+            while (!isNull(element.firstChild)) {
+                element.removeChild(element.firstChild);
+            }
         }
 
-        element.parentNode!.replaceChild(newElem, element);
+        for (const [key, value] of Object.entries(props)) {
+            (element as any)[key] = value;
+        }
+
+        connectRootElement(element);
     }
 }
