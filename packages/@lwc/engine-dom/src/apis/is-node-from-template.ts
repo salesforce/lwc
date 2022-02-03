@@ -25,12 +25,18 @@ export function isNodeFromTemplate(node: Node): boolean {
     if (node instanceof ShadowRoot) {
         return false;
     }
+
+    const rootNode = node.getRootNode();
+    if (rootNode instanceof ShadowRoot && isFalse('synthetic' in rootNode)) {
+        return true;
+    }
+
     if (isSyntheticShadowDefined) {
         // TODO [#1252]: old behavior that is still used by some pieces of the platform,
         // specifically, nodes inserted manually on places where `lwc:dom="manual"` directive is not
         // used, will be considered global elements.
         return !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
     }
-    const root = node.getRootNode();
-    return root instanceof ShadowRoot;
+
+    return rootNode instanceof ShadowRoot;
 }
