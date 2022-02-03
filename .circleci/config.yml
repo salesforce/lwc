@@ -9,14 +9,6 @@ only_forks: &only_forks
     # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
     only: /pull\/[0-9]+/
 
-deploy_filters: &deploy_filters
-  filters:
-    branches:
-      ignore: /.*/
-    tags:
-      # Trigger on tags that begin with `v`
-      only: /^v.*/
-
 # Jobs definition
 version: 2.1
 
@@ -144,18 +136,6 @@ jobs:
           command: yarn bundlesize
       - save_yarn_cache
       - save_workspace
-
-
-  deploy:
-    executor: node
-    steps:
-      - load_workspace
-      - run:
-          name: Configure NPM authentication
-          command: npm config set "//registry.npmjs.org/:_authToken" "$NPM_AUTOMATION_TOKEN"
-      - run:
-          name: Publish package
-          command: yarn release:publish:ci
 
 
   test_unit:
@@ -309,36 +289,3 @@ workflows:
           requires:
             - test_unit
             - test_karma
-
-  build_and_test_and_deploy:
-    jobs:
-      - build:
-          <<: *deploy_filters
-
-      - test_unit:
-          <<: *deploy_filters
-          requires:
-            - build
-
-      - test_karma:
-          <<: *deploy_filters
-          requires:
-            - build
-
-      - test_integration:
-          <<: *deploy_filters
-          requires:
-            - test_unit
-            - test_karma
-
-      - test_integration_compat:
-          <<: *deploy_filters
-          requires:
-            - test_unit
-            - test_karma
-
-      - deploy:
-          <<: *deploy_filters
-          requires:
-            - test_integration
-            - test_integration_compat

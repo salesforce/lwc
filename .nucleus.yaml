@@ -4,9 +4,10 @@ core-deploy:
     lwc: lwc.version
 branches:
   ~DEFAULT~:
-    pull-request:
+    pull-request: &branch-definition
       auto-start: true
       auto-start-from-forks: false
+      merge-method: disabled # do not auto-merge; we'll do it ourselves
       required-downstream-deps:
         - communities/microsite-template-marketing
         - communities/shared-experience-components
@@ -22,4 +23,33 @@ branches:
         - salesforce/utam-docs
         - salesforcedevs/developer-website
         - uiplatform/nucleus
-
+  release:
+    pull-request:
+      <<: *branch-definition
+      merge-method: force-push # release branch should always be in sync with master branch (linear history)
+  winter22:
+    pull-request:
+      <<: *branch-definition
+  spring22:
+    pull-request:
+      <<: *branch-definition
+steps:
+  node-conformance:
+    run:
+      command: yarn run lint
+    after: node-build
+  node-unit-tests:
+    run:
+      command: yarn test
+  # this project runs yarn build after yarn install so skip explicit build step
+  node-build: &node-build
+    skip: true
+  node-pre-release-tests:
+    params:
+      command: yarn test
+  npm-configure:
+    params:
+      registry-url: https://registry.yarnpkg.com
+  npm-configure-for-publish:
+    params:
+      registry-url: https://registry.npmjs.org
