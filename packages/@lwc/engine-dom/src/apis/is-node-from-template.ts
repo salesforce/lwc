@@ -5,7 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFalse, isUndefined, KEY__SHADOW_RESOLVER } from '@lwc/shared';
+import {
+    getPrototypeOf,
+    hasOwnProperty,
+    isFalse,
+    isUndefined,
+    KEY__SHADOW_RESOLVER,
+} from '@lwc/shared';
 import { isSyntheticShadowDefined } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
@@ -27,7 +33,11 @@ export function isNodeFromTemplate(node: Node): boolean {
     }
 
     const rootNode = node.getRootNode();
-    if (rootNode instanceof ShadowRoot && isFalse('synthetic' in rootNode)) {
+    const isShadowRootInstance = rootNode instanceof ShadowRoot;
+    if (
+        isShadowRootInstance &&
+        isFalse(hasOwnProperty.call(getPrototypeOf(rootNode), 'synthetic'))
+    ) {
         return true;
     }
 
@@ -38,5 +48,5 @@ export function isNodeFromTemplate(node: Node): boolean {
         return !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
     }
 
-    return rootNode instanceof ShadowRoot;
+    return isShadowRootInstance;
 }
