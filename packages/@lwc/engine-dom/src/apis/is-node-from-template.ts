@@ -19,10 +19,13 @@ import { isSyntheticShadowDefined } from '../renderer';
 const _Node = Node;
 
 /**
- * EXPERIMENTAL: This function detects whether or not a Node is controlled by a LWC template. This
- * API is subject to change or being removed.
+ * EXPERIMENTAL: The purpose of this function is to detect shadowed nodes. As noted below, it
+ * returns `false` for nodes that are manually inserted without using the `lwc:dom="manual"`
+ * directive within a synthetic root.
+ *
+ * This API can be removed once Locker V1 is no longer supported.
  */
-export function isNodeFromTemplate(node: Node): boolean {
+function isNodeShadowed(node: Node): boolean {
     if (isFalse(node instanceof _Node)) {
         return false;
     }
@@ -50,3 +53,6 @@ export function isNodeFromTemplate(node: Node): boolean {
 
     return isShadowRootInstance;
 }
+
+// Rename to maintain backcompat
+export { isNodeShadowed as isNodeFromTemplate };
