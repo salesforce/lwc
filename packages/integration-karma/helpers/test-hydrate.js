@@ -45,7 +45,7 @@ window.HydrateTest = (function (lwc, testUtils) {
 
     function runTest(ssrRendered, Component, testConfig) {
         const container = appendTestTarget(ssrRendered);
-        const selector = container.firstChild.tagName;
+        const selector = container.firstChild.tagName.toLowerCase();
         let target = container.querySelector(selector);
 
         const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
@@ -54,7 +54,12 @@ window.HydrateTest = (function (lwc, testUtils) {
         const clientProps = testConfig.clientProps || props;
 
         const consoleSpy = testUtils.spyConsole();
-        lwc.hydrateComponent(target, Component, clientProps);
+
+        if (testConfig.useCustomElementRegistry) {
+            customElements.define(selector, Component.CustomElementConstructor);
+        } else {
+            lwc.hydrateComponent(target, Component, clientProps);
+        }
         consoleSpy.reset();
 
         // let's select again the target, it should be the same elements as in the snapshot

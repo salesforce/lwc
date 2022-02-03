@@ -1,0 +1,8 @@
+<template lwc:render-mode="light">
+    <template if:true={isServer}>
+        <p>Hello from the server</p>
+    </template>
+    <template if:false={isServer}>
+        <span>Hello from the client</span>
+    </template>
+</template>
