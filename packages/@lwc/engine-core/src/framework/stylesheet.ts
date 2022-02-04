@@ -73,11 +73,13 @@ export function updateStylesheetToken(vm: VM, template: Template) {
         hasTokenInClass: oldHasTokenInClass,
         hasTokenInAttribute: oldHasTokenInAttribute,
     } = context;
-    if (oldHasTokenInClass) {
-        getClassList(elm).remove(makeHostToken(oldToken!));
-    }
-    if (oldHasTokenInAttribute) {
-        removeAttribute(elm, makeHostToken(oldToken!));
+    if (!isUndefined(oldToken)) {
+        if (oldHasTokenInClass) {
+            getClassList(elm).remove(makeHostToken(oldToken));
+        }
+        if (oldHasTokenInAttribute) {
+            removeAttribute(elm, makeHostToken(oldToken));
+        }
     }
 
     // Apply the new template styling token to the host element, if the new template has any

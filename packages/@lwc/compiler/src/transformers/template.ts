@@ -80,7 +80,9 @@ function serialize(
     buffer += 'if (_implicitScopedStylesheets) {\n';
     buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets)\n`;
     buffer += `}\n`;
-    buffer += `tmpl.stylesheetToken = "${scopeToken}"\n`;
+    buffer += 'if (_implicitStylesheets || _implicitScopedStylesheets) {\n';
+    buffer += `  tmpl.stylesheetToken = "${scopeToken}"\n`;
+    buffer += '}\n';
 
     return buffer;
 }

@@ -217,7 +217,7 @@ function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
 }
 
-function setElementShadowToken(elm: Element, token: string | undefined) {
+function setElementShadowToken(elm: Element, token: string) {
     (elm as any).$shadowToken$ = token;
 }
 
@@ -306,9 +306,11 @@ function fallbackElmHook(elm: Element, vnode: VBaseElement) {
             // this element will now accept any manual content inserted into it
             observeElementChildNodes(elm);
         }
-        // when running in synthetic shadow mode, we need to set the shadowToken value
-        // into each element from the template, so they can be styled accordingly.
-        setElementShadowToken(elm, stylesheetToken);
+        if (!isUndefined(stylesheetToken)) {
+            // when running in synthetic shadow mode, we need to set the shadowToken value
+            // into each element from the template, so they can be styled accordingly.
+            setElementShadowToken(elm, stylesheetToken);
+        }
     }
     if (process.env.NODE_ENV !== 'production') {
         const {
@@ -374,7 +376,9 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
         const { stylesheetToken } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.
-        setElementShadowToken(elm, stylesheetToken);
+        if (!isUndefined(stylesheetToken)) {
+            setElementShadowToken(elm, stylesheetToken);
+        }
     }
 
     vm = createVM(elm, ctor, {

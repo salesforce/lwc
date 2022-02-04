@@ -21,7 +21,9 @@
   if (_implicitScopedStylesheets) {
     tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
   }
-  tmpl.stylesheetToken = "x-app_app";
+  if (_implicitScopedStylesheets) {
+    tmpl.stylesheetToken = "x-app_app";
+  }
 
   class App extends lwc.LightningElement {}
 
