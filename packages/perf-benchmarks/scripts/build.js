@@ -20,11 +20,11 @@ const writeFile = promisify(fs.writeFile);
 const {
     BENCHMARK_REPO = 'https://github.com/salesforce/lwc.git',
     BENCHMARK_REF = 'master',
-    BENCHMARK_AUTO_SAMPLE_CONDITIONS = '25%', // how much difference we want to determine between A and B
+    BENCHMARK_AUTO_SAMPLE_CONDITIONS = '1%', // how much difference we want to determine between A and B
 } = process.env;
 let {
-    BENCHMARK_SAMPLE_SIZE = 50, // minimum number of samples to run
-    BENCHMARK_TIMEOUT = 5, // timeout in minutes during auto-sampling (after the minimum samples). If 0, no auto-sampling
+    BENCHMARK_SAMPLE_SIZE = 100, // minimum number of samples to run
+    BENCHMARK_TIMEOUT = 15, // timeout in minutes during auto-sampling (after the minimum samples). If 0, no auto-sampling
 } = process.env;
 
 const toInt = (num) => (typeof num === 'number' ? num : parseInt(num, 10));
