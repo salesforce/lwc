@@ -18,7 +18,7 @@ export const enum VNodeType {
 
 export type VNode = VText | VComment | VElement | VCustomElement;
 export type VParentElement = VElement | VCustomElement;
-export type VNodes = Array<VNode | null>;
+export type VNodes = Readonly<Array<VNode | null>>;
 
 export interface BaseVNode {
     type: VNodeType;
@@ -64,19 +64,22 @@ export interface VCustomElement extends VBaseElement {
 }
 
 export interface VNodeData {
-    props?: Record<string, any>;
-    attrs?: Record<string, string | number | boolean>;
-    className?: string;
-    style?: string;
-    classMap?: Record<string, boolean>;
-    styleDecls?: Array<[string, string, boolean]>;
-    context?: Record<string, Record<string, any>>;
-    on?: Record<string, (event: Event) => any>;
-    svg?: boolean;
+    // All props are readonly because VElementData may be shared across VNodes
+    // due to hoisting optimizations
+    readonly props?: Readonly<Record<string, any>>;
+    readonly attrs?: Readonly<Record<string, string | number | boolean>>;
+    readonly className?: string;
+    readonly style?: string;
+    readonly classMap?: Readonly<Record<string, boolean>>;
+    readonly styleDecls?: Readonly<Array<[string, string, boolean]>>;
+    readonly context?: Readonly<Record<string, Readonly<Record<string, any>>>>;
+    readonly on?: Readonly<Record<string, (event: Event) => any>>;
+    readonly svg?: boolean;
 }
 
 export interface VElementData extends VNodeData {
-    key: Key;
+    // Similar to above, all props are readonly
+    readonly key: Key;
 }
 
 export interface Hooks<N extends VNode> {

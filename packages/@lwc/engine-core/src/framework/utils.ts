@@ -74,3 +74,14 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
 
     return styleMap;
 }
+
+// Make a shallow copy of an object but omit the given key
+export function cloneAndOmitKey(object: { [key: string]: any }, keyToOmit: string) {
+    const result: { [key: string]: any } = {};
+    for (const key of Object.keys(object)) {
+        if (key !== keyToOmit) {
+            result[key] = object[key];
+        }
+    }
+    return result;
+}

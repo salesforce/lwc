@@ -40,7 +40,7 @@ import {
 } from './stylesheet';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { VNode, VNodes } from './vnodes';
+import { VNodes } from './vnodes';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -113,7 +113,7 @@ function validateLightDomTemplate(template: Template, vm: VM) {
     }
 }
 
-export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
+export function evaluateTemplate(vm: VM, html: Template): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             isFunction(html),
