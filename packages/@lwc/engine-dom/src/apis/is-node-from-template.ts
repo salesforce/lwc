@@ -5,7 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFalse, isUndefined, KEY__SHADOW_RESOLVER } from '@lwc/shared';
+import {
+    getPrototypeOf,
+    hasOwnProperty,
+    isFalse,
+    isUndefined,
+    KEY__SHADOW_RESOLVER,
+} from '@lwc/shared';
 import { isSyntheticShadowDefined } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
@@ -13,24 +19,35 @@ import { isSyntheticShadowDefined } from '../renderer';
 const _Node = Node;
 
 /**
- * EXPERIMENTAL: This function detects whether or not a Node is controlled by a LWC template. This
- * API is subject to change or being removed.
+ * EXPERIMENTAL: The purpose of this function is to detect shadowed nodes. THIS API WILL BE REMOVED
+ * ONCE LOCKER V1 IS NO LONGER SUPPORTED.
  */
-export function isNodeFromTemplate(node: Node): boolean {
+function isNodeShadowed(node: Node): boolean {
     if (isFalse(node instanceof _Node)) {
         return false;
     }
-    // TODO [#1250]: skipping the shadowRoot instances itself makes no sense, we need to revisit
-    // this with locker
+
+    // It's debatable whether shadow root instances should be considered as shadowed, but we keep
+    // this unchanged for legacy reasons (#1250).
     if (node instanceof ShadowRoot) {
         return false;
     }
-    if (isSyntheticShadowDefined) {
-        // TODO [#1252]: old behavior that is still used by some pieces of the platform,
-        // specifically, nodes inserted manually on places where `lwc:dom="manual"` directive is not
-        // used, will be considered global elements.
-        return !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
+
+    const rootNode = node.getRootNode();
+
+    // Handle the native case. We can return early here because an invariant of LWC is that
+    // synthetic roots cannot be descendants of native roots.
+    if (
+        rootNode instanceof ShadowRoot &&
+        isFalse(hasOwnProperty.call(getPrototypeOf(rootNode), 'synthetic'))
+    ) {
+        return true;
     }
-    const root = node.getRootNode();
-    return root instanceof ShadowRoot;
+
+    // TODO [#1252]: Old behavior that is still used by some pieces of the platform. Manually
+    // inserted nodes without the `lwc:dom=manual` directive will be considered as global elements.
+    return isSyntheticShadowDefined && !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
 }
+
+// Rename to maintain backcompat
+export { isNodeShadowed as isNodeFromTemplate };
