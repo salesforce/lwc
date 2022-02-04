@@ -544,6 +544,7 @@ function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
     let idxInOld: number;
     let elmToMove: VNode | null | undefined;
     let before: any;
+    let clonedOldCh = false;
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
         if (!isVNode(oldStartVnode)) {
             oldStartVnode = oldCh[++oldStartIdx]; // Vnode might have been moved left
@@ -595,9 +596,15 @@ function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNodes) {
                         // Delete the old child, but copy the array since it is read-only.
                         // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
                         // so we only care about the `oldCh` object inside this function.
-                        const oldChClone = [...oldCh];
-                        oldChClone[idxInOld] = undefined as any;
-                        oldCh = oldChClone;
+                        // To avoid cloning over and over again, we check `clonedOldCh`
+                        // and only clone once.
+                        if (!clonedOldCh) {
+                            clonedOldCh = true;
+                            oldCh = [...oldCh];
+                        }
+
+                        // We've already cloned at least once, so it's no longer read-only
+                        (oldCh as any[])[idxInOld] = undefined;
                         newStartVnode.hook.move(elmToMove, parentElm, oldStartVnode.elm!);
                     }
                 }
