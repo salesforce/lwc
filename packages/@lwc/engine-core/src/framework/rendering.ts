@@ -91,24 +91,24 @@ function patch(n1: VNode | null, n2: VNode, parent: ParentNode, anchor: Node | n
 
     switch (n2.type) {
         case VNodeType.Text:
-            processText(n1 as VText, n2, parent, anchor);
+            processText(n1 as VText | null, n2, parent, anchor);
             break;
 
         case VNodeType.Comment:
-            processComment(n1 as VComment, n2, parent, anchor);
+            processComment(n1 as VComment | null, n2, parent, anchor);
             break;
 
         case VNodeType.Element:
-            processElement(n1 as VElement, n2, parent, anchor);
+            processElement(n1 as VElement | null, n2, parent, anchor);
             break;
 
         case VNodeType.CustomElement:
-            processCustomElement(n1 as VCustomElement, n2, parent, anchor);
+            processCustomElement(n1 as VCustomElement | null, n2, parent, anchor);
             break;
     }
 }
 
-function processText(n1: VText, n2: VText, parent: ParentNode, anchor: Node | null) {
+function processText(n1: VText | null, n2: VText, parent: ParentNode, anchor: Node | null) {
     const { owner } = n2;
 
     if (isNull(n1)) {
@@ -125,7 +125,12 @@ function processText(n1: VText, n2: VText, parent: ParentNode, anchor: Node | nu
     }
 }
 
-function processComment(n1: VComment, n2: VComment, parent: ParentNode, anchor: Node | null) {
+function processComment(
+    n1: VComment | null,
+    n2: VComment,
+    parent: ParentNode,
+    anchor: Node | null
+) {
     const { owner } = n2;
 
     if (isNull(n1)) {
@@ -144,7 +149,12 @@ function processComment(n1: VComment, n2: VComment, parent: ParentNode, anchor: 
     }
 }
 
-function processElement(n1: VElement, n2: VElement, parent: ParentNode, anchor: Node | null) {
+function processElement(
+    n1: VElement | null,
+    n2: VElement,
+    parent: ParentNode,
+    anchor: Node | null
+) {
     if (isNull(n1)) {
         mountElement(n2, parent, anchor);
     } else {
@@ -180,7 +190,7 @@ function patchElement(n1: VElement, n2: VElement) {
 }
 
 function processCustomElement(
-    n1: VCustomElement,
+    n1: VCustomElement | null,
     n2: VCustomElement,
     parent: ParentNode,
     anchor: Node | null
