@@ -9,8 +9,8 @@
   "scripts": {
     "prepare": "husky install && yarn build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
-    "lint": "eslint packages/ scripts/ --ext=js,ts",
-    "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json,md}'",
+    "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
+    "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
     "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",
     "build": "lerna run build --ignore perf-benchmarks --ignore perf-benchmarks-components --ignore integration-tests",
     "build:performance": "yarn run build:performance:components && yarn run build:performance:benchmarks",
@@ -66,8 +66,8 @@
     "worker-farm": "^1.7.0"
   },
   "lint-staged": {
-    "**/*.{js,ts}": "eslint",
-    "{packages,scripts}/**/*.{js,ts,json,md}": "prettier --write"
+    "**/*.{js,mjs,ts}": "eslint",
+    "{packages,scripts}/**/*.{js,mjs,ts,json,md}": "prettier --write"
   },
   "workspaces": [
     "packages/@lwc/*",
