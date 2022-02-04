@@ -19,39 +19,34 @@ import { isSyntheticShadowDefined } from '../renderer';
 const _Node = Node;
 
 /**
- * EXPERIMENTAL: The purpose of this function is to detect shadowed nodes. As noted below, it
- * returns `false` for nodes that are manually inserted without using the `lwc:dom="manual"`
- * directive within a synthetic root.
- *
- * This API can be removed once Locker V1 is no longer supported.
+ * EXPERIMENTAL: The purpose of this function is to detect shadowed nodes. THIS API WILL BE REMOVED
+ * ONCE LOCKER V1 IS NO LONGER SUPPORTED.
  */
 function isNodeShadowed(node: Node): boolean {
     if (isFalse(node instanceof _Node)) {
         return false;
     }
-    // TODO [#1250]: skipping the shadowRoot instances itself makes no sense, we need to revisit
-    // this with locker
+
+    // It's debatable whether shadow root instances should be considered as shadowed, but we keep
+    // this unchanged for legacy reasons (#1250).
     if (node instanceof ShadowRoot) {
         return false;
     }
 
     const rootNode = node.getRootNode();
-    const isShadowRootInstance = rootNode instanceof ShadowRoot;
+
+    // Handle the native case. We can return early here because an invariant of LWC is that
+    // synthetic roots cannot be descendants of native roots.
     if (
-        isShadowRootInstance &&
+        rootNode instanceof ShadowRoot &&
         isFalse(hasOwnProperty.call(getPrototypeOf(rootNode), 'synthetic'))
     ) {
         return true;
     }
 
-    if (isSyntheticShadowDefined) {
-        // TODO [#1252]: old behavior that is still used by some pieces of the platform,
-        // specifically, nodes inserted manually on places where `lwc:dom="manual"` directive is not
-        // used, will be considered global elements.
-        return !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
-    }
-
-    return isShadowRootInstance;
+    // TODO [#1252]: Old behavior that is still used by some pieces of the platform. Manually
+    // inserted nodes without the `lwc:dom=manual` directive will be considered as global elements.
+    return isSyntheticShadowDefined && !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
 }
 
 // Rename to maintain backcompat
