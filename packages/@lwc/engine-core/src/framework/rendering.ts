@@ -618,7 +618,7 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patch(oldStartVnode, newEndVnode, parent, null);
-            insertNode(oldStartVnode.elm!, parent, nextSibling(oldStartVnode.elm!));
+            insertNode(oldStartVnode.elm!, parent, nextSibling(oldEndVnode.elm!));
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
