@@ -66,7 +66,7 @@ async function main() {
         })
     );
 
-    console.log(markdownTable([header, ...results].sort((a, b) => (a[0] < b[0] ? -1 : 1))));
+    console.log(markdownTable([header, ...results.sort((a, b) => (a[0] < b[0] ? -1 : 1))]));
 }
 
 main().catch((err) => {
