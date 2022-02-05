@@ -140,8 +140,6 @@ function hydrateCustomElement(vnode: VCustomElement, node: Node) {
     }
 
     const elm = node as Element;
-    vnode.elm = elm;
-
     const { sel, mode, ctor, owner } = vnode;
 
     const vm = createVM(elm, ctor, {
@@ -149,6 +147,9 @@ function hydrateCustomElement(vnode: VCustomElement, node: Node) {
         owner,
         tagName: sel,
     });
+
+    vnode.elm = elm;
+    vnode.vm = vm;
 
     allocateChildren(vnode, vm);
     patchElementPropsAndAttrs(vnode);
