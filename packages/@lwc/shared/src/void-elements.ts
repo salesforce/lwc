@@ -46,6 +46,7 @@ export const VOID_ELEMENTS = [
     'menuitem',
     'meta',
     'param',
+    'path',
     'rect',
     'source',
     'track',
