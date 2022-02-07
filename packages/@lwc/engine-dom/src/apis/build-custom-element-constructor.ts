@@ -46,16 +46,19 @@ export function deprecatedBuildCustomElementConstructor(
     return Ctor.CustomElementConstructor;
 }
 
+const hydratedCustomElements = new WeakSet<Element>();
+
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const HtmlPrototype = getComponentHtmlPrototype(Ctor);
 
     return class extends HtmlPrototype {
-        isHydrated = false;
         constructor() {
             super();
+
             if (this.isConnected) {
+                // this if block is hit when there's already an un-upgraded element in the DOM with the same tag name.
                 hydrateComponent(this, Ctor, {});
-                this.isHydrated = true;
+                hydratedCustomElements.add(this);
             } else {
                 createVM(this, Ctor, {
                     mode: 'open',
@@ -65,8 +68,9 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
             }
         }
         connectedCallback() {
-            if (this.isHydrated) {
-                this.isHydrated = false;
+            if (hydratedCustomElements.has(this)) {
+                // This is an un-upgraded element that was hydrated in the constructor.
+                hydratedCustomElements.delete(this);
             } else {
                 connectRootElement(this);
             }
