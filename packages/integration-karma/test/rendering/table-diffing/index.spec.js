@@ -101,7 +101,7 @@ describe('Table diffing', () => {
         };
         expect(getRowContents()).toEqual(ids);
 
-        const sortedIds = ids.sort((a, b) => (a - b));
+        const sortedIds = ids.sort((a, b) => a - b);
 
         elm.rows = sortedIds.map((id) => ({ id }));
 
