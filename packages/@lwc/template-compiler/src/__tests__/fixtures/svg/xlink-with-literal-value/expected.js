@@ -10,27 +10,22 @@ const stc0 = {
   key: 0,
   svg: true,
 };
-const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
     api_element("svg", stc0, [
-      api_element(
-        "use",
-        {
-          attrs: {
-            "xlink:href": sanitizeAttribute(
-              "use",
-              "http://www.w3.org/2000/svg",
-              "xlink:href",
-              "/assets/icons/standard-sprite/svg/symbols.svg#case"
-            ),
-          },
-          key: 1,
-          svg: true,
+      api_element("use", {
+        attrs: {
+          "xlink:href": sanitizeAttribute(
+            "use",
+            "http://www.w3.org/2000/svg",
+            "xlink:href",
+            "/assets/icons/standard-sprite/svg/symbols.svg#case"
+          ),
         },
-        stc1
-      ),
+        key: 1,
+        svg: true,
+      }),
     ]),
   ];
 }

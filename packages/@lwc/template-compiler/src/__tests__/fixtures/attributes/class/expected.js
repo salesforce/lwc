@@ -5,22 +5,21 @@ const stc0 = {
   },
   key: 0,
 };
-const stc1 = [];
-const stc2 = {
+const stc1 = {
   classMap: {
     foo: true,
     bar: true,
   },
   key: 1,
 };
-const stc3 = {
+const stc2 = {
   classMap: {
     foo: true,
     bar: true,
   },
   key: 2,
 };
-const stc4 = {
+const stc3 = {
   classMap: {
     foo: true,
     bar: true,
@@ -30,10 +29,10 @@ const stc4 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [
-    api_element("div", stc0, stc1),
-    api_element("div", stc2, stc1),
-    api_element("div", stc3, stc1),
-    api_element("div", stc4, stc1),
+    api_element("div", stc0),
+    api_element("div", stc1),
+    api_element("div", stc2),
+    api_element("div", stc3),
   ];
 }
 export default registerTemplate(tmpl);

@@ -6,14 +6,13 @@ const stc0 = {
   },
   key: 0,
 };
-const stc1 = [];
-const stc2 = {
+const stc1 = {
   props: {
     spellcheck: true,
   },
   key: 1,
 };
-const stc3 = {
+const stc2 = {
   props: {
     spellcheck: true,
   },
@@ -22,9 +21,9 @@ const stc3 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
   return [
-    api_custom_element("x-foo", _xFoo, stc0, stc1),
-    api_custom_element("x-foo", _xFoo, stc2, stc1),
-    api_custom_element("x-foo", _xFoo, stc3, stc1),
+    api_custom_element("x-foo", _xFoo, stc0),
+    api_custom_element("x-foo", _xFoo, stc1),
+    api_custom_element("x-foo", _xFoo, stc2),
   ];
 }
 export default registerTemplate(tmpl);

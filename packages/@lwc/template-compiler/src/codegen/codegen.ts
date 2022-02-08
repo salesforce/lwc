@@ -11,6 +11,7 @@ import * as t from '../shared/estree';
 import { Expression, Literal, LWCDirectiveRenderMode, Root } from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
+import { isArrayExpression } from '../shared/estree';
 
 type RenderPrimitive =
     | 'iterator'
@@ -122,7 +123,11 @@ export default class CodeGen {
     }
 
     genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {
-        return this._renderApiCall(RENDER_APIS.element, [t.literal(tagName), data, children]);
+        const args: t.Expression[] = [t.literal(tagName), data];
+        if (!isArrayExpression(children) || children.elements.length > 0) {
+            args.push(children); // only generate children if non-empty
+        }
+        return this._renderApiCall(RENDER_APIS.element, args);
     }
 
     genCustomElement(
@@ -133,12 +138,12 @@ export default class CodeGen {
     ) {
         this.referencedComponents.add(tagName);
 
-        return this._renderApiCall(RENDER_APIS.customElement, [
-            t.literal(tagName),
-            componentClass,
-            data,
-            children,
-        ]);
+        const args: t.Expression[] = [t.literal(tagName), componentClass, data];
+        if (!isArrayExpression(children) || children.elements.length > 0) {
+            args.push(children); // only generate children if non-empty
+        }
+
+        return this._renderApiCall(RENDER_APIS.customElement, args);
     }
     genDynamicElement(
         tagName: string,
@@ -146,12 +151,12 @@ export default class CodeGen {
         data: t.ObjectExpression,
         children: t.Expression
     ) {
-        return this._renderApiCall(RENDER_APIS.dynamicCtor, [
-            t.literal(tagName),
-            ctor,
-            data,
-            children,
-        ]);
+        const args: t.Expression[] = [t.literal(tagName), ctor, data];
+        if (!isArrayExpression(children) || children.elements.length > 0) {
+            args.push(children); // only generate children if non-empty
+        }
+
+        return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
     }
 
     genText(value: Array<string | t.Expression>): t.Expression {

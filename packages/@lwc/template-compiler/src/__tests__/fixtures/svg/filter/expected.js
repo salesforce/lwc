@@ -24,8 +24,7 @@ const stc2 = {
   key: 3,
   svg: true,
 };
-const stc3 = [];
-const stc4 = {
+const stc3 = {
   attrs: {
     x: "25%",
     y: "25%",
@@ -37,7 +36,7 @@ const stc4 = {
   key: 5,
   svg: true,
 };
-const stc5 = {
+const stc4 = {
   attrs: {
     x: "25%",
     y: "25%",
@@ -47,21 +46,21 @@ const stc5 = {
   key: 7,
   svg: true,
 };
-const stc6 = {
+const stc5 = {
   attrs: {
     in: "SourceGraphic",
   },
   key: 8,
   svg: true,
 };
-const stc7 = {
+const stc6 = {
   attrs: {
     in: "FillPaint",
   },
   key: 9,
   svg: true,
 };
-const stc8 = {
+const stc7 = {
   attrs: {
     fill: "none",
     stroke: "blue",
@@ -70,7 +69,7 @@ const stc8 = {
   key: 10,
   svg: true,
 };
-const stc9 = {
+const stc8 = {
   attrs: {
     width: "200",
     height: "200",
@@ -78,7 +77,7 @@ const stc9 = {
   key: 11,
   svg: true,
 };
-const stc10 = {
+const stc9 = {
   attrs: {
     x2: "200",
     y2: "200",
@@ -86,7 +85,7 @@ const stc10 = {
   key: 12,
   svg: true,
 };
-const stc11 = {
+const stc10 = {
   attrs: {
     x1: "200",
     y2: "200",
@@ -94,7 +93,7 @@ const stc11 = {
   key: 13,
   svg: true,
 };
-const stc12 = {
+const stc11 = {
   attrs: {
     fill: "green",
     filter: "url(#flood)",
@@ -105,14 +104,14 @@ const stc12 = {
   key: 14,
   svg: true,
 };
-const stc13 = {
+const stc12 = {
   attrs: {
     transform: "translate(200 0)",
   },
   key: 15,
   svg: true,
 };
-const stc14 = {
+const stc13 = {
   attrs: {
     fill: "none",
     stroke: "blue",
@@ -121,7 +120,7 @@ const stc14 = {
   key: 16,
   svg: true,
 };
-const stc15 = {
+const stc14 = {
   attrs: {
     width: "200",
     height: "200",
@@ -129,7 +128,7 @@ const stc15 = {
   key: 17,
   svg: true,
 };
-const stc16 = {
+const stc15 = {
   attrs: {
     x2: "200",
     y2: "200",
@@ -137,7 +136,7 @@ const stc16 = {
   key: 18,
   svg: true,
 };
-const stc17 = {
+const stc16 = {
   attrs: {
     x1: "200",
     y2: "200",
@@ -145,7 +144,7 @@ const stc17 = {
   key: 19,
   svg: true,
 };
-const stc18 = {
+const stc17 = {
   attrs: {
     fill: "green",
     filter: "url(#blend)",
@@ -156,14 +155,14 @@ const stc18 = {
   key: 20,
   svg: true,
 };
-const stc19 = {
+const stc18 = {
   attrs: {
     transform: "translate(0 200)",
   },
   key: 21,
   svg: true,
 };
-const stc20 = {
+const stc19 = {
   attrs: {
     fill: "none",
     stroke: "blue",
@@ -172,7 +171,7 @@ const stc20 = {
   key: 22,
   svg: true,
 };
-const stc21 = {
+const stc20 = {
   attrs: {
     width: "200",
     height: "200",
@@ -180,7 +179,7 @@ const stc21 = {
   key: 23,
   svg: true,
 };
-const stc22 = {
+const stc21 = {
   attrs: {
     x2: "200",
     y2: "200",
@@ -188,7 +187,7 @@ const stc22 = {
   key: 24,
   svg: true,
 };
-const stc23 = {
+const stc22 = {
   attrs: {
     x1: "200",
     y2: "200",
@@ -196,7 +195,7 @@ const stc23 = {
   key: 25,
   svg: true,
 };
-const stc24 = {
+const stc23 = {
   attrs: {
     fill: "green",
     "fill-opacity": "0.5",
@@ -208,7 +207,7 @@ const stc24 = {
   key: 26,
   svg: true,
 };
-const stc25 = {
+const stc24 = {
   attrs: {
     width: "600",
     height: "250",
@@ -219,7 +218,7 @@ const stc25 = {
   key: 27,
   svg: true,
 };
-const stc26 = {
+const stc25 = {
   attrs: {
     fill: "none",
     stroke: "blue",
@@ -231,11 +230,11 @@ const stc26 = {
   key: 28,
   svg: true,
 };
-const stc27 = {
+const stc26 = {
   key: 29,
   svg: true,
 };
-const stc28 = {
+const stc27 = {
   attrs: {
     x: "50",
     y: "25",
@@ -246,7 +245,7 @@ const stc28 = {
   key: 30,
   svg: true,
 };
-const stc29 = {
+const stc28 = {
   attrs: {
     x: "50",
     y: "25",
@@ -258,7 +257,7 @@ const stc29 = {
   key: 31,
   svg: true,
 };
-const stc30 = {
+const stc29 = {
   attrs: {
     x: "250",
     y: "25",
@@ -269,7 +268,7 @@ const stc30 = {
   key: 32,
   svg: true,
 };
-const stc31 = {
+const stc30 = {
   attrs: {
     x: "250",
     y: "25",
@@ -281,7 +280,7 @@ const stc31 = {
   key: 33,
   svg: true,
 };
-const stc32 = {
+const stc31 = {
   attrs: {
     x: "450",
     y: "25",
@@ -292,7 +291,7 @@ const stc32 = {
   key: 34,
   svg: true,
 };
-const stc33 = {
+const stc32 = {
   attrs: {
     x: "450",
     y: "25",
@@ -304,11 +303,11 @@ const stc33 = {
   key: 35,
   svg: true,
 };
-const stc34 = {
+const stc33 = {
   key: 37,
   svg: true,
 };
-const stc35 = {
+const stc34 = {
   attrs: {
     in: "SourceAlpha",
     stdDeviation: "4",
@@ -317,7 +316,7 @@ const stc35 = {
   key: 38,
   svg: true,
 };
-const stc36 = {
+const stc35 = {
   attrs: {
     in: "blur",
     dx: "4",
@@ -327,7 +326,7 @@ const stc36 = {
   key: 39,
   svg: true,
 };
-const stc37 = {
+const stc36 = {
   attrs: {
     in: "blur",
     surfaceScale: "5",
@@ -339,7 +338,7 @@ const stc37 = {
   key: 40,
   svg: true,
 };
-const stc38 = {
+const stc37 = {
   attrs: {
     x: "-5000",
     y: "-10000",
@@ -348,7 +347,7 @@ const stc38 = {
   key: 41,
   svg: true,
 };
-const stc39 = {
+const stc38 = {
   attrs: {
     in: "specOut",
     in2: "SourceAlpha",
@@ -358,7 +357,7 @@ const stc39 = {
   key: 42,
   svg: true,
 };
-const stc40 = {
+const stc39 = {
   attrs: {
     in: "SourceGraphic",
     in2: "specOut",
@@ -372,18 +371,18 @@ const stc40 = {
   key: 43,
   svg: true,
 };
-const stc41 = {
+const stc40 = {
   key: 44,
   svg: true,
 };
-const stc42 = {
+const stc41 = {
   attrs: {
     in: "offsetBlur",
   },
   key: 45,
   svg: true,
 };
-const stc43 = {
+const stc42 = {
   attrs: {
     in: "litPaint",
   },
@@ -409,7 +408,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
             svg: true,
           },
-          [api_element("feFlood", stc2, stc3)]
+          [api_element("feFlood", stc2)]
         ),
         api_element(
           "filter",
@@ -421,7 +420,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 4,
             svg: true,
           },
-          [api_element("feBlend", stc4, stc3)]
+          [api_element("feBlend", stc3)]
         ),
         api_element(
           "filter",
@@ -434,45 +433,45 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             svg: true,
           },
           [
-            api_element("feMerge", stc5, [
-              api_element("feMergeNode", stc6, stc3),
-              api_element("feMergeNode", stc7, stc3),
+            api_element("feMerge", stc4, [
+              api_element("feMergeNode", stc5),
+              api_element("feMergeNode", stc6),
             ]),
           ]
         ),
       ]),
-      api_element("g", stc8, [
-        api_element("rect", stc9, stc3),
-        api_element("line", stc10, stc3),
-        api_element("line", stc11, stc3),
+      api_element("g", stc7, [
+        api_element("rect", stc8),
+        api_element("line", stc9),
+        api_element("line", stc10),
       ]),
-      api_element("circle", stc12, stc3),
-      api_element("g", stc13, [
-        api_element("g", stc14, [
-          api_element("rect", stc15, stc3),
-          api_element("line", stc16, stc3),
-          api_element("line", stc17, stc3),
+      api_element("circle", stc11),
+      api_element("g", stc12, [
+        api_element("g", stc13, [
+          api_element("rect", stc14),
+          api_element("line", stc15),
+          api_element("line", stc16),
         ]),
-        api_element("circle", stc18, stc3),
+        api_element("circle", stc17),
       ]),
-      api_element("g", stc19, [
-        api_element("g", stc20, [
-          api_element("rect", stc21, stc3),
-          api_element("line", stc22, stc3),
-          api_element("line", stc23, stc3),
+      api_element("g", stc18, [
+        api_element("g", stc19, [
+          api_element("rect", stc20),
+          api_element("line", stc21),
+          api_element("line", stc22),
         ]),
-        api_element("circle", stc24, stc3),
+        api_element("circle", stc23),
       ]),
     ]),
-    api_element("svg", stc25, [
-      api_element("rect", stc26, stc3),
-      api_element("g", stc27, [
-        api_element("rect", stc28, stc3),
-        api_element("rect", stc29, stc3),
-        api_element("rect", stc30, stc3),
-        api_element("rect", stc31, stc3),
-        api_element("rect", stc32, stc3),
-        api_element("rect", stc33, stc3),
+    api_element("svg", stc24, [
+      api_element("rect", stc25),
+      api_element("g", stc26, [
+        api_element("rect", stc27),
+        api_element("rect", stc28),
+        api_element("rect", stc29),
+        api_element("rect", stc30),
+        api_element("rect", stc31),
+        api_element("rect", stc32),
       ]),
       api_element(
         "filter",
@@ -489,19 +488,19 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           svg: true,
         },
         [
-          api_element("desc", stc34, [
+          api_element("desc", stc33, [
             api_text("Produces a 3D lighting effect."),
           ]),
-          api_element("feGaussianBlur", stc35, stc3),
-          api_element("feOffset", stc36, stc3),
-          api_element("feSpecularLighting", stc37, [
-            api_element("fePointLight", stc38, stc3),
+          api_element("feGaussianBlur", stc34),
+          api_element("feOffset", stc35),
+          api_element("feSpecularLighting", stc36, [
+            api_element("fePointLight", stc37),
           ]),
-          api_element("feComposite", stc39, stc3),
-          api_element("feComposite", stc40, stc3),
-          api_element("feMerge", stc41, [
-            api_element("feMergeNode", stc42, stc3),
-            api_element("feMergeNode", stc43, stc3),
+          api_element("feComposite", stc38),
+          api_element("feComposite", stc39),
+          api_element("feMerge", stc40, [
+            api_element("feMergeNode", stc41),
+            api_element("feMergeNode", stc42),
           ]),
         ]
       ),

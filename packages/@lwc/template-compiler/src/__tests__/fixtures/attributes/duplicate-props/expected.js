@@ -7,8 +7,7 @@ const stc0 = {
   },
   key: 0,
 };
-const stc1 = [];
-const stc2 = {
+const stc1 = {
   props: {
     accessKey: "without-hyphen",
   },
@@ -17,8 +16,8 @@ const stc2 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
   return [
-    api_custom_element("ns-baz-1", _nsBaz1, stc0, stc1),
-    api_custom_element("ns-baz-2", _nsBaz2, stc2, stc1),
+    api_custom_element("ns-baz-1", _nsBaz1, stc0),
+    api_custom_element("ns-baz-2", _nsBaz2, stc1),
   ];
 }
 export default registerTemplate(tmpl);
