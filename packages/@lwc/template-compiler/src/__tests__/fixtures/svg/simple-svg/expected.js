@@ -19,8 +19,7 @@ const stc1 = {
   key: 1,
   svg: true,
 };
-const stc2 = [];
-const stc3 = {
+const stc2 = {
   attrs: {
     cx: "150",
     cy: "100",
@@ -30,7 +29,7 @@ const stc3 = {
   key: 2,
   svg: true,
 };
-const stc4 = {
+const stc3 = {
   attrs: {
     x: "150",
     y: "125",
@@ -45,9 +44,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, t: api_text } = $api;
   return [
     api_element("svg", stc0, [
-      api_element("rect", stc1, stc2),
-      api_element("circle", stc3, stc2),
-      api_element("text", stc4, [api_text("SVG")]),
+      api_element("rect", stc1),
+      api_element("circle", stc2),
+      api_element("text", stc3, [api_text("SVG")]),
     ]),
   ];
 }

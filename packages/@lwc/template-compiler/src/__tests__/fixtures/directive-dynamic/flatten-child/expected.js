@@ -5,7 +5,6 @@ const stc0 = {
 const stc1 = {
   key: 1,
 };
-const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
@@ -15,7 +14,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return api_flatten([
     api_element("div", stc0, [api_text("sibling")]),
-    api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc1, stc2),
+    api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc1),
   ]);
 }
 export default registerTemplate(tmpl);

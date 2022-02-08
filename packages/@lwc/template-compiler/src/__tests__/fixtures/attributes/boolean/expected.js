@@ -5,23 +5,18 @@ const stc0 = {
   },
   key: 0,
 };
-const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element } = $api;
   return [
     api_element("p", stc0, [api_text("x")]),
-    api_element(
-      "input",
-      {
-        attrs: {
-          readonly: $cmp.getReadOnly ? "" : null,
-          disabled: "",
-          title: "foo",
-        },
-        key: 1,
+    api_element("input", {
+      attrs: {
+        readonly: $cmp.getReadOnly ? "" : null,
+        disabled: "",
+        title: "foo",
       },
-      stc1
-    ),
+      key: 1,
+    }),
   ];
 }
 export default registerTemplate(tmpl);
