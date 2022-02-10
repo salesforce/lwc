@@ -103,11 +103,11 @@ if (process.env.NATIVE_SHADOW) {
         return Promise.resolve().then(() => {
             const styles = Array.from(elm.shadowRoot.querySelectorAll('x-simple')).map(
                 (xSimple) => {
-                    // if constructable stylesheets are supported, return that rather than <style> tags
-                    return (
-                        xSimple.shadowRoot.adoptedStyleSheets ||
-                        xSimple.shadowRoot.querySelector('style')
-                    );
+                    // If constructable stylesheets are supported, return that rather than <style> tags
+                    // In Chrome 99+, adoptedStyleSheets is a proxy, so we have to clone it to compare
+                    return xSimple.shadowRoot.adoptedStyleSheets
+                        ? [...xSimple.shadowRoot.adoptedStyleSheets]
+                        : xSimple.shadowRoot.querySelector('style');
                 }
             );
 
