@@ -87,6 +87,7 @@ const expectedEnumerableProps = [
     'offsetWidth',
     'querySelector',
     'querySelectorAll',
+    'refs',
     'removeAttribute',
     'removeAttributeNS',
     'removeEventListener',

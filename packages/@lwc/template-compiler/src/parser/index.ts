@@ -531,6 +531,7 @@ function applyLwcDirectives(
     applyLwcDynamicDirective(ctx, parsedAttr, element);
     applyLwcDomDirective(ctx, parsedAttr, element);
     applyLwcInnerHtmlDirective(ctx, parsedAttr, element);
+    applyRefDirective(ctx, parsedAttr, element);
 }
 
 function applyLwcDynamicDirective(
@@ -631,6 +632,36 @@ function applyLwcInnerHtmlDirective(
     }
 
     element.directives.push(ast.innerHTMLDirective(innerHTMLVal, lwcInnerHtmlDirective.location));
+}
+
+function applyRefDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const lwcRefDirective = parsedAttr.pick(LWC_DIRECTIVES.REF);
+
+    if (!lwcRefDirective) {
+        return;
+    }
+
+    if (ast.isSlot(element)) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_ELEMENT, element, [`<${element.name}>`]);
+    }
+
+    if (ctx.isInsideIteration()) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_LOCATION_INSIDE_ITERATION, element, [
+            `<${element.name}>`,
+        ]);
+    }
+
+    const { value: refName } = lwcRefDirective;
+
+    if (!ast.isStringLiteral(refName) || refName.value.length === 0) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_REF_INVALID_VALUE, element, [`<${element.name}>`]);
+    }
+
+    element.directives.push(ast.refDirective(refName, lwcRefDirective.location));
 }
 
 function parseForEach(
@@ -986,6 +1017,11 @@ function validateTemplate(
 
         if (parsedAttr.get(LWC_DIRECTIVES.INNER_HTML)) {
             ctx.throwAtLocation(ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT, location, [
+                '<template>',
+            ]);
+        }
+        if (parsedAttr.get(LWC_DIRECTIVES.REF)) {
+            ctx.throwAtLocation(ParserDiagnostics.LWC_REF_INVALID_ELEMENT, location, [
                 '<template>',
             ]);
         }

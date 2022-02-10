@@ -24,6 +24,7 @@ export const LWC_DIRECTIVES = {
     DOM: 'lwc:dom',
     DYNAMIC: 'lwc:dynamic',
     INNER_HTML: 'lwc:inner-html',
+    REF: 'lwc:ref',
 };
 
 export const LWC_DIRECTIVE_SET: Set<string> = new Set(Object.values(LWC_DIRECTIVES));

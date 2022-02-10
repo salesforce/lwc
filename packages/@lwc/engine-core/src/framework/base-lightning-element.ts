@@ -18,10 +18,13 @@ import {
     create,
     defineProperties,
     defineProperty,
+    freeze,
     isFunction,
     isNull,
     isObject,
+    isUndefined,
     KEY__SYNTHETIC_MODE,
+    keys,
     setPrototypeOf,
 } from '@lwc/shared';
 
@@ -54,7 +57,15 @@ import {
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
-import { associateVM, getAssociatedVM, RenderMode, ShadowMode, ShadowSupportMode, VM } from './vm';
+import {
+    associateVM,
+    getAssociatedVM,
+    RenderMode,
+    ShadowMode,
+    ShadowSupportMode,
+    VM,
+    RefVNodes,
+} from './vm';
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
@@ -193,8 +204,15 @@ type HTMLElementTheGoodParts = Pick<Object, 'toString'> &
         | 'title'
     >;
 
+type RefNodes = { [name: string]: Element };
+
+const EMPTY_REFS: RefNodes = freeze(create(null));
+
+const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
+
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
     template: ShadowRoot | null;
+    refs: RefNodes;
     render(): Template;
     connectedCallback?(): void;
     disconnectedCallback?(): void;
@@ -459,6 +477,30 @@ LightningElement.prototype = {
         }
 
         return vm.shadowRoot;
+    },
+
+    get refs(): RefNodes {
+        const vm = getAssociatedVM(this);
+
+        const { refVNodes } = vm;
+        if (isNull(refVNodes)) {
+            return EMPTY_REFS;
+        }
+
+        // The refNodes can be cached based on the refVNodes, since the refVNodes
+        // are recreated every time the template is rendered.
+        let refs = refsCache.get(refVNodes);
+
+        if (isUndefined(refs)) {
+            refs = create(null);
+            for (const key of keys(refVNodes)) {
+                refs![key] = refVNodes[key].elm as Element;
+            }
+            freeze(refs);
+            refsCache.set(refVNodes, refs!);
+        }
+
+        return refs!;
     },
 
     get shadowRoot(): null {

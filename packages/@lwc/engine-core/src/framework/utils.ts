@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, isFunction, seal } from '@lwc/shared';
-import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { ArrayPush, create, isFunction, isNull, isUndefined, seal } from "@lwc/shared";
+import { StylesheetFactory, TemplateStylesheetFactories } from "./stylesheet";
+import { RefVNodes, VM } from "./vm";
+import { VNode } from "./vnodes";
 
 type Callback = () => void;
 
@@ -97,4 +99,21 @@ export function flattenStylesheets(stylesheets: TemplateStylesheetFactories): St
         }
     }
     return list;
+}
+
+// Set a ref (lwc:ref) on a VM, from a template API
+export function setRefVNode(vm: VM, ref: string | undefined, vnode: VNode) {
+    if (!isUndefined(ref)) {
+        // Create the refVNodes object on-demand. This ensures that templates with no refs
+        // don't pay the perf tax of creating objects unnecessarily.
+        const refVNodes: RefVNodes = isNull(vm.refVNodes)
+            ? (vm.refVNodes = create(null))
+            : vm.refVNodes;
+
+        // In cases of conflict (two elements with the same ref), prefer, the last one,
+        // in depth-first traversal order.
+        if (!(ref in refVNodes) || refVNodes[ref].key! < vnode.key!) {
+            refVNodes[ref] = vnode;
+        }
+    }
 }

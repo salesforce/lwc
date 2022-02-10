@@ -79,6 +79,7 @@ export interface VNodeData {
 export interface VElementData extends VNodeData {
     // Similar to above, all props are readonly
     readonly key: Key;
+    readonly ref?: string;
 }
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {

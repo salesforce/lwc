@@ -158,6 +158,14 @@ export default class ParserCtx {
         currentScope.push(node);
     }
 
+    isInsideIteration(): boolean {
+        return this.scopes.some((scope) => {
+            return scope.some((subScope) => {
+                return subScope.type === 'ForEach' || subScope.type === 'ForOf';
+            });
+        });
+    }
+
     private currentScope(): ParentNode[] | undefined {
         return this.scopes[this.scopes.length - 1];
     }

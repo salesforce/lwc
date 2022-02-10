@@ -27,6 +27,7 @@ import {
     isDynamicDirective,
     isKeyDirective,
     isDomDirective,
+    isRefDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
@@ -402,6 +403,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
+        const ref = element.directives.find(isRefDirective);
 
         // Attributes
         if (attributes.length) {
@@ -470,6 +472,12 @@ function transform(codeGen: CodeGen): t.Expression {
             propsObj.properties.push(
                 t.property(t.identifier('innerHTML'), codeGen.genSanitizedHtmlExpr(expr))
             );
+        }
+
+        // Properties: lwc:ref directive
+        if (ref) {
+            const refValue = ref.value;
+            data.push(t.property(t.identifier('ref'), refValue));
         }
 
         if (propsObj.properties.length) {

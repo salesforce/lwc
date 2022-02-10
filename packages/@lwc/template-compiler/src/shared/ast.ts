@@ -37,6 +37,7 @@ import {
     Directive,
     BaseElement,
     LWCDirectiveDomMode,
+    RefDirective,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -248,6 +249,15 @@ export function innerHTMLDirective(
     };
 }
 
+export function refDirective(value: Literal<string>, location: SourceLocation): RefDirective {
+    return {
+        type: 'Directive',
+        name: 'Ref',
+        value,
+        location,
+    };
+}
+
 export function preserveCommentsDirective(
     preserveComments: boolean,
     location: SourceLocation
@@ -370,6 +380,10 @@ export function isDomDirective(directive: Directive): directive is DomDirective 
 
 export function isInnerHTMLDirective(directive: Directive): directive is InnerHTMLDirective {
     return directive.name === 'InnerHTML';
+}
+
+export function isRefDirective(directive: Directive): directive is RefDirective {
+    return directive.name === 'Ref';
 }
 
 export function isKeyDirective(directive: Directive): directive is KeyDirective {
