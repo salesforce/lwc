@@ -8,6 +8,7 @@ import { create, keys, defineProperty, isUndefined, isBoolean, globalThis } from
 import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
 const features: FeatureFlagMap = {
+    DISABLE_MIXED_SHADOW_MODE: null,
     ENABLE_ELEMENT_PATCH: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
     ENABLE_HMR: null,
