@@ -13,7 +13,6 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import features from '@lwc/features';
 import {
     assert,
     assign,
@@ -147,14 +146,9 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     errorCallback = errorCallback || superDef.errorCallback;
     render = render || superDef.render;
 
-    let shadowSupportMode;
-    if (features.DISABLE_MIXED_SHADOW_MODE) {
-        shadowSupportMode = ShadowSupportMode.Default;
-    } else {
-        shadowSupportMode = superDef.shadowSupportMode;
-        if (!isUndefined(ctorShadowSupportMode)) {
-            shadowSupportMode = ctorShadowSupportMode;
-        }
+    let shadowSupportMode = superDef.shadowSupportMode;
+    if (!isUndefined(ctorShadowSupportMode)) {
+        shadowSupportMode = ctorShadowSupportMode;
     }
 
     let renderMode = superDef.renderMode;
