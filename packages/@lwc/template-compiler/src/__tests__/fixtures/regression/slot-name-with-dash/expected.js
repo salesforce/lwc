@@ -22,3 +22,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.slots = ["secret-slot"];
 tmpl.stylesheets = [];
+tmpl.version = 2;

@@ -17,6 +17,7 @@
   }
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];
+  tmpl.version = 2;
   if (_implicitScopedStylesheets) {
     tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
   }

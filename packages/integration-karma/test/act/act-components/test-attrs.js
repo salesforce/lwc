@@ -29,6 +29,7 @@ export default function (define) {
         var _tmpl = lwc.registerTemplate(tmpl);
         tmpl.stylesheets = [];
         tmpl.stylesheetToken = 'records-recordLayout2_recordLayout2';
+        tmpl.version = 1;
         var recordLayout2 = lwc.registerComponent(_tmpl, {
             tmpl: _tmpl,
         });

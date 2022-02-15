@@ -50,6 +50,7 @@ export default function (define) {
             tmpl.slots = [''];
             tmpl.stylesheets = [];
             tmpl.stylesheetToken = 'records-recordLayout2_recordLayout2';
+            tmpl.version = 1;
             var recordLayout2 = lwc.registerComponent(_tmpl, {
                 tmpl: _tmpl,
             });

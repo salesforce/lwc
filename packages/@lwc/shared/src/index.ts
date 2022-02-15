@@ -14,5 +14,6 @@ export * from './void-elements';
 export * from './html-attributes';
 export * from './symbol';
 export * from './namespaces';
+export * from './meta';
 
 export { assert };

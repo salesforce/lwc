@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { COMPILER_VERSION_NUMBER } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
@@ -15,7 +16,11 @@ import {
     isIf,
     isDynamicDirective,
 } from '../shared/ast';
-import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
+import {
+    TEMPLATE_FUNCTION_NAME,
+    TEMPLATE_PARAMS,
+    TEMPLATE_VERSION_NAME,
+} from '../shared/constants';
 
 import CodeGen from './codegen';
 
@@ -159,6 +164,17 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
         );
         metadataExpressions.push(t.expressionStatement(renderModeMetadata));
     }
+
+    // Example: `tmpl.version = 2`
+    const versionMetadata = t.assignmentExpression(
+        '=',
+        t.memberExpression(
+            t.identifier(TEMPLATE_FUNCTION_NAME),
+            t.identifier(TEMPLATE_VERSION_NAME)
+        ),
+        t.literal(COMPILER_VERSION_NUMBER)
+    );
+    metadataExpressions.push(t.expressionStatement(versionMetadata));
 
     return metadataExpressions;
 }

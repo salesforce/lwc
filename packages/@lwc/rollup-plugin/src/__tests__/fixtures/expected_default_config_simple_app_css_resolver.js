@@ -22,6 +22,7 @@
     }
     var _tmpl$1 = lwc.registerTemplate(tmpl$1);
     tmpl$1.stylesheets = [];
+    tmpl$1.version = 2;
 
 
     if (_implicitStylesheets) {
@@ -69,6 +70,7 @@
     }
     var _tmpl = lwc.registerTemplate(tmpl);
     tmpl.stylesheets = [];
+    tmpl.version = 2;
 
     class App extends lwc.LightningElement {
       constructor() {

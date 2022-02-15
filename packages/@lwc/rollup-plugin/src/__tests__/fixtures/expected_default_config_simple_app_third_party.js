@@ -10,6 +10,7 @@
   }
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];
+  tmpl.version = 2;
 
   function fake() {
     return 'woo hoo';

@@ -117,3 +117,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+tmpl.version = 2;

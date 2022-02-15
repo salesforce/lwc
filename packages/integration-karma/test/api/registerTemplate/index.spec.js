@@ -6,6 +6,7 @@ import { LightningElement } from 'lwc';
 
 it('should accepts a function return the same value', () => {
     const template = () => [];
+    template.version = process.env.COMPILER_VERSION_NUMBER;
     const result = registerTemplate(template);
 
     expect(result).toBe(template);
@@ -14,7 +15,9 @@ it('should accepts a function return the same value', () => {
 it('should throw if a component tries to use a template that is not registered', () => {
     class Test extends LightningElement {
         render() {
-            return () => [];
+            const template = () => [];
+            template.version = process.env.COMPILER_VERSION_NUMBER;
+            return template;
         }
     }
 
@@ -27,6 +30,7 @@ it('should throw if a component tries to use a template that is not registered',
 
 it('should not throw if the template is registered first', () => {
     const template = () => [];
+    template.version = process.env.COMPILER_VERSION_NUMBER;
     registerTemplate(template);
 
     class Test extends LightningElement {

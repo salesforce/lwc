@@ -16,6 +16,7 @@ import {
     isUndefined,
     toString,
     KEY__SCOPED_CSS,
+    COMPILER_VERSION_NUMBER,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -53,6 +54,8 @@ export interface Template {
     stylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
+    /** Version number of the compiler used to compile the template */
+    version?: number;
 }
 
 export let isUpdatingTemplate: boolean = false;
@@ -191,6 +194,8 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     validateSlots(vm, html);
                     // add the VM to the list of host VMs that can be re-rendered if html is swapped
                     setActiveVM(vm);
+                    // validate that the template was compiled with the same version as the runtime
+                    validateTemplateVersion(html, vm);
                 }
 
                 // right before producing the vnodes, we clear up all internal references
@@ -222,6 +227,22 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
         );
     }
     return vnodes;
+}
+
+function validateTemplateVersion(template: Template, vm: VM) {
+    // Validate that the template was compiled with the same version of the LWC compiler used for the runtime engine.
+    // Note that 1 is a special version used to identify the ACT Compiler, and we continue to maintain support for
+    // templates with this version.
+    assert.isTrue(
+        template === defaultEmptyTemplate ||
+            template.version === 1 ||
+            template.version === COMPILER_VERSION_NUMBER,
+        `Mismatch between compiled template version and runtime engine version. Current engine is v${COMPILER_VERSION_NUMBER}, but ${getComponentTag(
+            vm
+        )} was compiled with ${
+            isUndefined(template.version) ? 'an unknown version' : `v${template.version}`
+        }.`
+    );
 }
 
 function computeHasScopedStyles(template: Template): boolean {

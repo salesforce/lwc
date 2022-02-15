@@ -23,3 +23,4 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["", "named"];
 tmpl.stylesheets = [];
 tmpl.renderMode = "light";
+tmpl.version = 2;

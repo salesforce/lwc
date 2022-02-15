@@ -16,3 +16,5 @@ export const TEMPLATE_PARAMS: { [label: string]: string } = {
     SLOT_SET: '$slotset',
     CONTEXT: '$ctx',
 };
+
+export const TEMPLATE_VERSION_NAME: string = 'version';
