@@ -24,10 +24,13 @@ if (!process.env.NATIVE_SHADOW) {
             setFeatureFlagForTest('DISABLE_MIXED_SHADOW_MODE', true);
         });
 
+        it('should be configured as "any" (sanity)', () => {
+            expect(Valid.shadowSupportMode === 'any').toBeTrue();
+        });
+
         it('should disable mixed shadow mode', () => {
             const elm = createElement('x-valid', { is: Valid });
             expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
-            expect(Valid.shadowSupportMode === 'any').toBeTrue();
         });
 
         afterEach(() => {
