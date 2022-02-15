@@ -1,6 +1,5 @@
 import _xFoo from "x/foo";
 import { registerTemplate } from "lwc";
-const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     ti: api_tab_index,
@@ -19,17 +18,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       [api_text("valid")]
     ),
-    api_custom_element(
-      "x-foo",
-      _xFoo,
-      {
-        props: {
-          tabIndex: api_tab_index($cmp.computed),
-        },
-        key: 1,
+    api_custom_element("x-foo", _xFoo, {
+      props: {
+        tabIndex: api_tab_index($cmp.computed),
       },
-      stc0
-    ),
+      key: 1,
+    }),
   ];
 }
 export default registerTemplate(tmpl);

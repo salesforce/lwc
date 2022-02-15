@@ -87,4 +87,26 @@ describe('Table diffing', () => {
             expect(r1).toBe(e4);
         });
     });
+
+    it('sorting a table', () => {
+        const elm = createElement('x-table', { is: Table });
+        const ids = [0, 9, 1, 5, 2, 3, 8, 4, 6, 7];
+        elm.rows = ids.map((id) => ({ id }));
+        document.body.appendChild(elm);
+
+        const getRowContents = () => {
+            return [...elm.shadowRoot.querySelectorAll('x-row')].map((row) =>
+                parseInt(row.shadowRoot.querySelector('span').textContent, 10)
+            );
+        };
+        expect(getRowContents()).toEqual(ids);
+
+        const sortedIds = ids.sort((a, b) => a - b);
+
+        elm.rows = sortedIds.map((id) => ({ id }));
+
+        return Promise.resolve().then(() => {
+            expect(getRowContents()).toEqual(sortedIds);
+        });
+    });
 });

@@ -12,10 +12,9 @@ const stc0 = {
   },
   key: 0,
 };
-const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
-  return [api_element("input", stc0, stc1)];
+  return [api_element("input", stc0)];
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

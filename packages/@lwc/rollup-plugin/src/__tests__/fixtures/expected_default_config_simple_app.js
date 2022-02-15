@@ -59,10 +59,9 @@
       },
       key: 1
     };
-    const stc2 = [];
     function tmpl($api, $cmp, $slotset, $ctx) {
       const {c: api_custom_element, h: api_element} = $api;
-      return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1, stc2)])];
+      return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1)])];
     }
     var _tmpl = lwc.registerTemplate(tmpl);
     tmpl.stylesheets = [];

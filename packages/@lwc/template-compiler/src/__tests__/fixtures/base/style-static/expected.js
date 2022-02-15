@@ -7,8 +7,7 @@ const stc0 = {
   ],
   key: 0,
 };
-const stc1 = [];
-const stc2 = {
+const stc1 = {
   styleDecls: [
     ["--my-color", "blue", false],
     ["color", "var(--my-color)", false],
@@ -17,10 +16,7 @@ const stc2 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
-  return [
-    api_element("section", stc0, stc1),
-    api_element("section", stc2, stc1),
-  ];
+  return [api_element("section", stc0), api_element("section", stc1)];
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

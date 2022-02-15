@@ -22,8 +22,7 @@ const stc2 = {
   key: 3,
   svg: true,
 };
-const stc3 = [];
-const stc4 = {
+const stc3 = {
   styleDecls: [
     ["stop-color", "rgb(255,0,0)", false],
     ["stop-opacity", "1", false],
@@ -34,7 +33,7 @@ const stc4 = {
   key: 4,
   svg: true,
 };
-const stc5 = {
+const stc4 = {
   attrs: {
     cx: "200",
     cy: "70",
@@ -63,10 +62,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
             svg: true,
           },
-          [api_element("stop", stc2, stc3), api_element("stop", stc4, stc3)]
+          [api_element("stop", stc2), api_element("stop", stc3)]
         ),
       ]),
-      api_element("ellipse", stc5, stc3),
+      api_element("ellipse", stc4),
     ]),
   ];
 }

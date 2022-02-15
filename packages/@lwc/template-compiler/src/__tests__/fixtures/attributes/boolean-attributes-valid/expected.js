@@ -26,24 +26,19 @@ const stc1 = {
   },
   key: 1,
 };
-const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, c: api_custom_element } = $api;
   return [
     api_element("p", stc0, [api_text("x")]),
-    api_custom_element("x-foo", _xFoo, stc1, stc2),
-    api_element(
-      "input",
-      {
-        attrs: {
-          readonly: $cmp.getReadOnly ? "" : null,
-          disabled: "",
-          title: "foo",
-        },
-        key: 2,
+    api_custom_element("x-foo", _xFoo, stc1),
+    api_element("input", {
+      attrs: {
+        readonly: $cmp.getReadOnly ? "" : null,
+        disabled: "",
+        title: "foo",
       },
-      stc2
-    ),
+      key: 2,
+    }),
   ];
 }
 export default registerTemplate(tmpl);

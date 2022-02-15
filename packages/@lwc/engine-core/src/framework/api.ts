@@ -50,7 +50,7 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-function h(sel: string, data: VElementData, children: VNodes): VElement {
+function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -453,7 +453,7 @@ function dc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
-    children?: VNodes
+    children: VNodes = EmptyArray
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `dc() 1st argument sel must be a string.`);

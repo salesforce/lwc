@@ -89,13 +89,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_flatten([
         api_element("p", stc5, [api_text("Last child")]),
         api_iterator($cmp.items, function (item) {
-          return api_element(
-            "div",
-            {
-              key: api_key(7, item.id),
-            },
-            stc3
-          );
+          return api_element("div", {
+            key: api_key(7, item.id),
+          });
         }),
       ])
     ),

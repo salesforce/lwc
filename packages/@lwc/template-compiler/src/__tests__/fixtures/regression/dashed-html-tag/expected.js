@@ -8,12 +8,9 @@ const stc1 = {
   },
   key: 1,
 };
-const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
-  return [
-    api_element("section", stc0, [api_element("color-profile", stc1, stc2)]),
-  ];
+  return [api_element("section", stc0, [api_element("color-profile", stc1)])];
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

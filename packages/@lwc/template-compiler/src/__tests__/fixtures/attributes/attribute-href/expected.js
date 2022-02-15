@@ -14,8 +14,7 @@ const stc2 = {
   },
   key: 2,
 };
-const stc3 = [];
-const stc4 = {
+const stc3 = {
   attrs: {
     href: "#kawaramachi",
   },
@@ -26,8 +25,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("a", stc0, [api_text("Yasaka Taxi")]),
     api_element("map", stc1, [
-      api_element("area", stc2, stc3),
-      api_element("area", stc4, stc3),
+      api_element("area", stc2),
+      api_element("area", stc3),
     ]),
   ];
 }

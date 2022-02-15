@@ -18,6 +18,7 @@ import {
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
     StringToLowerCase,
+    getOwnPropertyDescriptor,
 } from '@lwc/shared';
 
 const globalStylesheets: { [content: string]: true } = create(null);
@@ -38,6 +39,9 @@ const globalStylesheetsParentElement: Element = document.head || document.body |
 const supportsConstructableStyleSheets =
     isFunction((CSSStyleSheet.prototype as any).replaceSync) &&
     isArray((document as any).adoptedStyleSheets);
+const supportsMutableAdoptedStyleSheets =
+    supportsConstructableStyleSheets &&
+    getOwnPropertyDescriptor((document as any).adoptedStyleSheets, 'length')!.writable;
 const styleElements: { [content: string]: HTMLStyleElement } = create(null);
 const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
 const nodesToStyleSheets = new WeakMap<Node, { [content: string]: true }>();
@@ -79,7 +83,16 @@ function insertConstructableStyleSheet(content: string, target: Node) {
         styleSheets[content] = styleSheet;
     }
     if (!(target as any).adoptedStyleSheets.includes(styleSheet)) {
-        (target as any).adoptedStyleSheets = [...(target as any).adoptedStyleSheets, styleSheet];
+        if (supportsMutableAdoptedStyleSheets) {
+            // This is only supported in later versions of Chromium:
+            // https://chromestatus.com/feature/5638996492288000
+            (target as any).adoptedStyleSheets.push(styleSheet);
+        } else {
+            (target as any).adoptedStyleSheets = [
+                ...(target as any).adoptedStyleSheets,
+                styleSheet,
+            ];
+        }
     }
 }
 

@@ -155,12 +155,11 @@
     },
     key: 1
   };
-  var stc2 = [];
 
   function tmpl($api, $cmp, $slotset, $ctx) {
     var api_custom_element = $api._ES5ProxyType ? $api.get("c") : $api.c,
         api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
-    return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1, stc2)])];
+    return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1)])];
   }
 
   var _tmpl = lwc.registerTemplate(tmpl);
