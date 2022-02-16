@@ -86,9 +86,9 @@ function patch(n1: VNode, n2: VNode) {
         if (!isSameVnode(n1, n2)) {
             throw new Error(
                 'Expected these VNodes to be the same: ' +
-                    JSON.stringify(n1) +
+                    JSON.stringify({ sel: n1.sel, key: n1.key }) +
                     ', ' +
-                    JSON.stringify(n2)
+                    JSON.stringify({ sel: n2.sel, key: n2.key })
             );
         }
     }
