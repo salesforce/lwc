@@ -77,89 +77,91 @@ export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode): void 
     }
 }
 
-function patch(n1: VNode | null, n2: VNode, parent: ParentNode, anchor: Node | null) {
+function patch(n1: VNode, n2: VNode, parent: ParentNode) {
     if (n1 === n2) {
         return;
     }
 
     // FIXME: When does this occurs, is it possible with LWC?
-    if (!isNull(n1) && !isSameVnode(n1, n2)) {
-        anchor = nextSibling(n1.elm);
+    if (!isSameVnode(n1, n2)) {
         unmount(n1, parent, true);
-        n1 = null;
+        mount(n2, parent, nextSibling(n1.elm));
+        return;
     }
 
     switch (n2.type) {
         case VNodeType.Text:
-            processText(n1 as VText | null, n2, parent, anchor);
+            patchText(n1 as VText, n2);
             break;
 
         case VNodeType.Comment:
-            processComment(n1 as VComment | null, n2, parent, anchor);
+            patchComment(n1 as VComment, n2);
             break;
 
         case VNodeType.Element:
-            processElement(n1 as VElement | null, n2, parent, anchor);
+            patchElement(n1 as VElement, n2);
             break;
 
         case VNodeType.CustomElement:
-            processCustomElement(n1 as VCustomElement | null, n2, parent, anchor);
+            patchCustomElement(n1 as VCustomElement, n2);
             break;
     }
 }
 
-function processText(n1: VText | null, n2: VText, parent: ParentNode, anchor: Node | null) {
-    const { owner } = n2;
+function mount(node: VNode, parent: ParentNode, anchor: Node | null) {
+    switch (node.type) {
+        case VNodeType.Text:
+            mountText(node, parent, anchor);
+            break;
 
-    if (isNull(n1)) {
-        const textNode = (n2.elm = createText(n2.text));
-        linkNodeToShadow(textNode, owner);
+        case VNodeType.Comment:
+            mountComment(node, parent, anchor);
+            break;
 
-        insertNode(textNode, parent, anchor);
-    } else {
-        n2.elm = n1.elm;
+        case VNodeType.Element:
+            mountElement(node, parent, anchor);
+            break;
 
-        if (n2.text !== n1.text) {
-            updateTextContent(n2);
-        }
+        case VNodeType.CustomElement:
+            mountCustomElement(node, parent, anchor);
+            break;
     }
 }
 
-function processComment(
-    n1: VComment | null,
-    n2: VComment,
-    parent: ParentNode,
-    anchor: Node | null
-) {
-    const { owner } = n2;
+function patchText(n1: VText, n2: VText) {
+    n2.elm = n1.elm;
 
-    if (isNull(n1)) {
-        const commentNode = (n2.elm = createComment(n2.text));
-        linkNodeToShadow(commentNode, owner);
-
-        insertNode(commentNode, parent, anchor);
-    } else {
-        n2.elm = n1.elm;
-
-        // FIXME: Comment nodes should be static, we shouldn't need to diff them together. However
-        // it is the case today.
-        if (n2.text !== n1.text) {
-            updateTextContent(n2);
-        }
+    if (n2.text !== n1.text) {
+        updateTextContent(n2);
     }
 }
 
-function processElement(
-    n1: VElement | null,
-    n2: VElement,
-    parent: ParentNode,
-    anchor: Node | null
-) {
-    if (isNull(n1)) {
-        mountElement(n2, parent, anchor);
-    } else {
-        patchElement(n1, n2);
+function mountText(node: VText, parent: ParentNode, anchor: Node | null) {
+    const { owner } = node;
+
+    const textNode = (node.elm = createText(node.text));
+    linkNodeToShadow(textNode, owner);
+
+    insertNode(textNode, parent, anchor);
+}
+
+function patchComment(n1: VComment, n2: VComment) {
+    n2.elm = n1.elm;
+
+    // FIXME: Comment nodes should be static, we shouldn't need to diff them together. However
+    // it is the case today.
+    if (n2.text !== n1.text) {
+        updateTextContent(n2);
     }
+}
+
+function mountComment(node: VComment, parent: ParentNode, anchor: Node | null) {
+    const { owner } = node;
+
+    const commentNode = (node.elm = createComment(node.text));
+    linkNodeToShadow(commentNode, owner);
+
+    insertNode(commentNode, parent, anchor);
 }
 
 function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) {
@@ -187,19 +189,6 @@ function patchElement(n1: VElement, n2: VElement) {
 
     patchElementPropsAndAttrs(n1, n2);
     patchChildren(n1.children, n2.children, elm);
-}
-
-function processCustomElement(
-    n1: VCustomElement | null,
-    n2: VCustomElement,
-    parent: ParentNode,
-    anchor: Node | null
-) {
-    if (isNull(n1)) {
-        mountCustomElement(n2, parent, anchor);
-    } else {
-        patchCustomElement(n1, n2);
-    }
 }
 
 function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
@@ -277,7 +266,7 @@ function mountVNodes(
     for (; start < end; ++start) {
         const vnode = vnodes[start];
         if (isVNode(vnode)) {
-            patch(null, vnode, parent, anchor);
+            mount(vnode, parent, anchor);
         }
     }
 }
@@ -609,22 +598,22 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
         } else if (!isVNode(newEndVnode)) {
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newStartVnode)) {
-            patch(oldStartVnode, newStartVnode, parent, null);
+            patch(oldStartVnode, newStartVnode, parent);
             oldStartVnode = oldCh[++oldStartIdx];
             newStartVnode = newCh[++newStartIdx];
         } else if (isSameVnode(oldEndVnode, newEndVnode)) {
-            patch(oldEndVnode, newEndVnode, parent, null);
+            patch(oldEndVnode, newEndVnode, parent);
             oldEndVnode = oldCh[--oldEndIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
-            patch(oldStartVnode, newEndVnode, parent, null);
+            patch(oldStartVnode, newEndVnode, parent);
             insertNode(oldStartVnode.elm!, parent, nextSibling(oldEndVnode.elm!));
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
-            patch(oldEndVnode, newStartVnode, parent, null);
+            patch(oldEndVnode, newStartVnode, parent);
             insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
@@ -635,16 +624,16 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
             idxInOld = oldKeyToIdx[newStartVnode.key!];
             if (isUndefined(idxInOld)) {
                 // New element
-                patch(null, newStartVnode, parent, oldStartVnode.elm!);
+                mount(newStartVnode, parent, oldStartVnode.elm!);
                 newStartVnode = newCh[++newStartIdx];
             } else {
                 elmToMove = oldCh[idxInOld];
                 if (isVNode(elmToMove)) {
                     if (elmToMove.sel !== newStartVnode.sel) {
                         // New element
-                        patch(null, newStartVnode, parent, oldStartVnode.elm!);
+                        mount(newStartVnode, parent, oldStartVnode.elm!);
                     } else {
-                        patch(elmToMove, newStartVnode, parent, null);
+                        patch(elmToMove, newStartVnode, parent);
                         // Delete the old child, but copy the array since it is read-only.
                         // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
                         // so we only care about the `oldCh` object inside this function.
@@ -709,14 +698,14 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
                     // both vnodes must be equivalent, and se just need to patch them
-                    patch(n1, n2, parent, anchor);
+                    patch(n1, n2, parent);
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null
                     unmount(n1, parent, true);
                 }
             } else if (isVNode(n2)) {
-                patch(null, n2, parent, anchor);
+                mount(n2, parent, anchor);
                 anchor = n2.elm!;
             }
         }
