@@ -82,6 +82,17 @@ function patch(n1: VNode, n2: VNode) {
         return;
     }
 
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isSameVnode(n1, n2)) {
+            throw new Error(
+                'Expected these VNodes to be the same: ' +
+                    JSON.stringify(n1) +
+                    ', ' +
+                    JSON.stringify(n2)
+            );
+        }
+    }
+
     switch (n2.type) {
         case VNodeType.Text:
             patchText(n1 as VText, n2);
