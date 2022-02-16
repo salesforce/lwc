@@ -77,15 +77,8 @@ export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode): void 
     }
 }
 
-function patch(n1: VNode, n2: VNode, parent: ParentNode) {
+function patch(n1: VNode, n2: VNode) {
     if (n1 === n2) {
-        return;
-    }
-
-    // FIXME: When does this occurs, is it possible with LWC?
-    if (!isSameVnode(n1, n2)) {
-        unmount(n1, parent, true);
-        mount(n2, parent, nextSibling(n1.elm));
         return;
     }
 
@@ -598,22 +591,22 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
         } else if (!isVNode(newEndVnode)) {
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newStartVnode)) {
-            patch(oldStartVnode, newStartVnode, parent);
+            patch(oldStartVnode, newStartVnode);
             oldStartVnode = oldCh[++oldStartIdx];
             newStartVnode = newCh[++newStartIdx];
         } else if (isSameVnode(oldEndVnode, newEndVnode)) {
-            patch(oldEndVnode, newEndVnode, parent);
+            patch(oldEndVnode, newEndVnode);
             oldEndVnode = oldCh[--oldEndIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
-            patch(oldStartVnode, newEndVnode, parent);
+            patch(oldStartVnode, newEndVnode);
             insertNode(oldStartVnode.elm!, parent, nextSibling(oldEndVnode.elm!));
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
-            patch(oldEndVnode, newStartVnode, parent);
+            patch(oldEndVnode, newStartVnode);
             insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
@@ -633,7 +626,7 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
                         // New element
                         mount(newStartVnode, parent, oldStartVnode.elm!);
                     } else {
-                        patch(elmToMove, newStartVnode, parent);
+                        patch(elmToMove, newStartVnode);
                         // Delete the old child, but copy the array since it is read-only.
                         // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
                         // so we only care about the `oldCh` object inside this function.
@@ -698,7 +691,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
                     // both vnodes must be equivalent, and se just need to patch them
-                    patch(n1, n2, parent);
+                    patch(n1, n2);
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null
