@@ -34,35 +34,35 @@ import {
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
 
-function hydrate(vnode: VNode, node: Node) {
+function hydrate(vnode: VNode, node: Node, vm: VM) {
     switch (vnode.type) {
         case VNodeType.Text:
-            hydrateText(vnode, node);
+            hydrateText(vnode, node, vm);
             break;
 
         case VNodeType.Comment:
-            hydrateComment(vnode, node);
+            hydrateComment(vnode, node, vm);
             break;
 
         case VNodeType.Element:
-            hydrateElement(vnode, node);
+            hydrateElement(vnode, node, vm);
             break;
 
         case VNodeType.CustomElement:
-            hydrateCustomElement(vnode, node);
+            hydrateCustomElement(vnode, node, vm);
             break;
     }
 }
 
-function hydrateText(vnode: VText, node: Node) {
+function hydrateText(vnode: VText, node: Node, vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line lwc-internal/no-global-node
-        validateNodeType(vnode, node, Node.TEXT_NODE);
+        validateNodeType(node, Node.TEXT_NODE, vm);
 
         if (node.nodeValue !== vnode.text && !(node.nodeValue === '\u200D' && vnode.text === '')) {
             logWarn(
                 'Hydration mismatch: text values do not match, will recover from the difference',
-                vnode.owner
+                vm
             );
         }
     }
@@ -72,15 +72,15 @@ function hydrateText(vnode: VText, node: Node) {
     vnode.elm = node;
 }
 
-function hydrateComment(vnode: VComment, node: Node) {
+function hydrateComment(vnode: VComment, node: Node, vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line lwc-internal/no-global-node
-        validateNodeType(vnode, node, Node.COMMENT_NODE);
+        validateNodeType(node, Node.COMMENT_NODE, vm);
 
         if (node.nodeValue !== vnode.text) {
             logWarn(
                 'Hydration mismatch: comment values do not match, will recover from the difference',
-                vnode.owner
+                vm
             );
         }
     }
@@ -90,11 +90,11 @@ function hydrateComment(vnode: VComment, node: Node) {
     vnode.elm = node;
 }
 
-function hydrateElement(vnode: VElement, node: Node) {
+function hydrateElement(vnode: VElement, node: Node, vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line lwc-internal/no-global-node
-        validateNodeType<Element>(vnode, node, Node.ELEMENT_NODE);
-        validateElement(vnode, node);
+        validateNodeType<Element>(node, Node.ELEMENT_NODE, vm);
+        validateElement(vnode, node, vm);
     }
 
     const elm = node as Element;
@@ -119,7 +119,7 @@ function hydrateElement(vnode: VElement, node: Node) {
             } else {
                 logWarn(
                     `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
-                    vnode.owner
+                    vm
                 );
             }
         }
@@ -128,19 +128,19 @@ function hydrateElement(vnode: VElement, node: Node) {
     patchElementPropsAndAttrs(vnode);
 
     if (!isDomManual) {
-        hydrateChildren(vnode.elm.childNodes, vnode.children, vnode.owner);
+        hydrateChildren(vnode.elm.childNodes, vnode.children, vm);
     }
 }
 
-function hydrateCustomElement(vnode: VCustomElement, node: Node) {
+function hydrateCustomElement(vnode: VCustomElement, node: Node, owner: VM) {
     if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line lwc-internal/no-global-node
-        validateNodeType<Element>(vnode, node, Node.ELEMENT_NODE);
-        validateElement(vnode, node);
+        validateNodeType<Element>(node, Node.ELEMENT_NODE, owner);
+        validateElement(vnode, node, owner);
     }
 
     const elm = node as Element;
-    const { sel, mode, ctor, owner } = vnode;
+    const { sel, mode, ctor } = vnode;
 
     const vm = createVM(elm, ctor, {
         mode,
@@ -188,7 +188,7 @@ export function hydrateChildren(elmChildren: NodeListOf<ChildNode>, children: VN
 
         if (!isNull(childVnode)) {
             const childNode = elmChildren[childNodeIndex];
-            hydrate(childVnode, childNode);
+            hydrate(childVnode, childNode, vm);
 
             childNodeIndex++;
         }
@@ -204,30 +204,26 @@ function throwHydrationError(): never {
     assert.fail('Server rendered elements do not match client side generated elements');
 }
 
-function validateNodeType<T extends Node>(
-    vnode: VNode,
-    node: Node,
-    nodeType: number
-): asserts node is T {
+function validateNodeType<T extends Node>(node: Node, nodeType: number, vm: VM): asserts node is T {
     if (node.nodeType !== nodeType) {
-        logError('Hydration mismatch: incorrect node type received', vnode.owner);
+        logError('Hydration mismatch: incorrect node type received', vm);
         assert.fail('Hydration mismatch: incorrect node type received.');
     }
 }
 
-function validateElement(vnode: VBaseElement, elm: Element) {
+function validateElement(vnode: VBaseElement, elm: Element, vm: VM) {
     if (vnode.sel.toLowerCase() !== elm.tagName.toLowerCase()) {
         logError(
             `Hydration mismatch: expecting element with tag "${vnode.sel.toLowerCase()}" but found "${elm.tagName.toLowerCase()}".`,
-            vnode.owner
+            vm
         );
 
         throwHydrationError();
     }
 
-    const hasIncompatibleAttrs = validateAttrs(vnode, elm);
-    const hasIncompatibleClass = validateClassAttr(vnode, elm);
-    const hasIncompatibleStyle = validateStyleAttr(vnode, elm);
+    const hasIncompatibleAttrs = validateAttrs(vnode, elm, vm);
+    const hasIncompatibleClass = validateClassAttr(vnode, elm, vm);
+    const hasIncompatibleStyle = validateStyleAttr(vnode, elm, vm);
     const isVNodeAndElementCompatible =
         hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
 
@@ -236,7 +232,7 @@ function validateElement(vnode: VBaseElement, elm: Element) {
     }
 }
 
-function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
+function validateAttrs(vnode: VBaseElement, elm: Element, vm: VM): boolean {
     const {
         data: { attrs = {} },
     } = vnode;
@@ -250,7 +246,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
         if (String(attrValue) !== elmAttrValue) {
             logError(
                 `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
-                vnode.owner
+                vm
             );
             nodesAreCompatible = false;
         }
@@ -259,7 +255,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
     return nodesAreCompatible;
 }
 
-function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
+function validateClassAttr(vnode: VBaseElement, elm: Element, vm: VM): boolean {
     const {
         data: { className, classMap },
     } = vnode;
@@ -296,14 +292,14 @@ function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
             `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "class" has different values, expected "${vnodeClassName}" but found "${
                 elm.className
             }"`,
-            vnode.owner
+            vm
         );
     }
 
     return nodesAreCompatible;
 }
 
-function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
+function validateStyleAttr(vnode: VBaseElement, elm: Element, vm: VM): boolean {
     const {
         data: { style, styleDecls },
     } = vnode;
@@ -344,7 +340,7 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
         // style is used when class is bound to an expr.
         logError(
             `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
-            vnode.owner
+            vm
         );
     }
 

@@ -464,7 +464,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    patchChildren(oldCh, newCh, renderRoot);
+                    patchChildren(oldCh, newCh, renderRoot, vm);
                 },
                 () => {
                     // post

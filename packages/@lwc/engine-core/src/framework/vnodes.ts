@@ -25,7 +25,6 @@ export interface BaseVNode {
     elm: Node | undefined;
     sel: string | undefined;
     key: Key | undefined;
-    owner: VM;
 }
 
 export interface VText extends BaseVNode {

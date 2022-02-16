@@ -98,7 +98,6 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         children,
         elm,
         key,
-        owner: vmBeingRendered,
     };
 }
 
@@ -211,7 +210,6 @@ function c(
         key,
 
         ctor: Ctor,
-        owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
         aChildren,
         vm,
@@ -340,7 +338,6 @@ function t(text: string): VText {
         text,
         elm,
         key,
-        owner: getVMBeingRendered()!,
     };
 }
 
@@ -353,7 +350,6 @@ function co(text: string): VComment {
         text,
         elm,
         key,
-        owner: getVMBeingRendered()!,
     };
 }
 
