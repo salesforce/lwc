@@ -708,7 +708,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
                         // TODO [#2697]: it is possible for the template to define key attributes outside of an
                         //  iteration, leading to a situation where static children have different keys.
                         unmount(n1, parent, true);
-                        mount(n2, parent, nextSibling(n1.elm));
+                        mount(n2, parent, anchor);
                     }
                     anchor = n2.elm!;
                 } else {
