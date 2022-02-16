@@ -23,7 +23,7 @@
     ],
     "dependencies": {
         "@lwc/shared": "2.9.0",
-        "postcss": "~8.4.5",
+        "postcss": "~8.4.6",
         "postcss-selector-parser": "~6.0.9",
         "postcss-value-parser": "~4.2.0",
         "string.prototype.matchall": "^4.0.5"
