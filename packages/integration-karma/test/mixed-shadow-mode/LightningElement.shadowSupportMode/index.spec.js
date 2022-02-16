@@ -1,4 +1,5 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
+import { isSyntheticShadowRootInstance } from 'test-utils';
 
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
@@ -16,3 +17,24 @@ describe('shadowSupportMode static property', () => {
         }).not.toThrowError();
     });
 });
+
+if (!process.env.NATIVE_SHADOW) {
+    describe('DISABLE_MIXED_SHADOW_MODE', () => {
+        beforeEach(() => {
+            setFeatureFlagForTest('DISABLE_MIXED_SHADOW_MODE', true);
+        });
+
+        it('should be configured as "any" (sanity)', () => {
+            expect(Valid.shadowSupportMode === 'any').toBeTrue();
+        });
+
+        it('should disable mixed shadow mode', () => {
+            const elm = createElement('x-valid', { is: Valid });
+            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
+        });
+
+        afterEach(() => {
+            setFeatureFlagForTest('DISABLE_MIXED_SHADOW_MODE', false);
+        });
+    });
+}
