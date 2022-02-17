@@ -45,6 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       [api_text("Time to travel!")]
     ),
   ];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

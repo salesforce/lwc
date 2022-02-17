@@ -12,6 +12,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_element("p", stc1, [api_text(api_dynamic_text($cmp.obj.sub))]),
     ]),
   ];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

@@ -16,6 +16,7 @@ import {
     isUndefined,
     toString,
     KEY__SCOPED_CSS,
+    COMPILER_VERSION_NUMBER,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -191,6 +192,8 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     validateSlots(vm, html);
                     // add the VM to the list of host VMs that can be re-rendered if html is swapped
                     setActiveVM(vm);
+                    // validate that the template was compiled with the same version as the runtime
+                    validateTemplateVersion(html, vm);
                 }
 
                 // right before producing the vnodes, we clear up all internal references
@@ -222,6 +225,25 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
         );
     }
     return vnodes;
+}
+
+function validateTemplateVersion(template: Template, vm: VM) {
+    // Validate that the template was compiled with the same version of the LWC compiler used for the runtime engine.
+    // Note this only works in unminified dev mode because it relies on code comments.
+    if (template === defaultEmptyTemplate) {
+        // skip the default template
+        return;
+    }
+    const versionMatcher = template.toString().match(/\/\*LWC compiler v(\d+)\*\/\s*}$/);
+    if (!isNull(versionMatcher)) {
+        const version = parseInt(versionMatcher[1], 10);
+        assert.isTrue(
+            version === COMPILER_VERSION_NUMBER,
+            `Mismatch between compiled template version and runtime engine version. Current engine is v${COMPILER_VERSION_NUMBER}, but ${getComponentTag(
+                vm
+            )} was compiled with v${version}.`
+        );
+    }
 }
 
 function computeHasScopedStyles(template: Template): boolean {

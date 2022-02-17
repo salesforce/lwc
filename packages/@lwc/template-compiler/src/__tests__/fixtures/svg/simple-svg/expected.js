@@ -49,6 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_element("text", stc3, [api_text("SVG")]),
     ]),
   ];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

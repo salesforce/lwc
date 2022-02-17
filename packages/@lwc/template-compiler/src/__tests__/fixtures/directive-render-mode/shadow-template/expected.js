@@ -5,6 +5,7 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element } = $api;
   return [api_element("p", stc0, [api_text("Root")])];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

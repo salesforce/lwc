@@ -8,6 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_comment(" This is an HTML comment "),
     api_element("button", stc0, [api_text("click me")]),
   ];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

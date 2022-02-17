@@ -68,6 +68,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_element("ellipse", stc4),
     ]),
   ];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

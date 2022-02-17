@@ -87,6 +87,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_text("integer value, should be true"),
     ]),
   ];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

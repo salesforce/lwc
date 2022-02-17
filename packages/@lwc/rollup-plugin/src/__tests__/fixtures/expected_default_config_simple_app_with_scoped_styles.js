@@ -14,6 +14,7 @@
   function tmpl($api, $cmp, $slotset, $ctx) {
     const {h: api_element} = $api;
     return [api_element("div", stc0)];
+    /*LWC compiler v1*/
   }
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];

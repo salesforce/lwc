@@ -100,6 +100,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_element("p", stc8, [api_text("Other child2")]),
     ]),
   ];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

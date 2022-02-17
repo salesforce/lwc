@@ -14,7 +14,7 @@
 
 const fs = require('fs');
 const path = require('path');
-
+const { COMPILER_VERSION_NUMBER } = require('@lwc/shared');
 const {
     COMPAT,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
@@ -41,7 +41,8 @@ function createEnvFile() {
                 COMPAT: ${COMPAT},
                 MIXED_SHADOW: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NATIVE_SHADOW: ${!SYNTHETIC_SHADOW_ENABLED || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
-                NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== 'undefined'
+                NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== 'undefined',
+                COMPILER_VERSION_NUMBER: ${COMPILER_VERSION_NUMBER}
             }
         };
     `

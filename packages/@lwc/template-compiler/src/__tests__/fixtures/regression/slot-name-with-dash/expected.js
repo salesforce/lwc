@@ -18,6 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       $slotset
     ),
   ];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.slots = ["secret-slot"];

@@ -93,6 +93,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ),
     api_custom_element("x-foo", _xFoo, stc8, [api_text("integer value")]),
   ];
+  /*LWC compiler v1*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

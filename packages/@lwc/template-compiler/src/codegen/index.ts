@@ -6,7 +6,7 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute, SVG_NAMESPACE } from '@lwc/shared';
+import { isBooleanAttribute, SVG_NAMESPACE, COMPILER_VERSION_NUMBER } from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import { ResolvedConfig } from '../config';
@@ -568,7 +568,9 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
     return t.functionDeclaration(
         t.identifier(TEMPLATE_FUNCTION_NAME),
         args,
-        t.blockStatement(body)
+        t.blockStatement(body, {
+            trailingComments: [t.comment(`LWC compiler v${COMPILER_VERSION_NUMBER}`)],
+        })
     );
 }
 
@@ -593,5 +595,5 @@ export default function (root: Root, config: ResolvedConfig): string {
             break;
     }
 
-    return astring.generate(program);
+    return astring.generate(program, { comments: true });
 }

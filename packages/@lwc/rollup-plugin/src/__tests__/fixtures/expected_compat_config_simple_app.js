@@ -89,6 +89,7 @@
         api_text = $api._ES5ProxyType ? $api.get("t") : $api.t,
         api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
     return [api_element("div", stc0$1, [api_text(api_dynamic_text($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x))])];
+    /*LWC compiler v1*/
   }
 
   var _tmpl$1 = lwc.registerTemplate(tmpl$1);
@@ -160,6 +161,7 @@
     var api_custom_element = $api._ES5ProxyType ? $api.get("c") : $api.c,
         api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
     return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1)])];
+    /*LWC compiler v1*/
   }
 
   var _tmpl = lwc.registerTemplate(tmpl);
