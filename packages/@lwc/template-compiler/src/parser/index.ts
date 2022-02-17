@@ -758,7 +758,11 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
             }
         }
 
-        element.directives.push(ast.keyDirective(keyAttribute.value, keyAttribute.location));
+        if (forOfParent || forEachParent) {
+            element.directives.push(ast.keyDirective(keyAttribute.value, keyAttribute.location));
+        } else {
+            ctx.warnOnNode(ParserDiagnostics.KEY_SHOULD_BE_IN_ITERATION, keyAttribute, [tag]);
+        }
     } else if (isInIteratorElement(ctx)) {
         ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
