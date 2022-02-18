@@ -239,9 +239,9 @@ function validateTemplateVersion(template: Template, vm: VM) {
         const version = parseInt(versionMatcher[1], 10);
         assert.isTrue(
             version === COMPILER_VERSION_NUMBER,
-            `Mismatch between compiled template version and runtime engine version. Current engine is v${COMPILER_VERSION_NUMBER}, but ${getComponentTag(
+            `Current engine is v${COMPILER_VERSION_NUMBER}, but component ${getComponentTag(
                 vm
-            )} was compiled with v${version}.`
+            )} was compiled with v${version}. Please update your compiled template or LWC engine so that the versions match.`
         );
     }
 }

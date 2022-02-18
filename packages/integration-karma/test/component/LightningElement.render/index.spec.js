@@ -70,7 +70,7 @@ it(`throws an error if the returned compiled template has a mismatched version n
         document.body.appendChild(elm);
     }).toThrowError(
         Error,
-        `Assert Violation: Mismatch between compiled template version and runtime engine version. Current engine is v${process.env.COMPILER_VERSION_NUMBER}, but <x-dynamic-template> was compiled with v123456789.`
+        `Assert Violation: Current engine is v${process.env.COMPILER_VERSION_NUMBER}, but component <x-dynamic-template> was compiled with v123456789. Please update your compiled template or LWC engine so that the versions match.`
     );
 });
 
