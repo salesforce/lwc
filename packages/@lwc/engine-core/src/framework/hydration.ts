@@ -7,7 +7,14 @@
 import { isUndefined, ArrayFilter, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
-import { getAttribute, getClassList } from '../renderer';
+import {
+    getAttribute,
+    getClassList,
+    setText,
+    getProperty,
+    setProperty,
+    getChildNodes,
+} from '../renderer';
 
 import { cloneAndOmitKey, parseStyleText } from './utils';
 import { allocateChildren } from './rendering';
@@ -34,6 +41,12 @@ import {
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
 
+const enum EnvNodeTypes {
+    ELEMENT = 1,
+    TEXT = 3,
+    COMMENT = 8,
+}
+
 function hydrate(vnode: VNode, node: Node) {
     switch (vnode.type) {
         case VNodeType.Text:
@@ -56,10 +69,11 @@ function hydrate(vnode: VNode, node: Node) {
 
 function hydrateText(vnode: VText, node: Node) {
     if (process.env.NODE_ENV !== 'production') {
-        // eslint-disable-next-line lwc-internal/no-global-node
-        validateNodeType(vnode, node, Node.TEXT_NODE);
+        validateNodeType(vnode, node, EnvNodeTypes.TEXT);
 
-        if (node.nodeValue !== vnode.text && !(node.nodeValue === '\u200D' && vnode.text === '')) {
+        const nodeValue = getProperty(node, 'nodeValue');
+
+        if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
             logWarn(
                 'Hydration mismatch: text values do not match, will recover from the difference',
                 vnode.owner
@@ -68,16 +82,15 @@ function hydrateText(vnode: VText, node: Node) {
     }
 
     // always set the text value to the one from the vnode.
-    node.nodeValue = vnode.text ?? null;
+    setText(node, vnode.text ?? null);
     vnode.elm = node;
 }
 
 function hydrateComment(vnode: VComment, node: Node) {
     if (process.env.NODE_ENV !== 'production') {
-        // eslint-disable-next-line lwc-internal/no-global-node
-        validateNodeType(vnode, node, Node.COMMENT_NODE);
+        validateNodeType(vnode, node, EnvNodeTypes.COMMENT);
 
-        if (node.nodeValue !== vnode.text) {
+        if (getProperty(node, 'nodeValue') !== vnode.text) {
             logWarn(
                 'Hydration mismatch: comment values do not match, will recover from the difference',
                 vnode.owner
@@ -86,14 +99,13 @@ function hydrateComment(vnode: VComment, node: Node) {
     }
 
     // always set the text value to the one from the vnode.
-    node.nodeValue = vnode.text ?? null;
+    setProperty(node, 'nodeValue', vnode.text ?? null);
     vnode.elm = node;
 }
 
 function hydrateElement(vnode: VElement, node: Node) {
     if (process.env.NODE_ENV !== 'production') {
-        // eslint-disable-next-line lwc-internal/no-global-node
-        validateNodeType<Element>(vnode, node, Node.ELEMENT_NODE);
+        validateNodeType<Element>(vnode, node, EnvNodeTypes.ELEMENT);
         validateElement(vnode, node);
     }
 
@@ -110,7 +122,7 @@ function hydrateElement(vnode: VElement, node: Node) {
         // remove the innerHTML from props so it reuses the existing dom elements.
         const { props } = vnode.data;
         if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
-            if (elm.innerHTML === props.innerHTML) {
+            if (getProperty(elm, 'innerHTML') === props.innerHTML) {
                 // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
                 vnode.data = {
                     ...vnode.data,
@@ -118,7 +130,10 @@ function hydrateElement(vnode: VElement, node: Node) {
                 };
             } else {
                 logWarn(
-                    `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
+                    `Mismatch hydrating element <${getProperty(
+                        elm,
+                        'tagName'
+                    ).toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
                     vnode.owner
                 );
             }
@@ -128,7 +143,7 @@ function hydrateElement(vnode: VElement, node: Node) {
     patchElementPropsAndAttrs(vnode);
 
     if (!isDomManual) {
-        hydrateChildren(vnode.elm.childNodes, vnode.children, vnode.owner);
+        hydrateChildren(getChildNodes(vnode.elm), vnode.children, vnode.owner);
     }
 }
 
@@ -163,13 +178,13 @@ function hydrateCustomElement(vnode: VCustomElement, node: Node) {
     if (vm.renderMode !== RenderMode.Light) {
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
-        hydrateChildren(vnode.elm.childNodes, vnode.children, vm);
+        hydrateChildren(getChildNodes(vnode.elm), vnode.children, vm);
     }
 
     hydrateVM(vm);
 }
 
-export function hydrateChildren(elmChildren: NodeListOf<ChildNode>, children: VNodes, vm: VM) {
+export function hydrateChildren(elmChildren: NodeList, children: VNodes, vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         const filteredVNodes = ArrayFilter.call(children, (vnode) => !!vnode);
 
@@ -209,16 +224,19 @@ function validateNodeType<T extends Node>(
     node: Node,
     nodeType: number
 ): asserts node is T {
-    if (node.nodeType !== nodeType) {
+    if (getProperty(node, 'nodeType') !== nodeType) {
         logError('Hydration mismatch: incorrect node type received', vnode.owner);
         assert.fail('Hydration mismatch: incorrect node type received.');
     }
 }
 
 function validateElement(vnode: VBaseElement, elm: Element) {
-    if (vnode.sel.toLowerCase() !== elm.tagName.toLowerCase()) {
+    if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         logError(
-            `Hydration mismatch: expecting element with tag "${vnode.sel.toLowerCase()}" but found "${elm.tagName.toLowerCase()}".`,
+            `Hydration mismatch: expecting element with tag "${vnode.sel.toLowerCase()}" but found "${getProperty(
+                elm,
+                'tagName'
+            ).toLowerCase()}".`,
             vnode.owner
         );
 
@@ -249,7 +267,10 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
         const elmAttrValue = getAttribute(elm, attrName);
         if (String(attrValue) !== elmAttrValue) {
             logError(
-                `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
+                `Mismatch hydrating element <${getProperty(
+                    elm,
+                    'tagName'
+                ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
                 vnode.owner
             );
             nodesAreCompatible = false;
@@ -267,7 +288,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
     let nodesAreCompatible = true;
     let vnodeClassName;
 
-    if (!isUndefined(className) && String(className) !== elm.className) {
+    if (!isUndefined(className) && String(className) !== getProperty(elm, 'className')) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
         vnodeClassName = className;
@@ -293,9 +314,13 @@ function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
 
     if (!nodesAreCompatible) {
         logError(
-            `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "class" has different values, expected "${vnodeClassName}" but found "${
-                elm.className
-            }"`,
+            `Mismatch hydrating element <${getProperty(
+                elm,
+                'tagName'
+            ).toLowerCase()}>: attribute "class" has different values, expected "${vnodeClassName}" but found "${getProperty(
+                elm,
+                'className'
+            )}"`,
             vnode.owner
         );
     }
@@ -343,7 +368,10 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
     if (!nodesAreCompatible) {
         // style is used when class is bound to an expr.
         logError(
-            `Mismatch hydrating element <${elm.tagName.toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
+            `Mismatch hydrating element <${getProperty(
+                elm,
+                'tagName'
+            ).toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
             vnode.owner
         );
     }

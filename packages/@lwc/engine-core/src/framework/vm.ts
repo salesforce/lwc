@@ -19,7 +19,13 @@ import {
     isUndefined,
 } from '@lwc/shared';
 
-import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
+import {
+    isSyntheticShadowDefined,
+    ssr,
+    remove,
+    isNativeShadowDefined,
+    getChildNodes,
+} from '../renderer';
 import type { HostNode, HostElement } from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
 
@@ -440,7 +446,9 @@ function hydrate(vm: VM) {
         vm.children = children;
 
         const vmChildren =
-            vm.renderMode === RenderMode.Light ? vm.elm.childNodes : vm.elm.shadowRoot.childNodes;
+            vm.renderMode === RenderMode.Light
+                ? getChildNodes(vm.elm)
+                : getChildNodes(vm.elm.shadowRoot);
         hydrateChildren(vmChildren, children, vm);
 
         runRenderedCallback(vm);
