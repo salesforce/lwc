@@ -149,8 +149,7 @@ function hydrateElement(vnode: VElement, node: Node) {
 
 function hydrateCustomElement(vnode: VCustomElement, node: Node) {
     if (process.env.NODE_ENV !== 'production') {
-        // eslint-disable-next-line lwc-internal/no-global-node
-        validateNodeType<Element>(vnode, node, Node.ELEMENT_NODE);
+        validateNodeType<Element>(vnode, node, EnvNodeTypes.ELEMENT);
         validateElement(vnode, node);
     }
 
