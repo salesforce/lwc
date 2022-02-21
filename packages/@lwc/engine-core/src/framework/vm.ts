@@ -43,7 +43,7 @@ import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
+import { VNodes, VCustomElement, VNode, VNodeType, AllocatedVNodes } from './vnodes';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -52,7 +52,7 @@ export interface TemplateCache {
 }
 
 export interface SlotSet {
-    [key: string]: VNodes;
+    [key: string]: AllocatedVNodes;
 }
 
 export const enum VMState {

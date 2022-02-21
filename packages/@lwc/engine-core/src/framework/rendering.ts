@@ -46,6 +46,7 @@ import {
     ShadowMode,
     RenderMode,
     LwcDomMode,
+    SlotSet,
 } from './vm';
 import {
     VNode,
@@ -59,6 +60,7 @@ import {
     isVBaseElement,
     isSameVnode,
     VNodeType,
+    VSlot,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -106,6 +108,10 @@ function patch(n1: VNode, n2: VNode, vm: VM) {
             patchElement(n1 as VElement, n2, vm);
             break;
 
+        case VNodeType.Slot:
+            patchElement(n1 as VSlot, n2, vm);
+            break;
+
         case VNodeType.CustomElement:
             patchCustomElement(n1 as VCustomElement, n2, vm);
             break;
@@ -124,6 +130,10 @@ function mount(node: VNode, parent: ParentNode, anchor: Node | null, vm: VM) {
 
         case VNodeType.Element:
             mountElement(node, parent, anchor, vm);
+            break;
+
+        case VNodeType.Slot:
+            mountSlot(node, parent, anchor, vm);
             break;
 
         case VNodeType.CustomElement:
@@ -183,6 +193,10 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null, 
     mountVNodes(vnode.children, elm, null, vm);
 }
 
+function mountSlot(vnode: VSlot, parent: ParentNode, anchor: Node | null, vm: VM) {
+
+}
+
 function patchElement(n1: VElement, n2: VElement, vm: VM) {
     const elm = (n2.elm = n1.elm!);
 
@@ -216,7 +230,7 @@ function mountCustomElement(
     vnode.vm = vm;
 
     if (vm) {
-        allocateChildren(vnode, vm);
+        allocateChildren(vnode, vm, owner);
     } else if (vnode.ctor !== UpgradableConstructor) {
         throw new TypeError(`Incorrect Component Constructor`);
     }
@@ -246,7 +260,7 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement, owner: VM) {
     if (!isUndefined(vm)) {
         // in fallback mode, the allocation will always set children to
         // empty and delegate the real allocation to the slot elements
-        allocateChildren(n2, vm);
+        allocateChildren(n2, vm, owner);
     }
 
     // in fallback mode, the children will be always empty, so, nothing
@@ -430,7 +444,7 @@ function fallbackElmHook(elm: Element, vnode: VBaseElement, vm: VM) {
     }
 }
 
-export function allocateChildren(vnode: VCustomElement, vm: VM) {
+export function allocateChildren(vnode: VCustomElement, vm: VM, owner: VM) {
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.
     // 2- There is a change on the external api (ex: slots)
@@ -448,7 +462,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     const { renderMode, shadowMode } = vm;
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
-        allocateInSlot(vm, children);
+        allocateInSlot(vm, children, owner);
         // save the allocated children in case this vnode is reused.
         vnode.aChildren = children;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
@@ -494,9 +508,10 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, owner: VM)
     return vm;
 }
 
-function allocateInSlot(vm: VM, children: VNodes) {
+function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
     const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null));
+    const cmpSlots: SlotSet = (vm.cmpSlots = create(null));
+
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
@@ -508,7 +523,7 @@ function allocateInSlot(vm: VM, children: VNodes) {
             slotName = (vnode.data.attrs?.slot as string) || '';
         }
 
-        const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
+        const {vnodes} = (cmpSlots[slotName] = cmpSlots[slotName] || { owner, vnodes: [] });
         // re-keying the vnodes is necessary to avoid conflicts with default content for the slot
         // which might have similar keys. Each vnode will always have a key that
         // starts with a numeric character from compiler. In this case, we add a unique
@@ -528,14 +543,14 @@ function allocateInSlot(vm: VM, children: VNodes) {
         }
         for (let i = 0, len = oldKeys.length; i < len; i += 1) {
             const key = oldKeys[i];
-            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
+            if (isUndefined(cmpSlots[key]) || oldSlots[key].vnodes.length !== cmpSlots[key].vnodes.length) {
                 markComponentAsDirty(vm);
                 return;
             }
             const oldVNodes = oldSlots[key];
             const vnodes = cmpSlots[key];
-            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
-                if (oldVNodes[j] !== vnodes[j]) {
+            for (let j = 0, a = cmpSlots[key].vnodes.length; j < a; j += 1) {
+                if (oldVNodes.vnodes[j] !== vnodes.vnodes[j]) {
                     markComponentAsDirty(vm);
                     return;
                 }

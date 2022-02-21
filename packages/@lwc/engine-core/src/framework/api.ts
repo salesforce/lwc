@@ -29,7 +29,7 @@ import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
+import { ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
@@ -41,6 +41,8 @@ import {
     VComment,
     VElementData,
     VNodeType,
+    VSlot,
+    AllocatedVNodes,
 } from './vnodes';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
@@ -127,31 +129,34 @@ function s(
     data: VElementData,
     children: VNodes,
     slotset: SlotSet | undefined
-): VElement | VNodes {
+): VSlot {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     }
+
+    let aChildren: AllocatedVNodes | undefined;
     if (
         !isUndefined(slotset) &&
         !isUndefined(slotset[slotName]) &&
-        slotset[slotName].length !== 0
+        slotset[slotName].vnodes.length !== 0
     ) {
-        children = slotset[slotName];
+        aChildren = slotset[slotName];
     }
-    const vmBeingRendered = getVMBeingRendered()!;
-    const { renderMode, shadowMode } = vmBeingRendered;
 
-    if (renderMode === RenderMode.Light) {
-        sc(children);
-        return children;
-    }
-    if (shadowMode === ShadowMode.Synthetic) {
-        // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
-        sc(children);
-    }
-    return h('slot', data, children);
+    let elm;
+    const { key } = data;
+
+    return {
+        type: VNodeType.Slot,
+        sel: 'slot',
+        data,
+        children,
+        aChildren,
+        elm,
+        key,
+    };
 }
 
 // [c]ustom element node

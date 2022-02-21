@@ -151,7 +151,7 @@ function hydrateCustomElement(vnode: VCustomElement, node: Node, owner: VM) {
     vnode.elm = elm;
     vnode.vm = vm;
 
-    allocateChildren(vnode, vm);
+    allocateChildren(vnode, vm, owner);
     patchElementPropsAndAttrs(vnode);
 
     // Insert hook section:

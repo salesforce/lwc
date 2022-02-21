@@ -13,12 +13,18 @@ export const enum VNodeType {
     Text,
     Comment,
     Element,
+    Slot,
     CustomElement,
 }
 
-export type VNode = VText | VComment | VElement | VCustomElement;
+export type VNode = VText | VComment | VElement | VSlot | VCustomElement;
 export type VParentElement = VElement | VCustomElement;
 export type VNodes = Readonly<Array<VNode | null>>;
+
+export interface AllocatedVNodes {
+    owner: VM,
+    vnodes: VNodes
+}
 
 export interface BaseVNode {
     type: VNodeType;
@@ -51,6 +57,12 @@ export interface VBaseElement extends BaseVNode {
 
 export interface VElement extends VBaseElement {
     type: VNodeType.Element;
+}
+
+export interface VSlot extends VBaseElement {
+    type: VNodeType.Slot;
+    sel: 'slot';
+    aChildren: AllocatedVNodes | undefined;
 }
 
 export interface VCustomElement extends VBaseElement {
