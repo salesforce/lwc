@@ -68,10 +68,7 @@ export function hydrateComponent(
 
     if (getAssociatedVMIfPresent(element)) {
         /* eslint-disable-next-line no-console */
-        console.warn(
-            `"hydrateComponent" expects an element that is not hydrated, instead received %o.`,
-            element
-        );
+        console.warn(`"hydrateComponent" expects an element that is not hydrated.`, element);
         return;
     }
 
