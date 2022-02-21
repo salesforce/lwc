@@ -5,10 +5,43 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { createVM, LightningElement, hydrateRootElement } from '@lwc/engine-core';
+import {
+    createVM,
+    LightningElement,
+    hydrateRootElement,
+    connectRootElement,
+    getAssociatedVMIfPresent,
+} from '@lwc/engine-core';
 import { isFunction, isNull, isObject } from '@lwc/shared';
 import { setIsHydrating } from '../renderer';
-import { createElement } from './create-element';
+
+function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElement) {
+    if (element.shadowRoot) {
+        const shadowRoot = element.shadowRoot;
+
+        while (!isNull(shadowRoot.firstChild)) {
+            shadowRoot.removeChild(shadowRoot.firstChild);
+        }
+    }
+
+    if (Ctor.renderMode === 'light') {
+        while (!isNull(element.firstChild)) {
+            element.removeChild(element.firstChild);
+        }
+    }
+}
+
+function createVMWithProps(element: Element, Ctor: typeof LightningElement, props: object) {
+    createVM(element, Ctor, {
+        mode: 'open',
+        owner: null,
+        tagName: element.tagName.toLowerCase(),
+    });
+
+    for (const [key, value] of Object.entries(props)) {
+        (element as any)[key] = value;
+    }
+}
 
 export function hydrateComponent(
     element: Element,
@@ -33,42 +66,40 @@ export function hydrateComponent(
         );
     }
 
+    if (getAssociatedVMIfPresent(element)) {
+        /* eslint-disable-next-line no-console */
+        console.warn(`"hydrateComponent" expects an element that is not hydrated.`, element);
+        return;
+    }
+
     try {
         // Let the renderer know we are hydrating, so it does not replace the existing shadowRoot
         // and uses the same algo to create the stylesheets as in SSR.
         setIsHydrating(true);
 
-        createVM(element, Ctor, {
-            mode: 'open',
-            owner: null,
-            tagName: element.tagName.toLowerCase(),
-        });
-
-        for (const [key, value] of Object.entries(props)) {
-            (element as any)[key] = value;
-        }
+        createVMWithProps(element, Ctor, props);
 
         hydrateRootElement(element);
 
         // set it back since now we finished hydration.
         setIsHydrating(false);
     } catch (e) {
-        // Fallback: In case there's an error while hydrating, let's log the error, and replace the element with
-        //           the client generated DOM.
+        // Fallback: In case there's an error while hydrating, let's log the error, and replace the element content
+        //           with the client generated DOM.
 
         /* eslint-disable-next-line no-console */
         console.error('Recovering from error while hydrating: ', e);
 
+        // We want to preserve the element, so we need to reset the shadowRoot and light dom.
+        resetShadowRootAndLightDom(element, Ctor);
+
+        // we need to recreate the vm with the hydration flag on, so it re-uses the existing shadowRoot.
+        createVMWithProps(element, Ctor, props);
         setIsHydrating(false);
-        const newElem = createElement(element.tagName, {
-            is: Ctor,
-            mode: 'open',
-        });
 
-        for (const [key, value] of Object.entries(props)) {
-            (newElem as any)[key] = value;
-        }
-
-        element.parentNode!.replaceChild(newElem, element);
+        connectRootElement(element);
+    } finally {
+        // in case there's an error during recovery
+        setIsHydrating(false);
     }
 }

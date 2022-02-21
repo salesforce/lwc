@@ -32,7 +32,7 @@ window.HydrateTest = (function (lwc, testUtils) {
             includeShadowRoots: true,
         });
 
-        const testTarget = fragment.querySelector('x-main');
+        const testTarget = fragment.body.firstChild;
         if (!browserSupportsDeclarativeShadowDOM) {
             polyfillDeclarativeShadowDom(testTarget);
         }
@@ -45,20 +45,38 @@ window.HydrateTest = (function (lwc, testUtils) {
 
     function runTest(ssrRendered, Component, testConfig) {
         const container = appendTestTarget(ssrRendered);
-        let target = container.querySelector('x-main');
+        const selector = container.firstChild.tagName.toLowerCase();
+        let target = container.querySelector(selector);
 
-        const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
-
-        const props = testConfig.props || {};
-        const clientProps = testConfig.clientProps || props;
-
+        let testResult;
         const consoleSpy = testUtils.spyConsole();
-        lwc.hydrateComponent(target, Component, clientProps);
+
+        if (testConfig.test) {
+            const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
+
+            const props = testConfig.props || {};
+            const clientProps = testConfig.clientProps || props;
+
+            if (testConfig.useCustomElementRegistry) {
+                customElements.define(selector, Component.CustomElementConstructor);
+            } else {
+                lwc.hydrateComponent(target, Component, clientProps);
+            }
+
+            // let's select again the target, it should be the same elements as in the snapshot
+            target = container.querySelector(selector);
+            testResult = testConfig.test(target, snapshot, consoleSpy.calls);
+        } else if (testConfig.advancedTest) {
+            testResult = testConfig.advancedTest(target, {
+                Component,
+                hydrateComponent: lwc.hydrateComponent.bind(lwc),
+                consoleSpy,
+            });
+        }
+
         consoleSpy.reset();
 
-        // let's select again the target, it should be the same elements as in the snapshot
-        target = container.querySelector('x-main');
-        return testConfig.test(target, snapshot, consoleSpy.calls);
+        return testResult;
     }
 
     return {

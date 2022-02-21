@@ -23,6 +23,7 @@ ssr.setHooks({
     },
 });
 
+let guid = 0;
 const COMPONENT_UNDER_TEST = 'main';
 
 const TEMPLATE = `
@@ -87,7 +88,7 @@ function getSsrCode(moduleCode, testConfig) {
         ${testConfig};
         config = config || {};
         ${moduleCode};
-        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}', Main, config.props || {});`
+        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`
     );
 
     vm.createContext(context);
