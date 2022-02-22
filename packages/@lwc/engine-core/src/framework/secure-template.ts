@@ -23,10 +23,6 @@ export function isTemplateRegistered(tpl: Template): boolean {
 function validateTemplateVersion(template: Template) {
     // Validate that the template was compiled with the same version of the LWC compiler used for the runtime engine.
     // Note this only works in unminified dev mode because it relies on code comments.
-    if (template === defaultEmptyTemplate) {
-        // skip the default template
-        return;
-    }
     checkVersionMismatch(template, 'template');
     if (!isUndefined(template.stylesheets)) {
         for (const stylesheet of flattenStylesheets(template.stylesheets)) {
