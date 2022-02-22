@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element("span", stc2, [api_text("valid tags should not warn")]),
     api_element("spam", stc3, [api_text("this tag has a typo")]),
   ];
-  /*LWC compiler v1*/
+  /*LWC compiler v2.9.0*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

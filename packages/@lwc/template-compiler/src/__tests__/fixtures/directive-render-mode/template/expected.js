@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_slot("", stc1, [api_text("Default")], $slotset),
     api_slot("named", stc2, [api_text("Named")], $slotset),
   ]);
-  /*LWC compiler v1*/
+  /*LWC compiler v2.9.0*/
 }
 export default registerTemplate(tmpl);
 tmpl.slots = ["", "named"];

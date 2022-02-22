@@ -45,6 +45,7 @@ import {
     resolveCircularModuleDependency,
 } from '../shared/circular-module-dependencies';
 import { getComponentOrSwappedComponent } from './hot-swaps';
+import { checkVersionMismatch } from './check-version-mismatch';
 
 export interface ComponentDef {
     name: string;
@@ -246,6 +247,10 @@ export function getComponentInternalDef(Ctor: unknown): ComponentDef {
             throw new TypeError(
                 `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`
             );
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+            checkVersionMismatch(Ctor);
         }
 
         def = createComponentDef(Ctor);

@@ -6,7 +6,7 @@
  */
 const path = require('path');
 const typescript = require('@rollup/plugin-typescript');
-
+const replace = require('@rollup/plugin-replace');
 const writeDistAndTypes = require('../../../../../scripts/rollup/writeDistAndTypes');
 const { version } = require('../../package.json');
 const entry = path.resolve(__dirname, '../../src/index.ts');
@@ -27,6 +27,10 @@ function rollupConfig({ format }) {
             footer,
         },
         plugins: [
+            replace({
+                preventAssignment: true,
+                'process.env.LWC_VERSION': JSON.stringify(version),
+            }),
             typescript({
                 target: 'es2017',
                 tsconfig: path.join(__dirname, '../../tsconfig.json'),

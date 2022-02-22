@@ -16,7 +16,6 @@ import {
     isUndefined,
     toString,
     KEY__SCOPED_CSS,
-    COMPILER_VERSION_NUMBER,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -31,7 +30,7 @@ import {
     VM,
     RenderMode,
 } from './vm';
-import { EmptyArray } from './utils';
+import { EmptyArray, flattenStylesheets } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     TemplateStylesheetFactories,
@@ -42,6 +41,7 @@ import {
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { VNodes } from './vnodes';
+import { checkVersionMismatch } from './check-version-mismatch';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -234,15 +234,12 @@ function validateTemplateVersion(template: Template, vm: VM) {
         // skip the default template
         return;
     }
-    const versionMatcher = template.toString().match(/\/\*LWC compiler v(\d+)\*\/\s*}$/);
-    if (!isNull(versionMatcher)) {
-        const version = parseInt(versionMatcher[1], 10);
-        assert.isTrue(
-            version === COMPILER_VERSION_NUMBER,
-            `Current engine is v${COMPILER_VERSION_NUMBER}, but component ${getComponentTag(
-                vm
-            )} was compiled with v${version}. Please update your compiled template or LWC engine so that the versions match.`
-        );
+    checkVersionMismatch(template, vm);
+    if (!isUndefined(template.stylesheets)) {
+        for (const stylesheet of flattenStylesheets(template.stylesheets)) {
+            // Verify that the stylesheet was compiled with a compatible LWC version
+            checkVersionMismatch(stylesheet, vm);
+        }
     }
 }
 

@@ -13,7 +13,7 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { c: api_custom_element } = $api;
   return [api_custom_element("lightning-combobox", _lightningCombobox, stc0)];
-  /*LWC compiler v1*/
+  /*LWC compiler v2.9.0*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

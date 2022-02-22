@@ -12,7 +12,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       $cmp.isTrue === true ? api_element("p", stc1, [api_text("1")]) : null,
     ]),
   ];
-  /*LWC compiler v1*/
+  /*LWC compiler v2.9.0*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

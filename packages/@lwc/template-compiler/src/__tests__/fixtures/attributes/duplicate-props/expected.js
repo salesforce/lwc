@@ -19,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_custom_element("ns-baz-1", _nsBaz1, stc0),
     api_custom_element("ns-baz-2", _nsBaz2, stc1),
   ];
-  /*LWC compiler v1*/
+  /*LWC compiler v2.9.0*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

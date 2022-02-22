@@ -5,4 +5,5 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 // Increment whenever the LWC template compiler changes
-export const COMPILER_VERSION_NUMBER = 1;
+
+export const LWC_VERSION = process.env.LWC_VERSION as string;

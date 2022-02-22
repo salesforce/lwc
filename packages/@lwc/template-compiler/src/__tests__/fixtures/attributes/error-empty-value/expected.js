@@ -16,7 +16,7 @@ const stc1 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, c: api_custom_element } = $api;
   return [api_element("p", stc0), api_custom_element("foo-bar", _fooBar, stc1)];
-  /*LWC compiler v1*/
+  /*LWC compiler v2.9.0*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

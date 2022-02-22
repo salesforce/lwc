@@ -35,6 +35,10 @@ function prettify(str) {
         .join('\n');
 }
 
+function stripComments(str) {
+    return str.replace(/\/\*LWC compiler v[\d.]+\*\//g, '');
+}
+
 function pluginTest(plugin, pluginOpts, opts = {}) {
     const testTransform = transform(plugin, pluginOpts, opts);
 
@@ -53,7 +57,8 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
         } else if (expected.output) {
             const output = testTransform(actual);
             if (expected.output.code !== undefined) {
-                const normalizedActual = output && output.code && stripIndents(output.code);
+                const normalizedActual =
+                    output && output.code && stripIndents(stripComments(output.code));
                 const normalizedExpected = stripIndents(expected.output.code);
 
                 if (normalizedActual !== normalizedExpected) {
