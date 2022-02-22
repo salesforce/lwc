@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isUndefined, LWC_VERSION } from '@lwc/shared';
+import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
 import { Template } from './template';
-import { getComponentTag } from '../shared/format';
-import { VM } from './vm';
 import { StylesheetFactory } from './stylesheet';
 import { LightningElementConstructor } from './base-lightning-element';
+import { logError } from '../shared/logger';
 
 let warned = false;
 
@@ -24,22 +23,24 @@ if (process.env.NODE_ENV === 'development') {
  * Validate a template, stylesheet, or component to make sure that its compiled version matches
  * the version used by the LWC engine at runtime.
  */
+export function checkVersionMismatch(func: Template, type: 'template'): void;
+export function checkVersionMismatch(func: StylesheetFactory, type: 'stylesheet'): void;
+export function checkVersionMismatch(func: LightningElementConstructor, type: 'component'): void;
 export function checkVersionMismatch(
     func: Template | StylesheetFactory | LightningElementConstructor,
-    vm?: VM
+    type: 'template' | 'stylesheet' | 'component'
 ) {
-    const versionMatcher = func.toString().match(/\/\*LWC compiler v([\d.]+)\*\//);
+    const versionMatcher = func.toString().match(LWC_VERSION_COMMENT_REGEX);
     if (!isNull(versionMatcher) && !warned) {
         const version = versionMatcher[1];
         const [major, minor] = version.split('.');
         const [expectedMajor, expectedMinor] = LWC_VERSION.split('.');
         if (major !== expectedMajor || minor !== expectedMinor) {
             warned = true; // only warn once to avoid flooding the console
-            // eslint-disable-next-line no-console
-            console.error(
-                `LWC WARNING: current engine is v${LWC_VERSION}, but ${
-                    isUndefined(vm) ? func.name : getComponentTag(vm)
-                } was compiled with v${version}.\nPlease update your compiled code or LWC engine so that the versions match.\nNo further warnings will appear.`
+            // stylesheets and templates do not have user-meaningful names, but components do
+            const friendlyName = type === 'component' ? `${type} ${func.name}` : type;
+            logError(
+                `LWC WARNING: current engine is v${LWC_VERSION}, but ${friendlyName} was compiled with v${version}.\nPlease update your compiled code or LWC engine so that the versions match.\nNo further warnings will appear.`
             );
         }
     }

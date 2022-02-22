@@ -30,7 +30,7 @@ import {
     VM,
     RenderMode,
 } from './vm';
-import { EmptyArray, flattenStylesheets } from './utils';
+import { EmptyArray } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     TemplateStylesheetFactories,
@@ -41,7 +41,6 @@ import {
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { VNodes } from './vnodes';
-import { checkVersionMismatch } from './check-version-mismatch';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -192,8 +191,6 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     validateSlots(vm, html);
                     // add the VM to the list of host VMs that can be re-rendered if html is swapped
                     setActiveVM(vm);
-                    // validate that the template was compiled with the same version as the runtime
-                    validateTemplateVersion(html, vm);
                 }
 
                 // right before producing the vnodes, we clear up all internal references
@@ -225,22 +222,6 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
         );
     }
     return vnodes;
-}
-
-function validateTemplateVersion(template: Template, vm: VM) {
-    // Validate that the template was compiled with the same version of the LWC compiler used for the runtime engine.
-    // Note this only works in unminified dev mode because it relies on code comments.
-    if (template === defaultEmptyTemplate) {
-        // skip the default template
-        return;
-    }
-    checkVersionMismatch(template, vm);
-    if (!isUndefined(template.stylesheets)) {
-        for (const stylesheet of flattenStylesheets(template.stylesheets)) {
-            // Verify that the stylesheet was compiled with a compatible LWC version
-            checkVersionMismatch(stylesheet, vm);
-        }
-    }
 }
 
 function computeHasScopedStyles(template: Template): boolean {

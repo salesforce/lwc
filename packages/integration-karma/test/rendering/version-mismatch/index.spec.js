@@ -1,12 +1,10 @@
 import { createElement, LightningElement } from 'lwc';
-import DynamicTemplate from 'x/dynamicTemplate';
-import DynamicTemplate2 from 'x/dynamicTemplate2';
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
 
 // TODO [#1284]: Import this from the lwc module once we move validation from compiler to linter
-const { registerTemplate, registerComponent, registerDecorators } = LWC;
+const { registerTemplate, registerComponent } = LWC;
 
 if (!process.env.COMPAT) {
     describe('compiler version mismatch', () => {
@@ -50,45 +48,36 @@ if (!process.env.COMPAT) {
             });
 
             it('template', () => {
-                const invalidTemplate = function () {
+                function tmpl() {
                     return [];
                     /*LWC compiler v123.456.789*/
-                };
-                registerTemplate(invalidTemplate);
-
-                const elm = createElement('x-dynamic-template', { is: DynamicTemplate });
-                elm.template = invalidTemplate;
+                }
 
                 expect(() => {
-                    document.body.appendChild(elm);
+                    registerTemplate(tmpl);
                 }).toLogErrorDev(
                     new RegExp(
-                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but <x-dynamic-template> was compiled with v123.456.789`
+                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but template was compiled with v123.456.789`
                     )
                 );
             });
 
             it('stylesheet', () => {
-                const invalidTemplate = function () {
+                function tmpl() {
                     return [];
-                };
-                invalidTemplate.stylesheetToken = 'x-component_component';
-                invalidTemplate.stylesheets = [
-                    function () {
+                }
+                tmpl.stylesheetToken = 'x-component_component';
+                tmpl.stylesheets = [
+                    function stylesheet() {
                         return '';
                         /*LWC compiler v123.456.789*/
                     },
                 ];
-                registerTemplate(invalidTemplate);
-
-                const elm = createElement('x-dynamic-template-2', { is: DynamicTemplate2 });
-                elm.template = invalidTemplate;
-
                 expect(() => {
-                    document.body.appendChild(elm);
+                    registerTemplate(tmpl);
                 }).toLogErrorDev(
                     new RegExp(
-                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but <x-dynamic-template-2> was compiled with v123.456.789`
+                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but stylesheet was compiled with v123.456.789`
                     )
                 );
             });
@@ -107,18 +96,13 @@ if (!process.env.COMPAT) {
                 };
                 registerTemplate(template);
 
-                registerDecorators(CustomElement, {});
-
-                const Ctor = registerComponent(CustomElement, {
-                    tmpl: template,
-                });
-
                 expect(() => {
-                    const elm = createElement('x-component', { is: Ctor });
-                    document.body.appendChild(elm);
+                    registerComponent(CustomElement, {
+                        tmpl: template,
+                    });
                 }).toLogErrorDev(
                     new RegExp(
-                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but CustomElement was compiled with v123.456.789`
+                        `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but component CustomElement was compiled with v123.456.789`
                     )
                 );
             });

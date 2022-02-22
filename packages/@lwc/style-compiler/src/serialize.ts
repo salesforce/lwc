@@ -7,7 +7,7 @@
 import postcss, { Result, Declaration } from 'postcss';
 import postcssValueParser from 'postcss-value-parser';
 import matchAll from 'string.prototype.matchall';
-import { KEY__SCOPED_CSS, LWC_VERSION } from '@lwc/shared';
+import { KEY__SCOPED_CSS, LWC_VERSION_COMMENT } from '@lwc/shared';
 import { Config } from './index';
 import { isImportMessage, isVarFunctionMessage } from './utils/message';
 import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
@@ -75,7 +75,7 @@ export default function serialize(result: Result, config: Config): string {
             buffer += `  var ${HOST_SELECTOR_IDENTIFIER} = token ? ("[" + token + "-host]") : "";\n`;
         }
         buffer += `  return ${serializedStyle};\n`;
-        buffer += `  /*LWC compiler v${LWC_VERSION}*/\n`;
+        buffer += `  /*${LWC_VERSION_COMMENT}*/\n`;
         buffer += `}\n`;
         if (config.scoped) {
             // Mark the stylesheet as scoped so that we can distinguish it later at runtime
