@@ -48,36 +48,36 @@ const enum EnvNodeTypes {
     COMMENT = 8,
 }
 
-function hydrate(vnode: VNode, node: Node) {
+function hydrate(vnode: VNode, node: Node, owner: VM) {
     switch (vnode.type) {
         case VNodeType.Text:
-            hydrateText(vnode, node);
+            hydrateText(vnode, node, owner);
             break;
 
         case VNodeType.Comment:
-            hydrateComment(vnode, node);
+            hydrateComment(vnode, node, owner);
             break;
 
         case VNodeType.Element:
-            hydrateElement(vnode, node);
+            hydrateElement(vnode, node, owner);
             break;
 
         case VNodeType.CustomElement:
-            hydrateCustomElement(vnode, node);
+            hydrateCustomElement(vnode, node, owner);
             break;
     }
 }
 
-function hydrateText(vnode: VText, node: Node) {
+function hydrateText(vnode: VText, node: Node, owner: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        validateNodeType(vnode, node, EnvNodeTypes.TEXT);
+        validateNodeType(vnode, node, EnvNodeTypes.TEXT, owner);
 
         const nodeValue = getProperty(node, 'nodeValue');
 
         if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
             logWarn(
                 'Hydration mismatch: text values do not match, will recover from the difference',
-                vnode.owner
+                owner
             );
         }
     }
@@ -87,14 +87,14 @@ function hydrateText(vnode: VText, node: Node) {
     vnode.elm = node;
 }
 
-function hydrateComment(vnode: VComment, node: Node) {
+function hydrateComment(vnode: VComment, node: Node, owner: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        validateNodeType(vnode, node, EnvNodeTypes.COMMENT);
+        validateNodeType(vnode, node, EnvNodeTypes.COMMENT, owner);
 
         if (getProperty(node, 'nodeValue') !== vnode.text) {
             logWarn(
                 'Hydration mismatch: comment values do not match, will recover from the difference',
-                vnode.owner
+                owner
             );
         }
     }
@@ -104,10 +104,10 @@ function hydrateComment(vnode: VComment, node: Node) {
     vnode.elm = node;
 }
 
-function hydrateElement(vnode: VElement, node: Node) {
+function hydrateElement(vnode: VElement, node: Node, owner: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        validateNodeType<Element>(vnode, node, EnvNodeTypes.ELEMENT);
-        validateElement(vnode, node);
+        validateNodeType<Element>(vnode, node, EnvNodeTypes.ELEMENT, owner);
+        validateElement(vnode, node, owner);
     }
 
     const elm = node as Element;
@@ -135,7 +135,7 @@ function hydrateElement(vnode: VElement, node: Node) {
                         elm,
                         'tagName'
                     ).toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
-                    vnode.owner
+                    owner
                 );
             }
         }
@@ -144,18 +144,18 @@ function hydrateElement(vnode: VElement, node: Node) {
     patchElementPropsAndAttrs(vnode);
 
     if (!isDomManual) {
-        hydrateChildren(getChildNodes(vnode.elm), vnode.children, vnode.owner);
+        hydrateChildren(getChildNodes(vnode.elm), vnode.children, owner);
     }
 }
 
-function hydrateCustomElement(vnode: VCustomElement, node: Node) {
+function hydrateCustomElement(vnode: VCustomElement, node: Node, owner: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        validateNodeType<Element>(vnode, node, EnvNodeTypes.ELEMENT);
-        validateElement(vnode, node);
+        validateNodeType<Element>(vnode, node, EnvNodeTypes.ELEMENT, owner);
+        validateElement(vnode, node, owner);
     }
 
     const elm = node as Element;
-    const { sel, mode, ctor, owner } = vnode;
+    const { sel, mode, ctor } = vnode;
 
     const vm = createVM(elm, ctor, {
         mode,
@@ -203,7 +203,7 @@ export function hydrateChildren(elmChildren: NodeList, children: VNodes, vm: VM)
 
         if (!isNull(childVnode)) {
             const childNode = elmChildren[childNodeIndex];
-            hydrate(childVnode, childNode);
+            hydrate(childVnode, childNode, vm);
 
             childNodeIndex++;
         }
@@ -222,30 +222,31 @@ function throwHydrationError(): never {
 function validateNodeType<T extends Node>(
     vnode: VNode,
     node: Node,
-    nodeType: number
+    nodeType: number,
+    owner: VM
 ): asserts node is T {
     if (getProperty(node, 'nodeType') !== nodeType) {
-        logError('Hydration mismatch: incorrect node type received', vnode.owner);
+        logError('Hydration mismatch: incorrect node type received', owner);
         assert.fail('Hydration mismatch: incorrect node type received.');
     }
 }
 
-function validateElement(vnode: VBaseElement, elm: Element) {
+function validateElement(vnode: VBaseElement, elm: Element, owner: VM) {
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         logError(
             `Hydration mismatch: expecting element with tag "${vnode.sel.toLowerCase()}" but found "${getProperty(
                 elm,
                 'tagName'
             ).toLowerCase()}".`,
-            vnode.owner
+            owner
         );
 
         throwHydrationError();
     }
 
-    const hasIncompatibleAttrs = validateAttrs(vnode, elm);
-    const hasIncompatibleClass = validateClassAttr(vnode, elm);
-    const hasIncompatibleStyle = validateStyleAttr(vnode, elm);
+    const hasIncompatibleAttrs = validateAttrs(vnode, elm, owner);
+    const hasIncompatibleClass = validateClassAttr(vnode, elm, owner);
+    const hasIncompatibleStyle = validateStyleAttr(vnode, elm, owner);
     const isVNodeAndElementCompatible =
         hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
 
@@ -254,7 +255,7 @@ function validateElement(vnode: VBaseElement, elm: Element) {
     }
 }
 
-function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
+function validateAttrs(vnode: VBaseElement, elm: Element, owner: VM): boolean {
     const {
         data: { attrs = {} },
     } = vnode;
@@ -271,7 +272,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
                     elm,
                     'tagName'
                 ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
-                vnode.owner
+                owner
             );
             nodesAreCompatible = false;
         }
@@ -280,7 +281,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
     return nodesAreCompatible;
 }
 
-function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
+function validateClassAttr(vnode: VBaseElement, elm: Element, owner: VM): boolean {
     const {
         data: { className, classMap },
     } = vnode;
@@ -321,14 +322,14 @@ function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
                 elm,
                 'className'
             )}"`,
-            vnode.owner
+            owner
         );
     }
 
     return nodesAreCompatible;
 }
 
-function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
+function validateStyleAttr(vnode: VBaseElement, elm: Element, owner: VM): boolean {
     const {
         data: { style, styleDecls },
     } = vnode;
@@ -372,7 +373,7 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
                 elm,
                 'tagName'
             ).toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
-            vnode.owner
+            owner
         );
     }
 
