@@ -19,7 +19,13 @@ import {
     isUndefined,
 } from '@lwc/shared';
 
-import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
+import {
+    isSyntheticShadowDefined,
+    ssr,
+    remove,
+    isNativeShadowDefined,
+    getChildNodes,
+} from '../renderer';
 import type { HostNode, HostElement } from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
 
@@ -225,7 +231,22 @@ export function appendVM(vm: VM) {
 }
 
 export function hydrateVM(vm: VM) {
-    hydrate(vm);
+    if (isTrue(vm.isDirty)) {
+        // manually diffing/patching here.
+        // This routine is:
+        // patchShadowRoot(vm, children);
+        //  -> addVnodes.
+        const children = renderComponent(vm);
+        vm.children = children;
+
+        const vmChildren =
+            vm.renderMode === RenderMode.Light
+                ? getChildNodes(vm.elm)
+                : getChildNodes(vm.elm.shadowRoot);
+        hydrateChildren(vmChildren, children, vm);
+
+        runRenderedCallback(vm);
+    }
 }
 
 // just in case the component comes back, with this we guarantee re-rendering it
@@ -427,23 +448,6 @@ function rehydrate(vm: VM) {
     if (isTrue(vm.isDirty)) {
         const children = renderComponent(vm);
         patchShadowRoot(vm, children);
-    }
-}
-
-function hydrate(vm: VM) {
-    if (isTrue(vm.isDirty)) {
-        // manually diffing/patching here.
-        // This routine is:
-        // patchShadowRoot(vm, children);
-        //  -> addVnodes.
-        const children = renderComponent(vm);
-        vm.children = children;
-
-        const vmChildren =
-            vm.renderMode === RenderMode.Light ? vm.elm.childNodes : vm.elm.shadowRoot.childNodes;
-        hydrateChildren(vmChildren, children, vm);
-
-        runRenderedCallback(vm);
     }
 }
 
