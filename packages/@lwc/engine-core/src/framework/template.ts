@@ -75,16 +75,7 @@ function validateSlots(vm: VM, html: Template) {
     const { slots = EmptyArray } = html;
 
     for (const slotName in cmpSlots) {
-        // eslint-disable-next-line lwc-internal/no-production-assert
-        assert.isTrue(
-            isArray(cmpSlots[slotName]),
-            `Slots can only be set to an array, instead received ${toString(
-                cmpSlots[slotName]
-            )} for slot "${slotName}" in ${vm}.`
-        );
-
         if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
-            // TODO [#1297]: this should never really happen because the compiler should always validate
             // eslint-disable-next-line lwc-internal/no-production-assert
             logError(
                 `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,

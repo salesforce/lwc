@@ -7,14 +7,7 @@
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
-import {
-    isParentNode,
-    isSlot,
-    isForBlock,
-    isBaseElement,
-    isIf,
-    isDynamicDirective,
-} from '../shared/ast';
+import { isParentNode, isForBlock, isBaseElement, isIf, isDynamicDirective } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
@@ -74,8 +67,7 @@ export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean 
                 ((isBaseElement(child) && isDynamic(child)) ||
                     // If node is only a control flow node and does not map to a stand alone element.
                     // Search children to determine if it should be flattened.
-                    (isIf(child) && shouldFlatten(codeGen, child.children)) ||
-                    (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child))))
+                    (isIf(child) && shouldFlatten(codeGen, child.children))))
     );
 }
 

@@ -13,19 +13,31 @@ export const enum VNodeType {
     Text,
     Comment,
     Element,
+    Slot,
     CustomElement,
 }
 
-export type VNode = VText | VComment | VElement | VCustomElement;
+export type VNode = VText | VComment | VElement | VSlot | VCustomElement;
 export type VParentElement = VElement | VCustomElement;
 export type VNodes = Readonly<Array<VNode | null>>;
+
+export interface AllocatedVNodes {
+    owner: VM;
+    vnodes: VNodes;
+}
 
 export interface BaseVNode {
     type: VNodeType;
     elm: Node | undefined;
     sel: string | undefined;
     key: Key | undefined;
-    owner: VM;
+}
+
+export interface VSlot extends VBaseElement {
+    type: VNodeType.Slot;
+    sel: 'slot';
+    owner: VM | undefined;
+    aChildren: VNodes | undefined;
 }
 
 export interface VText extends BaseVNode {
@@ -83,7 +95,9 @@ export interface VElementData extends VNodeData {
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
     const { type } = vnode;
-    return type === VNodeType.Element || type === VNodeType.CustomElement;
+    return (
+        type === VNodeType.Element || type === VNodeType.CustomElement || type === VNodeType.Slot
+    );
 }
 
 export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {

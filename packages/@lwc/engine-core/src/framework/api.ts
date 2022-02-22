@@ -8,8 +8,8 @@ import {
     ArrayPush,
     assert,
     create as ObjectCreate,
-    freeze as ObjectFreeze,
     forEach,
+    freeze as ObjectFreeze,
     isArray,
     isFalse,
     isFunction,
@@ -29,18 +29,19 @@ import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
+import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
+    VComment,
+    VCustomElement,
+    VElement,
+    VElementData,
     VNode,
     VNodes,
-    VElement,
-    VText,
-    VCustomElement,
-    VComment,
-    VElementData,
     VNodeType,
+    VSlot,
+    VText,
 } from './vnodes';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
@@ -98,7 +99,6 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         children,
         elm,
         key,
-        owner: vmBeingRendered,
     };
 }
 
@@ -123,12 +123,10 @@ function ti(value: any): number {
 }
 
 // [s]lot element node
-function s(
-    slotName: string,
-    data: VElementData,
-    children: VNodes,
-    slotset: SlotSet | undefined
-): VElement | VNodes {
+function s(slotName: string, data: VElementData, children: VNodes, slotset: SlotSet): VSlot {
+    let aChildren: VNodes | undefined;
+    let owner;
+
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -137,22 +135,52 @@ function s(
     if (
         !isUndefined(slotset) &&
         !isUndefined(slotset[slotName]) &&
-        slotset[slotName].length !== 0
+        slotset[slotName].vnodes.length !== 0
     ) {
-        children = slotset[slotName];
+        aChildren = slotset[slotName].vnodes;
+        owner = slotset[slotName].owner;
     }
-    const vmBeingRendered = getVMBeingRendered()!;
-    const { renderMode, shadowMode } = vmBeingRendered;
+
+    const { renderMode, shadowMode } = getVMBeingRendered()!;
 
     if (renderMode === RenderMode.Light) {
-        sc(children);
-        return children;
+        // In LightDom, the effective children are returned as is, we will need to
+        // diff the children (patchChildren) using an empty that is always present (to get the parentElement) and
+        // the same in both collection to patch (so it serves as an anchor).
+
+        // Note on why 2: if the same vnode is reused, it may lead to issues when removing because of elm.(1 vnode for 2 elements)
+        const markerStart = t('');
+        const markerEnd = t('');
+
+        // @todo: maybe modify the diffing algo, but as of now, we also need a upper border because the algo is not ready to
+        //        update a subarray of nodes.
+        if (aChildren) {
+            aChildren = [markerStart, ...aChildren, markerEnd];
+        } else {
+            children = [markerStart, ...children, markerEnd];
+        }
     }
-    if (shadowMode === ShadowMode.Synthetic) {
+
+    if (renderMode === RenderMode.Light || shadowMode === ShadowMode.Synthetic) {
+        const effectiveChildren = aChildren ? aChildren : children;
+
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
-        sc(children);
+        sc(effectiveChildren);
     }
-    return h('slot', data, children);
+
+    let elm;
+    const { key } = data;
+
+    return {
+        type: VNodeType.Slot,
+        sel: 'slot',
+        data,
+        children,
+        aChildren,
+        owner,
+        elm,
+        key,
+    };
 }
 
 // [c]ustom element node
@@ -211,7 +239,6 @@ function c(
         key,
 
         ctor: Ctor,
-        owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
         aChildren,
         vm,
@@ -340,7 +367,6 @@ function t(text: string): VText {
         text,
         elm,
         key,
-        owner: getVMBeingRendered()!,
     };
 }
 
@@ -353,7 +379,6 @@ function co(text: string): VComment {
         text,
         elm,
         key,
-        owner: getVMBeingRendered()!,
     };
 }
 

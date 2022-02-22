@@ -9,56 +9,58 @@ import {
     assert,
     create,
     isArray,
-    isTrue,
     isFalse,
     isNull,
+    isTrue,
     isUndefined,
+    KEY__SHADOW_RESOLVER,
     keys,
     SVG_NAMESPACE,
-    KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 
 import {
-    remove,
-    insert,
-    nextSibling,
+    createComment,
     createElement,
     createText,
-    setText,
-    createComment,
     getClassList,
+    insert,
     isSyntheticShadowDefined,
+    nextSibling,
+    remove,
+    setText,
 } from '../renderer';
 
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
-import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
+import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
-    createVM,
     appendVM,
-    removeVM,
-    rerenderVM,
+    createVM,
     getAssociatedVMIfPresent,
+    LwcDomMode,
+    removeVM,
+    RenderMode,
+    rerenderVM,
     runConnectedCallback,
+    ShadowMode,
+    SlotSet,
     VM,
     VMState,
-    ShadowMode,
-    RenderMode,
-    LwcDomMode,
 } from './vm';
 import {
-    VNode,
-    VNodes,
-    VCustomElement,
-    VElement,
-    VText,
-    VComment,
+    isSameVnode,
+    isVBaseElement,
     Key,
     VBaseElement,
-    isVBaseElement,
-    isSameVnode,
+    VComment,
+    VCustomElement,
+    VElement,
+    VNode,
+    VNodes,
     VNodeType,
+    VSlot,
+    VText,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -69,15 +71,15 @@ import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 
-export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode): void {
+export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode, vm: VM): void {
     if (hasDynamicChildren(c2)) {
-        updateDynamicChildren(c1, c2, parent);
+        updateDynamicChildren(c1, c2, parent, vm);
     } else {
-        updateStaticChildren(c1, c2, parent);
+        updateStaticChildren(c1, c2, parent, vm);
     }
 }
 
-function patch(n1: VNode, n2: VNode) {
+function patch(n1: VNode, n2: VNode, vm: VM) {
     if (n1 === n2) {
         return;
     }
@@ -103,33 +105,69 @@ function patch(n1: VNode, n2: VNode) {
             break;
 
         case VNodeType.Element:
-            patchElement(n1 as VElement, n2);
+            patchElement(n1 as VElement, n2, vm);
+            break;
+
+        case VNodeType.Slot:
+            patchSlot(n1 as VSlot, n2, vm);
             break;
 
         case VNodeType.CustomElement:
-            patchCustomElement(n1 as VCustomElement, n2);
+            patchCustomElement(n1 as VCustomElement, n2, vm);
             break;
     }
 }
 
-export function mount(node: VNode, parent: ParentNode, anchor: Node | null) {
+function mount(node: VNode, parent: ParentNode, anchor: Node | null, vm: VM) {
     switch (node.type) {
         case VNodeType.Text:
-            mountText(node, parent, anchor);
+            mountText(node, parent, anchor, vm);
             break;
 
         case VNodeType.Comment:
-            mountComment(node, parent, anchor);
+            mountComment(node, parent, anchor, vm);
             break;
 
         case VNodeType.Element:
-            mountElement(node, parent, anchor);
+            mountElement(node, parent, anchor, vm);
             break;
 
         case VNodeType.CustomElement:
-            mountCustomElement(node, parent, anchor);
+            mountCustomElement(node, parent, anchor, vm);
+            break;
+
+        case VNodeType.Slot:
+            mountSlot(node, parent, anchor, vm);
             break;
     }
+}
+
+function mountSlot(vnode: VSlot, parent: ParentNode, anchor: Node | null, vm: VM) {
+    const { aChildren, owner } = vnode;
+
+    // weather to render the slotted content or the default slot content.
+    const children: VNodes = isUndefined(aChildren) ? vnode.children : aChildren;
+
+    // default content is part of vm.
+    const slottedContentOwnerVM = isUndefined(aChildren) ? vm : owner!;
+
+    if (vm.renderMode === RenderMode.Light) {
+        mountVNodes(slottedContentOwnerVM, children, parent, anchor);
+        return;
+    }
+
+    const elementVNode = {
+        ...vnode,
+        type: VNodeType.Element,
+        children: [],
+        aChildren: undefined,
+    };
+    mountElement(elementVNode as VElement, parent, anchor, vm);
+
+    vnode.elm = elementVNode.elm!;
+
+    // swap the owner vm when mounting the children.
+    mountVNodes(slottedContentOwnerVM, children, vnode.elm, null);
 }
 
 function patchText(n1: VText, n2: VText) {
@@ -140,11 +178,9 @@ function patchText(n1: VText, n2: VText) {
     }
 }
 
-function mountText(node: VText, parent: ParentNode, anchor: Node | null) {
-    const { owner } = node;
-
+function mountText(node: VText, parent: ParentNode, anchor: Node | null, vm: VM) {
     const textNode = (node.elm = createText(node.text));
-    linkNodeToShadow(textNode, owner);
+    linkNodeToShadow(textNode, vm);
 
     insertNode(textNode, parent, anchor);
 }
@@ -159,44 +195,69 @@ function patchComment(n1: VComment, n2: VComment) {
     }
 }
 
-function mountComment(node: VComment, parent: ParentNode, anchor: Node | null) {
-    const { owner } = node;
-
+function mountComment(node: VComment, parent: ParentNode, anchor: Node | null, vm: VM) {
     const commentNode = (node.elm = createComment(node.text));
-    linkNodeToShadow(commentNode, owner);
+    linkNodeToShadow(commentNode, vm);
 
     insertNode(commentNode, parent, anchor);
 }
 
-function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) {
+function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null, vm: VM) {
     const {
         sel,
-        owner,
         data: { svg },
     } = vnode;
 
     const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
     const elm = createElement(sel, namespace);
-    linkNodeToShadow(elm, owner);
+    linkNodeToShadow(elm, vm);
 
-    fallbackElmHook(elm, vnode);
+    fallbackElmHook(elm, vnode, vm);
     vnode.elm = elm;
 
     patchElementPropsAndAttrs(null, vnode);
 
     insertNode(elm, parent, anchor);
-    mountVNodes(vnode.children, elm, null);
+    mountVNodes(vm, vnode.children, elm, null);
 }
 
-function patchElement(n1: VElement, n2: VElement) {
+function patchSlot(n1: VSlot, n2: VSlot, vm: VM) {
+    const { aChildren: oldAllocatedChildren } = n1;
+    const { aChildren } = n2;
+
+    const children = isUndefined(aChildren) ? n2.children : aChildren;
+    const oldChildren = isUndefined(oldAllocatedChildren) ? n1.children : oldAllocatedChildren;
+
+    const owner = isUndefined(aChildren) ? vm : n2.owner!;
+
+    if (vm.renderMode === RenderMode.Light) {
+        // Note: In light dom, there will always be a marker at the beginning (and the end) of the slotted content
+        //       so we can delimit the slotted content.
+        patchChildren(oldChildren, children, oldChildren[0]!.elm!.parentNode!, owner);
+        return;
+    }
+
     const elm = (n2.elm = n1.elm!);
 
     patchElementPropsAndAttrs(n1, n2);
-    patchChildren(n1.children, n2.children, elm);
+
+    patchChildren(oldChildren, children, elm, owner);
 }
 
-function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
-    const { sel, owner } = vnode;
+function patchElement(n1: VElement, n2: VElement, vm: VM) {
+    const elm = (n2.elm = n1.elm!);
+
+    patchElementPropsAndAttrs(n1, n2);
+    patchChildren(n1.children, n2.children, elm, vm);
+}
+
+function mountCustomElement(
+    vnode: VCustomElement,
+    parent: ParentNode,
+    anchor: Node | null,
+    owner: VM
+) {
+    const { sel } = vnode;
 
     const UpgradableConstructor = getUpgradableConstructor(sel);
     /**
@@ -208,7 +269,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
     let vm: VM | undefined;
     const elm = new UpgradableConstructor((elm: HTMLElement) => {
         // the custom element from the registry is expecting an upgrade callback
-        vm = createViewModelHook(elm, vnode);
+        vm = createViewModelHook(elm, vnode, owner);
     });
 
     linkNodeToShadow(elm, owner);
@@ -216,7 +277,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
     vnode.vm = vm;
 
     if (vm) {
-        allocateChildren(vnode, vm);
+        allocateChildren(vnode, vm, owner);
     } else if (vnode.ctor !== UpgradableConstructor) {
         throw new TypeError(`Incorrect Component Constructor`);
     }
@@ -231,14 +292,14 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
         runConnectedCallback(vm);
     }
 
-    mountVNodes(vnode.children, elm, null);
+    mountVNodes(owner, vnode.children, elm, null);
 
     if (vm) {
         appendVM(vm);
     }
 }
 
-function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
+function patchCustomElement(n1: VCustomElement, n2: VCustomElement, owner: VM) {
     const elm = (n2.elm = n1.elm!);
     const vm = (n2.vm = n1.vm);
 
@@ -246,12 +307,12 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
     if (!isUndefined(vm)) {
         // in fallback mode, the allocation will always set children to
         // empty and delegate the real allocation to the slot elements
-        allocateChildren(n2, vm);
+        allocateChildren(n2, vm, owner);
     }
 
     // in fallback mode, the children will be always empty, so, nothing
     // will happen, but in native, it does allocate the light dom
-    patchChildren(n1.children, n2.children, elm);
+    patchChildren(n1.children, n2.children, elm, owner);
 
     if (!isUndefined(vm)) {
         // this will probably update the shadowRoot, but only if the vm is in a dirty state
@@ -261,6 +322,7 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
 }
 
 function mountVNodes(
+    vm: VM,
     vnodes: VNodes,
     parent: ParentNode,
     anchor: Node | null,
@@ -270,27 +332,32 @@ function mountVNodes(
     for (; start < end; ++start) {
         const vnode = vnodes[start];
         if (isVNode(vnode)) {
-            mount(vnode, parent, anchor);
+            mount(vnode, parent, anchor, vm);
         }
     }
 }
 
 function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
-    const { type, elm, sel } = vnode;
+    const { type, elm } = vnode;
 
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
-    if (doRemove) {
-        removeNode(elm!, parent);
+    // elm may be undefined for light dom slots
+    if (doRemove && elm) {
+        removeNode(elm, parent);
     }
 
     switch (type) {
+        case VNodeType.Slot:
+            unmountVNodes(
+                isUndefined(vnode.aChildren) ? vnode.children : vnode.aChildren,
+                (elm as ParentNode) ?? parent,
+                !elm && doRemove
+            );
+            break;
+
         case VNodeType.Element: {
-            // Slot content is removed to trigger slotchange event when removing slot.
-            // Only required for synthetic shadow.
-            const removeChildren =
-                sel === 'slot' && vnode.owner.shadowMode === ShadowMode.Synthetic;
-            unmountVNodes(vnode.children, elm as ParentNode, removeChildren);
+            unmountVNodes(vnode.children, elm as ParentNode);
             break;
         }
 
@@ -400,14 +467,13 @@ function patchElementPropsAndAttrs(oldVnode: VBaseElement | null, vnode: VBaseEl
     patchProps(oldVnode, vnode);
 }
 
-function fallbackElmHook(elm: Element, vnode: VBaseElement) {
-    const { owner } = vnode;
-    setScopeTokenClassIfNecessary(elm, owner);
-    if (owner.shadowMode === ShadowMode.Synthetic) {
+function fallbackElmHook(elm: Element, vnode: VElement, vm: VM) {
+    setScopeTokenClassIfNecessary(elm, vm);
+    if (vm.shadowMode === ShadowMode.Synthetic) {
         const {
             data: { context },
         } = vnode;
-        const { stylesheetToken } = owner.context;
+        const { stylesheetToken } = vm.context;
         if (
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
@@ -430,12 +496,12 @@ function fallbackElmHook(elm: Element, vnode: VBaseElement) {
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
             context.lwc.dom === LwcDomMode.Manual;
-        const isLight = owner.renderMode === RenderMode.Light;
+        const isLight = vm.renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, { isPortal, isLight });
     }
 }
 
-export function allocateChildren(vnode: VCustomElement, vm: VM) {
+export function allocateChildren(vnode: VCustomElement, vm: VM, owner: VM) {
     // A component with slots will re-render because:
     // 1- There is a change of the internal state.
     // 2- There is a change on the external api (ex: slots)
@@ -447,13 +513,12 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     //
     // In case #2, we will always get a fresh VCustomElement.
     const children = vnode.aChildren || vnode.children;
-
     vm.aChildren = children;
 
     const { renderMode, shadowMode } = vm;
     if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
         // slow path
-        allocateInSlot(vm, children);
+        allocateInSlot(vm, children, owner);
         // save the allocated children in case this vnode is reused.
         vnode.aChildren = children;
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
@@ -461,7 +526,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     }
 }
 
-function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
+function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, owner: VM): VM {
     let vm = getAssociatedVMIfPresent(elm);
 
     // There is a possibility that a custom element is registered under tagName, in which case, the
@@ -471,7 +536,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
         return vm;
     }
 
-    const { sel, mode, ctor, owner } = vnode;
+    const { sel, mode, ctor } = vnode;
 
     setScopeTokenClassIfNecessary(elm, owner);
     if (owner.shadowMode === ShadowMode.Synthetic) {
@@ -499,9 +564,9 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
     return vm;
 }
 
-function allocateInSlot(vm: VM, children: VNodes) {
+function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
     const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null));
+    const cmpSlots: SlotSet = (vm.cmpSlots = create(null));
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
@@ -513,7 +578,14 @@ function allocateInSlot(vm: VM, children: VNodes) {
             slotName = (vnode.data.attrs?.slot as string) || '';
         }
 
-        const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
+        const { vnodes } = (cmpSlots[slotName] = cmpSlots[slotName] || { owner, vnodes: [] });
+        // re-keying the vnodes is necessary to avoid conflicts with default content for the slot
+        // which might have similar keys. Each vnode will always have a key that
+        // starts with a numeric character from compiler. In this case, we add a unique
+        // notation for slotted vnodes keys, e.g.: `@foo:1:1`
+        if (!isUndefined(vnode.key)) {
+            vnode.key = `@${slotName}:${vnode.key}`;
+        }
         ArrayPush.call(vnodes, vnode);
     }
     if (isFalse(vm.isDirty)) {
@@ -526,13 +598,16 @@ function allocateInSlot(vm: VM, children: VNodes) {
         }
         for (let i = 0, len = oldKeys.length; i < len; i += 1) {
             const key = oldKeys[i];
-            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
+            if (
+                isUndefined(cmpSlots[key]) ||
+                oldSlots[key].vnodes.length !== cmpSlots[key].vnodes.length
+            ) {
                 markComponentAsDirty(vm);
                 return;
             }
-            const oldVNodes = oldSlots[key];
-            const vnodes = cmpSlots[key];
-            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
+            const oldVNodes = oldSlots[key].vnodes;
+            const vnodes = cmpSlots[key].vnodes;
+            for (let j = 0, a = vnodes.length; j < a; j += 1) {
                 if (oldVNodes[j] !== vnodes[j]) {
                     markComponentAsDirty(vm);
                     return;
@@ -575,7 +650,7 @@ function createKeyToOldIdx(
     return map;
 }
 
-function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode) {
+function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode, vm: VM) {
     let oldStartIdx = 0;
     let newStartIdx = 0;
     let oldEndIdx = oldCh.length - 1;
@@ -600,22 +675,22 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
         } else if (!isVNode(newEndVnode)) {
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newStartVnode)) {
-            patch(oldStartVnode, newStartVnode);
+            patch(oldStartVnode, newStartVnode, vm);
             oldStartVnode = oldCh[++oldStartIdx];
             newStartVnode = newCh[++newStartIdx];
         } else if (isSameVnode(oldEndVnode, newEndVnode)) {
-            patch(oldEndVnode, newEndVnode);
+            patch(oldEndVnode, newEndVnode, vm);
             oldEndVnode = oldCh[--oldEndIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
-            patch(oldStartVnode, newEndVnode);
+            patch(oldStartVnode, newEndVnode, vm);
             insertNode(oldStartVnode.elm!, parent, nextSibling(oldEndVnode.elm!));
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
-            patch(oldEndVnode, newStartVnode);
+            patch(oldEndVnode, newStartVnode, vm);
             insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
@@ -626,16 +701,16 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
             idxInOld = oldKeyToIdx[newStartVnode.key!];
             if (isUndefined(idxInOld)) {
                 // New element
-                mount(newStartVnode, parent, oldStartVnode.elm!);
+                mount(newStartVnode, parent, oldStartVnode.elm!, vm);
                 newStartVnode = newCh[++newStartIdx];
             } else {
                 elmToMove = oldCh[idxInOld];
                 if (isVNode(elmToMove)) {
                     if (elmToMove.sel !== newStartVnode.sel) {
                         // New element
-                        mount(newStartVnode, parent, oldStartVnode.elm!);
+                        mount(newStartVnode, parent, oldStartVnode.elm!, vm);
                     } else {
-                        patch(elmToMove, newStartVnode);
+                        patch(elmToMove, newStartVnode, vm);
                         // Delete the old child, but copy the array since it is read-only.
                         // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
                         // so we only care about the `oldCh` object inside this function.
@@ -665,20 +740,20 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
                 n = newCh[++i];
             } while (!isVNode(n) && i < newChEnd);
             before = isVNode(n) ? n.elm : null;
-            mountVNodes(newCh, parent, before, newStartIdx, newEndIdx + 1);
+            mountVNodes(vm, newCh, parent, before, newStartIdx, newEndIdx + 1);
         } else {
             unmountVNodes(oldCh, parent, true, oldStartIdx, oldEndIdx + 1);
         }
     }
 }
 
-function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
+function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, vm: VM) {
     const c1Length = c1.length;
     const c2Length = c2.length;
 
     if (c1Length === 0) {
         // the old list is empty, we can directly insert anything new
-        mountVNodes(c2, parent, null);
+        mountVNodes(vm, c2, parent, null);
         return;
     }
 
@@ -700,14 +775,14 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
                     // both vnodes are equivalent, and we just need to patch them
-                    patch(n1, n2);
+                    patch(n1, n2, vm);
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null
                     unmount(n1, parent, true);
                 }
             } else if (isVNode(n2)) {
-                mount(n2, parent, anchor);
+                mount(n2, parent, anchor, vm);
                 anchor = n2.elm!;
             }
         }

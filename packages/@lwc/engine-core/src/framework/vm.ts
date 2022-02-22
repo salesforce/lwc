@@ -41,7 +41,7 @@ import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
+import { AllocatedVNodes, VCustomElement, VNode, VNodes, VNodeType } from './vnodes';
 
 import type { HostNode, HostElement } from '../renderer';
 
@@ -52,7 +52,7 @@ export interface TemplateCache {
 }
 
 export interface SlotSet {
-    [key: string]: VNodes;
+    [key: string]: AllocatedVNodes;
 }
 
 export const enum VMState {
@@ -434,7 +434,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    patchChildren(oldCh, newCh, renderRoot);
+                    patchChildren(oldCh, newCh, renderRoot, vm);
                 },
                 () => {
                     // post
@@ -598,8 +598,7 @@ function runChildNodesDisconnectedCallback(vm: VM) {
 }
 
 function runLightChildNodesDisconnectedCallback(vm: VM) {
-    const { aChildren: adoptedChildren } = vm;
-    recursivelyDisconnectChildren(adoptedChildren);
+    recursivelyDisconnectChildren(vm.aChildren);
 }
 
 /**
@@ -615,6 +614,7 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 
         if (!isNull(vnode) && !isUndefined(vnode.elm)) {
             switch (vnode.type) {
+                case VNodeType.Slot:
                 case VNodeType.Element:
                     recursivelyDisconnectChildren(vnode.children);
                     break;
