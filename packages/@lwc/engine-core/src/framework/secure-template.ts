@@ -21,12 +21,9 @@ export function isTemplateRegistered(tpl: Template): boolean {
 }
 
 function validateTemplateVersion(template: Template) {
-    // Validate that the template was compiled with the same version of the LWC compiler used for the runtime engine.
-    // Note this only works in unminified dev mode because it relies on code comments.
     checkVersionMismatch(template, 'template');
     if (!isUndefined(template.stylesheets)) {
         for (const stylesheet of flattenStylesheets(template.stylesheets)) {
-            // Verify that the stylesheet was compiled with a compatible LWC version
             checkVersionMismatch(stylesheet, 'stylesheet');
         }
     }
@@ -37,7 +34,9 @@ function validateTemplateVersion(template: Template) {
  * will prevent this function from being imported by userland code.
  */
 export function registerTemplate(tpl: Template): Template {
-    validateTemplateVersion(tpl);
+    if (process.env.NODE_ENV !== 'production') {
+        validateTemplateVersion(tpl);
+    }
     signedTemplateSet.add(tpl);
     // chaining this method as a way to wrap existing
     // assignment of templates easily, without too much transformation
