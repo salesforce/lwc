@@ -5,9 +5,9 @@
             "message": "LWC1065: Invalid key value for element <div>. Key cannot reference for:each index index",
             "level": 1,
             "location": {
-                "line": 4,
-                "column": 18,
-                "start": 112,
+                "line": 3,
+                "column": 14,
+                "start": 38,
                 "length": 11
             }
         }

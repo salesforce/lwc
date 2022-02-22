@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1066,
+            "message": "LWC1066: Invalid key value for element <p>. Key cannot reference iterator index",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 31,
+                "start": 55,
+                "length": 13
+            }
+        }
+    ]
+}

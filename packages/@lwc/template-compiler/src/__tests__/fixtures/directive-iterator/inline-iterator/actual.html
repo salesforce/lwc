@@ -1,0 +1,5 @@
+<template>
+    <section>
+        <div iterator:x={items} key={x.value.id} data-islast={x.last} data-isfirst={x.first}><span>Row: {x.index}</span>. Value: {x.value}</div>
+    </section>
+</template>
