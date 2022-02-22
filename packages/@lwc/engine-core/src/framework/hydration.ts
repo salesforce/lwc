@@ -41,6 +41,7 @@ import {
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
 
+// These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
     ELEMENT = 1,
     TEXT = 3,
