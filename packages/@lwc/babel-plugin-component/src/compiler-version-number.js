@@ -9,6 +9,11 @@ const { LWC_VERSION } = require('@lwc/shared');
 module.exports = function compilerVersionNumber({ types: t }) {
     return {
         ClassBody(path) {
+            if (path.parent.superClass === null) {
+                // Components *must* extend from either LightningElement or some other superclass (e.g. a mixin).
+                // We can skip classes without a superclass to avoid adding unnecessary comments.
+                return;
+            }
             const comment = `LWC compiler v${LWC_VERSION}`;
             // If the class body is empty, we want an inner comment. Otherwise we want it after the last child
             // of the class body. In either case, we want it right before the `}` at the end of the function body.
