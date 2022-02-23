@@ -51,10 +51,10 @@ describe('fixtures', () => {
             }
 
             // Replace LWC's version with X.X.X so the snapshots don't frequently change
-            const code = (result?.code ?? '').replace(
-                new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'),
-                'X.X.X'
-            );
+            let code = result?.code;
+            if (code) {
+                code = code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
+            }
 
             return {
                 'expected.js': code,
