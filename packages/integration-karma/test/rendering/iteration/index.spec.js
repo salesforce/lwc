@@ -25,34 +25,47 @@ describe('iteration rendering', () => {
         }
     }
 
-    const components = {
-        'x-inline-for-each': InlineForEach,
-        'x-inline-iterator': InlineIterator,
-        'x-template-for-each': ForEach,
-        'x-template-iterator': Iterator,
-    };
+    const components = [
+        {
+            Ctor: InlineForEach,
+            type: 'inline',
+            iterationType: 'for-each',
+        },
+        {
+            Ctor: InlineIterator,
+            type: 'inline',
+            iterationType: 'iterator',
+        },
+        {
+            Ctor: ForEach,
+            type: 'template',
+            iterationType: 'for-each',
+        },
+        {
+            Ctor: Iterator,
+            type: 'template',
+            iterationType: 'iterator',
+        },
+    ];
 
-    ['inline'].forEach((type) => {
-        ['iterator'].forEach((iterationType) => {
-            const tag = `x-${type}-${iterationType}`;
-            const Ctor = components[tag];
+    components.forEach(({ Ctor, type, iterationType }) => {
+        const tag = `x-${type}-${iterationType}`;
 
-            it(`${type} ${iterationType}`, () => {
-                const elm = createElement(tag, { is: Ctor });
-                elm.items = [1, 2, 3, 4];
-                document.body.appendChild(elm);
+        it(`${type} ${iterationType}`, () => {
+            const elm = createElement(tag, { is: Ctor });
+            elm.items = [1, 2, 3, 4];
+            document.body.appendChild(elm);
+            validateRenderedChildren(elm, iterationType);
+            const [c1, c2, c3, c4] = elm.shadowRoot.querySelectorAll('x-item');
+
+            elm.items = [3, 1, 2, 4];
+            return Promise.resolve().then(() => {
                 validateRenderedChildren(elm, iterationType);
-                const [c1, c2, c3, c4] = elm.shadowRoot.querySelectorAll('x-item');
-
-                elm.items = [3, 1, 2, 4];
-                return Promise.resolve().then(() => {
-                    validateRenderedChildren(elm, iterationType);
-                    const [c3b, c1b, c2b, c4b] = elm.shadowRoot.querySelectorAll('x-item');
-                    expect(c1).toBe(c1b);
-                    expect(c2).toBe(c2b);
-                    expect(c3).toBe(c3b);
-                    expect(c4).toBe(c4b);
-                });
+                const [c3b, c1b, c2b, c4b] = elm.shadowRoot.querySelectorAll('x-item');
+                expect(c1).toBe(c1b);
+                expect(c2).toBe(c2b);
+                expect(c3).toBe(c3b);
+                expect(c4).toBe(c4b);
             });
         });
     });
