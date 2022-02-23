@@ -45,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       [api_text("Don't forget your passport!")]
     ),
   ];
-  /*LWC compiler v2.9.0*/
+  /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

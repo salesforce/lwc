@@ -6,7 +6,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-
+import { LWC_VERSION } from '@lwc/shared';
 import prettier from 'prettier';
 import { testFixtureDir } from 'jest-utils-lwc-internals';
 
@@ -26,7 +26,15 @@ describe('fixtures', () => {
                 config = require(configPath);
             }
 
-            const { code, warnings } = compiler(src, config);
+            const compiled = compiler(src, config);
+            const { warnings } = compiled;
+
+            // Replace LWC's version with X.X.X so the snapshots don't frequently change
+            // String.prototype.replaceAll only available in Node 15+
+            const code = compiled.code.replace(
+                new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'),
+                'X.X.X'
+            );
 
             return {
                 'expected.js': prettier.format(code, { parser: 'babel' }),

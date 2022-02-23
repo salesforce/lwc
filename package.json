@@ -22,7 +22,7 @@
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
     "test:performance": "lerna exec --scope perf-benchmarks -- yarn test",
     "release:publish:ci": "./scripts/release/publish.mjs",
-    "release:version": "./scripts/release/version.mjs && yarn test -u"
+    "release:version": "./scripts/release/version.mjs"
   },
   "devDependencies": {
     "@babel/core": "^7.17.4",

@@ -7,7 +7,7 @@
     function tmpl($api, $cmp, $slotset, $ctx) {
       const {t: api_text, h: api_element} = $api;
       return [api_element("h1", stc0, [api_text("hello")])];
-      /*LWC compiler v2.9.0*/
+      /*LWC compiler vX.X.X*/
     }
     var _tmpl = lwc.registerTemplate(tmpl);
     tmpl.stylesheets = [];
@@ -30,7 +30,7 @@
         // eslint-disable-next-line no-console
         console.log(NotALightningElement, AlsoNotALightningElement);
       }
-      /*LWC compiler v2.9.0*/
+      /*LWC compiler vX.X.X*/
 
 
     }

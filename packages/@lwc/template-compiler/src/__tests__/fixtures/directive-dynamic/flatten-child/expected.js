@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element("div", stc0, [api_text("sibling")]),
     api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc1),
   ]);
-  /*LWC compiler v2.9.0*/
+  /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

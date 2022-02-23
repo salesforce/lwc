@@ -9,6 +9,7 @@ const fs = require('fs');
 const rollup = require('rollup');
 const rollupCompat = require('rollup-plugin-compat');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const { LWC_VERSION } = require('@lwc/shared');
 const rollupCompile = require('../index');
 require('jest-utils-lwc-internals');
 
@@ -185,5 +186,11 @@ async function doRollup(input, { compat, resolve, extraPlugins } = {}, rollupCom
         globals: globalModules,
     });
 
-    return output[0];
+    // Replace LWC's version with X.X.X so the snapshots don't frequently change
+    const code = output[0].code.replace(
+        new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'),
+        'X.X.X'
+    );
+
+    return { code };
 }

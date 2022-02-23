@@ -4,7 +4,7 @@
     function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
       var hostSelector = token ? ("[" + token + "-host]") : "";
       return (useActualHostSelector ? ":host {color: var(--lwc-my-color);}" : [hostSelector, " {color: var(--lwc-my-color);}"].join(''));
-      /*LWC compiler v2.9.0*/
+      /*LWC compiler vX.X.X*/
     }
     var _implicitStylesheets = [stylesheet];
 
@@ -16,7 +16,7 @@
     function tmpl$1($api, $cmp, $slotset, $ctx) {
       const {d: api_dynamic_text, t: api_text, h: api_element} = $api;
       return [api_element("div", stc0$1, [api_text(api_dynamic_text($cmp.x))])];
-      /*LWC compiler v2.9.0*/
+      /*LWC compiler vX.X.X*/
     }
     var _tmpl$1 = lwc.registerTemplate(tmpl$1);
     tmpl$1.stylesheets = [];
@@ -34,7 +34,7 @@
         super(...args);
         this.x = void 0;
       }
-      /*LWC compiler v2.9.0*/
+      /*LWC compiler vX.X.X*/
 
 
     }
@@ -66,7 +66,7 @@
     function tmpl($api, $cmp, $slotset, $ctx) {
       const {c: api_custom_element, h: api_element} = $api;
       return [api_element("div", stc0, [api_custom_element("ts-foo", _tsFoo, stc1)])];
-      /*LWC compiler v2.9.0*/
+      /*LWC compiler vX.X.X*/
     }
     var _tmpl = lwc.registerTemplate(tmpl);
     tmpl.stylesheets = [];
@@ -75,7 +75,7 @@
       constructor() {
         super();
       }
-      /*LWC compiler v2.9.0*/
+      /*LWC compiler vX.X.X*/
 
 
     }
