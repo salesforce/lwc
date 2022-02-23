@@ -143,13 +143,6 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
         metadataExpressions.push(t.expressionStatement(slotsMetadata));
     }
 
-    const stylesheetsMetadata = t.assignmentExpression(
-        '=',
-        t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('stylesheets')),
-        t.arrayExpression([])
-    );
-    metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
-
     // ignore when shadow because we don't want to modify template unnecessarily
     if (codeGen.renderMode === LWCDirectiveRenderMode.light) {
         const renderModeMetadata = t.assignmentExpression(

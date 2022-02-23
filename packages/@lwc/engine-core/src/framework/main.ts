@@ -32,6 +32,7 @@ export { hydrateRoot } from './hydration';
 export { registerComponent } from './component';
 export { registerTemplate } from './secure-template';
 export { registerDecorators } from './decorators/register';
+export { registerStylesheets } from './register-stylesheets';
 
 // Mics. internal APIs -----------------------------------------------------------------------------
 export { unwrap } from './membrane';

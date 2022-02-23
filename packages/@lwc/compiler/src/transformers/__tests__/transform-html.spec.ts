@@ -27,5 +27,5 @@ it('should apply transformation for template file', async () => {
     `;
     const { code } = await transform(actual, 'foo.html', TRANSFORMATION_OPTIONS);
 
-    expect(code).toContain(`tmpl.stylesheets = []`);
+    expect(code).toContain('function tmpl');
 });

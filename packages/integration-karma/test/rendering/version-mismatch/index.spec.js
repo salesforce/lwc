@@ -1,4 +1,4 @@
-import { createElement, LightningElement, registerTemplate, registerComponent } from 'lwc';
+import { createElement, LightningElement, registerTemplate, registerComponent, registerStylesheets } from 'lwc';
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
@@ -63,8 +63,8 @@ if (!process.env.COMPAT) {
                 function tmpl() {
                     return [];
                 }
-                tmpl.stylesheetToken = 'x-component_component';
-                tmpl.stylesheets = [
+                const stylesheetToken = 'x-component_component';
+                const stylesheets = [
                     function stylesheet() {
                         return '';
                         /*LWC compiler v123.456.789*/
@@ -74,10 +74,8 @@ if (!process.env.COMPAT) {
                 class CustomElement extends LightningElement {}
                 registerComponent(CustomElement, { tmpl });
 
-                const elm = createElement('x-component', { is: CustomElement });
-
                 expect(() => {
-                    document.body.appendChild(elm);
+                    registerStylesheets(tmpl, stylesheetToken, stylesheets);
                 }).toLogErrorDev(
                     new RegExp(
                         `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but stylesheet was compiled with v123.456.789`
