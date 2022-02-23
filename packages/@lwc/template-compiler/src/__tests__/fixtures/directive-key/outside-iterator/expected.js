@@ -1,11 +1,10 @@
 import { registerTemplate } from "lwc";
+const stc0 = {
+  key: 0,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { k: api_key, h: api_element } = $api;
-  return [
-    api_element("div", {
-      key: api_key(0, $cmp.keyGetter),
-    }),
-  ];
+  const { h: api_element } = $api;
+  return [api_element("div", stc0)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
