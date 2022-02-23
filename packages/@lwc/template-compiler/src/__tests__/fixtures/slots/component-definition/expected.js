@@ -4,7 +4,7 @@ const stc0 = {
   key: 0,
 };
 const stc1 = {
-  key: 1,
+  key: "@:1",
 };
 const stc2 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {

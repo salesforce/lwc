@@ -3,14 +3,14 @@ const stc0 = {
   attrs: {
     name: "foo",
   },
-  key: 0,
+  key: "@foo:0",
 };
 const stc1 = [];
 const stc2 = {
   attrs: {
     name: "foo",
   },
-  key: 1,
+  key: "@foo:1",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { s: api_slot } = $api;

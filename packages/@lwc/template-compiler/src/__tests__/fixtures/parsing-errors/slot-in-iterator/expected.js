@@ -1,6 +1,6 @@
 import { registerTemplate } from "lwc";
 const stc0 = {
-  key: 1,
+  key: "@:1",
 };
 const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {

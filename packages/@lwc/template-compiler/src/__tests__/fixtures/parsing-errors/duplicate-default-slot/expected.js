@@ -1,10 +1,10 @@
 import { registerTemplate } from "lwc";
 const stc0 = {
-  key: 0,
+  key: "@:0",
 };
 const stc1 = [];
 const stc2 = {
-  key: 1,
+  key: "@:1",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { s: api_slot } = $api;

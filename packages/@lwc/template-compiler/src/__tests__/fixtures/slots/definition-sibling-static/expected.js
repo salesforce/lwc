@@ -6,10 +6,10 @@ const stc1 = {
   key: 1,
 };
 const stc2 = {
-  key: 2,
+  key: "@:2",
 };
 const stc3 = {
-  key: 3,
+  key: "@:3",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, s: api_slot } = $api;

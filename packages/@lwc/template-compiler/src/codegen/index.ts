@@ -398,7 +398,7 @@ function transform(codeGen: CodeGen): t.Expression {
     function elementDataBag(element: BaseElement): t.ObjectExpression {
         const data: t.Property[] = [];
 
-        const { attributes, properties, listeners } = element;
+        const { attributes, properties, listeners, keyScope } = element;
 
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
@@ -495,9 +495,18 @@ function transform(codeGen: CodeGen): t.Expression {
             const generatedKey = codeGen.genKey(t.literal(codeGen.generateKey()), forKeyExpression);
             data.push(t.property(t.identifier('key'), generatedKey));
         } else {
-            // If stand alone element with no user-defined key
-            // member expression id
-            data.push(t.property(t.identifier('key'), t.literal(codeGen.generateKey())));
+            // If standalone element with no user-defined key
+            let key: number | string = codeGen.generateKey();
+            // keyScope could be an empty string, for unnamed slots
+            if (keyScope !== undefined) {
+                // Prefixing the key is necessary to avoid conflicts with default content for the
+                // slot which might have similar keys. Each vnode will always have a key that starts
+                // with a numeric character from compiler. In this case, we add a unique notation
+                // for slotted vnodes keys, e.g.: `@foo:1:1`. Note that this is *not* needed for
+                // dynamic keys, since `api.k` already scopes based on the iteration.
+                key = `@${keyScope}:${key}`;
+            }
+            data.push(t.property(t.identifier('key'), t.literal(key)));
         }
 
         // Event handler

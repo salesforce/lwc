@@ -763,8 +763,14 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
         } else {
             ctx.warnOnNode(ParserDiagnostics.KEY_SHOULD_BE_IN_ITERATION, keyAttribute, [tag]);
         }
-    } else if (isInIteratorElement(ctx)) {
-        ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
+    } else {
+        if (isInIteratorElement(ctx)) {
+            ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
+        }
+        const slotAncestor = getSlotAncestor(ctx);
+        if (slotAncestor) {
+            element.keyScope = slotAncestor.slotName;
+        }
     }
 }
 
@@ -1151,4 +1157,8 @@ function getForEachParent(ctx: ParserCtx): ForEach | null {
 
 function isInIteratorElement(ctx: ParserCtx): boolean {
     return !!(getForOfParent(ctx) || getForEachParent(ctx));
+}
+
+function getSlotAncestor(ctx: ParserCtx): Slot | null {
+    return ctx.findAncestor(ast.isSlot);
 }

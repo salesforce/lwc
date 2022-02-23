@@ -3,6 +3,7 @@ import { createElement } from 'lwc';
 import RenderCountParent from 'x/renderCountParent';
 import FallbackContentReuseParent from 'x/fallbackContentReuseParent';
 import RegressionContainer from 'x/regressionContainer';
+import FallbackContentReuseDynamicKeyParent from 'x/fallbackContentReuseDynamicKeyParent';
 
 // TODO [#1617]: Engine currently has trouble with slotting and invocation of the renderedCallback.
 xit('should not render if the slotted content changes', () => {
@@ -23,19 +24,33 @@ xit('should not render if the slotted content changes', () => {
     });
 });
 
-it('#663 - should not reuse elements from the fallback slot content', () => {
-    const elm = createElement('x-fallback-content-reuse-parent', {
-        is: FallbackContentReuseParent,
-    });
-    document.body.appendChild(elm);
+[
+    {
+        type: 'static',
+        tag: 'x-fallback-content-reuse-parent',
+        Ctor: FallbackContentReuseParent,
+    },
+    {
+        type: 'dynamic',
+        tag: 'x-fallback-content-reuse-dynamic-key-parent',
+        Ctor: FallbackContentReuseDynamicKeyParent,
+    },
+].forEach(({ type, tag, Ctor }) => {
+    it(`#663 - should not reuse elements from the fallback slot content - ${type} key`, () => {
+        const childTag = tag.replace('parent', 'child');
+        const elm = createElement(tag, {
+            is: Ctor,
+        });
+        document.body.appendChild(elm);
 
-    expect(elm.shadowRoot.querySelector('x-fallback-content-reuse-child').innerHTML).toBe('');
-    elm.renderSlotted = true;
+        expect(elm.shadowRoot.querySelector(childTag).innerHTML).toBe('');
+        elm.renderSlotted = true;
 
-    return Promise.resolve().then(() => {
-        expect(elm.shadowRoot.querySelector('x-fallback-content-reuse-child').innerHTML).toBe(
-            '<div>Default slotted</div><div slot="foo">Named slotted</div>'
-        );
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector(childTag).innerHTML).toBe(
+                '<div>Default slotted</div><div slot="foo">Named slotted</div>'
+            );
+        });
     });
 });
 
