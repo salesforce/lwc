@@ -12,7 +12,8 @@ import { LightningElementConstructor } from './base-lightning-element';
 import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
-import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { StylesheetFactory } from './stylesheet';
+import { flattenStylesheets } from './utils';
 
 const swappedTemplateMap = new WeakMap<Template, Template>();
 const swappedComponentMap = new WeakMap<LightningElementConstructor, LightningElementConstructor>();
@@ -82,18 +83,6 @@ function rehydrateHotComponent(Ctor: LightningElementConstructor): boolean {
         list.clear();
     }
     return canRefreshAllInstances;
-}
-
-function flattenStylesheets(stylesheets: TemplateStylesheetFactories): StylesheetFactory[] {
-    const list: StylesheetFactory[] = [];
-    for (const stylesheet of stylesheets) {
-        if (!Array.isArray(stylesheet)) {
-            list.push(stylesheet);
-        } else {
-            list.push(...flattenStylesheets(stylesheet));
-        }
-    }
-    return list;
 }
 
 export function getTemplateOrSwappedTemplate(tpl: Template): Template {

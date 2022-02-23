@@ -20,6 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       $cmp.isTrue ? api_element("p", stc3, [api_text("3")]) : null,
     ]),
   ];
+  /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

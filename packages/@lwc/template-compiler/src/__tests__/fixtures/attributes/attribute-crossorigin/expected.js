@@ -27,6 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element("video", stc1),
     api_element("audio", stc2),
   ];
+  /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

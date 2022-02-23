@@ -7,6 +7,7 @@
   function tmpl($api, $cmp, $slotset, $ctx) {
     const {d: api_dynamic_text, t: api_text, h: api_element} = $api;
     return [api_element("pre", stc0, [api_text(api_dynamic_text($cmp.hello))])];
+    /*LWC compiler vX.X.X*/
   }
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];
@@ -20,6 +21,8 @@
       super(...args);
       this.hello = fake();
     }
+    /*LWC compiler vX.X.X*/
+
 
   }
 

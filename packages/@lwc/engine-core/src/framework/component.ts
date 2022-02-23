@@ -12,6 +12,7 @@ import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { VNodes } from './vnodes';
+import { checkVersionMismatch } from './check-version-mismatch';
 
 const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
 
@@ -23,6 +24,9 @@ export function registerComponent(
     Ctor: LightningElementConstructor,
     { tmpl }: { tmpl: Template }
 ): LightningElementConstructor {
+    if (process.env.NODE_ENV !== 'production') {
+        checkVersionMismatch(Ctor, 'component');
+    }
     signedTemplateMap.set(Ctor, tmpl);
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation

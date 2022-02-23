@@ -364,6 +364,13 @@ export function program(body: t.Program['body'], config?: Partial<t.Program>): t
     };
 }
 
+export function comment(content: string): t.Comment {
+    return {
+        type: 'Block',
+        value: content,
+    };
+}
+
 export type BaseNode = t.BaseNode;
 export type Identifier = t.Identifier;
 export type MemberExpression = t.MemberExpression;

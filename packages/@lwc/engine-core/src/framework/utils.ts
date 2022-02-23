@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayPush, create, isFunction, seal } from '@lwc/shared';
+import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 
 type Callback = () => void;
 
@@ -84,4 +85,16 @@ export function cloneAndOmitKey(object: { [key: string]: any }, keyToOmit: strin
         }
     }
     return result;
+}
+
+export function flattenStylesheets(stylesheets: TemplateStylesheetFactories): StylesheetFactory[] {
+    const list: StylesheetFactory[] = [];
+    for (const stylesheet of stylesheets) {
+        if (!Array.isArray(stylesheet)) {
+            list.push(stylesheet);
+        } else {
+            list.push(...flattenStylesheets(stylesheet));
+        }
+    }
+    return list;
 }

@@ -15,6 +15,7 @@ const {
 } = require('./decorators');
 const dedupeImports = require('./dedupe-imports');
 const dynamicImports = require('./dynamic-imports');
+const compilerVersionNumber = require('./compiler-version-number');
 const { generateError, getEngineImportSpecifiers } = require('./utils');
 
 /**
@@ -26,6 +27,7 @@ module.exports = function LwcClassTransform(api) {
     const { ExportDefaultDeclaration: transformCreateRegisterComponent } = component(api);
     const { Class: transformDecorators } = decorators(api);
     const { Import: transformDynamicImports } = dynamicImports(api);
+    const { ClassBody: addCompilerVersionNumber } = compilerVersionNumber(api);
 
     return {
         manipulateOptions(opts, parserOpts) {
@@ -71,6 +73,10 @@ module.exports = function LwcClassTransform(api) {
 
             Class(path) {
                 transformDecorators(path);
+            },
+
+            ClassBody(path) {
+                addCompilerVersionNumber(path);
             },
 
             ExportDefaultDeclaration(path, state) {

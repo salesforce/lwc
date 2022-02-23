@@ -44,6 +44,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       [api_text("Click")]
     ),
   ];
+  /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

@@ -25,6 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       key: 1,
     }),
   ];
+  /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

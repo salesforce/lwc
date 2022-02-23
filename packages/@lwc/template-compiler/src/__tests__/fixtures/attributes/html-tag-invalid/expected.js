@@ -17,6 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_element("textarea", stc1, [api_text("x")]),
     ]),
   ];
+  /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

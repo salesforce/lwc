@@ -74,6 +74,7 @@
   function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
     var hostSelector = token ? "[" + token + "-host]" : "";
     return useActualHostSelector ? ":host {color: var(--lwc-my-color);}" : __callKey1([hostSelector, " {color: var(--lwc-my-color);}"], "join", '');
+    /*LWC compiler vX.X.X*/
   }
 
   var _implicitStylesheets = [stylesheet];
@@ -89,6 +90,7 @@
         api_text = $api._ES5ProxyType ? $api.get("t") : $api.t,
         api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
     return [api_element("div", stc0$1, [api_text(api_dynamic_text($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x))])];
+    /*LWC compiler vX.X.X*/
   }
 
   var _tmpl$1 = lwc.registerTemplate(tmpl$1);
@@ -127,6 +129,8 @@
 
       return _this;
     }
+    /*LWC compiler vX.X.X*/
+
 
     return Foo;
   }(lwc.LightningElement);
@@ -160,6 +164,7 @@
     var api_custom_element = $api._ES5ProxyType ? $api.get("c") : $api.c,
         api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
     return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1)])];
+    /*LWC compiler vX.X.X*/
   }
 
   var _tmpl = lwc.registerTemplate(tmpl);
@@ -186,6 +191,8 @@
 
       return _this;
     }
+    /*LWC compiler vX.X.X*/
+
 
     return App;
   }(lwc.LightningElement);

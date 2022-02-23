@@ -15,6 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_element("p", stc1, [api_text("false branch")])
       : null,
   ];
+  /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

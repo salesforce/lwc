@@ -13,6 +13,7 @@ const stc1 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
   return [api_element("svg", stc0, [api_element("path", stc1)])];
+  /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];

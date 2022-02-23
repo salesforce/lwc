@@ -9,6 +9,7 @@ const fs = require('fs');
 const rollup = require('rollup');
 const rollupCompat = require('rollup-plugin-compat');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const { LWC_VERSION } = require('@lwc/shared');
 const rollupCompile = require('../index');
 require('jest-utils-lwc-internals');
 
@@ -16,6 +17,10 @@ const fixturesDir = path.join(__dirname, 'fixtures');
 const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
 const simpleAppWithThirdPartyDir = path.join(fixturesDir, 'simple_app_third_party_import/src');
 const simpleAppDirWithScopedStyles = path.join(fixturesDir, 'simple_app_with_scoped_styles/src');
+const simpleAppDirWithNonComponentClass = path.join(
+    fixturesDir,
+    'simple_app_with_non_component_class/src'
+);
 const tsAppDir = path.join(fixturesDir, 'ts_simple_app/src');
 const jsMultiVersion = path.join(fixturesDir, 'multi_version');
 
@@ -92,6 +97,15 @@ describe('default configuration', () => {
         return doRollup(entry, { extraPlugins }).then(({ code: actual }) => {
             expect(actual).toMatchFile(
                 path.join(fixturesDir, 'expected_default_config_simple_app_with_scoped_styles.js')
+            );
+        });
+    });
+
+    it('simple app with non-component class', () => {
+        const entry = path.join(simpleAppDirWithNonComponentClass, 'main.js');
+        return doRollup(entry, { compat: false, resolve: true }).then(({ code: actual }) => {
+            expect(actual).toMatchFile(
+                path.join(fixturesDir, 'expected_default_config_simple_app_non_component_class.js')
             );
         });
     });
@@ -172,5 +186,11 @@ async function doRollup(input, { compat, resolve, extraPlugins } = {}, rollupCom
         globals: globalModules,
     });
 
-    return output[0];
+    // Replace LWC's version with X.X.X so the snapshots don't frequently change
+    const code = output[0].code.replace(
+        new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'),
+        'X.X.X'
+    );
+
+    return { code };
 }

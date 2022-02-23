@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { testFixtureDir } from 'jest-utils-lwc-internals';
 import type { CssSyntaxError } from 'postcss';
+import { LWC_VERSION } from '@lwc/shared';
 import { transform, Config } from '../index';
 
 function normalizeError(err: Error) {
@@ -49,8 +50,14 @@ describe('fixtures', () => {
                 error = JSON.stringify(normalizeError(err), null, 4);
             }
 
+            // Replace LWC's version with X.X.X so the snapshots don't frequently change
+            let code = result?.code;
+            if (code) {
+                code = code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
+            }
+
             return {
-                'expected.js': result?.code,
+                'expected.js': code,
                 'error.json': error,
             };
         }

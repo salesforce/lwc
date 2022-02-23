@@ -4,6 +4,7 @@
   function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
     var shadowSelector = token ? ("." + token) : "";
     return ["div", shadowSelector, " {color: blue;}"].join('');
+    /*LWC compiler vX.X.X*/
   }
   stylesheet.$scoped$ = true;
   var _implicitScopedStylesheets = [stylesheet];
@@ -14,6 +15,7 @@
   function tmpl($api, $cmp, $slotset, $ctx) {
     const {h: api_element} = $api;
     return [api_element("div", stc0)];
+    /*LWC compiler vX.X.X*/
   }
   var _tmpl = lwc.registerTemplate(tmpl);
   tmpl.stylesheets = [];
@@ -24,7 +26,9 @@
     tmpl.stylesheetToken = "x-app_app";
   }
 
-  class App extends lwc.LightningElement {}
+  class App extends lwc.LightningElement {
+    /*LWC compiler vX.X.X*/
+  }
 
   var App$1 = lwc.registerComponent(App, {
     tmpl: _tmpl
