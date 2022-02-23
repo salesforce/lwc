@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1149,
-            "message": "LWC1149: Invalid key attribute on element <div>. The key attribute should be applied to an element with for:each or for:item, or to a direct child of that element. This key will be ignored, and may throw an error in future versions of LWC.",
+            "message": "LWC1149: Invalid key attribute on element <div>. The key attribute should be applied to an element with for:each or iterator:*, or to a direct child of a <template> element with for:each or iterator:*. This key will be ignored, and may throw an error in future versions of LWC.",
             "level": 2,
             "location": {
                 "line": 2,

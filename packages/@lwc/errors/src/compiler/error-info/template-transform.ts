@@ -598,7 +598,7 @@ export const ParserDiagnostics = {
     KEY_SHOULD_BE_IN_ITERATION: {
         code: 1149,
         message:
-            'Invalid key attribute on element <{0}>. The key attribute should be applied to an element with for:each or for:item, or to a direct child of that element. This key will be ignored, and may throw an error in future versions of LWC.',
+            'Invalid key attribute on element <{0}>. The key attribute should be applied to an element with for:each or iterator:*, or to a direct child of a <template> element with for:each or iterator:*. This key will be ignored, and may throw an error in future versions of LWC.',
         level: DiagnosticLevel.Warning,
         url: '',
     },
