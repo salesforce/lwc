@@ -582,27 +582,16 @@ function runDisconnectedCallback(vm: VM) {
 function runChildNodesDisconnectedCallback(vm: VM) {
     const { velements: vCustomElementCollection } = vm;
 
-    // Reporting disconnection for every child in inverse order since they are
-    // inserted in reserved order.
+    // Reporting disconnection for every child in inverse order since they are inserted in reserved
+    // order.
     for (let i = vCustomElementCollection.length - 1; i >= 0; i -= 1) {
-        const { elm } = vCustomElementCollection[i];
+        const { vm: childVM } = vCustomElementCollection[i];
 
-        // There are two cases where the element could be undefined:
-        // * when there is an error during the construction phase, and an error
-        //   boundary picks it, there is a possibility that the VCustomElement
-        //   is not properly initialized, and therefore is should be ignored.
-        // * when slotted custom element is not used by the element where it is
-        //   slotted into it, as  a result, the custom element was never
-        //   initialized.
-        if (!isUndefined(elm)) {
-            const childVM = getAssociatedVMIfPresent(elm);
-
-            // The VM associated with the element might be associated undefined
-            // in the case where the VM failed in the middle of its creation,
-            // eg: constructor throwing before invoking super().
-            if (!isUndefined(childVM)) {
-                resetComponentStateWhenRemoved(childVM);
-            }
+        // The VM associated with the element might be associated undefined
+        // in the case where the VM failed in the middle of its creation,
+        // eg: constructor throwing before invoking super().
+        if (!isUndefined(childVM)) {
+            resetComponentStateWhenRemoved(childVM);
         }
     }
 }
@@ -623,15 +612,17 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {
         const vnode = vnodes[i];
 
-        if (!isNull(vnode) && !isUndefined(vnode.elm)) {
+        if (!isNull(vnode)) {
             switch (vnode.type) {
                 case VNodeType.Element:
                     recursivelyDisconnectChildren(vnode.children);
                     break;
 
                 case VNodeType.CustomElement: {
-                    const vm = getAssociatedVM(vnode.elm);
-                    resetComponentStateWhenRemoved(vm);
+                    const { vm: childVM } = vnode;
+                    if (!isUndefined(childVM)) {
+                        resetComponentStateWhenRemoved(childVM);
+                    }
                     break;
                 }
             }
