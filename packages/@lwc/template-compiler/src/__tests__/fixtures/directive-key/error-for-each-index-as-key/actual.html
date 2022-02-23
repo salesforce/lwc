@@ -1,7 +1,9 @@
 <template>
     <section>
-        <div key={index} for:index="index" class="my-list" for:each={items} for:item="item">
-            <p>{item}</p>
-        </div>
+        <template for:index="index" for:each={items} for:item="item">
+            <div key={index} class="my-list">
+                <p>{item}</p>
+            </div>
+        </template>
     </section>
 </template>

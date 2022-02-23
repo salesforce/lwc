@@ -171,7 +171,7 @@ function parseElement(
 
     if (element) {
         applyHandlers(ctx, parsedAttr, element);
-        applyKey(ctx, parsedAttr, element, parentNode);
+        applyKey(ctx, parsedAttr, element);
         applyLwcDirectives(ctx, parsedAttr, element);
         applyAttributes(ctx, parsedAttr, element);
 
@@ -727,12 +727,7 @@ function parseForOf(
     );
 }
 
-function applyKey(
-    ctx: ParserCtx,
-    parsedAttr: ParsedAttribute,
-    element: BaseElement,
-    parent: ParentNode
-): void {
+function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElement): void {
     const { name: tag } = element;
     const keyAttribute = parsedAttr.pick('key');
 
@@ -741,7 +736,7 @@ function applyKey(
             ctx.throwOnNode(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, keyAttribute);
         }
 
-        const forOfParent = getForOfParent(ctx, parent);
+        const forOfParent = getForOfParent(ctx);
         const forEachParent = getForEachParent(ctx);
 
         if (forOfParent) {
@@ -764,7 +759,7 @@ function applyKey(
         }
 
         element.directives.push(ast.keyDirective(keyAttribute.value, keyAttribute.location));
-    } else if (isInIteratorElement(ctx, parent)) {
+    } else if (isInIteratorElement(ctx)) {
         ctx.throwOnNode(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, element, [tag]);
     }
 }
@@ -1142,14 +1137,14 @@ function isInIteration(ctx: ParserCtx): boolean {
     return !!ctx.findAncestor(ast.isForBlock);
 }
 
-function getForOfParent(ctx: ParserCtx, srcNode: ParentNode): ForOf | null {
-    return ctx.findAncestor(ast.isForOf, ({ current }) => !ast.isBaseElement(current), srcNode);
+function getForOfParent(ctx: ParserCtx): ForOf | null {
+    return ctx.findAncestor(ast.isForOf, ({ parent }) => parent && !ast.isBaseElement(parent));
 }
 
 function getForEachParent(ctx: ParserCtx): ForEach | null {
     return ctx.findAncestor(ast.isForEach, ({ parent }) => parent && !ast.isBaseElement(parent));
 }
 
-function isInIteratorElement(ctx: ParserCtx, parent: ParentNode): boolean {
-    return !!(getForOfParent(ctx, parent) || getForEachParent(ctx));
+function isInIteratorElement(ctx: ParserCtx): boolean {
+    return !!(getForOfParent(ctx) || getForEachParent(ctx));
 }
