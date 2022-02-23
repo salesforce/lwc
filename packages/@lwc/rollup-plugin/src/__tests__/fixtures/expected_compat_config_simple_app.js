@@ -95,14 +95,8 @@
 
   var _tmpl$1 = lwc.registerTemplate(tmpl$1);
 
-  __setKey(tmpl$1, "stylesheets", []);
-
-  if (_implicitStylesheets) {
-    __callKey2((tmpl$1._ES5ProxyType ? tmpl$1.get("stylesheets") : tmpl$1.stylesheets).push, "apply", tmpl$1._ES5ProxyType ? tmpl$1.get("stylesheets") : tmpl$1.stylesheets, _implicitStylesheets);
-  }
-
   if (_implicitStylesheets || _implicitScopedStylesheets) {
-    __setKey(tmpl$1, "stylesheetToken", "x-foo_foo");
+    lwc.registerStylesheets(tmpl$1, "x-foo_foo", _implicitStylesheets, _implicitScopedStylesheets);
   }
 
   function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var _getPrototypeOf2; var NewTarget = (_getPrototypeOf2 = _getPrototypeOf(this), _getPrototypeOf2._ES5ProxyType ? _getPrototypeOf2.get("constructor") : _getPrototypeOf2.constructor); result = __callKey3(Reflect, "construct", Super, arguments, NewTarget); } else { result = __callKey2(Super, "apply", this, arguments); } return _possibleConstructorReturn(this, result); }; }
@@ -168,8 +162,6 @@
   }
 
   var _tmpl = lwc.registerTemplate(tmpl);
-
-  __setKey(tmpl, "stylesheets", []);
 
   function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var _getPrototypeOf2; var NewTarget = (_getPrototypeOf2 = _getPrototypeOf(this), _getPrototypeOf2._ES5ProxyType ? _getPrototypeOf2.get("constructor") : _getPrototypeOf2.constructor); result = __callKey3(Reflect, "construct", Super, arguments, NewTarget); } else { result = __callKey2(Super, "apply", this, arguments); } return _possibleConstructorReturn(this, result); }; }
 

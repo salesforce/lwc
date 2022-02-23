@@ -70,18 +70,13 @@ function serialize(
         `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`
     );
     let buffer = '';
-    buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
+    buffer += `import { registerStylesheets } from "lwc";\n`;
+    buffer += `import _implicitStylesheets from "${cssRelPath}";\n`;
     buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scoped=true";\n\n`;
     buffer += code;
     buffer += '\n\n';
-    buffer += 'if (_implicitStylesheets) {\n';
-    buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets)\n`;
-    buffer += `}\n`;
-    buffer += 'if (_implicitScopedStylesheets) {\n';
-    buffer += `  tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets)\n`;
-    buffer += `}\n`;
     buffer += 'if (_implicitStylesheets || _implicitScopedStylesheets) {\n';
-    buffer += `  tmpl.stylesheetToken = "${scopeToken}"\n`;
+    buffer += `  registerStylesheets(tmpl, "${scopeToken}", _implicitStylesheets, _implicitScopedStylesheets);\n`;
     buffer += '}\n';
 
     return buffer;

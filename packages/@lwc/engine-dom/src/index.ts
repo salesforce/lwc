@@ -25,6 +25,7 @@ export {
     registerTemplate,
     registerComponent,
     registerDecorators,
+    registerStylesheets,
     sanitizeAttribute,
     setHooks,
     getComponentDef,

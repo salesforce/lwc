@@ -4,10 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
 import { Template } from './template';
 import { checkVersionMismatch } from './check-version-mismatch';
-import { flattenStylesheets } from './utils';
 
 const signedTemplateSet: Set<Template> = new Set();
 
@@ -20,22 +18,13 @@ export function isTemplateRegistered(tpl: Template): boolean {
     return signedTemplateSet.has(tpl);
 }
 
-function checkTemplateVersionMismatch(template: Template) {
-    checkVersionMismatch(template, 'template');
-    if (!isUndefined(template.stylesheets)) {
-        for (const stylesheet of flattenStylesheets(template.stylesheets)) {
-            checkVersionMismatch(stylesheet, 'stylesheet');
-        }
-    }
-}
-
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
  * will prevent this function from being imported by userland code.
  */
 export function registerTemplate(tpl: Template): Template {
     if (process.env.NODE_ENV !== 'production') {
-        checkTemplateVersionMismatch(tpl);
+        checkVersionMismatch(tpl, 'template');
     }
     signedTemplateSet.add(tpl);
     // chaining this method as a way to wrap existing

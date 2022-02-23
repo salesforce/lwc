@@ -19,14 +19,10 @@
       /*LWC compiler vX.X.X*/
     }
     var _tmpl$1 = lwc.registerTemplate(tmpl$1);
-    tmpl$1.stylesheets = [];
 
 
-    if (_implicitStylesheets) {
-      tmpl$1.stylesheets.push.apply(tmpl$1.stylesheets, _implicitStylesheets);
-    }
     if (_implicitStylesheets || _implicitScopedStylesheets) {
-      tmpl$1.stylesheetToken = "x-foo_foo";
+      lwc.registerStylesheets(tmpl$1, "x-foo_foo", _implicitStylesheets, _implicitScopedStylesheets);
     }
 
     class Foo extends lwc.LightningElement {
@@ -69,7 +65,6 @@
       /*LWC compiler vX.X.X*/
     }
     var _tmpl = lwc.registerTemplate(tmpl);
-    tmpl.stylesheets = [];
 
     class App extends lwc.LightningElement {
       constructor() {

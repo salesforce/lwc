@@ -1,6 +1,8 @@
 (function (lwc) {
   'use strict';
 
+  var _implicitStylesheets = undefined;
+
   function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
     var shadowSelector = token ? ("." + token) : "";
     return ["div", shadowSelector, " {color: blue;}"].join('');
@@ -18,12 +20,10 @@
     /*LWC compiler vX.X.X*/
   }
   var _tmpl = lwc.registerTemplate(tmpl);
-  tmpl.stylesheets = [];
+
+
   if (_implicitScopedStylesheets) {
-    tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitScopedStylesheets);
-  }
-  if (_implicitScopedStylesheets) {
-    tmpl.stylesheetToken = "x-app_app";
+    lwc.registerStylesheets(tmpl, "x-app_app", _implicitStylesheets, _implicitScopedStylesheets);
   }
 
   class App extends lwc.LightningElement {

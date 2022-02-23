@@ -10,7 +10,6 @@
     /*LWC compiler vX.X.X*/
   }
   var _tmpl = lwc.registerTemplate(tmpl);
-  tmpl.stylesheets = [];
 
   function fake() {
     return 'woo hoo';
