@@ -3,13 +3,13 @@ const stc0 = {
   key: 0,
 };
 const stc1 = {
-  key: "@:1",
+  key: 1,
 };
 const stc2 = {
   attrs: {
     name: "named",
   },
-  key: "@named:2",
+  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, s: api_slot, f: api_flatten } = $api;

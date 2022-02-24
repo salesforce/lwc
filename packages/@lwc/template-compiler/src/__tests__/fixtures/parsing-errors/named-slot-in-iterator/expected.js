@@ -3,7 +3,7 @@ const stc0 = {
   attrs: {
     name: "james",
   },
-  key: "@james:1",
+  key: 1,
 };
 const stc1 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {

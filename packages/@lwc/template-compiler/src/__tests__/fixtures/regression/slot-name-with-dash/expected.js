@@ -3,7 +3,7 @@ const stc0 = {
   attrs: {
     name: "secret-slot",
   },
-  key: "@secret-slot:0",
+  key: 0,
 };
 const stc1 = {
   key: "@secret-slot:1",

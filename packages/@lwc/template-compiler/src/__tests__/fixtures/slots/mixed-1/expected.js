@@ -9,7 +9,7 @@ const stc2 = {
   attrs: {
     name: "header",
   },
-  key: "@header:2",
+  key: 2,
 };
 const stc3 = {
   key: 3,
@@ -18,7 +18,7 @@ const stc4 = {
   key: 4,
 };
 const stc5 = {
-  key: "@:5",
+  key: 5,
 };
 const stc6 = {
   key: "@:6",
@@ -27,7 +27,7 @@ const stc7 = {
   attrs: {
     name: "footer",
   },
-  key: "@footer:7",
+  key: 7,
 };
 const stc8 = {
   key: "@footer:8",

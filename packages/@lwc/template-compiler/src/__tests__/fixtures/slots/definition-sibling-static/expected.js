@@ -6,7 +6,7 @@ const stc1 = {
   key: 1,
 };
 const stc2 = {
-  key: "@:2",
+  key: 2,
 };
 const stc3 = {
   key: "@:3",

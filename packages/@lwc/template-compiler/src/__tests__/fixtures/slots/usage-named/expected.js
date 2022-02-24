@@ -6,7 +6,7 @@ const stc1 = {
   attrs: {
     name: "test",
   },
-  key: "@test:1",
+  key: 1,
 };
 const stc2 = {
   key: "@test:2",

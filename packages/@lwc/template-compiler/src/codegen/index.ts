@@ -70,8 +70,8 @@ import {
 } from '../parser/attribute';
 
 function transform(codeGen: CodeGen): t.Expression {
-    function transformElement(element: BaseElement): t.Expression {
-        const databag = elementDataBag(element);
+    function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
+        const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
 
         const children = transformChildren(element);
@@ -146,7 +146,8 @@ function transform(codeGen: CodeGen): t.Expression {
                 const children = transformIf(child);
                 Array.isArray(children) ? res.push(...children) : res.push(children);
             } else if (isBaseElement(child)) {
-                res.push(transformElement(child));
+                const slotParentName = isSlot(parent) ? parent.slotName : undefined;
+                res.push(transformElement(child, slotParentName));
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
             }
@@ -395,10 +396,10 @@ function transform(codeGen: CodeGen): t.Expression {
         }
     }
 
-    function elementDataBag(element: BaseElement): t.ObjectExpression {
+    function elementDataBag(element: BaseElement, slotParentName?: string): t.ObjectExpression {
         const data: t.Property[] = [];
 
-        const { attributes, properties, listeners, keyScope } = element;
+        const { attributes, properties, listeners } = element;
 
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
@@ -497,14 +498,14 @@ function transform(codeGen: CodeGen): t.Expression {
         } else {
             // If standalone element with no user-defined key
             let key: number | string = codeGen.generateKey();
-            // keyScope could be an empty string, for unnamed slots
-            if (keyScope !== undefined) {
+            // Parent slot name could be the empty string
+            if (slotParentName !== undefined) {
                 // Prefixing the key is necessary to avoid conflicts with default content for the
                 // slot which might have similar keys. Each vnode will always have a key that starts
                 // with a numeric character from compiler. In this case, we add a unique notation
                 // for slotted vnodes keys, e.g.: `@foo:1:1`. Note that this is *not* needed for
                 // dynamic keys, since `api.k` already scopes based on the iteration.
-                key = `@${keyScope}:${key}`;
+                key = `@${slotParentName}:${key}`;
             }
             data.push(t.property(t.identifier('key'), t.literal(key)));
         }

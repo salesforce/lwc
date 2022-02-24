@@ -6,13 +6,13 @@ const stc1 = {
   attrs: {
     name: "other",
   },
-  key: "@other:1",
+  key: 1,
 };
 const stc2 = {
   key: "@other:2",
 };
 const stc3 = {
-  key: "@:3",
+  key: 3,
 };
 const stc4 = {
   key: "@:4",
