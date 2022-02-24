@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "strict": true,
-    "noUnusedLocals": true,
 
     "declaration": true,
     "sourceMap": true,
