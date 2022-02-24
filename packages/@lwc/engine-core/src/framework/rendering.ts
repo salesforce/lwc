@@ -77,6 +77,14 @@ export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode): void 
     }
 }
 
+export function unmountChildren(
+    vnode: VNodes,
+    parent: ParentNode,
+    doRemove: boolean = false
+): void {
+    unmountVNodes(vnode, parent, doRemove);
+}
+
 function patch(n1: VNode, n2: VNode) {
     if (n1 === n2) {
         return;
@@ -280,8 +288,8 @@ function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
 
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
-    if (doRemove) {
-        removeNode(elm!, parent);
+    if (doRemove && !isUndefined(elm)) {
+        removeNode(elm, parent);
     }
 
     switch (type) {

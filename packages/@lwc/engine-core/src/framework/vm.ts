@@ -19,7 +19,7 @@ import {
     isUndefined,
 } from '@lwc/shared';
 
-import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
+import { isSyntheticShadowDefined, ssr, isNativeShadowDefined } from '../renderer';
 import type { HostNode, HostElement } from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
 
@@ -37,12 +37,12 @@ import {
     logGlobalOperationEnd,
     logGlobalOperationStart,
 } from './profiler';
-import { patchChildren } from './rendering';
+import { patchChildren, unmountChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
+import { VNodes, VCustomElement, VNode /*, VNodeType */ } from './vnodes';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -231,8 +231,9 @@ function resetComponentStateWhenRemoved(vm: VM) {
         }
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
-        runChildNodesDisconnectedCallback(vm);
-        runLightChildNodesDisconnectedCallback(vm);
+
+        unmountChildren(vm.children, vm.renderRoot);
+        unmountChildren(vm.aChildren, vm.renderRoot);
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -579,74 +580,9 @@ function runDisconnectedCallback(vm: VM) {
     }
 }
 
-function runChildNodesDisconnectedCallback(vm: VM) {
-    const { velements: vCustomElementCollection } = vm;
-
-    // Reporting disconnection for every child in inverse order since they are inserted in reserved
-    // order.
-    for (let i = vCustomElementCollection.length - 1; i >= 0; i -= 1) {
-        const { vm: childVM } = vCustomElementCollection[i];
-
-        // The VM associated with the element might be associated undefined
-        // in the case where the VM failed in the middle of its creation,
-        // eg: constructor throwing before invoking super().
-        if (!isUndefined(childVM)) {
-            resetComponentStateWhenRemoved(childVM);
-        }
-    }
-}
-
-function runLightChildNodesDisconnectedCallback(vm: VM) {
-    const { aChildren: adoptedChildren } = vm;
-    recursivelyDisconnectChildren(adoptedChildren);
-}
-
-/**
- * The recursion doesn't need to be a complete traversal of the vnode graph,
- * instead it can be partial, when a custom element vnode is found, we don't
- * need to continue into its children because by attempting to disconnect the
- * custom element itself will trigger the removal of anything slotted or anything
- * defined on its shadow.
- */
-function recursivelyDisconnectChildren(vnodes: VNodes) {
-    for (let i = 0, len = vnodes.length; i < len; i += 1) {
-        const vnode = vnodes[i];
-
-        if (!isNull(vnode)) {
-            switch (vnode.type) {
-                case VNodeType.Element:
-                    recursivelyDisconnectChildren(vnode.children);
-                    break;
-
-                case VNodeType.CustomElement: {
-                    const { vm: childVM } = vnode;
-                    if (!isUndefined(childVM)) {
-                        resetComponentStateWhenRemoved(childVM);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-}
-
-// This is a super optimized mechanism to remove the content of the root node (shadow root
-// for shadow DOM components and the root element itself for light DOM) without having to go
-// into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
-// children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const { children, renderRoot } = vm;
-
-    for (let i = 0, len = children.length; i < len; i++) {
-        const child = children[i];
-
-        if (!isNull(child) && !isUndefined(child.elm)) {
-            remove(child.elm, renderRoot);
-        }
-    }
+    unmountChildren(vm.children, vm.renderRoot, true);
     vm.children = EmptyArray;
-
-    runChildNodesDisconnectedCallback(vm);
     vm.velements = EmptyArray;
 }
 
