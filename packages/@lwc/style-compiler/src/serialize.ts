@@ -29,6 +29,12 @@ interface Token {
     value: string;
 }
 
+// "1400 binary expressions are enough to reach Node.js maximum call stack size"
+// https://github.com/salesforce/lwc/issues/1726
+// The vast majority of stylesheet functions are much less than this, so we can set the limit lower
+// to play it safe.
+const BINARY_EXPRESSION_LIMIT = 100;
+
 // Javascript identifiers used for the generation of the style module
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
@@ -115,14 +121,26 @@ function normalizeString(str: string) {
 }
 
 function generateExpressionFromTokens(tokens: Token[]): string {
-    const serializedTokens = reduceTokens(tokens).map(({ type, value }) =>
-        type === TokenType.text ? JSON.stringify(value) : value
-    );
+    const serializedTokens = reduceTokens(tokens).map(({ type, value }) => {
+        switch (type) {
+            // Note that we don't expect to get a TokenType.divider here. It should be converted into an
+            // expression elsewhere.
+            case TokenType.text:
+                return JSON.stringify(value);
+            // Expressions may be concatenated with " + ", in which case we must remove ambiguity
+            case TokenType.expression:
+                return `(${value})`;
+            default:
+                return value;
+        }
+    });
 
     if (serializedTokens.length === 0) {
         return '';
     } else if (serializedTokens.length === 1) {
         return serializedTokens[0];
+    } else if (serializedTokens.length < BINARY_EXPRESSION_LIMIT) {
+        return serializedTokens.join(' + ');
     } else {
         // #1726 Using Array.prototype.join() instead of a standard "+" operator to concatenate the
         // string to avoid running into a maximum call stack error when the stylesheet is parsed

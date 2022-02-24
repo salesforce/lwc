@@ -3,7 +3,7 @@
 
   function stylesheet(token, useActualHostSelector, useNativeDirPseudoclass) {
     var shadowSelector = token ? ("." + token) : "";
-    return ["div", shadowSelector, " {color: blue;}"].join('');
+    return "div" + shadowSelector + " {color: blue;}";
     /*LWC compiler vX.X.X*/
   }
   stylesheet.$scoped$ = true;
