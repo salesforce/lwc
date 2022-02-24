@@ -193,9 +193,6 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     setActiveVM(vm);
                 }
 
-                // right before producing the vnodes, we clear up all internal references
-                // to custom elements from the template.
-                vm.velements = [];
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 

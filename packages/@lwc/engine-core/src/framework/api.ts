@@ -45,10 +45,6 @@ import {
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
-function addVNodeToChildLWC(vnode: VCustomElement) {
-    ArrayPush.call(getVMBeingRendered()!.velements, vnode);
-}
-
 // [h]tml node
 function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
@@ -201,8 +197,9 @@ function c(
         }
     }
     const { key } = data;
+
     let elm, aChildren, vm;
-    const vnode: VCustomElement = {
+    return {
         type: VNodeType.CustomElement,
         sel,
         data,
@@ -216,8 +213,6 @@ function c(
         aChildren,
         vm,
     };
-    addVNodeToChildLWC(vnode);
-    return vnode;
 }
 
 // [i]terable node

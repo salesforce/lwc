@@ -42,7 +42,7 @@ import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode /*, VNodeType */ } from './vnodes';
+import { VNodes, VNode } from './vnodes';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -122,10 +122,6 @@ export interface VM<N = HostNode, E = HostElement> {
     children: VNodes;
     /** The list of adopted children VNodes. */
     aChildren: VNodes;
-    /** The list of custom elements VNodes currently rendered in the shadow tree. We keep track of
-     * those elements to efficiently unmount them when the parent component is disconnected without
-     * having to traverse the VNode tree. */
-    velements: VCustomElement[];
     /** The component public properties. */
     cmpProps: { [name: string]: any };
     /** The mapping between the slot names and the slotted VNodes. */
@@ -285,7 +281,6 @@ export function createVM<HostNode, HostElement>(
         owner,
         children: EmptyArray,
         aChildren: EmptyArray,
-        velements: EmptyArray,
         cmpProps: create(null),
         cmpFields: create(null),
         cmpSlots: create(null),
@@ -583,7 +578,6 @@ function runDisconnectedCallback(vm: VM) {
 export function resetComponentRoot(vm: VM) {
     unmountChildren(vm.children, vm.renderRoot, true);
     vm.children = EmptyArray;
-    vm.velements = EmptyArray;
 }
 
 export function scheduleRehydration(vm: VM) {
