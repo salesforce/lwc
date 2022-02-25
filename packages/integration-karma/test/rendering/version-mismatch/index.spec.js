@@ -73,8 +73,14 @@ if (!process.env.COMPAT) {
                         /*LWC compiler v123.456.789*/
                     },
                 ];
+                registerTemplate(tmpl);
+                class CustomElement extends LightningElement {}
+                registerComponent(CustomElement, { tmpl });
+
+                const elm = createElement('x-component', { is: CustomElement });
+
                 expect(() => {
-                    registerTemplate(tmpl);
+                    document.body.appendChild(elm);
                 }).toLogErrorDev(
                     new RegExp(
                         `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but stylesheet was compiled with v123.456.789`

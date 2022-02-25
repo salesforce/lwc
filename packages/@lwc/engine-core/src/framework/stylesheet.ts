@@ -21,6 +21,7 @@ import { RenderMode, ShadowMode, VM } from './vm';
 import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 import { VNode } from './vnodes';
+import { checkVersionMismatch } from './check-version-mismatch';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -122,6 +123,8 @@ function evaluateStylesheetsContent(
             ArrayPush.apply(content, evaluateStylesheetsContent(stylesheet, stylesheetToken, vm));
         } else {
             if (process.env.NODE_ENV !== 'production') {
+                // Check for compiler version mismatch in dev mode only
+                checkVersionMismatch(stylesheet, 'stylesheet');
                 // in dev-mode, we support hot swapping of stylesheet, which means that
                 // the component instance might be attempting to use an old version of
                 // the stylesheet, while internally, we have a replacement for it.
