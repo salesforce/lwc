@@ -10,29 +10,18 @@ import { TemplateStylesheetFactories } from './stylesheet';
 import { flattenStylesheets } from './utils';
 import { checkVersionMismatch } from './check-version-mismatch';
 
-function checkStylesheetsVersionMismatch(stylesheets: TemplateStylesheetFactories | undefined) {
-    if (!isUndefined(stylesheets)) {
-        for (const stylesheet of flattenStylesheets(stylesheets)) {
-            checkVersionMismatch(stylesheet, 'stylesheet');
-        }
-    }
-}
-
 export function registerStylesheets(
     tmpl: Template,
     stylesheetToken: string,
-    ...stylesheets: Array<TemplateStylesheetFactories | undefined>,
+    ...stylesheets: Array<TemplateStylesheetFactories | undefined>
 ) {
-    if (process.env.NODE_ENV !== 'production') {
-        checkStylesheetsVersionMismatch(stylesheets);
-        checkStylesheetsVersionMismatch(scopedStylesheets);
-    }
     tmpl.stylesheetToken = stylesheetToken;
-    tmpl.stylesheets = [];
-    if (!isUndefined(stylesheets)) {
-        tmpl.stylesheets.push(...stylesheets);
-    }
-    if (!isUndefined(scopedStylesheets)) {
-        tmpl.stylesheets.push(...scopedStylesheets);
+    tmpl.stylesheets = stylesheets.filter(
+        (stylesheet) => !isUndefined(stylesheet)
+    ) as TemplateStylesheetFactories;
+    if (process.env.NODE_ENV !== 'production') {
+        for (const stylesheet of flattenStylesheets(tmpl.stylesheets)) {
+            checkVersionMismatch(stylesheet, 'stylesheet');
+        }
     }
 }
