@@ -21,8 +21,7 @@ function checkStylesheetsVersionMismatch(stylesheets: TemplateStylesheetFactorie
 export function registerStylesheets(
     tmpl: Template,
     stylesheetToken: string,
-    stylesheets: TemplateStylesheetFactories | undefined,
-    scopedStylesheets: TemplateStylesheetFactories | undefined
+    ...stylesheets: Array<TemplateStylesheetFactories | undefined>,
 ) {
     if (process.env.NODE_ENV !== 'production') {
         checkStylesheetsVersionMismatch(stylesheets);
