@@ -37,14 +37,13 @@ const globalStylesheetsParentElement: Element = document.head || document.body |
 // https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
 // See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
 const supportsConstructableStyleSheets =
-    isFunction((CSSStyleSheet.prototype as any).replaceSync) &&
-    isArray((document as any).adoptedStyleSheets);
+    isFunction(CSSStyleSheet.prototype.replaceSync) && isArray(document.adoptedStyleSheets);
 const supportsMutableAdoptedStyleSheets =
     supportsConstructableStyleSheets &&
-    getOwnPropertyDescriptor((document as any).adoptedStyleSheets, 'length')!.writable;
+    getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
 const styleElements: { [content: string]: HTMLStyleElement } = create(null);
 const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
-const nodesToStyleSheets = new WeakMap<Node, { [content: string]: true }>();
+const shadowRootsToStyleSheets = new WeakMap<ShadowRoot, { [content: string]: true }>();
 
 export let getCustomElement: any;
 export let defineCustomElement: any;
@@ -73,35 +72,33 @@ function isCustomElementRegistryAvailable() {
     }
 }
 
-function insertConstructableStyleSheet(content: string, target: Node) {
+function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
     // It's important for CSSStyleSheets to be unique based on their content, so that
     // `shadowRoot.adoptedStyleSheets.includes(sheet)` works.
     let styleSheet = styleSheets[content];
     if (isUndefined(styleSheet)) {
         styleSheet = new CSSStyleSheet();
-        (styleSheet as any).replaceSync(content);
+        styleSheet.replaceSync(content);
         styleSheets[content] = styleSheet;
     }
-    if (!(target as any).adoptedStyleSheets.includes(styleSheet)) {
+    const { adoptedStyleSheets } = target;
+    if (!adoptedStyleSheets.includes(styleSheet)) {
         if (supportsMutableAdoptedStyleSheets) {
             // This is only supported in later versions of Chromium:
             // https://chromestatus.com/feature/5638996492288000
-            (target as any).adoptedStyleSheets.push(styleSheet);
+            adoptedStyleSheets.push(styleSheet);
         } else {
-            (target as any).adoptedStyleSheets = [
-                ...(target as any).adoptedStyleSheets,
-                styleSheet,
-            ];
+            target.adoptedStyleSheets = [...adoptedStyleSheets, styleSheet];
         }
     }
 }
 
-function insertStyleElement(content: string, target: Node) {
+function insertStyleElement(content: string, target: ShadowRoot) {
     // Avoid inserting duplicate `<style>`s
-    let sheets = nodesToStyleSheets.get(target);
+    let sheets = shadowRootsToStyleSheets.get(target);
     if (isUndefined(sheets)) {
         sheets = create(null);
-        nodesToStyleSheets.set(target, sheets!);
+        shadowRootsToStyleSheets.set(target, sheets!);
     }
     if (sheets![content]) {
         return;
@@ -366,7 +363,7 @@ export function insertGlobalStylesheet(content: string): void {
     globalStylesheetsParentElement.appendChild(elm);
 }
 
-export function insertStylesheet(content: string, target: Node): void {
+export function insertStylesheet(content: string, target: ShadowRoot): void {
     if (supportsConstructableStyleSheets) {
         insertConstructableStyleSheet(content, target);
     } else {

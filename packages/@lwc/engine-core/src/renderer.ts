@@ -252,7 +252,7 @@ export function setInsertGlobalStylesheet(insertGlobalStylesheetImpl: insertGlob
     insertGlobalStylesheet = insertGlobalStylesheetImpl;
 }
 
-type insertStylesheetFunc = (content: string, target: N) => void;
+type insertStylesheetFunc = (content: string, target: ShadowRoot) => void;
 export let insertStylesheet: insertStylesheetFunc;
 export function setInsertStylesheet(insertStylesheetImpl: insertStylesheetFunc) {
     insertStylesheet = insertStylesheetImpl;
