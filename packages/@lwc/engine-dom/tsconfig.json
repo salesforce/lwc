@@ -7,5 +7,5 @@
         "lib": ["dom", "es2018"]
     },
 
-    "include": ["src/"]
+    "include": ["src/", "typings/"]
 }

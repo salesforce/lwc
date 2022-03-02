@@ -226,7 +226,7 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
                 insertGlobalStylesheet(stylesheets[i]);
             } else {
                 // local level
-                insertStylesheet(stylesheets[i], root!.shadowRoot);
+                insertStylesheet(stylesheets[i], root!.shadowRoot!);
             }
         }
     }
