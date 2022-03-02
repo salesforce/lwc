@@ -11,21 +11,8 @@ const path = require('path');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescriptPlugin = require('@rollup/plugin-typescript');
-
-const babel = require('@babel/core');
-const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
+const lwcFeatures = require('../../../../scripts/rollup/lwcFeatures');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
-
-function rollupFeaturesPlugin() {
-    return {
-        name: 'rollup-plugin-lwc-features',
-        transform(source) {
-            return babel.transform(source, {
-                plugins: [babelFeaturesPlugin],
-            }).code;
-        },
-    };
-}
 
 const { version, dependencies, peerDependencies } = require('../package.json');
 
@@ -55,7 +42,7 @@ module.exports = {
             noEmitOnError: true,
         }),
         writeDistAndTypes(),
-        rollupFeaturesPlugin(),
+        lwcFeatures(),
     ],
 
     onwarn({ code, message }) {
