@@ -6,7 +6,7 @@
  */
 const path = require('path');
 const rollupReplace = require('@rollup/plugin-replace');
-const { terser: rollupTerser } = require('rollup-plugin-terser');
+const { minify } = require('rollup-plugin-esbuild');
 const babel = require('@babel/core');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 const { generateTargetName } = require('./helpers');
@@ -66,7 +66,7 @@ function rollupConfig(config) {
             name,
             file: path.join(targetDirectory, target, generateTargetName(config)),
             format,
-            plugins: [prod && !debug && rollupTerser()],
+            plugins: [prod && !debug && minify()],
         },
         display: { name, dir, format, target, prod, debug },
     };
