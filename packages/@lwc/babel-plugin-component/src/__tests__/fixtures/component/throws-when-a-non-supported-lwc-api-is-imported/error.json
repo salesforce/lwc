@@ -1,9 +1,0 @@
-{
-    "message": "LWC1091: Invalid import. \"registerTemplate\" is not part of the lwc api.",
-    "loc": {
-        "line": 1,
-        "column": 0,
-        "start": 0,
-        "length": 0
-    }
-}
