@@ -8,19 +8,7 @@ const path = require('path');
 const rollupReplace = require('@rollup/plugin-replace');
 const { terser: rollupTerser } = require('rollup-plugin-terser');
 const babel = require('@babel/core');
-const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 const { generateTargetName } = require('./helpers');
-
-function rollupFeaturesPlugin(prod) {
-    return {
-        name: 'rollup-plugin-lwc-features',
-        transform(source) {
-            return babel.transform(source, {
-                plugins: [[babelFeaturesPlugin, { prod }]],
-            }).code;
-        },
-    };
-}
 
 function babelCompatPlugin() {
     return {
@@ -58,7 +46,6 @@ function rollupConfig(config) {
                         'process.env.NODE_ENV': JSON.stringify('production'),
                         preventAssignment: true,
                     }),
-                rollupFeaturesPlugin(prod),
                 compatMode && babelCompatPlugin(),
             ],
         },

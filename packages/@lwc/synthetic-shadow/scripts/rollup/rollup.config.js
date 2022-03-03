@@ -7,8 +7,7 @@
 const path = require('path');
 const rollupTypescript = require('@rollup/plugin-typescript');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const babel = require('@babel/core');
-const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
+const lwcFeatures = require('../../../../../scripts/rollup/lwcFeatures');
 const { version } = require('../../package.json');
 
 const entry = path.resolve(__dirname, '../../src/index.ts');
@@ -21,17 +20,6 @@ function wrapModule() {
     return {
         renderChunk(code) {
             return `${banner}\nexport default function enableSyntheticShadow() {\n${code}\n}`;
-        },
-    };
-}
-
-function rollupFeaturesPlugin() {
-    return {
-        name: 'rollup-plugin-lwc-features',
-        transform(source) {
-            return babel.transform(source, {
-                plugins: [babelFeaturesPlugin],
-            }).code;
         },
     };
 }
@@ -56,7 +44,7 @@ function rollupConfig({ wrap } = {}) {
                 tsconfig: path.join(__dirname, '../../tsconfig.json'),
                 noEmitOnError: true,
             }),
-            rollupFeaturesPlugin(),
+            lwcFeatures(),
         ].filter(Boolean),
     };
 }
