@@ -384,7 +384,8 @@ function computeShadowMode(vm: VM) {
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
         } else if (isNativeShadowDefined) {
-            // Not combined with above condition because feature flags must be standalone.
+            // Not combined with above condition because @lwc/features only supports identifiers in
+            // the if-condition.
             if (features.ENABLE_MIXED_SHADOW_MODE) {
                 if (def.shadowSupportMode === ShadowSupportMode.Any) {
                     shadowMode = ShadowMode.Native;

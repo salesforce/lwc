@@ -57,6 +57,18 @@ if (ENABLE_AWESOME_FEATURE) {
 }
 ```
 
+```
+// Does not work
+if (isTrue(features.ENABLE_AWESOME_FEATURE)) {
+    // awesome feature
+}
+
+// Does work
+if (features.ENABLE_AWESOME_FEATURE) {
+    // awesome feature
+}
+```
+
 #### Initialization code cannot be tested
 
 Toggling the value of `ENABLE_FOO` during a test will not change the return
