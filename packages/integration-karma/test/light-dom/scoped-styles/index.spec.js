@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import Basic from 'x/basic';
 import Other from 'x/other';
 import Switchable from 'x/switchable';
@@ -6,6 +6,14 @@ import Unscoped from 'x/unscoped';
 import ShadowWithScoped from 'x/shadowWithScoped';
 
 describe('Light DOM scoped CSS', () => {
+    beforeAll(() => {
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
+    });
+
+    afterAll(() => {
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
+    });
+
     it('should scope scoped CSS and allow unscoped CSS to leak out', () => {
         const basicElement = createElement('x-basic', { is: Basic });
         const otherElement = createElement('x-other', { is: Other });
