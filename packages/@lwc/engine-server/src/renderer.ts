@@ -12,8 +12,9 @@ import {
     isAriaAttribute,
     create,
     htmlPropertyToAttribute,
-    noop, isFunction
-} from "@lwc/shared";
+    noop,
+    isFunction,
+} from '@lwc/shared';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
@@ -35,9 +36,6 @@ function createElement(name: string): HostElement {
         eventListeners: {},
     };
 }
-
-const registry: Record<string, CustomElementConstructor> = create(null);
-const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
 
 export const ssr: boolean = true;
 
@@ -375,13 +373,13 @@ interface UpgradableCustomElementConstructor extends CustomElementConstructor {
 
 const localRegistryRecord: Record<string, UpgradableCustomElementConstructor> = create(null);
 function getUpgradableConstructor(name: string): UpgradableCustomElementConstructor {
-    return (function (upgradeCallback?: UpgradeCallback) {
+    return function (upgradeCallback?: UpgradeCallback) {
         const elm = createElement(name);
         if (isFunction(upgradeCallback)) {
             upgradeCallback(elm); // nothing to do with the result for now
         }
         return elm;
-    } as unknown) as UpgradableCustomElementConstructor;
+    } as unknown as UpgradableCustomElementConstructor;
 }
 
 export function getUpgradableElement(name: string): UpgradableCustomElementConstructor {
