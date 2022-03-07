@@ -1,5 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import { isSyntheticShadowRootInstance } from 'test-utils';
+import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
@@ -18,23 +18,25 @@ describe('shadowSupportMode static property', () => {
     });
 });
 
-if (!process.env.NATIVE_SHADOW) {
-    describe('DISABLE_MIXED_SHADOW_MODE', () => {
-        beforeEach(() => {
-            setFeatureFlagForTest('DISABLE_MIXED_SHADOW_MODE', true);
-        });
-
-        it('should be configured as "any" (sanity)', () => {
-            expect(Valid.shadowSupportMode === 'any').toBeTrue();
-        });
-
-        it('should disable mixed shadow mode', () => {
-            const elm = createElement('x-valid', { is: Valid });
-            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
-        });
-
-        afterEach(() => {
-            setFeatureFlagForTest('DISABLE_MIXED_SHADOW_MODE', false);
-        });
+describe('ENABLE_MIXED_SHADOW_MODE', () => {
+    beforeEach(() => {
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
     });
-}
+
+    it('should be configured as "any" (sanity)', () => {
+        expect(Valid.shadowSupportMode === 'any').toBeTrue();
+    });
+
+    it('should enable mixed shadow mode', () => {
+        const elm = createElement('x-valid', { is: Valid });
+        if (process.env.NATIVE_SHADOW_ROOT_DEFINED) {
+            expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
+        } else {
+            expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
+        }
+    });
+
+    afterEach(() => {
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
+    });
+});

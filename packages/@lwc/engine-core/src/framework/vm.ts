@@ -384,21 +384,28 @@ function computeShadowMode(vm: VM) {
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
         } else if (isNativeShadowDefined) {
-            if (features.DISABLE_MIXED_SHADOW_MODE) {
-                shadowMode = ShadowMode.Synthetic;
-            } else if (def.shadowSupportMode === ShadowSupportMode.Any) {
-                shadowMode = ShadowMode.Native;
-            } else {
-                const shadowAncestor = getNearestShadowAncestor(vm);
-                if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
-                    // Transitive support for native Shadow DOM. A component in native mode
-                    // transitively opts all of its descendants into native.
+            // Not combined with above condition because @lwc/features only supports identifiers in
+            // the if-condition.
+            if (features.ENABLE_MIXED_SHADOW_MODE) {
+                if (def.shadowSupportMode === ShadowSupportMode.Any) {
                     shadowMode = ShadowMode.Native;
                 } else {
-                    // Synthetic if neither this component nor any of its ancestors are configured
-                    // to be native.
-                    shadowMode = ShadowMode.Synthetic;
+                    const shadowAncestor = getNearestShadowAncestor(vm);
+                    if (
+                        !isNull(shadowAncestor) &&
+                        shadowAncestor.shadowMode === ShadowMode.Native
+                    ) {
+                        // Transitive support for native Shadow DOM. A component in native mode
+                        // transitively opts all of its descendants into native.
+                        shadowMode = ShadowMode.Native;
+                    } else {
+                        // Synthetic if neither this component nor any of its ancestors are configured
+                        // to be native.
+                        shadowMode = ShadowMode.Synthetic;
+                    }
                 }
+            } else {
+                shadowMode = ShadowMode.Synthetic;
             }
         } else {
             // Synthetic if there is no native Shadow DOM support.

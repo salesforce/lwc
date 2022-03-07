@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
 import ResetExtendsAny from 'x/resetExtendsAny';
@@ -18,8 +18,13 @@ if (!process.env.NATIVE_SHADOW) {
         let elm;
 
         beforeEach(() => {
+            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
             elm = createElement('x-native-container', { is: NativeContainer });
             document.body.appendChild(elm);
+        });
+
+        afterAll(() => {
+            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
         });
 
         it('should attach a native shadow root when possible', () => {
