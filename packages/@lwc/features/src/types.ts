@@ -17,11 +17,10 @@ export type FeatureFlagValue = boolean | null;
 
 export interface FeatureFlagMap {
     /**
-     * LWC engine flag to disable mixed shadow mode. Setting this flag to `true` reverts the
-     * application behavior to the old behavior, such that only the presence of the synthetic shadow
-     * polyfill dictates whether instantiated roots are synthetic or native.
+     * LWC engine flag to enable mixed shadow mode. Setting this flag to `true` enables usage of
+     * native shadow DOM even when the synthetic shadow polyfill is applied.
      */
-    DISABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
+    ENABLE_MIXED_SHADOW_MODE: FeatureFlagValue;
 
     /**
      * LWC engine flag to make setter reactive.
