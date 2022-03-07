@@ -4,16 +4,23 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, assign, isFunction, isNull, isObject, isUndefined, toString, StringToLowerCase } from '@lwc/shared';
+import {
+    assert,
+    assign,
+    isFunction,
+    isNull,
+    isObject,
+    isUndefined,
+    toString,
+    StringToLowerCase,
+} from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
     disconnectRootElement,
     LightningElement,
 } from '@lwc/engine-core';
-import {
-    getUpgradableElement
-} from '../renderer'
+import { getUpgradableElement } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
@@ -74,24 +81,24 @@ assign(_Node.prototype, {
  * ```
  */
 export function createElement(
-  sel: string,
-  options: {
-      is: typeof LightningElement;
-      mode?: 'open' | 'closed';
-  }
+    sel: string,
+    options: {
+        is: typeof LightningElement;
+        mode?: 'open' | 'closed';
+    }
 ): HTMLElement {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
-          `"createElement" function expects an object as second parameter but received "${toString(
-            options
-          )}".`
+            `"createElement" function expects an object as second parameter but received "${toString(
+                options
+            )}".`
         );
     }
 
     const Ctor = options.is;
     if (!isFunction(Ctor)) {
         throw new TypeError(
-          `"createElement" function expects an "is" option with a valid component constructor.`
+            `"createElement" function expects an "is" option with a valid component constructor.`
         );
     }
 
@@ -108,20 +115,25 @@ export function createElement(
      * mechanism that only passes that argument if the constructor is known to be
      * an upgradable custom element.
      */
-    const element = new UpgradableConstructor((elm: HTMLElement) => {
-        createVM(elm, Ctor, {
-            tagName,
-            mode: options.mode !== 'closed' ? 'open' : 'closed',
-            owner: null,
-        });
-        ConnectingSlot.set(elm, connectRootElement);
-        DisconnectingSlot.set(elm, disconnectRootElement);
-        wasComponentUpgraded = true;
-    });
+    class UserElement extends HTMLElement {
+        constructor() {
+            super();
+            const elm = this;
+            createVM(elm, Ctor, {
+                tagName,
+                mode: options.mode !== 'closed' ? 'open' : 'closed',
+                owner: null,
+            });
+            ConnectingSlot.set(elm, connectRootElement);
+            DisconnectingSlot.set(elm, disconnectRootElement);
+            wasComponentUpgraded = true;
+        }
+    }
+    const element = new UpgradableConstructor(UserElement.prototype.constructor);
     if (!wasComponentUpgraded) {
         /* eslint-disable-next-line no-console */
         console.error(
-          `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
+            `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
         );
     }
     return element;

@@ -28,7 +28,7 @@ import {
     createComment,
     getClassList,
     isSyntheticShadowDefined,
-    getUpgradableElement
+    getUpgradableElement,
 } from '../renderer';
 
 import { EmptyArray } from './utils';
@@ -206,10 +206,16 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
      * an upgradable custom element.
      */
     let vm: VM | undefined;
-    const elm = new UpgradableConstructor((elm: HTMLElement) => {
-        // the custom element from the registry is expecting an upgrade callback
-        vm = createViewModelHook(elm, vnode);
-    });
+
+    class UserElement extends HTMLElement {
+        constructor() {
+            super();
+            // the custom element from the registry is expecting an upgrade callback
+            vm = createViewModelHook(this, vnode);
+        }
+    }
+
+    const elm = new UpgradableConstructor(UserElement.prototype.constructor);
 
     linkNodeToShadow(elm, owner);
     vnode.elm = elm;
