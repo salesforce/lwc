@@ -24,8 +24,9 @@ export {
     connectRootElement,
     disconnectRootElement,
     getAssociatedVMIfPresent,
-    hydrateRootElement,
 } from './vm';
+
+export { hydrateRoot } from './hydration';
 
 // Internal APIs used by compiled code -------------------------------------------------------------
 export { registerComponent } from './component';

@@ -24,7 +24,7 @@ import {
     ssr,
     remove,
     isNativeShadowDefined,
-    getChildNodes,
+    getFirstChild,
 } from '../renderer';
 import type { HostNode, HostElement } from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
@@ -44,7 +44,6 @@ import {
     logGlobalOperationStart,
 } from './profiler';
 import { patchChildren } from './rendering';
-import { hydrateChildren } from './hydration';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
@@ -214,11 +213,14 @@ export function connectRootElement(elm: any) {
     logGlobalOperationEnd(OperationId.GlobalHydrate, vm);
 }
 
-export function hydrateRootElement(elm: any) {
+export function hydrateRootElement(
+    elm: any,
+    hydrateChildren: (node: Node, children: VNodes, parentNode: Element | ShadowRoot) => void
+) {
     const vm = getAssociatedVM(elm);
 
     runConnectedCallback(vm);
-    hydrateVM(vm);
+    hydrateVM(vm, hydrateChildren);
 }
 
 export function disconnectRootElement(elm: any) {
@@ -230,7 +232,10 @@ export function appendVM(vm: VM) {
     rehydrate(vm);
 }
 
-export function hydrateVM(vm: VM) {
+export function hydrateVM(
+    vm: VM,
+    hydrateChildren: (node: Node, children: VNodes, parentNode: Element | ShadowRoot) => void
+) {
     if (isTrue(vm.isDirty)) {
         // manually diffing/patching here.
         // This routine is:
@@ -239,11 +244,16 @@ export function hydrateVM(vm: VM) {
         const children = renderComponent(vm);
         vm.children = children;
 
-        const vmChildren =
-            vm.renderMode === RenderMode.Light
-                ? getChildNodes(vm.elm)
-                : getChildNodes(vm.elm.shadowRoot);
-        hydrateChildren(vmChildren, children, vm);
+        // const vmChildren =
+        //     vm.renderMode === RenderMode.Light
+        //         ? getChildNodes(vm.elm)
+        //         : getChildNodes(vm.elm.shadowRoot);
+        if (vm.renderMode === RenderMode.Light) {
+            hydrateChildren(getFirstChild(vm.elm), children, vm.elm);
+        } else {
+            hydrateChildren(getFirstChild(vm.elm.shadowRoot), children, vm.elm.shadowRoot);
+        }
+        // hydrateChildren(vmChildren, children, vm);
 
         runRenderedCallback(vm);
     }

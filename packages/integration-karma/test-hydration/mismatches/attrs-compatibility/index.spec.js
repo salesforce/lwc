@@ -25,6 +25,6 @@ export default {
         expect(consoleCalls.error[1][0].message).toContain(
             'Mismatch hydrating element <p>: attribute "data-another-diff" has different values, expected "client-val" but found "ssr-val"'
         );
-        expect(consoleCalls.error[2][0]).toContain('Recovering from error while hydrating');
+        expect(consoleCalls.error[2][0].message).toContain('Hydration completed with errors.');
     },
 };
