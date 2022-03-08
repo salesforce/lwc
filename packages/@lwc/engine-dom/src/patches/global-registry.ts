@@ -1,4 +1,4 @@
-import { setPrototypeOf, isUndefined } from '@lwc/shared';
+import { setPrototypeOf, isUndefined, getPrototypeOf } from '@lwc/shared';
 
 const NativeHTMLElement = window.HTMLElement;
 const { defineProperties } = Object;
@@ -34,12 +34,8 @@ interface Definition {
 function createDefinitionRecord(constructor: CustomElementConstructor): Definition {
     // Since observedAttributes can't change, we approximate it by patching
     // set/removeAttribute on the user's class
-    const {
-        connectedCallback,
-        disconnectedCallback,
-        adoptedCallback,
-        attributeChangedCallback,
-    } = constructor.prototype;
+    const { connectedCallback, disconnectedCallback, adoptedCallback, attributeChangedCallback } =
+        constructor.prototype;
     const observedAttributes = new Set<string>((constructor as any).observedAttributes || []);
     const definition: Definition = {
         UserCtor: constructor,
@@ -196,6 +192,20 @@ function patchAttributes(
 // User extends this HTMLElement, which returns the CE being upgraded
 let upgradingInstance: HTMLElement | undefined;
 
+// Helper to patch CE class hierarchy changing those CE classes created before applying the polyfill
+// to make them work with the new patched CustomElementsRegistry
+function patchHTMLElement(elementClass: CustomElementConstructor): void {
+    const parentClass = getPrototypeOf(elementClass);
+
+    if (parentClass !== window.HTMLElement) {
+        if (parentClass === NativeHTMLElement) {
+            return setPrototypeOf(elementClass, window.HTMLElement);
+        }
+
+        patchHTMLElement(parentClass);
+    }
+}
+
 // Helper to upgrade an instance with a CE definition using "constructor call trick"
 function internalUpgrade(
     instance: HTMLElement,
@@ -213,7 +223,23 @@ function internalUpgrade(
     // constructor will reuse the instance by returning the upgradingInstance.
     // This is by far the most important piece of the puzzle
     upgradingInstance = instance;
-    new instancedDefinition.UserCtor();
+    try {
+        new instancedDefinition.UserCtor();
+    } catch (err) {
+        if (
+            err instanceof Error &&
+            !isUndefined(err.message) &&
+            (err.message.startsWith('Assert Violation') ||
+                err.message.startsWith('Invariant Violation') ||
+                err.message.includes('class should extend LightningElement') ||
+                err.message.includes('Throwing before calling super') ||
+                err.message.includes(' does not extends LightningElement'))
+        ) {
+            throw err;
+        }
+        patchHTMLElement(instancedDefinition.UserCtor);
+        new instancedDefinition.UserCtor();
+    }
 
     const { observedAttributes, attributeChangedCallback } = instancedDefinition;
     if (observedAttributes.size === 0 || isUndefined(attributeChangedCallback)) {
