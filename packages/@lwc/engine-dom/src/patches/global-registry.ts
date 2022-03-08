@@ -119,7 +119,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
                 definition.attributeChangedCallback?.apply(this, [name, oldValue, newValue]);
             }
         }
-        static observedAttributes = registeredDefinition.observedAttributes;
+        static observedAttributes = [...registeredDefinition.observedAttributes];
     }
     _pivotCtorByTag.set(tagName, PivotCtor);
     return PivotCtor;

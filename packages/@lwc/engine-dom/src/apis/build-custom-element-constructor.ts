@@ -52,8 +52,10 @@ const hydratedCustomElements = new WeakSet<Element>();
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const HtmlPrototype = getComponentHtmlPrototype(Ctor);
+    const { observedAttributes } = HtmlPrototype as any;
+    const { attributeChangedCallback } = HtmlPrototype.prototype as any;
 
-    return class extends HtmlPrototype {
+    return class extends HTMLElement {
         constructor() {
             super();
 
@@ -80,5 +82,9 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
         disconnectedCallback() {
             disconnectRootElement(this);
         }
+        attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+            attributeChangedCallback.call(this, name, oldValue, newValue);
+        }
+        static observedAttributes = observedAttributes;
     };
 }
