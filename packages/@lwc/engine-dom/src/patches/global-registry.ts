@@ -1,4 +1,4 @@
-import { setPrototypeOf, isUndefined, getPrototypeOf } from '@lwc/shared';
+import { setPrototypeOf, isUndefined } from '@lwc/shared';
 
 const NativeHTMLElement = window.HTMLElement;
 const { defineProperties } = Object;
@@ -192,20 +192,6 @@ function patchAttributes(
 // User extends this HTMLElement, which returns the CE being upgraded
 let upgradingInstance: HTMLElement | undefined;
 
-// Helper to patch CE class hierarchy changing those CE classes created before applying the polyfill
-// to make them work with the new patched CustomElementsRegistry
-function patchHTMLElement(elementClass: CustomElementConstructor): void {
-    const parentClass = getPrototypeOf(elementClass);
-
-    if (parentClass !== window.HTMLElement) {
-        if (parentClass === NativeHTMLElement) {
-            return setPrototypeOf(elementClass, window.HTMLElement);
-        }
-
-        patchHTMLElement(parentClass);
-    }
-}
-
 // Helper to upgrade an instance with a CE definition using "constructor call trick"
 function internalUpgrade(
     instance: HTMLElement,
@@ -226,19 +212,11 @@ function internalUpgrade(
     try {
         new instancedDefinition.UserCtor();
     } catch (err) {
-        if (
-            err instanceof Error &&
-            !isUndefined(err.message) &&
-            (err.message.startsWith('Assert Violation') ||
-                err.message.startsWith('Invariant Violation') ||
-                err.message.includes('class should extend LightningElement') ||
-                err.message.includes('Throwing before calling super') ||
-                err.message.includes(' does not extends LightningElement'))
-        ) {
+        if (err instanceof TypeError && err.message === 'Illegal constructor') {
+            new instancedDefinition.UserCtor();
+        } else {
             throw err;
         }
-        patchHTMLElement(instancedDefinition.UserCtor);
-        new instancedDefinition.UserCtor();
     }
 
     const { observedAttributes, attributeChangedCallback } = instancedDefinition;
@@ -380,9 +358,7 @@ export function patchCustomElementRegistry() {
         const { constructor } = this;
         const definition = _definitionsByClass.get(constructor as CustomElementConstructor);
         if (isUndefined(definition) || !definition.PivotCtor) {
-            throw new TypeError(
-                'Illegal constructor (custom element class must be registered with global customElements registry to be newable)'
-            );
+            throw new TypeError('Illegal constructor');
         }
         // This constructor is ONLY invoked when it is the user instantiating
         // an element via new Ctor while Ctor is a registered global constructor.

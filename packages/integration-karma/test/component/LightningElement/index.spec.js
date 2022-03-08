@@ -8,12 +8,12 @@ import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
 it('should throw when trying to invoke the constructor manually', () => {
     expect(() => {
         new LightningElement();
-    }).toThrowError(ReferenceError);
+    }).toThrowError(/Illegal constructor/);
 
     expect(() => {
         class Test extends LightningElement {}
         new Test();
-    }).toThrowError(ReferenceError);
+    }).toThrowError(/Illegal constructor/);
 });
 
 it('should have no property enumerable on the component instance', () => {
