@@ -9,6 +9,7 @@ import {
     createVM,
     connectRootElement,
     disconnectRootElement,
+    getComponentHtmlPrototype,
     LightningElement,
 } from '@lwc/engine-core';
 import { hydrateComponent } from './hydrate-component';
@@ -50,9 +51,9 @@ export function deprecatedBuildCustomElementConstructor(
 const hydratedCustomElements = new WeakSet<Element>();
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
-    // const HtmlPrototype = getComponentHtmlPrototype(Ctor);
+    const HtmlPrototype = getComponentHtmlPrototype(Ctor);
 
-    return class extends HTMLElement {
+    return class extends HtmlPrototype {
         constructor() {
             super();
 
