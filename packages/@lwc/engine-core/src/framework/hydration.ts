@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
+import { isUndefined, ArrayJoin, assert, keys, isNull, isTrue } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 import {
@@ -21,13 +21,12 @@ import { cloneAndOmitKey, parseStyleText } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
     createVM,
-    hydrateVM,
     runConnectedCallback,
     VMState,
     RenderMode,
     LwcDomMode,
-    hydrateRootElement,
     VM,
+    runRenderedCallback,
 } from './vm';
 import {
     VNodes,
@@ -42,6 +41,7 @@ import {
 
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
+import { renderComponent } from './component';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
@@ -53,17 +53,35 @@ const enum EnvNodeTypes {
 export function hydrateRoot(vm: VM) {
     const hydration = new Hydration();
 
-    hydrateRootElement(vm.elm!, (node, children, parentNode) =>
-        hydration.hydrateChildren(node, children, parentNode)
-    );
+    hydration.hydrateRootVM(vm);
 
     if (hydration.hasMismatch) {
         logError('Hydration completed with errors.', vm);
     }
 }
 
-export class Hydration {
+class Hydration {
     hasMismatch = false;
+
+    public hydrateRootVM(vm: VM) {
+        runConnectedCallback(vm);
+        this.hydrateVM(vm);
+    }
+
+    private hydrateVM(vm: VM) {
+        if (isTrue(vm.isDirty)) {
+            const children = renderComponent(vm);
+            vm.children = children;
+
+            if (vm.renderMode === RenderMode.Light) {
+                this.hydrateChildren(getFirstChild(vm.elm), children, vm.elm);
+            } else {
+                this.hydrateChildren(getFirstChild(vm.elm.shadowRoot), children, vm.elm.shadowRoot);
+            }
+
+            runRenderedCallback(vm);
+        }
+    }
 
     private hydrateNode(node: Node, vnode: VNode): Node | null {
         switch (vnode.type) {
@@ -125,15 +143,14 @@ export class Hydration {
         return nextSibling(node);
     }
 
-    private hydrateElement(node: Node, vnode: VElement): Node | null {
+    private hydrateElement(elm: Node, vnode: VElement): Node | null {
         if (
-            !hasCorrectNodeType<Element>(vnode, node, EnvNodeTypes.ELEMENT) ||
-            !isMatchingElement(vnode, node as unknown as Element)
+            !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT) ||
+            !isMatchingElement(vnode, elm)
         ) {
-            return this.handleMismatch(node, vnode);
+            return this.handleMismatch(elm, vnode);
         }
 
-        const elm = node as unknown as Element;
         vnode.elm = elm;
 
         const { context } = vnode.data;
@@ -171,12 +188,12 @@ export class Hydration {
         patchElementPropsAndAttrs(vnode);
 
         if (isDomManual) {
-            return nextSibling(node);
+            return nextSibling(elm);
         }
 
         this.hydrateChildren(getFirstChild(elm), vnode.children, elm);
 
-        return nextSibling(node);
+        return nextSibling(elm);
     }
 
     private hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
@@ -213,9 +230,7 @@ export class Hydration {
             this.hydrateChildren(getFirstChild(elm), vnode.children, elm);
         }
 
-        hydrateVM(vm, (node, children, parentNode) =>
-            this.hydrateChildren(node, children, parentNode)
-        );
+        this.hydrateVM(vm);
         return nextSibling(elm);
     }
 
@@ -241,6 +256,7 @@ export class Hydration {
                         }
                     }
                     mount(childVnode, parentNode, anchor);
+                    anchor = childVnode.elm!;
                 }
             }
         }
@@ -431,7 +447,6 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
     }
 
     if (!nodesAreCompatible) {
-        // style is used when class is bound to an expr.
         if (process.env.NODE_ENV !== 'production') {
             logError(
                 `Mismatch hydrating element <${getProperty(
