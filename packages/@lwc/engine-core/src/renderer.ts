@@ -252,12 +252,14 @@ export function setAssertInstanceOfHTMLElement(
     assertInstanceOfHTMLElement = assertInstanceOfHTMLElementImpl;
 }
 
-type UpgradeCallback = (elm: HTMLElement) => void;
-interface UpgradableCustomElementConstructor extends CustomElementConstructor {
-    new (upgradeCallback?: UpgradeCallback): HTMLElement;
+interface CustomElementConstructor {
+    new (...params: any[]): HTMLElement;
 }
-type getUpgradableElementFunc = (name: string) => UpgradableCustomElementConstructor
-export let getUpgradableElement: getUpgradableElementFunc
+interface UpgradableCustomElementConstructor extends CustomElementConstructor {
+    new (UserCtor?: CustomElementConstructor): HTMLElement;
+}
+type getUpgradableElementFunc = (name: string) => UpgradableCustomElementConstructor;
+export let getUpgradableElement: getUpgradableElementFunc;
 export function setGetUpgradableElement(getUpgradableElementImpl: getUpgradableElementFunc) {
     getUpgradableElement = getUpgradableElementImpl;
 }

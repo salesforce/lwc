@@ -29,6 +29,7 @@ import {
     getClassList,
     isSyntheticShadowDefined,
     getUpgradableElement,
+    ssr,
 } from '../renderer';
 
 import { EmptyArray } from './utils';
@@ -207,7 +208,11 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
      */
     let vm: VM | undefined;
 
-    class UserElement extends HTMLElement {
+    // In DOM mode, we need to grab the global HTMLElement on-demand so we can get the patched one
+    const HTMLEl: typeof HTMLElement = ssr
+        ? (function () {} as unknown as typeof HTMLElement)
+        : HTMLElement;
+    class UserElement extends HTMLEl {
         constructor() {
             super();
             // the custom element from the registry is expecting an upgrade callback
@@ -215,7 +220,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
         }
     }
 
-    const elm = new UpgradableConstructor(UserElement.prototype.constructor);
+    const elm = new UpgradableConstructor(UserElement);
 
     linkNodeToShadow(elm, owner);
     vnode.elm = elm;

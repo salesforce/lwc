@@ -366,17 +366,19 @@ export const getLastElementChild = unsupportedMethod('getLastElementChild') as (
 /* noop */
 export const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 
-type UpgradeCallback = (elm: HostElement) => void;
+interface CustomElementConstructor {
+    new (...params: any[]): HTMLElement;
+}
 interface UpgradableCustomElementConstructor extends CustomElementConstructor {
-    new (upgradeCallback?: UpgradeCallback): HostElement;
+    new (userCtor?: CustomElementConstructor): HTMLElement;
 }
 
 const localRegistryRecord: Record<string, UpgradableCustomElementConstructor> = create(null);
 function getUpgradableConstructor(name: string): UpgradableCustomElementConstructor {
-    return function (upgradeCallback?: UpgradeCallback) {
+    return function (UserCtor?: CustomElementConstructor) {
         const elm = createElement(name);
-        if (isFunction(upgradeCallback)) {
-            upgradeCallback(elm); // nothing to do with the result for now
+        if (isFunction(UserCtor)) {
+            new UserCtor(); // nothing to do with the result for now
         }
         return elm;
     } as unknown as UpgradableCustomElementConstructor;
