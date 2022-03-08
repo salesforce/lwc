@@ -112,15 +112,24 @@ if (isCustomElementRegistryAvailable()) {
 } else {
     // no registry available here
     getUpgradableElement = (name: string): UpgradableCustomElementConstructor => {
-        return (function(upgradeCallback?: UpgradeCallback) {
+        return function (upgradeCallback?: UpgradeCallback) {
             const elm = document.createElement(name);
             if (isFunction(upgradeCallback)) {
                 upgradeCallback(elm); // nothing to do with the result for now
             }
             return elm;
-        } as unknown) as UpgradableCustomElementConstructor;
+        } as unknown as UpgradableCustomElementConstructor;
     };
 }
+
+export const getUserConstructor = (upgradeCallback: UpgradeCallback) => {
+    return class UserElement extends HTMLElement {
+        constructor() {
+            super();
+            upgradeCallback(this);
+        }
+    };
+};
 
 let hydrating = false;
 

@@ -93,5 +93,6 @@ export {
     setSsr,
     setAddEventListener,
     setInsertStylesheet,
-    setGetUpgradableElement
+    setGetUpgradableElement,
+    setGetUserConstructor,
 } from '../renderer';

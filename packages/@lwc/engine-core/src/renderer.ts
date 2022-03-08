@@ -263,3 +263,12 @@ export let getUpgradableElement: getUpgradableElementFunc;
 export function setGetUpgradableElement(getUpgradableElementImpl: getUpgradableElementFunc) {
     getUpgradableElement = getUpgradableElementImpl;
 }
+
+type UpgradeCallback = (elm: E) => void;
+type getUserConstructorFunc = (
+    upgradeCallback: UpgradeCallback
+) => UpgradableCustomElementConstructor | UpgradeCallback;
+export let getUserConstructor: getUserConstructorFunc;
+export function setGetUserConstructor(getUserConstructorImpl: getUserConstructorFunc) {
+    getUserConstructor = getUserConstructorImpl;
+}

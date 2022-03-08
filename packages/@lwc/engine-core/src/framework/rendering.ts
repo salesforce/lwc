@@ -29,7 +29,7 @@ import {
     getClassList,
     isSyntheticShadowDefined,
     getUpgradableElement,
-    ssr,
+    getUserConstructor,
 } from '../renderer';
 
 import { EmptyArray } from './utils';
@@ -199,7 +199,6 @@ function patchElement(n1: VElement, n2: VElement) {
 function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
     const { sel, owner } = vnode;
 
-    const UpgradableConstructor = getUpgradableElement(sel);
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced
@@ -208,19 +207,14 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
      */
     let vm: VM | undefined;
 
-    // In DOM mode, we need to grab the global HTMLElement on-demand so we can get the patched one
-    const HTMLEl: typeof HTMLElement = ssr
-        ? (function () {} as unknown as typeof HTMLElement)
-        : HTMLElement;
-    class UserElement extends HTMLEl {
-        constructor() {
-            super();
-            // the custom element from the registry is expecting an upgrade callback
-            vm = createViewModelHook(this, vnode);
-        }
-    }
+    const upgradeCallback = (elm: HTMLElement) => {
+        // the custom element from the registry is expecting an upgrade callback
+        vm = createViewModelHook(elm, vnode);
+    };
+    const UpgradableConstructor = getUpgradableElement(sel);
+    const UserConstructor = getUserConstructor(upgradeCallback);
 
-    const elm = new UpgradableConstructor(UserElement);
+    const elm = new UpgradableConstructor(UserConstructor);
 
     linkNodeToShadow(elm, owner);
     vnode.elm = elm;
