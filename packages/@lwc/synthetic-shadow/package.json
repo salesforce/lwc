@@ -1,6 +1,6 @@
 {
     "name": "@lwc/synthetic-shadow",
-    "version": "2.11.0",
+    "version": "2.11.1",
     "description": "Synthetic Shadow Root for LWC",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -36,8 +36,8 @@
         "access": "public"
     },
     "devDependencies": {
-        "@lwc/features": "2.11.0",
-        "@lwc/shared": "2.11.0"
+        "@lwc/features": "2.11.1",
+        "@lwc/shared": "2.11.1"
     },
     "gitHead": "94040389ab8fc717b8753e503f659489480a327d"
 }
