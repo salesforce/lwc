@@ -50,247 +50,236 @@ const enum EnvNodeTypes {
     COMMENT = 8,
 }
 
+let hasMismatch = false;
+
 export function hydrateRoot(vm: VM) {
-    const hydration = new Hydration();
+    hasMismatch = false;
 
-    hydration.hydrateRootVM(vm);
+    runConnectedCallback(vm);
+    hydrateVM(vm);
 
-    if (hydration.hasMismatch) {
+    if (hasMismatch) {
         logError('Hydration completed with errors.', vm);
     }
 }
 
-class Hydration {
-    hasMismatch = false;
+function hydrateVM(vm: VM) {
+    if (isTrue(vm.isDirty)) {
+        const children = renderComponent(vm);
+        vm.children = children;
 
-    public hydrateRootVM(vm: VM) {
-        runConnectedCallback(vm);
-        this.hydrateVM(vm);
+        const parentNode = vm.renderMode === RenderMode.Light ? vm.elm : vm.elm.shadowRoot;
+
+        hydrateChildren(getFirstChild(parentNode), children, parentNode);
+        runRenderedCallback(vm);
+    }
+}
+
+function hydrateNode(node: Node, vnode: VNode): Node | null {
+    switch (vnode.type) {
+        case VNodeType.Text:
+            return hydrateText(node, vnode);
+
+        case VNodeType.Comment:
+            return hydrateComment(node, vnode);
+
+        case VNodeType.Element:
+            return hydrateElement(node, vnode);
+
+        case VNodeType.CustomElement:
+            return hydrateCustomElement(node, vnode);
+    }
+}
+
+function hydrateText(node: Node, vnode: VText): Node | null {
+    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT)) {
+        return handleMismatch(node, vnode);
     }
 
-    private hydrateVM(vm: VM) {
-        if (isTrue(vm.isDirty)) {
-            const children = renderComponent(vm);
-            vm.children = children;
+    if (process.env.NODE_ENV !== 'production') {
+        const nodeValue = getProperty(node, 'nodeValue');
 
-            if (vm.renderMode === RenderMode.Light) {
-                this.hydrateChildren(getFirstChild(vm.elm), children, vm.elm);
+        if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
+            logWarn(
+                'Hydration mismatch: text values do not match, will recover from the difference',
+                vnode.owner
+            );
+        }
+    }
+
+    setText(node, vnode.text ?? null);
+    vnode.elm = node;
+
+    return nextSibling(node);
+}
+
+function hydrateComment(node: Node, vnode: VComment): Node | null {
+    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.COMMENT)) {
+        return handleMismatch(node, vnode);
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+        const nodeValue = getProperty(node, 'nodeValue');
+
+        if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
+            logWarn(
+                'Hydration mismatch: comment values do not match, will recover from the difference',
+                vnode.owner
+            );
+        }
+    }
+
+    setProperty(node, 'nodeValue', vnode.text ?? null);
+    vnode.elm = node;
+
+    return nextSibling(node);
+}
+
+function hydrateElement(elm: Node, vnode: VElement): Node | null {
+    if (
+        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT) ||
+        !isMatchingElement(vnode, elm)
+    ) {
+        return handleMismatch(elm, vnode);
+    }
+
+    vnode.elm = elm;
+
+    const { context } = vnode.data;
+    const isDomManual = Boolean(
+        !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LwcDomMode.Manual
+    );
+
+    if (isDomManual) {
+        // it may be that this element has lwc:inner-html, we need to diff and in case are the same,
+        // remove the innerHTML from props so it reuses the existing dom elements.
+        const { props } = vnode.data;
+        if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
+            if (getProperty(elm, 'innerHTML') === props.innerHTML) {
+                // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
+                vnode.data = {
+                    ...vnode.data,
+                    props: cloneAndOmitKey(props, 'innerHTML'),
+                };
             } else {
-                this.hydrateChildren(getFirstChild(vm.elm.shadowRoot), children, vm.elm.shadowRoot);
-            }
-
-            runRenderedCallback(vm);
-        }
-    }
-
-    private hydrateNode(node: Node, vnode: VNode): Node | null {
-        switch (vnode.type) {
-            case VNodeType.Text:
-                return this.hydrateText(node, vnode);
-
-            case VNodeType.Comment:
-                return this.hydrateComment(node, vnode);
-
-            case VNodeType.Element:
-                return this.hydrateElement(node, vnode);
-
-            case VNodeType.CustomElement:
-                return this.hydrateCustomElement(node, vnode);
-        }
-    }
-
-    private hydrateText(node: Node, vnode: VText): Node | null {
-        if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT)) {
-            return this.handleMismatch(node, vnode);
-        }
-
-        if (process.env.NODE_ENV !== 'production') {
-            const nodeValue = getProperty(node, 'nodeValue');
-
-            if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
-                logWarn(
-                    'Hydration mismatch: text values do not match, will recover from the difference',
-                    vnode.owner
-                );
-            }
-        }
-
-        setText(node, vnode.text ?? null);
-        vnode.elm = node;
-
-        return nextSibling(node);
-    }
-
-    private hydrateComment(node: Node, vnode: VComment): Node | null {
-        if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.COMMENT)) {
-            return this.handleMismatch(node, vnode);
-        }
-
-        if (process.env.NODE_ENV !== 'production') {
-            const nodeValue = getProperty(node, 'nodeValue');
-
-            if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
-                logWarn(
-                    'Hydration mismatch: comment values do not match, will recover from the difference',
-                    vnode.owner
-                );
-            }
-        }
-
-        setProperty(node, 'nodeValue', vnode.text ?? null);
-        vnode.elm = node;
-
-        return nextSibling(node);
-    }
-
-    private hydrateElement(elm: Node, vnode: VElement): Node | null {
-        if (
-            !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT) ||
-            !isMatchingElement(vnode, elm)
-        ) {
-            return this.handleMismatch(elm, vnode);
-        }
-
-        vnode.elm = elm;
-
-        const { context } = vnode.data;
-        const isDomManual = Boolean(
-            !isUndefined(context) &&
-                !isUndefined(context.lwc) &&
-                context.lwc.dom === LwcDomMode.Manual
-        );
-
-        if (isDomManual) {
-            // it may be that this element has lwc:inner-html, we need to diff and in case are the same,
-            // remove the innerHTML from props so it reuses the existing dom elements.
-            const { props } = vnode.data;
-            if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
-                if (getProperty(elm, 'innerHTML') === props.innerHTML) {
-                    // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
-                    vnode.data = {
-                        ...vnode.data,
-                        props: cloneAndOmitKey(props, 'innerHTML'),
-                    };
-                } else {
-                    if (process.env.NODE_ENV !== 'production') {
-                        logWarn(
-                            `Mismatch hydrating element <${getProperty(
-                                elm,
-                                'tagName'
-                            ).toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
-                            vnode.owner
-                        );
-                    }
-                }
-            }
-        }
-
-        patchElementPropsAndAttrs(vnode);
-
-        if (isDomManual) {
-            return nextSibling(elm);
-        }
-
-        this.hydrateChildren(getFirstChild(elm), vnode.children, elm);
-
-        return nextSibling(elm);
-    }
-
-    private hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
-        if (
-            !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT) ||
-            !isMatchingElement(vnode, elm)
-        ) {
-            return this.handleMismatch(elm, vnode);
-        }
-
-        const { sel, mode, ctor, owner } = vnode;
-
-        const vm = createVM(elm, ctor, {
-            mode,
-            owner,
-            tagName: sel,
-        });
-
-        vnode.elm = elm;
-        vnode.vm = vm;
-
-        allocateChildren(vnode, vm);
-        patchElementPropsAndAttrs(vnode);
-
-        // Insert hook section:
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
-        }
-        runConnectedCallback(vm);
-
-        if (vm.renderMode !== RenderMode.Light) {
-            // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
-            // Note: for Light DOM, this is handled while hydrating the VM
-            this.hydrateChildren(getFirstChild(elm), vnode.children, elm);
-        }
-
-        this.hydrateVM(vm);
-        return nextSibling(elm);
-    }
-
-    public hydrateChildren(node: Node | null, children: VNodes, parentNode: Element | ShadowRoot) {
-        let hasWarned = false;
-        let nextNode: Node | null = node;
-        let anchor: Node | null = null;
-        for (let i = 0; i < children.length; i++) {
-            const childVnode = children[i];
-
-            if (!isNull(childVnode)) {
-                if (nextNode) {
-                    nextNode = this.hydrateNode(nextNode, childVnode);
-                    anchor = childVnode.elm!;
-                } else {
-                    this.hasMismatch = true;
-                    if (process.env.NODE_ENV !== 'production') {
-                        if (!hasWarned) {
-                            hasWarned = true;
-                            logError(
-                                `Hydration mismatch: incorrect number of rendered nodes. Client vdom rendered more elements than the server.`
-                            );
-                        }
-                    }
-                    mount(childVnode, parentNode, anchor);
-                    anchor = childVnode.elm!;
-                }
-            }
-        }
-
-        if (nextNode) {
-            this.hasMismatch = true;
-            if (process.env.NODE_ENV !== 'production') {
-                if (!hasWarned) {
-                    logError(
-                        `Hydration mismatch: incorrect number of rendered nodes. Server rendered more elements than client vdom.`
+                if (process.env.NODE_ENV !== 'production') {
+                    logWarn(
+                        `Mismatch hydrating element <${getProperty(
+                            elm,
+                            'tagName'
+                        ).toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
+                        vnode.owner
                     );
                 }
             }
-            do {
-                const current = nextNode;
-                nextNode = nextSibling(nextNode);
-                removeNode(current, parentNode);
-            } while (nextNode);
         }
     }
 
-    private handleMismatch(node: Node, vnode: VNode, msg?: string): Node | null {
-        this.hasMismatch = true;
-        if (!isUndefined(msg)) {
-            if (process.env.NODE_ENV !== 'production') {
-                logError(msg, vnode.owner);
+    patchElementPropsAndAttrs(vnode);
+
+    if (isDomManual) {
+        return nextSibling(elm);
+    }
+
+    hydrateChildren(getFirstChild(elm), vnode.children, elm);
+
+    return nextSibling(elm);
+}
+
+function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
+    if (
+        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT) ||
+        !isMatchingElement(vnode, elm)
+    ) {
+        return handleMismatch(elm, vnode);
+    }
+
+    const { sel, mode, ctor, owner } = vnode;
+
+    const vm = createVM(elm, ctor, {
+        mode,
+        owner,
+        tagName: sel,
+    });
+
+    vnode.elm = elm;
+    vnode.vm = vm;
+
+    allocateChildren(vnode, vm);
+    patchElementPropsAndAttrs(vnode);
+
+    // Insert hook section:
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+    }
+    runConnectedCallback(vm);
+
+    if (vm.renderMode !== RenderMode.Light) {
+        // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
+        // Note: for Light DOM, this is handled while hydrating the VM
+        hydrateChildren(getFirstChild(elm), vnode.children, elm);
+    }
+
+    hydrateVM(vm);
+    return nextSibling(elm);
+}
+
+function hydrateChildren(node: Node | null, children: VNodes, parentNode: Element | ShadowRoot) {
+    let hasWarned = false;
+    let nextNode: Node | null = node;
+    let anchor: Node | null = null;
+    for (let i = 0; i < children.length; i++) {
+        const childVnode = children[i];
+
+        if (!isNull(childVnode)) {
+            if (nextNode) {
+                nextNode = hydrateNode(nextNode, childVnode);
+                anchor = childVnode.elm!;
+            } else {
+                hasMismatch = true;
+                if (process.env.NODE_ENV !== 'production') {
+                    if (!hasWarned) {
+                        hasWarned = true;
+                        logError(
+                            `Hydration mismatch: incorrect number of rendered nodes. Client vdom rendered more elements than the server.`
+                        );
+                    }
+                }
+                mount(childVnode, parentNode, anchor);
+                anchor = childVnode.elm!;
             }
         }
-        const parentNode = getProperty(node, 'parentNode');
-        mount(vnode, parentNode, node);
-        removeNode(node, parentNode);
-
-        return nextSibling(vnode.elm);
     }
+
+    if (nextNode) {
+        hasMismatch = true;
+        if (process.env.NODE_ENV !== 'production') {
+            if (!hasWarned) {
+                logError(
+                    `Hydration mismatch: incorrect number of rendered nodes. Server rendered more elements than client vdom.`
+                );
+            }
+        }
+        do {
+            const current = nextNode;
+            nextNode = nextSibling(nextNode);
+            removeNode(current, parentNode);
+        } while (nextNode);
+    }
+}
+
+function handleMismatch(node: Node, vnode: VNode, msg?: string): Node | null {
+    hasMismatch = true;
+    if (!isUndefined(msg)) {
+        if (process.env.NODE_ENV !== 'production') {
+            logError(msg, vnode.owner);
+        }
+    }
+    const parentNode = getProperty(node, 'parentNode');
+    mount(vnode, parentNode, node);
+    removeNode(node, parentNode);
+
+    return nextSibling(vnode.elm);
 }
 
 function patchElementPropsAndAttrs(vnode: VBaseElement) {
