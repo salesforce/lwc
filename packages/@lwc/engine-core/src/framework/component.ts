@@ -21,13 +21,16 @@ const signedTemplateMap: Map<LightningElementConstructor, Template> = new Map();
  * will prevent this function from being imported by userland code.
  */
 export function registerComponent(
-    Ctor: LightningElementConstructor,
+    // We typically expect a LightningElementConstructor, but technically you can call this with anything
+    Ctor: any,
     { tmpl }: { tmpl: Template }
-): LightningElementConstructor {
-    if (process.env.NODE_ENV !== 'production') {
-        checkVersionMismatch(Ctor, 'component');
+): any {
+    if (isFunction(Ctor)) {
+        if (process.env.NODE_ENV !== 'production') {
+            checkVersionMismatch(Ctor, 'component');
+        }
+        signedTemplateMap.set(Ctor, tmpl);
     }
-    signedTemplateMap.set(Ctor, tmpl);
     // chaining this method as a way to wrap existing assignment of component constructor easily,
     // without too much transformation
     return Ctor;
