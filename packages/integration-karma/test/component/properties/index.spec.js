@@ -19,6 +19,7 @@ const expectedEnumerableProps = [
     'ariaExpanded',
     'ariaHasPopup',
     'ariaHidden',
+    'ariaInvalid',
     'ariaKeyShortcuts',
     'ariaLabel',
     'ariaLevel',
