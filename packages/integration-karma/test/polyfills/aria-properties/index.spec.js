@@ -105,7 +105,6 @@ const nonStandardAriaProps = [
     'ariaDetails',
     'ariaErrorMessage',
     'ariaFlowTo',
-    'ariaInvalid',
     'ariaLabelledBy',
     'ariaOwns',
 ];

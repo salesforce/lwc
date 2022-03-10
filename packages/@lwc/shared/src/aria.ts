@@ -83,7 +83,6 @@ const nonStandardAriaPropertyNames = [
     'ariaDetails',
     'ariaErrorMessage',
     'ariaFlowTo',
-    'ariaInvalid',
     'ariaLabelledBy',
     'ariaOwns',
 ];
