@@ -66,6 +66,7 @@ const GLOBAL_HTML_ATTRIBUTES = [
     'ariaExpanded',
     'ariaHasPopup',
     'ariaHidden',
+    'ariaInvalid',
     'ariaKeyShortcuts',
     'ariaLabel',
     'ariaLevel',
