@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { hasOwnProperty, AriaPropNameToAttrNameMap } from '@lwc/shared';
+import { hasOwnProperty, ReflectedAriaPropNameToAttrNameMap } from '@lwc/shared';
 
 type NormalizedAttributeValue = string | null;
 type AriaPropMap = Record<string, NormalizedAttributeValue>;
@@ -63,7 +63,7 @@ export function patch(propName: string) {
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
-    const attrName = AriaPropNameToAttrNameMap[propName];
+    const attrName = ReflectedAriaPropNameToAttrNameMap[propName];
     const descriptor = createAriaPropertyPropertyDescriptor(propName, attrName);
     Object.defineProperty(Element.prototype, propName, descriptor);
 }

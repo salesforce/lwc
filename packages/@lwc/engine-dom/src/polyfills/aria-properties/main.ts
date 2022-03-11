@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaPropNameToAttrNameMap, keys } from '@lwc/shared';
+import { ReflectedAriaPropNameToAttrNameMap, keys } from '@lwc/shared';
 import { detect } from './detect';
 import { patch } from './polyfill';
 
-const ElementPrototypeAriaPropertyNames = keys(AriaPropNameToAttrNameMap);
+const ElementPrototypeAriaPropertyNames = keys(ReflectedAriaPropNameToAttrNameMap);
 
 for (let i = 0, len = ElementPrototypeAriaPropertyNames.length; i < len; i += 1) {
     const propName = ElementPrototypeAriaPropertyNames[i];

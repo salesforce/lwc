@@ -34,7 +34,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_custom_element("x-textarea", _xTextarea, {
       props: {
         id: api_scoped_id("foo"),
-        ariaDescribedby: api_scoped_id("bar baz"),
+        ariaDescribedBy: api_scoped_id("bar baz"),
       },
       key: 3,
     }),
