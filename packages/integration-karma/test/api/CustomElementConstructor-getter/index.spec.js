@@ -7,13 +7,6 @@ import LifecycleParent from 'x/lifecycleParent';
 // constructor.
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
-it('should return a custom element', () => {
-    class Test extends LightningElement {}
-    const TestCustomElement = Test.CustomElementConstructor;
-
-    expect(typeof TestCustomElement).toBe('function');
-});
-
 it('should throw when trying to claim abstract LightningElement as custom element', () => {
     expect(() => LightningElement.CustomElementConstructor).toThrowError(
         TypeError,
@@ -22,6 +15,13 @@ it('should throw when trying to claim abstract LightningElement as custom elemen
 });
 
 if (SUPPORTS_CUSTOM_ELEMENTS) {
+    it('should return a custom element', () => {
+        class Test extends LightningElement {}
+        const TestCustomElement = Test.CustomElementConstructor;
+
+        expect(typeof TestCustomElement).toBe('function');
+    });
+
     it('should create a custom element with shadow mode set to "open" by default', () => {
         class Test extends LightningElement {}
 
