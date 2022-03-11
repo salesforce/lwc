@@ -90,24 +90,27 @@ interface UpgradableCustomElementConstructor extends CustomElementConstructor {
     new (upgradeCallback?: UpgradeCallback): HTMLElement;
 }
 export let getUpgradableElement: (name: string) => CustomElementConstructor;
+export let getUserConstructor: (
+    upgradeCallback: UpgradeCallback
+) => UpgradableCustomElementConstructor | UpgradeCallback;
 if (isCustomElementRegistryAvailable()) {
     const getPivotCustomElement = patchCustomElementRegistry();
     const cachedConstructor: Record<string, CustomElementConstructor> = create(null);
     getUpgradableElement = (name: string) => {
         let Ctor = cachedConstructor[name];
         if (!Ctor) {
-            class LWCUpgradableElement extends HTMLElement {
-                constructor(upgradeCallback?: UpgradeCallback) {
-                    super();
-                    if (isFunction(upgradeCallback)) {
-                        upgradeCallback(this); // nothing to do with the result for now
-                    }
-                }
-            }
-
+            class LWCUpgradableElement extends HTMLElement {}
             Ctor = getPivotCustomElement(name, LWCUpgradableElement);
         }
         return Ctor;
+    };
+    getUserConstructor = (upgradeCallback: UpgradeCallback) => {
+        return class UserElement extends HTMLElement {
+            constructor() {
+                super();
+                upgradeCallback(this);
+            }
+        };
     };
 } else {
     // no registry available here
@@ -120,16 +123,8 @@ if (isCustomElementRegistryAvailable()) {
             return elm;
         } as unknown as UpgradableCustomElementConstructor;
     };
+    getUserConstructor = (upgradeCallback: UpgradeCallback) => upgradeCallback;
 }
-
-export const getUserConstructor = (upgradeCallback: UpgradeCallback) => {
-    return class UserElement extends HTMLElement {
-        constructor() {
-            super();
-            upgradeCallback(this);
-        }
-    };
-};
 
 let hydrating = false;
 

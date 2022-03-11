@@ -20,7 +20,7 @@ import {
     disconnectRootElement,
     LightningElement,
 } from '@lwc/engine-core';
-import { getUpgradableElement } from '../renderer';
+import { getUpgradableElement, getUserConstructor } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
@@ -115,21 +115,18 @@ export function createElement(
      * mechanism that only passes that argument if the constructor is known to be
      * an upgradable custom element.
      */
-    class UserElement extends HTMLElement {
-        constructor() {
-            super();
-            const elm = this;
-            createVM(elm, Ctor, {
-                tagName,
-                mode: options.mode !== 'closed' ? 'open' : 'closed',
-                owner: null,
-            });
-            ConnectingSlot.set(elm, connectRootElement);
-            DisconnectingSlot.set(elm, disconnectRootElement);
-            wasComponentUpgraded = true;
-        }
-    }
-    const element = new UpgradableConstructor(UserElement.prototype.constructor);
+    const upgradeCallback = (elm: HTMLElement) => {
+        createVM(elm, Ctor, {
+            tagName,
+            mode: options.mode !== 'closed' ? 'open' : 'closed',
+            owner: null,
+        });
+        ConnectingSlot.set(elm, connectRootElement);
+        DisconnectingSlot.set(elm, disconnectRootElement);
+        wasComponentUpgraded = true;
+    };
+    const UserConstructor = getUserConstructor(upgradeCallback);
+    const element = new UpgradableConstructor(UserConstructor);
     if (!wasComponentUpgraded) {
         /* eslint-disable-next-line no-console */
         console.error(
