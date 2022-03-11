@@ -1,16 +1,16 @@
-function testAriaProperty(property, attribute, standard) {
+function testAriaProperty(property, attribute, reflected) {
     describe(property, () => {
         it(`should ${
-            standard ? '' : 'not'
+            reflected ? '' : 'not'
         } assign property ${property} to Element prototype`, () => {
             expect(Object.prototype.hasOwnProperty.call(Element.prototype, property)).toBe(
-                standard
+                reflected
             );
         });
 
-        it(`should ${standard ? '' : 'not'} return null if the value is not set`, () => {
+        it(`should ${reflected ? '' : 'not'} return null if the value is not set`, () => {
             const el = document.createElement('div');
-            expect(el[property]).toBe(standard ? null : undefined);
+            expect(el[property]).toBe(reflected ? null : undefined);
         });
 
         it(`should return the right value from the getter`, () => {
@@ -20,27 +20,27 @@ function testAriaProperty(property, attribute, standard) {
         });
 
         it(`should ${
-            standard ? '' : 'not'
+            reflected ? '' : 'not'
         } reflect the property to the associated attribute`, () => {
             const el = document.createElement('div');
             el[property] = 'foo';
-            expect(el.getAttribute(attribute)).toBe(standard ? 'foo' : null);
+            expect(el.getAttribute(attribute)).toBe(reflected ? 'foo' : null);
         });
 
-        it(`should ${standard ? '' : 'not'} reflect the attribute to the property`, () => {
+        it(`should ${reflected ? '' : 'not'} reflect the attribute to the property`, () => {
             const el = document.createElement('div');
             el.setAttribute(attribute, 'foo');
-            expect(el[property]).toBe(standard ? 'foo' : undefined);
+            expect(el[property]).toBe(reflected ? 'foo' : undefined);
         });
 
         it(`should ${
-            standard ? '' : 'not'
+            reflected ? '' : 'not'
         } remove the attribute if the property is set to null`, () => {
             const el = document.createElement('div');
             el.setAttribute(attribute, 'foo');
 
             el[property] = null;
-            expect(el.hasAttribute(attribute)).toBe(!standard);
+            expect(el.hasAttribute(attribute)).toBe(!reflected);
         });
     });
 }
@@ -87,10 +87,10 @@ const ariaPropertiesMapping = {
     role: 'role',
 };
 
-// The non-standard list includes prop->attr mappings that we have added in the
-// past, but which are not part of AOM ARIA reflection as supported in browsers.
+// The list includes prop->attr reflections that we have added in the past,
+// but which are not part of AOM ARIA reflection as supported in browsers.
 // https://github.com/salesforce/lwc/issues/2733
-const nonStandardAriaPropertiesMapping = {
+const nonReflectedAriaPropertiesMapping = {
     ariaActiveDescendant: 'aria-activedescendant',
     ariaControls: 'aria-controls',
     ariaDescribedBy: 'aria-describedby',
@@ -105,6 +105,6 @@ for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping
     testAriaProperty(ariaProperty, ariaAttribute, true);
 }
 
-for (const [ariaProperty, ariaAttribute] of Object.entries(nonStandardAriaPropertiesMapping)) {
+for (const [ariaProperty, ariaAttribute] of Object.entries(nonReflectedAriaPropertiesMapping)) {
     testAriaProperty(ariaProperty, ariaAttribute, false);
 }
