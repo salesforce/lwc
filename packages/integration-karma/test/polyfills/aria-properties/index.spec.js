@@ -46,70 +46,65 @@ function testAriaProperty(property, attribute, standard) {
 }
 
 const ariaPropertiesMapping = {
+    ariaAtomic: 'aria-atomic',
     ariaAutoComplete: 'aria-autocomplete',
+    ariaBusy: 'aria-busy',
     ariaChecked: 'aria-checked',
+    ariaColCount: 'aria-colcount',
+    ariaColIndex: 'aria-colindex',
+    ariaColSpan: 'aria-colspan',
     ariaCurrent: 'aria-current',
     ariaDisabled: 'aria-disabled',
     ariaExpanded: 'aria-expanded',
     ariaHasPopup: 'aria-haspopup',
     ariaHidden: 'aria-hidden',
     ariaInvalid: 'aria-invalid',
+    ariaKeyShortcuts: 'aria-keyshortcuts',
     ariaLabel: 'aria-label',
     ariaLevel: 'aria-level',
+    ariaLive: 'aria-live',
+    ariaModal: 'aria-modal',
     ariaMultiLine: 'aria-multiline',
     ariaMultiSelectable: 'aria-multiselectable',
     ariaOrientation: 'aria-orientation',
+    ariaPlaceholder: 'aria-placeholder',
+    ariaPosInSet: 'aria-posinset',
     ariaPressed: 'aria-pressed',
     ariaReadOnly: 'aria-readonly',
+    ariaRelevant: 'aria-relevant',
     ariaRequired: 'aria-required',
+    ariaRoleDescription: 'aria-roledescription',
+    ariaRowCount: 'aria-rowcount',
+    ariaRowIndex: 'aria-rowindex',
+    ariaRowSpan: 'aria-rowspan',
     ariaSelected: 'aria-selected',
+    ariaSetSize: 'aria-setsize',
     ariaSort: 'aria-sort',
     ariaValueMax: 'aria-valuemax',
     ariaValueMin: 'aria-valuemin',
     ariaValueNow: 'aria-valuenow',
     ariaValueText: 'aria-valuetext',
-    ariaLive: 'aria-live',
-    ariaRelevant: 'aria-relevant',
-    ariaAtomic: 'aria-atomic',
-    ariaBusy: 'aria-busy',
-    ariaActiveDescendant: 'aria-activedescendant',
-    ariaControls: 'aria-controls',
-    ariaDescribedBy: 'aria-describedby',
-    ariaFlowTo: 'aria-flowto',
-    ariaLabelledBy: 'aria-labelledby',
-    ariaOwns: 'aria-owns',
-    ariaPosInSet: 'aria-posinset',
-    ariaSetSize: 'aria-setsize',
-    ariaColCount: 'aria-colcount',
-    ariaColSpan: 'aria-colspan',
-    ariaColIndex: 'aria-colindex',
-    ariaDetails: 'aria-details',
-    ariaErrorMessage: 'aria-errormessage',
-    ariaKeyShortcuts: 'aria-keyshortcuts',
-    ariaModal: 'aria-modal',
-    ariaPlaceholder: 'aria-placeholder',
-    ariaRoleDescription: 'aria-roledescription',
-    ariaRowCount: 'aria-rowcount',
-    ariaRowIndex: 'aria-rowindex',
-    ariaRowSpan: 'aria-rowspan',
     role: 'role',
 };
 
 // The non-standard list includes prop->attr mappings that we have added in the
 // past, but which are not part of AOM ARIA reflection as supported in browsers.
 // https://github.com/salesforce/lwc/issues/2733
-const nonStandardAriaProps = [
-    'ariaActiveDescendant',
-    'ariaControls',
-    'ariaDescribedBy',
-    'ariaDetails',
-    'ariaErrorMessage',
-    'ariaFlowTo',
-    'ariaLabelledBy',
-    'ariaOwns',
-];
+const nonStandardAriaPropertiesMapping = {
+    ariaActiveDescendant: 'aria-activedescendant',
+    ariaControls: 'aria-controls',
+    ariaDescribedBy: 'aria-describedby',
+    ariaDetails: 'aria-details',
+    ariaErrorMessage: 'aria-errormessage',
+    ariaFlowTo: 'aria-flowto',
+    ariaLabelledBy: 'aria-labelledby',
+    ariaOwns: 'aria-owns',
+};
 
 for (const [ariaProperty, ariaAttribute] of Object.entries(ariaPropertiesMapping)) {
-    const standard = !nonStandardAriaProps.includes(ariaProperty);
-    testAriaProperty(ariaProperty, ariaAttribute, standard);
+    testAriaProperty(ariaProperty, ariaAttribute, true);
+}
+
+for (const [ariaProperty, ariaAttribute] of Object.entries(nonStandardAriaPropertiesMapping)) {
+    testAriaProperty(ariaProperty, ariaAttribute, false);
 }

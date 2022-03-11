@@ -1,3 +1,15 @@
 {
-    "warnings": []
+    "warnings": [
+        {
+            "code": 1057,
+            "message": "LWC1057: aria-describedby is not valid attribute for input. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input",
+            "level": 2,
+            "location": {
+                "line": 12,
+                "column": 32,
+                "start": 413,
+                "length": 27
+            }
+        }
+    ]
 }

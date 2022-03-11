@@ -55,7 +55,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       classMap: stc1,
       attrs: stc2,
       props: {
-        ariaDescribedBy: api_scoped_id("ns-foo"),
+        ariaDescribedby: api_scoped_id("ns-foo"),
         ariaHidden: "hidden",
         fooBar: "x",
         foo: "bar",

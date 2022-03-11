@@ -5,14 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import {
-    ArrayFilter,
-    ArrayIndexOf,
-    create,
-    forEach,
-    StringReplace,
-    StringToLowerCase,
-} from './language';
+import { create, forEach, StringReplace, StringToLowerCase } from './language';
 
 /**
  * According to the following list, there are 48 aria attributes of which two (ariaDropEffect and
@@ -23,8 +16,7 @@ import {
  * https://github.com/w3c/aria/pull/708/files#diff-eacf331f0ffc35d4b482f1d15a887d3bR11060
  * https://wicg.github.io/aom/spec/aria-reflection.html
  */
-const ariaPropertyNames = [
-    'ariaActiveDescendant',
+const AriaPropertyNames = [
     'ariaAtomic',
     'ariaAutoComplete',
     'ariaBusy',
@@ -32,27 +24,20 @@ const ariaPropertyNames = [
     'ariaColCount',
     'ariaColIndex',
     'ariaColSpan',
-    'ariaControls',
     'ariaCurrent',
-    'ariaDescribedBy',
-    'ariaDetails',
     'ariaDisabled',
-    'ariaErrorMessage',
     'ariaExpanded',
-    'ariaFlowTo',
     'ariaHasPopup',
     'ariaHidden',
     'ariaInvalid',
     'ariaKeyShortcuts',
     'ariaLabel',
-    'ariaLabelledBy',
     'ariaLevel',
     'ariaLive',
     'ariaModal',
     'ariaMultiLine',
     'ariaMultiSelectable',
     'ariaOrientation',
-    'ariaOwns',
     'ariaPlaceholder',
     'ariaPosInSet',
     'ariaPressed',
@@ -73,35 +58,16 @@ const ariaPropertyNames = [
     'role',
 ] as const;
 
-// The non-standard list includes prop->attr mappings that we have added in the
-// past, but which are not part of AOM ARIA reflection as supported in browsers.
-// https://github.com/salesforce/lwc/issues/2733
-const nonStandardAriaPropertyNames = [
-    'ariaActiveDescendant',
-    'ariaControls',
-    'ariaDescribedBy',
-    'ariaDetails',
-    'ariaErrorMessage',
-    'ariaFlowTo',
-    'ariaLabelledBy',
-    'ariaOwns',
-];
-
-const standardAriaPropertyNames = /*@__PURE__*/ ArrayFilter.call(
-    ariaPropertyNames,
-    (item) => ArrayIndexOf.call(nonStandardAriaPropertyNames, item) === -1
-);
-
 export type AccessibleElementProperties = {
-    [prop in typeof ariaPropertyNames[number]]: string | null;
+    [prop in typeof AriaPropertyNames[number]]: string | null;
 };
 
-function createMappings(propertyNames: string[]) {
+const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (() => {
     const AriaAttrNameToPropNameMap: Record<string, string> = create(null);
     const AriaPropNameToAttrNameMap: Record<string, string> = create(null);
 
     // Synthetic creation of all AOM property descriptors for Custom Elements
-    forEach.call(propertyNames, (propName) => {
+    forEach.call(AriaPropertyNames, (propName) => {
         const attrName = StringToLowerCase.call(
             StringReplace.call(propName, /^aria/, () => 'aria-')
         );
@@ -109,15 +75,11 @@ function createMappings(propertyNames: string[]) {
         AriaPropNameToAttrNameMap[propName] = attrName;
     });
 
-    return [AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap];
-}
-
-export const [AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap] = /*@__PURE__*/ createMappings(
-    ariaPropertyNames as unknown as string[]
-);
-export const [StandardAriaAttrNameToPropNameMap, StandardAriaPropNameToAttrNameMap] =
-    /*@__PURE__*/ createMappings(standardAriaPropertyNames);
+    return { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap };
+})();
 
 export function isAriaAttribute(attrName: string): boolean {
     return attrName in AriaAttrNameToPropNameMap;
 }
+
+export { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap };
