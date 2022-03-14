@@ -216,6 +216,12 @@ function decorators({ types: t }) {
                 return;
             }
 
+            if (node.superClass === null) {
+                // Components *must* extend from either LightningElement or some other superclass (e.g. a mixin).
+                // We can skip classes without a superclass to avoid adding unnecessary registerDecorators() calls
+                return;
+            }
+
             const decoratorPaths = collectDecoratorPaths(classBodyItems);
             const decoratorMetas = decoratorPaths.map(getDecoratorMetadata);
 
