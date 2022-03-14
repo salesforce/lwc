@@ -51,3 +51,25 @@ it('should object spread', async () => {
     expect(code).toContain('b: 1');
     expect(code).not.toContain('...a');
 });
+
+it('should provide helpful error for decorator outside of LightningElement', async () => {
+    const actual = `
+        import { track } from 'lwc'
+        class Foo {
+          @track bar = 'baz';
+        }
+    `;
+    let errored = false;
+    try {
+        await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+    } catch (err) {
+        errored = true;
+        expect((err as any).message).toContain(
+            'Decorators like @api, @track, and @wire are only supported in LightningElement classes.'
+        );
+    }
+
+    if (!errored) {
+        fail('Expected an error to be thrown');
+    }
+});

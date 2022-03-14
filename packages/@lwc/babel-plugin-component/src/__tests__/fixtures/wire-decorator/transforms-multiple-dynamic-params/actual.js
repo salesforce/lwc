@@ -1,6 +1,6 @@
-import { wire } from "lwc";
+import { wire, LightningElement } from "lwc";
 import { getFoo } from "data-service";
-export default class Test {
+export default class Test extends LightningElement {
   @wire(getFoo, {
     key1: "$prop",
     key2: "$prop",
