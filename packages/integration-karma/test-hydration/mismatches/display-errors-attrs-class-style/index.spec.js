@@ -33,6 +33,6 @@ export default {
         expect(consoleCalls.error[2][0].message).toContain(
             'Mismatch hydrating element <p>: attribute "style" has different values, expected "background-color: blue;" but found "background-color: red;"'
         );
-        expect(consoleCalls.error[3][0]).toContain('Recovering from error while hydrating');
+        expect(consoleCalls.error[3][0].message).toContain('Hydration completed with errors.');
     },
 };

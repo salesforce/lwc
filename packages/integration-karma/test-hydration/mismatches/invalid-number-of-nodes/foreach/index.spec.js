@@ -17,8 +17,8 @@ export default {
 
         expect(consoleCalls.error).toHaveSize(2);
         expect(consoleCalls.error[0][0].message).toContain(
-            '[LWC error]: Hydration mismatch: incorrect number of rendered nodes, expected 2 but found 3.'
+            'Server rendered more nodes than the client.'
         );
-        expect(consoleCalls.error[1][0]).toContain('Recovering from error while hydrating');
+        expect(consoleCalls.error[1][0].message).toContain('Hydration completed with errors.');
     },
 };

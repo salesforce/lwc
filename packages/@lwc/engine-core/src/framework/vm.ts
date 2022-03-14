@@ -19,13 +19,7 @@ import {
     isUndefined,
 } from '@lwc/shared';
 
-import {
-    isSyntheticShadowDefined,
-    ssr,
-    remove,
-    isNativeShadowDefined,
-    getChildNodes,
-} from '../renderer';
+import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
 import type { HostNode, HostElement } from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
 
@@ -44,7 +38,6 @@ import {
     logGlobalOperationStart,
 } from './profiler';
 import { patchChildren } from './rendering';
-import { hydrateChildren } from './hydration';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
@@ -214,13 +207,6 @@ export function connectRootElement(elm: any) {
     logGlobalOperationEnd(OperationId.GlobalHydrate, vm);
 }
 
-export function hydrateRootElement(elm: any) {
-    const vm = getAssociatedVM(elm);
-
-    runConnectedCallback(vm);
-    hydrateVM(vm);
-}
-
 export function disconnectRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
     resetComponentStateWhenRemoved(vm);
@@ -228,25 +214,6 @@ export function disconnectRootElement(elm: any) {
 
 export function appendVM(vm: VM) {
     rehydrate(vm);
-}
-
-export function hydrateVM(vm: VM) {
-    if (isTrue(vm.isDirty)) {
-        // manually diffing/patching here.
-        // This routine is:
-        // patchShadowRoot(vm, children);
-        //  -> addVnodes.
-        const children = renderComponent(vm);
-        vm.children = children;
-
-        const vmChildren =
-            vm.renderMode === RenderMode.Light
-                ? getChildNodes(vm.elm)
-                : getChildNodes(vm.elm.shadowRoot);
-        hydrateChildren(vmChildren, children, vm);
-
-        runRenderedCallback(vm);
-    }
 }
 
 // just in case the component comes back, with this we guarantee re-rendering it
@@ -496,7 +463,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
     }
 }
 
-function runRenderedCallback(vm: VM) {
+export function runRenderedCallback(vm: VM) {
     const {
         def: { renderedCallback },
     } = vm;

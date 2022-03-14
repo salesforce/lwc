@@ -112,7 +112,7 @@ function patch(n1: VNode, n2: VNode) {
     }
 }
 
-function mount(node: VNode, parent: ParentNode, anchor: Node | null) {
+export function mount(node: VNode, parent: ParentNode, anchor: Node | null) {
     switch (node.type) {
         case VNodeType.Text:
             mountText(node, parent, anchor);
@@ -370,7 +370,7 @@ function insertNode(node: Node, parent: Node, anchor: Node | null) {
     }
 }
 
-function removeNode(node: Node, parent: ParentNode) {
+export function removeNode(node: Node, parent: ParentNode) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }

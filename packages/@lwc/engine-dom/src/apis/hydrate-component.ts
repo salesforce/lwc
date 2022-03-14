@@ -8,7 +8,7 @@
 import {
     createVM,
     LightningElement,
-    hydrateRootElement,
+    hydrateRoot,
     connectRootElement,
     getAssociatedVMIfPresent,
 } from '@lwc/engine-core';
@@ -32,7 +32,7 @@ function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElem
 }
 
 function createVMWithProps(element: Element, Ctor: typeof LightningElement, props: object) {
-    createVM(element, Ctor, {
+    const vm = createVM(element, Ctor, {
         mode: 'open',
         owner: null,
         tagName: element.tagName.toLowerCase(),
@@ -41,6 +41,8 @@ function createVMWithProps(element: Element, Ctor: typeof LightningElement, prop
     for (const [key, value] of Object.entries(props)) {
         (element as any)[key] = value;
     }
+
+    return vm;
 }
 
 export function hydrateComponent(
@@ -77,9 +79,9 @@ export function hydrateComponent(
         // and uses the same algo to create the stylesheets as in SSR.
         setIsHydrating(true);
 
-        createVMWithProps(element, Ctor, props);
+        const vm = createVMWithProps(element, Ctor, props);
 
-        hydrateRootElement(element);
+        hydrateRoot(vm);
 
         // set it back since now we finished hydration.
         setIsHydrating(false);
