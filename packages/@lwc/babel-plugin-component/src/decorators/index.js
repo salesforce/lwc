@@ -216,6 +216,13 @@ function decorators({ types: t }) {
                 return;
             }
 
+            if (node.superClass === null) {
+                // Any class exposing a field *must* extend either LightningElement or some other superclass.
+                // Even in the case of superclasses and mixins that expose fields, those must extend something as well.
+                // So we can skip classes without a superclass to avoid adding unnecessary registerDecorators calls.
+                return;
+            }
+
             const decoratorPaths = collectDecoratorPaths(classBodyItems);
             const decoratorMetas = decoratorPaths.map(getDecoratorMetadata);
 

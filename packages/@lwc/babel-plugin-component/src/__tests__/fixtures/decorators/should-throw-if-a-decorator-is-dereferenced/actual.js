@@ -1,5 +1,5 @@
-import { track } from "lwc";
+import { track, LightningElement } from "lwc";
 const trock = track;
-export default class Test {
+export default class Test extends LightningElement {
   @trock field;
 }

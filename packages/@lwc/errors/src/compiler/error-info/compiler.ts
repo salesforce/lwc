@@ -208,6 +208,14 @@ export const TransformerErrors = {
         url: '',
     },
 
+    JS_TRANSFORMER_DECORATOR_ERROR: {
+        code: 1153,
+        message:
+            'Decorators like @api, @track, and @wire are only supported in LightningElement classes. {0}',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
     NO_AVAILABLE_TRANSFORMER: {
         code: 1005,
         message: 'No available transformer for "{0}"',

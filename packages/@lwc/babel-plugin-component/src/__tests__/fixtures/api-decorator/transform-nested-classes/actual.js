@@ -1,7 +1,7 @@
-import { api } from "lwc";
-export default class Outer {
+import { api, LightningElement } from "lwc";
+export default class Outer extends LightningElement {
   @api outer;
-  a = class {
+  a = class extends LightningElement {
     @api innerA;
   };
 }
