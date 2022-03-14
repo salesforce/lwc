@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull, isTrue } from '@lwc/shared';
+import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 import {
@@ -50,6 +50,7 @@ const enum EnvNodeTypes {
     COMMENT = 8,
 }
 
+// flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
 
 export function hydrateRoot(vm: VM) {
@@ -64,31 +65,36 @@ export function hydrateRoot(vm: VM) {
 }
 
 function hydrateVM(vm: VM) {
-    if (isTrue(vm.isDirty)) {
-        const children = renderComponent(vm);
-        vm.children = children;
+    const children = renderComponent(vm);
+    vm.children = children;
 
-        const parentNode = vm.renderRoot;
+    const parentNode = vm.renderRoot;
 
-        hydrateChildren(getFirstChild(parentNode), children, parentNode);
-        runRenderedCallback(vm);
-    }
+    hydrateChildren(getFirstChild(parentNode), children, parentNode, vm);
+    runRenderedCallback(vm);
 }
 
 function hydrateNode(node: Node, vnode: VNode): Node | null {
+    let hydratedNode;
     switch (vnode.type) {
         case VNodeType.Text:
-            return hydrateText(node, vnode);
+            hydratedNode = hydrateText(node, vnode);
+            break;
 
         case VNodeType.Comment:
-            return hydrateComment(node, vnode);
+            hydratedNode = hydrateComment(node, vnode);
+            break;
 
         case VNodeType.Element:
-            return hydrateElement(node, vnode);
+            hydratedNode = hydrateElement(node, vnode);
+            break;
 
         case VNodeType.CustomElement:
-            return hydrateCustomElement(node, vnode);
+            hydratedNode = hydrateCustomElement(node, vnode);
+            break;
     }
+
+    return nextSibling(hydratedNode);
 }
 
 function hydrateText(node: Node, vnode: VText): Node | null {
@@ -110,7 +116,7 @@ function hydrateText(node: Node, vnode: VText): Node | null {
     setText(node, vnode.text ?? null);
     vnode.elm = node;
 
-    return nextSibling(node);
+    return node;
 }
 
 function hydrateComment(node: Node, vnode: VComment): Node | null {
@@ -121,7 +127,7 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
     if (process.env.NODE_ENV !== 'production') {
         const nodeValue = getProperty(node, 'nodeValue');
 
-        if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
+        if (nodeValue !== vnode.text) {
             logWarn(
                 'Hydration mismatch: comment values do not match, will recover from the difference',
                 vnode.owner
@@ -132,7 +138,7 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
     setProperty(node, 'nodeValue', vnode.text ?? null);
     vnode.elm = node;
 
-    return nextSibling(node);
+    return node;
 }
 
 function hydrateElement(elm: Node, vnode: VElement): Node | null {
@@ -178,10 +184,10 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
     patchElementPropsAndAttrs(vnode);
 
     if (!isDomManual) {
-        hydrateChildren(getFirstChild(elm), vnode.children, elm);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm, vnode.owner);
     }
 
-    return nextSibling(elm);
+    return elm;
 }
 
 function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
@@ -215,14 +221,19 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
     if (vm.renderMode !== RenderMode.Light) {
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
-        hydrateChildren(getFirstChild(elm), vnode.children, elm);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm, vm);
     }
 
     hydrateVM(vm);
-    return nextSibling(elm);
+    return elm;
 }
 
-function hydrateChildren(node: Node | null, children: VNodes, parentNode: Element | ShadowRoot) {
+function hydrateChildren(
+    node: Node | null,
+    children: VNodes,
+    parentNode: Element | ShadowRoot,
+    owner: VM
+) {
     let hasWarned = false;
     let nextNode: Node | null = node;
     let anchor: Node | null = null;
@@ -239,7 +250,8 @@ function hydrateChildren(node: Node | null, children: VNodes, parentNode: Elemen
                     if (!hasWarned) {
                         hasWarned = true;
                         logError(
-                            `Hydration mismatch: incorrect number of rendered nodes. Client vdom rendered more elements than the server.`
+                            `Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.`,
+                            owner
                         );
                     }
                 }
@@ -254,7 +266,8 @@ function hydrateChildren(node: Node | null, children: VNodes, parentNode: Elemen
         if (process.env.NODE_ENV !== 'production') {
             if (!hasWarned) {
                 logError(
-                    `Hydration mismatch: incorrect number of rendered nodes. Server rendered more elements than client vdom.`
+                    `Hydration mismatch: incorrect number of rendered nodes. Server rendered more nodes than the client.`,
+                    owner
                 );
             }
         }
@@ -277,7 +290,7 @@ function handleMismatch(node: Node, vnode: VNode, msg?: string): Node | null {
     mount(vnode, parentNode, node);
     removeNode(node, parentNode);
 
-    return nextSibling(vnode.elm);
+    return vnode.elm!;
 }
 
 function patchElementPropsAndAttrs(vnode: VBaseElement) {
