@@ -1,3 +1,5 @@
-export default class Test {
+import { LightningElement } from "lwc";
+
+export default class Test extends LightningElement {
   @foo.bar field;
 }

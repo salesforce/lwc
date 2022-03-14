@@ -1,6 +1,6 @@
-import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
+import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
 import _tmpl from "./test.html";
-class Text {
+class Text extends LightningElement {
   publicProp;
   privateProp;
   get aloneGet() {}
@@ -14,6 +14,7 @@ class Text {
   static get ctorGet() {
     return 1;
   }
+  /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Text, {
   publicProps: {

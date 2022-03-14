@@ -15,6 +15,7 @@ import api from './api';
 import wire from './wire';
 import track from './track';
 import { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
+import {APIFeature, getAPIVersionFromNumber, isAPIFeatureEnabled} from "@lwc/shared";
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
@@ -264,6 +265,14 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
                 'body.body'
             ) as NodePath<ClassBodyItem>[];
             if (classBodyItems.length === 0) {
+                return;
+            }
+
+            if (node.superClass === null && isAPIFeatureEnabled(APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS, getAPIVersionFromNumber(state.opts.apiVersion))) {
+                // Any class exposing a field *must* extend either LightningElement or some other superclass.
+                // Even in the case of superclasses and mixins that expose fields, those must extend something as well.
+                // So we can skip classes without a superclass to avoid adding unnecessary registerDecorators calls.
+                // However, we only do this in later API versions to avoid a breaking change.
                 return;
             }
 

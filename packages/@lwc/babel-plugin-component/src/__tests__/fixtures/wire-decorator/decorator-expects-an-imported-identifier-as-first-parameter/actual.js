@@ -1,5 +1,5 @@
-import { wire } from "lwc";
+import { wire, LightningElement } from "lwc";
 const ID = "adapterId";
-export default class Test {
+export default class Test extends LightningElement {
   @wire(ID, {}) wiredProp;
 }
