@@ -1,0 +1,9 @@
+{
+    "message": "LWC1103: \"@track\" can only be applied on class properties",
+    "loc": {
+        "line": 2,
+        "column": 0,
+        "start": 29,
+        "length": 19
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "message": "LWC1111: Invalid property name \"part\". \"part\" is a future reserved attribute for web components.",
+    "loc": {
+        "line": 3,
+        "column": 2,
+        "start": 57,
+        "length": 10
+    }
+}

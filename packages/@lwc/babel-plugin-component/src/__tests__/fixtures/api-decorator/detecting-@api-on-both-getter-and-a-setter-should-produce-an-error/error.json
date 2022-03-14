@@ -1,0 +1,9 @@
+{
+    "message": "LWC1112: @api get something and @api set something detected in class declaration. Only one of the two needs to be decorated with @api.",
+    "loc": {
+        "line": 7,
+        "column": 2,
+        "start": 107,
+        "length": 53
+    }
+}
