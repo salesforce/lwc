@@ -177,11 +177,9 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
 
     patchElementPropsAndAttrs(vnode);
 
-    if (isDomManual) {
-        return nextSibling(elm);
+    if (!isDomManual) {
+        hydrateChildren(getFirstChild(elm), vnode.children, elm);
     }
-
-    hydrateChildren(getFirstChild(elm), vnode.children, elm);
 
     return nextSibling(elm);
 }
