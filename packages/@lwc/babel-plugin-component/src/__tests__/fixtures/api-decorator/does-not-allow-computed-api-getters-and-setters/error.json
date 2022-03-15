@@ -1,0 +1,9 @@
+{
+    "message": "LWC1106: @api cannot be applied to a computed property, getter, setter or method.",
+    "loc": {
+        "line": 3,
+        "column": 2,
+        "start": 111,
+        "length": 24
+    }
+}

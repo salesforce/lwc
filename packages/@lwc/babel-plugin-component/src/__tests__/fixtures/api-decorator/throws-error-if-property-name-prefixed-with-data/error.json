@@ -1,0 +1,9 @@
+{
+    "message": "LWC1107: Invalid property name \"dataFooBar\". Properties starting with \"data\" are reserved attributes.",
+    "loc": {
+        "line": 3,
+        "column": 2,
+        "start": 57,
+        "length": 16
+    }
+}

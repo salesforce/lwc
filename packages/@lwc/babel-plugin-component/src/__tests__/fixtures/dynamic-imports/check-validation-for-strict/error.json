@@ -1,0 +1,9 @@
+{
+    "message": "LWC1121: Invalid import. The argument \"id\" must be a stringLiteral for dynamic imports when strict mode is enabled.",
+    "loc": {
+        "line": 3,
+        "column": 25,
+        "start": 76,
+        "length": 2
+    }
+}

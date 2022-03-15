@@ -1,0 +1,1 @@
+import { foo, bar as bar1, bar as bar2 } from "foo";

@@ -1,0 +1,9 @@
+{
+    "message": "LWC1095: @wire method or property cannot be used with @track",
+    "loc": {
+        "line": 5,
+        "column": 2,
+        "start": 113,
+        "length": 59
+    }
+}

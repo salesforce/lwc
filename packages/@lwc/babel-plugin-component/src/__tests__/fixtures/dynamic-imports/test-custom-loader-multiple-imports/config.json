@@ -1,0 +1,6 @@
+{
+    "dynamicImports": {
+        "loader": "@custom/loader",
+        "strictSpecifier": true
+    }
+}

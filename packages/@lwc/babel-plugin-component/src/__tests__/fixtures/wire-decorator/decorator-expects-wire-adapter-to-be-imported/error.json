@@ -1,0 +1,9 @@
+{
+    "message": "LWC1119: Failed to resolve @wire adapter \"adapter\". Ensure it is imported.",
+    "loc": {
+        "line": 3,
+        "column": 8,
+        "start": 116,
+        "length": 7
+    }
+}

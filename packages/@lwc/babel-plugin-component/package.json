@@ -25,9 +25,6 @@
         "@lwc/shared": "2.11.1",
         "line-column": "~1.0.2"
     },
-    "devDependencies": {
-        "common-tags": "^1.8.0"
-    },
     "peerDependencies": {
         "@babel/core": "^7"
     },

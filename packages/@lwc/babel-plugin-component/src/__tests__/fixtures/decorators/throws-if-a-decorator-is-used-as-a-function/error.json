@@ -1,0 +1,9 @@
+{
+    "message": "LWC1104: \"track\" can only be used as a class decorator",
+    "loc": {
+        "line": 2,
+        "column": 0,
+        "start": 29,
+        "length": 12
+    }
+}

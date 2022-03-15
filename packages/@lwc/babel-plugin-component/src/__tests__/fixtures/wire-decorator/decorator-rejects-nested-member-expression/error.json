@@ -1,0 +1,9 @@
+{
+    "message": "LWC1132: @wire identifier cannot contain nested member expressions",
+    "loc": {
+        "line": 4,
+        "column": 8,
+        "start": 87,
+        "length": 12
+    }
+}

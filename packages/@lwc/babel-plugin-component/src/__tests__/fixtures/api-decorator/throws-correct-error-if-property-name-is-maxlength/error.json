@@ -1,0 +1,9 @@
+{
+    "message": "LWC1109: Ambiguous attribute name \"maxlength\". \"maxlength\" will never be called from template because its corresponding property is camel cased. Consider renaming to \"maxLength\".",
+    "loc": {
+        "line": 3,
+        "column": 2,
+        "start": 57,
+        "length": 15
+    }
+}

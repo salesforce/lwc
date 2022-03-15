@@ -1,0 +1,9 @@
+{
+    "message": "LWC1098: @wire expects a function identifier to be imported as first parameter.",
+    "loc": {
+        "line": 4,
+        "column": 8,
+        "start": 88,
+        "length": 2
+    }
+}

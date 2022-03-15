@@ -1,0 +1,9 @@
+{
+    "message": "LWC1113: @track decorator can only be applied to class properties.",
+    "loc": {
+        "line": 5,
+        "column": 2,
+        "start": 71,
+        "length": 6
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "message": "LWC1105: Method or property can only have 1 @wire decorator",
+    "loc": {
+        "line": 4,
+        "column": 2,
+        "start": 97,
+        "length": 59
+    }
+}

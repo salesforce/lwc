@@ -1,0 +1,9 @@
+{
+    "message": "LWC1093: @api method or property cannot be used with @track",
+    "loc": {
+        "line": 4,
+        "column": 2,
+        "start": 73,
+        "length": 4
+    }
+}

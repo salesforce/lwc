@@ -1,0 +1,1 @@
+import { renderComponent } from "lwc";
