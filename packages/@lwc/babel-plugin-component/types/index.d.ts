@@ -5,12 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export interface Location {
-    start: Position;
-    end: Position;
-}
+import type { PluginObj } from '@babel/core';
 
-export interface Position {
-    line: number;
-    column: number;
-}
+export default function babelPluginComponent(): PluginObj;

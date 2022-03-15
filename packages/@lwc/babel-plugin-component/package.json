@@ -16,8 +16,7 @@
     "license": "MIT",
     "files": [
         "src/*.js",
-        "src/decorators/",
-        "src/post-process/"
+        "src/decorators/"
     ],
     "dependencies": {
         "@babel/helper-module-imports": "~7.16.7",
@@ -30,6 +29,5 @@
     },
     "publishConfig": {
         "access": "public"
-    },
-    "gitHead": "94040389ab8fc717b8753e503f659489480a327d"
+    }
 }
