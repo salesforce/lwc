@@ -16,7 +16,6 @@ branches:
         - communities/ui-feeds-components
         - communities/ui-lightning-community
         - lwc/lwc-platform
-        - salesforce/luvio
         - salesforce/lwr
         - salesforce/lwr-recipes
         - salesforce/utam-docs
