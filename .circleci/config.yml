@@ -18,7 +18,7 @@ executors:
   node:
     working_directory: ~/lwc
     docker:
-      - image: cimg/node:16
+      - image: cimg/node:16.14.0
 
 
 # Custom commands definition
