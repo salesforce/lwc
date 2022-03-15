@@ -17,7 +17,6 @@ branches:
         - communities/ui-lightning-community
         - lwc/lwc-platform
         - salesforce/lwr
-        - salesforce/lwr-recipes
         - salesforce/utam-docs
         - salesforcedevs/developer-website
         - uiplatform/nucleus
