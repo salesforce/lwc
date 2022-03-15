@@ -84,14 +84,13 @@ it('should disconnect on the right order (issue #1199 and #1198)', () => {
     elm.hide = true;
     return Promise.resolve().then(() => {
         expect(window.timingBuffer).toEqual([
-            'shadowParent:disconnectedCallback',
-            'leaf:after-container:disconnectedCallback',
             'shadowContainer:disconnectedCallback',
             'leaf:after-slot:disconnectedCallback',
             'leaf:before-slot:disconnectedCallback',
-            'leaf:slotted-a:disconnectedCallback',
-            'leaf:slotted-b:disconnectedCallback',
-            'leaf:before-container:disconnectedCallback',
+            'parent:a:disconnectedCallback',
+            'leaf:a:disconnectedCallback',
+            'parent:b:disconnectedCallback',
+            'leaf:b:disconnectedCallback',
         ]);
     });
 });
