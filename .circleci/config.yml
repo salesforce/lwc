@@ -85,7 +85,9 @@ commands:
       -  run:
           name: Stop sauce connect
           # Stop any processes starting with 'sc ' https://stackoverflow.com/a/64718983
-          command: pkill -SIGTERM -f '^sc '
+          command: |
+              pgrep -f '^sc '
+              pkill -SIGTERM -f '^sc '
 
 
   # Test
@@ -110,7 +112,7 @@ commands:
               <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >>
               <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
               <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
-              yarn sauce
+              echo hello world
 
 
 # Jobs definition
