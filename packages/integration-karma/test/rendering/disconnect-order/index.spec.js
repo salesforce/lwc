@@ -1,7 +1,9 @@
 import { createElement } from 'lwc';
 
 import ShadowParent from 'x/shadowParent';
+import ShadowLightParent from 'x/shadowLightParent';
 import LightParent from 'x/lightParent';
+import LightShadowParent from 'x/lightShadowParent';
 import ToggleContainer from 'x/toggleContainer';
 
 beforeEach(() => {
@@ -28,6 +30,17 @@ const fixtures = [
         ],
     },
     {
+        tagName: 'x-shadow-light-parent',
+        ctor: ShadowLightParent,
+        values: [
+            'shadowLightParent:disconnectedCallback',
+            'lightContainer:disconnectedCallback',
+            'leaf:after-slot:disconnectedCallback',
+            'leaf:before-slot:disconnectedCallback',
+            'leaf:slotted-shadow:disconnectedCallback',
+        ],
+    },
+    {
         tagName: 'x-light-parent',
         ctor: LightParent,
         values: [
@@ -39,6 +52,17 @@ const fixtures = [
             'leaf:slotted-a:disconnectedCallback',
             'leaf:slotted-b:disconnectedCallback',
             'leaf:before-container:disconnectedCallback',
+        ],
+    },
+    {
+        tagName: 'x-light-shadow-parent',
+        ctor: LightShadowParent,
+        values: [
+            'lightShadowContainer:disconnectedCallback',
+            'shadowContainer:disconnectedCallback',
+            'leaf:after-slot:disconnectedCallback',
+            'leaf:before-slot:disconnectedCallback',
+            'leaf:slotted-light:disconnectedCallback',
         ],
     },
 ];
