@@ -85,7 +85,7 @@ commands:
       -  run:
           name: Stop sauce connect
           # Stop any processes starting with 'sc ' https://stackoverflow.com/a/64718983
-          command: pkill -SIGQUIT -f '^sc '
+          command: pkill -SIGTERM -f '^sc '
 
 
   # Test
