@@ -217,8 +217,9 @@ function decorators({ types: t }) {
             }
 
             if (node.superClass === null) {
-                // Components *must* extend from either LightningElement or some other superclass (e.g. a mixin).
-                // We can skip classes without a superclass to avoid adding unnecessary registerDecorators() calls
+                // Any class exposing a field *must* extend either LightningElement or some other superclass.
+                // Even in the case of superclasses and mixins that expose fields, those must extend something as well.
+                // So we can skip classes without a superclass to avoid adding unnecessary registerDecorators calls.
                 return;
             }
 
