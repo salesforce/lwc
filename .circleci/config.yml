@@ -84,7 +84,7 @@ commands:
     steps:
       -  run:
           name: Stop sauce connect
-          command: killall sc
+          command: pkill -SIGQUIT sc
 
 
   # Test
