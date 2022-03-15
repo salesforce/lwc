@@ -25,27 +25,6 @@ function normalizeError(err) {
 }
 
 describe('fixtures', () => {
-    beforeEach(() => {
-        // Disable console.error because babel logs warnings if the file size is > 500KB
-        const { error: originalConsoleError } = console;
-        // eslint-disable-next-line no-console
-        console.error = jest.spyOn(console, 'error').mockImplementation((...args) => {
-            if (
-                args.length > 0 &&
-                // To be sure we are not letting any other real problems slip
-                args[0]
-                    .toString()
-                    .includes('[BABEL] Note: The code generator has deoptimised the styling of')
-            ) {
-                return;
-            }
-            originalConsoleError(...args);
-        });
-    });
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
     testFixtureDir(
         {
             root: path.resolve(__dirname, 'fixtures'),
