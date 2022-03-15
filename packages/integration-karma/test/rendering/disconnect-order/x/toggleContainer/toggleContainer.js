@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
 
-export default class Container extends LightningElement {
+export default class ToggleContainer extends LightningElement {
     @api hide = false;
 }

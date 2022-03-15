@@ -1,6 +1,6 @@
 import { LightningElement } from 'lwc';
 
-export default class Parent extends LightningElement {
+export default class ToggleParent extends LightningElement {
     constructor() {
         super();
         window.timingBuffer.push('parent:constructor');
