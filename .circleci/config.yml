@@ -79,17 +79,6 @@ commands:
           name: Wait for sauce connect to be up
           command: wget --retry-connrefused --no-check-certificate -T 60 localhost:4445
 
-  stop_sauce_connect:
-    description: Stop all sauce connect tunnels
-    steps:
-      -  run:
-          name: Stop sauce connect
-          # Stop any processes starting with 'sc ' https://stackoverflow.com/a/64718983
-          command: |
-              pgrep -f '^sc '
-              pkill -SIGTERM -f '^sc '
-
-
   # Test
   run_karma:
     description: Run Karma integration tests
@@ -183,7 +172,6 @@ jobs:
           name: Compute karma coverage
           command: yarn coverage
           working_directory: packages/integration-karma
-      - stop_sauce_connect
 
 
   test_integration:
@@ -197,7 +185,6 @@ jobs:
           name: Run integration test - Chrome SauceLabs
           command: yarn sauce:prod --browsers chrome
           working_directory: packages/integration-tests
-      - stop_sauce_connect
 
 
   test_integration_compat:
@@ -211,7 +198,6 @@ jobs:
           name: Run integration test - IE11 SauceLabs
           command: yarn sauce:prod_compat --browsers ie11
           working_directory: packages/integration-tests
-      - stop_sauce_connect
 
 
 # Workflows definition
