@@ -1,6 +1,6 @@
 {
     "name": "lwc",
-    "version": "2.11.1",
+    "version": "2.11.2",
     "description": "Lightning Web Components (LWC)",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -41,12 +41,12 @@
         ]
     },
     "dependencies": {
-        "@lwc/compiler": "2.11.1",
-        "@lwc/engine-dom": "2.11.1",
-        "@lwc/engine-server": "2.11.1",
-        "@lwc/features": "2.11.1",
-        "@lwc/synthetic-shadow": "2.11.1",
-        "@lwc/wire-service": "2.11.1"
+        "@lwc/compiler": "2.11.2",
+        "@lwc/engine-dom": "2.11.2",
+        "@lwc/engine-server": "2.11.2",
+        "@lwc/features": "2.11.2",
+        "@lwc/synthetic-shadow": "2.11.2",
+        "@lwc/wire-service": "2.11.2"
     },
     "gitHead": "94040389ab8fc717b8753e503f659489480a327d"
 }
