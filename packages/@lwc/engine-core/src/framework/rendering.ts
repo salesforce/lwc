@@ -77,14 +77,6 @@ export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode): void 
     }
 }
 
-export function unmountChildren(
-    vnode: VNodes,
-    parent: ParentNode,
-    doRemove: boolean = false
-): void {
-    unmountVNodes(vnode, parent, doRemove);
-}
-
 function patch(n1: VNode, n2: VNode) {
     if (n1 === n2) {
         return;
@@ -286,15 +278,25 @@ function mountVNodes(
 function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
     const { type, elm } = vnode;
 
-    // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
-    // subtree root, is the only element worth unmounting from the subtree.
-    if (doRemove && !isUndefined(elm)) {
+    // Ignore the subtree if the VNode has no associated element. This occurs whenever a compo
+    if (isUndefined(elm)) {
+        return;
+    }
+
+    // When unmounting a VNode subtree not all the elements have to removed from the DOM. There are
+    // two cases where the element could be undefined:
+    // * when there is an error during the construction phase, and an error boundary picks it, there
+    //   is a possibility that the VCustomElement is not properly initialized, and therefore is
+    //   should be ignored.
+    // * when slotted custom element is not used by the element where it is slotted into it, as a
+    //   result, the custom element was never initialized.
+    if (doRemove) {
         removeNode(elm, parent);
     }
 
     switch (type) {
         case VNodeType.Element:
-            unmountVNodes(vnode.children, elm as ParentNode);
+            unmountChildren(vnode.children, elm as ParentNode);
             break;
 
         case VNodeType.CustomElement: {
@@ -309,7 +311,7 @@ function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
     }
 }
 
-function unmountVNodes(
+export function unmountChildren(
     vnodes: VNodes,
     parent: ParentNode,
     doRemove: boolean = false,
@@ -677,7 +679,7 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
             before = isVNode(n) ? n.elm : null;
             mountVNodes(newCh, parent, before, newStartIdx, newEndIdx + 1);
         } else {
-            unmountVNodes(oldCh, parent, true, oldStartIdx, oldEndIdx + 1);
+            unmountChildren(oldCh, parent, true, oldStartIdx, oldEndIdx + 1);
         }
     }
 }
@@ -695,7 +697,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
     if (c2Length === 0) {
         // the old list is nonempty and the new list is empty so we can directly remove all old nodes
         // this is the case in which the dynamic children of an if-directive should be removed
-        unmountVNodes(c1, parent, true);
+        unmountChildren(c1, parent, true);
         return;
     }
 
