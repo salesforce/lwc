@@ -118,7 +118,7 @@ function patch(n1: VNode, n2: VNode, vm: VM) {
     }
 }
 
-function mount(node: VNode, parent: ParentNode, anchor: Node | null, vm: VM) {
+export function mount(node: VNode, parent: ParentNode, anchor: Node | null, vm: VM) {
     switch (node.type) {
         case VNodeType.Text:
             mountText(node, parent, anchor, vm);

@@ -4,39 +4,40 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
+import { ArrayJoin, assert, isNull, isUndefined, keys } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 import {
     getAttribute,
     getClassList,
-    setText,
-    getProperty,
-    setProperty,
-    nextSibling,
     getFirstChild,
+    getProperty,
+    nextSibling,
+    setProperty,
+    setText,
 } from '../renderer';
 
 import { cloneAndOmitKey, parseStyleText } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
     createVM,
-    runConnectedCallback,
-    VMState,
-    RenderMode,
     LwcDomMode,
-    VM,
+    RenderMode,
+    runConnectedCallback,
     runRenderedCallback,
+    VM,
+    VMState,
 } from './vm';
 import {
-    VNodes,
     VBaseElement,
-    VNode,
-    VNodeType,
-    VText,
     VComment,
-    VElement,
     VCustomElement,
+    VElement,
+    VNode,
+    VNodes,
+    VNodeType,
+    VSlot,
+    VText,
 } from './vnodes';
 
 import { patchProps } from './modules/props';
@@ -74,32 +75,36 @@ function hydrateVM(vm: VM) {
     runRenderedCallback(vm);
 }
 
-function hydrateNode(node: Node, vnode: VNode): Node | null {
+function hydrateNode(node: Node, vnode: VNode, owner: VM): Node | null {
     let hydratedNode;
     switch (vnode.type) {
         case VNodeType.Text:
-            hydratedNode = hydrateText(node, vnode);
+            hydratedNode = hydrateText(node, vnode, owner);
             break;
 
         case VNodeType.Comment:
-            hydratedNode = hydrateComment(node, vnode);
+            hydratedNode = hydrateComment(node, vnode, owner);
+            break;
+
+        case VNodeType.Slot:
+            hydratedNode = hydrateSlot(node, vnode, owner);
             break;
 
         case VNodeType.Element:
-            hydratedNode = hydrateElement(node, vnode);
+            hydratedNode = hydrateElement(node, vnode, owner);
             break;
 
         case VNodeType.CustomElement:
-            hydratedNode = hydrateCustomElement(node, vnode);
+            hydratedNode = hydrateCustomElement(node, vnode, owner);
             break;
     }
 
     return nextSibling(hydratedNode);
 }
 
-function hydrateText(node: Node, vnode: VText): Node | null {
-    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT)) {
-        return handleMismatch(node, vnode);
+function hydrateText(node: Node, vnode: VText, owner: VM): Node {
+    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT, owner)) {
+        return handleMismatch(node, vnode, owner);
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -108,7 +113,7 @@ function hydrateText(node: Node, vnode: VText): Node | null {
         if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
             logWarn(
                 'Hydration mismatch: text values do not match, will recover from the difference',
-                vnode.owner
+                owner
             );
         }
     }
@@ -119,9 +124,9 @@ function hydrateText(node: Node, vnode: VText): Node | null {
     return node;
 }
 
-function hydrateComment(node: Node, vnode: VComment): Node | null {
-    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.COMMENT)) {
-        return handleMismatch(node, vnode);
+function hydrateComment(node: Node, vnode: VComment, owner: VM): Node {
+    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.COMMENT, owner)) {
+        return handleMismatch(node, vnode, owner);
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -130,7 +135,7 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
         if (nodeValue !== vnode.text) {
             logWarn(
                 'Hydration mismatch: comment values do not match, will recover from the difference',
-                vnode.owner
+                owner
             );
         }
     }
@@ -141,12 +146,43 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
     return node;
 }
 
-function hydrateElement(elm: Node, vnode: VElement): Node | null {
+function hydrateSlot(node: Node, vnode: VSlot, vm: VM): Node {
+    const { aChildren, owner } = vnode;
+
+    // weather to render the slotted content or the default slot content.
+    const children: VNodes = isUndefined(aChildren) ? vnode.children : aChildren;
+
+    // default content is part of vm.
+    const slottedContentOwnerVM = isUndefined(aChildren) ? vm : owner!;
+
+    if (vm.renderMode === RenderMode.Light) {
+        hydrateChildren(node, children, node.parentNode as Element, slottedContentOwnerVM, false);
+
+        const cl = children.length;
+        // last element of a slot in light dom is an empty text node.
+        return cl ? children[cl - 1]!.elm! : node;
+    }
+
     if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT) ||
-        !isMatchingElement(vnode, elm)
+        !hasCorrectNodeType<Element>(vnode, node, EnvNodeTypes.ELEMENT, vm) ||
+        !isMatchingElement(vnode, node, vm)
     ) {
-        return handleMismatch(elm, vnode);
+        return handleMismatch(node, vnode, vm);
+    }
+
+    vnode.elm = node;
+    patchElementPropsAndAttrs(vnode);
+    hydrateChildren(getFirstChild(node), children, node, slottedContentOwnerVM);
+
+    return node;
+}
+
+function hydrateElement(elm: Node, vnode: VElement, owner: VM): Node {
+    if (
+        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, owner) ||
+        !isMatchingElement(vnode, elm, owner)
+    ) {
+        return handleMismatch(elm, vnode, owner);
     }
 
     vnode.elm = elm;
@@ -174,7 +210,7 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
                             elm,
                             'tagName'
                         ).toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
-                        vnode.owner
+                        owner
                     );
                 }
             }
@@ -184,21 +220,21 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
     patchElementPropsAndAttrs(vnode);
 
     if (!isDomManual) {
-        hydrateChildren(getFirstChild(elm), vnode.children, elm, vnode.owner);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm, owner);
     }
 
     return elm;
 }
 
-function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
+function hydrateCustomElement(elm: Node, vnode: VCustomElement, owner: VM): Node {
     if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT) ||
-        !isMatchingElement(vnode, elm)
+        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, owner) ||
+        !isMatchingElement(vnode, elm, owner)
     ) {
-        return handleMismatch(elm, vnode);
+        return handleMismatch(elm, vnode, owner);
     }
 
-    const { sel, mode, ctor, owner } = vnode;
+    const { sel, mode, ctor } = vnode;
 
     const vm = createVM(elm, ctor, {
         mode,
@@ -210,7 +246,7 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
     vnode.elm = elm;
     vnode.vm = vm;
 
-    allocateChildren(vnode, vm);
+    allocateChildren(vnode, vm, owner);
     patchElementPropsAndAttrs(vnode);
 
     // Insert hook section:
@@ -233,7 +269,8 @@ function hydrateChildren(
     node: Node | null,
     children: VNodes,
     parentNode: Element | ShadowRoot,
-    owner: VM
+    owner: VM,
+    hydrateAllSiblings = true
 ) {
     let hasWarned = false;
     let nextNode: Node | null = node;
@@ -243,7 +280,7 @@ function hydrateChildren(
 
         if (!isNull(childVnode)) {
             if (nextNode) {
-                nextNode = hydrateNode(nextNode, childVnode);
+                nextNode = hydrateNode(nextNode, childVnode, owner);
                 anchor = childVnode.elm!;
             } else {
                 hasMismatch = true;
@@ -256,13 +293,13 @@ function hydrateChildren(
                         );
                     }
                 }
-                mount(childVnode, parentNode, anchor);
+                mount(childVnode, parentNode, anchor, owner);
                 anchor = childVnode.elm!;
             }
         }
     }
 
-    if (nextNode) {
+    if (hydrateAllSiblings && nextNode) {
         hasMismatch = true;
         if (process.env.NODE_ENV !== 'production') {
             if (!hasWarned) {
@@ -280,15 +317,15 @@ function hydrateChildren(
     }
 }
 
-function handleMismatch(node: Node, vnode: VNode, msg?: string): Node | null {
+function handleMismatch(node: Node, vnode: VNode, owner: VM, msg?: string): Node {
     hasMismatch = true;
     if (!isUndefined(msg)) {
         if (process.env.NODE_ENV !== 'production') {
-            logError(msg, vnode.owner);
+            logError(msg, owner);
         }
     }
     const parentNode = getProperty(node, 'parentNode');
-    mount(vnode, parentNode, node);
+    mount(vnode, parentNode, node, owner);
     removeNode(node, parentNode);
 
     return vnode.elm!;
@@ -299,10 +336,15 @@ function patchElementPropsAndAttrs(vnode: VBaseElement) {
     patchProps(null, vnode);
 }
 
-function hasCorrectNodeType<T extends Node>(vnode: VNode, node: Node, nodeType: number): node is T {
+function hasCorrectNodeType<T extends Node>(
+    vnode: VNode,
+    node: Node,
+    nodeType: number,
+    owner: VM
+): node is T {
     if (getProperty(node, 'nodeType') !== nodeType) {
         if (process.env.NODE_ENV !== 'production') {
-            logError('Hydration mismatch: incorrect node type received', vnode.owner);
+            logError('Hydration mismatch: incorrect node type received', owner);
         }
         return false;
     }
@@ -310,7 +352,7 @@ function hasCorrectNodeType<T extends Node>(vnode: VNode, node: Node, nodeType: 
     return true;
 }
 
-function isMatchingElement(vnode: VBaseElement, elm: Element) {
+function isMatchingElement(vnode: VBaseElement, elm: Element, owner: VM) {
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
@@ -318,21 +360,21 @@ function isMatchingElement(vnode: VBaseElement, elm: Element) {
                     elm,
                     'tagName'
                 ).toLowerCase()}".`,
-                vnode.owner
+                owner
             );
         }
 
         return false;
     }
 
-    const hasIncompatibleAttrs = validateAttrs(vnode, elm);
-    const hasIncompatibleClass = validateClassAttr(vnode, elm);
-    const hasIncompatibleStyle = validateStyleAttr(vnode, elm);
+    const hasIncompatibleAttrs = validateAttrs(vnode, elm, owner);
+    const hasIncompatibleClass = validateClassAttr(vnode, elm, owner);
+    const hasIncompatibleStyle = validateStyleAttr(vnode, elm, owner);
 
     return hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
 }
 
-function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
+function validateAttrs(vnode: VBaseElement, elm: Element, owner: VM): boolean {
     const {
         data: { attrs = {} },
     } = vnode;
@@ -350,7 +392,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
                         elm,
                         'tagName'
                     ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
-                    vnode.owner
+                    owner
                 );
             }
             nodesAreCompatible = false;
@@ -360,7 +402,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
     return nodesAreCompatible;
 }
 
-function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
+function validateClassAttr(vnode: VBaseElement, elm: Element, owner: VM): boolean {
     const {
         data: { className, classMap },
     } = vnode;
@@ -402,7 +444,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
                     elm,
                     'className'
                 )}"`,
-                vnode.owner
+                owner
             );
         }
     }
@@ -410,7 +452,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
     return nodesAreCompatible;
 }
 
-function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
+function validateStyleAttr(vnode: VBaseElement, elm: Element, owner: VM): boolean {
     const {
         data: { style, styleDecls },
     } = vnode;
@@ -454,7 +496,7 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
                     elm,
                     'tagName'
                 ).toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
-                vnode.owner
+                owner
             );
         }
     }
