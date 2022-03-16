@@ -47,6 +47,5 @@
         "@lwc/features": "2.11.2",
         "@lwc/synthetic-shadow": "2.11.2",
         "@lwc/wire-service": "2.11.2"
-    },
-    "gitHead": "94040389ab8fc717b8753e503f659489480a327d"
+    }
 }
