@@ -278,18 +278,19 @@ function mountVNodes(
 function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
     const { type, elm } = vnode;
 
-    // Ignore the subtree if the VNode has no associated element. This occurs whenever a compo
-    if (isUndefined(elm)) {
-        return;
-    }
-
-    // When unmounting a VNode subtree not all the elements have to removed from the DOM. There are
-    // two cases where the element could be undefined:
+    // Ignore the subtree if the VNode has no associated element. There are two cases where the
+    // element could be undefined:
     // * when there is an error during the construction phase, and an error boundary picks it, there
     //   is a possibility that the VCustomElement is not properly initialized, and therefore is
     //   should be ignored.
     // * when slotted custom element is not used by the element where it is slotted into it, as a
     //   result, the custom element was never initialized.
+    if (isUndefined(elm)) {
+        return;
+    }
+
+    // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
+    // subtree root, is the only element worth unmounting from the subtree.
     if (doRemove) {
         removeNode(elm, parent);
     }
