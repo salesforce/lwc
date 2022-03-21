@@ -6,8 +6,8 @@
  */
 const path = require('path');
 const rollupReplace = require('@rollup/plugin-replace');
-const { terser: rollupTerser } = require('rollup-plugin-terser');
 const babel = require('@babel/core');
+const terser = require('terser');
 const { generateTargetName } = require('./helpers');
 
 function babelCompatPlugin() {
@@ -34,6 +34,17 @@ function babelCompatPlugin() {
     };
 }
 
+function rollupTerserPlugin() {
+    return {
+        name: 'rollup-plugin-terser',
+        renderChunk(code, chunk, outputOptions) {
+            return terser.minify(code, {
+                toplevel: ['cjs', 'commonjs'].includes(outputOptions.format),
+            });
+        },
+    };
+}
+
 function rollupConfig(config) {
     const { input, format, name, prod, target, targetDirectory, dir, debug = false } = config;
     const compatMode = target === 'es5';
@@ -53,20 +64,20 @@ function rollupConfig(config) {
             name,
             file: path.join(targetDirectory, target, generateTargetName(config)),
             format,
-            plugins: [prod && !debug && rollupTerser()],
+            plugins: [prod && !debug && rollupTerserPlugin()],
         },
         display: { name, dir, format, target, prod, debug },
     };
 }
 
-async function generateTarget({ bundle, outputOptions, display }) {
+async function generateTarget({ bundle, outputOptions, display, workerId }) {
     const msg = [
         `module: ${path.basename(display.dir)}`.padEnd(25, ' '),
-        `format: ${display.format}`.padEnd(12, ' '),
+        `format: ${display.format}`.padEnd(16, ' '),
         `target: ${display.target}`.padEnd(14, ' '),
         `min: ${display.prod}`.padEnd(10, ' '),
         `debug: ${display.debug}`.padEnd(12, ' '),
-        `pid: ${process.pid}`.padEnd(10, ' '),
+        `worker: ${workerId}`.padEnd(10, ' '),
     ].join(' | ');
 
     await bundle.write(outputOptions);
