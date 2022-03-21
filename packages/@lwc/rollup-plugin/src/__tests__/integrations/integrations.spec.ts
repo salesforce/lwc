@@ -6,13 +6,10 @@
  */
 import path from 'path';
 import { rollup } from 'rollup';
-// import compat from 'rollup-plugin-compat';
 
 import lwc from '../../index';
 
 const compat = require('rollup-plugin-compat');
-
-jest.setTimeout(20000);
 
 describe('integration', () => {
     describe('typescript', () => {

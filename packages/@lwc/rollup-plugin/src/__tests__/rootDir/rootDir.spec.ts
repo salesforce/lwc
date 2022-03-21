@@ -9,8 +9,6 @@ import { rollup } from 'rollup';
 
 import lwc from '../../index';
 
-jest.setTimeout(20000);
-
 describe('rootDir', () => {
     it('warns if an "input" array is passed and when "rootDir" is not set', async () => {
         const warnings: any = [];

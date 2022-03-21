@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'path';
+import fs from 'fs';
 import { rollup } from 'rollup';
+import nodeResolve from '@rollup/plugin-node-resolve';
 
 import lwc from '../../index';
-
-jest.setTimeout(20000);
 
 describe('resolver', () => {
     it('should be capable to resolve all the base LWC module imports', async () => {
@@ -85,5 +85,67 @@ describe('resolver', () => {
             code: 'UNRESOLVED_IMPORT',
             source: 'some/module',
         });
+    });
+
+    it('should properly resolve modules with @rollup/rollup-node-resolve and third-party package', async () => {
+        const warnings: any = [];
+
+        await rollup({
+            input: path.resolve(__dirname, 'fixtures/third-party-import/src/main.js'),
+            plugins: [lwc(), nodeResolve()],
+            onwarn(warning) {
+                warnings.push(warning);
+            },
+        });
+
+        expect(warnings).toHaveLength(0);
+    });
+
+    it('should properly handle non-component class', async () => {
+        const warnings: any = [];
+
+        await rollup({
+            input: path.resolve(__dirname, 'fixtures/non-component-class/src/main.js'),
+            plugins: [lwc()],
+            onwarn(warning) {
+                warnings.push(warning);
+            },
+        });
+
+        expect(warnings).toHaveLength(0);
+    });
+
+    it('should properly resolve scoped styles with another plugin', async () => {
+        const warnings: any = [];
+
+        await rollup({
+            input: path.resolve(__dirname, 'fixtures/scoped-styles/src/main.js'),
+            plugins: [
+                lwc(),
+                {
+                    name: 'resolve-scoped-styles',
+                    resolveId(importee, importer) {
+                        if (importee.endsWith('?scoped=true') && importer) {
+                            const importeeWithoutQuery = importee.replace('?scoped=true', '');
+                            const importerDir = path.dirname(importer);
+                            const fullImportee = path.resolve(importerDir, importee);
+                            const fullImporteeWithoutQuery = path.resolve(
+                                importerDir,
+                                importeeWithoutQuery
+                            );
+                            if (fs.existsSync(fullImporteeWithoutQuery)) {
+                                // mimics @rollup/plugin-node-resolve, which can resolve the ID with the query param
+                                return fullImportee;
+                            }
+                        }
+                    },
+                },
+            ],
+            onwarn(warning) {
+                warnings.push(warning);
+            },
+        });
+
+        expect(warnings).toHaveLength(0);
     });
 });

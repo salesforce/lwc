@@ -165,7 +165,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             });
 
             const rollupMap = map as SourceMapInput;
-            return { code, rollupMap };
+            return { code, map: rollupMap };
         },
     };
 }
