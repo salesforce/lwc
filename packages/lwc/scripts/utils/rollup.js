@@ -6,28 +6,18 @@
  */
 const path = require('path');
 const rollupReplace = require('@rollup/plugin-replace');
-const babel = require('@babel/core');
-const terser = require('terser');
+const swc = require('@swc/core');
 const { generateTargetName } = require('./helpers');
 
 function babelCompatPlugin() {
     return {
-        name: 'rollup-plugin-babel-compat',
+        name: 'rollup-plugin-compat',
         transform(source) {
-            const { code, map } = babel.transformSync(source, {
-                babelrc: false,
-                configFile: false,
-                presets: [
-                    [
-                        '@babel/preset-env',
-                        {
-                            targets: {
-                                ie: '11',
-                            },
-                            modules: false,
-                        },
-                    ],
-                ],
+            const { code, map } = swc.transformSync(source, {
+                sourceMaps: true,
+                jsc: {
+                    target: 'es5',
+                },
             });
             return { code, map };
         },
@@ -36,10 +26,13 @@ function babelCompatPlugin() {
 
 function rollupTerserPlugin() {
     return {
-        name: 'rollup-plugin-terser',
+        name: 'rollup-plugin-minify',
         renderChunk(code, chunk, outputOptions) {
-            return terser.minify(code, {
-                toplevel: ['cjs', 'commonjs'].includes(outputOptions.format),
+            return swc.minifySync(code, {
+                mangle: {
+                    topLevel: ['cjs', 'commonjs'].includes(outputOptions.format),
+                },
+                compress: true,
             });
         },
     };
