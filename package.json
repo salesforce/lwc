@@ -85,7 +85,11 @@
     "yarn": "1.22.17"
   },
   "resolutions": {
-    "//": "Freezing jasmine version used in Karma test suite. jasmine-core@4 drops support for IE11.",
-    "jasmine-core": "3.10.1"
+    "//": [
+      "jasmine-core: Freezing jasmine version used in Karma test suite. jasmine-core@4 drops support for IE11.",
+      "iltorb: Native module used by bundlesize which slows down yarn install and may fail on some envs. Not needed."
+    ],
+    "jasmine-core": "3.10.1",
+    "iltorb": "npm:@stdlib/utils-noop@0.0.10"
   }
 }
