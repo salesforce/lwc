@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { promisify } = require('util');
-const workerFarm = require('worker-farm');
+const workerpool = require('workerpool');
 const isCI = require('is-ci');
+const os = require('os');
 
-const DEFAULT_FARM_OPTS = {
-    maxConcurrentWorkers: isCI ? 2 : require('os').cpus().length,
-    maxConcurrentCallsPerWorker: 2,
-};
+const pool = workerpool.pool(require.resolve('./child_worker.js'), {
+    maxWorkers: isCI ? 2 : os.cpus().length,
+});
 
 // Group the targets based on their input configuration, which allows us to run
 // rollup.rollup() once per unique input combination, and then bundle.generate
@@ -28,17 +27,15 @@ function groupByInputOptions(configs) {
     return Object.values(keysToConfigs);
 }
 
-module.exports = async function generateTargets(targets, opts = {}) {
-    const workers = workerFarm(
-        { ...DEFAULT_FARM_OPTS, ...opts },
-        require.resolve('./child_worker')
-    );
-
+module.exports = async function generateTargets(targets) {
     const targetGroups = groupByInputOptions(targets);
+    let workerId = 0;
 
     try {
-        await Promise.all(targetGroups.map((targetGroup) => promisify(workers)(targetGroup)));
+        await Promise.all(
+            targetGroups.map((targetGroup) => pool.exec('compile', [targetGroup, workerId++]))
+        );
     } finally {
-        workerFarm.end(workers);
+        await pool.terminate();
     }
 };
