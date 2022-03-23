@@ -18,9 +18,9 @@ const pool = workerpool.pool(require.resolve('./child_worker.js'), {
 function groupByInputOptions(configs) {
     const keysToConfigs = {};
     for (const config of configs) {
-        const { input, prod, target } = config;
+        const { input, target } = config;
         // These are the only input options that matter for rollup.rollup()
-        const key = [input, !!prod, target].join('-');
+        const key = [input, target].join('-');
         keysToConfigs[key] = keysToConfigs[key] || [];
         keysToConfigs[key].push(config);
     }

@@ -13,23 +13,11 @@ const distDirectory = path.join(__dirname, '../dist');
 
 const COMMON_TARGETS = [
     // ESM
-    { target: 'es2017', format: 'esm', prod: false },
+    { target: 'es2017', format: 'esm' },
 
     // IIFE
-    { target: 'es5', format: 'iife', prod: false },
-    { target: 'es5', format: 'iife', prod: true },
-    { target: 'es5', format: 'iife', prod: true, debug: true },
-    { target: 'es2017', format: 'iife', prod: false },
-    { target: 'es2017', format: 'iife', prod: true },
-    { target: 'es2017', format: 'iife', prod: true, debug: true },
-
-    // UMD
-    { target: 'es5', format: 'umd', prod: false },
-    { target: 'es5', format: 'umd', prod: true },
-    { target: 'es5', format: 'umd', prod: true, debug: true },
-    { target: 'es2017', format: 'umd', prod: false },
-    { target: 'es2017', format: 'umd', prod: true },
-    { target: 'es2017', format: 'umd', prod: true, debug: true },
+    { target: 'es5', format: 'iife' },
+    { target: 'es2017', format: 'iife' },
 ];
 
 // -- Helpers -----------------------------------------------------------------
@@ -82,9 +70,8 @@ function buildWireService(targets) {
         ...buildSyntheticShadow(COMMON_TARGETS),
         ...buildWireService(COMMON_TARGETS),
         ...buildEngineServerTargets([
-            { target: 'es2017', format: 'esm', prod: false },
-            { target: 'es2017', format: 'commonjs', prod: false },
-            { target: 'es2017', format: 'commonjs', prod: true },
+            { target: 'es2017', format: 'esm' },
+            { target: 'es2017', format: 'commonjs' },
         ]),
     ];
     process.stdout.write('\n# Generating LWC artifacts...\n');

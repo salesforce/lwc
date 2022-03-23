@@ -5,10 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const rollupReplace = require('@rollup/plugin-replace');
 const babel = require('@babel/core');
-const terser = require('terser');
-const { generateTargetName } = require('./helpers');
 
 function babelCompatPlugin() {
     return {
@@ -34,39 +31,20 @@ function babelCompatPlugin() {
     };
 }
 
-function rollupTerserPlugin() {
-    return {
-        name: 'rollup-plugin-terser',
-        renderChunk(code, chunk, outputOptions) {
-            return terser.minify(code, {
-                toplevel: ['cjs', 'commonjs'].includes(outputOptions.format),
-            });
-        },
-    };
-}
-
 function rollupConfig(config) {
-    const { input, format, name, prod, target, targetDirectory, dir, debug = false } = config;
+    const { input, format, name, target, targetDirectory, dir, targetName } = config;
     const compatMode = target === 'es5';
     return {
         inputOptions: {
             input,
-            plugins: [
-                prod &&
-                    rollupReplace({
-                        'process.env.NODE_ENV': JSON.stringify('production'),
-                        preventAssignment: true,
-                    }),
-                compatMode && babelCompatPlugin(),
-            ],
+            plugins: [compatMode && babelCompatPlugin()],
         },
         outputOptions: {
             name,
-            file: path.join(targetDirectory, target, generateTargetName(config)),
+            file: path.join(targetDirectory, target, `${targetName}.js`),
             format,
-            plugins: [prod && !debug && rollupTerserPlugin()],
         },
-        display: { name, dir, format, target, prod, debug },
+        display: { name, dir, format, target },
     };
 }
 
@@ -75,8 +53,6 @@ async function generateTarget({ bundle, outputOptions, display, workerId }) {
         `module: ${path.basename(display.dir)}`.padEnd(25, ' '),
         `format: ${display.format}`.padEnd(16, ' '),
         `target: ${display.target}`.padEnd(14, ' '),
-        `min: ${display.prod}`.padEnd(10, ' '),
-        `debug: ${display.debug}`.padEnd(12, ' '),
         `worker: ${workerId}`.padEnd(10, ' '),
     ].join(' | ');
 
