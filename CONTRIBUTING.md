@@ -43,6 +43,12 @@ If this fails with an error about *UNABLE_TO_GET_ISSUER_CERT_LOCALLY*, *Error: u
 yarn build
 ```
 
+## Dev / watch mode
+
+```bash
+yarn dev
+```
+
 ## Testing
 
 ### Unit Testing LWC

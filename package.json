@@ -16,6 +16,7 @@
     "build:performance": "yarn run build:performance:components && yarn run build:performance:benchmarks",
     "build:performance:components": "lerna exec --scope perf-benchmarks-components -- yarn build",
     "build:performance:benchmarks": "lerna exec --scope perf-benchmarks -- yarn build",
+    "dev": "lerna run dev --parallel --ignore perf-benchmarks --ignore perf-benchmarks-components --ignore integration-tests",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
     "test:ci": "yarn test --no-cache --coverage --runInBand",

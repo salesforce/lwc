@@ -14,7 +14,8 @@
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",
     "scripts": {
-        "build": "tsc"
+        "build": "tsc",
+        "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
     "license": "MIT",
     "files": [

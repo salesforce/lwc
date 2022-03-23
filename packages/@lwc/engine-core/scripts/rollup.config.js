@@ -10,7 +10,7 @@
 const path = require('path');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const typescriptPlugin = require('@rollup/plugin-typescript');
+const typescript = require('../../../../scripts/rollup/typescript');
 const lwcFeatures = require('../../../../scripts/rollup/lwcFeatures');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 
@@ -36,17 +36,13 @@ module.exports = {
         nodeResolve({
             resolveOnly: [/^@lwc\//, 'observable-membrane'],
         }),
-        typescriptPlugin({
-            target: 'es2017',
-            tsconfig: path.join(__dirname, '../tsconfig.json'),
-            noEmitOnError: true,
-        }),
+        typescript(),
         writeDistAndTypes(),
         lwcFeatures(),
     ],
 
     onwarn({ code, message }) {
-        if (code !== 'CIRCULAR_DEPENDENCY') {
+        if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {
             throw new Error(message);
         }
     },

@@ -6,11 +6,13 @@
  */
 const { worker } = require('workerpool');
 const { rollup } = require('rollup');
+const { rollupWatch } = require('./rollup_watch');
 const { rollupConfig, generateTarget } = require('./rollup');
 
-async function compile(targets, workerId) {
+async function build(targets, workerId) {
     const targetConfigs = targets.map((config) => rollupConfig(config));
-    const bundle = await rollup(targetConfigs[0].inputOptions); // inputOptions are all the same
+    const { inputOptions } = targetConfigs[0]; // inputOptions are all the same
+    const bundle = await rollup(inputOptions);
     await Promise.all(
         targetConfigs.map(async ({ outputOptions, display }) => {
             await generateTarget({
@@ -23,6 +25,12 @@ async function compile(targets, workerId) {
     );
 }
 
+function watch(target) {
+    const { inputOptions, outputOptions } = rollupConfig(target);
+    rollupWatch({ inputOptions, outputOptions });
+}
+
 worker({
-    compile,
+    build,
+    watch,
 });

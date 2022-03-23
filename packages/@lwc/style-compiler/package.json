@@ -16,7 +16,8 @@
     "types": "dist/types/index.d.ts",
     "scripts": {
         "clean": "rm -rf dist/",
-        "build": "tsc"
+        "build": "tsc",
+        "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
     "files": [
         "dist/"

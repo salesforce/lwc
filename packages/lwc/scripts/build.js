@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const generateTargets = require('./utils/generate_targets');
+const { buildTargets, watchTargets } = require('./utils/generate_targets');
 const { createDir, getEs6ModuleEntry, buildBundleConfig } = require('./utils/helpers');
 
 // -- globals -----------------------------------------------------------------
@@ -88,7 +88,12 @@ function buildWireService(targets) {
         ]),
     ];
     process.stdout.write('\n# Generating LWC artifacts...\n');
-    await generateTargets(allTargets);
+    const watch = process.argv.includes('--watch');
+    if (watch) {
+        watchTargets(allTargets);
+    } else {
+        await buildTargets(allTargets);
+    }
 })().catch((err) => {
     console.error(err);
     process.exit(1);
