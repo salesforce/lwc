@@ -9,7 +9,7 @@ import * as astring from 'astring';
 import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT } from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
-import { ResolvedConfig } from '../config';
+import { NormalizedConfig } from '../config';
 
 import {
     isComment,
@@ -58,7 +58,6 @@ import {
 } from './helpers';
 
 import { format as formatModule } from './formatters/module';
-import { format as formatFunction } from './formatters/function';
 
 import * as t from '../shared/estree';
 import {
@@ -574,7 +573,7 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
     );
 }
 
-export default function (root: Root, config: ResolvedConfig): string {
+export default function (root: Root, config: NormalizedConfig): string {
     const scopeFragmentId = hasIdAttribute(root);
     const codeGen = new CodeGen({
         root,
@@ -584,16 +583,7 @@ export default function (root: Root, config: ResolvedConfig): string {
 
     const templateFunction = generateTemplateFunction(codeGen);
 
-    let program: t.Program;
-    switch (config.format) {
-        case 'function':
-            program = formatFunction(templateFunction, codeGen);
-            break;
-
-        case 'module':
-            program = formatModule(templateFunction, codeGen);
-            break;
-    }
+    const program: t.Program = formatModule(templateFunction, codeGen);
 
     return astring.generate(program, { comments: true });
 }

@@ -13,7 +13,7 @@ import {
     LWCErrorInfo,
     normalizeToDiagnostic,
 } from '@lwc/errors';
-import { ResolvedConfig } from '../config';
+import { NormalizedConfig } from '../config';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 
 import {
@@ -48,7 +48,7 @@ interface ParentWrapper {
 export default class ParserCtx {
     private readonly source: String;
 
-    readonly config: ResolvedConfig;
+    readonly config: NormalizedConfig;
     readonly warnings: CompilerDiagnostic[] = [];
 
     readonly seenIds: Set<string> = new Set();
@@ -70,7 +70,7 @@ export default class ParserCtx {
     renderMode: LWCDirectiveRenderMode;
     preserveComments: boolean;
 
-    constructor(source: String, config: ResolvedConfig) {
+    constructor(source: String, config: NormalizedConfig) {
         this.source = source;
         this.config = config;
         this.renderMode = LWCDirectiveRenderMode.shadow;

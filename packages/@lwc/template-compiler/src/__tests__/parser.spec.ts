@@ -6,7 +6,7 @@
  */
 import { DiagnosticLevel } from '@lwc/errors';
 import parse5Errors from 'parse5/lib/common/error-codes';
-import { mergeConfig } from '../config';
+import { normalizeConfig } from '../config';
 import State from '../state';
 import parse from '../parser';
 import { errorCodesToErrorOn, errorCodesToWarnOn } from '../parser/parse5Errors';
@@ -19,7 +19,7 @@ const EXPECTED_LOCATION = expect.objectContaining({
 });
 
 function parseTemplate(src: string): any {
-    const config = mergeConfig({}, { format: 'module' });
+    const config = normalizeConfig({});
     const state = new State(config);
 
     const res = parse(src, state);
