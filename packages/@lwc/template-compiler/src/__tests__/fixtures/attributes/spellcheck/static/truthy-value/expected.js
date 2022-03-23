@@ -1,5 +1,6 @@
 import _xFoo from "x/foo";
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { c: api_custom_element } = renderApi;
 const stc0 = {
   props: {
     spellcheck: true,
@@ -18,8 +19,7 @@ const stc2 = {
   },
   key: 2,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { c: api_custom_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_custom_element("x-foo", _xFoo, stc0),
     api_custom_element("x-foo", _xFoo, stc1),

@@ -1,11 +1,11 @@
-import { registerTemplate } from "lwc";
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    d: api_dynamic_text,
-    t: api_text,
-    i: api_iterator,
-    f: api_flatten,
-  } = $api;
+import { registerTemplate, renderApi } from "lwc";
+const {
+  d: api_dynamic_text,
+  t: api_text,
+  i: api_iterator,
+  f: api_flatten,
+} = renderApi;
+function tmpl($cmp, $slotset, $ctx) {
   return api_flatten([
     api_text(
       api_dynamic_text($cmp.val) +

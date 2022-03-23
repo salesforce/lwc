@@ -1,12 +1,12 @@
-import { registerTemplate } from "lwc";
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    k: api_key,
-    d: api_dynamic_text,
-    t: api_text,
-    h: api_element,
-    i: api_iterator,
-  } = $api;
+import { registerTemplate, renderApi } from "lwc";
+const {
+  k: api_key,
+  d: api_dynamic_text,
+  t: api_text,
+  h: api_element,
+  i: api_iterator,
+} = renderApi;
+function tmpl($cmp, $slotset, $ctx) {
   return api_iterator($cmp.features, function (feature) {
     return api_iterator(
       feature.innerFeatures,

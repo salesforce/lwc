@@ -1,4 +1,5 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { h: api_element } = renderApi;
 const stc0 = {
   styleDecls: [["color", "blue", false]],
   key: 0,
@@ -35,8 +36,7 @@ const stc6 = {
   styleDecls: [["background-color", "rgba(255,0,0,0.3)", false]],
   key: 6,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("div", stc0),
     api_element("div", stc1),

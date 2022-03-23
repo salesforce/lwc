@@ -1,4 +1,5 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { t: api_text, h: api_element, s: api_slot } = renderApi;
 const stc0 = {
   attrs: {
     name: "secret-slot",
@@ -8,8 +9,7 @@ const stc0 = {
 const stc1 = {
   key: 1,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element, s: api_slot } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_slot(
       "secret-slot",

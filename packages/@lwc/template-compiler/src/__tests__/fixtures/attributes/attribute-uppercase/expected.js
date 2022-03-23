@@ -1,5 +1,6 @@
 import _xButton from "x/button";
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { c: api_custom_element } = renderApi;
 const stc0 = {
   props: {
     Class: "r",
@@ -12,8 +13,7 @@ const stc0 = {
   },
   key: 0,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { c: api_custom_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [api_custom_element("x-button", _xButton, stc0)];
   /*LWC compiler vX.X.X*/
 }

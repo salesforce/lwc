@@ -1,12 +1,12 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { co: api_comment, t: api_text, h: api_element } = renderApi;
 const stc0 = {
   key: 0,
 };
 const stc1 = {
   key: 1,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { co: api_comment, t: api_text, h: api_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     $cmp.truthyValue ? api_comment(" HTML comment inside if:true ") : null,
     $cmp.truthyValue ? api_element("p", stc0, [api_text("true branch")]) : null,

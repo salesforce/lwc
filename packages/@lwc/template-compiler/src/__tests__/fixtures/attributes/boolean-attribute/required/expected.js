@@ -1,5 +1,6 @@
 import _xFoo from "x/foo";
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { h: api_element, t: api_text, c: api_custom_element } = renderApi;
 const stc0 = {
   attrs: {
     required: "",
@@ -63,8 +64,7 @@ const stc8 = {
   },
   key: 9,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element, t: api_text, c: api_custom_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("input", stc0),
     api_element("input", stc1),

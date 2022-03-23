@@ -1,14 +1,14 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const {
+  fid: api_scoped_frag_id,
+  t: api_text,
+  h: api_element,
+  gid: api_scoped_id,
+} = renderApi;
 const stc0 = {
   key: 1,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    fid: api_scoped_frag_id,
-    t: api_text,
-    h: api_element,
-    gid: api_scoped_id,
-  } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element(
       "a",

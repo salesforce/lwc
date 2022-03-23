@@ -1,5 +1,13 @@
 import _aB from "a/b";
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const {
+  shc: api_sanitize_html_content,
+  h: api_element,
+  k: api_key,
+  i: api_iterator,
+  f: api_flatten,
+  c: api_custom_element,
+} = renderApi;
 const stc0 = {
   classMap: {
     s2: true,
@@ -11,15 +19,7 @@ const stc1 = {
     dom: "manual",
   },
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    shc: api_sanitize_html_content,
-    h: api_element,
-    k: api_key,
-    i: api_iterator,
-    f: api_flatten,
-    c: api_custom_element,
-  } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_custom_element(
       "a-b",

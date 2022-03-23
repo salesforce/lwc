@@ -1,11 +1,11 @@
 (function (lwc) {
   'use strict';
 
+  const {d: api_dynamic_text, t: api_text, h: api_element} = lwc.renderApi;
   const stc0 = {
     key: 0
   };
-  function tmpl($api, $cmp, $slotset, $ctx) {
-    const {d: api_dynamic_text, t: api_text, h: api_element} = $api;
+  function tmpl($cmp, $slotset, $ctx) {
     return [api_element("pre", stc0, [api_text(api_dynamic_text($cmp.hello))])];
     /*LWC compiler vX.X.X*/
   }

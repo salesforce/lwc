@@ -1,5 +1,6 @@
 import _xFoo from "x/foo";
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { t: api_text, h: api_element, c: api_custom_element } = renderApi;
 const stc0 = {
   attrs: {
     hidden: "",
@@ -48,8 +49,7 @@ const stc7 = {
   },
   key: 9,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element, c: api_custom_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("p", stc0, [api_text("boolean present")]),
     api_element("p", stc1, [api_text("empty string, should be true")]),

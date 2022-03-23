@@ -1,5 +1,12 @@
 import _xB from "x/b";
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const {
+  h: api_element,
+  t: api_text,
+  i: api_iterator,
+  f: api_flatten,
+  c: api_custom_element,
+} = renderApi;
 const stc0 = {
   key: 0,
 };
@@ -10,14 +17,7 @@ const stc2 = {
   key: 2,
 };
 const stc3 = [];
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    h: api_element,
-    t: api_text,
-    i: api_iterator,
-    f: api_flatten,
-    c: api_custom_element,
-  } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("div", stc0, [
       api_custom_element(

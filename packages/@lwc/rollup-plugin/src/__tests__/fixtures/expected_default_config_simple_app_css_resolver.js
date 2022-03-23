@@ -14,12 +14,12 @@
 
     var _implicitScopedStylesheets = undefined;
 
+    const {d: api_dynamic_text, t: api_text, h: api_element$1} = lwc.renderApi;
     const stc0$1 = {
       key: 0
     };
-    function tmpl$1($api, $cmp, $slotset, $ctx) {
-      const {d: api_dynamic_text, t: api_text, h: api_element} = $api;
-      return [api_element("div", stc0$1, [api_text(api_dynamic_text($cmp.x))])];
+    function tmpl$1($cmp, $slotset, $ctx) {
+      return [api_element$1("div", stc0$1, [api_text(api_dynamic_text($cmp.x))])];
       /*LWC compiler vX.X.X*/
     }
     var _tmpl$1 = lwc.registerTemplate(tmpl$1);
@@ -55,6 +55,7 @@
       tmpl: _tmpl$1
     });
 
+    const {c: api_custom_element, h: api_element} = lwc.renderApi;
     const stc0 = {
       classMap: {
         "container": true
@@ -67,8 +68,7 @@
       },
       key: 1
     };
-    function tmpl($api, $cmp, $slotset, $ctx) {
-      const {c: api_custom_element, h: api_element} = $api;
+    function tmpl($cmp, $slotset, $ctx) {
       return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1)])];
       /*LWC compiler vX.X.X*/
     }

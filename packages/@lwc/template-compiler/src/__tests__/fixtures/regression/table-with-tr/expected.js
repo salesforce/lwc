@@ -1,4 +1,5 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { h: api_element } = renderApi;
 const stc0 = {
   key: 0,
 };
@@ -8,8 +9,7 @@ const stc1 = {
 const stc2 = {
   key: 2,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("table", stc0, [
       api_element("tbody", stc1, [api_element("tr", stc2)]),

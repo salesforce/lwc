@@ -1,17 +1,17 @@
 import _xSubject from "x/subject";
 import _xDescription from "x/description";
 import _xTextarea from "x/textarea";
-import { registerTemplate } from "lwc";
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    gid: api_scoped_id,
-    c: api_custom_element,
-    t: api_text,
-    h: api_element,
-    k: api_key,
-    i: api_iterator,
-    f: api_flatten,
-  } = $api;
+import { registerTemplate, renderApi } from "lwc";
+const {
+  gid: api_scoped_id,
+  c: api_custom_element,
+  t: api_text,
+  h: api_element,
+  k: api_key,
+  i: api_iterator,
+  f: api_flatten,
+} = renderApi;
+function tmpl($cmp, $slotset, $ctx) {
   return api_flatten([
     api_custom_element("x-subject", _xSubject, {
       props: {

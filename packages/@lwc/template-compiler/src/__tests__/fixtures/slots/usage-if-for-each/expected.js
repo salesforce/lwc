@@ -1,5 +1,12 @@
 import _aB from "a/b";
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const {
+  k: api_key,
+  t: api_text,
+  h: api_element,
+  i: api_iterator,
+  c: api_custom_element,
+} = renderApi;
 const stc0 = {
   classMap: {
     s2: true,
@@ -7,14 +14,7 @@ const stc0 = {
   key: 0,
 };
 const stc1 = [];
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    k: api_key,
-    t: api_text,
-    h: api_element,
-    i: api_iterator,
-    c: api_custom_element,
-  } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_custom_element(
       "a-b",

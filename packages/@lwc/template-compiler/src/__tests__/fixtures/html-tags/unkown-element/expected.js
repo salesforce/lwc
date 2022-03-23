@@ -1,5 +1,6 @@
 import _xCustomComponent from "x/customComponent";
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { h: api_element, c: api_custom_element, t: api_text } = renderApi;
 const stc0 = {
   key: 0,
 };
@@ -15,8 +16,7 @@ const stc2 = {
 const stc3 = {
   key: 3,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element, c: api_custom_element, t: api_text } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("unknonwtag", stc0),
     api_custom_element("x-custom-component", _xCustomComponent, stc1),

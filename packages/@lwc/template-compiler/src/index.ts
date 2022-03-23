@@ -21,7 +21,7 @@ import parseTemplate from './parser';
 import generate from './codegen';
 
 import { TemplateCompileResult, TemplateParseResult } from './shared/types';
-import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
+import { RENDER_API, TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 
 export * from './shared/types';
 export { Config } from './config';
@@ -83,5 +83,5 @@ export function compileToFunction(source: string): Function {
     }
 
     const code = generate(parsingResults.root, options);
-    return new Function(TEMPLATE_MODULES_PARAMETER, code);
+    return new Function(TEMPLATE_MODULES_PARAMETER, RENDER_API, code);
 }

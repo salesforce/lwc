@@ -1,16 +1,16 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const {
+  b: api_bind,
+  t: api_text,
+  h: api_element,
+  k: api_key,
+  d: api_dynamic_text,
+  i: api_iterator,
+} = renderApi;
 const stc0 = {
   key: 1,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    b: api_bind,
-    t: api_text,
-    h: api_element,
-    k: api_key,
-    d: api_dynamic_text,
-    i: api_iterator,
-  } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   const { _m0 } = $ctx;
   return [
     api_element(

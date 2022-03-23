@@ -1,4 +1,5 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { t: api_text, h: api_element } = renderApi;
 const stc0 = {
   key: 0,
 };
@@ -36,8 +37,7 @@ const stc4 = {
 const stc5 = {
   key: 5,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("div", stc0, [
       api_element("svg", stc1, [

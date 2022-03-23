@@ -81,15 +81,15 @@
 
   var _implicitScopedStylesheets = undefined;
 
+  var api_dynamic_text = lwc.renderApi._ES5ProxyType ? lwc.renderApi.get("d") : lwc.renderApi.d,
+      api_text = lwc.renderApi._ES5ProxyType ? lwc.renderApi.get("t") : lwc.renderApi.t,
+      api_element$1 = lwc.renderApi._ES5ProxyType ? lwc.renderApi.get("h") : lwc.renderApi.h;
   var stc0$1 = {
     key: 0
   };
 
-  function tmpl$1($api, $cmp, $slotset, $ctx) {
-    var api_dynamic_text = $api._ES5ProxyType ? $api.get("d") : $api.d,
-        api_text = $api._ES5ProxyType ? $api.get("t") : $api.t,
-        api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
-    return [api_element("div", stc0$1, [api_text(api_dynamic_text($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x))])];
+  function tmpl$1($cmp, $slotset, $ctx) {
+    return [api_element$1("div", stc0$1, [api_text(api_dynamic_text($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x))])];
     /*LWC compiler vX.X.X*/
   }
 
@@ -147,6 +147,8 @@
     tmpl: _tmpl$1
   });
 
+  var api_custom_element = lwc.renderApi._ES5ProxyType ? lwc.renderApi.get("c") : lwc.renderApi.c,
+      api_element = lwc.renderApi._ES5ProxyType ? lwc.renderApi.get("h") : lwc.renderApi.h;
   var stc0 = {
     classMap: {
       "container": true
@@ -160,9 +162,7 @@
     key: 1
   };
 
-  function tmpl($api, $cmp, $slotset, $ctx) {
-    var api_custom_element = $api._ES5ProxyType ? $api.get("c") : $api.c,
-        api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
+  function tmpl($cmp, $slotset, $ctx) {
     return [api_element("div", stc0, [api_custom_element("x-foo", _xFoo, stc1)])];
     /*LWC compiler vX.X.X*/
   }

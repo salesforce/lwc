@@ -1,6 +1,7 @@
 import _nsBaz1 from "ns/baz1";
 import _nsBaz2 from "ns/baz2";
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { c: api_custom_element } = renderApi;
 const stc0 = {
   props: {
     accessKey: "with-hyphen",
@@ -13,8 +14,7 @@ const stc1 = {
   },
   key: 1,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { c: api_custom_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_custom_element("ns-baz-1", _nsBaz1, stc0),
     api_custom_element("ns-baz-2", _nsBaz2, stc1),

@@ -1,6 +1,6 @@
-import { registerTemplate } from "lwc";
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
+import { registerTemplate, renderApi } from "lwc";
+const { h: api_element } = renderApi;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("section", {
       style: $cmp.customStyle,

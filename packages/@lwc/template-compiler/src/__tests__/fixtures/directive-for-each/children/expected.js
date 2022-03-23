@@ -1,4 +1,11 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const {
+  t: api_text,
+  i: api_iterator,
+  h: api_element,
+  f: api_flatten,
+  k: api_key,
+} = renderApi;
 const stc0 = {
   classMap: {
     s1: true,
@@ -36,14 +43,7 @@ const stc7 = {
 const stc8 = {
   key: 10,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    t: api_text,
-    i: api_iterator,
-    h: api_element,
-    f: api_flatten,
-    k: api_key,
-  } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element(
       "section",

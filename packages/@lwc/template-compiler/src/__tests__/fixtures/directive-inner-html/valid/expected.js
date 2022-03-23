@@ -1,11 +1,11 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { shc: api_sanitize_html_content, h: api_element } = renderApi;
 const stc0 = {
   lwc: {
     dom: "manual",
   },
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { shc: api_sanitize_html_content, h: api_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("div", {
       props: {

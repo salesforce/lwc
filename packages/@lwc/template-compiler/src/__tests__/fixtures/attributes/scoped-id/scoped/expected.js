@@ -1,7 +1,7 @@
 import _lightningCombobox from "lightning/combobox";
-import { registerTemplate } from "lwc";
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { gid: api_scoped_id, c: api_custom_element } = $api;
+import { registerTemplate, renderApi } from "lwc";
+const { gid: api_scoped_id, c: api_custom_element } = renderApi;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_custom_element("lightning-combobox", _lightningCombobox, {
       props: {

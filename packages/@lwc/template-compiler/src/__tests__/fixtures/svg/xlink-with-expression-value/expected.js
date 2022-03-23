@@ -1,4 +1,5 @@
-import { registerTemplate, sanitizeAttribute } from "lwc";
+import { registerTemplate, renderApi, sanitizeAttribute } from "lwc";
+const { fid: api_scoped_frag_id, h: api_element } = renderApi;
 const stc0 = {
   classMap: {
     "slds-icon": true,
@@ -10,8 +11,7 @@ const stc0 = {
   key: 0,
   svg: true,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { fid: api_scoped_frag_id, h: api_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element("svg", stc0, [
       api_element("use", {

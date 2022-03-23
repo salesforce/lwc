@@ -65,7 +65,7 @@ it('should compile correctly simple components', () => {
             </div>
         </template>
     `);
-    renderFn({})(apis);
+    renderFn({}, apis)();
 
     expect(calls).toMatchObject([
         ['api_text#1', ['Hello']],
@@ -88,7 +88,7 @@ it('should look up for rendering a component', () => {
         </template>
     `);
 
-    renderFn(modules)(apis);
+    renderFn(modules, apis)();
 
     expect(calls).toMatchObject([
         ['api_component#1', ['x-foo', XFoo, { key: expect.any(Number) }]],
@@ -101,7 +101,7 @@ it('should should attach template metadata', () => {
             <slot name="foo"></slot>
         </template>
     `);
-    const tmpl = renderFn({});
+    const tmpl = renderFn({}, {});
 
     expect(tmpl.slots).toEqual(['foo']);
 });

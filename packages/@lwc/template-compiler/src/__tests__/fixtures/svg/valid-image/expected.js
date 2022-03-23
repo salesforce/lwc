@@ -1,4 +1,5 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, renderApi } from "lwc";
+const { h: api_element } = renderApi;
 const stc0 = {
   attrs: {
     width: "200",
@@ -18,8 +19,7 @@ const stc1 = {
   key: 1,
   svg: true,
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [api_element("svg", stc0, [api_element("image", stc1)])];
   /*LWC compiler vX.X.X*/
 }

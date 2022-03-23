@@ -1,6 +1,6 @@
-import { registerTemplate } from "lwc";
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text } = $api;
+import { registerTemplate, renderApi } from "lwc";
+const { t: api_text } = renderApi;
+function tmpl($cmp, $slotset, $ctx) {
   return [api_text("foo")];
   /*LWC compiler vX.X.X*/
 }

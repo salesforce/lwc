@@ -1,12 +1,12 @@
 import _xFoo from "x/foo";
-import { registerTemplate } from "lwc";
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    ti: api_tab_index,
-    t: api_text,
-    h: api_element,
-    c: api_custom_element,
-  } = $api;
+import { registerTemplate, renderApi } from "lwc";
+const {
+  ti: api_tab_index,
+  t: api_text,
+  h: api_element,
+  c: api_custom_element,
+} = renderApi;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_element(
       "p",

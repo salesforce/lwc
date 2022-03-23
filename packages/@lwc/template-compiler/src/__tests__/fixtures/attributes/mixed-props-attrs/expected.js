@@ -1,6 +1,7 @@
 import _nsFoo from "ns/foo";
 import _nsBar from "ns/bar";
-import { registerTemplate, sanitizeAttribute } from "lwc";
+import { registerTemplate, renderApi, sanitizeAttribute } from "lwc";
+const { gid: api_scoped_id, c: api_custom_element, h: api_element } = renderApi;
 const stc0 = {
   classMap: {
     test: true,
@@ -40,8 +41,7 @@ const stc4 = {
 const stc5 = {
   "aria-hidden": "hidden",
 };
-function tmpl($api, $cmp, $slotset, $ctx) {
-  const { gid: api_scoped_id, c: api_custom_element, h: api_element } = $api;
+function tmpl($cmp, $slotset, $ctx) {
   return [
     api_custom_element("ns-foo", _nsFoo, {
       props: {
