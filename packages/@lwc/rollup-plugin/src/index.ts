@@ -6,12 +6,12 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { URLSearchParams } from 'url';
 
 import { Plugin, SourceMapInput } from 'rollup';
 import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
-import { transformSync, StylesheetConfig } from '@lwc/compiler';
+import { transformSync, StylesheetConfig, DynamicComponentConfig } from '@lwc/compiler';
 import { resolveModule, ModuleRecord } from '@lwc/module-resolver';
-import { URLSearchParams } from 'url';
 
 export interface RollupLwcOptions {
     include?: FilterPattern;
@@ -21,6 +21,7 @@ export interface RollupLwcOptions {
     modules?: ModuleRecord[];
     stylesheetConfig?: StylesheetConfig;
     preserveHtmlComments?: boolean;
+    experimentalDynamicComponent?: DynamicComponentConfig;
 }
 
 const DEFAULT_MODULES = [
@@ -60,7 +61,12 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
 
     let { rootDir, modules = [] } = pluginOptions;
-    const { stylesheetConfig, sourcemap = false, preserveHtmlComments } = pluginOptions;
+    const {
+        stylesheetConfig,
+        sourcemap = false,
+        preserveHtmlComments,
+        experimentalDynamicComponent,
+    } = pluginOptions;
 
     return {
         name: 'rollup-plugin-lwc-compiler',
@@ -113,7 +119,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                         rootDir,
                     }).entry;
                 } catch (err: any) {
-                    if (err.code !== 'NO_LWC_MODULE_FOUND') {
+                    if (err && err.code !== 'NO_LWC_MODULE_FOUND') {
                         throw err;
                     }
                 }
@@ -159,7 +165,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 namespace,
                 outputConfig: { sourcemap },
                 stylesheetConfig,
-                experimentalDynamicComponent: (pluginOptions as any).experimentalDynamicComponent,
+                experimentalDynamicComponent,
                 preserveHtmlComments,
                 scopedStyles: scoped,
             });
@@ -170,8 +176,5 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     };
 }
 
-// In order to keep backward compatibility with commonjs format, we can't use the export default.
-// Using export default will result in consumer importing the plugin via
-// `require("@lwc/rollup-plugin").default`. We should revisit this for the next major release.
+// For backward compatibility with commonjs format,
 module.exports = lwc;
-module.exports.default = lwc;
