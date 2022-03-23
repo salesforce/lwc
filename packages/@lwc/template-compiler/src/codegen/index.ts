@@ -528,25 +528,11 @@ function transform(codeGen: CodeGen): t.Expression {
 function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
     const returnedValue = transform(codeGen);
 
-    const args = [
-        TEMPLATE_PARAMS.API,
-        TEMPLATE_PARAMS.INSTANCE,
-        TEMPLATE_PARAMS.SLOT_SET,
-        TEMPLATE_PARAMS.CONTEXT,
-    ].map((id) => t.identifier(id));
+    const args = [TEMPLATE_PARAMS.INSTANCE, TEMPLATE_PARAMS.SLOT_SET, TEMPLATE_PARAMS.CONTEXT].map(
+        (id) => t.identifier(id)
+    );
 
-    const body: t.Statement[] = [
-        t.variableDeclaration('const', [
-            t.variableDeclarator(
-                t.objectPattern(
-                    Object.keys(codeGen.usedApis).map((name) =>
-                        t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
-                    )
-                ),
-                t.identifier(TEMPLATE_PARAMS.API)
-            ),
-        ]),
-    ];
+    const body: t.Statement[] = [];
 
     if (codeGen.memorizedIds.length) {
         body.push(

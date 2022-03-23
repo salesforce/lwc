@@ -9,7 +9,11 @@ import * as t from '../../shared/estree';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_MODULES_PARAMETER } from '../../shared/constants';
 
 import CodeGen from '../codegen';
-import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
+import {
+    identifierFromComponentName,
+    generateTemplateMetadata,
+    generateApisInitialization,
+} from '../helpers';
 import { optimizeStaticExpressions } from '../optimize';
 
 /**
@@ -32,6 +36,7 @@ import { optimizeStaticExpressions } from '../optimize';
  * ```
  */
 export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.Program {
+    const apisInit = generateApisInitialization(codeGen);
     const lookups = Array.from(codeGen.referencedComponents)
         .sort()
         .map((name) => {
@@ -52,6 +57,7 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
     const metadata = generateTemplateMetadata(codeGen);
 
     return t.program([
+        ...apisInit,
         ...lookups,
         ...optimizedTemplateDeclarations,
         ...metadata,

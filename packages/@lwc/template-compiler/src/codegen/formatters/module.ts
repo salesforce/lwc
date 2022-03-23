@@ -13,7 +13,11 @@ import {
 } from '../../shared/constants';
 
 import CodeGen from '../codegen';
-import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
+import {
+    identifierFromComponentName,
+    generateTemplateMetadata,
+    generateApisInitialization,
+} from '../helpers';
 import { optimizeStaticExpressions } from '../optimize';
 
 function generateComponentImports(codeGen: CodeGen): t.ImportDeclaration[] {
@@ -57,6 +61,8 @@ function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
  * ```
  */
 export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.Program {
+    const apisInit = generateApisInitialization(codeGen);
+
     codeGen.usedLwcApis.add(SECURE_REGISTER_TEMPLATE_METHOD_NAME);
 
     const imports = [...generateComponentImports(codeGen), generateLwcApisImport(codeGen)];
@@ -66,6 +72,7 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
     const optimizedTemplateDeclarations = optimizeStaticExpressions(templateFn);
 
     const templateBody = [
+        ...apisInit,
         ...optimizedTemplateDeclarations,
         t.exportDefaultDeclaration(
             t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [

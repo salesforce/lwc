@@ -15,7 +15,7 @@ import {
     isIf,
     isDynamicDirective,
 } from '../shared/ast';
-import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
+import { RENDER_API, TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
 
@@ -161,6 +161,31 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     }
 
     return metadataExpressions;
+}
+
+/**
+ * @todo: probably a better location is module.ts.
+ * @param codeGen
+ */
+export function generateApisInitialization(codeGen: CodeGen): t.VariableDeclaration[] {
+    if (Object.keys(codeGen.usedApis).length === 0) {
+        return [];
+    }
+
+    codeGen.usedLwcApis.add(RENDER_API);
+
+    return [
+        t.variableDeclaration('const', [
+            t.variableDeclarator(
+                t.objectPattern(
+                    Object.keys(codeGen.usedApis).map((name) =>
+                        t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
+                    )
+                ),
+                t.identifier(RENDER_API)
+            ),
+        ]),
+    ];
 }
 
 const DECLARATION_DELIMITER = /;(?![^(]*\))/g;

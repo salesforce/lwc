@@ -21,7 +21,6 @@ import {
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
-import api, { RenderAPI } from './api';
 import {
     resetComponentRoot,
     runWithBoundaryProtection,
@@ -43,7 +42,7 @@ import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { VNodes } from './vnodes';
 
 export interface Template {
-    (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
+    (cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
 
     /** The list of slot names used in the template. */
     slots?: string[];
@@ -199,7 +198,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 
-                vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
+                vnodes = html.call(undefined, component, cmpSlots, context.tplCache);
                 const { styleVNode } = context;
                 if (!isNull(styleVNode)) {
                     ArrayUnshift.call(vnodes, styleVNode);

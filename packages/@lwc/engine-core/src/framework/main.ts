@@ -15,6 +15,8 @@ export { default as track } from './decorators/track';
 export { default as wire } from './decorators/wire';
 export { readonly } from './readonly';
 
+export { default as renderApi } from './api';
+
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 
 // Internal APIs used by renderers -----------------------------------------------------------------

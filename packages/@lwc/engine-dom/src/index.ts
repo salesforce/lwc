@@ -19,6 +19,7 @@ export {
     track,
     wire,
     readonly,
+    renderApi,
     unwrap,
     setFeatureFlag,
     setFeatureFlagForTest,
