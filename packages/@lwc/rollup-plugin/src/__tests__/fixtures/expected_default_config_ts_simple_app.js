@@ -14,7 +14,7 @@
     const stc0$1 = {
       key: 0
     };
-    function tmpl$1($cmp, $slotset, $ctx) {
+    function tmpl$1($api, $cmp, $slotset, $ctx) {
       return [api_element$1("div", stc0$1, [api_text(api_dynamic_text($cmp.x))])];
       /*LWC compiler vX.X.X*/
     }
@@ -64,7 +64,7 @@
       },
       key: 1
     };
-    function tmpl($cmp, $slotset, $ctx) {
+    function tmpl($api, $cmp, $slotset, $ctx) {
       return [api_element("div", stc0, [api_custom_element("ts-foo", _tsFoo, stc1)])];
       /*LWC compiler vX.X.X*/
     }

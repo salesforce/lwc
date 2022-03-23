@@ -7,7 +7,7 @@ const stc1 = [];
 const stc2 = {
   key: 1,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_slot("", stc0, stc1, $slotset),
     api_slot("", stc2, stc1, $slotset),

@@ -12,7 +12,7 @@ const stc0 = {
 const stc1 = {
   key: 2,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "section",

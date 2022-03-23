@@ -14,7 +14,7 @@ const stc1 = {
   },
   key: 1,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_custom_element("ns-baz-1", _nsBaz1, stc0),
     api_custom_element("ns-baz-2", _nsBaz2, stc1),

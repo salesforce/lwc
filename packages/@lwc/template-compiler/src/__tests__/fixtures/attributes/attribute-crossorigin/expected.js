@@ -21,7 +21,7 @@ const stc2 = {
   },
   key: 2,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("img", stc0),
     api_element("video", stc1),

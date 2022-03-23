@@ -37,7 +37,7 @@ const stc4 = {
 const stc5 = {
   key: 5,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("div", stc0, [
       api_element("svg", stc1, [

@@ -21,7 +21,7 @@ const stc3 = {
   },
   key: 3,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("a", stc0, [api_text("Yasaka Taxi")]),
     api_element("map", stc1, [

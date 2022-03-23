@@ -4,7 +4,7 @@ const stc0 = {
   key: 1,
 };
 const stc1 = [];
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return api_iterator($cmp.items, function (item) {
     return api_element(
       "div",

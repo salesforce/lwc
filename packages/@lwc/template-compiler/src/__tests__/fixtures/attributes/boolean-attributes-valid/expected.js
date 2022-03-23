@@ -27,7 +27,7 @@ const stc1 = {
   },
   key: 1,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("p", stc0, [api_text("x")]),
     api_custom_element("x-foo", _xFoo, stc1),

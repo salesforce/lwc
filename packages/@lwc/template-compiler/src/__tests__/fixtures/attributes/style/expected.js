@@ -36,7 +36,7 @@ const stc6 = {
   styleDecls: [["background-color", "rgba(255,0,0,0.3)", false]],
   key: 6,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("div", stc0),
     api_element("div", stc1),

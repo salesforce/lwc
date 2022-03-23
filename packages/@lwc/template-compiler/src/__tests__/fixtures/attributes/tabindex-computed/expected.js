@@ -6,7 +6,7 @@ const {
   h: api_element,
   c: api_custom_element,
 } = renderApi;
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "p",

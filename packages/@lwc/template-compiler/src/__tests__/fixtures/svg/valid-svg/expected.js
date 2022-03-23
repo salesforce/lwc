@@ -88,7 +88,7 @@ const stc21 = {
   key: 21,
   svg: true,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("svg", stc0, [
       api_element("a", stc1),

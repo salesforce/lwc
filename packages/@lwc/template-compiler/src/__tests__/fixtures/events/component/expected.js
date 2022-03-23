@@ -4,7 +4,7 @@ const { b: api_bind, c: api_custom_element, h: api_element } = renderApi;
 const stc0 = {
   key: 0,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   const { _m0 } = $ctx;
   return [
     api_element("section", stc0, [

@@ -6,7 +6,7 @@ const {
   h: api_element,
   i: api_iterator,
 } = renderApi;
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return api_iterator($cmp.features, function (feature) {
     return api_iterator(
       feature.innerFeatures,

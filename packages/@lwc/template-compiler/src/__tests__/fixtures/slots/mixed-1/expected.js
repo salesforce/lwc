@@ -33,7 +33,7 @@ const stc7 = {
 const stc8 = {
   key: 8,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
       api_element("p", stc1, [api_text("Before header")]),

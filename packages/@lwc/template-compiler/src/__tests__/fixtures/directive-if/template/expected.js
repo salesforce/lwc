@@ -3,7 +3,7 @@ const { d: api_dynamic_text, t: api_text, h: api_element } = renderApi;
 const stc0 = {
   key: 0,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
       $cmp.isTrue

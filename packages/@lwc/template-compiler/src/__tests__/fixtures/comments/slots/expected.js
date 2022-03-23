@@ -12,7 +12,7 @@ const stc0 = {
 const stc1 = {
   key: 1,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_custom_element("x-child", _xChild, stc0, [
       api_comment(" HTML comment inside slot "),

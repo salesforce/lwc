@@ -12,7 +12,7 @@ const stc2 = {
   },
   key: 2,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return api_flatten([
     api_element("p", stc0, [api_text("Root")]),
     api_slot("", stc1, [api_text("Default")], $slotset),

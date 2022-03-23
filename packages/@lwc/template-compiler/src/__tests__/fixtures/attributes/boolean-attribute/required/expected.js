@@ -64,7 +64,7 @@ const stc8 = {
   },
   key: 9,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("input", stc0),
     api_element("input", stc1),

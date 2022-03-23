@@ -8,7 +8,7 @@ const stc0 = {
   },
   key: 0,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [api_element("section", stc0)];
   /*LWC compiler vX.X.X*/
 }

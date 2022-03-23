@@ -10,7 +10,7 @@ const {
 const stc0 = {
   key: 1,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   const { _m0 } = $ctx;
   return [
     api_element(

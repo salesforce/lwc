@@ -14,7 +14,7 @@ const stc0 = {
   key: 0,
 };
 const stc1 = [];
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_custom_element(
       "a-b",

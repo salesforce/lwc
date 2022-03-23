@@ -5,7 +5,7 @@ const {
   i: api_iterator,
   f: api_flatten,
 } = renderApi;
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return api_flatten([
     api_text(
       api_dynamic_text($cmp.val) +

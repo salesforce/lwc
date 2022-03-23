@@ -390,7 +390,7 @@ const stc42 = {
   key: 46,
   svg: true,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("svg", stc0, [
       api_element("defs", stc1, [

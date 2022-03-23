@@ -8,7 +8,7 @@ const stc1 = {
   key: 1,
 };
 const stc2 = [];
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_custom_element("x-foo", _xFoo, stc0, [
       api_slot("", stc1, stc2, $slotset),

@@ -7,7 +7,7 @@ const {
   f: api_flatten,
 } = renderApi;
 const stc0 = [];
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return $cmp.isTrue
     ? api_flatten([
         api_text("Outer"),

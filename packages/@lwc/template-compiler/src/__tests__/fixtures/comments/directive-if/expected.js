@@ -6,7 +6,7 @@ const stc0 = {
 const stc1 = {
   key: 1,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     $cmp.truthyValue ? api_comment(" HTML comment inside if:true ") : null,
     $cmp.truthyValue ? api_element("p", stc0, [api_text("true branch")]) : null,

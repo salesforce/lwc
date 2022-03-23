@@ -41,7 +41,7 @@ const stc4 = {
 const stc5 = {
   "aria-hidden": "hidden",
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_custom_element("ns-foo", _nsFoo, {
       props: {

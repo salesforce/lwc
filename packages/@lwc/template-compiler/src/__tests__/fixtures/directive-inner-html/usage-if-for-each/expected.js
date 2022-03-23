@@ -19,7 +19,7 @@ const stc1 = {
     dom: "manual",
   },
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_custom_element(
       "a-b",

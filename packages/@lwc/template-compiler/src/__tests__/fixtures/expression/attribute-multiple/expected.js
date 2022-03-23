@@ -1,6 +1,6 @@
 import { registerTemplate, renderApi } from "lwc";
 const { h: api_element } = renderApi;
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
       "section",

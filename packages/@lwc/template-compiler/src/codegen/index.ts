@@ -528,9 +528,12 @@ function transform(codeGen: CodeGen): t.Expression {
 function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
     const returnedValue = transform(codeGen);
 
-    const args = [TEMPLATE_PARAMS.INSTANCE, TEMPLATE_PARAMS.SLOT_SET, TEMPLATE_PARAMS.CONTEXT].map(
-        (id) => t.identifier(id)
-    );
+    const args = [
+        TEMPLATE_PARAMS.API,
+        TEMPLATE_PARAMS.INSTANCE,
+        TEMPLATE_PARAMS.SLOT_SET,
+        TEMPLATE_PARAMS.CONTEXT,
+    ].map((id) => t.identifier(id));
 
     const body: t.Statement[] = [];
 

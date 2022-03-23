@@ -11,7 +11,7 @@ const stc0 = {
 const stc1 = {
   key: 1,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return api_flatten([
     api_element("div", stc0, [api_text("sibling")]),
     api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc1),

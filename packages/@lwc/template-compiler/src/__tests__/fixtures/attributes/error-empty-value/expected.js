@@ -14,7 +14,7 @@ const stc1 = {
   },
   key: 1,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [api_element("p", stc0), api_custom_element("foo-bar", _fooBar, stc1)];
   /*LWC compiler vX.X.X*/
 }

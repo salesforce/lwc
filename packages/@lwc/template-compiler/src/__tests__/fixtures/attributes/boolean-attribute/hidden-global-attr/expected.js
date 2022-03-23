@@ -49,7 +49,7 @@ const stc7 = {
   },
   key: 9,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("p", stc0, [api_text("boolean present")]),
     api_element("p", stc1, [api_text("empty string, should be true")]),

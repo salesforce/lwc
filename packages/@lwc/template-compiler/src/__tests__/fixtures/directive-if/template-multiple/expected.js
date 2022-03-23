@@ -9,7 +9,7 @@ const stc1 = {
 const stc2 = {
   key: 2,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     $cmp.isTrue ? api_element("p", stc0, [api_text("1")]) : null,
     $cmp.isTrue ? api_element("p", stc1, [api_text("2")]) : null,

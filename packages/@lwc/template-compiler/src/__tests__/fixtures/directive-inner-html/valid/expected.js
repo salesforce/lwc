@@ -5,7 +5,7 @@ const stc0 = {
     dom: "manual",
   },
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("div", {
       props: {

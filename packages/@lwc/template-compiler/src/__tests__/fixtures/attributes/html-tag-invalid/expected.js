@@ -11,7 +11,7 @@ const stc1 = {
   },
   key: 1,
 };
-function tmpl($cmp, $slotset, $ctx) {
+function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
       api_element("textarea", stc1, [api_text("x")]),
