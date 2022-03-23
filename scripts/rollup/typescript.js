@@ -7,13 +7,15 @@
 const typescriptPlugin = require('@rollup/plugin-typescript');
 const path = require('path');
 
+const { ROLLUP_WATCH: watchMode } = process.env;
+
 // Basic @rollup/plugin-typescript config that can be shared between packages
 module.exports = function typescript() {
     return typescriptPlugin({
         target: 'es2017',
         tsconfig: path.join(process.cwd(), 'tsconfig.json'),
-        noEmitOnError: true,
-        ...(process.env.ROLLUP_WATCH && {
+        noEmitOnError: !watchMode, // in watch mode, do not exit with an error if typechecking fails
+        ...(watchMode && {
             incremental: true,
             outputToFilesystem: true,
         }),
