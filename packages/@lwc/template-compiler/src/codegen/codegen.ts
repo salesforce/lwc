@@ -8,10 +8,33 @@ import { walk } from 'estree-walker';
 import { ResolvedConfig } from '../config';
 
 import * as t from '../shared/estree';
-import { Expression, Literal, LWCDirectiveRenderMode, Root } from '../shared/types';
+import {
+    BaseElement,
+    BaseParentNode,
+    ChildNode,
+    Expression,
+    Literal,
+    LWCDirectiveRenderMode,
+    Root,
+} from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
-import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
-import { isArrayExpression } from '../shared/estree';
+import {
+    isBaseElement,
+    isComment,
+    isComponent,
+    isIf,
+    isPreserveCommentsDirective,
+    isRenderModeDirective,
+    isSlot,
+    isText,
+} from '../shared/ast';
+import { isArrayExpression, isLiteral } from '../shared/estree';
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
 
 type RenderPrimitive =
     | 'iterator'
@@ -58,9 +81,89 @@ interface Scope {
     declaration: Set<string>;
 }
 
+function getStaticNodes(root: Root): Set<ChildNode> {
+    const staticNodes = new Set<ChildNode>();
+
+    function isStaticNode(node: BaseElement, parent: BaseParentNode): boolean {
+        let result = true;
+        const {
+            name: nodeName,
+            namespace = '',
+            attributes,
+            directives,
+            properties,
+            listeners,
+        } = node;
+
+        // Note: the trick is that the static nodes elm can not be removed by themself, they will always be removed
+        //       as parent removal.
+
+        result &&= !isIf(parent); // the parent node is an if, therefore this it is the same as an inline if
+        result &&= !isSlot(node); // slot element can't be static.
+        result &&= !isComponent(node); // components can't be static.
+        // it is an element.
+        result &&= !attributes.some(({ name, value }) => {
+            return (
+                !isLiteral(value) ||
+                name === 'slot' ||
+                // check for ScopedId
+                name === 'id' ||
+                isIdReferencingAttribute(name) ||
+                // Check for ScopedFragId
+                (isSvgUseHref(nodeName, name, namespace) &&
+                    isFragmentOnlyUrl(value.value as string)) ||
+                (isAllowedFragOnlyUrlsXHTML(nodeName, name, namespace) &&
+                    isFragmentOnlyUrl(value.value as string))
+            );
+        }); // all attrs are static
+        result &&= directives.length === 0; // do not have any directive
+        result &&= !properties.some((prop) => isLiteral(prop.value)); // all properties are static
+        result &&= listeners.length === 0; // do not have any event listener
+
+        // Notes:
+        //   An element inside a foreach can be static because it will have a parent that it is dynamic (the keyed element)
+        //   Slotted content can be static if the parent is dynamic. @todo: think harder in the lightdom cases.
+
+        return result;
+    }
+
+    function collectStaticNodes(node: ChildNode, parent: BaseParentNode) {
+        let childrenAreStatic = true;
+        let nodeIsStatic = true;
+
+        if (isText(node)) {
+            nodeIsStatic = isLiteral(node.value);
+        } else if (isComment(node)) {
+            nodeIsStatic = true;
+        } else {
+            // it is ForBlock | If | BaseElement
+            node.children.forEach((childNode) => {
+                collectStaticNodes(childNode, node);
+
+                childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
+            });
+
+            nodeIsStatic = isBaseElement(node) && isStaticNode(node, parent);
+        }
+
+        if (nodeIsStatic && childrenAreStatic) {
+            // let's unmark the children as static. So in the codegen we generate the outermost static node.
+            if (isBaseElement(node)) {
+                node.children.forEach((childNode) => staticNodes.delete(childNode));
+            }
+            staticNodes.add(node);
+        }
+    }
+
+    root.children.forEach((childNode) => collectStaticNodes(childNode, root));
+
+    return staticNodes;
+}
+
 export default class CodeGen {
     /** The AST root. */
     readonly root: Root;
+    readonly staticNodes: Set<ChildNode>;
 
     /** The template render mode. */
     readonly renderMode: LWCDirectiveRenderMode;
@@ -107,6 +210,7 @@ export default class CodeGen {
         scopeFragmentId: boolean;
     }) {
         this.root = root;
+        this.staticNodes = getStaticNodes(root);
         this.renderMode =
             root.directives.find(isRenderModeDirective)?.value.value ??
             LWCDirectiveRenderMode.shadow;
@@ -116,6 +220,10 @@ export default class CodeGen {
 
         this.scopeFragmentId = scopeFragmentId;
         this.scope = this.createScope();
+    }
+
+    isStaticNode(node: ChildNode): boolean {
+        return this.staticNodes.has(node);
     }
 
     generateKey() {
