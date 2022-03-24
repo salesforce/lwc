@@ -26,6 +26,7 @@ export interface BaseVNode {
     sel: string | undefined;
     key: Key | undefined;
     owner: VM;
+    isStatic?: boolean;
 }
 
 export interface VText extends BaseVNode {

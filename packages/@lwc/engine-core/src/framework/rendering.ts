@@ -144,7 +144,7 @@ function mountText(node: VText, parent: ParentNode, anchor: Node | null) {
     const { owner } = node;
 
     const textNode = (node.elm = createText(node.text));
-    linkNodeToShadow(textNode, owner);
+    linkNodeToShadow(textNode, owner, parent);
 
     insertNode(textNode, parent, anchor);
 }
@@ -163,12 +163,19 @@ function mountComment(node: VComment, parent: ParentNode, anchor: Node | null) {
     const { owner } = node;
 
     const commentNode = (node.elm = createComment(node.text));
-    linkNodeToShadow(commentNode, owner);
+    linkNodeToShadow(commentNode, owner, parent);
 
     insertNode(commentNode, parent, anchor);
 }
 
 function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) {
+    if (vnode.isStatic && vnode.elm) {
+        // @todo: what to do about the owner for synthetic shadow and fallbackElmHook
+        vnode.elm = vnode.elm.cloneNode(true) as Element;
+        insertNode(vnode.elm, parent, anchor);
+        return;
+    }
+
     const {
         sel,
         owner,
@@ -177,9 +184,14 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
 
     const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
     const elm = createElement(sel, namespace);
-    linkNodeToShadow(elm, owner);
 
-    fallbackElmHook(elm, vnode);
+    linkNodeToShadow(elm, owner, parent);
+
+    if (vnode.owner) {
+        // hoisted nodes do not have an owner
+        fallbackElmHook(elm, vnode);
+    }
+
     vnode.elm = elm;
 
     patchElementPropsAndAttrs(null, vnode);
@@ -337,7 +349,16 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     }
 }
 
-function linkNodeToShadow(elm: Node, owner: VM) {
+// @todo: hack alert!
+function linkNodeToShadow(elm: Node, owner: VM | undefined, parent?: Node) {
+    if (!owner) {
+        const parentShadowKey = (parent! as any)[KEY__SHADOW_RESOLVER];
+
+        if (isSyntheticShadowDefined && parentShadowKey) {
+            (elm as any)[KEY__SHADOW_RESOLVER] = parentShadowKey;
+        }
+        return;
+    }
     const { renderRoot, renderMode, shadowMode } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
@@ -712,6 +733,9 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
                 mount(n2, parent, anchor);
                 anchor = n2.elm!;
             }
+        } else if (n2 !== null) {
+            // it is hoisted
+            anchor = n2.elm!;
         }
     }
 }

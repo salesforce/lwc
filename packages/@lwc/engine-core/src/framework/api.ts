@@ -50,7 +50,12 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VElement {
+function h(
+    sel: string,
+    data: VElementData,
+    children: VNodes = EmptyArray,
+    isStatic: boolean = false
+): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -99,6 +104,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
         elm,
         key,
         owner: vmBeingRendered,
+        isStatic,
     };
 }
 
@@ -332,7 +338,7 @@ function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
 }
 
 // [t]ext node
-function t(text: string): VText {
+function t(text: string, isStatic: boolean = false): VText {
     let sel, key, elm;
     return {
         type: VNodeType.Text,
@@ -341,11 +347,12 @@ function t(text: string): VText {
         elm,
         key,
         owner: getVMBeingRendered()!,
+        isStatic,
     };
 }
 
 // [co]mment node
-function co(text: string): VComment {
+function co(text: string, isStatic: boolean = false): VComment {
     let sel, key, elm;
     return {
         type: VNodeType.Comment,
@@ -354,6 +361,7 @@ function co(text: string): VComment {
         elm,
         key,
         owner: getVMBeingRendered()!,
+        isStatic,
     };
 }
 
