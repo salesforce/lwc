@@ -36,8 +36,7 @@ async function main() {
                 `
 ${passed ? 'PASSED: ' : 'FAILED: '}${filepath}
   Actual: ${bytes.format(gzipped.length)}
-  Limit : ${limit}
-    `.trim()
+  Limit : ${limit}`.trim()
             );
 
             if (!passed) {
