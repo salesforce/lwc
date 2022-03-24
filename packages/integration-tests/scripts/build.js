@@ -15,8 +15,7 @@ const { getModulePath } = require('lwc');
 const templates = require('../src/shared/templates.js');
 
 // -- Build Config -------------------------------------------
-const mode = process.env.MODE || 'compat';
-const isCompat = /compat/.test(mode);
+const isCompat = process.env.COMPAT;
 
 const engineModeFile = getModulePath('engine-dom', 'iife', isCompat ? 'es5' : 'es2017');
 const shadowModeFile = getModulePath('synthetic-shadow', 'iife', isCompat ? 'es5' : 'es2017');

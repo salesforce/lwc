@@ -65,8 +65,6 @@ const compatBrowsers = [
     },
 ];
 
-const mode = process.env.MODE;
-
 const username = process.env.SAUCE_USERNAME;
 if (!username) {
     throw new TypeError('Missing SAUCE_USERNAME environment variable');
@@ -80,9 +78,8 @@ if (!accessKey) {
 const tunnelId = process.env.SAUCE_TUNNEL_ID;
 const buildId = process.env.CIRCLE_BUILD_NUM || Date.now();
 
-const name = ['integration-test', mode].join(' - ');
-const build = ['integration-test', buildId, mode].join(' - ');
-const tags = [mode];
+const name = ['integration-test'].join(' - ');
+const build = ['integration-test', buildId].join(' - ');
 
 const customData = {
     ci: !!process.env.CI,
@@ -94,7 +91,7 @@ const customData = {
 };
 
 function getCapabilities() {
-    const isCompat = process.env.MODE && /compat/.test(process.env.MODE);
+    const isCompat = process.env.COMPAT;
     let filtered = isCompat ? compatBrowsers : browsers;
 
     const args = minimist(process.argv.slice(2));
@@ -119,7 +116,6 @@ function getCapabilities() {
 
             name,
             build,
-            tags,
             customData,
         };
     });

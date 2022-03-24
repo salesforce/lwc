@@ -4,14 +4,8 @@
     "version": "2.11.3",
     "scripts": {
         "build": "node scripts/build.js",
-        "build:dev": "MODE=dev yarn build",
-        "build:compat": "MODE=compat yarn build",
-        "local": "yarn local:dev",
-        "local:dev": "yarn build:dev && MODE=dev wdio ./scripts/wdio.local.conf.js",
-        "local:compat": "yarn build:compat && MODE=compat wdio ./scripts/wdio.local.conf.js",
-        "sauce": "yarn sauce:dev",
-        "sauce:dev": "MODE=dev yarn build:dev && MODE=dev wdio ./scripts/wdio.sauce.conf.js",
-        "sauce:compat": "MODE=compat yarn build:compat && MODE=compat wdio ./scripts/wdio.sauce.conf.js"
+        "local": "yarn build && wdio ./scripts/wdio.local.conf.js",
+        "sauce": "yarn build && wdio ./scripts/wdio.sauce.conf.js"
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "2.11.3",

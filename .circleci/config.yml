@@ -183,7 +183,7 @@ jobs:
       - start_sauce_connect
       - run:
           name: Run integration test - Chrome SauceLabs
-          command: yarn sauce:prod --browsers chrome
+          command: yarn sauce --browsers chrome
           working_directory: packages/integration-tests
 
 
@@ -196,7 +196,7 @@ jobs:
       - start_sauce_connect
       - run:
           name: Run integration test - IE11 SauceLabs
-          command: yarn sauce:compat --browsers ie11
+          command: COMPAT=1 yarn sauce --browsers ie11
           working_directory: packages/integration-tests
 
 
