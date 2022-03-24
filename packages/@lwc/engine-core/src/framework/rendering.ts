@@ -144,7 +144,7 @@ function mountText(node: VText, parent: ParentNode, anchor: Node | null) {
     const { owner } = node;
 
     const textNode = (node.elm = createText(node.text));
-    linkNodeToShadow(textNode, owner, parent);
+    linkNodeToShadow(textNode, owner);
 
     insertNode(textNode, parent, anchor);
 }
@@ -163,34 +163,46 @@ function mountComment(node: VComment, parent: ParentNode, anchor: Node | null) {
     const { owner } = node;
 
     const commentNode = (node.elm = createComment(node.text));
-    linkNodeToShadow(commentNode, owner, parent);
+    linkNodeToShadow(commentNode, owner);
 
     insertNode(commentNode, parent, anchor);
 }
 
 function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) {
-    if (vnode.isStatic && vnode.elm) {
-        // @todo: what to do about the owner for synthetic shadow and fallbackElmHook
-        vnode.elm = vnode.elm.cloneNode(true) as Element;
-        insertNode(vnode.elm, parent, anchor);
-        return;
-    }
-
     const {
         sel,
         owner,
         data: { svg },
     } = vnode;
 
+    if (vnode.isStatic) {
+        if (vnode.elm) {
+            // @todo: what to do about the owner for synthetic shadow and fallbackElmHook
+
+            // @todo: cloned subtree is not associated with the proper shadow. The restrictions and styles will be
+            //        ok.
+            //        maybe modify synthetic shadow and get the owner from ancestors?
+            vnode.elm = vnode.elm.cloneNode(true) as Element;
+            linkNodeToShadow(vnode.elm, owner);
+            fallbackElmHook(vnode.elm, vnode);
+
+            insertNode(vnode.elm, parent, anchor);
+            return;
+        }
+
+        // @todo: hackalert: for now, let's mark all children as static and set the owner
+        const ch = vnode.children;
+        for (let i = 0, n = ch.length; i < n; i++) {
+            ch[i]!.isStatic = true;
+            ch[i]!.owner = owner;
+        }
+    }
+
     const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
     const elm = createElement(sel, namespace);
 
-    linkNodeToShadow(elm, owner, parent);
-
-    if (vnode.owner) {
-        // hoisted nodes do not have an owner
-        fallbackElmHook(elm, vnode);
-    }
+    linkNodeToShadow(elm, owner);
+    fallbackElmHook(elm, vnode);
 
     vnode.elm = elm;
 
@@ -349,16 +361,7 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     }
 }
 
-// @todo: hack alert!
-function linkNodeToShadow(elm: Node, owner: VM | undefined, parent?: Node) {
-    if (!owner) {
-        const parentShadowKey = (parent! as any)[KEY__SHADOW_RESOLVER];
-
-        if (isSyntheticShadowDefined && parentShadowKey) {
-            (elm as any)[KEY__SHADOW_RESOLVER] = parentShadowKey;
-        }
-        return;
-    }
+function linkNodeToShadow(elm: Node, owner: VM) {
     const { renderRoot, renderMode, shadowMode } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly

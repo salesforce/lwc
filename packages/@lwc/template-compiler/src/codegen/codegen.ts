@@ -51,7 +51,8 @@ type RenderPrimitive =
     | 'scopedId'
     | 'scopedFragId'
     | 'comment'
-    | 'sanitizeHtmlContent';
+    | 'sanitizeHtmlContent'
+    | 'setOwner';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -74,6 +75,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
     comment: { name: 'co', alias: 'api_comment' },
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
+    setOwner: { name: 'so', alias: 'api_set_owner' },
 };
 
 interface Scope {
@@ -293,17 +295,21 @@ export default class CodeGen {
             textConcatenation = t.binaryExpression('+', textConcatenation, mappedValues[i]);
         }
 
-        return this._renderApiCall(RENDER_APIS.text, [textConcatenation]);
         if (isHoisted) {
             return this.genHoistedNode(
                 this._renderApiCall(RENDER_APIS.text, [textConcatenation, t.literal(true)])
             );
         }
+
+        return this._renderApiCall(RENDER_APIS.text, [textConcatenation]);
     }
 
-    genHoistedNode(expr: t.Expression): t.Identifier {
+    genHoistedNode(expr: t.Expression): t.CallExpression {
         this.hoistedNodes.push(expr);
-        return t.identifier(`$hoisted${this.hoistedNodes.length}`);
+
+        return this._renderApiCall(RENDER_APIS.setOwner, [
+            t.identifier(`$hoisted${this.hoistedNodes.length}`),
+        ]);
     }
 
     genComment(value: string, isHoisted: boolean): t.Expression {

@@ -49,6 +49,13 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
     ArrayPush.call(getVMBeingRendered()!.velements, vnode);
 }
 
+// [s]et [o]wner
+function so(vnode: VNode): VNode {
+    vnode.owner = getVMBeingRendered()!;
+
+    return vnode;
+}
+
 // [h]tml node
 function h(
     sel: string,
@@ -554,6 +561,7 @@ const api = ObjectFreeze({
     co,
     dc,
     ti,
+    so,
     gid,
     fid,
     shc,
