@@ -186,6 +186,17 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
             linkNodeToShadow(vnode.elm, owner);
             fallbackElmHook(vnode.elm, vnode);
 
+            // @todo: hackalert: doing a traversal to set the proper shadow, just to reduce test failures
+            // const treeWalker = document.createTreeWalker(
+            //     vnode.elm,
+            //     NodeFilter.SHOW_ELEMENT & NodeFilter.SHOW_COMMENT & NodeFilter.SHOW_TEXT,
+            // );
+            // let currentNode: Node | null = treeWalker.currentNode;
+            //
+            // while(currentNode) {
+            //     linkNodeToShadow(currentNode, owner);
+            //     currentNode = treeWalker.nextNode();
+            // }
             insertNode(vnode.elm, parent, anchor);
             return;
         }
