@@ -8,7 +8,7 @@
 import './polyfills';
 
 // Renderer initialization -------------------------------------------------------------------------
-import * as renderer from './initializeRenderer';
+import * as renderer from './renderer';
 export { renderer };
 
 // Engine-core public APIs -------------------------------------------------------------------------

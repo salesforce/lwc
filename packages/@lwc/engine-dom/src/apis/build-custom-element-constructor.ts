@@ -14,7 +14,7 @@ import {
 } from '@lwc/engine-core';
 import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 import { hydrateComponent } from './hydrate-component';
-import * as renderer from '../initializeRenderer';
+import * as renderer from '../renderer';
 
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;

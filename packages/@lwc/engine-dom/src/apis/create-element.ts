@@ -13,7 +13,7 @@ import {
     getUpgradableConstructor,
 } from '@lwc/engine-core';
 import type { RendererAPI } from '@lwc/engine-core/types/renderer';
-import * as renderer from '../initializeRenderer';
+import * as renderer from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node

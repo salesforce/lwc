@@ -9,7 +9,7 @@
 import './polyfills/aria-properties/main';
 
 // Renderer initialization -------------------------------------------------------------------------
-import * as renderer from './initializeRenderer';
+import * as renderer from './renderer';
 export { renderer };
 
 // Tests -------------------------------------------------------------------------------------------
