@@ -14,13 +14,21 @@ import { transformSync, StylesheetConfig, DynamicComponentConfig } from '@lwc/co
 import { resolveModule, ModuleRecord } from '@lwc/module-resolver';
 
 export interface RollupLwcOptions {
+    /** A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should transform on. By default all files are targeted. */
     include?: FilterPattern;
+    /** A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should not transform. By default no files are ignored. */
     exclude?: FilterPattern;
+    /** The LWC root module directory. */
     rootDir?: string;
+    /** If `true` the plugin will produce source maps. */
     sourcemap?: boolean;
+    /** The [module resolution](https://lwc.dev/guide/es_modules#module-resolution) overrides passed to the `@lwc/module-resolver`. */
     modules?: ModuleRecord[];
+    /** The stylesheet compiler configuration to pass to the `@lwc/style-compiler` */
     stylesheetConfig?: StylesheetConfig;
+    /** The configuration to pass to the `@lwc/template-compiler`. */
     preserveHtmlComments?: boolean;
+    /** The configuration to pass to `@lwc/compiler`. */
     experimentalDynamicComponent?: DynamicComponentConfig;
 }
 
@@ -74,7 +82,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         buildStart({ input }) {
             if (rootDir === undefined) {
                 if (Array.isArray(input)) {
-                    rootDir = path.dirname(input[0]);
+                    rootDir = path.dirname(path.resolve(input[0]));
 
                     if (input.length > 1) {
                         this.warn(
@@ -82,7 +90,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                         );
                     }
                 } else {
-                    rootDir = path.dirname(Object.values(input)[0]);
+                    rootDir = path.dirname(path.resolve(Object.values(input)[0]));
 
                     this.warn(
                         `The "rootDir" option should be explicitly set when passing "input" object to rollup. The "rootDir" option is implicitly resolved to ${rootDir}.`
@@ -92,7 +100,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 rootDir = path.resolve(rootDir);
             }
 
-            modules = [...modules, { dir: rootDir }, ...DEFAULT_MODULES];
+            modules = [...modules, ...DEFAULT_MODULES, { dir: rootDir }];
         },
 
         resolveId(importee, importer) {
@@ -176,5 +184,5 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     };
 }
 
-// For backward compatibility with commonjs format,
+// For backward compatibility with commonjs format
 module.exports = lwc;
