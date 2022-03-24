@@ -6,8 +6,12 @@ import LightParent from 'x/lightParent';
 import LightShadowParent from 'x/lightShadowParent';
 import ToggleContainer from 'x/toggleContainer';
 
-beforeEach(() => {
+function resetTimingBuffer() {
     window.timingBuffer = [];
+}
+
+beforeEach(() => {
+    resetTimingBuffer();
 });
 
 afterEach(() => {
@@ -18,7 +22,7 @@ const fixtures = [
     {
         tagName: 'x-shadow-parent',
         ctor: ShadowParent,
-        values: [
+        disconnect: [
             'shadowParent:disconnectedCallback',
             'leaf:after-container:disconnectedCallback',
             'shadowContainer:disconnectedCallback',
@@ -32,7 +36,7 @@ const fixtures = [
     {
         tagName: 'x-shadow-light-parent',
         ctor: ShadowLightParent,
-        values: [
+        disconnect: [
             'shadowLightParent:disconnectedCallback',
             'lightContainer:disconnectedCallback',
             'leaf:after-slot:disconnectedCallback',
@@ -43,7 +47,7 @@ const fixtures = [
     {
         tagName: 'x-light-parent',
         ctor: LightParent,
-        values: [
+        disconnect: [
             'lightParent:disconnectedCallback',
             'leaf:after-container:disconnectedCallback',
             'lightContainer:disconnectedCallback',
@@ -57,7 +61,7 @@ const fixtures = [
     {
         tagName: 'x-light-shadow-parent',
         ctor: LightShadowParent,
-        values: [
+        disconnect: [
             'lightShadowContainer:disconnectedCallback',
             'shadowContainer:disconnectedCallback',
             'leaf:after-slot:disconnectedCallback',
@@ -67,13 +71,15 @@ const fixtures = [
     },
 ];
 
-for (const { tagName, ctor, values: expectedValues } of fixtures) {
+for (const { tagName, ctor, disconnect: expectedDisconnect } of fixtures) {
     it(`${tagName} - should invoke disconnectedCallback in the right order`, () => {
         const elm = createElement(tagName, { is: ctor });
         document.body.appendChild(elm);
 
+        resetTimingBuffer();
+
         document.body.removeChild(elm);
-        expect(window.timingBuffer).toEqual(expectedValues);
+        expect(window.timingBuffer).toEqual(expectedDisconnect);
     });
 }
 
@@ -81,6 +87,7 @@ it('should disconnect on the right order (issue #1199 and #1198)', () => {
     const elm = createElement('x-toggle-container', { is: ToggleContainer });
     document.body.appendChild(elm);
 
+    resetTimingBuffer();
     elm.hide = true;
     return Promise.resolve().then(() => {
         expect(window.timingBuffer).toEqual([
