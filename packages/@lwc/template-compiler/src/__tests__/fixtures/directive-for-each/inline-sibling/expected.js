@@ -7,11 +7,16 @@ const {
   i: api_iterator,
   f: api_flatten,
 } = renderApi;
+const $hoisted1 = api_element(
+  "li",
+  {
+    key: 2,
+  },
+  [api_text("Last")],
+  true
+);
 const stc0 = {
   key: 0,
-};
-const stc1 = {
-  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
@@ -29,7 +34,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             [api_text(api_dynamic_text(item))]
           );
         }),
-        api_element("li", stc1, [api_text("Last")]),
+        $hoisted1,
       ])
     ),
   ];

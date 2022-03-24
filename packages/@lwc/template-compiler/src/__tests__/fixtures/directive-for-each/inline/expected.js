@@ -1,13 +1,18 @@
 import { registerTemplate, renderApi } from "lwc";
 const { k: api_key, t: api_text, h: api_element, i: api_iterator } = renderApi;
+const $hoisted1 = api_element(
+  "p",
+  {
+    key: 2,
+  },
+  [api_text("items")],
+  true
+);
 const stc0 = {
   key: 0,
 };
 const stc1 = {
   "my-list": true,
-};
-const stc2 = {
-  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
@@ -21,7 +26,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: stc1,
             key: api_key(1, item.id),
           },
-          [api_element("p", stc2, [api_text("items")])]
+          [$hoisted1]
         );
       })
     ),

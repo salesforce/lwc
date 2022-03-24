@@ -1,39 +1,54 @@
 import { registerTemplate, renderApi } from "lwc";
 const { h: api_element } = renderApi;
-const stc0 = {
-  classMap: {
-    foo: true,
+const $hoisted1 = api_element(
+  "div",
+  {
+    classMap: {
+      foo: true,
+    },
+    key: 0,
   },
-  key: 0,
-};
-const stc1 = {
-  classMap: {
-    foo: true,
-    bar: true,
+  [],
+  true
+);
+const $hoisted2 = api_element(
+  "div",
+  {
+    classMap: {
+      foo: true,
+      bar: true,
+    },
+    key: 1,
   },
-  key: 1,
-};
-const stc2 = {
-  classMap: {
-    foo: true,
-    bar: true,
+  [],
+  true
+);
+const $hoisted3 = api_element(
+  "div",
+  {
+    classMap: {
+      foo: true,
+      bar: true,
+    },
+    key: 2,
   },
-  key: 2,
-};
-const stc3 = {
-  classMap: {
-    foo: true,
-    bar: true,
+  [],
+  true
+);
+const $hoisted4 = api_element(
+  "div",
+  {
+    classMap: {
+      foo: true,
+      bar: true,
+    },
+    key: 3,
   },
-  key: 3,
-};
+  [],
+  true
+);
 function tmpl($api, $cmp, $slotset, $ctx) {
-  return [
-    api_element("div", stc0),
-    api_element("div", stc1),
-    api_element("div", stc2),
-    api_element("div", stc3),
-  ];
+  return [$hoisted1, $hoisted2, $hoisted3, $hoisted4];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

@@ -2,11 +2,11 @@
     'use strict';
 
     const {t: api_text, h: api_element} = lwc.renderApi;
-    const stc0 = {
+    const $hoisted1 = api_element("h1", {
       key: 0
-    };
+    }, [api_text("hello")], true);
     function tmpl($api, $cmp, $slotset, $ctx) {
-      return [api_element("h1", stc0, [api_text("hello")])];
+      return [$hoisted1];
       /*LWC compiler vX.X.X*/
     }
     var _tmpl = lwc.registerTemplate(tmpl);

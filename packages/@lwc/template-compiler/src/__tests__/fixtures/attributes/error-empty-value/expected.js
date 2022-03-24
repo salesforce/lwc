@@ -1,13 +1,18 @@
 import _fooBar from "foo/bar";
 import { registerTemplate, renderApi } from "lwc";
 const { h: api_element, c: api_custom_element } = renderApi;
-const stc0 = {
-  attrs: {
-    title: "",
+const $hoisted1 = api_element(
+  "p",
+  {
+    attrs: {
+      title: "",
+    },
+    key: 0,
   },
-  key: 0,
-};
-const stc1 = {
+  [],
+  true
+);
+const stc0 = {
   props: {
     content: "",
     visible: true,
@@ -15,7 +20,7 @@ const stc1 = {
   key: 1,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  return [api_element("p", stc0), api_custom_element("foo-bar", _fooBar, stc1)];
+  return [$hoisted1, api_custom_element("foo-bar", _fooBar, stc0)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

@@ -1,16 +1,22 @@
 import { registerTemplate, renderApi } from "lwc";
 const { h: api_element } = renderApi;
-const stc0 = {
-  key: 0,
-};
-const stc1 = {
-  attrs: {
-    "data--bar-baz": "xyz",
+const $hoisted1 = api_element(
+  "section",
+  {
+    key: 0,
   },
-  key: 1,
-};
+  [
+    api_element("p", {
+      attrs: {
+        "data--bar-baz": "xyz",
+      },
+      key: 1,
+    }),
+  ],
+  true
+);
 function tmpl($api, $cmp, $slotset, $ctx) {
-  return [api_element("section", stc0, [api_element("p", stc1)])];
+  return [$hoisted1];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

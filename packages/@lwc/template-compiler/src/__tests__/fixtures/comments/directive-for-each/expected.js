@@ -7,6 +7,7 @@ const {
   h: api_element,
   i: api_iterator,
 } = renderApi;
+const $hoisted1 = api_comment(" color ", true);
 const stc0 = {
   key: 0,
 };
@@ -17,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       stc0,
       api_iterator($cmp.colors, function (color) {
         return [
-          api_comment(" color "),
+          $hoisted1,
           api_element(
             "li",
             {

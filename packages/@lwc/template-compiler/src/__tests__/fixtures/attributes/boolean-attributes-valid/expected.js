@@ -1,13 +1,18 @@
 import _xFoo from "x/foo";
 import { registerTemplate, renderApi } from "lwc";
 const { t: api_text, h: api_element, c: api_custom_element } = renderApi;
-const stc0 = {
-  attrs: {
-    hidden: "",
+const $hoisted1 = api_element(
+  "p",
+  {
+    attrs: {
+      hidden: "",
+    },
+    key: 0,
   },
-  key: 0,
-};
-const stc1 = {
+  [api_text("x")],
+  true
+);
+const stc0 = {
   props: {
     autofocus: "true",
     autoplay: "true",
@@ -29,8 +34,8 @@ const stc1 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
-    api_element("p", stc0, [api_text("x")]),
-    api_custom_element("x-foo", _xFoo, stc1),
+    $hoisted1,
+    api_custom_element("x-foo", _xFoo, stc0),
     api_element("input", {
       attrs: {
         readonly: $cmp.getReadOnly ? "" : null,

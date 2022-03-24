@@ -2,43 +2,71 @@ import _nsFoo from "ns/foo";
 import _nsBar from "ns/bar";
 import { registerTemplate, renderApi, sanitizeAttribute } from "lwc";
 const { gid: api_scoped_id, c: api_custom_element, h: api_element } = renderApi;
+const $hoisted1 = api_element(
+  "a",
+  {
+    classMap: {
+      test: true,
+    },
+    attrs: {
+      "data-foo": "datafoo",
+      "aria-hidden": "h",
+      role: "presentation",
+      href: "/foo",
+      title: "test",
+      tabindex: "-1",
+    },
+    key: 1,
+  },
+  [],
+  true
+);
+const $hoisted2 = api_element(
+  "svg",
+  {
+    classMap: {
+      cubano: true,
+    },
+    attrs: {
+      focusable: "true",
+    },
+    key: 3,
+    svg: true,
+  },
+  [
+    api_element("use", {
+      attrs: {
+        "xlink:href": sanitizeAttribute(
+          "use",
+          "http://www.w3.org/2000/svg",
+          "xlink:href",
+          "xx"
+        ),
+      },
+      key: 4,
+      svg: true,
+    }),
+  ],
+  true
+);
+const $hoisted3 = api_element(
+  "table",
+  {
+    attrs: {
+      bgcolor: "x",
+    },
+    key: 5,
+  },
+  [],
+  true
+);
 const stc0 = {
-  classMap: {
-    test: true,
-  },
-  attrs: {
-    "data-foo": "datafoo",
-    "aria-hidden": "h",
-    role: "presentation",
-    href: "/foo",
-    title: "test",
-    tabindex: "-1",
-  },
-  key: 1,
-};
-const stc1 = {
   r: true,
 };
-const stc2 = {
+const stc1 = {
   "data-xx": "foo",
 };
-const stc3 = {
-  classMap: {
-    cubano: true,
-  },
-  attrs: {
-    focusable: "true",
-  },
-  key: 3,
-  svg: true,
-};
-const stc4 = {
-  attrs: {
-    bgcolor: "x",
-  },
-  key: 5,
-};
-const stc5 = {
+const stc2 = {
   "aria-hidden": "hidden",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -50,10 +78,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 0,
     }),
-    api_element("a", stc0),
+    $hoisted1,
     api_custom_element("ns-bar", _nsBar, {
-      classMap: stc1,
-      attrs: stc2,
+      classMap: stc0,
+      attrs: stc1,
       props: {
         ariaDescribedBy: api_scoped_id("ns-foo"),
         ariaHidden: "hidden",
@@ -65,24 +93,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 2,
     }),
-    api_element("svg", stc3, [
-      api_element("use", {
-        attrs: {
-          "xlink:href": sanitizeAttribute(
-            "use",
-            "http://www.w3.org/2000/svg",
-            "xlink:href",
-            "xx"
-          ),
-        },
-        key: 4,
-        svg: true,
-      }),
-    ]),
-    api_element("table", stc4),
+    $hoisted2,
+    $hoisted3,
     api_element("div", {
       className: $cmp.foo,
-      attrs: stc5,
+      attrs: stc2,
       key: 6,
     }),
   ];

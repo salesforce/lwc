@@ -1,13 +1,18 @@
 import { registerTemplate, renderApi } from "lwc";
 const { h: api_element } = renderApi;
-const stc0 = {
-  attrs: {
-    min: "4",
+const $hoisted1 = api_element(
+  "somefancytag",
+  {
+    attrs: {
+      min: "4",
+    },
+    key: 0,
   },
-  key: 0,
-};
+  [],
+  true
+);
 function tmpl($api, $cmp, $slotset, $ctx) {
-  return [api_element("somefancytag", stc0)];
+  return [$hoisted1];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

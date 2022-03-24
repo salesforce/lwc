@@ -1,12 +1,17 @@
 import { registerTemplate, renderApi } from "lwc";
 const { t: api_text, h: api_element, s: api_slot, f: api_flatten } = renderApi;
+const $hoisted1 = api_element(
+  "p",
+  {
+    key: 0,
+  },
+  [api_text("Root")],
+  true
+);
 const stc0 = {
-  key: 0,
-};
-const stc1 = {
   key: 1,
 };
-const stc2 = {
+const stc1 = {
   attrs: {
     name: "named",
   },
@@ -14,9 +19,9 @@ const stc2 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return api_flatten([
-    api_element("p", stc0, [api_text("Root")]),
-    api_slot("", stc1, [api_text("Default")], $slotset),
-    api_slot("named", stc2, [api_text("Named")], $slotset),
+    $hoisted1,
+    api_slot("", stc0, [api_text("Default")], $slotset),
+    api_slot("named", stc1, [api_text("Named")], $slotset),
   ]);
   /*LWC compiler vX.X.X*/
 }

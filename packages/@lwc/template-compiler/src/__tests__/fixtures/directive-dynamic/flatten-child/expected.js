@@ -5,16 +5,21 @@ const {
   dc: api_dynamic_component,
   f: api_flatten,
 } = renderApi;
+const $hoisted1 = api_element(
+  "div",
+  {
+    key: 0,
+  },
+  [api_text("sibling")],
+  true
+);
 const stc0 = {
-  key: 0,
-};
-const stc1 = {
   key: 1,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return api_flatten([
-    api_element("div", stc0, [api_text("sibling")]),
-    api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc1),
+    $hoisted1,
+    api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0),
   ]);
   /*LWC compiler vX.X.X*/
 }
