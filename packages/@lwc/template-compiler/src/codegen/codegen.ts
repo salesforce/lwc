@@ -180,6 +180,8 @@ export default class CodeGen {
      */
     readonly scopeFragmentId: boolean;
 
+    readonly hoistedNodes: t.Expression[] = [];
+
     /**
      * The scope keeps track of the identifiers that have been seen while traversing the AST.
      * Currently, we are keeping track of item, index and iterator on the ForEach and ForOf nodes respectively.
@@ -230,12 +232,23 @@ export default class CodeGen {
         return this.currentKey++;
     }
 
-    genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {
+    genElement(
+        tagName: string,
+        data: t.ObjectExpression,
+        children: t.Expression,
+        isHoisted: boolean
+    ) {
         const args: t.Expression[] = [t.literal(tagName), data];
-        if (!isArrayExpression(children) || children.elements.length > 0) {
-            args.push(children); // only generate children if non-empty
+        if (!isArrayExpression(children) || children.elements.length > 0 || isHoisted) {
+            args.push(children); // only generate children if non-empty or if hoisted
         }
-        return this._renderApiCall(RENDER_APIS.element, args);
+
+        if (isHoisted) {
+            args.push(t.literal(true));
+        }
+
+        const expr = this._renderApiCall(RENDER_APIS.element, args);
+        return isHoisted ? this.genHoistedNode(expr) : expr;
     }
 
     genCustomElement(
@@ -267,7 +280,7 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
     }
 
-    genText(value: Array<string | t.Expression>): t.Expression {
+    genText(value: Array<string | t.Expression>, isHoisted: boolean): t.Expression {
         const mappedValues = value.map((v) => {
             return typeof v === 'string'
                 ? t.literal(v)
@@ -281,10 +294,24 @@ export default class CodeGen {
         }
 
         return this._renderApiCall(RENDER_APIS.text, [textConcatenation]);
+        if (isHoisted) {
+            return this.genHoistedNode(
+                this._renderApiCall(RENDER_APIS.text, [textConcatenation, t.literal(true)])
+            );
+        }
     }
 
-    genComment(value: string): t.Expression {
-        return this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
+    genHoistedNode(expr: t.Expression): t.Identifier {
+        this.hoistedNodes.push(expr);
+        return t.identifier(`$hoisted${this.hoistedNodes.length}`);
+    }
+
+    genComment(value: string, isHoisted: boolean): t.Expression {
+        return isHoisted
+            ? this.genHoistedNode(
+                  this._renderApiCall(RENDER_APIS.comment, [t.literal(value), t.literal(true)])
+              )
+            : this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
     }
 
     genSanitizeHtmlContent(content: t.Expression): t.Expression {

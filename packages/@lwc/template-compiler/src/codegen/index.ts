@@ -95,22 +95,24 @@ function transform(codeGen: CodeGen): t.Expression {
 
             res = codeGen.getSlot(element.slotName, databag, defaultSlot);
         } else {
-            res = codeGen.genElement(name, databag, children);
+            res = codeGen.genElement(name, databag, children, codeGen.isStaticNode(element));
         }
 
         return res;
     }
 
     function transformText(consecutiveText: Text[]): t.Expression {
+        const mustHoistText = !consecutiveText.some((txt) => !codeGen.isStaticNode(txt));
         return codeGen.genText(
             consecutiveText.map(({ value }) => {
                 return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
-            })
+            }),
+            mustHoistText
         );
     }
 
     function transformComment(comment: Comment): t.Expression {
-        return codeGen.genComment(comment.value);
+        return codeGen.genComment(comment.value, codeGen.isStaticNode(comment));
     }
 
     function transformChildren(parent: ParentNode): t.Expression {
