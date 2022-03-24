@@ -17,20 +17,9 @@ const templates = require('../src/shared/templates.js');
 // -- Build Config -------------------------------------------
 const mode = process.env.MODE || 'compat';
 const isCompat = /compat/.test(mode);
-const isProd = /prod/.test(mode);
 
-const engineModeFile = getModulePath(
-    'engine-dom',
-    'iife',
-    isCompat ? 'es5' : 'es2017',
-    isProd ? 'prod' : 'dev'
-);
-const shadowModeFile = getModulePath(
-    'synthetic-shadow',
-    'iife',
-    isCompat ? 'es5' : 'es2017',
-    isProd ? 'prod' : 'dev'
-);
+const engineModeFile = getModulePath('engine-dom', 'iife', isCompat ? 'es5' : 'es2017');
+const shadowModeFile = getModulePath('synthetic-shadow', 'iife', isCompat ? 'es5' : 'es2017');
 
 const testSufix = '.test.js';
 const testPrefix = 'test-';
@@ -91,11 +80,10 @@ function createRollupInputConfig() {
             entryPointResolverPlugin(),
             rollupLwcCompilerPlugin({ exclude: `**/*${testSufix}` }),
             isCompat && rollupCompatPlugin({ polyfills: false }),
-            isProd &&
-                rollupReplacePlugin({
-                    'process.env.NODE_ENV': JSON.stringify('production'),
-                    preventAssignment: true,
-                }),
+            rollupReplacePlugin({
+                'process.env.NODE_ENV': JSON.stringify('production'),
+                preventAssignment: true,
+            }),
         ].filter(Boolean),
     };
 }

@@ -196,7 +196,7 @@ jobs:
       - start_sauce_connect
       - run:
           name: Run integration test - IE11 SauceLabs
-          command: yarn sauce:prod_compat --browsers ie11
+          command: yarn sauce:compat --browsers ie11
           working_directory: packages/integration-tests
 
 
