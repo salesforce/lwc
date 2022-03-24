@@ -6,7 +6,6 @@
  */
 import { isNull, isString } from '@lwc/shared';
 
-import { setAttribute, removeAttribute } from '../../renderer';
 import { VBaseElement } from '../vnodes';
 
 // The style property is a string when defined via an expression in the template.
@@ -21,6 +20,9 @@ export function patchStyleAttribute(oldVnode: VBaseElement | null, vnode: VBaseE
         return;
     }
 
+    const {
+        renderer: { setAttribute, removeAttribute },
+    } = vnode;
     if (!isString(newStyle) || newStyle === '') {
         removeAttribute(elm, 'style');
     } else {

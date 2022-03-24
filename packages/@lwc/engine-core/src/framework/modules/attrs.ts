@@ -6,8 +6,6 @@
  */
 import { isNull, isUndefined, StringCharCodeAt, XML_NAMESPACE, XLINK_NAMESPACE } from '@lwc/shared';
 
-import { setAttribute, removeAttribute } from '../../renderer';
-
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
@@ -25,7 +23,10 @@ export function patchAttributes(oldVnode: VBaseElement | null, vnode: VBaseEleme
         return;
     }
 
-    const { elm } = vnode;
+    const {
+        elm,
+        renderer: { setAttribute, removeAttribute },
+    } = vnode;
     for (const key in attrs) {
         const cur = attrs[key];
         const old = oldAttrs[key];

@@ -14,8 +14,6 @@ import {
     StringSlice,
 } from '@lwc/shared';
 
-import { getClassList } from '../../renderer';
-
 import { EmptyObject, SPACE_CHAR } from '../utils';
 import { VBaseElement } from '../vnodes';
 
@@ -68,7 +66,7 @@ export function patchClassAttribute(oldVnode: VBaseElement | null, vnode: VBaseE
         return;
     }
 
-    const classList = getClassList(elm!);
+    const classList = vnode.renderer.getClassList(elm!);
     const newClassMap = getMapFromClassName(newClass);
     const oldClassMap = getMapFromClassName(oldClass);
 

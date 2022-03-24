@@ -18,18 +18,6 @@ import {
     KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 
-import {
-    remove,
-    insert,
-    nextSibling,
-    createElement,
-    createText,
-    setText,
-    createComment,
-    getClassList,
-    isSyntheticShadowDefined,
-} from '../renderer';
-
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -68,6 +56,7 @@ import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
+import type { RendererAPI } from '../renderer';
 
 export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode): void {
     if (hasDynamicChildren(c2)) {
@@ -140,13 +129,14 @@ function patchText(n1: VText, n2: VText) {
     }
 }
 
-function mountText(node: VText, parent: ParentNode, anchor: Node | null) {
-    const { owner } = node;
+function mountText(vnode: VText, parent: ParentNode, anchor: Node | null) {
+    const { owner, renderer } = vnode;
+    const { createText } = renderer;
 
-    const textNode = (node.elm = createText(node.text));
+    const textNode = (vnode.elm = createText(vnode.text));
     linkNodeToShadow(textNode, owner);
 
-    insertNode(textNode, parent, anchor);
+    insertNode(textNode, parent, anchor, renderer);
 }
 
 function patchComment(n1: VComment, n2: VComment) {
@@ -159,13 +149,14 @@ function patchComment(n1: VComment, n2: VComment) {
     }
 }
 
-function mountComment(node: VComment, parent: ParentNode, anchor: Node | null) {
-    const { owner } = node;
+function mountComment(vnode: VComment, parent: ParentNode, anchor: Node | null) {
+    const { owner, renderer } = vnode;
+    const { createComment } = renderer;
 
-    const commentNode = (node.elm = createComment(node.text));
+    const commentNode = (vnode.elm = createComment(vnode.text));
     linkNodeToShadow(commentNode, owner);
 
-    insertNode(commentNode, parent, anchor);
+    insertNode(commentNode, parent, anchor, renderer);
 }
 
 function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) {
@@ -173,7 +164,9 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
         sel,
         owner,
         data: { svg },
+        renderer,
     } = vnode;
+    const { createElement } = renderer;
 
     const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
     const elm = createElement(sel, namespace);
@@ -184,7 +177,7 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
 
     patchElementPropsAndAttrs(null, vnode);
 
-    insertNode(elm, parent, anchor);
+    insertNode(elm, parent, anchor, renderer);
     mountVNodes(vnode.children, elm, null);
 }
 
@@ -196,9 +189,9 @@ function patchElement(n1: VElement, n2: VElement) {
 }
 
 function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
-    const { sel, owner } = vnode;
+    const { sel, owner, renderer } = vnode;
 
-    const UpgradableConstructor = getUpgradableConstructor(sel);
+    const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced
@@ -222,7 +215,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
     }
 
     patchElementPropsAndAttrs(null, vnode);
-    insertNode(elm, parent, anchor);
+    insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
         if (process.env.NODE_ENV !== 'production') {
@@ -276,12 +269,12 @@ function mountVNodes(
 }
 
 function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
-    const { type, elm, sel } = vnode;
+    const { type, elm, renderer, sel } = vnode;
 
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
     if (doRemove) {
-        removeNode(elm!, parent);
+        removeNode(elm!, parent, renderer);
     }
 
     switch (type) {
@@ -335,15 +328,26 @@ function setElementShadowToken(elm: Element, token: string) {
 
 // Set the scope token class for *.scoped.css styles
 function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
-    const { cmpTemplate, context } = owner;
+    const {
+        cmpTemplate,
+        context,
+        renderer: { getClassList },
+    } = owner;
     const token = cmpTemplate?.stylesheetToken;
     if (!isUndefined(token) && context.hasScopedStyles) {
+        // TODO [#2762]: this dot notation with add is probably problematic
+        // probably we should have a renderer api for just the add operation
         getClassList(elm).add(token);
     }
 }
 
 function linkNodeToShadow(elm: Node, owner: VM) {
-    const { renderRoot, renderMode, shadowMode } = owner;
+    const {
+        renderRoot,
+        renderMode,
+        shadowMode,
+        renderer: { isSyntheticShadowDefined },
+    } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
     if (isSyntheticShadowDefined) {
@@ -354,7 +358,11 @@ function linkNodeToShadow(elm: Node, owner: VM) {
 }
 
 function updateTextContent(vnode: VText | VComment) {
-    const { elm, text } = vnode;
+    const {
+        elm,
+        text,
+        renderer: { setText },
+    } = vnode;
 
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
@@ -365,21 +373,21 @@ function updateTextContent(vnode: VText | VComment) {
     }
 }
 
-function insertNode(node: Node, parent: Node, anchor: Node | null) {
+function insertNode(node: Node, parent: Node, anchor: Node | null, renderer: RendererAPI) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    insert(node, parent, anchor);
+    renderer.insert(node, parent, anchor);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
 }
 
-export function removeNode(node: Node, parent: ParentNode) {
+export function removeNode(node: Node, parent: ParentNode, renderer: RendererAPI) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    remove(node, parent);
+    renderer.remove(node, parent);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
@@ -471,7 +479,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
         return vm;
     }
 
-    const { sel, mode, ctor, owner } = vnode;
+    const { sel, mode, ctor, owner, renderer } = vnode;
 
     setScopeTokenClassIfNecessary(elm, owner);
     if (owner.shadowMode === ShadowMode.Synthetic) {
@@ -483,7 +491,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
         }
     }
 
-    vm = createVM(elm, ctor, {
+    vm = createVM(elm, ctor, renderer, {
         mode,
         owner,
         tagName: sel,
@@ -610,13 +618,18 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patch(oldStartVnode, newEndVnode);
-            insertNode(oldStartVnode.elm!, parent, nextSibling(oldEndVnode.elm!));
+            insertNode(
+                oldStartVnode.elm!,
+                parent,
+                newEndVnode.renderer.nextSibling(oldEndVnode.elm!),
+                newEndVnode.renderer
+            );
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
             patch(oldEndVnode, newStartVnode);
-            insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!);
+            insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, newStartVnode.renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
         } else {
@@ -648,7 +661,7 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
 
                         // We've already cloned at least once, so it's no longer read-only
                         (oldCh as any[])[idxInOld] = undefined;
-                        insertNode(elmToMove.elm!, parent, oldStartVnode.elm!);
+                        insertNode(elmToMove.elm!, parent, oldStartVnode.elm!, elmToMove.renderer);
                     }
                 }
                 newStartVnode = newCh[++newStartIdx];

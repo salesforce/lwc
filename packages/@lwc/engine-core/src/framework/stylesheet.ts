@@ -6,14 +6,13 @@
  */
 import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
-import { getClassList, removeAttribute, setAttribute, ssr, insertStylesheet } from '../renderer';
-
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
 import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 import { VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
+import type { RendererAPI } from '../renderer';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -36,8 +35,9 @@ function makeHostToken(token: string) {
     return `${token}-host`;
 }
 
-function createInlineStyleVNode(content: string): VNode {
+function createInlineStyleVNode(renderer: RendererAPI, content: string): VNode {
     return api.h(
+        renderer,
         'style',
         {
             key: 'style', // special key
@@ -45,12 +45,18 @@ function createInlineStyleVNode(content: string): VNode {
                 type: 'text/css',
             },
         },
-        [api.t(content)]
+        [api.t(renderer, content)]
     );
 }
 
 export function updateStylesheetToken(vm: VM, template: Template) {
-    const { elm, context, renderMode, shadowMode } = vm;
+    const {
+        elm,
+        context,
+        renderMode,
+        shadowMode,
+        renderer: { getClassList, removeAttribute, setAttribute },
+    } = vm;
     const { stylesheets: newStylesheets, stylesheetToken: newStylesheetToken } = template;
     const isSyntheticShadow =
         renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic;
@@ -196,7 +202,8 @@ function getNearestNativeShadowComponent(vm: VM): VM | null {
 }
 
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    const { renderMode, shadowMode } = vm;
+    const { renderMode, shadowMode, renderer } = vm;
+    const { ssr, insertStylesheet } = renderer;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
             insertStylesheet(stylesheets[i]);
@@ -208,7 +215,7 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
 
         // native shadow or light DOM, SSR
         const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
-        return createInlineStyleVNode(combinedStylesheetContent);
+        return createInlineStyleVNode(renderer, combinedStylesheetContent);
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);

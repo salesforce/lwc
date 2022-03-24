@@ -6,8 +6,6 @@
  */
 import { isNull, isUndefined } from '@lwc/shared';
 
-import { getProperty, setProperty } from '../../renderer';
-
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
 
@@ -29,7 +27,11 @@ export function patchProps(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     }
 
     const isFirstPatch = isNull(oldVnode);
-    const { elm, sel } = vnode;
+    const {
+        elm,
+        sel,
+        renderer: { getProperty, setProperty },
+    } = vnode;
 
     for (const key in props) {
         const cur = props[key];

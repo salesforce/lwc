@@ -42,6 +42,7 @@ import {
     VElementData,
     VNodeType,
 } from './vnodes';
+import type { RendererAPI } from '../renderer';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -50,7 +51,12 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [h]tml node
-function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VElement {
+function h(
+    renderer: RendererAPI,
+    sel: string,
+    data: VElementData,
+    children: VNodes = EmptyArray
+): VElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
@@ -92,6 +98,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
     const { key } = data;
 
     return {
+        renderer,
         type: VNodeType.Element,
         sel,
         data,
@@ -124,6 +131,7 @@ function ti(value: any): number {
 
 // [s]lot element node
 function s(
+    renderer: RendererAPI,
     slotName: string,
     data: VElementData,
     children: VNodes,
@@ -152,11 +160,12 @@ function s(
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
-    return h('slot', data, children);
+    return h(renderer, 'slot', data, children);
 }
 
 // [c]ustom element node
 function c(
+    renderer: RendererAPI,
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
@@ -203,6 +212,7 @@ function c(
     const { key } = data;
     let elm, aChildren, vm;
     const vnode: VCustomElement = {
+        renderer,
         type: VNodeType.CustomElement,
         sel,
         data,
@@ -332,9 +342,10 @@ function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
 }
 
 // [t]ext node
-function t(text: string): VText {
+function t(renderer: RendererAPI, text: string): VText {
     let sel, key, elm;
     return {
+        renderer,
         type: VNodeType.Text,
         sel,
         text,
@@ -345,9 +356,10 @@ function t(text: string): VText {
 }
 
 // [co]mment node
-function co(text: string): VComment {
+function co(renderer: RendererAPI, text: string): VComment {
     let sel, key, elm;
     return {
+        renderer,
         type: VNodeType.Comment,
         sel,
         text,
@@ -450,6 +462,7 @@ let dynamicImportedComponentCounter = 0;
  * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
  */
 function dc(
+    renderer: RendererAPI,
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
@@ -481,7 +494,7 @@ function dc(
     // Shallow clone is necessary here becuase VElementData may be shared across VNodes due to
     // hoisting optimization.
     const newData = { ...data, key: `dc:${idx}:${data.key}` };
-    return c(sel, Ctor, newData, children);
+    return c(renderer, sel, Ctor, newData, children);
 }
 
 /**

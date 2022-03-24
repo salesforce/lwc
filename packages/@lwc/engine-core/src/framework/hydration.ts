@@ -7,15 +7,6 @@
 import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
-import {
-    getAttribute,
-    getClassList,
-    setText,
-    getProperty,
-    setProperty,
-    nextSibling,
-    getFirstChild,
-} from '../renderer';
 
 import { cloneAndOmitKey, parseStyleText } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
@@ -70,6 +61,9 @@ function hydrateVM(vm: VM) {
 
     const parentNode = vm.renderRoot;
 
+    const {
+        renderer: { getFirstChild },
+    } = vm;
     hydrateChildren(getFirstChild(parentNode), children, parentNode, vm);
     runRenderedCallback(vm);
 }
@@ -93,7 +87,9 @@ function hydrateNode(node: Node, vnode: VNode): Node | null {
             hydratedNode = hydrateCustomElement(node, vnode);
             break;
     }
-
+    const {
+        renderer: { nextSibling },
+    } = vnode;
     return nextSibling(hydratedNode);
 }
 
@@ -103,6 +99,9 @@ function hydrateText(node: Node, vnode: VText): Node | null {
     }
 
     if (process.env.NODE_ENV !== 'production') {
+        const {
+            renderer: { getProperty },
+        } = vnode;
         const nodeValue = getProperty(node, 'nodeValue');
 
         if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
@@ -112,7 +111,9 @@ function hydrateText(node: Node, vnode: VText): Node | null {
             );
         }
     }
-
+    const {
+        renderer: { setText },
+    } = vnode;
     setText(node, vnode.text ?? null);
     vnode.elm = node;
 
@@ -125,6 +126,9 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
     }
 
     if (process.env.NODE_ENV !== 'production') {
+        const {
+            renderer: { getProperty },
+        } = vnode;
         const nodeValue = getProperty(node, 'nodeValue');
 
         if (nodeValue !== vnode.text) {
@@ -135,6 +139,9 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
         }
     }
 
+    const {
+        renderer: { setProperty },
+    } = vnode;
     setProperty(node, 'nodeValue', vnode.text ?? null);
     vnode.elm = node;
 
@@ -159,7 +166,10 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
     if (isDomManual) {
         // it may be that this element has lwc:inner-html, we need to diff and in case are the same,
         // remove the innerHTML from props so it reuses the existing dom elements.
-        const { props } = vnode.data;
+        const {
+            data: { props },
+            renderer: { getProperty },
+        } = vnode;
         if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
             if (getProperty(elm, 'innerHTML') === props.innerHTML) {
                 // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
@@ -184,6 +194,9 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
     patchElementPropsAndAttrs(vnode);
 
     if (!isDomManual) {
+        const {
+            renderer: { getFirstChild },
+        } = vnode;
         hydrateChildren(getFirstChild(elm), vnode.children, elm, vnode.owner);
     }
 
@@ -198,9 +211,9 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
         return handleMismatch(elm, vnode);
     }
 
-    const { sel, mode, ctor, owner } = vnode;
+    const { sel, mode, ctor, owner, renderer } = vnode;
 
-    const vm = createVM(elm, ctor, {
+    const vm = createVM(elm, ctor, renderer, {
         mode,
         owner,
         tagName: sel,
@@ -220,6 +233,9 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
     runConnectedCallback(vm);
 
     if (vm.renderMode !== RenderMode.Light) {
+        const {
+            renderer: { getFirstChild },
+        } = vnode;
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
         hydrateChildren(getFirstChild(elm), vnode.children, elm, vm);
@@ -272,10 +288,12 @@ function hydrateChildren(
                 );
             }
         }
+        const { renderer } = owner;
+        const { nextSibling } = renderer;
         do {
             const current = nextNode;
             nextNode = nextSibling(nextNode);
-            removeNode(current, parentNode);
+            removeNode(current, parentNode, renderer);
         } while (nextNode);
     }
 }
@@ -287,9 +305,11 @@ function handleMismatch(node: Node, vnode: VNode, msg?: string): Node | null {
             logError(msg, vnode.owner);
         }
     }
+    const { renderer } = vnode;
+    const { getProperty } = renderer;
     const parentNode = getProperty(node, 'parentNode');
     mount(vnode, parentNode, node);
-    removeNode(node, parentNode);
+    removeNode(node, parentNode, renderer);
 
     return vnode.elm!;
 }
@@ -300,6 +320,9 @@ function patchElementPropsAndAttrs(vnode: VBaseElement) {
 }
 
 function hasCorrectNodeType<T extends Node>(vnode: VNode, node: Node, nodeType: number): node is T {
+    const {
+        renderer: { getProperty },
+    } = vnode;
     if (getProperty(node, 'nodeType') !== nodeType) {
         if (process.env.NODE_ENV !== 'production') {
             logError('Hydration mismatch: incorrect node type received', vnode.owner);
@@ -311,6 +334,9 @@ function hasCorrectNodeType<T extends Node>(vnode: VNode, node: Node, nodeType: 
 }
 
 function isMatchingElement(vnode: VBaseElement, elm: Element) {
+    const {
+        renderer: { getProperty },
+    } = vnode;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
@@ -342,9 +368,15 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
+        const {
+            renderer: { getAttribute },
+        } = vnode;
         const elmAttrValue = getAttribute(elm, attrName);
         if (String(attrValue) !== elmAttrValue) {
             if (process.env.NODE_ENV !== 'production') {
+                const {
+                    renderer: { getProperty },
+                } = vnode;
                 logError(
                     `Mismatch hydrating element <${getProperty(
                         elm,
@@ -363,6 +395,7 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
 function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
     const {
         data: { className, classMap },
+        renderer: { getProperty, getClassList },
     } = vnode;
 
     let nodesAreCompatible = true;
@@ -413,6 +446,7 @@ function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
 function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
     const {
         data: { style, styleDecls },
+        renderer: { getAttribute },
     } = vnode;
     const elmStyle = getAttribute(elm, 'style') || '';
     let vnodeStyle;
@@ -449,6 +483,9 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
 
     if (!nodesAreCompatible) {
         if (process.env.NODE_ENV !== 'production') {
+            const {
+                renderer: { getProperty },
+            } = vnode;
             logError(
                 `Mismatch hydrating element <${getProperty(
                     elm,

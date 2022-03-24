@@ -12,7 +12,9 @@ import {
     getComponentHtmlPrototype,
     LightningElement,
 } from '@lwc/engine-core';
+import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 import { hydrateComponent } from './hydrate-component';
+import * as renderer from '../initializeRenderer';
 
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;
@@ -62,7 +64,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 hydrateComponent(this, Ctor, {});
                 hydratedCustomElements.add(this);
             } else {
-                createVM(this, Ctor, {
+                createVM(this, Ctor, renderer as unknown as RendererAPI, {
                     mode: 'open',
                     owner: null,
                     tagName: this.tagName,

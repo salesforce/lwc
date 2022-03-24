@@ -9,7 +9,8 @@
 import './polyfills/aria-properties/main';
 
 // Renderer initialization -------------------------------------------------------------------------
-import './initializeRenderer';
+import * as renderer from './initializeRenderer';
+export { renderer };
 
 // Tests -------------------------------------------------------------------------------------------
 import './testFeatureFlag.ts';

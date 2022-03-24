@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import type { RendererAPI } from '../renderer';
 import { VM } from './vm';
 
 export type Key = string | number;
@@ -26,6 +27,7 @@ export interface BaseVNode {
     sel: string | undefined;
     key: Key | undefined;
     owner: VM;
+    renderer: RendererAPI;
 }
 
 export interface VText extends BaseVNode {

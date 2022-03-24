@@ -12,6 +12,8 @@ import {
     LightningElement,
     getUpgradableConstructor,
 } from '@lwc/engine-core';
+import type { RendererAPI } from '@lwc/engine-core/types/renderer';
+import * as renderer from '../initializeRenderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
@@ -93,7 +95,7 @@ export function createElement(
         );
     }
 
-    const UpgradableConstructor = getUpgradableConstructor(sel);
+    const UpgradableConstructor = getUpgradableConstructor(sel, renderer as unknown as RendererAPI);
     let wasComponentUpgraded: boolean = false;
     // the custom element from the registry is expecting an upgrade callback
     /**
@@ -103,7 +105,7 @@ export function createElement(
      * an upgradable custom element.
      */
     const element = new UpgradableConstructor((elm: HTMLElement) => {
-        createVM(elm, Ctor, {
+        createVM(elm, Ctor, renderer as unknown as RendererAPI, {
             tagName: sel,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,

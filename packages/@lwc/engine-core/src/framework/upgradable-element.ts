@@ -5,11 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined, isFunction } from '@lwc/shared';
-import {
-    getCustomElement,
-    defineCustomElement,
-    HTMLElement as RendererHTMLElement,
-} from '../renderer';
+import type { RendererAPI } from '../renderer';
 
 type UpgradeCallback = (elm: HTMLElement) => void;
 
@@ -18,8 +14,14 @@ interface UpgradableCustomElementConstructor extends CustomElementConstructor {
 }
 
 export function getUpgradableConstructor(
-    tagName: string
+    tagName: string,
+    renderer: RendererAPI
 ): CustomElementConstructor | UpgradableCustomElementConstructor {
+    const {
+        getCustomElement,
+        HTMLElementExported: RendererHTMLElement,
+        defineCustomElement,
+    } = renderer;
     // Should never get a tag with upper case letter at this point, the compiler should
     // produce only tags with lowercase letters
     // But, for backwards compatibility, we will lower case the tagName

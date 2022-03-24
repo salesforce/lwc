@@ -6,7 +6,6 @@
  */
 import { isUndefined } from '@lwc/shared';
 
-import { addEventListener } from '../../renderer';
 import { VBaseElement } from '../vnodes';
 
 export function applyEventListeners(vnode: VBaseElement) {
@@ -19,6 +18,9 @@ export function applyEventListeners(vnode: VBaseElement) {
         return;
     }
 
+    const {
+        renderer: { addEventListener },
+    } = vnode;
     for (const name in on) {
         const handler = on[name];
         addEventListener(elm, name, handler);

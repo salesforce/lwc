@@ -6,7 +6,6 @@
  */
 import { isUndefined } from '@lwc/shared';
 
-import { getClassList } from '../../renderer';
 import { VBaseElement } from '../vnodes';
 
 // The HTML class property becomes the vnode.data.classMap object when defined as a string in the template.
@@ -16,13 +15,14 @@ export function applyStaticClassAttribute(vnode: VBaseElement) {
     const {
         elm,
         data: { classMap },
+        renderer,
     } = vnode;
 
     if (isUndefined(classMap)) {
         return;
     }
 
-    const classList = getClassList(elm);
+    const classList = renderer.getClassList(elm);
     for (const name in classMap) {
         classList.add(name);
     }

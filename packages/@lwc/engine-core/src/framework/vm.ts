@@ -19,7 +19,6 @@ import {
     isUndefined,
 } from '@lwc/shared';
 
-import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
 
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
@@ -42,8 +41,7 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
-
-import type { HostNode, HostElement } from '../renderer';
+import type { HostNode, HostElement, RendererAPI } from '../renderer';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -164,6 +162,9 @@ export interface VM<N = HostNode, E = HostElement> {
     /** Hook invoked whenever a method is called on the component (life-cycle hooks, public
      *  properties and event handlers). This hook is used by Locker. */
     callHook: (cmp: LightningElement | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
+    /**
+     * Renderer API */
+    renderer: RendererAPI;
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -266,6 +267,7 @@ function getNearestShadowAncestor(vm: VM): VM | null {
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
     ctor: LightningElementConstructor,
+    renderer: RendererAPI,
     options: {
         mode: ShadowRootMode;
         owner: VM<HostNode, HostElement> | null;
@@ -297,7 +299,6 @@ export function createVM<HostNode, HostElement>(
         hydrated: Boolean(hydrated),
 
         renderMode: def.renderMode,
-
         context: {
             stylesheetToken: undefined,
             hasTokenInClass: undefined,
@@ -321,9 +322,11 @@ export function createVM<HostNode, HostElement>(
         callHook,
         setHook,
         getHook,
+
+        renderer,
     };
 
-    vm.shadowMode = computeShadowMode(vm);
+    vm.shadowMode = computeShadowMode(vm, renderer);
     vm.tro = getTemplateReactiveObserver(vm);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -346,8 +349,9 @@ export function createVM<HostNode, HostElement>(
     return vm;
 }
 
-function computeShadowMode(vm: VM) {
+function computeShadowMode(vm: VM, renderer: RendererAPI) {
     const { def } = vm;
+    const { isSyntheticShadowDefined, isNativeShadowDefined } = renderer;
 
     let shadowMode;
     if (isSyntheticShadowDefined) {
@@ -471,6 +475,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
 export function runRenderedCallback(vm: VM) {
     const {
         def: { renderedCallback },
+        renderer: { ssr },
     } = vm;
 
     if (isTrue(ssr)) {
@@ -649,7 +654,11 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const { children, renderRoot } = vm;
+    const {
+        children,
+        renderRoot,
+        renderer: { remove },
+    } = vm;
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
@@ -665,6 +674,9 @@ export function resetComponentRoot(vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
+    const {
+        renderer: { ssr },
+    } = vm;
     if (isTrue(ssr) || isTrue(vm.isScheduled)) {
         return;
     }
