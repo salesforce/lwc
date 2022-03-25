@@ -5,6 +5,7 @@ const {
   t: api_text,
   h: api_element,
   i: api_iterator,
+  so: api_set_owner,
   f: api_flatten,
 } = renderApi;
 const $hoisted1 = api_element(
@@ -34,7 +35,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             [api_text(api_dynamic_text(item))]
           );
         }),
-        $hoisted1,
+        api_set_owner($hoisted1),
       ])
     ),
   ];

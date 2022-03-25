@@ -1,5 +1,5 @@
 import { registerTemplate, renderApi } from "lwc";
-const { gid: api_scoped_id, h: api_element } = renderApi;
+const { gid: api_scoped_id, h: api_element, so: api_set_owner } = renderApi;
 const $hoisted1 = api_element(
   "stop",
   {
@@ -77,10 +77,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
             svg: true,
           },
-          [$hoisted1, $hoisted2]
+          [api_set_owner($hoisted1), api_set_owner($hoisted2)]
         ),
       ]),
-      $hoisted3,
+      api_set_owner($hoisted3),
     ]),
   ];
   /*LWC compiler vX.X.X*/

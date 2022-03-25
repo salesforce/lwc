@@ -6,11 +6,14 @@ const {
   gid: api_scoped_id,
   c: api_custom_element,
   t: api_text,
+  so: api_set_owner,
   h: api_element,
   k: api_key,
   i: api_iterator,
   f: api_flatten,
 } = renderApi;
+const $hoisted1 = api_text("label text", true);
+const $hoisted2 = api_text("description text", true);
 function tmpl($api, $cmp, $slotset, $ctx) {
   return api_flatten([
     api_custom_element("x-subject", _xSubject, {
@@ -46,7 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 4,
       },
-      [api_text("label text")]
+      [api_set_owner($hoisted1)]
     ),
     api_element("input", {
       attrs: {
@@ -64,7 +67,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             },
             key: api_key(6, thing.key),
           },
-          [api_text("description text")]
+          [api_set_owner($hoisted2)]
         ),
         api_element("input", {
           attrs: {

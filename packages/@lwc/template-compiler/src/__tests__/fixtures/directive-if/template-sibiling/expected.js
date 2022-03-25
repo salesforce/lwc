@@ -1,5 +1,5 @@
 import { registerTemplate, renderApi } from "lwc";
-const { t: api_text, h: api_element } = renderApi;
+const { t: api_text, h: api_element, so: api_set_owner } = renderApi;
 const $hoisted1 = api_element(
   "p",
   {
@@ -8,7 +8,8 @@ const $hoisted1 = api_element(
   [api_text("1")],
   true
 );
-const $hoisted2 = api_element(
+const $hoisted2 = api_text("2", true);
+const $hoisted3 = api_element(
   "p",
   {
     key: 3,
@@ -25,9 +26,9 @@ const stc1 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
-      $hoisted1,
-      $cmp.bar ? api_element("p", stc1, [api_text("2")]) : null,
-      $hoisted2,
+      api_set_owner($hoisted1),
+      $cmp.bar ? api_element("p", stc1, [api_set_owner($hoisted2)]) : null,
+      api_set_owner($hoisted3),
     ]),
   ];
   /*LWC compiler vX.X.X*/

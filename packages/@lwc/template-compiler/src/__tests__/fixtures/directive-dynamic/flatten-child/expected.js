@@ -2,6 +2,7 @@ import { registerTemplate, renderApi } from "lwc";
 const {
   t: api_text,
   h: api_element,
+  so: api_set_owner,
   dc: api_dynamic_component,
   f: api_flatten,
 } = renderApi;
@@ -18,7 +19,7 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return api_flatten([
-    $hoisted1,
+    api_set_owner($hoisted1),
     api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0),
   ]);
   /*LWC compiler vX.X.X*/

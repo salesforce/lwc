@@ -1,5 +1,10 @@
 import { registerTemplate, renderApi } from "lwc";
-const { co: api_comment, t: api_text, h: api_element } = renderApi;
+const {
+  co: api_comment,
+  so: api_set_owner,
+  t: api_text,
+  h: api_element,
+} = renderApi;
 const $hoisted1 = api_comment(" This is an HTML comment ", true);
 const $hoisted2 = api_element(
   "button",
@@ -10,7 +15,7 @@ const $hoisted2 = api_element(
   true
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
-  return [$hoisted1, $hoisted2];
+  return [api_set_owner($hoisted1), api_set_owner($hoisted2)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

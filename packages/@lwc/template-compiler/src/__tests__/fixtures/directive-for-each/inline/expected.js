@@ -1,5 +1,11 @@
 import { registerTemplate, renderApi } from "lwc";
-const { k: api_key, t: api_text, h: api_element, i: api_iterator } = renderApi;
+const {
+  k: api_key,
+  t: api_text,
+  h: api_element,
+  so: api_set_owner,
+  i: api_iterator,
+} = renderApi;
 const $hoisted1 = api_element(
   "p",
   {
@@ -26,7 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: stc1,
             key: api_key(1, item.id),
           },
-          [$hoisted1]
+          [api_set_owner($hoisted1)]
         );
       })
     ),

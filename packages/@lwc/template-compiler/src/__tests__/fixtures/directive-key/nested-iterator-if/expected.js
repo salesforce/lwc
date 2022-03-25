@@ -4,8 +4,10 @@ const {
   d: api_dynamic_text,
   t: api_text,
   h: api_element,
+  so: api_set_owner,
   i: api_iterator,
 } = renderApi;
+const $hoisted1 = api_text("Text", true);
 const stc0 = {
   key: 0,
 };
@@ -47,7 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 {
                   key: api_key(3, x.value.key),
                 },
-                [api_text("Text")]
+                [api_set_owner($hoisted1)]
               )
             : null,
         ];

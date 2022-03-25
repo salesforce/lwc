@@ -1,6 +1,11 @@
 import _xFoo from "x/foo";
 import { registerTemplate, renderApi } from "lwc";
-const { h: api_element, t: api_text, c: api_custom_element } = renderApi;
+const {
+  h: api_element,
+  so: api_set_owner,
+  t: api_text,
+  c: api_custom_element,
+} = renderApi;
 const $hoisted1 = api_element(
   "input",
   {
@@ -57,6 +62,14 @@ const $hoisted4 = api_element(
   [],
   true
 );
+const $hoisted5 = api_text("boolean present", true);
+const $hoisted6 = api_text("empty string", true);
+const $hoisted7 = api_text("string value", true);
+const $hoisted8 = api_text(
+  "computed value, should be resolved in component",
+  true
+);
+const $hoisted9 = api_text("integer value", true);
 const stc0 = {
   value: "computed value",
 };
@@ -86,9 +99,9 @@ const stc4 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
-    $hoisted1,
-    $hoisted2,
-    $hoisted3,
+    api_set_owner($hoisted1),
+    api_set_owner($hoisted2),
+    api_set_owner($hoisted3),
     api_element("input", {
       attrs: {
         required: $cmp.computed ? "" : null,
@@ -96,10 +109,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       props: stc0,
       key: 3,
     }),
-    $hoisted4,
-    api_custom_element("x-foo", _xFoo, stc1, [api_text("boolean present")]),
-    api_custom_element("x-foo", _xFoo, stc2, [api_text("empty string")]),
-    api_custom_element("x-foo", _xFoo, stc3, [api_text("string value")]),
+    api_set_owner($hoisted4),
+    api_custom_element("x-foo", _xFoo, stc1, [api_set_owner($hoisted5)]),
+    api_custom_element("x-foo", _xFoo, stc2, [api_set_owner($hoisted6)]),
+    api_custom_element("x-foo", _xFoo, stc3, [api_set_owner($hoisted7)]),
     api_custom_element(
       "x-foo",
       _xFoo,
@@ -109,9 +122,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 8,
       },
-      [api_text("computed value, should be resolved in component")]
+      [api_set_owner($hoisted8)]
     ),
-    api_custom_element("x-foo", _xFoo, stc4, [api_text("integer value")]),
+    api_custom_element("x-foo", _xFoo, stc4, [api_set_owner($hoisted9)]),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -3,9 +3,11 @@ import { registerTemplate, renderApi } from "lwc";
 const {
   ti: api_tab_index,
   t: api_text,
+  so: api_set_owner,
   h: api_element,
   c: api_custom_element,
 } = renderApi;
+const $hoisted1 = api_text("valid", true);
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(
@@ -16,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 0,
       },
-      [api_text("valid")]
+      [api_set_owner($hoisted1)]
     ),
     api_custom_element("x-foo", _xFoo, {
       props: {

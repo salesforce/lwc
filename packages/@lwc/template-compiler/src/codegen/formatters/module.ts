@@ -17,6 +17,7 @@ import {
     identifierFromComponentName,
     generateTemplateMetadata,
     generateApisInitialization,
+    generateHoistedNodes,
 } from '../helpers';
 import { optimizeStaticExpressions } from '../optimize';
 
@@ -39,14 +40,6 @@ function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
         });
 
     return t.importDeclaration(imports, t.literal(LWC_MODULE_NAME));
-}
-
-function generateHoistedNodes(codegen: CodeGen): t.VariableDeclaration[] {
-    return codegen.hoistedNodes.map((value, index) => {
-        return t.variableDeclaration('const', [
-            t.variableDeclarator(t.identifier(`$hoisted${index + 1}`), value),
-        ]);
-    });
 }
 
 /**

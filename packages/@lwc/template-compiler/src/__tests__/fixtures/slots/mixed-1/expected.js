@@ -1,5 +1,10 @@
 import { registerTemplate, renderApi } from "lwc";
-const { t: api_text, h: api_element, s: api_slot } = renderApi;
+const {
+  t: api_text,
+  h: api_element,
+  so: api_set_owner,
+  s: api_slot,
+} = renderApi;
 const $hoisted1 = api_element(
   "p",
   {
@@ -8,7 +13,8 @@ const $hoisted1 = api_element(
   [api_text("Before header")],
   true
 );
-const $hoisted2 = api_element(
+const $hoisted2 = api_text("Default header", true);
+const $hoisted3 = api_element(
   "p",
   {
     key: 3,
@@ -16,7 +22,7 @@ const $hoisted2 = api_element(
   [api_text("In")],
   true
 );
-const $hoisted3 = api_element(
+const $hoisted4 = api_element(
   "p",
   {
     key: 4,
@@ -24,7 +30,7 @@ const $hoisted3 = api_element(
   [api_text("between")],
   true
 );
-const $hoisted4 = api_element(
+const $hoisted5 = api_element(
   "p",
   {
     key: 6,
@@ -32,7 +38,7 @@ const $hoisted4 = api_element(
   [api_text("Default body")],
   true
 );
-const $hoisted5 = api_element(
+const $hoisted6 = api_element(
   "p",
   {
     key: 8,
@@ -61,12 +67,12 @@ const stc3 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
-      $hoisted1,
-      api_slot("header", stc1, [api_text("Default header")], $slotset),
-      $hoisted2,
-      $hoisted3,
-      api_slot("", stc2, [$hoisted4], $slotset),
-      api_slot("footer", stc3, [$hoisted5], $slotset),
+      api_set_owner($hoisted1),
+      api_slot("header", stc1, [api_set_owner($hoisted2)], $slotset),
+      api_set_owner($hoisted3),
+      api_set_owner($hoisted4),
+      api_slot("", stc2, [api_set_owner($hoisted5)], $slotset),
+      api_slot("footer", stc3, [api_set_owner($hoisted6)], $slotset),
     ]),
   ];
   /*LWC compiler vX.X.X*/

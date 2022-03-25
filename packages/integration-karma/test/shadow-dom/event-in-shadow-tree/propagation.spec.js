@@ -42,7 +42,6 @@ function createDisconnectedTestElement() {
 describe('event propagation', () => {
     describe('dispatched on native element', () => {
         it('{bubbles: true, composed: true}', () => {
-            debugger;
             const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: true, composed: true });
             const actualLogs = dispatchEventWithLog(nodes.button, nodes, event);

@@ -13,6 +13,7 @@ import {
     identifierFromComponentName,
     generateTemplateMetadata,
     generateApisInitialization,
+    generateHoistedNodes,
 } from '../helpers';
 import { optimizeStaticExpressions } from '../optimize';
 
@@ -37,6 +38,8 @@ import { optimizeStaticExpressions } from '../optimize';
  */
 export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.Program {
     const apisInit = generateApisInitialization(codeGen);
+    const hoistedNodes = generateHoistedNodes(codeGen);
+
     const lookups = Array.from(codeGen.referencedComponents)
         .sort()
         .map((name) => {
@@ -58,6 +61,7 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
 
     return t.program([
         ...apisInit,
+        ...hoistedNodes,
         ...lookups,
         ...optimizedTemplateDeclarations,
         ...metadata,

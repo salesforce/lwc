@@ -1,6 +1,11 @@
 import _xFoo from "x/foo";
 import { registerTemplate, renderApi } from "lwc";
-const { t: api_text, h: api_element, c: api_custom_element } = renderApi;
+const {
+  t: api_text,
+  h: api_element,
+  so: api_set_owner,
+  c: api_custom_element,
+} = renderApi;
 const $hoisted1 = api_element(
   "p",
   {
@@ -34,7 +39,7 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
-    $hoisted1,
+    api_set_owner($hoisted1),
     api_custom_element("x-foo", _xFoo, stc0),
     api_element("input", {
       attrs: {

@@ -1,6 +1,13 @@
 import _nsCmp from "ns/cmp";
 import { registerTemplate, renderApi } from "lwc";
-const { t: api_text, h: api_element, c: api_custom_element } = renderApi;
+const {
+  t: api_text,
+  so: api_set_owner,
+  h: api_element,
+  c: api_custom_element,
+} = renderApi;
+const $hoisted1 = api_text("Header Slot Content", true);
+const $hoisted2 = api_text("Default Content", true);
 const stc0 = {
   key: 0,
 };
@@ -23,8 +30,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
       api_custom_element("ns-cmp", _nsCmp, stc1, [
-        api_element("p", stc2, [api_text("Header Slot Content")]),
-        api_element("p", stc3, [api_text("Default Content")]),
+        api_element("p", stc2, [api_set_owner($hoisted1)]),
+        api_element("p", stc3, [api_set_owner($hoisted2)]),
       ]),
     ]),
   ];

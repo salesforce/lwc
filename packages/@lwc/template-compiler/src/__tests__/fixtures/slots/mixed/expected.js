@@ -3,10 +3,12 @@ import { registerTemplate, renderApi } from "lwc";
 const {
   h: api_element,
   t: api_text,
+  so: api_set_owner,
   i: api_iterator,
   f: api_flatten,
   c: api_custom_element,
 } = renderApi;
+const $hoisted1 = api_text("x", true);
 const stc0 = {
   key: 0,
 };
@@ -28,7 +30,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           $cmp.isLoading ? api_element("div", stc2) : null,
           $cmp.haveLoadedItems
             ? api_iterator($cmp.menuItems, function (item) {
-                return api_text("x");
+                return api_set_owner($hoisted1);
               })
             : stc3,
         ])

@@ -2,9 +2,12 @@ import { registerTemplate, renderApi } from "lwc";
 const {
   fid: api_scoped_frag_id,
   t: api_text,
+  so: api_set_owner,
   h: api_element,
   gid: api_scoped_id,
 } = renderApi;
+const $hoisted1 = api_text("KIX", true);
+const $hoisted2 = api_text("Don't forget your passport!", true);
 const stc0 = {
   key: 1,
 };
@@ -18,7 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 0,
       },
-      [api_text("KIX")]
+      [api_set_owner($hoisted1)]
     ),
     api_element("map", stc0, [
       api_element("area", {
@@ -42,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 4,
       },
-      [api_text("Don't forget your passport!")]
+      [api_set_owner($hoisted2)]
     ),
   ];
   /*LWC compiler vX.X.X*/

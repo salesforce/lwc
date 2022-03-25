@@ -1,5 +1,6 @@
 import { registerTemplate, renderApi } from "lwc";
-const { t: api_text, h: api_element } = renderApi;
+const { t: api_text, so: api_set_owner, h: api_element } = renderApi;
+const $hoisted1 = api_text("Yasaka Taxi", true);
 const stc0 = {
   attrs: {
     href: "#yasaka-taxi",
@@ -23,7 +24,7 @@ const stc3 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
-    api_element("a", stc0, [api_text("Yasaka Taxi")]),
+    api_element("a", stc0, [api_set_owner($hoisted1)]),
     api_element("map", stc1, [
       api_element("area", stc2),
       api_element("area", stc3),

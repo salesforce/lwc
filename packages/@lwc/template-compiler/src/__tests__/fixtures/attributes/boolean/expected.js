@@ -1,5 +1,5 @@
 import { registerTemplate, renderApi } from "lwc";
-const { t: api_text, h: api_element } = renderApi;
+const { t: api_text, h: api_element, so: api_set_owner } = renderApi;
 const $hoisted1 = api_element(
   "p",
   {
@@ -13,7 +13,7 @@ const $hoisted1 = api_element(
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
-    $hoisted1,
+    api_set_owner($hoisted1),
     api_element("input", {
       attrs: {
         readonly: $cmp.getReadOnly ? "" : null,

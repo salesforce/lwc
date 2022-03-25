@@ -1,6 +1,7 @@
 import { registerTemplate, renderApi } from "lwc";
 const {
   co: api_comment,
+  so: api_set_owner,
   k: api_key,
   d: api_dynamic_text,
   t: api_text,
@@ -18,7 +19,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       stc0,
       api_iterator($cmp.colors, function (color) {
         return [
-          $hoisted1,
+          api_set_owner($hoisted1),
           api_element(
             "li",
             {

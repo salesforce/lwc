@@ -1,6 +1,11 @@
 import _xCustomComponent from "x/customComponent";
 import { registerTemplate, renderApi } from "lwc";
-const { h: api_element, c: api_custom_element, t: api_text } = renderApi;
+const {
+  h: api_element,
+  so: api_set_owner,
+  c: api_custom_element,
+  t: api_text,
+} = renderApi;
 const $hoisted1 = api_element(
   "unknonwtag",
   {
@@ -33,10 +38,10 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
-    $hoisted1,
+    api_set_owner($hoisted1),
     api_custom_element("x-custom-component", _xCustomComponent, stc0),
-    $hoisted2,
-    $hoisted3,
+    api_set_owner($hoisted2),
+    api_set_owner($hoisted3),
   ];
   /*LWC compiler vX.X.X*/
 }

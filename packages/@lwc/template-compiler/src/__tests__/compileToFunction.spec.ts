@@ -23,6 +23,7 @@ function mockRenderApi() {
         t: mock('api_text'),
         h: mock('api_element'),
         c: mock('api_component'),
+        so: mock('api_set_owner'),
     };
 
     return {
@@ -72,7 +73,8 @@ it('should compile correctly simple components', () => {
         ['api_element#2', ['p', { key: expect.any(Number) }, ['#1']]],
         ['api_text#3', ['world!']],
         ['api_element#4', ['p', { key: expect.any(Number) }, ['#3']]],
-        ['api_element#5', ['div', { key: expect.any(Number) }, ['#2', '#4']]],
+        ['api_element#5', ['div', { key: expect.any(Number) }, ['#2', '#4'], true]],
+        ['api_set_owner#6', ['#5']],
     ]);
 });
 

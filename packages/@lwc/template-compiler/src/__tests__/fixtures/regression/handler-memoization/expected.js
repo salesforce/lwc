@@ -2,11 +2,14 @@ import { registerTemplate, renderApi } from "lwc";
 const {
   b: api_bind,
   t: api_text,
+  so: api_set_owner,
   h: api_element,
   k: api_key,
   d: api_dynamic_text,
   i: api_iterator,
 } = renderApi;
+const $hoisted1 = api_text("New", true);
+const $hoisted2 = api_text("[X]", true);
 const stc0 = {
   key: 1,
 };
@@ -21,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           click: _m0 || ($ctx._m0 = api_bind($cmp.create)),
         },
       },
-      [api_text("New")]
+      [api_set_owner($hoisted1)]
     ),
     api_element(
       "ul",
@@ -42,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   click: api_bind(task.delete),
                 },
               },
-              [api_text("[X]")]
+              [api_set_owner($hoisted2)]
             ),
           ]
         );

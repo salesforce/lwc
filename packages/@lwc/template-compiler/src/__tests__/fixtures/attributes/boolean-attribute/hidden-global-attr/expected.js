@@ -1,6 +1,11 @@
 import _xFoo from "x/foo";
 import { registerTemplate, renderApi } from "lwc";
-const { t: api_text, h: api_element, c: api_custom_element } = renderApi;
+const {
+  t: api_text,
+  h: api_element,
+  so: api_set_owner,
+  c: api_custom_element,
+} = renderApi;
 const $hoisted1 = api_element(
   "p",
   {
@@ -34,7 +39,11 @@ const $hoisted3 = api_element(
   [api_text("string value, should be true")],
   true
 );
-const $hoisted4 = api_element(
+const $hoisted4 = api_text(
+  "computed value, should be resolved in component",
+  true
+);
+const $hoisted5 = api_element(
   "p",
   {
     attrs: {
@@ -45,6 +54,14 @@ const $hoisted4 = api_element(
   [api_text("integer value, should be true")],
   true
 );
+const $hoisted6 = api_text("boolean present", true);
+const $hoisted7 = api_text("empty string, should be true", true);
+const $hoisted8 = api_text("string value, should be true", true);
+const $hoisted9 = api_text(
+  "computed value, should be resolved in component",
+  true
+);
+const $hoisted10 = api_text("integer value, should be true", true);
 const stc0 = {
   props: {
     hidden: true,
@@ -71,9 +88,9 @@ const stc3 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
-    $hoisted1,
-    $hoisted2,
-    $hoisted3,
+    api_set_owner($hoisted1),
+    api_set_owner($hoisted2),
+    api_set_owner($hoisted3),
     api_element(
       "p",
       {
@@ -82,16 +99,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 3,
       },
-      [api_text("computed value, should be resolved in component")]
+      [api_set_owner($hoisted4)]
     ),
-    $hoisted4,
-    api_custom_element("x-foo", _xFoo, stc0, [api_text("boolean present")]),
-    api_custom_element("x-foo", _xFoo, stc1, [
-      api_text("empty string, should be true"),
-    ]),
-    api_custom_element("x-foo", _xFoo, stc2, [
-      api_text("string value, should be true"),
-    ]),
+    api_set_owner($hoisted5),
+    api_custom_element("x-foo", _xFoo, stc0, [api_set_owner($hoisted6)]),
+    api_custom_element("x-foo", _xFoo, stc1, [api_set_owner($hoisted7)]),
+    api_custom_element("x-foo", _xFoo, stc2, [api_set_owner($hoisted8)]),
     api_custom_element(
       "x-foo",
       _xFoo,
@@ -101,11 +114,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 8,
       },
-      [api_text("computed value, should be resolved in component")]
+      [api_set_owner($hoisted9)]
     ),
-    api_custom_element("x-foo", _xFoo, stc3, [
-      api_text("integer value, should be true"),
-    ]),
+    api_custom_element("x-foo", _xFoo, stc3, [api_set_owner($hoisted10)]),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -1,5 +1,10 @@
 import { registerTemplate, renderApi } from "lwc";
-const { gid: api_scoped_id, h: api_element, t: api_text } = renderApi;
+const {
+  gid: api_scoped_id,
+  h: api_element,
+  so: api_set_owner,
+  t: api_text,
+} = renderApi;
 const $hoisted1 = api_element(
   "feFlood",
   {
@@ -505,7 +510,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 2,
             svg: true,
           },
-          [$hoisted1]
+          [api_set_owner($hoisted1)]
         ),
         api_element(
           "filter",
@@ -517,7 +522,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 4,
             svg: true,
           },
-          [$hoisted2]
+          [api_set_owner($hoisted2)]
         ),
         api_element(
           "filter",
@@ -529,17 +534,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 6,
             svg: true,
           },
-          [$hoisted3]
+          [api_set_owner($hoisted3)]
         ),
       ]),
-      $hoisted4,
-      $hoisted5,
-      $hoisted6,
-      $hoisted7,
+      api_set_owner($hoisted4),
+      api_set_owner($hoisted5),
+      api_set_owner($hoisted6),
+      api_set_owner($hoisted7),
     ]),
     api_element("svg", stc2, [
-      $hoisted8,
-      $hoisted9,
+      api_set_owner($hoisted8),
+      api_set_owner($hoisted9),
       api_element(
         "filter",
         {
@@ -555,13 +560,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           svg: true,
         },
         [
-          $hoisted10,
-          $hoisted11,
-          $hoisted12,
-          $hoisted13,
-          $hoisted14,
-          $hoisted15,
-          $hoisted16,
+          api_set_owner($hoisted10),
+          api_set_owner($hoisted11),
+          api_set_owner($hoisted12),
+          api_set_owner($hoisted13),
+          api_set_owner($hoisted14),
+          api_set_owner($hoisted15),
+          api_set_owner($hoisted16),
         ]
       ),
     ]),

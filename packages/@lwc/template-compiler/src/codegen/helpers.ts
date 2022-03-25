@@ -100,6 +100,14 @@ export function hasIdAttribute(node: Node): boolean {
     return false;
 }
 
+export function generateHoistedNodes(codegen: CodeGen): t.VariableDeclaration[] {
+    return codegen.hoistedNodes.map((value, index) => {
+        return t.variableDeclaration('const', [
+            t.variableDeclarator(t.identifier(`$hoisted${index + 1}`), value),
+        ]);
+    });
+}
+
 export function memorizeHandler(
     codeGen: CodeGen,
     componentHandler: t.Expression,

@@ -9,12 +9,12 @@
   stylesheet.$scoped$ = true;
   var _implicitScopedStylesheets = [stylesheet];
 
-  const {h: api_element} = lwc.renderApi;
+  const {h: api_element, so: api_set_owner} = lwc.renderApi;
   const $hoisted1 = api_element("div", {
     key: 0
   }, [], true);
   function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$hoisted1];
+    return [api_set_owner($hoisted1)];
     /*LWC compiler vX.X.X*/
   }
   var _tmpl = lwc.registerTemplate(tmpl);

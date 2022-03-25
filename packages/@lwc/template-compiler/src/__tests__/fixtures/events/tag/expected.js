@@ -1,5 +1,12 @@
 import { registerTemplate, renderApi } from "lwc";
-const { b: api_bind, t: api_text, h: api_element } = renderApi;
+const {
+  b: api_bind,
+  t: api_text,
+  so: api_set_owner,
+  h: api_element,
+} = renderApi;
+const $hoisted1 = api_text("x", true);
+const $hoisted2 = api_text("x", true);
 const stc0 = {
   key: 0,
 };
@@ -15,7 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             click: _m0 || ($ctx._m0 = api_bind($cmp.handleClick)),
           },
         },
-        [api_text("x")]
+        [api_set_owner($hoisted1)]
       ),
       api_element(
         "div",
@@ -25,7 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             press: _m1 || ($ctx._m1 = api_bind($cmp.handlePress)),
           },
         },
-        [api_text("x")]
+        [api_set_owner($hoisted2)]
       ),
     ]),
   ];

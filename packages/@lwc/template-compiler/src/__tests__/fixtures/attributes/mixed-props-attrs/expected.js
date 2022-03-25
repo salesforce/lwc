@@ -1,7 +1,12 @@
 import _nsFoo from "ns/foo";
 import _nsBar from "ns/bar";
 import { registerTemplate, renderApi, sanitizeAttribute } from "lwc";
-const { gid: api_scoped_id, c: api_custom_element, h: api_element } = renderApi;
+const {
+  gid: api_scoped_id,
+  c: api_custom_element,
+  h: api_element,
+  so: api_set_owner,
+} = renderApi;
 const $hoisted1 = api_element(
   "a",
   {
@@ -78,7 +83,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 0,
     }),
-    $hoisted1,
+    api_set_owner($hoisted1),
     api_custom_element("ns-bar", _nsBar, {
       classMap: stc0,
       attrs: stc1,
@@ -93,8 +98,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 2,
     }),
-    $hoisted2,
-    $hoisted3,
+    api_set_owner($hoisted2),
+    api_set_owner($hoisted3),
     api_element("div", {
       className: $cmp.foo,
       attrs: stc2,

@@ -1,12 +1,15 @@
 import { registerTemplate, renderApi } from "lwc";
 const {
   t: api_text,
+  so: api_set_owner,
   i: api_iterator,
   h: api_element,
   f: api_flatten,
   k: api_key,
 } = renderApi;
-const $hoisted1 = api_element(
+const $hoisted1 = api_text("Other Child", true);
+const $hoisted2 = api_text("X", true);
+const $hoisted3 = api_element(
   "p",
   {
     key: 1,
@@ -14,7 +17,10 @@ const $hoisted1 = api_element(
   [api_text("Last child")],
   true
 );
-const $hoisted2 = api_element(
+const $hoisted4 = api_text("Other Child", true);
+const $hoisted5 = api_text("X1", true);
+const $hoisted6 = api_text("X2", true);
+const $hoisted7 = api_element(
   "p",
   {
     key: 6,
@@ -22,7 +28,7 @@ const $hoisted2 = api_element(
   [api_text("Last child")],
   true
 );
-const $hoisted3 = api_element(
+const $hoisted8 = api_element(
   "section",
   {
     classMap: {
@@ -73,18 +79,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       stc0,
       api_flatten([
-        api_text("Other Child"),
+        api_set_owner($hoisted1),
         api_iterator($cmp.items, function (item) {
-          return api_text("X");
+          return api_set_owner($hoisted2);
         }),
-        $hoisted1,
+        api_set_owner($hoisted3),
       ])
     ),
     api_element(
       "section",
       stc1,
       api_flatten([
-        api_text("Other Child"),
+        api_set_owner($hoisted4),
         $cmp.isTrue
           ? api_iterator($cmp.items, function (item) {
               return [
@@ -93,14 +99,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   {
                     key: api_key(3, item.id),
                   },
-                  [api_text("X1")]
+                  [api_set_owner($hoisted5)]
                 ),
                 api_element(
                   "p",
                   {
                     key: api_key(4, item.id),
                   },
-                  [api_text("X2")]
+                  [api_set_owner($hoisted6)]
                 ),
               ];
             })
@@ -111,7 +117,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       stc3,
       api_flatten([
-        $hoisted2,
+        api_set_owner($hoisted7),
         api_iterator($cmp.items, function (item) {
           return api_element("div", {
             key: api_key(7, item.id),
@@ -119,7 +125,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         }),
       ])
     ),
-    $hoisted3,
+    api_set_owner($hoisted8),
   ];
   /*LWC compiler vX.X.X*/
 }
