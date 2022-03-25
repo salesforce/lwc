@@ -78,7 +78,7 @@ if (!accessKey) {
 const tunnelId = process.env.SAUCE_TUNNEL_ID;
 const buildId = process.env.CIRCLE_BUILD_NUM || Date.now();
 
-const name = ['integration-test'].join(' - ');
+const name = 'integration-test';
 const build = ['integration-test', buildId].join(' - ');
 
 const customData = {
