@@ -9,5 +9,5 @@
         "declarationDir": null
     },
 
-    "include": ["src/"]
+    "include": ["src/", "typings"]
 }

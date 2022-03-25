@@ -39,6 +39,7 @@ const {
     getElementsByClassName,
     getElementsByTagName,
     getElementsByTagNameNS,
+    createTreeWalker,
 } = Document.prototype;
 
 // In Firefox v57 and lower, getElementsByName is defined on HTMLDocument.prototype
@@ -57,4 +58,5 @@ export {
     getElementsByTagName,
     getElementsByTagNameNS,
     defaultViewGetter,
+    createTreeWalker,
 };

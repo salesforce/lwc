@@ -33,7 +33,7 @@ import {
 } from './traverse';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { createStaticNodeList } from '../shared/static-node-list';
-import { DocumentPrototypeActiveElement, createComment } from '../env/document';
+import { DocumentPrototypeActiveElement, createComment, createTreeWalker } from '../env/document';
 import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -87,9 +87,14 @@ defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
         setNodeOwnerKey(this, (fn as any).nodeKey);
 
         if (isTrue((this as any)[KEY__IS_STATIC_NODE])) {
-            const treeWalker = document.createTreeWalker(
+            // Work around Internet Explorer wanting a function instead of an object. IE also *requires* this argument where
+            // other browsers don't.
+            const treeWalker = createTreeWalker.call(
+                getOwnerDocument(this),
                 this,
-                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
+                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT,
+                () => NodeFilter.FILTER_ACCEPT,
+                false
             );
             let currentNode: Node | null = treeWalker.nextNode();
 
