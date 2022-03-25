@@ -174,22 +174,18 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
         sel,
         owner,
         data: { svg },
+        isStatic,
     } = vnode;
 
-    if (vnode.isStatic) {
+    if (isStatic) {
         if (vnode.elm) {
-            // @todo: what to do about the owner for synthetic shadow and fallbackElmHook
-
-            // @todo: cloned subtree is not associated with the proper shadow. The restrictions and styles will be
-            //        ok.
-            //        maybe modify synthetic shadow and get the owner from ancestors?
             vnode.elm = vnode.elm.cloneNode(true) as Element;
 
             linkNodeToShadow(vnode.elm, owner, true);
 
             if (process.env.NODE_ENV !== 'production') {
                 // @todo: take out the restrictions patching
-                // @todo: should we traverse the tree?
+                // @todo: should we traverse the tree to set restrictions on inner nodes?
                 fallbackElmHook(vnode.elm, vnode);
             }
 
@@ -734,6 +730,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
         const n2 = c2[i];
 
         if (n2 !== n1) {
+            // if n1 === n2, they are null or the same hoisted vnode.
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
                     // both vnodes are equivalent, and we just need to patch them
@@ -748,7 +745,8 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
                 anchor = n2.elm!;
             }
         } else if (n2 !== null) {
-            // it is hoisted
+            // it is a hoisted vnode, patch does nothing for a hoisted vnode,
+            // but we need to update the anchor.
             anchor = n2.elm!;
         }
     }
