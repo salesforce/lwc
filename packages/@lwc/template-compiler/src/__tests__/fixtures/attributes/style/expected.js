@@ -6,8 +6,7 @@ const $hoisted1 = api_element(
     styleDecls: [["color", "blue", false]],
     key: 0,
   },
-  [],
-  true
+  []
 );
 const $hoisted2 = api_element(
   "div",
@@ -15,8 +14,7 @@ const $hoisted2 = api_element(
     styleDecls: [["color", "blue", false]],
     key: 1,
   },
-  [],
-  true
+  []
 );
 const $hoisted3 = api_element(
   "div",
@@ -24,8 +22,7 @@ const $hoisted3 = api_element(
     styleDecls: [["color", "blue", false]],
     key: 2,
   },
-  [],
-  true
+  []
 );
 const $hoisted4 = api_element(
   "div",
@@ -33,8 +30,7 @@ const $hoisted4 = api_element(
     styleDecls: [["box-shadow", "10px 5px 5px black", false]],
     key: 3,
   },
-  [],
-  true
+  []
 );
 const $hoisted5 = api_element(
   "div",
@@ -46,8 +42,7 @@ const $hoisted5 = api_element(
     ],
     key: 4,
   },
-  [],
-  true
+  []
 );
 const $hoisted6 = api_element(
   "div",
@@ -59,8 +54,7 @@ const $hoisted6 = api_element(
     ],
     key: 5,
   },
-  [],
-  true
+  []
 );
 const $hoisted7 = api_element(
   "div",
@@ -68,8 +62,7 @@ const $hoisted7 = api_element(
     styleDecls: [["background-color", "rgba(255,0,0,0.3)", false]],
     key: 6,
   },
-  [],
-  true
+  []
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [

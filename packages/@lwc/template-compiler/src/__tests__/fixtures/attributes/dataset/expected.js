@@ -13,8 +13,7 @@ const $hoisted1 = api_element(
       },
       key: 1,
     }),
-  ],
-  true
+  ]
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [api_set_owner($hoisted1)];

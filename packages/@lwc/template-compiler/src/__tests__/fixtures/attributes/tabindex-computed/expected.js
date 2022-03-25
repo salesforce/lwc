@@ -7,7 +7,7 @@ const {
   h: api_element,
   c: api_custom_element,
 } = renderApi;
-const $hoisted1 = api_text("valid", true);
+const $hoisted1 = api_text("valid");
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element(

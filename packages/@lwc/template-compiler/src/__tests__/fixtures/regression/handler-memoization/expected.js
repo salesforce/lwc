@@ -8,8 +8,8 @@ const {
   d: api_dynamic_text,
   i: api_iterator,
 } = renderApi;
-const $hoisted1 = api_text("New", true);
-const $hoisted2 = api_text("[X]", true);
+const $hoisted1 = api_text("New");
+const $hoisted2 = api_text("[X]");
 const stc0 = {
   key: 1,
 };

@@ -10,8 +10,7 @@ const $hoisted1 = api_element(
   {
     key: 2,
   },
-  [api_text("Test slot content")],
-  true
+  [api_text("Test slot content")]
 );
 const stc0 = {
   key: 0,

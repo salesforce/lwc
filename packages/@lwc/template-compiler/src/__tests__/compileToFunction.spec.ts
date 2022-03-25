@@ -73,7 +73,7 @@ it('should compile correctly simple components', () => {
         ['api_element#2', ['p', { key: expect.any(Number) }, ['#1']]],
         ['api_text#3', ['world!']],
         ['api_element#4', ['p', { key: expect.any(Number) }, ['#3']]],
-        ['api_element#5', ['div', { key: expect.any(Number) }, ['#2', '#4'], true]],
+        ['api_element#5', ['div', { key: expect.any(Number) }, ['#2', '#4']]],
         ['api_set_owner#6', ['#5']],
     ]);
 });

@@ -48,8 +48,7 @@ const $hoisted1 = api_element(
       },
       [api_text("SVG")]
     ),
-  ],
-  true
+  ]
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [api_set_owner($hoisted1)];

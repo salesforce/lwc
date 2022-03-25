@@ -11,24 +11,21 @@ const $hoisted1 = api_element(
   {
     key: 0,
   },
-  [],
-  true
+  []
 );
 const $hoisted2 = api_element(
   "span",
   {
     key: 2,
   },
-  [api_text("valid tags should not warn")],
-  true
+  [api_text("valid tags should not warn")]
 );
 const $hoisted3 = api_element(
   "spam",
   {
     key: 3,
   },
-  [api_text("this tag has a typo")],
-  true
+  [api_text("this tag has a typo")]
 );
 const stc0 = {
   props: {

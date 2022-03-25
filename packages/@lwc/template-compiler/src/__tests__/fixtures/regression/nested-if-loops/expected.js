@@ -7,8 +7,8 @@ const {
   i: api_iterator,
   f: api_flatten,
 } = renderApi;
-const $hoisted1 = api_text("Outer", true);
-const $hoisted2 = api_text("Inner", true);
+const $hoisted1 = api_text("Outer");
+const $hoisted2 = api_text("Inner");
 const stc0 = [];
 function tmpl($api, $cmp, $slotset, $ctx) {
   return $cmp.isTrue

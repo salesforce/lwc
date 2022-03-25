@@ -6,8 +6,8 @@ const {
   h: api_element,
   gid: api_scoped_id,
 } = renderApi;
-const $hoisted1 = api_text("KIX", true);
-const $hoisted2 = api_text("Don't forget your passport!", true);
+const $hoisted1 = api_text("KIX");
+const $hoisted2 = api_text("Don't forget your passport!");
 const stc0 = {
   key: 1,
 };

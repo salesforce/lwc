@@ -11,8 +11,7 @@ const $hoisted1 = api_element(
   {
     key: 0,
   },
-  [api_text("sibling")],
-  true
+  [api_text("sibling")]
 );
 const stc0 = {
   key: 1,

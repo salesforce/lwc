@@ -7,7 +7,7 @@ const {
   so: api_set_owner,
   i: api_iterator,
 } = renderApi;
-const $hoisted1 = api_text("Text", true);
+const $hoisted1 = api_text("Text");
 const stc0 = {
   key: 0,
 };

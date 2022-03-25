@@ -6,8 +6,8 @@ const {
   h: api_element,
   c: api_custom_element,
 } = renderApi;
-const $hoisted1 = api_text("Header Slot Content", true);
-const $hoisted2 = api_text("Default Content", true);
+const $hoisted1 = api_text("Header Slot Content");
+const $hoisted2 = api_text("Default Content");
 const stc0 = {
   key: 0,
 };

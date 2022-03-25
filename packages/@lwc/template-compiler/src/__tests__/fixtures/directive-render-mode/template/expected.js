@@ -11,11 +11,10 @@ const $hoisted1 = api_element(
   {
     key: 0,
   },
-  [api_text("Root")],
-  true
+  [api_text("Root")]
 );
-const $hoisted2 = api_text("Default", true);
-const $hoisted3 = api_text("Named", true);
+const $hoisted2 = api_text("Default");
+const $hoisted3 = api_text("Named");
 const stc0 = {
   key: 1,
 };

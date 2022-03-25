@@ -8,8 +8,7 @@ const $hoisted1 = api_element(
     },
     key: 0,
   },
-  [],
-  true
+  []
 );
 const $hoisted2 = api_element(
   "div",
@@ -20,8 +19,7 @@ const $hoisted2 = api_element(
     },
     key: 1,
   },
-  [],
-  true
+  []
 );
 const $hoisted3 = api_element(
   "div",
@@ -32,8 +30,7 @@ const $hoisted3 = api_element(
     },
     key: 2,
   },
-  [],
-  true
+  []
 );
 const $hoisted4 = api_element(
   "div",
@@ -44,8 +41,7 @@ const $hoisted4 = api_element(
     },
     key: 3,
   },
-  [],
-  true
+  []
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [

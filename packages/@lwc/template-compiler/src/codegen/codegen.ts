@@ -245,12 +245,8 @@ export default class CodeGen {
             args.push(children); // only generate children if non-empty or if hoisted
         }
 
-        if (isHoisted) {
-            args.push(t.literal(true));
-        }
-
-        const expr = this._renderApiCall(RENDER_APIS.element, args);
-        return isHoisted ? this.genHoistedNode(expr) : expr;
+        const apiCall = this._renderApiCall(RENDER_APIS.element, args);
+        return isHoisted ? this.genHoistedNode(apiCall) : apiCall;
     }
 
     genCustomElement(
@@ -295,13 +291,9 @@ export default class CodeGen {
             textConcatenation = t.binaryExpression('+', textConcatenation, mappedValues[i]);
         }
 
-        if (isHoisted) {
-            return this.genHoistedNode(
-                this._renderApiCall(RENDER_APIS.text, [textConcatenation, t.literal(true)])
-            );
-        }
+        const apiCall = this._renderApiCall(RENDER_APIS.text, [textConcatenation]);
 
-        return this._renderApiCall(RENDER_APIS.text, [textConcatenation]);
+        return isHoisted ? this.genHoistedNode(apiCall) : apiCall;
     }
 
     genHoistedNode(expr: t.Expression): t.CallExpression {
@@ -313,11 +305,9 @@ export default class CodeGen {
     }
 
     genComment(value: string, isHoisted: boolean): t.Expression {
-        return isHoisted
-            ? this.genHoistedNode(
-                  this._renderApiCall(RENDER_APIS.comment, [t.literal(value), t.literal(true)])
-              )
-            : this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
+        const apiCall = this._renderApiCall(RENDER_APIS.comment, [t.literal(value)]);
+
+        return isHoisted ? this.genHoistedNode(apiCall) : apiCall;
     }
 
     genSanitizeHtmlContent(content: t.Expression): t.Expression {

@@ -7,14 +7,13 @@ const {
   h: api_element,
   c: api_custom_element,
 } = renderApi;
-const $hoisted1 = api_comment(" HTML comment inside slot ", true);
+const $hoisted1 = api_comment(" HTML comment inside slot ");
 const $hoisted2 = api_element(
   "p",
   {
     key: 1,
   },
-  [api_text("slot content")],
-  true
+  [api_text("slot content")]
 );
 const stc0 = {
   key: 0,

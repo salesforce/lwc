@@ -13,8 +13,7 @@ const $hoisted1 = api_element(
     key: 3,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted2 = api_element(
   "stop",
@@ -29,8 +28,7 @@ const $hoisted2 = api_element(
     key: 4,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted3 = api_element(
   "ellipse",
@@ -45,8 +43,7 @@ const $hoisted3 = api_element(
     key: 5,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const stc0 = {
   attrs: {

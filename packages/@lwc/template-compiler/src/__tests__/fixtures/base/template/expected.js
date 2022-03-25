@@ -5,8 +5,7 @@ const $hoisted1 = api_element(
   {
     key: 0,
   },
-  [api_text("Root")],
-  true
+  [api_text("Root")]
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [api_set_owner($hoisted1)];

@@ -14,8 +14,7 @@ const $hoisted1 = api_element(
     },
     key: 0,
   },
-  [api_text("x")],
-  true
+  [api_text("x")]
 );
 const stc0 = {
   props: {

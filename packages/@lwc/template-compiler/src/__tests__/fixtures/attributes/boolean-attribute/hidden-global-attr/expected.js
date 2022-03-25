@@ -14,8 +14,7 @@ const $hoisted1 = api_element(
     },
     key: 0,
   },
-  [api_text("boolean present")],
-  true
+  [api_text("boolean present")]
 );
 const $hoisted2 = api_element(
   "p",
@@ -25,8 +24,7 @@ const $hoisted2 = api_element(
     },
     key: 1,
   },
-  [api_text("empty string, should be true")],
-  true
+  [api_text("empty string, should be true")]
 );
 const $hoisted3 = api_element(
   "p",
@@ -36,13 +34,9 @@ const $hoisted3 = api_element(
     },
     key: 2,
   },
-  [api_text("string value, should be true")],
-  true
+  [api_text("string value, should be true")]
 );
-const $hoisted4 = api_text(
-  "computed value, should be resolved in component",
-  true
-);
+const $hoisted4 = api_text("computed value, should be resolved in component");
 const $hoisted5 = api_element(
   "p",
   {
@@ -51,17 +45,13 @@ const $hoisted5 = api_element(
     },
     key: 4,
   },
-  [api_text("integer value, should be true")],
-  true
+  [api_text("integer value, should be true")]
 );
-const $hoisted6 = api_text("boolean present", true);
-const $hoisted7 = api_text("empty string, should be true", true);
-const $hoisted8 = api_text("string value, should be true", true);
-const $hoisted9 = api_text(
-  "computed value, should be resolved in component",
-  true
-);
-const $hoisted10 = api_text("integer value, should be true", true);
+const $hoisted6 = api_text("boolean present");
+const $hoisted7 = api_text("empty string, should be true");
+const $hoisted8 = api_text("string value, should be true");
+const $hoisted9 = api_text("computed value, should be resolved in component");
+const $hoisted10 = api_text("integer value, should be true");
 const stc0 = {
   props: {
     hidden: true,

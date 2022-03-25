@@ -5,10 +5,10 @@ const {
   so: api_set_owner,
   h: api_element,
 } = renderApi;
-const $hoisted1 = api_text("Click", true);
-const $hoisted2 = api_text("Click", true);
-const $hoisted3 = api_text("Click", true);
-const $hoisted4 = api_text("Click", true);
+const $hoisted1 = api_text("Click");
+const $hoisted2 = api_text("Click");
+const $hoisted3 = api_text("Click");
+const $hoisted4 = api_text("Click");
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { _m0, _m1, _m2, _m3 } = $ctx;
   return [

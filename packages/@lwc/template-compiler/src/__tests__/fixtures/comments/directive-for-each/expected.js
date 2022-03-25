@@ -8,7 +8,7 @@ const {
   h: api_element,
   i: api_iterator,
 } = renderApi;
-const $hoisted1 = api_comment(" color ", true);
+const $hoisted1 = api_comment(" color ");
 const stc0 = {
   key: 0,
 };

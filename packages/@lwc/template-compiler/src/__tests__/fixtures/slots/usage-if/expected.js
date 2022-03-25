@@ -6,8 +6,8 @@ const {
   h: api_element,
   c: api_custom_element,
 } = renderApi;
-const $hoisted1 = api_text("S1", true);
-const $hoisted2 = api_text("S2", true);
+const $hoisted1 = api_text("S1");
+const $hoisted2 = api_text("S2");
 const stc0 = {
   key: 0,
 };

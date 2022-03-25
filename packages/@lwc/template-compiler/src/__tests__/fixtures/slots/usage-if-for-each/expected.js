@@ -8,7 +8,7 @@ const {
   i: api_iterator,
   c: api_custom_element,
 } = renderApi;
-const $hoisted1 = api_text("X", true);
+const $hoisted1 = api_text("X");
 const stc0 = {
   classMap: {
     s2: true,

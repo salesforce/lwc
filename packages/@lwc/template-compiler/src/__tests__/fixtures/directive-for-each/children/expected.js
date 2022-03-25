@@ -7,26 +7,24 @@ const {
   f: api_flatten,
   k: api_key,
 } = renderApi;
-const $hoisted1 = api_text("Other Child", true);
-const $hoisted2 = api_text("X", true);
+const $hoisted1 = api_text("Other Child");
+const $hoisted2 = api_text("X");
 const $hoisted3 = api_element(
   "p",
   {
     key: 1,
   },
-  [api_text("Last child")],
-  true
+  [api_text("Last child")]
 );
-const $hoisted4 = api_text("Other Child", true);
-const $hoisted5 = api_text("X1", true);
-const $hoisted6 = api_text("X2", true);
+const $hoisted4 = api_text("Other Child");
+const $hoisted5 = api_text("X1");
+const $hoisted6 = api_text("X2");
 const $hoisted7 = api_element(
   "p",
   {
     key: 6,
   },
-  [api_text("Last child")],
-  true
+  [api_text("Last child")]
 );
 const $hoisted8 = api_element(
   "section",
@@ -51,8 +49,7 @@ const $hoisted8 = api_element(
       },
       [api_text("Other child2")]
     ),
-  ],
-  true
+  ]
 );
 const stc0 = {
   classMap: {

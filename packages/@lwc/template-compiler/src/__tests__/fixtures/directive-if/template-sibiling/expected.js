@@ -5,17 +5,15 @@ const $hoisted1 = api_element(
   {
     key: 1,
   },
-  [api_text("1")],
-  true
+  [api_text("1")]
 );
-const $hoisted2 = api_text("2", true);
+const $hoisted2 = api_text("2");
 const $hoisted3 = api_element(
   "p",
   {
     key: 3,
   },
-  [api_text("3")],
-  true
+  [api_text("3")]
 );
 const stc0 = {
   key: 0,

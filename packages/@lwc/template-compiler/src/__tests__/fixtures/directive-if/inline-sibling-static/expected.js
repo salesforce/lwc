@@ -5,8 +5,8 @@ const {
   h: api_element,
   d: api_dynamic_text,
 } = renderApi;
-const $hoisted1 = api_text("1", true);
-const $hoisted2 = api_text("3", true);
+const $hoisted1 = api_text("1");
+const $hoisted2 = api_text("3");
 const stc0 = {
   key: 0,
 };

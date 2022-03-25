@@ -5,16 +5,14 @@ const $hoisted1 = api_element(
   {
     key: 0,
   },
-  [api_text("hello")],
-  true
+  [api_text("hello")]
 );
 const $hoisted2 = api_element(
   "br",
   {
     key: 1,
   },
-  [],
-  true
+  []
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [api_set_owner($hoisted1), api_set_owner($hoisted2)];

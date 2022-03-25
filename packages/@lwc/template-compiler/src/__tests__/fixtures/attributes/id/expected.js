@@ -12,8 +12,8 @@ const {
   i: api_iterator,
   f: api_flatten,
 } = renderApi;
-const $hoisted1 = api_text("label text", true);
-const $hoisted2 = api_text("description text", true);
+const $hoisted1 = api_text("label text");
+const $hoisted2 = api_text("description text");
 function tmpl($api, $cmp, $slotset, $ctx) {
   return api_flatten([
     api_custom_element("x-subject", _xSubject, {

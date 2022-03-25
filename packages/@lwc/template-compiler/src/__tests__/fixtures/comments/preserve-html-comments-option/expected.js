@@ -5,14 +5,13 @@ const {
   t: api_text,
   h: api_element,
 } = renderApi;
-const $hoisted1 = api_comment(" This is an HTML comment ", true);
+const $hoisted1 = api_comment(" This is an HTML comment ");
 const $hoisted2 = api_element(
   "button",
   {
     key: 0,
   },
-  [api_text("click me")],
-  true
+  [api_text("click me")]
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [api_set_owner($hoisted1), api_set_owner($hoisted2)];

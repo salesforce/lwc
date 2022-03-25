@@ -1,6 +1,6 @@
 import { registerTemplate, renderApi } from "lwc";
 const { t: api_text, so: api_set_owner, h: api_element } = renderApi;
-const $hoisted1 = api_text("1", true);
+const $hoisted1 = api_text("1");
 const stc0 = {
   key: 0,
 };

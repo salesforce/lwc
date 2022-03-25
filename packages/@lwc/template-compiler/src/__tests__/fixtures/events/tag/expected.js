@@ -5,8 +5,8 @@ const {
   so: api_set_owner,
   h: api_element,
 } = renderApi;
-const $hoisted1 = api_text("x", true);
-const $hoisted2 = api_text("x", true);
+const $hoisted1 = api_text("x");
+const $hoisted2 = api_text("x");
 const stc0 = {
   key: 0,
 };

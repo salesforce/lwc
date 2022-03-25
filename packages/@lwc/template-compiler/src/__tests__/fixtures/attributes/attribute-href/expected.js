@@ -1,6 +1,6 @@
 import { registerTemplate, renderApi } from "lwc";
 const { t: api_text, so: api_set_owner, h: api_element } = renderApi;
-const $hoisted1 = api_text("Yasaka Taxi", true);
+const $hoisted1 = api_text("Yasaka Taxi");
 const stc0 = {
   attrs: {
     href: "#yasaka-taxi",

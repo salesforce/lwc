@@ -13,8 +13,7 @@ const $hoisted1 = api_element(
   {
     key: 2,
   },
-  [api_text("Last")],
-  true
+  [api_text("Last")]
 );
 const stc0 = {
   key: 0,

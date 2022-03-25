@@ -9,8 +9,7 @@ const $hoisted1 = api_element(
     },
     key: 0,
   },
-  [],
-  true
+  []
 );
 const $hoisted2 = api_element(
   "video",
@@ -21,8 +20,7 @@ const $hoisted2 = api_element(
     },
     key: 1,
   },
-  [],
-  true
+  []
 );
 const $hoisted3 = api_element(
   "audio",
@@ -33,8 +31,7 @@ const $hoisted3 = api_element(
     },
     key: 2,
   },
-  [],
-  true
+  []
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [

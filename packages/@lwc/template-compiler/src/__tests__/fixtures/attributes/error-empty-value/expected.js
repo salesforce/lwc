@@ -9,8 +9,7 @@ const $hoisted1 = api_element(
     },
     key: 0,
   },
-  [],
-  true
+  []
 );
 const stc0 = {
   props: {

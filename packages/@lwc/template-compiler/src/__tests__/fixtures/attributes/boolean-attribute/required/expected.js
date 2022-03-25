@@ -17,8 +17,7 @@ const $hoisted1 = api_element(
     },
     key: 0,
   },
-  [],
-  true
+  []
 );
 const $hoisted2 = api_element(
   "input",
@@ -31,8 +30,7 @@ const $hoisted2 = api_element(
     },
     key: 1,
   },
-  [],
-  true
+  []
 );
 const $hoisted3 = api_element(
   "input",
@@ -45,8 +43,7 @@ const $hoisted3 = api_element(
     },
     key: 2,
   },
-  [],
-  true
+  []
 );
 const $hoisted4 = api_element(
   "input",
@@ -59,17 +56,13 @@ const $hoisted4 = api_element(
     },
     key: 4,
   },
-  [],
-  true
+  []
 );
-const $hoisted5 = api_text("boolean present", true);
-const $hoisted6 = api_text("empty string", true);
-const $hoisted7 = api_text("string value", true);
-const $hoisted8 = api_text(
-  "computed value, should be resolved in component",
-  true
-);
-const $hoisted9 = api_text("integer value", true);
+const $hoisted5 = api_text("boolean present");
+const $hoisted6 = api_text("empty string");
+const $hoisted7 = api_text("string value");
+const $hoisted8 = api_text("computed value, should be resolved in component");
+const $hoisted9 = api_text("integer value");
 const stc0 = {
   value: "computed value",
 };

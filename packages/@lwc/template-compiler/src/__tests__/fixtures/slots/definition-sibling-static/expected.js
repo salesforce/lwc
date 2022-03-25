@@ -10,16 +10,14 @@ const $hoisted1 = api_element(
   {
     key: 1,
   },
-  [api_text("Sibling")],
-  true
+  [api_text("Sibling")]
 );
 const $hoisted2 = api_element(
   "p",
   {
     key: 3,
   },
-  [api_text("Default slot content")],
-  true
+  [api_text("Default slot content")]
 );
 const stc0 = {
   key: 0,

@@ -5,10 +5,10 @@ const {
   t: api_text,
   h: api_element,
 } = renderApi;
-const $hoisted1 = api_comment(" HTML comment inside if:true ", true);
-const $hoisted2 = api_text("true branch", true);
-const $hoisted3 = api_comment(" HTML comment inside if:false ", true);
-const $hoisted4 = api_text("false branch", true);
+const $hoisted1 = api_comment(" HTML comment inside if:true ");
+const $hoisted2 = api_text("true branch");
+const $hoisted3 = api_comment(" HTML comment inside if:false ");
+const $hoisted4 = api_text("false branch");
 const stc0 = {
   key: 0,
 };

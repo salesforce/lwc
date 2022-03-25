@@ -23,8 +23,7 @@ const $hoisted1 = api_element(
     },
     key: 1,
   },
-  [],
-  true
+  []
 );
 const $hoisted2 = api_element(
   "svg",
@@ -51,8 +50,7 @@ const $hoisted2 = api_element(
       key: 4,
       svg: true,
     }),
-  ],
-  true
+  ]
 );
 const $hoisted3 = api_element(
   "table",
@@ -62,8 +60,7 @@ const $hoisted3 = api_element(
     },
     key: 5,
   },
-  [],
-  true
+  []
 );
 const stc0 = {
   r: true,

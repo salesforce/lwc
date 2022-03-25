@@ -8,8 +8,7 @@ const $hoisted1 = api_element(
     },
     key: 0,
   },
-  [api_text("x")],
-  true
+  [api_text("x")]
 );
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [

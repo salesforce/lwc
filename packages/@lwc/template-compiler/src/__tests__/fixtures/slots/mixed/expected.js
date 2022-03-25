@@ -8,7 +8,7 @@ const {
   f: api_flatten,
   c: api_custom_element,
 } = renderApi;
-const $hoisted1 = api_text("x", true);
+const $hoisted1 = api_text("x");
 const stc0 = {
   key: 0,
 };

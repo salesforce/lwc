@@ -19,8 +19,7 @@ const $hoisted1 = api_element(
     key: 3,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted2 = api_element(
   "feBlend",
@@ -36,8 +35,7 @@ const $hoisted2 = api_element(
     key: 5,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted3 = api_element(
   "feMerge",
@@ -66,8 +64,7 @@ const $hoisted3 = api_element(
       key: 9,
       svg: true,
     }),
-  ],
-  true
+  ]
 );
 const $hoisted4 = api_element(
   "g",
@@ -105,8 +102,7 @@ const $hoisted4 = api_element(
       key: 13,
       svg: true,
     }),
-  ],
-  true
+  ]
 );
 const $hoisted5 = api_element(
   "circle",
@@ -121,8 +117,7 @@ const $hoisted5 = api_element(
     key: 14,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted6 = api_element(
   "g",
@@ -183,8 +178,7 @@ const $hoisted6 = api_element(
       key: 20,
       svg: true,
     }),
-  ],
-  true
+  ]
 );
 const $hoisted7 = api_element(
   "g",
@@ -246,8 +240,7 @@ const $hoisted7 = api_element(
       key: 26,
       svg: true,
     }),
-  ],
-  true
+  ]
 );
 const $hoisted8 = api_element(
   "rect",
@@ -263,8 +256,7 @@ const $hoisted8 = api_element(
     key: 28,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted9 = api_element(
   "g",
@@ -342,8 +334,7 @@ const $hoisted9 = api_element(
       key: 35,
       svg: true,
     }),
-  ],
-  true
+  ]
 );
 const $hoisted10 = api_element(
   "desc",
@@ -351,8 +342,7 @@ const $hoisted10 = api_element(
     key: 37,
     svg: true,
   },
-  [api_text("Produces a 3D lighting effect.")],
-  true
+  [api_text("Produces a 3D lighting effect.")]
 );
 const $hoisted11 = api_element(
   "feGaussianBlur",
@@ -365,8 +355,7 @@ const $hoisted11 = api_element(
     key: 38,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted12 = api_element(
   "feOffset",
@@ -380,8 +369,7 @@ const $hoisted12 = api_element(
     key: 39,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted13 = api_element(
   "feSpecularLighting",
@@ -407,8 +395,7 @@ const $hoisted13 = api_element(
       key: 41,
       svg: true,
     }),
-  ],
-  true
+  ]
 );
 const $hoisted14 = api_element(
   "feComposite",
@@ -422,8 +409,7 @@ const $hoisted14 = api_element(
     key: 42,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted15 = api_element(
   "feComposite",
@@ -441,8 +427,7 @@ const $hoisted15 = api_element(
     key: 43,
     svg: true,
   },
-  [],
-  true
+  []
 );
 const $hoisted16 = api_element(
   "feMerge",
@@ -465,8 +450,7 @@ const $hoisted16 = api_element(
       key: 46,
       svg: true,
     }),
-  ],
-  true
+  ]
 );
 const stc0 = {
   attrs: {

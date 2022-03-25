@@ -10,41 +10,36 @@ const $hoisted1 = api_element(
   {
     key: 1,
   },
-  [api_text("Before header")],
-  true
+  [api_text("Before header")]
 );
-const $hoisted2 = api_text("Default header", true);
+const $hoisted2 = api_text("Default header");
 const $hoisted3 = api_element(
   "p",
   {
     key: 3,
   },
-  [api_text("In")],
-  true
+  [api_text("In")]
 );
 const $hoisted4 = api_element(
   "p",
   {
     key: 4,
   },
-  [api_text("between")],
-  true
+  [api_text("between")]
 );
 const $hoisted5 = api_element(
   "p",
   {
     key: 6,
   },
-  [api_text("Default body")],
-  true
+  [api_text("Default body")]
 );
 const $hoisted6 = api_element(
   "p",
   {
     key: 8,
   },
-  [api_text("Default footer")],
-  true
+  [api_text("Default footer")]
 );
 const stc0 = {
   key: 0,
