@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const rollupTypescript = require('@rollup/plugin-typescript');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const typescript = require('../../../../../scripts/rollup/typescript');
 const lwcFeatures = require('../../../../../scripts/rollup/lwcFeatures');
 const { version } = require('../../package.json');
 
@@ -39,13 +39,14 @@ function rollupConfig({ wrap } = {}) {
             nodeResolve({
                 only: [/^@lwc\//],
             }),
-            rollupTypescript({
-                target: 'es2017',
-                tsconfig: path.join(__dirname, '../../tsconfig.json'),
-                noEmitOnError: true,
-            }),
+            typescript(),
             lwcFeatures(),
         ].filter(Boolean),
+        onwarn({ code, message }) {
+            if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {
+                throw new Error(message);
+            }
+        },
     };
 }
 

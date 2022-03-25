@@ -7,7 +7,7 @@
 
 const path = require('path');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const typescriptPlugin = require('@rollup/plugin-typescript');
+const typescript = require('../../../../scripts/rollup/typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 const { version } = require('../package.json');
 
@@ -31,16 +31,12 @@ module.exports = {
         nodeResolve({
             resolveOnly: [/^@lwc\//],
         }),
-        typescriptPlugin({
-            target: 'es2017',
-            tsconfig: path.join(__dirname, '../tsconfig.json'),
-            noEmitOnError: true,
-        }),
+        typescript(),
         writeDistAndTypes(),
     ],
 
     onwarn({ code, message }) {
-        if (code !== 'CIRCULAR_DEPENDENCY') {
+        if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {
             throw new Error(message);
         }
     },
