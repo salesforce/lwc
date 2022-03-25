@@ -16,6 +16,7 @@ import {
     keys,
     SVG_NAMESPACE,
     KEY__SHADOW_RESOLVER,
+    KEY__IS_STATIC_NODE,
 } from '@lwc/shared';
 
 import {
@@ -184,19 +185,13 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
             //        maybe modify synthetic shadow and get the owner from ancestors?
             vnode.elm = vnode.elm.cloneNode(true) as Element;
 
-            // @todo: hackalert: doing a traversal to set the proper shadow, just to reduce test failures
-            const treeWalker = document.createTreeWalker(
-                vnode.elm,
-                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
-            );
-            let currentNode: Node | null = treeWalker.currentNode;
+            linkNodeToShadow(vnode.elm, owner, true);
 
-            while (currentNode) {
-                linkNodeToShadow(currentNode, owner);
-                currentNode = treeWalker.nextNode();
+            if (process.env.NODE_ENV !== 'production') {
+                // @todo: take out the restrictions patching
+                // @todo: should we traverse the tree?
+                fallbackElmHook(vnode.elm, vnode);
             }
-
-            fallbackElmHook(vnode.elm, vnode);
 
             insertNode(vnode.elm, parent, anchor);
             return;
@@ -373,12 +368,16 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     }
 }
 
-function linkNodeToShadow(elm: Node, owner: VM) {
+function linkNodeToShadow(elm: Node, owner: VM, isStatic: boolean = false) {
     const { renderRoot, renderMode, shadowMode } = owner;
 
     // TODO [#1164]: this should eventually be done by the polyfill directly
     if (isSyntheticShadowDefined) {
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
+            if (isStatic) {
+                (elm as any)[KEY__IS_STATIC_NODE] = true;
+            }
+            // needs to happen after isStatic is set.
             (elm as any)[KEY__SHADOW_RESOLVER] = renderRoot[KEY__SHADOW_RESOLVER];
         }
     }

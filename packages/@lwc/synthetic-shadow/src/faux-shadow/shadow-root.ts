@@ -17,6 +17,7 @@ import {
     KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_RESOLVER_PRIVATE,
+    KEY__IS_STATIC_NODE,
     setPrototypeOf,
     getPrototypeOf,
     isObject,
@@ -84,6 +85,20 @@ defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
         (this as any)[KEY__SHADOW_RESOLVER_PRIVATE] = fn;
         // TODO [#1164]: temporary propagation of the key
         setNodeOwnerKey(this, (fn as any).nodeKey);
+
+        if (isTrue((this as any)[KEY__IS_STATIC_NODE])) {
+            const treeWalker = document.createTreeWalker(
+                this,
+                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
+            );
+            let currentNode: Node | null = treeWalker.nextNode();
+
+            while (currentNode) {
+                (currentNode as any)[KEY__SHADOW_RESOLVER_PRIVATE] = fn;
+                setNodeOwnerKey(currentNode, (fn as any).nodeKey);
+                currentNode = treeWalker.nextNode();
+            }
+        }
     },
     get(this: Node): ShadowRootResolver | undefined {
         return (this as any)[KEY__SHADOW_RESOLVER_PRIVATE];

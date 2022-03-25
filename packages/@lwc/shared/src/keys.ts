@@ -7,6 +7,7 @@
 
 export const KEY__IS_NATIVE_SHADOW_ROOT_DEFINED = '$isNativeShadowRootDefined$';
 export const KEY__SHADOW_RESOLVER = '$shadowResolver$';
+export const KEY__IS_STATIC_NODE = '$isStaticNode$';
 export const KEY__SHADOW_RESOLVER_PRIVATE = '$$ShadowResolverKey$$';
 export const KEY__SHADOW_TOKEN = '$shadowToken$';
 export const KEY__SHADOW_TOKEN_PRIVATE = '$$ShadowTokenKey$$';
