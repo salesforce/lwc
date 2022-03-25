@@ -53,6 +53,7 @@ export interface VBaseElement extends BaseVNode {
 
 export interface VElement extends VBaseElement {
     type: VNodeType.Element;
+    protoElm?: Element;
 }
 
 export interface VCustomElement extends VBaseElement {

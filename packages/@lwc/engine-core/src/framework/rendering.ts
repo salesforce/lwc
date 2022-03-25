@@ -178,8 +178,8 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
     } = vnode;
 
     if (isStatic) {
-        if (vnode.elm) {
-            vnode.elm = vnode.elm.cloneNode(true) as Element;
+        if (vnode.protoElm) {
+            vnode.elm = vnode.protoElm.cloneNode(true) as Element;
 
             linkNodeToShadow(vnode.elm, owner, true);
 
@@ -213,6 +213,11 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
 
     insertNode(elm, parent, anchor);
     mountVNodes(vnode.children, elm, null);
+
+    if (isStatic) {
+        // clone the rendered node in case it is manually manipulated.
+        vnode.protoElm = elm.cloneNode(true);
+    }
 }
 
 function patchElement(n1: VElement, n2: VElement) {
