@@ -58,6 +58,12 @@ export function setRemove(removeImpl: removeFunc) {
     remove = removeImpl;
 }
 
+type cloneNodeFunc = (node: N, deep: boolean) => N;
+export let cloneNode: cloneNodeFunc;
+export function setCloneNode(cloneNodeImpl: cloneNodeFunc) {
+    cloneNode = cloneNodeImpl;
+}
+
 type createElementFunc = (tagName: string, namespace?: string) => E;
 export let createElement: createElementFunc;
 export function setCreateElement(createElementImpl: createElementFunc) {

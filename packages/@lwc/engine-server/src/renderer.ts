@@ -96,6 +96,10 @@ export function remove(node: N, parent: E) {
     parent.children.splice(nodeIndex, 1);
 }
 
+export function cloneNode(node: N) {
+    return node;
+}
+
 export { createElement };
 
 export function createText(content: string): HostNode {

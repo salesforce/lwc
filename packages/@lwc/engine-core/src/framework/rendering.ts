@@ -29,6 +29,7 @@ import {
     createComment,
     getClassList,
     isSyntheticShadowDefined,
+    cloneNode,
 } from '../renderer';
 
 import { EmptyArray } from './utils';
@@ -179,17 +180,17 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
 
     if (isStatic) {
         if (vnode.protoElm) {
-            vnode.elm = vnode.protoElm.cloneNode(true) as Element;
+            const el = (vnode.elm = cloneNode(vnode.protoElm, true));
 
-            linkNodeToShadow(vnode.elm, owner, true);
+            linkNodeToShadow(el, owner, true);
 
             if (process.env.NODE_ENV !== 'production') {
                 // @todo: take out the restrictions patching
                 // @todo: should we traverse the tree to set restrictions on inner nodes?
-                fallbackElmHook(vnode.elm, vnode);
+                fallbackElmHook(el, vnode);
             }
 
-            insertNode(vnode.elm, parent, anchor);
+            insertNode(el, parent, anchor);
             return;
         }
 
@@ -216,7 +217,7 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
 
     if (isStatic) {
         // clone the rendered node in case it is manually manipulated.
-        vnode.protoElm = elm.cloneNode(true);
+        vnode.protoElm = cloneNode(elm, true);
     }
 }
 

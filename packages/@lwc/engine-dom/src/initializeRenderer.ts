@@ -8,6 +8,7 @@
 import {
     setAssertInstanceOfHTMLElement,
     setAttachShadow,
+    setCloneNode,
     setCreateComment,
     setCreateElement,
     setCreateText,
@@ -51,6 +52,7 @@ import {
 import {
     assertInstanceOfHTMLElement,
     attachShadow,
+    cloneNode,
     createComment,
     createElement,
     createText,
@@ -93,6 +95,7 @@ import {
 
 setAssertInstanceOfHTMLElement(assertInstanceOfHTMLElement);
 setAttachShadow(attachShadow);
+setCloneNode(cloneNode);
 setCreateComment(createComment);
 setCreateElement(createElement);
 setCreateText(createText);

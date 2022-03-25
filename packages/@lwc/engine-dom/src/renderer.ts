@@ -179,6 +179,10 @@ export function createElement(tagName: string, namespace?: string): Element {
         : document.createElementNS(namespace, tagName);
 }
 
+export function cloneNode(node: Node, deep: boolean): Node {
+    return node.cloneNode(deep);
+}
+
 export function createText(content: string): Node {
     return document.createTextNode(content);
 }
