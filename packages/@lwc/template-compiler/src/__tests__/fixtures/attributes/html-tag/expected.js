@@ -4,6 +4,7 @@ const $hoisted1 = api_element(
   "section",
   {
     key: 0,
+    isStatic: true,
   },
   [
     api_element(
@@ -14,6 +15,7 @@ const $hoisted1 = api_element(
           "aria-hidden": "x",
         },
         key: 1,
+        isStatic: true,
       },
       [api_text("x")]
     ),

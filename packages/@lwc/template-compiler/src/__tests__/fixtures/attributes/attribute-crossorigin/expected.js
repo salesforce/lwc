@@ -8,6 +8,7 @@ const $hoisted1 = api_element(
       crossorigin: "anonymous",
     },
     key: 0,
+    isStatic: true,
   },
   []
 );
@@ -19,6 +20,7 @@ const $hoisted2 = api_element(
       crossorigin: "anonymous",
     },
     key: 1,
+    isStatic: true,
   },
   []
 );
@@ -30,6 +32,7 @@ const $hoisted3 = api_element(
       crossorigin: "anonymous",
     },
     key: 2,
+    isStatic: true,
   },
   []
 );

@@ -9,6 +9,7 @@ const $hoisted1 = api_element(
   "p",
   {
     key: 2,
+    isStatic: true,
   },
   [api_text("Default slot other content")]
 );
@@ -16,6 +17,7 @@ const $hoisted2 = api_element(
   "p",
   {
     key: 4,
+    isStatic: true,
   },
   [api_text("Default slot content")]
 );

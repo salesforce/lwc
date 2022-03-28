@@ -9,6 +9,7 @@ const $hoisted1 = api_element(
       ["margin", "10px 5px 10px", false],
     ],
     key: 0,
+    isStatic: true,
   },
   []
 );
@@ -20,6 +21,7 @@ const $hoisted2 = api_element(
       ["color", "var(--my-color)", false],
     ],
     key: 1,
+    isStatic: true,
   },
   []
 );

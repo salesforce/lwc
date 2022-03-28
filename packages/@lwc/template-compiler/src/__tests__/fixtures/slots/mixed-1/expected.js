@@ -9,6 +9,7 @@ const $hoisted1 = api_element(
   "p",
   {
     key: 1,
+    isStatic: true,
   },
   [api_text("Before header")]
 );
@@ -17,6 +18,7 @@ const $hoisted3 = api_element(
   "p",
   {
     key: 3,
+    isStatic: true,
   },
   [api_text("In")]
 );
@@ -24,6 +26,7 @@ const $hoisted4 = api_element(
   "p",
   {
     key: 4,
+    isStatic: true,
   },
   [api_text("between")]
 );
@@ -31,6 +34,7 @@ const $hoisted5 = api_element(
   "p",
   {
     key: 6,
+    isStatic: true,
   },
   [api_text("Default body")]
 );
@@ -38,6 +42,7 @@ const $hoisted6 = api_element(
   "p",
   {
     key: 8,
+    isStatic: true,
   },
   [api_text("Default footer")]
 );

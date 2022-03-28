@@ -3,7 +3,8 @@
 
     const {t: api_text, h: api_element, so: api_set_owner} = lwc.renderApi;
     const $hoisted1 = api_element("h1", {
-      key: 0
+      key: 0,
+      "isStatic": true
     }, [api_text("hello")]);
     function tmpl($api, $cmp, $slotset, $ctx) {
       return [api_set_owner($hoisted1)];

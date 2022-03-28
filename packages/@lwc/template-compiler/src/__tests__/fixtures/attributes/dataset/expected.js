@@ -4,6 +4,7 @@ const $hoisted1 = api_element(
   "section",
   {
     key: 0,
+    isStatic: true,
   },
   [
     api_element("p", {
@@ -12,6 +13,7 @@ const $hoisted1 = api_element(
         "data-bar-baz": "xyz",
       },
       key: 1,
+      isStatic: true,
     }),
   ]
 );

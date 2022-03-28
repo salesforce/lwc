@@ -9,6 +9,7 @@ const $hoisted1 = api_element(
   "p",
   {
     key: 1,
+    isStatic: true,
   },
   [api_text("Test slot content")]
 );

@@ -13,6 +13,7 @@ const $hoisted3 = api_element(
   "p",
   {
     key: 1,
+    isStatic: true,
   },
   [api_text("Last child")]
 );
@@ -23,6 +24,7 @@ const $hoisted7 = api_element(
   "p",
   {
     key: 6,
+    isStatic: true,
   },
   [api_text("Last child")]
 );
@@ -33,12 +35,14 @@ const $hoisted8 = api_element(
       s4: true,
     },
     key: 8,
+    isStatic: true,
   },
   [
     api_element(
       "p",
       {
         key: 9,
+        isStatic: true,
       },
       [api_text("Other child1")]
     ),
@@ -46,6 +50,7 @@ const $hoisted8 = api_element(
       "p",
       {
         key: 10,
+        isStatic: true,
       },
       [api_text("Other child2")]
     ),

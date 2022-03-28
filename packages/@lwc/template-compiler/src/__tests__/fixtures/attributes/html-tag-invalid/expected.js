@@ -4,6 +4,7 @@ const $hoisted1 = api_element(
   "section",
   {
     key: 0,
+    isStatic: true,
   },
   [
     api_element(
@@ -15,6 +16,7 @@ const $hoisted1 = api_element(
           "unknown-attr": "should-error",
         },
         key: 1,
+        isStatic: true,
       },
       [api_text("x")]
     ),

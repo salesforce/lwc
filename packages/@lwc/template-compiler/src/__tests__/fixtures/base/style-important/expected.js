@@ -9,6 +9,7 @@ const $hoisted1 = api_element(
       ["opacity", "0.5", true],
     ],
     key: 0,
+    isStatic: true,
   },
   []
 );

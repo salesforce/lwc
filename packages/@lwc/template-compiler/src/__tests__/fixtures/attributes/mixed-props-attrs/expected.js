@@ -22,6 +22,7 @@ const $hoisted1 = api_element(
       tabindex: "-1",
     },
     key: 1,
+    isStatic: true,
   },
   []
 );
@@ -36,6 +37,7 @@ const $hoisted2 = api_element(
     },
     key: 3,
     svg: true,
+    isStatic: true,
   },
   [
     api_element("use", {
@@ -49,6 +51,7 @@ const $hoisted2 = api_element(
       },
       key: 4,
       svg: true,
+      isStatic: true,
     }),
   ]
 );
@@ -59,6 +62,7 @@ const $hoisted3 = api_element(
       bgcolor: "x",
     },
     key: 5,
+    isStatic: true,
   },
   []
 );

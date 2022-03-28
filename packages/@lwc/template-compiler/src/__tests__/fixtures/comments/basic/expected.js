@@ -10,6 +10,7 @@ const $hoisted2 = api_element(
   "button",
   {
     key: 0,
+    isStatic: true,
   },
   [api_text("click me")]
 );

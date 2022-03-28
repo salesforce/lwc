@@ -18,6 +18,7 @@ const $hoisted1 = api_element(
     },
     key: 3,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -34,6 +35,7 @@ const $hoisted2 = api_element(
     },
     key: 5,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -48,6 +50,7 @@ const $hoisted3 = api_element(
     },
     key: 7,
     svg: true,
+    isStatic: true,
   },
   [
     api_element("feMergeNode", {
@@ -56,6 +59,7 @@ const $hoisted3 = api_element(
       },
       key: 8,
       svg: true,
+      isStatic: true,
     }),
     api_element("feMergeNode", {
       attrs: {
@@ -63,6 +67,7 @@ const $hoisted3 = api_element(
       },
       key: 9,
       svg: true,
+      isStatic: true,
     }),
   ]
 );
@@ -76,6 +81,7 @@ const $hoisted4 = api_element(
     },
     key: 10,
     svg: true,
+    isStatic: true,
   },
   [
     api_element("rect", {
@@ -85,6 +91,7 @@ const $hoisted4 = api_element(
       },
       key: 11,
       svg: true,
+      isStatic: true,
     }),
     api_element("line", {
       attrs: {
@@ -93,6 +100,7 @@ const $hoisted4 = api_element(
       },
       key: 12,
       svg: true,
+      isStatic: true,
     }),
     api_element("line", {
       attrs: {
@@ -101,6 +109,7 @@ const $hoisted4 = api_element(
       },
       key: 13,
       svg: true,
+      isStatic: true,
     }),
   ]
 );
@@ -116,6 +125,7 @@ const $hoisted5 = api_element(
     },
     key: 14,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -127,6 +137,7 @@ const $hoisted6 = api_element(
     },
     key: 15,
     svg: true,
+    isStatic: true,
   },
   [
     api_element(
@@ -139,6 +150,7 @@ const $hoisted6 = api_element(
         },
         key: 16,
         svg: true,
+        isStatic: true,
       },
       [
         api_element("rect", {
@@ -148,6 +160,7 @@ const $hoisted6 = api_element(
           },
           key: 17,
           svg: true,
+          isStatic: true,
         }),
         api_element("line", {
           attrs: {
@@ -156,6 +169,7 @@ const $hoisted6 = api_element(
           },
           key: 18,
           svg: true,
+          isStatic: true,
         }),
         api_element("line", {
           attrs: {
@@ -164,6 +178,7 @@ const $hoisted6 = api_element(
           },
           key: 19,
           svg: true,
+          isStatic: true,
         }),
       ]
     ),
@@ -177,6 +192,7 @@ const $hoisted6 = api_element(
       },
       key: 20,
       svg: true,
+      isStatic: true,
     }),
   ]
 );
@@ -188,6 +204,7 @@ const $hoisted7 = api_element(
     },
     key: 21,
     svg: true,
+    isStatic: true,
   },
   [
     api_element(
@@ -200,6 +217,7 @@ const $hoisted7 = api_element(
         },
         key: 22,
         svg: true,
+        isStatic: true,
       },
       [
         api_element("rect", {
@@ -209,6 +227,7 @@ const $hoisted7 = api_element(
           },
           key: 23,
           svg: true,
+          isStatic: true,
         }),
         api_element("line", {
           attrs: {
@@ -217,6 +236,7 @@ const $hoisted7 = api_element(
           },
           key: 24,
           svg: true,
+          isStatic: true,
         }),
         api_element("line", {
           attrs: {
@@ -225,6 +245,7 @@ const $hoisted7 = api_element(
           },
           key: 25,
           svg: true,
+          isStatic: true,
         }),
       ]
     ),
@@ -239,6 +260,7 @@ const $hoisted7 = api_element(
       },
       key: 26,
       svg: true,
+      isStatic: true,
     }),
   ]
 );
@@ -255,6 +277,7 @@ const $hoisted8 = api_element(
     },
     key: 28,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -263,6 +286,7 @@ const $hoisted9 = api_element(
   {
     key: 29,
     svg: true,
+    isStatic: true,
   },
   [
     api_element("rect", {
@@ -275,6 +299,7 @@ const $hoisted9 = api_element(
       },
       key: 30,
       svg: true,
+      isStatic: true,
     }),
     api_element("rect", {
       attrs: {
@@ -287,6 +312,7 @@ const $hoisted9 = api_element(
       },
       key: 31,
       svg: true,
+      isStatic: true,
     }),
     api_element("rect", {
       attrs: {
@@ -298,6 +324,7 @@ const $hoisted9 = api_element(
       },
       key: 32,
       svg: true,
+      isStatic: true,
     }),
     api_element("rect", {
       attrs: {
@@ -310,6 +337,7 @@ const $hoisted9 = api_element(
       },
       key: 33,
       svg: true,
+      isStatic: true,
     }),
     api_element("rect", {
       attrs: {
@@ -321,6 +349,7 @@ const $hoisted9 = api_element(
       },
       key: 34,
       svg: true,
+      isStatic: true,
     }),
     api_element("rect", {
       attrs: {
@@ -333,6 +362,7 @@ const $hoisted9 = api_element(
       },
       key: 35,
       svg: true,
+      isStatic: true,
     }),
   ]
 );
@@ -341,6 +371,7 @@ const $hoisted10 = api_element(
   {
     key: 37,
     svg: true,
+    isStatic: true,
   },
   [api_text("Produces a 3D lighting effect.")]
 );
@@ -354,6 +385,7 @@ const $hoisted11 = api_element(
     },
     key: 38,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -368,6 +400,7 @@ const $hoisted12 = api_element(
     },
     key: 39,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -384,6 +417,7 @@ const $hoisted13 = api_element(
     },
     key: 40,
     svg: true,
+    isStatic: true,
   },
   [
     api_element("fePointLight", {
@@ -394,6 +428,7 @@ const $hoisted13 = api_element(
       },
       key: 41,
       svg: true,
+      isStatic: true,
     }),
   ]
 );
@@ -408,6 +443,7 @@ const $hoisted14 = api_element(
     },
     key: 42,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -426,6 +462,7 @@ const $hoisted15 = api_element(
     },
     key: 43,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -434,6 +471,7 @@ const $hoisted16 = api_element(
   {
     key: 44,
     svg: true,
+    isStatic: true,
   },
   [
     api_element("feMergeNode", {
@@ -442,6 +480,7 @@ const $hoisted16 = api_element(
       },
       key: 45,
       svg: true,
+      isStatic: true,
     }),
     api_element("feMergeNode", {
       attrs: {
@@ -449,6 +488,7 @@ const $hoisted16 = api_element(
       },
       key: 46,
       svg: true,
+      isStatic: true,
     }),
   ]
 );

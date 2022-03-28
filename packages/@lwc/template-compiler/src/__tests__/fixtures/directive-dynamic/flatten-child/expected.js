@@ -10,6 +10,7 @@ const $hoisted1 = api_element(
   "div",
   {
     key: 0,
+    isStatic: true,
   },
   [api_text("sibling")]
 );

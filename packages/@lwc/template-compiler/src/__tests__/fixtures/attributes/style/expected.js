@@ -5,6 +5,7 @@ const $hoisted1 = api_element(
   {
     styleDecls: [["color", "blue", false]],
     key: 0,
+    isStatic: true,
   },
   []
 );
@@ -13,6 +14,7 @@ const $hoisted2 = api_element(
   {
     styleDecls: [["color", "blue", false]],
     key: 1,
+    isStatic: true,
   },
   []
 );
@@ -21,6 +23,7 @@ const $hoisted3 = api_element(
   {
     styleDecls: [["color", "blue", false]],
     key: 2,
+    isStatic: true,
   },
   []
 );
@@ -29,6 +32,7 @@ const $hoisted4 = api_element(
   {
     styleDecls: [["box-shadow", "10px 5px 5px black", false]],
     key: 3,
+    isStatic: true,
   },
   []
 );
@@ -41,6 +45,7 @@ const $hoisted5 = api_element(
       ["color", "red", false],
     ],
     key: 4,
+    isStatic: true,
   },
   []
 );
@@ -53,6 +58,7 @@ const $hoisted6 = api_element(
       ["color", "red", false],
     ],
     key: 5,
+    isStatic: true,
   },
   []
 );
@@ -61,6 +67,7 @@ const $hoisted7 = api_element(
   {
     styleDecls: [["background-color", "rgba(255,0,0,0.3)", false]],
     key: 6,
+    isStatic: true,
   },
   []
 );

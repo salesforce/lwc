@@ -12,6 +12,7 @@ const $hoisted1 = api_element(
     },
     key: 0,
     svg: true,
+    isStatic: true,
   },
   [
     api_element("rect", {
@@ -22,6 +23,7 @@ const $hoisted1 = api_element(
       },
       key: 1,
       svg: true,
+      isStatic: true,
     }),
     api_element("circle", {
       attrs: {
@@ -32,6 +34,7 @@ const $hoisted1 = api_element(
       },
       key: 2,
       svg: true,
+      isStatic: true,
     }),
     api_element(
       "text",
@@ -45,6 +48,7 @@ const $hoisted1 = api_element(
         },
         key: 3,
         svg: true,
+        isStatic: true,
       },
       [api_text("SVG")]
     ),

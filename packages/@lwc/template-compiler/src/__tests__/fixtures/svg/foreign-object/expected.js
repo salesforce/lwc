@@ -4,6 +4,7 @@ const $hoisted1 = api_element(
   "div",
   {
     key: 0,
+    isStatic: true,
   },
   [
     api_element(
@@ -15,6 +16,7 @@ const $hoisted1 = api_element(
         },
         key: 1,
         svg: true,
+        isStatic: true,
       },
       [
         api_element(
@@ -25,6 +27,7 @@ const $hoisted1 = api_element(
             },
             key: 2,
             svg: true,
+            isStatic: true,
           },
           [
             api_element(
@@ -35,6 +38,7 @@ const $hoisted1 = api_element(
                 },
                 key: 3,
                 svg: true,
+                isStatic: true,
               },
               [
                 api_element(
@@ -47,12 +51,14 @@ const $hoisted1 = api_element(
                     },
                     key: 4,
                     svg: true,
+                    isStatic: true,
                   },
                   [
                     api_element(
                       "a",
                       {
                         key: 5,
+                        isStatic: true,
                       },
                       [api_text("x")]
                     ),

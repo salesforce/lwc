@@ -7,6 +7,7 @@ const $hoisted1 = api_element(
       allow: "geolocation https://google-developers.appspot.com",
     },
     key: 0,
+    isStatic: true,
   },
   []
 );

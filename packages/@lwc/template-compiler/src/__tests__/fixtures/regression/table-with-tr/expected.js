@@ -4,16 +4,19 @@ const $hoisted1 = api_element(
   "table",
   {
     key: 0,
+    isStatic: true,
   },
   [
     api_element(
       "tbody",
       {
         key: 1,
+        isStatic: true,
       },
       [
         api_element("tr", {
           key: 2,
+          isStatic: true,
         }),
       ]
     ),

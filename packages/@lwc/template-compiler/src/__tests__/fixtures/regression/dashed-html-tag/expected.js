@@ -4,6 +4,7 @@ const $hoisted1 = api_element(
   "section",
   {
     key: 0,
+    isStatic: true,
   },
   [
     api_element("color-profile", {
@@ -11,6 +12,7 @@ const $hoisted1 = api_element(
         local: "x",
       },
       key: 1,
+      isStatic: true,
     }),
   ]
 );

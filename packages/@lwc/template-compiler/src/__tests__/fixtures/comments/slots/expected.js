@@ -8,21 +8,18 @@ const {
   c: api_custom_element,
 } = renderApi;
 const $hoisted1 = api_comment(" HTML comment inside slot ");
-const $hoisted2 = api_element(
-  "p",
-  {
-    key: 1,
-  },
-  [api_text("slot content")]
-);
+const $hoisted2 = api_text("slot content");
 const stc0 = {
   key: 0,
+};
+const stc1 = {
+  key: 1,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_custom_element("x-child", _xChild, stc0, [
       api_set_owner($hoisted1),
-      api_set_owner($hoisted2),
+      api_element("p", stc1, [api_set_owner($hoisted2)]),
     ]),
   ];
   /*LWC compiler vX.X.X*/

@@ -4,6 +4,7 @@ const $hoisted1 = api_element(
   "p",
   {
     key: 1,
+    isStatic: true,
   },
   [api_text("1")]
 );
@@ -12,6 +13,7 @@ const $hoisted3 = api_element(
   "p",
   {
     key: 3,
+    isStatic: true,
   },
   [api_text("3")]
 );

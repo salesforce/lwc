@@ -16,6 +16,7 @@ const $hoisted1 = api_element(
       value: "boolean present",
     },
     key: 0,
+    isStatic: true,
   },
   []
 );
@@ -29,6 +30,7 @@ const $hoisted2 = api_element(
       value: "empty string",
     },
     key: 1,
+    isStatic: true,
   },
   []
 );
@@ -42,6 +44,7 @@ const $hoisted3 = api_element(
       value: "string value",
     },
     key: 2,
+    isStatic: true,
   },
   []
 );
@@ -55,6 +58,7 @@ const $hoisted4 = api_element(
       value: "integer value",
     },
     key: 4,
+    isStatic: true,
   },
   []
 );

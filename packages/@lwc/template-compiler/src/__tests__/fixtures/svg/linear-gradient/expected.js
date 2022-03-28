@@ -12,6 +12,7 @@ const $hoisted1 = api_element(
     },
     key: 3,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -27,6 +28,7 @@ const $hoisted2 = api_element(
     },
     key: 4,
     svg: true,
+    isStatic: true,
   },
   []
 );
@@ -42,6 +44,7 @@ const $hoisted3 = api_element(
     },
     key: 5,
     svg: true,
+    isStatic: true,
   },
   []
 );

@@ -4,6 +4,7 @@ const $hoisted1 = api_element(
   "h1",
   {
     key: 0,
+    isStatic: true,
   },
   [api_text("hello")]
 );
@@ -11,6 +12,7 @@ const $hoisted2 = api_element(
   "br",
   {
     key: 1,
+    isStatic: true,
   },
   []
 );

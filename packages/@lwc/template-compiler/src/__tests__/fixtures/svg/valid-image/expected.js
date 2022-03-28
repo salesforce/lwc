@@ -9,6 +9,7 @@ const $hoisted1 = api_element(
     },
     key: 0,
     svg: true,
+    isStatic: true,
   },
   [
     api_element("image", {
@@ -21,6 +22,7 @@ const $hoisted1 = api_element(
       },
       key: 1,
       svg: true,
+      isStatic: true,
     }),
   ]
 );

@@ -7,6 +7,7 @@ const $hoisted1 = api_element(
       hidden: "",
     },
     key: 0,
+    isStatic: true,
   },
   [api_text("x")]
 );

@@ -9,6 +9,7 @@ const $hoisted1 = api_element(
       "baz-fiz": true,
     },
     key: 0,
+    isStatic: true,
   },
   []
 );
