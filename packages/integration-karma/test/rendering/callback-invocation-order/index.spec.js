@@ -10,6 +10,14 @@ function resetTimingBuffer() {
     window.timingBuffer = [];
 }
 
+function connectedTimings(evts) {
+    return evts.map((evt) => `${evt}:connectedCallback`);
+}
+
+function disconnectedTimings(evts) {
+    return evts.map((evt) => `${evt}:disconnectedCallback`);
+}
+
 beforeEach(() => {
     resetTimingBuffer();
 });
@@ -24,84 +32,95 @@ const fixtures = [
         ctor: ShadowParent,
         connect: process.env.NATIVE_SHADOW
             ? [
-                  'shadowParent:connectedCallback',
-                  'leaf:before-container:connectedCallback',
-                  'shadowContainer:connectedCallback',
-                  'leaf:slotted-a:connectedCallback',
-                  'leaf:slotted-b:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
-                  'leaf:after-container:connectedCallback',
+                  'shadowParent',
+                  'leaf:before-container',
+                  'shadowContainer',
+                  'leaf:slotted-a',
+                  'leaf:slotted-b',
+                  'leaf:before-slot',
+                  'leaf:after-slot',
+                  'leaf:after-container',
               ]
             : [
-                  'shadowParent:connectedCallback',
-                  'leaf:before-container:connectedCallback',
-                  'shadowContainer:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:slotted-a:connectedCallback',
-                  'leaf:slotted-b:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
-                  'leaf:after-container:connectedCallback',
+                  'shadowParent',
+                  'leaf:before-container',
+                  'shadowContainer',
+                  'leaf:before-slot',
+                  'leaf:slotted-a',
+                  'leaf:slotted-b',
+                  'leaf:after-slot',
+                  'leaf:after-container',
               ],
-        disconnect: [
-            'shadowParent:disconnectedCallback',
-            'leaf:after-container:disconnectedCallback',
-            'shadowContainer:disconnectedCallback',
-            'leaf:after-slot:disconnectedCallback',
-            'leaf:before-slot:disconnectedCallback',
-            'leaf:slotted-a:disconnectedCallback',
-            'leaf:slotted-b:disconnectedCallback',
-            'leaf:before-container:disconnectedCallback',
-        ],
+        disconnect: process.env.NATIVE_SHADOW
+            ? [
+                  'shadowParent',
+                  'leaf:before-container',
+                  'shadowContainer',
+                  'leaf:before-slot',
+                  'leaf:after-slot',
+                  'leaf:slotted-a',
+                  'leaf:slotted-b',
+                  'leaf:after-container',
+              ]
+            : [
+                  'shadowParent',
+                  'leaf:before-container',
+                  'shadowContainer',
+                  'leaf:before-slot',
+                  'leaf:slotted-a',
+                  'leaf:slotted-b',
+                  'leaf:after-slot',
+                  'leaf:after-container',
+              ],
     },
     {
         tagName: 'x-shadow-light-parent',
         ctor: ShadowLightParent,
         connect: process.env.NATIVE_SHADOW
             ? [
-                  'shadowLightParent:connectedCallback',
-                  'lightContainer:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:slotted-shadow:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
+                  'shadowLightParent',
+                  'lightContainer',
+                  'leaf:before-slot',
+                  'leaf:slotted-shadow',
+                  'leaf:after-slot',
               ]
             : [
-                  'shadowLightParent:connectedCallback',
-                  'lightContainer:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:slotted-shadow:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
+                  'shadowLightParent',
+                  'lightContainer',
+                  'leaf:before-slot',
+                  'leaf:slotted-shadow',
+                  'leaf:after-slot',
               ],
         disconnect: [
-            'shadowLightParent:disconnectedCallback',
-            'lightContainer:disconnectedCallback',
-            'leaf:after-slot:disconnectedCallback',
-            'leaf:before-slot:disconnectedCallback',
-            'leaf:slotted-shadow:disconnectedCallback',
+            'shadowLightParent',
+            'lightContainer',
+            'leaf:before-slot',
+            'leaf:slotted-shadow',
+            'leaf:after-slot',
         ],
     },
     {
         tagName: 'x-light-parent',
         ctor: LightParent,
         connect: [
-            'lightParent:connectedCallback',
-            'leaf:before-container:connectedCallback',
-            'lightContainer:connectedCallback',
-            'leaf:before-slot:connectedCallback',
-            'leaf:slotted-a:connectedCallback',
-            'leaf:slotted-b:connectedCallback',
-            'leaf:after-slot:connectedCallback',
-            'leaf:after-container:connectedCallback',
+            'lightParent',
+            'leaf:before-container',
+            'lightContainer',
+            'leaf:before-slot',
+            'leaf:slotted-a',
+            'leaf:slotted-b',
+            'leaf:after-slot',
+            'leaf:after-container',
         ],
         disconnect: [
-            'lightParent:disconnectedCallback',
-            'leaf:after-container:disconnectedCallback',
-            'lightContainer:disconnectedCallback',
-            'leaf:after-slot:disconnectedCallback',
-            'leaf:before-slot:disconnectedCallback',
-            'leaf:slotted-a:disconnectedCallback',
-            'leaf:slotted-b:disconnectedCallback',
-            'leaf:before-container:disconnectedCallback',
+            'lightParent',
+            'leaf:before-container',
+            'lightContainer',
+            'leaf:before-slot',
+            'leaf:slotted-a',
+            'leaf:slotted-b',
+            'leaf:after-slot',
+            'leaf:after-container',
         ],
     },
     {
@@ -109,26 +128,34 @@ const fixtures = [
         ctor: LightShadowParent,
         connect: process.env.NATIVE_SHADOW
             ? [
-                  'lightShadowContainer:connectedCallback',
-                  'shadowContainer:connectedCallback',
-                  'leaf:slotted-light:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
+                  'lightShadowContainer',
+                  'shadowContainer',
+                  'leaf:slotted-light',
+                  'leaf:before-slot',
+                  'leaf:after-slot',
               ]
             : [
-                  'lightShadowContainer:connectedCallback',
-                  'shadowContainer:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:slotted-light:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
+                  'lightShadowContainer',
+                  'shadowContainer',
+                  'leaf:before-slot',
+                  'leaf:slotted-light',
+                  'leaf:after-slot',
               ],
-        disconnect: [
-            'lightShadowContainer:disconnectedCallback',
-            'shadowContainer:disconnectedCallback',
-            'leaf:after-slot:disconnectedCallback',
-            'leaf:before-slot:disconnectedCallback',
-            'leaf:slotted-light:disconnectedCallback',
-        ],
+        disconnect: process.env.NATIVE_SHADOW
+            ? [
+                  'lightShadowContainer',
+                  'shadowContainer',
+                  'leaf:before-slot',
+                  'leaf:after-slot',
+                  'leaf:slotted-light',
+              ]
+            : [
+                  'lightShadowContainer',
+                  'shadowContainer',
+                  'leaf:before-slot',
+                  'leaf:slotted-light',
+                  'leaf:after-slot',
+              ],
     },
 ];
 
@@ -137,53 +164,68 @@ for (const { tagName, ctor, connect, disconnect } of fixtures) {
         const elm = createElement(tagName, { is: ctor });
 
         document.body.appendChild(elm);
-        expect(window.timingBuffer).toEqual(connect);
+        expect(window.timingBuffer).toEqual(connectedTimings(connect));
 
         resetTimingBuffer();
 
         document.body.removeChild(elm);
-        expect(window.timingBuffer).toEqual(disconnect);
+        expect(window.timingBuffer).toEqual(disconnectedTimings(disconnect));
     });
 }
 
 it('should invoke callbacks on the right order (issue #1199 and #1198)', () => {
+    const expectedConnected = connectedTimings(
+        process.env.NATIVE_SHADOW
+            ? [
+                  'shadowContainer',
+                  'parent:a',
+                  'leaf:a',
+                  'parent:b',
+                  'leaf:b',
+                  'leaf:before-slot',
+                  'leaf:after-slot',
+              ]
+            : [
+                  'shadowContainer',
+                  'leaf:before-slot',
+                  'parent:a',
+                  'leaf:a',
+                  'parent:b',
+                  'leaf:b',
+                  'leaf:after-slot',
+              ]
+    );
+    const expectedDisconnected = disconnectedTimings(
+        process.env.NATIVE_SHADOW
+            ? [
+                  'shadowContainer',
+                  'leaf:before-slot',
+                  'leaf:after-slot',
+                  'parent:a',
+                  'leaf:a',
+                  'parent:b',
+                  'leaf:b',
+              ]
+            : [
+                  'shadowContainer',
+                  'leaf:before-slot',
+                  'parent:a',
+                  'leaf:a',
+                  'parent:b',
+                  'leaf:b',
+                  'leaf:after-slot',
+              ]
+    );
+
     const elm = createElement('x-toggle-container', { is: ToggleContainer });
 
     document.body.appendChild(elm);
-    expect(window.timingBuffer).toEqual(
-        process.env.NATIVE_SHADOW
-            ? [
-                  'shadowContainer:connectedCallback',
-                  'parent:a:connectedCallback',
-                  'leaf:a:connectedCallback',
-                  'parent:b:connectedCallback',
-                  'leaf:b:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
-              ]
-            : [
-                  'shadowContainer:connectedCallback',
-                  'leaf:before-slot:connectedCallback',
-                  'parent:a:connectedCallback',
-                  'leaf:a:connectedCallback',
-                  'parent:b:connectedCallback',
-                  'leaf:b:connectedCallback',
-                  'leaf:after-slot:connectedCallback',
-              ]
-    );
+    expect(window.timingBuffer).toEqual(expectedConnected);
 
     resetTimingBuffer();
 
     elm.hide = true;
     return Promise.resolve().then(() => {
-        expect(window.timingBuffer).toEqual([
-            'shadowContainer:disconnectedCallback',
-            'leaf:after-slot:disconnectedCallback',
-            'leaf:before-slot:disconnectedCallback',
-            'parent:a:disconnectedCallback',
-            'leaf:a:disconnectedCallback',
-            'parent:b:disconnectedCallback',
-            'leaf:b:disconnectedCallback',
-        ]);
+        expect(window.timingBuffer).toEqual(expectedDisconnected);
     });
 });
