@@ -105,7 +105,7 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformText(consecutiveText: Text[]): t.Expression {
-        const mustHoistText = !consecutiveText.some((txt) => !codeGen.isHoistedNode(txt));
+        const mustHoistText = consecutiveText.every((txt) => codeGen.isHoistedNode(txt));
         return codeGen.genText(
             consecutiveText.map(({ value }) => {
                 return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);

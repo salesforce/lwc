@@ -130,7 +130,7 @@ function getStaticNodes(root: Root): {
             );
         }); // all attrs are static
         result &&= directives.length === 0; // do not have any directive
-        result &&= !properties.some((prop) => !isLiteral(prop.value)); // all properties are static
+        result &&= properties.every((prop) => isLiteral(prop.value)); // all properties are static
         result &&= listeners.length === 0; // do not have any event listener
 
         return result;
