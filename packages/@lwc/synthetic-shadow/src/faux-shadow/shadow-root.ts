@@ -96,12 +96,11 @@ defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
                 () => NodeFilter.FILTER_ACCEPT,
                 false
             );
-            let currentNode: Node | null = treeWalker.nextNode();
+            let currentNode: Node | null;
 
-            while (currentNode) {
+            while ((currentNode = treeWalker.nextNode())) {
                 (currentNode as any)[KEY__SHADOW_RESOLVER_PRIVATE] = fn;
                 setNodeOwnerKey(currentNode, (fn as any).nodeKey);
-                currentNode = treeWalker.nextNode();
             }
         }
     },

@@ -7,6 +7,7 @@ import LightConsumer from 'x/lightConsumer';
 import ShadowConsumer from 'x/shadowConsumer';
 import ConditionalSlot from 'x/conditionalSlot';
 import ConditionalSlotted from 'x/conditionalSlotted';
+import StaticSlotContent from 'x/staticSlotContent';
 
 function createTestElement(tag, component) {
     const elm = createElement(tag, { is: component });
@@ -90,6 +91,23 @@ describe('Slotting', () => {
         const elm = nodes['x-conditional-slotted'];
         expect(elm.innerHTML).toEqual(
             '<x-conditional-slot data-id="conditional-slot"><p data-id="slotted-text">Slotted content</p><button data-id="button">Toggle</button></x-conditional-slot>'
+        );
+        nodes.button.click();
+        await Promise.resolve();
+        expect(elm.innerHTML).toEqual(
+            '<x-conditional-slot data-id="conditional-slot"><button data-id="button">Toggle</button></x-conditional-slot>'
+        );
+    });
+
+    it('removes slotted static content properly', async () => {
+        const nodes = createTestElement('x-static-slot-content', StaticSlotContent);
+
+        // creates another component instance so it losses track of the elm we want to remove.
+        createTestElement('x-static-slot-content', StaticSlotContent);
+
+        const elm = nodes['x-static-slot-content'];
+        expect(elm.innerHTML).toEqual(
+            '<x-conditional-slot data-id="conditional-slot"><p data-id="slotted-text">static slotted content</p><button data-id="button">Toggle</button></x-conditional-slot>'
         );
         nodes.button.click();
         await Promise.resolve();

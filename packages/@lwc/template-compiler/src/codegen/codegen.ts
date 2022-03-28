@@ -107,7 +107,7 @@ function getStaticNodes(root: Root): {
         //   2. An element inside a foreach can be static because it will have a parent that it is dynamic (the keyed element)
         //   3. Slotted content can be static if:
         //        - the parent is dynamic and not a component. In light dom, if the slot is wrapped with if, then the node will
-        //          be directly removed. @todo: make a test.
+        //          be directly removed.
 
         result &&= !isIf(parent); // when parent node is an if, this element may be removed directly.
         result &&= !isSlot(node); // slot element can't be static.
