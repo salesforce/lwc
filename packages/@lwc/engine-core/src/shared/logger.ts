@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import { isNull, isUndefined } from '@lwc/shared';
 
 import { VM } from '../framework/vm';
 import { getComponentStack } from './format';
@@ -12,7 +12,7 @@ import { getComponentStack } from './format';
 function log(method: 'warn' | 'error', message: string, vm?: VM) {
     let msg = `[LWC ${method}]: ${message}`;
 
-    if (!isUndefined(vm)) {
+    if (!isUndefined(vm) && !isNull(vm)) {
         msg = `${msg}\n${getComponentStack(vm)}`;
     }
 
