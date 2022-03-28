@@ -95,14 +95,17 @@ function transform(codeGen: CodeGen): t.Expression {
 
             res = codeGen.getSlot(element.slotName, databag, defaultSlot);
         } else {
-            res = codeGen.genElement(name, databag, children, codeGen.isStaticNode(element));
+            if (codeGen.isStaticNode(element)) {
+                databag.properties.push(t.property(t.literal('isStatic'), t.literal(true)));
+            }
+            res = codeGen.genElement(name, databag, children, codeGen.isHoistedNode(element));
         }
 
         return res;
     }
 
     function transformText(consecutiveText: Text[]): t.Expression {
-        const mustHoistText = !consecutiveText.some((txt) => !codeGen.isStaticNode(txt));
+        const mustHoistText = !consecutiveText.some((txt) => !codeGen.isHoistedNode(txt));
         return codeGen.genText(
             consecutiveText.map(({ value }) => {
                 return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
@@ -112,7 +115,7 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformComment(comment: Comment): t.Expression {
-        return codeGen.genComment(comment.value, codeGen.isStaticNode(comment));
+        return codeGen.genComment(comment.value, codeGen.isHoistedNode(comment));
     }
 
     function transformChildren(parent: ParentNode): t.Expression {

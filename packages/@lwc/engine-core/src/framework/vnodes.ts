@@ -26,7 +26,6 @@ export interface BaseVNode {
     sel: string | undefined;
     key: Key | undefined;
     owner: VM;
-    isStatic?: boolean;
 }
 
 export interface VText extends BaseVNode {
@@ -76,6 +75,7 @@ export interface VNodeData {
     readonly context?: Readonly<Record<string, Readonly<Record<string, any>>>>;
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;
+    readonly isStatic?: boolean;
 }
 
 export interface VElementData extends VNodeData {

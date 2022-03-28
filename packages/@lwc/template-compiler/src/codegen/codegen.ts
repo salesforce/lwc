@@ -83,7 +83,11 @@ interface Scope {
     declaration: Set<string>;
 }
 
-function getStaticNodes(root: Root): Set<ChildNode> {
+function getStaticNodes(root: Root): {
+    hoistedNodes: Set<ChildNode>;
+    staticNodes: Set<ChildNode>;
+} {
+    const hoistedNodes = new Set<ChildNode>();
     const staticNodes = new Set<ChildNode>();
 
     function isStaticNode(node: BaseElement, parent: BaseParentNode): boolean {
@@ -97,12 +101,19 @@ function getStaticNodes(root: Root): Set<ChildNode> {
             listeners,
         } = node;
 
-        // Note: the trick is that the static nodes elm can not be removed by themself, they will always be removed
-        //       as parent removal.
+        // Notes:
+        //   1. the trick is that the static nodes elm can not be removed by themself, they will always be removed
+        //      as parent removal operation.
+        //   2. An element inside a foreach can be static because it will have a parent that it is dynamic (the keyed element)
+        //   3. Slotted content can be static if:
+        //        - the parent is dynamic and not a component. In light dom, if the slot is wrapped with if, then the node will
+        //          be directly removed. @todo: make a test.
 
-        result &&= !isIf(parent); // the parent node is an if, therefore this it is the same as an inline if
+        result &&= !isIf(parent); // when parent node is an if, this element may be removed directly.
         result &&= !isSlot(node); // slot element can't be static.
-        result &&= !isComponent(node); // components can't be static.
+        result &&= !isComponent(node); // components are not static.
+        result &&= !isComponent(parent); // Slotted content root can be directly removed in light dom.
+
         // it is an element.
         result &&= !attributes.some(({ name, value }) => {
             return (
@@ -122,10 +133,6 @@ function getStaticNodes(root: Root): Set<ChildNode> {
         result &&= !properties.some((prop) => !isLiteral(prop.value)); // all properties are static
         result &&= listeners.length === 0; // do not have any event listener
 
-        // Notes:
-        //   An element inside a foreach can be static because it will have a parent that it is dynamic (the keyed element)
-        //   Slotted content can be static if the parent is dynamic. @todo: think harder in the lightdom cases.
-
         return result;
     }
 
@@ -142,7 +149,7 @@ function getStaticNodes(root: Root): Set<ChildNode> {
             node.children.forEach((childNode) => {
                 collectStaticNodes(childNode, node);
 
-                childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
+                childrenAreStatic = childrenAreStatic && hoistedNodes.has(childNode);
             });
 
             nodeIsStatic = isBaseElement(node) && isStaticNode(node, parent);
@@ -151,20 +158,25 @@ function getStaticNodes(root: Root): Set<ChildNode> {
         if (nodeIsStatic && childrenAreStatic) {
             // let's unmark the children as static. So in the codegen we generate the outermost static node.
             if (isBaseElement(node)) {
-                node.children.forEach((childNode) => staticNodes.delete(childNode));
+                node.children.forEach((childNode) => hoistedNodes.delete(childNode));
             }
+            hoistedNodes.add(node);
             staticNodes.add(node);
         }
     }
 
     root.children.forEach((childNode) => collectStaticNodes(childNode, root));
 
-    return staticNodes;
+    return {
+        hoistedNodes: hoistedNodes,
+        staticNodes: staticNodes,
+    };
 }
 
 export default class CodeGen {
     /** The AST root. */
     readonly root: Root;
+    readonly nodesToHoist: Set<ChildNode>;
     readonly staticNodes: Set<ChildNode>;
 
     /** The template render mode. */
@@ -214,7 +226,9 @@ export default class CodeGen {
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        this.staticNodes = getStaticNodes(root);
+        const { hoistedNodes, staticNodes } = getStaticNodes(root);
+        this.staticNodes = staticNodes;
+        this.nodesToHoist = hoistedNodes;
         this.renderMode =
             root.directives.find(isRenderModeDirective)?.value.value ??
             LWCDirectiveRenderMode.shadow;
@@ -228,6 +242,10 @@ export default class CodeGen {
 
     isStaticNode(node: ChildNode): boolean {
         return this.staticNodes.has(node);
+    }
+
+    isHoistedNode(node: ChildNode): boolean {
+        return this.nodesToHoist.has(node);
     }
 
     generateKey() {

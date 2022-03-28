@@ -174,8 +174,7 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
     const {
         sel,
         owner,
-        data: { svg },
-        isStatic,
+        data: { svg, isStatic },
     } = vnode;
 
     if (isStatic) {
@@ -194,10 +193,9 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
             return;
         }
 
-        // @todo: hackalert: for now, let's mark all children as static and set the owner
+        // @todo: hackalert: for now, let's set the owner in all children
         const ch = vnode.children;
         for (let i = 0, n = ch.length; i < n; i++) {
-            ch[i]!.isStatic = true;
             ch[i]!.owner = owner;
         }
     }

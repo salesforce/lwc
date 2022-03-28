@@ -52,7 +52,6 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 // [s]et [o]wner
 function so(vnode: VNode): VNode {
     vnode.owner = getVMBeingRendered()!;
-    vnode.isStatic = true;
 
     return vnode;
 }
