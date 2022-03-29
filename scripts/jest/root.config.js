@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 module.exports = {
+    testTimeout: 60000, // Default timeout for all tests in  ms. Jest's default is 5000ms
     rootDir: '../..',
     projects: ['<rootDir>/packages/@lwc/*'],
     coverageThreshold: {
