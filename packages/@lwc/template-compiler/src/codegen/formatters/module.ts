@@ -56,10 +56,20 @@ function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
  * registerTemplate(tmpl);
  * ```
  */
+
+function generateHoistedNodes(codegen: CodeGen): t.VariableDeclaration[] {
+    return codegen.hoistedNodes.map((value, index) => {
+        return t.variableDeclaration('const', [
+            t.variableDeclarator(t.identifier(`$hoisted${index + 1}`), value),
+        ]);
+    });
+}
+
 export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.Program {
     codeGen.usedLwcApis.add(SECURE_REGISTER_TEMPLATE_METHOD_NAME);
 
     const imports = [...generateComponentImports(codeGen), generateLwcApisImport(codeGen)];
+    const hoistedNodes = generateHoistedNodes(codeGen);
 
     const metadata = generateTemplateMetadata(codeGen);
 
@@ -74,5 +84,5 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
         ),
     ];
 
-    return t.program([...imports, ...templateBody, ...metadata]);
+    return t.program([...imports, ...hoistedNodes, ...templateBody, ...metadata]);
 }

@@ -94,18 +94,28 @@ function transform(codeGen: CodeGen): t.Expression {
 
             res = codeGen.getSlot(element.slotName, databag, defaultSlot);
         } else {
-            res = codeGen.genElement(name, databag, children);
+            res = codeGen.nodesToHoist.has(element)
+                ? codeGen.genHoistedElement(element)
+                : codeGen.genElement(name, databag, children);
         }
 
         return res;
     }
 
     function transformText(consecutiveText: Text[]): t.Expression {
-        return codeGen.genText(
-            consecutiveText.map(({ value }) => {
-                return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
-            })
-        );
+        const mustHoistText = consecutiveText.every((txt) => codeGen.nodesToHoist.has(txt));
+
+        return mustHoistText
+            ? codeGen.genHoistedText(
+                  consecutiveText
+                      .map(({ value }) => (isStringLiteral(value) ? value.value : ''))
+                      .join('')
+              )
+            : codeGen.genText(
+                  consecutiveText.map(({ value }) => {
+                      return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
+                  })
+              );
     }
 
     function transformComment(comment: Comment): t.Expression {
@@ -544,18 +554,22 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
         TEMPLATE_PARAMS.CONTEXT,
     ].map((id) => t.identifier(id));
 
-    const body: t.Statement[] = [
-        t.variableDeclaration('const', [
-            t.variableDeclarator(
-                t.objectPattern(
-                    Object.keys(codeGen.usedApis).map((name) =>
-                        t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
-                    )
-                ),
-                t.identifier(TEMPLATE_PARAMS.API)
-            ),
-        ]),
-    ];
+    const usedApis = Object.keys(codeGen.usedApis);
+    const body: t.Statement[] =
+        usedApis.length === 0
+            ? []
+            : [
+                  t.variableDeclaration('const', [
+                      t.variableDeclarator(
+                          t.objectPattern(
+                              usedApis.map((name) =>
+                                  t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
+                              )
+                          ),
+                          t.identifier(TEMPLATE_PARAMS.API)
+                      ),
+                  ]),
+              ];
 
     if (codeGen.memorizedIds.length) {
         body.push(

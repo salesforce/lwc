@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { CompilerDiagnostic } from '@lwc/errors';
+import * as parse5 from 'parse5';
 
 export type TemplateCompileResult = {
     code: string;
@@ -28,6 +29,7 @@ export enum LWCDirectiveRenderMode {
 export interface BaseNode {
     type: string;
     location: SourceLocation;
+    _original?: parse5.CommentNode | parse5.TextNode | parse5.Element;
 }
 
 export interface SourceLocation {
