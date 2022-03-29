@@ -29,6 +29,7 @@ import {
     VComment,
     VElement,
     VCustomElement,
+    VStatic,
 } from './vnodes';
 
 import { patchProps } from './modules/props';
@@ -79,6 +80,11 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
         case VNodeType.Comment:
             // VComment has no special capability, fallback to the owner's renderer
             hydratedNode = hydrateComment(node, vnode, renderer);
+            break;
+
+        case VNodeType.Static:
+            // VStatic are cacheable and cannot have custom renderer associated to them
+            hydratedNode = hydrateStaticElement(node, vnode, renderer);
             break;
 
         case VNodeType.Element:
@@ -135,6 +141,16 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     vnode.elm = node;
 
     return node;
+}
+
+function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
+    if (!areCompatibleNodes(vnode.fragment, elm, vnode, renderer)) {
+        return handleMismatch(elm, vnode, renderer);
+    }
+
+    vnode.elm = elm;
+
+    return elm;
 }
 
 function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
@@ -480,4 +496,62 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     }
 
     return nodesAreCompatible;
+}
+
+function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode, renderer: RendererAPI) {
+    const { getProperty, getAttribute } = renderer;
+    if (getProperty(client, 'nodeType') === EnvNodeTypes.TEXT) {
+        if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.TEXT, renderer)) {
+            return false;
+        }
+
+        return getProperty(client, 'nodeValue') === getProperty(ssr, 'nodeValue');
+    }
+
+    if (getProperty(client, 'nodeType') === EnvNodeTypes.COMMENT) {
+        if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.COMMENT, renderer)) {
+            return false;
+        }
+
+        return getProperty(client, 'nodeValue') === getProperty(ssr, 'nodeValue');
+    }
+
+    if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.ELEMENT, renderer)) {
+        return false;
+    }
+
+    let isCompatibleElements = true;
+    if (getProperty(client, 'tagName') !== getProperty(ssr, 'tagName')) {
+        if (process.env.NODE_ENV !== 'production') {
+            logError(
+                `Hydration mismatch: expecting element with tag "${getProperty(
+                    client,
+                    'tagName'
+                ).toLowerCase()}" but found "${getProperty(ssr, 'tagName').toLowerCase()}".`,
+                vnode.owner
+            );
+        }
+
+        return false;
+    }
+
+    const clientAttrsNames: string[] = getProperty(client, 'getAttributeNames').call(client);
+
+    clientAttrsNames.forEach((attrName) => {
+        if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
+            logError(
+                `Mismatch hydrating element <${getProperty(
+                    client,
+                    'tagName'
+                ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
+                    client,
+                    attrName
+                )}" but found "${getAttribute(ssr, attrName)}"`,
+                vnode.owner
+            );
+            isCompatibleElements = false;
+        }
+    });
+
+    return isCompatibleElements;
 }

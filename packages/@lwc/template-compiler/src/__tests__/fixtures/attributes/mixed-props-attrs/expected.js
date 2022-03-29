@@ -1,47 +1,34 @@
 import _nsFoo from "ns/foo";
 import _nsBar from "ns/bar";
-import { registerTemplate, sanitizeAttribute } from "lwc";
+import { parseFragment, registerTemplate, sanitizeAttribute } from "lwc";
+const $fragment1 = parseFragment`<a class="test${0}" data-foo="datafoo" aria-hidden="h" role="presentation" href="/foo" title="test" tabindex="-1"${2}></a>`;
+const $fragment2 = parseFragment`<table bgcolor="x"${3}></table>`;
 const stc0 = {
-  classMap: {
-    test: true,
-  },
-  attrs: {
-    "data-foo": "datafoo",
-    "aria-hidden": "h",
-    role: "presentation",
-    href: "/foo",
-    title: "test",
-    tabindex: "-1",
-  },
-  key: 1,
-};
-const stc1 = {
   r: true,
 };
-const stc2 = {
+const stc1 = {
   "data-xx": "foo",
 };
-const stc3 = {
+const stc2 = {
   classMap: {
     cubano: true,
   },
   attrs: {
     focusable: "true",
   },
-  key: 3,
+  key: 4,
   svg: true,
 };
-const stc4 = {
-  attrs: {
-    bgcolor: "x",
-  },
-  key: 5,
-};
-const stc5 = {
+const stc3 = {
   "aria-hidden": "hidden",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { gid: api_scoped_id, c: api_custom_element, h: api_element } = $api;
+  const {
+    gid: api_scoped_id,
+    c: api_custom_element,
+    st: api_static_fragment,
+    h: api_element,
+  } = $api;
   return [
     api_custom_element("ns-foo", _nsFoo, {
       props: {
@@ -50,10 +37,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 0,
     }),
-    api_element("a", stc0),
+    api_static_fragment($fragment1(), 2),
     api_custom_element("ns-bar", _nsBar, {
-      classMap: stc1,
-      attrs: stc2,
+      classMap: stc0,
+      attrs: stc1,
       props: {
         ariaDescribedBy: api_scoped_id("ns-foo"),
         ariaHidden: "hidden",
@@ -63,9 +50,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         tabIndex: "0",
         bgColor: "blue",
       },
-      key: 2,
+      key: 3,
     }),
-    api_element("svg", stc3, [
+    api_element("svg", stc2, [
       api_element("use", {
         attrs: {
           "xlink:href": sanitizeAttribute(
@@ -75,15 +62,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             "xx"
           ),
         },
-        key: 4,
+        key: 5,
         svg: true,
       }),
     ]),
-    api_element("table", stc4),
+    api_static_fragment($fragment2(), 7),
     api_element("div", {
       className: $cmp.foo,
-      attrs: stc5,
-      key: 6,
+      attrs: stc3,
+      key: 8,
     }),
   ];
   /*LWC compiler vX.X.X*/

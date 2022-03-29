@@ -230,6 +230,28 @@ export function expressionStatement(
     };
 }
 
+export function taggedTemplateExpression(
+    tag: Expression,
+    quasi: t.TemplateLiteral
+): t.TaggedTemplateExpression {
+    return {
+        type: 'TaggedTemplateExpression',
+        tag,
+        quasi,
+    };
+}
+
+export function templateLiteral(
+    quasis: t.TemplateElement[],
+    expressions: t.Expression[]
+): t.TemplateLiteral {
+    return {
+        type: 'TemplateLiteral',
+        quasis,
+        expressions,
+    };
+}
+
 export function functionExpression(
     id: null | t.Identifier,
     params: t.FunctionExpression['params'],

@@ -34,6 +34,7 @@ const defaultViewGetter: (this: Document) => Window | null = getOwnPropertyDescr
 
 const {
     createComment,
+    createTreeWalker,
     querySelectorAll,
     getElementById,
     getElementsByClassName,
@@ -49,6 +50,7 @@ export {
     elementFromPoint,
     elementsFromPoint,
     createComment,
+    createTreeWalker,
     DocumentPrototypeActiveElement,
     querySelectorAll,
     getElementById,

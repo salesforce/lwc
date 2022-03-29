@@ -16,6 +16,7 @@ import {
     keys,
     SVG_NAMESPACE,
     KEY__SHADOW_RESOLVER,
+    KEY__SHADOW_STATIC,
 } from '@lwc/shared';
 
 import { RendererAPI } from './renderer';
@@ -48,6 +49,7 @@ import {
     isVBaseElement,
     isSameVnode,
     VNodeType,
+    VStatic,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -98,6 +100,10 @@ function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
             patchComment(n1 as VComment, n2, renderer);
             break;
 
+        case VNodeType.Static:
+            n2.elm = n1.elm;
+            break;
+    
         case VNodeType.Element:
             patchElement(n1 as VElement, n2, n2.data.renderer ?? renderer);
             break;
@@ -120,6 +126,11 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
             mountComment(node, parent, anchor, renderer);
             break;
 
+        case VNodeType.Static:
+            // VStatic cannot have a custom renderer associated to them, using owner's renderer
+            mountStatic(node, parent, anchor, renderer);
+            break;
+    
         case VNodeType.Element:
             // If the vnode data has a renderer override use it, else fallback to owner's renderer
             mountElement(node, parent, anchor, node.data.renderer ?? renderer);
@@ -206,6 +217,35 @@ function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
 
     patchElementPropsAndAttrs(n1, n2, renderer);
     patchChildren(n1.children, n2.children, elm, renderer);
+}
+
+function mountStatic(
+    vnode: VStatic,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
+    const { owner } = vnode;
+    const { cloneNode, isSyntheticShadowDefined, insertNode } = renderer;
+    const elm = (vnode.elm = cloneNode(vnode.fragment, true));
+
+    linkNodeToShadow(elm, owner, renderer);
+
+    // Marks this node as Static to propagate the shadow resolver. must happen after elm is assigned to the proper shadow
+    const { renderMode, shadowMode } = owner;
+
+    if (isSyntheticShadowDefined) {
+        if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
+            (elm as any)[KEY__SHADOW_STATIC] = true;
+        }
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+        const isLight = renderMode === RenderMode.Light;
+        patchElementWithRestrictions(elm, { isPortal: false, isLight });
+    }
+
+    insertNode(elm, parent, anchor);
 }
 
 function mountCustomElement(
