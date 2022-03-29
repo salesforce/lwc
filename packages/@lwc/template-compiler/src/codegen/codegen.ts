@@ -53,7 +53,8 @@ type RenderPrimitive =
     | 'scopedId'
     | 'scopedFragId'
     | 'comment'
-    | 'sanitizeHtmlContent';
+    | 'sanitizeHtmlContent'
+    | 'staticFragment';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -76,6 +77,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
     comment: { name: 'co', alias: 'api_comment' },
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
+    staticFragment: { name: 'st', alias: 'api_static_fragment' },
 };
 
 interface Scope {
@@ -517,7 +519,10 @@ export default class CodeGen {
 
         this.hoistedNodes.push(expr);
 
-        return t.identifier(`$hoisted${this.hoistedNodes.length}`);
+        return this._renderApiCall(RENDER_APIS.staticFragment, [
+            t.identifier(`$hoisted${this.hoistedNodes.length}`),
+            t.literal(this.generateKey()),
+        ]);
     }
 
     genHoistedElement(element: Element): t.Expression {

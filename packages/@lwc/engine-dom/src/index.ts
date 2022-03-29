@@ -35,6 +35,10 @@ export {
     __unstable__ProfilerControl,
 } from '@lwc/engine-core';
 
+export function createFragment(strHTML: string) {
+    return document.createRange().createContextualFragment(strHTML).firstChild;
+}
+
 // Engine-dom public APIs --------------------------------------------------------------------------
 export { hydrateComponent } from './apis/hydrate-component';
 export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './apis/build-custom-element-constructor';

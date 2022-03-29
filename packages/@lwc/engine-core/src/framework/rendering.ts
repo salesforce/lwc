@@ -59,6 +59,7 @@ import {
     isVBaseElement,
     isSameVnode,
     VNodeType,
+    VStatic,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -109,6 +110,10 @@ function patch(n1: VNode, n2: VNode) {
         case VNodeType.CustomElement:
             patchCustomElement(n1 as VCustomElement, n2);
             break;
+
+        case VNodeType.Static:
+            n2.elm = n1.elm;
+            break;
     }
 }
 
@@ -128,6 +133,10 @@ export function mount(node: VNode, parent: ParentNode, anchor: Node | null) {
 
         case VNodeType.CustomElement:
             mountCustomElement(node, parent, anchor);
+            break;
+
+        case VNodeType.Static:
+            mountStatic(node, parent, anchor);
             break;
     }
 }
@@ -195,6 +204,11 @@ function patchElement(n1: VElement, n2: VElement) {
     patchChildren(n1.children, n2.children, elm);
 }
 
+function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
+    const elm = (vnode.elm = vnode.elmProto.cloneNode(true));
+
+    insertNode(elm, parent, anchor);
+}
 function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
     const { sel, owner } = vnode;
 

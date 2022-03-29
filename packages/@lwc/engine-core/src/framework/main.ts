@@ -52,6 +52,10 @@ export type {
     WireAdapterSchemaValue,
 } from './wiring';
 
+export function createFragment(strHTML: string) {
+    return document.createRange().createContextualFragment(strHTML).firstChild;
+}
+
 // Initialization APIs for the renderer, to be used by engine implementations ----------------------
 export {
     setAssertInstanceOfHTMLElement,

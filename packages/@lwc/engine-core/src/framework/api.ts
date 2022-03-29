@@ -41,12 +41,28 @@ import {
     VComment,
     VElementData,
     VNodeType,
+    VStatic,
+    Key,
 } from './vnodes';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
     ArrayPush.call(getVMBeingRendered()!.velements, vnode);
+}
+
+// [st]atic node
+function st(hoisted: Node, key: Key): VStatic {
+    let elm;
+
+    return {
+        type: VNodeType.Static,
+        sel: undefined,
+        key,
+        elm,
+        elmProto: hoisted,
+        owner: getVMBeingRendered()!,
+    };
 }
 
 // [h]tml node
@@ -546,6 +562,7 @@ const api = ObjectFreeze({
     co,
     dc,
     ti,
+    st,
     gid,
     fid,
     shc,
