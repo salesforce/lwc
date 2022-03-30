@@ -209,6 +209,8 @@ function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
     const elm = (vnode.elm = vnode.elmProto.cloneNode(true));
 
     // @todo: move these out to synthetic shadow.
+
+    // only patch the root node of the fragment, we don't want to be in the business of traversing the dom.
     const treeWalker = document.createTreeWalker(
         elm,
         NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
@@ -218,7 +220,6 @@ function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
     while (currentNode) {
         linkNodeToShadow(currentNode, owner);
         if (currentNode.nodeType === Node.ELEMENT_NODE) {
-            setScopeTokenClassIfNecessary(elm as unknown as Element, owner);
             if (owner.shadowMode === ShadowMode.Synthetic) {
                 const { stylesheetToken } = owner.context;
                 if (!isUndefined(stylesheetToken)) {

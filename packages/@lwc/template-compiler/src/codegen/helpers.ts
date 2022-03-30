@@ -150,6 +150,21 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     );
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
+    if (codeGen.hoistedNodes.length > 0) {
+        metadataExpressions.push(
+            t.expressionStatement(
+                t.assignmentExpression(
+                    '=',
+                    t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('hoistedFragments')),
+                    t.arrayExpression(
+                        codeGen.hoistedNodes
+                            .map((v, index) => t.identifier(`$hoisted${index + 1}`))
+                    )
+                )
+            )
+        )
+    }
+
     // ignore when shadow because we don't want to modify template unnecessarily
     if (codeGen.renderMode === LWCDirectiveRenderMode.light) {
         const renderModeMetadata = t.assignmentExpression(

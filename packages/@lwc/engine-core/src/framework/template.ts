@@ -41,6 +41,7 @@ import {
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { VNodes } from './vnodes';
+import {getClassList} from "../renderer";
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -53,6 +54,8 @@ export interface Template {
     stylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
+    /** Hoisted Fragments */
+    hoistedFragments?: Node[],
 }
 
 export let isUpdatingTemplate: boolean = false;
@@ -111,6 +114,26 @@ function validateLightDomTemplate(template: Template, vm: VM) {
             )} or set it to 'lwc:render-mode="shadow"`
         );
     }
+}
+
+function setHoistedFragmentsScopeTokenClass(hoistedFragments: Node[] | undefined, stylesheetToken: string | undefined, hasScopedStyles: boolean) {
+    if (isUndefined(hoistedFragments) || isUndefined(stylesheetToken) || !hasScopedStyles) {
+        return;
+    }
+
+    hoistedFragments.forEach((fragment) => {
+        // @todo: move to the renderer.
+        const treeWalker = document.createTreeWalker(
+            fragment,
+            NodeFilter.SHOW_ELEMENT
+        );
+        let currentNode: Node | null = treeWalker.currentNode;
+
+        while (currentNode) {
+            getClassList(currentNode as Element).add(stylesheetToken);
+            currentNode = treeWalker.nextNode();
+        }
+    });
 }
 
 export function evaluateTemplate(vm: VM, html: Template): VNodes {
@@ -173,6 +196,12 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
                     // Set the computeHasScopedStyles property in the context, to avoid recomputing it repeatedly.
                     context.hasScopedStyles = computeHasScopedStyles(html);
+
+                    setHoistedFragmentsScopeTokenClass(
+                        html.hoistedFragments,
+                        html.stylesheetToken,
+                        context.hasScopedStyles
+                    );
 
                     // Update the scoping token on the host element.
                     updateStylesheetToken(vm, html);
