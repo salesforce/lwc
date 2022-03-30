@@ -16,6 +16,7 @@ import {
     keys,
     SVG_NAMESPACE,
     KEY__SHADOW_RESOLVER,
+    KEY__SHADOW_STATIC,
 } from '@lwc/shared';
 
 import {
@@ -210,28 +211,21 @@ function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
 
     linkNodeToShadow(elm, owner);
 
+    // Marks this node as Static to propagate the shadow resolver. must happen after elm is assigned to the proper shadow
+    const { renderMode, shadowMode } = owner;
+
+    if (isSyntheticShadowDefined) {
+        if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
+            (elm as any)[KEY__SHADOW_STATIC] = true;
+        }
+    }
+
     if (process.env.NODE_ENV !== 'production') {
         if (elm.nodeType === Node.ELEMENT_NODE) { // move to renderer
             const isLight = owner.renderMode === RenderMode.Light;
             patchElementWithRestrictions(elm as unknown as Element, { isPortal: false, isLight });
         }
-
     }
-
-    // // @todo: move these out to synthetic shadow.
-    //
-    // // only patch the root node of the fragment, we don't want to be in the business of traversing the dom.
-    // const treeWalker = document.createTreeWalker(
-    //     elm,
-    //     NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
-    // );
-    // let currentNode: Node | null = treeWalker.currentNode;
-    //
-    // while (currentNode) {
-    //     linkNodeToShadow(currentNode, owner);
-    //
-    //     currentNode = treeWalker.nextNode();
-    // }
 
     insertNode(elm, parent, anchor);
 }

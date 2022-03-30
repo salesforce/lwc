@@ -9,6 +9,9 @@ import {
     isUndefined,
     KEY__SHADOW_TOKEN,
     KEY__SHADOW_TOKEN_PRIVATE,
+    KEY__SHADOW_STATIC,
+    KEY__SHADOW_STATIC_PRIVATE,
+    KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
 
@@ -41,6 +44,30 @@ defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
     },
     get(this: Element): string | undefined {
         return (this as any)[KEY__SHADOW_TOKEN_PRIVATE];
+    },
+    configurable: true,
+});
+
+defineProperty(Element.prototype, KEY__SHADOW_STATIC, {
+    set(this: Element, v: boolean) {
+        // Marking an element as static propagates the shadow resolver to its content.
+        const fn = (this as any)[KEY__SHADOW_RESOLVER];
+        if (v) {
+            const treeWalker = document.createTreeWalker(
+                this,
+                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
+            );
+
+            let currentNode: Node | null;
+
+            while ((currentNode = treeWalker.nextNode())) {
+                (currentNode as any)[KEY__SHADOW_RESOLVER] = fn;
+            }
+        }
+        (this as any)[KEY__SHADOW_STATIC_PRIVATE] = v;
+    },
+    get(this: Element): string | undefined {
+        return (this as any)[KEY__SHADOW_STATIC_PRIVATE];
     },
     configurable: true,
 });
