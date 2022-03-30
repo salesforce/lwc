@@ -92,7 +92,7 @@ export interface VElementData extends VNodeData {
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
     const { type } = vnode;
     return (
-        type === VNodeType.Element || type === VNodeType.CustomElement || type === VNodeType.Static
+        type === VNodeType.Element || type === VNodeType.CustomElement
     );
 }
 

@@ -119,6 +119,7 @@ function getStaticNodes(root: Root): Set<ChildNode> {
                 name === 'slot' ||
                 // check for ScopedId
                 name === 'id' ||
+                name === 'spellcheck' || // spellcheck is specially handled by the vnodes. @todo: alternatively we could add/remove those that are static
                 isIdReferencingAttribute(name) ||
                 // Check for ScopedFragId
                 (isSvgUseHref(nodeName, name, namespace) &&

@@ -205,7 +205,34 @@ function patchElement(n1: VElement, n2: VElement) {
 }
 
 function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
+    const { owner } = vnode;
     const elm = (vnode.elm = vnode.elmProto.cloneNode(true));
+
+    // @todo: move these out to synthetic shadow.
+    const treeWalker = document.createTreeWalker(
+        elm,
+        NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
+    );
+    let currentNode: Node | null = treeWalker.currentNode;
+
+    while (currentNode) {
+        linkNodeToShadow(currentNode, owner);
+        if (currentNode.nodeType === Node.ELEMENT_NODE) {
+            setScopeTokenClassIfNecessary(elm as unknown as Element, owner);
+            if (owner.shadowMode === ShadowMode.Synthetic) {
+                const { stylesheetToken } = owner.context;
+                if (!isUndefined(stylesheetToken)) {
+                    // when running in synthetic shadow mode, we need to set the shadowToken value
+                    // into each element from the template, so they can be styled accordingly.
+                    setElementShadowToken(currentNode as unknown as Element, stylesheetToken);
+                }
+            }
+            const isLight = owner.renderMode === RenderMode.Light;
+            patchElementWithRestrictions(currentNode as unknown as Element, { isPortal: false, isLight });
+        }
+
+        currentNode = treeWalker.nextNode();
+    }
 
     insertNode(elm, parent, anchor);
 }
