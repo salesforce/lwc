@@ -14,34 +14,28 @@ import {
     isNull,
     isTrue,
     isUndefined,
-    toString,
     KEY__SCOPED_CSS,
+    toString,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
-import { getComponentTag } from '../shared/format';
+import {logError} from '../shared/logger';
+import {getComponentTag} from '../shared/format';
 
-import api, { RenderAPI } from './api';
+import api, {RenderAPI} from './api';
+import {RenderMode, resetComponentRoot, runWithBoundaryProtection, ShadowMode, SlotSet, TemplateCache, VM,} from './vm';
+import {EmptyArray} from './utils';
+import {defaultEmptyTemplate, isTemplateRegistered} from './secure-template';
 import {
-    resetComponentRoot,
-    runWithBoundaryProtection,
-    SlotSet,
-    TemplateCache,
-    VM,
-    RenderMode,
-} from './vm';
-import { EmptyArray } from './utils';
-import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
-import {
-    TemplateStylesheetFactories,
     createStylesheet,
     getStylesheetsContent,
+    TemplateStylesheetFactories,
     updateStylesheetToken,
 } from './stylesheet';
-import { logOperationStart, logOperationEnd, OperationId } from './profiler';
-import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { VNodes } from './vnodes';
+import {logOperationEnd, logOperationStart, OperationId} from './profiler';
+import {getTemplateOrSwappedTemplate, setActiveVM} from './hot-swaps';
+import {VNodes} from './vnodes';
 import {getClassList} from "../renderer";
+import {setElementShadowToken} from "./rendering";
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -116,8 +110,14 @@ function validateLightDomTemplate(template: Template, vm: VM) {
     }
 }
 
-function setHoistedFragmentsScopeTokenClass(hoistedFragments: Node[] | undefined, stylesheetToken: string | undefined, hasScopedStyles: boolean) {
-    if (isUndefined(hoistedFragments) || isUndefined(stylesheetToken) || !hasScopedStyles) {
+function setHoistedFragmentsScopeTokenClass(
+    hoistedFragments: Node[] | undefined,
+    stylesheetToken: string | undefined,
+    hasScopedStyles: boolean,
+    isSyntheticShadow: boolean
+) {
+
+    if (isUndefined(hoistedFragments) || isUndefined(stylesheetToken)) {
         return;
     }
 
@@ -130,7 +130,21 @@ function setHoistedFragmentsScopeTokenClass(hoistedFragments: Node[] | undefined
         let currentNode: Node | null = treeWalker.currentNode;
 
         while (currentNode) {
-            getClassList(currentNode as Element).add(stylesheetToken);
+            if (hasScopedStyles) {
+                getClassList(currentNode as Element).add(stylesheetToken);
+            }
+            if (isSyntheticShadow) {
+                // note: shadowToken never changes because is set to the stylesheetToken (never changes)
+                //       and the owner is from the same template (but different instance) so we can reuse it during
+                //       the template initialization.
+                //
+                // @alert: this is tight coupled to the implementation of shadow-token.ts, we only need to set it on the
+                //         hoisted fragment because setting the shadowToken adds the token as an attribute
+                //         therefore cloneNode will copy the stylesheetToken in subsequent usages.
+
+                // @todo: ask ekashida how this may work for mixed shadow.
+                setElementShadowToken(currentNode as Element, stylesheetToken);
+            }
             currentNode = treeWalker.nextNode();
         }
     });
@@ -200,7 +214,8 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     setHoistedFragmentsScopeTokenClass(
                         html.hoistedFragments,
                         html.stylesheetToken,
-                        context.hasScopedStyles
+                        context.hasScopedStyles,
+                        vm.shadowMode === ShadowMode.Synthetic
                     );
 
                     // Update the scoping token on the host element.

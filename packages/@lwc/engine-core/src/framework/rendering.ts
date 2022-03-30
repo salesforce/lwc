@@ -208,32 +208,30 @@ function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
     const { owner } = vnode;
     const elm = (vnode.elm = vnode.elmProto.cloneNode(true));
 
-    // @todo: move these out to synthetic shadow.
+    linkNodeToShadow(elm, owner);
 
-    // only patch the root node of the fragment, we don't want to be in the business of traversing the dom.
-    const treeWalker = document.createTreeWalker(
-        elm,
-        NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
-    );
-    let currentNode: Node | null = treeWalker.currentNode;
-
-    while (currentNode) {
-        linkNodeToShadow(currentNode, owner);
-        if (currentNode.nodeType === Node.ELEMENT_NODE) {
-            if (owner.shadowMode === ShadowMode.Synthetic) {
-                const { stylesheetToken } = owner.context;
-                if (!isUndefined(stylesheetToken)) {
-                    // when running in synthetic shadow mode, we need to set the shadowToken value
-                    // into each element from the template, so they can be styled accordingly.
-                    setElementShadowToken(currentNode as unknown as Element, stylesheetToken);
-                }
-            }
+    if (process.env.NODE_ENV !== 'production') {
+        if (elm.nodeType === Node.ELEMENT_NODE) { // move to renderer
             const isLight = owner.renderMode === RenderMode.Light;
-            patchElementWithRestrictions(currentNode as unknown as Element, { isPortal: false, isLight });
+            patchElementWithRestrictions(elm as unknown as Element, { isPortal: false, isLight });
         }
 
-        currentNode = treeWalker.nextNode();
     }
+
+    // // @todo: move these out to synthetic shadow.
+    //
+    // // only patch the root node of the fragment, we don't want to be in the business of traversing the dom.
+    // const treeWalker = document.createTreeWalker(
+    //     elm,
+    //     NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
+    // );
+    // let currentNode: Node | null = treeWalker.currentNode;
+    //
+    // while (currentNode) {
+    //     linkNodeToShadow(currentNode, owner);
+    //
+    //     currentNode = treeWalker.nextNode();
+    // }
 
     insertNode(elm, parent, anchor);
 }
@@ -366,7 +364,7 @@ function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
 }
 
-function setElementShadowToken(elm: Element, token: string) {
+export function setElementShadowToken(elm: Element, token: string) {
     (elm as any).$shadowToken$ = token;
 }
 
