@@ -820,11 +820,11 @@ function parseSlot(
     ctx.seenSlots.add(name);
 
     if (alreadySeen) {
-        ctx.warnAtLocation(ParserDiagnostics.NO_DUPLICATE_SLOTS, location, [
+        ctx.throwAtLocation(ParserDiagnostics.NO_DUPLICATE_SLOTS, location, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
     } else if (isInIteration(ctx)) {
-        ctx.warnAtLocation(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, location, [
+        ctx.throwAtLocation(ParserDiagnostics.NO_SLOTS_IN_ITERATOR, location, [
             name === '' ? 'default' : `name="${name}"`,
         ]);
     }

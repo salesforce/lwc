@@ -3,7 +3,7 @@
         {
             "code": 1137,
             "message": "LWC1137: Invalid duplicate slot (name=\"foo\").",
-            "level": 2,
+            "level": 1,
             "location": {
                 "line": 3,
                 "column": 5,

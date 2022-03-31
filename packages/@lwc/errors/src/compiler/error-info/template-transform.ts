@@ -516,13 +516,13 @@ export const ParserDiagnostics = {
     NO_DUPLICATE_SLOTS: {
         code: 1137,
         message: 'Invalid duplicate slot ({0}).',
-        level: DiagnosticLevel.Warning,
+        level: DiagnosticLevel.Error,
         url: '',
     },
     NO_SLOTS_IN_ITERATOR: {
         code: 1138,
         message: 'Invalid slot ({0}). A slot cannot appear inside of an iterator.',
-        level: DiagnosticLevel.Warning,
+        level: DiagnosticLevel.Error,
         url: '',
     },
     LWC_LIGHT_SLOT_INVALID_EVENT_LISTENER: {
