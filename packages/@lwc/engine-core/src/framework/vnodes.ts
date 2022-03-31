@@ -33,7 +33,7 @@ export interface VStatic extends BaseVNode {
     type: VNodeType.Static;
     sel: undefined;
     key: Key;
-    elmProto: Node;
+    elmProto: Element;
 }
 
 export interface VText extends BaseVNode {
@@ -91,9 +91,7 @@ export interface VElementData extends VNodeData {
 
 export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
     const { type } = vnode;
-    return (
-        type === VNodeType.Element || type === VNodeType.CustomElement
-    );
+    return type === VNodeType.Element || type === VNodeType.CustomElement;
 }
 
 export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {

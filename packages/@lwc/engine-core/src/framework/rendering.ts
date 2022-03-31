@@ -207,7 +207,7 @@ function patchElement(n1: VElement, n2: VElement) {
 
 function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
     const { owner } = vnode;
-    const elm = (vnode.elm = vnode.elmProto.cloneNode(true));
+    const elm = (vnode.elm = vnode.elmProto.cloneNode(true)) as Element;
 
     linkNodeToShadow(elm, owner);
 
@@ -221,10 +221,8 @@ function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        if (elm.nodeType === Node.ELEMENT_NODE) { // move to renderer
-            const isLight = owner.renderMode === RenderMode.Light;
-            patchElementWithRestrictions(elm as unknown as Element, { isPortal: false, isLight });
-        }
+        const isLight = owner.renderMode === RenderMode.Light;
+        patchElementWithRestrictions(elm, { isPortal: false, isLight });
     }
 
     insertNode(elm, parent, anchor);

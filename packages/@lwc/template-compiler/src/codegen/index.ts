@@ -103,19 +103,11 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformText(consecutiveText: Text[]): t.Expression {
-        const mustHoistText = consecutiveText.every((txt) => codeGen.nodesToHoist.has(txt));
-
-        return mustHoistText
-            ? codeGen.genHoistedText(
-                  consecutiveText
-                      .map(({ value }) => (isStringLiteral(value) ? value.value : ''))
-                      .join('')
-              )
-            : codeGen.genText(
-                  consecutiveText.map(({ value }) => {
-                      return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
-                  })
-              );
+        return codeGen.genText(
+            consecutiveText.map(({ value }) => {
+                return isStringLiteral(value) ? value.value : codeGen.bindExpression(value);
+            })
+        );
     }
 
     function transformComment(comment: Comment): t.Expression {

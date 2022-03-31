@@ -513,7 +513,9 @@ export default class CodeGen {
         return expression as t.Expression;
     }
 
-    _callCreateFragment(html: string): t.Expression {
+    genHoistedElement(element: Element): t.Expression {
+        const html = parse5.serialize({ childNodes: [element._original!] } as parse5.Node);
+
         this.usedLwcApis.add(CREATE_FRAGMENT_METHOD_NAME);
 
         const expr = t.callExpression(t.identifier(CREATE_FRAGMENT_METHOD_NAME), [t.literal(html)]);
@@ -524,19 +526,5 @@ export default class CodeGen {
             t.identifier(`$hoisted${this.hoistedNodes.length}`),
             t.literal(this.generateKey()),
         ]);
-    }
-
-    genHoistedElement(element: Element): t.Expression {
-        const html = parse5.serialize({ childNodes: [element._original!] } as parse5.Node);
-
-        return this._callCreateFragment(html);
-    }
-
-    genHoistedText(txt: string): t.Expression {
-        return this._callCreateFragment(txt);
-    }
-
-    genHoistedComent(comment: string): t.Expression {
-        return this._callCreateFragment(comment);
     }
 }

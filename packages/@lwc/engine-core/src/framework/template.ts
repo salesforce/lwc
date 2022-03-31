@@ -18,24 +18,32 @@ import {
     toString,
 } from '@lwc/shared';
 
-import {logError} from '../shared/logger';
-import {getComponentTag} from '../shared/format';
+import { logError } from '../shared/logger';
+import { getComponentTag } from '../shared/format';
 
-import api, {RenderAPI} from './api';
-import {RenderMode, resetComponentRoot, runWithBoundaryProtection, ShadowMode, SlotSet, TemplateCache, VM,} from './vm';
-import {EmptyArray} from './utils';
-import {defaultEmptyTemplate, isTemplateRegistered} from './secure-template';
+import api, { RenderAPI } from './api';
+import {
+    RenderMode,
+    resetComponentRoot,
+    runWithBoundaryProtection,
+    ShadowMode,
+    SlotSet,
+    TemplateCache,
+    VM,
+} from './vm';
+import { EmptyArray } from './utils';
+import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     createStylesheet,
     getStylesheetsContent,
     TemplateStylesheetFactories,
     updateStylesheetToken,
 } from './stylesheet';
-import {logOperationEnd, logOperationStart, OperationId} from './profiler';
-import {getTemplateOrSwappedTemplate, setActiveVM} from './hot-swaps';
-import {VNodes} from './vnodes';
-import {getClassList} from "../renderer";
-import {setElementShadowToken} from "./rendering";
+import { logOperationEnd, logOperationStart, OperationId } from './profiler';
+import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
+import { VNodes } from './vnodes';
+import { getClassList } from '../renderer';
+import { setElementShadowToken } from './rendering';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -49,7 +57,7 @@ export interface Template {
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
     /** Hoisted Fragments */
-    hoistedFragments?: Node[],
+    hoistedFragments?: Node[];
 }
 
 export let isUpdatingTemplate: boolean = false;
@@ -116,23 +124,20 @@ function setHoistedFragmentsScopeTokenClass(
     hasScopedStyles: boolean,
     isSyntheticShadow: boolean
 ) {
-
     if (isUndefined(hoistedFragments) || isUndefined(stylesheetToken)) {
         return;
     }
 
     hoistedFragments.forEach((fragment) => {
         // @todo: move to the renderer.
-        const treeWalker = document.createTreeWalker(
-            fragment,
-            NodeFilter.SHOW_ELEMENT
-        );
+        const treeWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT);
         let currentNode: Node | null = treeWalker.currentNode;
 
         while (currentNode) {
             if (hasScopedStyles) {
                 getClassList(currentNode as Element).add(stylesheetToken);
             }
+            // @todo: maybe this is not needed.
             if (isSyntheticShadow) {
                 // note: shadowToken never changes because is set to the stylesheetToken (never changes)
                 //       and the owner is from the same template (but different instance) so we can reuse it during
