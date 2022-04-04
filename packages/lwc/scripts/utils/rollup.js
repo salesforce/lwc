@@ -29,6 +29,7 @@ function rollupTerserPlugin() {
         name: 'rollup-plugin-minify',
         renderChunk(code, chunk, outputOptions) {
             return swc.minifySync(code, {
+                sourceMap: false,
                 mangle: {
                     topLevel: ['cjs', 'commonjs'].includes(outputOptions.format),
                 },
