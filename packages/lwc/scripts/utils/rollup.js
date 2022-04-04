@@ -13,13 +13,13 @@ function babelCompatPlugin() {
     return {
         name: 'rollup-plugin-compat',
         transform(source) {
-            const { code, map } = swc.transformSync(source, {
-                sourceMaps: true,
+            const { code } = swc.transformSync(source, {
+                sourceMaps: false,
                 jsc: {
                     target: 'es5',
                 },
             });
-            return { code, map };
+            return { code };
         },
     };
 }
