@@ -24,10 +24,10 @@
     ],
     "dependencies": {
         "@lwc/shared": "2.12.0",
-        "postcss": "~8.4.6",
+        "postcss": "~8.4.12",
         "postcss-selector-parser": "~6.0.9",
         "postcss-value-parser": "~4.2.0",
-        "string.prototype.matchall": "^4.0.5"
+        "string.prototype.matchall": "^4.0.7"
     },
     "devDependencies": {
         "@types/string.prototype.matchall": "^4.0.0"
