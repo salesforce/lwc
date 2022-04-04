@@ -47,8 +47,11 @@ function rollupConfig(config) {
             plugins: [
                 prod &&
                     rollupReplace({
-                        'process.env.NODE_ENV': JSON.stringify('production'),
+                        values: {
+                            'process.env.NODE_ENV': JSON.stringify('production'),
+                        },
                         preventAssignment: true,
+                        sourceMap: false, // increases the build time and we don't need it
                     }),
                 compatMode && babelCompatPlugin(),
             ],
