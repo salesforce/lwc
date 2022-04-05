@@ -9,7 +9,7 @@ const rollupReplace = require('@rollup/plugin-replace');
 const swc = require('@swc/core');
 const { generateTargetName } = require('./helpers');
 
-function babelCompatPlugin() {
+function compatPlugin() {
     return {
         name: 'rollup-plugin-compat',
         transform(source) {
@@ -24,7 +24,7 @@ function babelCompatPlugin() {
     };
 }
 
-function rollupTerserPlugin() {
+function minifyPlugin() {
     return {
         name: 'rollup-plugin-minify',
         renderChunk(code, chunk, outputOptions) {
@@ -54,14 +54,14 @@ function rollupConfig(config) {
                         preventAssignment: true,
                         sourceMap: false, // increases the build time and we don't need it
                     }),
-                compatMode && babelCompatPlugin(),
+                compatMode && compatPlugin(),
             ],
         },
         outputOptions: {
             name,
             file: path.join(targetDirectory, target, generateTargetName(config)),
             format,
-            plugins: [prod && !debug && rollupTerserPlugin()],
+            plugins: [prod && !debug && minifyPlugin()],
         },
         display: { name, dir, format, target, prod, debug },
     };
