@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { ResolvedConfig } from '../config';
+import { NormalizedConfig } from '../config';
 
 import * as t from '../shared/estree';
 import { Expression, Literal, LWCDirectiveRenderMode, Root } from '../shared/types';
@@ -103,7 +103,7 @@ export default class CodeGen {
         scopeFragmentId,
     }: {
         root: Root;
-        config: ResolvedConfig;
+        config: NormalizedConfig;
         scopeFragmentId: boolean;
     }) {
         this.root = root;

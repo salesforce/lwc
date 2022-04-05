@@ -12,7 +12,7 @@ import * as t from '../shared/estree';
 import ParserCtx from './parser';
 import { isReservedES6Keyword } from './utils/javascript';
 
-import { ResolvedConfig } from '../config';
+import { NormalizedConfig } from '../config';
 import { Expression, Identifier, SourceLocation } from '../shared/types';
 
 export const EXPRESSION_SYMBOL_START = '{';
@@ -30,7 +30,10 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
-function validateExpression(node: t.BaseNode, config: ResolvedConfig): asserts node is Expression {
+function validateExpression(
+    node: t.BaseNode,
+    config: NormalizedConfig
+): asserts node is Expression {
     const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
     invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
 
