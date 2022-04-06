@@ -20,7 +20,7 @@
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
     "devDependencies": {
-        "@types/estree": "0.0.50",
+        "@types/estree": "0.0.51",
         "@types/he": "^1.1.1",
         "@types/parse5": "^6.0.2"
     },
