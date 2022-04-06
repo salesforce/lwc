@@ -27,7 +27,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.17.8",
-    "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@commitlint/cli": "^16.2.3",
     "@rollup/plugin-node-resolve": "^13.1.3",
