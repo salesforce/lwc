@@ -2,7 +2,7 @@
     "files": [
         {
             "path": "packages/lwc/dist/engine-dom/umd/es2017/engine-dom.min.js",
-            "maxSize": "16.62KB",
+            "maxSize": "17.5KB",
             "compression": "gzip"
         },
         {

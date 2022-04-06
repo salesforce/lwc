@@ -6,40 +6,34 @@
  */
 const path = require('path');
 const rollupReplace = require('@rollup/plugin-replace');
-const babel = require('@babel/core');
-const terser = require('terser');
+const swc = require('@swc/core');
 const { generateTargetName } = require('./helpers');
 
-function babelCompatPlugin() {
+function compatPlugin() {
     return {
-        name: 'rollup-plugin-babel-compat',
+        name: 'rollup-plugin-compat',
         transform(source) {
-            const { code, map } = babel.transformSync(source, {
-                babelrc: false,
-                configFile: false,
-                presets: [
-                    [
-                        '@babel/preset-env',
-                        {
-                            targets: {
-                                ie: '11',
-                            },
-                            modules: false,
-                        },
-                    ],
-                ],
+            const { code } = swc.transformSync(source, {
+                sourceMaps: false,
+                jsc: {
+                    target: 'es5',
+                },
             });
-            return { code, map };
+            return { code };
         },
     };
 }
 
-function rollupTerserPlugin() {
+function minifyPlugin() {
     return {
-        name: 'rollup-plugin-terser',
+        name: 'rollup-plugin-minify',
         renderChunk(code, chunk, outputOptions) {
-            return terser.minify(code, {
-                toplevel: ['cjs', 'commonjs'].includes(outputOptions.format),
+            return swc.minifySync(code, {
+                sourceMap: false,
+                mangle: {
+                    topLevel: ['cjs', 'commonjs'].includes(outputOptions.format),
+                },
+                compress: true,
             });
         },
     };
@@ -54,17 +48,20 @@ function rollupConfig(config) {
             plugins: [
                 prod &&
                     rollupReplace({
-                        'process.env.NODE_ENV': JSON.stringify('production'),
+                        values: {
+                            'process.env.NODE_ENV': JSON.stringify('production'),
+                        },
                         preventAssignment: true,
+                        sourceMap: false, // increases the build time and we don't need it
                     }),
-                compatMode && babelCompatPlugin(),
+                compatMode && compatPlugin(),
             ],
         },
         outputOptions: {
             name,
             file: path.join(targetDirectory, target, generateTargetName(config)),
             format,
-            plugins: [prod && !debug && rollupTerserPlugin()],
+            plugins: [prod && !debug && minifyPlugin()],
         },
         display: { name, dir, format, target, prod, debug },
     };
