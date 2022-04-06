@@ -26,6 +26,7 @@ export {
     registerDecorators,
     sanitizeAttribute,
     setHooks,
+    parseFragment,
     getComponentDef,
     isComponentConstructor,
 } from '@lwc/engine-core';

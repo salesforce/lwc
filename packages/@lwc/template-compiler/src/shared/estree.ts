@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import type * as t from 'estree';
+import { TemplateLiteral } from 'estree';
 
 export function isIdentifier(node: t.BaseNode): node is t.Identifier {
     return node.type === 'Identifier';
@@ -227,6 +228,28 @@ export function expressionStatement(
         type: 'ExpressionStatement',
         expression,
         ...config,
+    };
+}
+
+export function taggedTemplateExpression(
+    tag: Expression,
+    quasi: TemplateLiteral
+): t.TaggedTemplateExpression {
+    return {
+        type: 'TaggedTemplateExpression',
+        tag,
+        quasi,
+    };
+}
+
+export function templateLiteral(
+    quasis: t.TemplateElement[],
+    expressions: t.Expression[]
+): t.TemplateLiteral {
+    return {
+        type: 'TemplateLiteral',
+        quasis,
+        expressions,
     };
 }
 

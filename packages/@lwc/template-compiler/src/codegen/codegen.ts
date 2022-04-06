@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { NormalizedConfig } from '../config';
 import * as parse5 from 'parse5';
+import defaultTreeAdapter from 'parse5/lib/tree-adapters/default';
+import { NormalizedConfig } from '../config';
 
 import * as t from '../shared/estree';
 import {
@@ -19,7 +20,7 @@ import {
     LWCDirectiveRenderMode,
     Root,
 } from '../shared/types';
-import { CREATE_FRAGMENT_METHOD_NAME, TEMPLATE_PARAMS } from '../shared/constants';
+import { PARSE_FRAGMENT_METHOD_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 import {
     isBaseElement,
     isComment,
@@ -99,18 +100,9 @@ function getStaticNodes(root: Root): Set<ChildNode> {
             listeners,
         } = node;
 
-        // Notes:
-        //   1. the trick is that the static nodes elm can not be removed by themself, they will always be removed
-        //      as parent removal operation.
-        //   2. An element inside a foreach can be static because it will have a parent that it is dynamic (the keyed element)
-        //   3. Slotted content can be static if:
-        //        - the parent is dynamic and not a component. In light dom, if the slot is wrapped with if, then the node will
-        //          be directly removed.
-
-        result &&= !isIf(parent); // when parent node is an if, this element may be removed directly.
+        result &&= !isIf(parent); // when parent node is an if, this element output is bound to some component value.
         result &&= !isSlot(node); // slot element can't be static.
         result &&= !isComponent(node); // components are not static.
-        result &&= !isComponent(parent); // Slotted content root can be directly removed in light dom.
 
         // it is an element.
         result &&= !attributes.some(({ name, value }) => {
@@ -514,16 +506,68 @@ export default class CodeGen {
     }
 
     genHoistedElement(element: Element): t.Expression {
-        const html = parse5.serialize({ childNodes: [element._original!] } as parse5.Node);
+        // 0: stylesheetToken in an existing class attr
+        // 1: stylesheetToken as an attribute (synthetic shadow)
+        // 2: syntheticShadowToken in an added class attr
+        const treeAdapter = {
+            ...defaultTreeAdapter,
+            getAttrList(element: parse5.Element): parse5.Attribute[] {
+                let hasClassAttr = false;
+                const attrs = element.attrs.map((attr) => {
+                    if (attr.name === 'class') {
+                        hasClassAttr = true;
+                        return {
+                            name: 'class',
+                            value: attr.value + '${0}',
+                        };
+                    }
 
-        this.usedLwcApis.add(CREATE_FRAGMENT_METHOD_NAME);
+                    return attr;
+                });
+                attrs.push({ name: '${1}', value: '' });
+                if (!hasClassAttr) {
+                    attrs.push({ name: 'class', value: '${2}' });
+                }
 
-        const expr = t.callExpression(t.identifier(CREATE_FRAGMENT_METHOD_NAME), [t.literal(html)]);
+                return attrs;
+            },
+        };
+        const html = parse5.serialize({ childNodes: [element._original!] } as parse5.Node, {
+            treeAdapter,
+        });
+
+        this.usedLwcApis.add(PARSE_FRAGMENT_METHOD_NAME);
+
+        // building the taggedTemplate expression as if it were a string
+        const expr = t.taggedTemplateExpression(
+            t.identifier(PARSE_FRAGMENT_METHOD_NAME),
+            t.templateLiteral(
+                [
+                    {
+                        type: 'TemplateElement',
+                        tail: true,
+                        value: {
+                            raw: html,
+                            cooked: html,
+                        },
+                    },
+                ],
+                []
+            )
+        );
 
         this.hoistedNodes.push(expr);
 
         return this._renderApiCall(RENDER_APIS.staticFragment, [
-            t.identifier(`$hoisted${this.hoistedNodes.length}`),
+            t.logicalExpression(
+                '||',
+                t.identifier(`$fragment${this.hoistedNodes.length}`),
+                t.assignmentExpression(
+                    '=',
+                    t.identifier(`$fragment${this.hoistedNodes.length}`),
+                    t.callExpression(t.identifier(`$hoisted${this.hoistedNodes.length}`), [])
+                )
+            ),
             t.literal(this.generateKey()),
         ]);
     }

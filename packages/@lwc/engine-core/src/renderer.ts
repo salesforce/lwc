@@ -58,6 +58,12 @@ export function setRemove(removeImpl: removeFunc) {
     remove = removeImpl;
 }
 
+type createFragmentFunc = (html: string) => N | null;
+export let createFragment: createFragmentFunc;
+export function setCreateFragment(createFragmentImpl: createFragmentFunc) {
+    createFragment = createFragmentImpl;
+}
+
 type createElementFunc = (tagName: string, namespace?: string) => E;
 export let createElement: createElementFunc;
 export function setCreateElement(createElementImpl: createElementFunc) {

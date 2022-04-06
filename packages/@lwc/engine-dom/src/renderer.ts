@@ -187,6 +187,10 @@ export function createComment(content: string): Node {
     return document.createComment(content);
 }
 
+export function createFragment(html: string): Node | null {
+    return document.createRange().createContextualFragment(html).firstChild;
+}
+
 export function insert(node: Node, parent: Node, anchor: Node): void {
     parent.insertBefore(node, anchor);
 }

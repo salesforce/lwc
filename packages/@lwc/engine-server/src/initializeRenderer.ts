@@ -10,6 +10,7 @@ import {
     setAttachShadow,
     setCreateComment,
     setCreateElement,
+    setCreateFragment,
     setCreateText,
     setDefineCustomElement,
     setDispatchEvent,
@@ -89,6 +90,7 @@ import {
     setText,
     ssr,
     addEventListener,
+    createFragment,
 } from './renderer';
 
 setAssertInstanceOfHTMLElement(assertInstanceOfHTMLElement);
@@ -96,6 +98,7 @@ setAttachShadow(attachShadow);
 setCreateComment(createComment);
 setCreateElement(createElement);
 setCreateText(createText);
+setCreateFragment(createFragment);
 setDefineCustomElement(defineCustomElement);
 setDispatchEvent(dispatchEvent);
 setGetAttribute(getAttribute);

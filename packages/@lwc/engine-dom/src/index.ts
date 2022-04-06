@@ -29,15 +29,12 @@ export {
     setHooks,
     getComponentDef,
     isComponentConstructor,
+    parseFragment,
     swapComponent,
     swapStyle,
     swapTemplate,
     __unstable__ProfilerControl,
 } from '@lwc/engine-core';
-
-export function createFragment(strHTML: string) {
-    return document.createRange().createContextualFragment(strHTML).firstChild;
-}
 
 // Engine-dom public APIs --------------------------------------------------------------------------
 export { hydrateComponent } from './apis/hydrate-component';

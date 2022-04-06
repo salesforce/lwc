@@ -16,7 +16,7 @@ import {
     noop,
 } from '@lwc/shared';
 
-import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
+import { HostNode, HostElement, HostAttribute, HostNodeType, HostChildNode } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
 function unsupportedMethod(name: string): () => never {
@@ -94,6 +94,18 @@ export function insert(node: N, parent: E, anchor: N | null) {
 export function remove(node: N, parent: E) {
     const nodeIndex = parent.children.indexOf(node);
     parent.children.splice(nodeIndex, 1);
+}
+
+export function createFragment(html: string): HostChildNode {
+    return {
+        type: HostNodeType.Raw,
+        parent: null,
+        value: html,
+        // @todo:
+        cloneNode(this: HostChildNode) {
+            return this;
+        },
+    } as HostChildNode;
 }
 
 export { createElement };
