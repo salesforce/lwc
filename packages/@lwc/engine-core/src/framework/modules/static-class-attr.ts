@@ -15,7 +15,7 @@ export function applyStaticClassAttribute(vnode: VBaseElement) {
     const {
         elm,
         data: { classMap },
-        renderer,
+        owner: { renderer },
     } = vnode;
 
     if (isUndefined(classMap)) {

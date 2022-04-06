@@ -88,7 +88,9 @@ function hydrateNode(node: Node, vnode: VNode): Node | null {
             break;
     }
     const {
-        renderer: { nextSibling },
+        owner: {
+            renderer: { nextSibling },
+        },
     } = vnode;
     return nextSibling(hydratedNode);
 }
@@ -100,7 +102,9 @@ function hydrateText(node: Node, vnode: VText): Node | null {
 
     if (process.env.NODE_ENV !== 'production') {
         const {
-            renderer: { getProperty },
+            owner: {
+                renderer: { getProperty },
+            },
         } = vnode;
         const nodeValue = getProperty(node, 'nodeValue');
 
@@ -112,7 +116,9 @@ function hydrateText(node: Node, vnode: VText): Node | null {
         }
     }
     const {
-        renderer: { setText },
+        owner: {
+            renderer: { setText },
+        },
     } = vnode;
     setText(node, vnode.text ?? null);
     vnode.elm = node;
@@ -127,7 +133,9 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
 
     if (process.env.NODE_ENV !== 'production') {
         const {
-            renderer: { getProperty },
+            owner: {
+                renderer: { getProperty },
+            },
         } = vnode;
         const nodeValue = getProperty(node, 'nodeValue');
 
@@ -140,7 +148,9 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
     }
 
     const {
-        renderer: { setProperty },
+        owner: {
+            renderer: { setProperty },
+        },
     } = vnode;
     setProperty(node, 'nodeValue', vnode.text ?? null);
     vnode.elm = node;
@@ -168,7 +178,9 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
         // remove the innerHTML from props so it reuses the existing dom elements.
         const {
             data: { props },
-            renderer: { getProperty },
+            owner: {
+                renderer: { getProperty },
+            },
         } = vnode;
         if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
             if (getProperty(elm, 'innerHTML') === props.innerHTML) {
@@ -195,7 +207,9 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
 
     if (!isDomManual) {
         const {
-            renderer: { getFirstChild },
+            owner: {
+                renderer: { getFirstChild },
+            },
         } = vnode;
         hydrateChildren(getFirstChild(elm), vnode.children, elm, vnode.owner);
     }
@@ -211,7 +225,8 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
         return handleMismatch(elm, vnode);
     }
 
-    const { sel, mode, ctor, owner, renderer } = vnode;
+    const { sel, mode, ctor, owner } = vnode;
+    const { renderer } = owner;
 
     const vm = createVM(elm, ctor, renderer, {
         mode,
@@ -234,7 +249,9 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
 
     if (vm.renderMode !== RenderMode.Light) {
         const {
-            renderer: { getFirstChild },
+            owner: {
+                renderer: { getFirstChild },
+            },
         } = vnode;
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
@@ -305,7 +322,9 @@ function handleMismatch(node: Node, vnode: VNode, msg?: string): Node | null {
             logError(msg, vnode.owner);
         }
     }
-    const { renderer } = vnode;
+    const {
+        owner: { renderer },
+    } = vnode;
     const { getProperty } = renderer;
     const parentNode = getProperty(node, 'parentNode');
     mount(vnode, parentNode, node);
@@ -321,7 +340,9 @@ function patchElementPropsAndAttrs(vnode: VBaseElement) {
 
 function hasCorrectNodeType<T extends Node>(vnode: VNode, node: Node, nodeType: number): node is T {
     const {
-        renderer: { getProperty },
+        owner: {
+            renderer: { getProperty },
+        },
     } = vnode;
     if (getProperty(node, 'nodeType') !== nodeType) {
         if (process.env.NODE_ENV !== 'production') {
@@ -335,7 +356,9 @@ function hasCorrectNodeType<T extends Node>(vnode: VNode, node: Node, nodeType: 
 
 function isMatchingElement(vnode: VBaseElement, elm: Element) {
     const {
-        renderer: { getProperty },
+        owner: {
+            renderer: { getProperty },
+        },
     } = vnode;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
@@ -369,13 +392,17 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
         const {
-            renderer: { getAttribute },
+            owner: {
+                renderer: { getAttribute },
+            },
         } = vnode;
         const elmAttrValue = getAttribute(elm, attrName);
         if (String(attrValue) !== elmAttrValue) {
             if (process.env.NODE_ENV !== 'production') {
                 const {
-                    renderer: { getProperty },
+                    owner: {
+                        renderer: { getProperty },
+                    },
                 } = vnode;
                 logError(
                     `Mismatch hydrating element <${getProperty(
@@ -395,7 +422,9 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
 function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
     const {
         data: { className, classMap },
-        renderer: { getProperty, getClassList },
+        owner: {
+            renderer: { getProperty, getClassList },
+        },
     } = vnode;
 
     let nodesAreCompatible = true;
@@ -446,7 +475,9 @@ function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
 function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
     const {
         data: { style, styleDecls },
-        renderer: { getAttribute },
+        owner: {
+            renderer: { getAttribute },
+        },
     } = vnode;
     const elmStyle = getAttribute(elm, 'style') || '';
     let vnodeStyle;
@@ -484,7 +515,9 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
     if (!nodesAreCompatible) {
         if (process.env.NODE_ENV !== 'production') {
             const {
-                renderer: { getProperty },
+                owner: {
+                    renderer: { getProperty },
+                },
             } = vnode;
             logError(
                 `Mismatch hydrating element <${getProperty(

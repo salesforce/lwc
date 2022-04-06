@@ -30,7 +30,9 @@ export function patchProps(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     const {
         elm,
         sel,
-        renderer: { getProperty, setProperty },
+        owner: {
+            renderer: { getProperty, setProperty },
+        },
     } = vnode;
 
     for (const key in props) {

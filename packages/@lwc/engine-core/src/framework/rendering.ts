@@ -130,7 +130,8 @@ function patchText(n1: VText, n2: VText) {
 }
 
 function mountText(vnode: VText, parent: ParentNode, anchor: Node | null) {
-    const { owner, renderer } = vnode;
+    const { owner } = vnode;
+    const { renderer } = owner;
     const { createText } = renderer;
 
     const textNode = (vnode.elm = createText(vnode.text));
@@ -150,7 +151,8 @@ function patchComment(n1: VComment, n2: VComment) {
 }
 
 function mountComment(vnode: VComment, parent: ParentNode, anchor: Node | null) {
-    const { owner, renderer } = vnode;
+    const { owner } = vnode;
+    const { renderer } = owner;
     const { createComment } = renderer;
 
     const commentNode = (vnode.elm = createComment(vnode.text));
@@ -164,7 +166,7 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
         sel,
         owner,
         data: { svg },
-        renderer,
+        owner: { renderer },
     } = vnode;
     const { createElement } = renderer;
 
@@ -189,7 +191,8 @@ function patchElement(n1: VElement, n2: VElement) {
 }
 
 function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
-    const { sel, owner, renderer } = vnode;
+    const { sel, owner } = vnode;
+    const { renderer } = owner;
 
     const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
     /**
@@ -269,7 +272,12 @@ function mountVNodes(
 }
 
 function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
-    const { type, elm, renderer, sel } = vnode;
+    const {
+        type,
+        elm,
+        sel,
+        owner: { renderer },
+    } = vnode;
 
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
@@ -361,7 +369,9 @@ function updateTextContent(vnode: VText | VComment) {
     const {
         elm,
         text,
-        renderer: { setText },
+        owner: {
+            renderer: { setText },
+        },
     } = vnode;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -479,7 +489,8 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
         return vm;
     }
 
-    const { sel, mode, ctor, owner, renderer } = vnode;
+    const { sel, mode, ctor, owner } = vnode;
+    const { renderer } = owner;
 
     setScopeTokenClassIfNecessary(elm, owner);
     if (owner.shadowMode === ShadowMode.Synthetic) {
@@ -621,15 +632,20 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
             insertNode(
                 oldStartVnode.elm!,
                 parent,
-                newEndVnode.renderer.nextSibling(oldEndVnode.elm!),
-                newEndVnode.renderer
+                newEndVnode.owner.renderer.nextSibling(oldEndVnode.elm!),
+                newEndVnode.owner.renderer
             );
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
             patch(oldEndVnode, newStartVnode);
-            insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, newStartVnode.renderer);
+            insertNode(
+                newStartVnode.elm!,
+                parent,
+                oldStartVnode.elm!,
+                newStartVnode.owner.renderer
+            );
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
         } else {
@@ -661,7 +677,12 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
 
                         // We've already cloned at least once, so it's no longer read-only
                         (oldCh as any[])[idxInOld] = undefined;
-                        insertNode(elmToMove.elm!, parent, oldStartVnode.elm!, elmToMove.renderer);
+                        insertNode(
+                            elmToMove.elm!,
+                            parent,
+                            oldStartVnode.elm!,
+                            elmToMove.owner.renderer
+                        );
                     }
                 }
                 newStartVnode = newCh[++newStartIdx];

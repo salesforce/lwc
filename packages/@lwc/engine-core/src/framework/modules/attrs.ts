@@ -25,7 +25,9 @@ export function patchAttributes(oldVnode: VBaseElement | null, vnode: VBaseEleme
 
     const {
         elm,
-        renderer: { setAttribute, removeAttribute },
+        owner: {
+            renderer: { setAttribute, removeAttribute },
+        },
     } = vnode;
     for (const key in attrs) {
         const cur = attrs[key];

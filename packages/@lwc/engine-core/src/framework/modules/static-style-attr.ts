@@ -15,7 +15,7 @@ export function applyStaticStyleAttribute(vnode: VBaseElement) {
     const {
         elm,
         data: { styleDecls },
-        renderer,
+        owner: { renderer },
     } = vnode;
 
     if (isUndefined(styleDecls)) {

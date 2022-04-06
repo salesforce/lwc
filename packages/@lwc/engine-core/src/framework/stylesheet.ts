@@ -12,7 +12,6 @@ import { Template } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 import { VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
-import type { RendererAPI } from '../renderer';
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -35,9 +34,8 @@ function makeHostToken(token: string) {
     return `${token}-host`;
 }
 
-function createInlineStyleVNode(renderer: RendererAPI, content: string): VNode {
+function createInlineStyleVNode(content: string): VNode {
     return api.h(
-        renderer,
         'style',
         {
             key: 'style', // special key
@@ -45,7 +43,7 @@ function createInlineStyleVNode(renderer: RendererAPI, content: string): VNode {
                 type: 'text/css',
             },
         },
-        [api.t(renderer, content)]
+        [api.t(content)]
     );
 }
 
@@ -215,7 +213,7 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
 
         // native shadow or light DOM, SSR
         const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
-        return createInlineStyleVNode(renderer, combinedStylesheetContent);
+        return createInlineStyleVNode(combinedStylesheetContent);
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);

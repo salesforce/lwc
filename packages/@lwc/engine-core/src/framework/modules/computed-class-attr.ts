@@ -66,7 +66,7 @@ export function patchClassAttribute(oldVnode: VBaseElement | null, vnode: VBaseE
         return;
     }
 
-    const classList = vnode.renderer.getClassList(elm!);
+    const classList = vnode.owner.renderer.getClassList(elm!);
     const newClassMap = getMapFromClassName(newClass);
     const oldClassMap = getMapFromClassName(oldClass);
 

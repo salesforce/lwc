@@ -21,7 +21,9 @@ export function patchStyleAttribute(oldVnode: VBaseElement | null, vnode: VBaseE
     }
 
     const {
-        renderer: { setAttribute, removeAttribute },
+        owner: {
+            renderer: { setAttribute, removeAttribute },
+        },
     } = vnode;
     if (!isString(newStyle) || newStyle === '') {
         removeAttribute(elm, 'style');

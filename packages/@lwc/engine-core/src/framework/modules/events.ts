@@ -19,7 +19,9 @@ export function applyEventListeners(vnode: VBaseElement) {
     }
 
     const {
-        renderer: { addEventListener },
+        owner: {
+            renderer: { addEventListener },
+        },
     } = vnode;
     for (const name in on) {
         const handler = on[name];
