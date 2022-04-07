@@ -21,7 +21,7 @@ const stc5 = {
   key: 5,
 };
 const stc6 = {
-  key: 6,
+  key: "@:6",
 };
 const stc7 = {
   attrs: {
@@ -30,7 +30,7 @@ const stc7 = {
   key: 7,
 };
 const stc8 = {
-  key: 8,
+  key: "@footer:8",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, s: api_slot } = $api;

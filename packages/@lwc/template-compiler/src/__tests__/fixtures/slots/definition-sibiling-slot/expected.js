@@ -9,13 +9,13 @@ const stc1 = {
   key: 1,
 };
 const stc2 = {
-  key: 2,
+  key: "@other:2",
 };
 const stc3 = {
   key: 3,
 };
 const stc4 = {
-  key: 4,
+  key: "@:4",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, s: api_slot } = $api;
