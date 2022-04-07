@@ -52,7 +52,7 @@ defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
 
 defineProperty(Element.prototype, KEY__SHADOW_STATIC, {
     set(this: Element, v: boolean) {
-        // Marking an element as static propagates the shadow resolver to its content.
+        // Marking an element as static will propagate the shadow resolver to the children.
         const fn = (this as any)[KEY__SHADOW_RESOLVER];
         if (v) {
             const treeWalker = createTreeWalker.call(

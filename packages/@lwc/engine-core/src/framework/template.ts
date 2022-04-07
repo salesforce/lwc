@@ -55,8 +55,6 @@ export interface Template {
     stylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
-    /** Hoisted Fragments */
-    hoistedFragments?: Node[];
 }
 
 export let isUpdatingTemplate: boolean = false;
@@ -127,21 +125,21 @@ export function parseFragment(strings: string[], ...keys: number[]): () => Eleme
         const attrToken =
             stylesheetToken && shadowMode === ShadowMode.Synthetic ? stylesheetToken : '""';
 
-        const genHtmlFragment: string[] = [];
+        const htmlFragments: string[] = [];
         for (let i = 0, n = keys.length; i < n; i++) {
             switch (keys[i]) {
                 case 0:
-                    genHtmlFragment.push(strings[i], classToken);
+                    htmlFragments.push(strings[i], classToken);
                     break;
                 case 1:
-                    genHtmlFragment.push(strings[i], attrToken);
+                    htmlFragments.push(strings[i], attrToken);
                     break;
             }
         }
 
-        genHtmlFragment.push(strings[strings.length - 1]);
+        htmlFragments.push(strings[strings.length - 1]);
 
-        return createFragment(genHtmlFragment.join(''));
+        return createFragment(htmlFragments.join(''));
     };
 }
 

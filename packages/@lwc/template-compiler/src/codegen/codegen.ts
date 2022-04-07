@@ -12,7 +12,6 @@ import { NormalizedConfig } from '../config';
 import * as t from '../shared/estree';
 import {
     BaseElement,
-    BaseParentNode,
     ChildNode,
     Element,
     Expression,
@@ -25,7 +24,6 @@ import {
     isBaseElement,
     isComment,
     isComponent,
-    isIf,
     isPreserveCommentsDirective,
     isRenderModeDirective,
     isSlot,
@@ -89,7 +87,7 @@ interface Scope {
 function getStaticNodes(root: Root): Set<ChildNode> {
     const hoistedNodes = new Set<ChildNode>();
 
-    function isStaticNode(node: BaseElement, parent: BaseParentNode): boolean {
+    function isStaticNode(node: BaseElement): boolean {
         let result = true;
         const {
             name: nodeName,
@@ -100,7 +98,6 @@ function getStaticNodes(root: Root): Set<ChildNode> {
             listeners,
         } = node;
 
-        result &&= !isIf(parent); // when parent node is an if, this element output is bound to some component value.
         result &&= !isSlot(node); // slot element can't be static.
         result &&= !isComponent(node); // components are not static.
 
@@ -127,9 +124,9 @@ function getStaticNodes(root: Root): Set<ChildNode> {
         return result;
     }
 
-    function collectStaticNodes(node: ChildNode, parent: BaseParentNode) {
+    function collectStaticNodes(node: ChildNode) {
         let childrenAreStatic = true;
-        let nodeIsStatic = true;
+        let nodeIsStatic;
 
         if (isText(node)) {
             nodeIsStatic = isLiteral(node.value);
@@ -138,12 +135,12 @@ function getStaticNodes(root: Root): Set<ChildNode> {
         } else {
             // it is ForBlock | If | BaseElement
             node.children.forEach((childNode) => {
-                collectStaticNodes(childNode, node);
+                collectStaticNodes(childNode);
 
                 childrenAreStatic = childrenAreStatic && hoistedNodes.has(childNode);
             });
 
-            nodeIsStatic = isBaseElement(node) && isStaticNode(node, parent);
+            nodeIsStatic = isBaseElement(node) && isStaticNode(node);
         }
 
         if (nodeIsStatic && childrenAreStatic) {
@@ -155,7 +152,7 @@ function getStaticNodes(root: Root): Set<ChildNode> {
         }
     }
 
-    root.children.forEach((childNode) => collectStaticNodes(childNode, root));
+    root.children.forEach((childNode) => collectStaticNodes(childNode));
 
     return hoistedNodes;
 }

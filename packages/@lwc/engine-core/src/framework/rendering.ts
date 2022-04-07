@@ -222,7 +222,7 @@ function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        const isLight = owner.renderMode === RenderMode.Light;
+        const isLight = renderMode === RenderMode.Light;
         patchElementWithRestrictions(elm, { isPortal: false, isLight });
     }
 
@@ -357,7 +357,7 @@ function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;
 }
 
-export function setElementShadowToken(elm: Element, token: string) {
+function setElementShadowToken(elm: Element, token: string) {
     (elm as any).$shadowToken$ = token;
 }
 
