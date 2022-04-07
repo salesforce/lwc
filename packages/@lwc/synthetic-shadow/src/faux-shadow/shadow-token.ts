@@ -14,6 +14,8 @@ import {
     KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
+import { createTreeWalker } from '../env/document';
+import { getOwnerDocument } from '../shared/utils';
 
 export function getShadowToken(node: Node): string | undefined {
     return (node as any)[KEY__SHADOW_TOKEN];
@@ -53,9 +55,12 @@ defineProperty(Element.prototype, KEY__SHADOW_STATIC, {
         // Marking an element as static propagates the shadow resolver to its content.
         const fn = (this as any)[KEY__SHADOW_RESOLVER];
         if (v) {
-            const treeWalker = document.createTreeWalker(
+            const treeWalker = createTreeWalker.call(
+                getOwnerDocument(this),
                 this,
-                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
+                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT,
+                () => NodeFilter.FILTER_ACCEPT,
+                false
             );
 
             let currentNode: Node | null;
