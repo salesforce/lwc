@@ -52,13 +52,13 @@ function addVNodeToChildLWC(vnode: VCustomElement) {
 }
 
 // [st]atic node
-function st(elmProto: Element, key: Key): VStatic {
+function st(fragment: Element, key: Key): VStatic {
     return {
         type: VNodeType.Static,
         sel: undefined,
         key,
         elm: undefined,
-        elmProto,
+        fragment,
         owner: getVMBeingRendered()!,
     };
 }

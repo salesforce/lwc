@@ -527,6 +527,9 @@ export default class CodeGen {
 
                 return attrs;
             },
+            getTextNodeContent(textNode: parse5.TextNode): string {
+                return textNode.value.trim();
+            },
         };
         const html = parse5.serialize({ childNodes: [element._original!] } as parse5.Node, {
             treeAdapter,

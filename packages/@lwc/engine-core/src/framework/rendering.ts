@@ -208,7 +208,7 @@ function patchElement(n1: VElement, n2: VElement) {
 
 function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
     const { owner } = vnode;
-    const elm = (vnode.elm = cloneNode(vnode.elmProto, true));
+    const elm = (vnode.elm = cloneNode(vnode.fragment, true));
 
     linkNodeToShadow(elm, owner);
 

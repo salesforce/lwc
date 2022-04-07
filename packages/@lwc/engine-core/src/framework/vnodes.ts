@@ -33,7 +33,7 @@ export interface VStatic extends BaseVNode {
     type: VNodeType.Static;
     sel: undefined;
     key: Key;
-    elmProto: Element;
+    fragment: Element;
 }
 
 export interface VText extends BaseVNode {
