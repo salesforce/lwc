@@ -37,6 +37,7 @@ import {
     VComment,
     VElement,
     VCustomElement,
+    VStatic,
 } from './vnodes';
 
 import { patchProps } from './modules/props';
@@ -92,6 +93,10 @@ function hydrateNode(node: Node, vnode: VNode): Node | null {
         case VNodeType.CustomElement:
             hydratedNode = hydrateCustomElement(node, vnode);
             break;
+
+        case VNodeType.Static:
+            hydratedNode = hydrateStaticElement(node, vnode);
+            break;
     }
 
     return nextSibling(hydratedNode);
@@ -139,6 +144,12 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
     vnode.elm = node;
 
     return node;
+}
+
+function hydrateStaticElement(elm: Node, vnode: VStatic): Node | null {
+    // We don't have a way to compare static vnodes, so we need to replace them (without showing a warning).
+    // @todo: fix the tests that were expecting static dom elements to be the same (now they are different)
+    return handleMismatch(elm, vnode);
 }
 
 function hydrateElement(elm: Node, vnode: VElement): Node | null {
