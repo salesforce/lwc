@@ -506,9 +506,8 @@ export default class CodeGen {
     }
 
     genHoistedElement(element: Element): t.Expression {
-        // 0: stylesheetToken in an existing class attr
-        // 1: stylesheetToken as an attribute (synthetic shadow)
-        // 2: syntheticShadowToken in an added class attr
+        // 0: stylesheetToken as class
+        // 1: stylesheetToken as attribute (synthetic shadow)
         const treeAdapter = {
             ...defaultTreeAdapter,
             getAttrList(element: parse5.Element): parse5.Attribute[] {
@@ -518,7 +517,7 @@ export default class CodeGen {
                         hasClassAttr = true;
                         return {
                             name: 'class',
-                            value: attr.value + '${0}',
+                            value: attr.value + ' ${0}',
                         };
                     }
 
@@ -526,7 +525,7 @@ export default class CodeGen {
                 });
                 attrs.push({ name: '${1}', value: '' });
                 if (!hasClassAttr) {
-                    attrs.push({ name: 'class', value: '${2}' });
+                    attrs.push({ name: 'class', value: '${0}' });
                 }
 
                 return attrs;

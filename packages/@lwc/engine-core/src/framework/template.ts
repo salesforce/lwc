@@ -123,26 +123,25 @@ export function parseFragment(strings: string[], ...keys: number[]): () => Eleme
             context: { hasScopedStyles, stylesheetToken },
             shadowMode,
         } = getVMBeingRendered()!;
-        const requiresScopedToken = hasScopedStyles && stylesheetToken;
-        const values = [
-            requiresScopedToken ? ' ' + stylesheetToken : '',
-            stylesheetToken && shadowMode === ShadowMode.Synthetic ? stylesheetToken : '""',
-            requiresScopedToken ? stylesheetToken : '',
-        ];
+        const classToken = hasScopedStyles && stylesheetToken ? stylesheetToken : '';
+        const attrToken =
+            stylesheetToken && shadowMode === ShadowMode.Synthetic ? stylesheetToken : '""';
+
         const genHtmlFragment: string[] = [];
-        // @todo: maybe a for loop as micro optimization.
-        keys.forEach((key, index) => {
-            // @todo: try a switch: 0, 1, 2
-            genHtmlFragment.push(strings[index], values[key]);
-        });
+        for (let i = 0, n = keys.length; i < n; i++) {
+            switch (keys[i]) {
+                case 0:
+                    genHtmlFragment.push(strings[i], classToken);
+                    break;
+                case 1:
+                    genHtmlFragment.push(strings[i], attrToken);
+                    break;
+            }
+        }
 
         genHtmlFragment.push(strings[strings.length - 1]);
 
-        // @todo: remove the replaceAll to run perf
-        // @ts-ignore
-        const strHTML = genHtmlFragment.join('').replaceAll('""=""', '').replaceAll('class=""', '');
-
-        return createFragment(strHTML);
+        return createFragment(genHtmlFragment.join(''));
     };
 }
 
