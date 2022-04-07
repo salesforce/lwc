@@ -187,6 +187,10 @@ export function createComment(content: string): Node {
     return document.createComment(content);
 }
 
+export function cloneNode(node: Node, deep: boolean): Node {
+    return node.cloneNode(deep);
+}
+
 export function createFragment(html: string): Node | null {
     return document.createRange().createContextualFragment(html).firstChild;
 }

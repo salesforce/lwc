@@ -58,6 +58,12 @@ export function setRemove(removeImpl: removeFunc) {
     remove = removeImpl;
 }
 
+type cloneNodeFunc = (node: N, deep: boolean) => N;
+export let cloneNode: cloneNodeFunc;
+export function setCloneNode(cloneNodeImpl: cloneNodeFunc) {
+    cloneNode = cloneNodeImpl;
+}
+
 type createFragmentFunc = (html: string) => N | null;
 export let createFragment: createFragmentFunc;
 export function setCreateFragment(createFragmentImpl: createFragmentFunc) {

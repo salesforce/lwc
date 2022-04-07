@@ -29,6 +29,7 @@ import {
     createComment,
     getClassList,
     isSyntheticShadowDefined,
+    cloneNode,
 } from '../renderer';
 
 import { EmptyArray } from './utils';
@@ -207,7 +208,7 @@ function patchElement(n1: VElement, n2: VElement) {
 
 function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
     const { owner } = vnode;
-    const elm = (vnode.elm = vnode.elmProto.cloneNode(true)) as Element;
+    const elm = (vnode.elm = cloneNode(vnode.elmProto, true));
 
     linkNodeToShadow(elm, owner);
 

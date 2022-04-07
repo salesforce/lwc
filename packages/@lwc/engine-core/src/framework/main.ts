@@ -57,6 +57,7 @@ export type {
 export {
     setAssertInstanceOfHTMLElement,
     setAttachShadow,
+    setCloneNode,
     setCreateComment,
     setCreateElement,
     setCreateFragment,

@@ -47,6 +47,7 @@ import {
     setSetText,
     setSsr,
     setAddEventListener,
+    setCloneNode,
 } from '@lwc/engine-core';
 
 import {
@@ -91,10 +92,12 @@ import {
     ssr,
     addEventListener,
     createFragment,
+    cloneNode,
 } from './renderer';
 
 setAssertInstanceOfHTMLElement(assertInstanceOfHTMLElement);
 setAttachShadow(attachShadow);
+setCloneNode(cloneNode);
 setCreateComment(createComment);
 setCreateElement(createElement);
 setCreateText(createText);
