@@ -1,15 +1,9 @@
-import { registerTemplate } from "lwc";
-const stc0 = {
-  classMap: {
-    foo: true,
-    bar: true,
-    "baz-fiz": true,
-  },
-  key: 0,
-};
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<section class="foo bar   baz-fiz${0}"${2}></section>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
-  return [api_element("section", stc0)];
+  const { st: api_static_fragment } = $api;
+  return [api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

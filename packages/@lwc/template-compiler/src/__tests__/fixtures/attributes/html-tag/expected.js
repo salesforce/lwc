@@ -1,19 +1,9 @@
-import { registerTemplate } from "lwc";
-const stc0 = {
-  key: 0,
-};
-const stc1 = {
-  attrs: {
-    title: "x",
-    "aria-hidden": "x",
-  },
-  key: 1,
-};
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<section${1}${2}><p title="x" aria-hidden="x"${1}${2}>x</p></section>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element } = $api;
-  return [
-    api_element("section", stc0, [api_element("p", stc1, [api_text("x")])]),
-  ];
+  const { t: api_text, h: api_element, st: api_static_fragment } = $api;
+  return [api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 2)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

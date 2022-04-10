@@ -1,55 +1,55 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<p${1}${2}>Before header</p>`;
+let $fragment2;
+const $hoisted2 = parseFragment`<p${1}${2}>In</p>`;
+let $fragment3;
+const $hoisted3 = parseFragment`<p${1}${2}>between</p>`;
+let $fragment4;
+const $hoisted4 = parseFragment`<p${1}${2}>Default body</p>`;
+let $fragment5;
+const $hoisted5 = parseFragment`<p${1}${2}>Default footer</p>`;
 const stc0 = {
   key: 0,
 };
 const stc1 = {
-  key: 1,
-};
-const stc2 = {
   attrs: {
     name: "header",
   },
-  key: 2,
-};
-const stc3 = {
   key: 3,
 };
-const stc4 = {
-  key: 4,
+const stc2 = {
+  key: 8,
 };
-const stc5 = {
-  key: 5,
-};
-const stc6 = {
-  key: "@:6",
-};
-const stc7 = {
+const stc3 = {
   attrs: {
     name: "footer",
   },
-  key: 7,
-};
-const stc8 = {
-  key: "@footer:8",
+  key: 11,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element, s: api_slot } = $api;
+  const {
+    t: api_text,
+    st: api_static_fragment,
+    s: api_slot,
+    h: api_element,
+  } = $api;
   return [
     api_element("section", stc0, [
-      api_element("p", stc1, [api_text("Before header")]),
-      api_slot("header", stc2, [api_text("Default header")], $slotset),
-      api_element("p", stc3, [api_text("In")]),
-      api_element("p", stc4, [api_text("between")]),
+      api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 2),
+      api_slot("header", stc1, [api_text("Default header")], $slotset),
+      api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 5),
+      api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 7),
       api_slot(
         "",
-        stc5,
-        [api_element("p", stc6, [api_text("Default body")])],
+        stc2,
+        [api_static_fragment($fragment4 || ($fragment4 = $hoisted4()), 10)],
         $slotset
       ),
       api_slot(
         "footer",
-        stc7,
-        [api_element("p", stc8, [api_text("Default footer")])],
+        stc3,
+        [api_static_fragment($fragment5 || ($fragment5 = $hoisted5()), 13)],
         $slotset
       ),
     ]),

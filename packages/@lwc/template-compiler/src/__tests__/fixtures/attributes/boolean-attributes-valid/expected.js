@@ -1,12 +1,8 @@
 import _xFoo from "x/foo";
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<p hidden${1}${2}>x</p>`;
 const stc0 = {
-  attrs: {
-    hidden: "",
-  },
-  key: 0,
-};
-const stc1 = {
   props: {
     autofocus: "true",
     autoplay: "true",
@@ -24,20 +20,25 @@ const stc1 = {
     reversed: "true",
     selected: "true",
   },
-  key: 1,
+  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element, c: api_custom_element } = $api;
+  const {
+    t: api_text,
+    st: api_static_fragment,
+    c: api_custom_element,
+    h: api_element,
+  } = $api;
   return [
-    api_element("p", stc0, [api_text("x")]),
-    api_custom_element("x-foo", _xFoo, stc1),
+    api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1),
+    api_custom_element("x-foo", _xFoo, stc0),
     api_element("input", {
       attrs: {
         readonly: $cmp.getReadOnly ? "" : null,
         disabled: "",
         title: "foo",
       },
-      key: 2,
+      key: 3,
     }),
   ];
   /*LWC compiler vX.X.X*/

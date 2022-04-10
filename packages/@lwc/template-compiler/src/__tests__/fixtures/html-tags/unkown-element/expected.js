@@ -1,27 +1,24 @@
 import _xCustomComponent from "x/customComponent";
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<unknonwtag${1}${2}></unknonwtag>`;
+let $fragment2;
+const $hoisted2 = parseFragment`<span${1}${2}>valid tags should not warn</span>`;
+let $fragment3;
+const $hoisted3 = parseFragment`<spam${1}${2}>this tag has a typo</spam>`;
 const stc0 = {
-  key: 0,
-};
-const stc1 = {
   props: {
     someTruthyValue: true,
   },
-  key: 1,
-};
-const stc2 = {
   key: 2,
 };
-const stc3 = {
-  key: 3,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element, c: api_custom_element, t: api_text } = $api;
+  const { st: api_static_fragment, c: api_custom_element, t: api_text } = $api;
   return [
-    api_element("unknonwtag", stc0),
-    api_custom_element("x-custom-component", _xCustomComponent, stc1),
-    api_element("span", stc2, [api_text("valid tags should not warn")]),
-    api_element("spam", stc3, [api_text("this tag has a typo")]),
+    api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1),
+    api_custom_element("x-custom-component", _xCustomComponent, stc0),
+    api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 4),
+    api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 6),
   ];
   /*LWC compiler vX.X.X*/
 }

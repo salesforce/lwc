@@ -1,20 +1,9 @@
-import { registerTemplate } from "lwc";
-const stc0 = {
-  attrs: {
-    type: "checkbox",
-    required: "",
-    readonly: "",
-    minlength: "5",
-    maxlength: "10",
-  },
-  props: {
-    checked: true,
-  },
-  key: 0,
-};
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<input type="checkbox" required readonly minlength="5" maxlength="10" checked${1}${2}>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
-  return [api_element("input", stc0)];
+  const { st: api_static_fragment } = $api;
+  return [api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

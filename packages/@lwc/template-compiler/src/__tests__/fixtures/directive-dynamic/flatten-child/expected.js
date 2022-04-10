@@ -1,20 +1,19 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<div${1}${2}>sibling</div>`;
 const stc0 = {
-  key: 0,
-};
-const stc1 = {
-  key: 1,
+  key: 2,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
-    h: api_element,
+    st: api_static_fragment,
     dc: api_dynamic_component,
     f: api_flatten,
   } = $api;
   return api_flatten([
-    api_element("div", stc0, [api_text("sibling")]),
-    api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc1),
+    api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1),
+    api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0),
   ]);
   /*LWC compiler vX.X.X*/
 }

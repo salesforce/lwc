@@ -1,75 +1,64 @@
 import _xFoo from "x/foo";
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<p hidden${1}${2}>boolean present</p>`;
+let $fragment2;
+const $hoisted2 = parseFragment`<p hidden=""${1}${2}>empty string, should be true</p>`;
+let $fragment3;
+const $hoisted3 = parseFragment`<p hidden="other than true"${1}${2}>string value, should be true</p>`;
+let $fragment4;
+const $hoisted4 = parseFragment`<p hidden="3"${1}${2}>integer value, should be true</p>`;
 const stc0 = {
-  attrs: {
-    hidden: "",
-  },
-  key: 0,
-};
-const stc1 = {
-  attrs: {
-    hidden: "",
-  },
-  key: 1,
-};
-const stc2 = {
-  attrs: {
-    hidden: "other than true",
-  },
-  key: 2,
-};
-const stc3 = {
-  attrs: {
-    hidden: "3",
-  },
-  key: 4,
-};
-const stc4 = {
-  props: {
-    hidden: true,
-  },
-  key: 5,
-};
-const stc5 = {
-  props: {
-    hidden: true,
-  },
-  key: 6,
-};
-const stc6 = {
-  props: {
-    hidden: true,
-  },
-  key: 7,
-};
-const stc7 = {
   props: {
     hidden: true,
   },
   key: 9,
 };
+const stc1 = {
+  props: {
+    hidden: true,
+  },
+  key: 10,
+};
+const stc2 = {
+  props: {
+    hidden: true,
+  },
+  key: 11,
+};
+const stc3 = {
+  props: {
+    hidden: true,
+  },
+  key: 13,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element, c: api_custom_element } = $api;
+  const {
+    t: api_text,
+    st: api_static_fragment,
+    h: api_element,
+    c: api_custom_element,
+  } = $api;
   return [
-    api_element("p", stc0, [api_text("boolean present")]),
-    api_element("p", stc1, [api_text("empty string, should be true")]),
-    api_element("p", stc2, [api_text("string value, should be true")]),
+    api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1),
+    api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 3),
+    api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 5),
     api_element(
       "p",
       {
         attrs: {
           hidden: $cmp.computed ? "" : null,
         },
-        key: 3,
+        key: 6,
       },
       [api_text("computed value, should be resolved in component")]
     ),
-    api_element("p", stc3, [api_text("integer value, should be true")]),
-    api_custom_element("x-foo", _xFoo, stc4, [api_text("boolean present")]),
-    api_custom_element("x-foo", _xFoo, stc5, [
+    api_static_fragment($fragment4 || ($fragment4 = $hoisted4()), 8),
+    api_custom_element("x-foo", _xFoo, stc0, [api_text("boolean present")]),
+    api_custom_element("x-foo", _xFoo, stc1, [
       api_text("empty string, should be true"),
     ]),
-    api_custom_element("x-foo", _xFoo, stc6, [
+    api_custom_element("x-foo", _xFoo, stc2, [
       api_text("string value, should be true"),
     ]),
     api_custom_element(
@@ -79,11 +68,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           hidden: $cmp.computed,
         },
-        key: 8,
+        key: 12,
       },
       [api_text("computed value, should be resolved in component")]
     ),
-    api_custom_element("x-foo", _xFoo, stc7, [
+    api_custom_element("x-foo", _xFoo, stc3, [
       api_text("integer value, should be true"),
     ]),
   ];

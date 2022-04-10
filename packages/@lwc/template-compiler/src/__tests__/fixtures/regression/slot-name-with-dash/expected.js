@@ -1,20 +1,19 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<p${1}${2}>Test slot content</p>`;
 const stc0 = {
   attrs: {
     name: "secret-slot",
   },
   key: 0,
 };
-const stc1 = {
-  key: "@secret-slot:1",
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element, s: api_slot } = $api;
+  const { t: api_text, st: api_static_fragment, s: api_slot } = $api;
   return [
     api_slot(
       "secret-slot",
       stc0,
-      [api_element("p", stc1, [api_text("Test slot content")])],
+      [api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 2)],
       $slotset
     ),
   ];

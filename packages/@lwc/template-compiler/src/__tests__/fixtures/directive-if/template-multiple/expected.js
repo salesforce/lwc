@@ -1,19 +1,22 @@
-import { registerTemplate } from "lwc";
-const stc0 = {
-  key: 0,
-};
-const stc1 = {
-  key: 1,
-};
-const stc2 = {
-  key: 2,
-};
+import { parseFragment, registerTemplate } from "lwc";
+let $fragment1;
+const $hoisted1 = parseFragment`<p${1}${2}>1</p>`;
+let $fragment2;
+const $hoisted2 = parseFragment`<p${1}${2}>2</p>`;
+let $fragment3;
+const $hoisted3 = parseFragment`<p${1}${2}>3</p>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element } = $api;
+  const { t: api_text, st: api_static_fragment } = $api;
   return [
-    $cmp.isTrue ? api_element("p", stc0, [api_text("1")]) : null,
-    $cmp.isTrue ? api_element("p", stc1, [api_text("2")]) : null,
-    $cmp.isTrue ? api_element("p", stc2, [api_text("3")]) : null,
+    $cmp.isTrue
+      ? api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1)
+      : null,
+    $cmp.isTrue
+      ? api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 3)
+      : null,
+    $cmp.isTrue
+      ? api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 5)
+      : null,
   ];
   /*LWC compiler vX.X.X*/
 }
