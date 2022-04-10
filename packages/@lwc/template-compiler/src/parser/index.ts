@@ -268,7 +268,6 @@ function parseBaseElement(
     }
 
     if (element) {
-        element._original = parse5Elm;
         ctx.addNodeCurrentScope(element);
         parent.children.push(element);
     }

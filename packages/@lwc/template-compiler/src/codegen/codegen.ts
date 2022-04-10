@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import * as parse5 from 'parse5';
-import defaultTreeAdapter from 'parse5/lib/tree-adapters/default';
 import { NormalizedConfig } from '../config';
 
 import * as t from '../shared/estree';
@@ -36,6 +34,7 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
+import { serializeStaticElement } from './helpers';
 
 type RenderPrimitive =
     | 'iterator'
@@ -185,7 +184,7 @@ export default class CodeGen {
      */
     private scope: Scope;
 
-    readonly nodesToHoist: Set<ChildNode>;
+    readonly staticNodes: Set<ChildNode>;
     readonly hoistedNodes: t.Expression[] = [];
 
     currentId = 0;
@@ -209,7 +208,7 @@ export default class CodeGen {
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        this.nodesToHoist = getStaticNodes(root);
+        this.staticNodes = getStaticNodes(root);
         this.renderMode =
             root.directives.find(isRenderModeDirective)?.value.value ??
             LWCDirectiveRenderMode.shadow;
@@ -503,37 +502,7 @@ export default class CodeGen {
     }
 
     genHoistedElement(element: Element): t.Expression {
-        // 0: stylesheetToken as class
-        // 1: stylesheetToken as attribute (synthetic shadow)
-        const treeAdapter = {
-            ...defaultTreeAdapter,
-            getAttrList(element: parse5.Element): parse5.Attribute[] {
-                let hasClassAttr = false;
-                const attrs = element.attrs.map((attr) => {
-                    if (attr.name === 'class') {
-                        hasClassAttr = true;
-                        return {
-                            name: 'class',
-                            value: attr.value + ' ${0}',
-                        };
-                    }
-
-                    return attr;
-                });
-                attrs.push({ name: '${1}', value: '' });
-                if (!hasClassAttr) {
-                    attrs.push({ name: 'class', value: '${0}' });
-                }
-
-                return attrs;
-            },
-            getTextNodeContent(textNode: parse5.TextNode): string {
-                return textNode.value.trim();
-            },
-        };
-        const html = parse5.serialize({ childNodes: [element._original!] } as parse5.Node, {
-            treeAdapter,
-        });
+        const html = serializeStaticElement(element);
 
         this.usedLwcApis.add(PARSE_FRAGMENT_METHOD_NAME);
 
@@ -557,14 +526,15 @@ export default class CodeGen {
 
         this.hoistedNodes.push(expr);
 
+        const idx = this.hoistedNodes.length;
         return this._renderApiCall(RENDER_APIS.staticFragment, [
             t.logicalExpression(
                 '||',
-                t.identifier(`$fragment${this.hoistedNodes.length}`),
+                t.identifier(`$fragment${idx}`),
                 t.assignmentExpression(
                     '=',
-                    t.identifier(`$fragment${this.hoistedNodes.length}`),
-                    t.callExpression(t.identifier(`$hoisted${this.hoistedNodes.length}`), [])
+                    t.identifier(`$fragment${idx}`),
+                    t.callExpression(t.identifier(`$hoisted${idx}`), [])
                 )
             ),
             t.literal(this.generateKey()),

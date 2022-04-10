@@ -121,19 +121,23 @@ export function parseFragment(strings: string[], ...keys: number[]): () => Eleme
             context: { hasScopedStyles, stylesheetToken },
             shadowMode,
         } = getVMBeingRendered()!;
-        const classToken = hasScopedStyles && stylesheetToken ? stylesheetToken : '';
+        const classToken = hasScopedStyles && stylesheetToken ? ' ' + stylesheetToken : '';
+        const classAttrToken =
+            hasScopedStyles && stylesheetToken ? ` class="${stylesheetToken}"` : '';
         const attrToken =
-            stylesheetToken && shadowMode === ShadowMode.Synthetic ? stylesheetToken : '""';
+            stylesheetToken && shadowMode === ShadowMode.Synthetic ? ' ' + stylesheetToken : '';
 
         const htmlFragments: string[] = [];
         for (let i = 0, n = keys.length; i < n; i++) {
             switch (keys[i]) {
-                case 0:
+                case 0: // styleToken in existing class attr
                     htmlFragments.push(strings[i], classToken);
                     break;
-                case 1:
-                    htmlFragments.push(strings[i], attrToken);
+                case 1: // styleToken for added class attr
+                    htmlFragments.push(strings[i], classAttrToken);
                     break;
+                case 2: // styleToken as attr
+                    htmlFragments.push(strings[i], attrToken);
             }
         }
 

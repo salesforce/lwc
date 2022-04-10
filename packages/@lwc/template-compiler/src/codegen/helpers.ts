@@ -6,7 +6,15 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
+import {
+    Attribute,
+    BaseElement,
+    ChildNode,
+    Element,
+    LWCDirectiveRenderMode,
+    Node,
+    Property,
+} from '../shared/types';
 import {
     isParentNode,
     isSlot,
@@ -14,10 +22,96 @@ import {
     isBaseElement,
     isIf,
     isDynamicDirective,
+    isElement,
+    isText,
+    isComment,
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
+
+function serializeAttrs(element: Element): string {
+    /**
+     * 0: styleToken in existing class attr
+     * 1: styleToken for added class attr
+     * 2: styleToken as attr
+     */
+    const attrs: string[] = [];
+    let hasClassAttr = false;
+
+    const collector = ({ name, value }: Attribute | Property) => {
+        let v = (value as any).value;
+
+        if (name === 'class') {
+            hasClassAttr = true;
+            v += '${0}';
+        }
+        if (typeof v === 'string') {
+            attrs.push(`${name}="${v}"`);
+        } else {
+            attrs.push(name);
+        }
+    };
+
+    element.attributes.forEach(collector);
+    element.properties.forEach(collector);
+
+    return attrs.join(' ') + (hasClassAttr ? '${2}' : '${1}${2}');
+}
+
+function serializeChildren(children: ChildNode[]): string {
+    let html = '';
+
+    children.forEach((child) => {
+        if (isElement(child)) {
+            html += serializeStaticElement(child);
+        } else if (isText(child)) {
+            html += (child.value as any).value;
+        } else if (isComment(child)) {
+            html += `<!--${child.value}-->`;
+        }
+    });
+
+    return html;
+}
+
+const selfClosingTagNames = new Set([
+    'AREA',
+    'BASE',
+    'BASEFONT',
+    'BGSOUND',
+    'BR',
+    'COL',
+    'EMBED',
+    'FRAME',
+    'HR',
+    'IMG',
+    'INPUT',
+    'KEYGEN',
+    'LINK',
+    'META',
+    'PARAM',
+    'SOURCE',
+    'TRACK',
+    'WBR',
+]);
+
+export function serializeStaticElement(element: Element): string {
+    const tagName = element.name;
+
+    let html = '<';
+    html += tagName;
+    const serializedAttrs = serializeAttrs(element);
+    const hasAttrs = element.attributes.length > 0 || element.properties.length > 0;
+    html += (hasAttrs ? ' ' : '') + serializedAttrs + '>';
+
+    if (!selfClosingTagNames.has(tagName.toUpperCase())) {
+        html += serializeChildren(element.children);
+        html += `</${tagName}>`;
+    }
+
+    return html;
+}
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toPropertyName(name)}`);
