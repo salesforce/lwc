@@ -147,9 +147,13 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
 }
 
 function hydrateStaticElement(elm: Node, vnode: VStatic): Node | null {
-    // We don't have a way to compare static vnodes, so we need to replace them (without showing a warning).
-    // @todo: fix the tests that were expecting static dom elements to be the same (now they are different)
-    return handleMismatch(elm, vnode);
+    if (!areCompatibleNodes(vnode.fragment, elm, vnode)) {
+        return handleMismatch(elm, vnode);
+    }
+
+    vnode.elm = elm;
+
+    return elm;
 }
 
 function hydrateElement(elm: Node, vnode: VElement): Node | null {
@@ -470,4 +474,61 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
     }
 
     return nodesAreCompatible;
+}
+
+function areCompatibleNodes(client: Node, ssr: Node, vnode: VNode) {
+    if (getProperty(client, 'nodeType') === EnvNodeTypes.TEXT) {
+        if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.TEXT)) {
+            return false;
+        }
+
+        return getProperty(client, 'nodeValue') === getProperty(ssr, 'nodeValue');
+    }
+
+    if (getProperty(client, 'nodeType') === EnvNodeTypes.COMMENT) {
+        if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.COMMENT)) {
+            return false;
+        }
+
+        return getProperty(client, 'nodeValue') === getProperty(ssr, 'nodeValue');
+    }
+
+    if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.ELEMENT)) {
+        return false;
+    }
+
+    let isCompatibleElements = true;
+    if (getProperty(client, 'tagName') !== getProperty(ssr, 'tagName')) {
+        if (process.env.NODE_ENV !== 'production') {
+            logError(
+                `Hydration mismatch: expecting element with tag "${getProperty(
+                    client,
+                    'tagName'
+                ).toLowerCase()}" but found "${getProperty(ssr, 'tagName').toLowerCase()}".`,
+                vnode.owner
+            );
+        }
+
+        return false;
+    }
+
+    const clientAttrsNames: string[] = getProperty(client, 'getAttributeNames').call(client);
+
+    clientAttrsNames.forEach((attrName) => {
+        if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
+            logError(
+                `Mismatch hydrating element <${getProperty(
+                    client,
+                    'tagName'
+                ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
+                    client,
+                    attrName
+                )}" but found "${getAttribute(ssr, attrName)}"`,
+                vnode.owner
+            );
+            isCompatibleElements = false;
+        }
+    });
+
+    return isCompatibleElements;
 }
