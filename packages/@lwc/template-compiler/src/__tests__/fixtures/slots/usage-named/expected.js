@@ -22,7 +22,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_slot(
         "test",
         stc1,
-        [api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 3)],
+        [
+          api_static_fragment(
+            $fragment1 || ($fragment1 = $hoisted1()),
+            "@test:3"
+          ),
+        ],
         $slotset
       ),
     ]),

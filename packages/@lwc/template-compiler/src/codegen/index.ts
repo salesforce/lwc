@@ -95,7 +95,7 @@ function transform(codeGen: CodeGen): t.Expression {
             res = codeGen.getSlot(element.slotName, databag, defaultSlot);
         } else {
             res = codeGen.staticNodes.has(element)
-                ? codeGen.genHoistedElement(element)
+                ? codeGen.genHoistedElement(element, slotParentName)
                 : codeGen.genElement(name, databag, children);
         }
 

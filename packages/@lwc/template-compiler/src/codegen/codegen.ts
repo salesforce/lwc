@@ -501,7 +501,11 @@ export default class CodeGen {
         return expression as t.Expression;
     }
 
-    genHoistedElement(element: Element): t.Expression {
+    genHoistedElement(element: Element, slotParentName?: string): t.Expression {
+        const key =
+            slotParentName !== undefined
+                ? `@${slotParentName}:${this.generateKey()}`
+                : this.generateKey();
         const html = serializeStaticElement(element);
 
         this.usedLwcApis.add(PARSE_FRAGMENT_METHOD_NAME);
@@ -537,7 +541,7 @@ export default class CodeGen {
                     t.callExpression(t.identifier(`$hoisted${idx}`), [])
                 )
             ),
-            t.literal(this.generateKey()),
+            t.literal(key),
         ]);
     }
 }

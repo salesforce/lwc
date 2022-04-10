@@ -13,7 +13,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_slot(
       "secret-slot",
       stc0,
-      [api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 2)],
+      [
+        api_static_fragment(
+          $fragment1 || ($fragment1 = $hoisted1()),
+          "@secret-slot:2"
+        ),
+      ],
       $slotset
     ),
   ];
