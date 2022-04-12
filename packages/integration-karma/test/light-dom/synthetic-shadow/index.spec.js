@@ -140,5 +140,10 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
                 '<x-light-container data-id="light-container"><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></x-light-container>'
             );
         });
+
+        it('static content is with correct shadow', () => {
+            const p = elm.shadowRoot.querySelector('p');
+            expect(p.contains(p.firstChild)).toBe(true);
+        });
     });
 });
