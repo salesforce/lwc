@@ -48,7 +48,7 @@
     "eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
     "execa": "^6.1.0",
     "fs-extra": "^10.0.1",
-    "glob": "^7.2.0",
+    "glob": "^8.0.1",
     "husky": "^7.0.4",
     "is-ci": "^3.0.1",
     "isbinaryfile": "^5.0.0",
@@ -89,6 +89,9 @@
       "iltorb: Native module used by bundlesize which slows down yarn install and may fail on some envs. Not needed."
     ],
     "jasmine-core": "3.10.1",
+    "iltorb": "npm:@stdlib/utils-noop@0.0.10"
+  },
+  "dependencies": {
     "iltorb": "npm:@stdlib/utils-noop@0.0.10"
   }
 }
