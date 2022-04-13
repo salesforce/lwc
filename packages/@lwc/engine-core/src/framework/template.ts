@@ -121,29 +121,30 @@ export function parseFragment(strings: string[], ...keys: number[]): () => Eleme
             context: { hasScopedStyles, stylesheetToken },
             shadowMode,
         } = getVMBeingRendered()!;
-        const classToken = hasScopedStyles && stylesheetToken ? ' ' + stylesheetToken : '';
+        const hasStyleToken = !isUndefined(stylesheetToken);
+        const classToken = hasScopedStyles && hasStyleToken ? ' ' + stylesheetToken : '';
         const classAttrToken =
-            hasScopedStyles && stylesheetToken ? ` class="${stylesheetToken}"` : '';
+            hasScopedStyles && hasStyleToken ? ` class="${stylesheetToken}"` : '';
         const attrToken =
-            stylesheetToken && shadowMode === ShadowMode.Synthetic ? ' ' + stylesheetToken : '';
+            hasStyleToken && shadowMode === ShadowMode.Synthetic ? ' ' + stylesheetToken : '';
 
-        const htmlFragments: string[] = [];
+        let htmlFragment = '';
         for (let i = 0, n = keys.length; i < n; i++) {
             switch (keys[i]) {
                 case 0: // styleToken in existing class attr
-                    htmlFragments.push(strings[i], classToken);
+                    htmlFragment += strings[i] + classToken;
                     break;
                 case 1: // styleToken for added class attr
-                    htmlFragments.push(strings[i], classAttrToken);
+                    htmlFragment += strings[i] + classAttrToken;
                     break;
                 case 2: // styleToken as attr
-                    htmlFragments.push(strings[i], attrToken);
+                    htmlFragment += strings[i] + attrToken;
             }
         }
 
-        htmlFragments.push(strings[strings.length - 1]);
+        htmlFragment += strings[strings.length - 1];
 
-        return createFragment(htmlFragments.join(''));
+        return createFragment(htmlFragment);
     };
 }
 
