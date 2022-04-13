@@ -336,7 +336,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
             value = ast.literal(decodeTextContent(token));
         }
 
-        parsedTextNodes.push(ast.text(value, location));
+        parsedTextNodes.push(ast.text(token, value, location));
     }
 
     return parsedTextNodes;
@@ -354,7 +354,7 @@ function parseComment(parse5Comment: parse5.CommentNode): Comment {
         );
     }
 
-    return ast.comment(decodeTextContent(parse5Comment.data), location);
+    return ast.comment(parse5Comment.data, decodeTextContent(parse5Comment.data), location);
 }
 
 function getTemplateRoot(

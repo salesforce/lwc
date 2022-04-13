@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { VOID_ELEMENTS } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import {
@@ -30,6 +31,37 @@ import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
 
+const selfClosingTagNames = new Set(VOID_ELEMENTS.map((t) => t.toUpperCase()));
+const noEscapedContent = new Set([
+    'STYLE',
+    'SCRIPT',
+    'XMP',
+    'IFRAME',
+    'NOEMBED',
+    'NOFRAMES',
+    'PLAINTEXT',
+    'NOSCRIPT',
+]);
+
+//Escaping regexes
+const AMP_REGEX = /&/g;
+const NBSP_REGEX = /\u00a0/g;
+const DOUBLE_QUOTE_REGEX = /"/g;
+const LT_REGEX = /</g;
+const GT_REGEX = />/g;
+
+function escapeString(str: string, attrMode: boolean): string {
+    str = str.replace(AMP_REGEX, '&amp;').replace(NBSP_REGEX, '&nbsp;');
+
+    if (attrMode) {
+        str = str.replace(DOUBLE_QUOTE_REGEX, '&quot;');
+    } else {
+        str = str.replace(LT_REGEX, '&lt;').replace(GT_REGEX, '&gt;');
+    }
+
+    return str;
+}
+
 function serializeAttrs(element: Element): string {
     /**
      * 0: styleToken in existing class attr
@@ -47,7 +79,7 @@ function serializeAttrs(element: Element): string {
             v += '${0}';
         }
         if (typeof v === 'string') {
-            attrs.push(`${name}="${v}"`);
+            attrs.push(`${name}="${escapeString(v, true)}"`);
         } else {
             attrs.push(name);
         }
@@ -59,42 +91,25 @@ function serializeAttrs(element: Element): string {
     return attrs.join(' ') + (hasClassAttr ? '${2}' : '${1}${2}');
 }
 
-function serializeChildren(children: ChildNode[]): string {
+function serializeChildren(children: ChildNode[], parentTagName: string): string {
     let html = '';
 
     children.forEach((child) => {
         if (isElement(child)) {
             html += serializeStaticElement(child);
         } else if (isText(child)) {
-            html += (child.value as any).value;
+            if (noEscapedContent.has(parentTagName.toUpperCase())) {
+                html += child.raw;
+            } else {
+                html += escapeString((child.value as any).value, false);
+            }
         } else if (isComment(child)) {
-            html += `<!--${child.value}-->`;
+            html += `<!--${escapeString(child.value, false)}-->`;
         }
     });
 
     return html;
 }
-
-const selfClosingTagNames = new Set([
-    'AREA',
-    'BASE',
-    'BASEFONT',
-    'BGSOUND',
-    'BR',
-    'COL',
-    'EMBED',
-    'FRAME',
-    'HR',
-    'IMG',
-    'INPUT',
-    'KEYGEN',
-    'LINK',
-    'META',
-    'PARAM',
-    'SOURCE',
-    'TRACK',
-    'WBR',
-]);
 
 export function serializeStaticElement(element: Element): string {
     const tagName = element.name;
@@ -105,8 +120,9 @@ export function serializeStaticElement(element: Element): string {
     const hasAttrs = element.attributes.length > 0 || element.properties.length > 0;
     html += (hasAttrs ? ' ' : '') + serializedAttrs + '>';
 
-    if (!selfClosingTagNames.has(tagName.toUpperCase())) {
-        html += serializeChildren(element.children);
+    html += serializeChildren(element.children, tagName);
+
+    if (!selfClosingTagNames.has(tagName.toUpperCase()) || element.children.length > 0) {
         html += `</${tagName}>`;
     }
 
