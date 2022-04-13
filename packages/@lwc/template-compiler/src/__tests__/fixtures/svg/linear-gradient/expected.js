@@ -4,7 +4,7 @@ const $hoisted1 = parseFragment`<stop offset="0%" style="stop-color:rgb(255,255,
 let $fragment2;
 const $hoisted2 = parseFragment`<stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${1}${2}></stop>`;
 let $fragment3;
-const $hoisted3 = parseFragment`<ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${1}${2}></ellipse>`;
+const $hoisted3 = parseFragment`<ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${1}${2}>`;
 const stc0 = {
   attrs: {
     height: "150",

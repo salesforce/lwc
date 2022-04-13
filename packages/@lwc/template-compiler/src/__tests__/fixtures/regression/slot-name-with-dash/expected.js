@@ -8,7 +8,7 @@ const stc0 = {
   key: 0,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, st: api_static_fragment, s: api_slot } = $api;
+  const { st: api_static_fragment, s: api_slot } = $api;
   return [
     api_slot(
       "secret-slot",

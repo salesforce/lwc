@@ -34,8 +34,8 @@ const stc3 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    t: api_text,
     st: api_static_fragment,
+    t: api_text,
     h: api_element,
     c: api_custom_element,
   } = $api;

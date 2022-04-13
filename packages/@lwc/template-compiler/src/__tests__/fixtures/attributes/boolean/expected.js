@@ -2,7 +2,7 @@ import { parseFragment, registerTemplate } from "lwc";
 let $fragment1;
 const $hoisted1 = parseFragment`<p hidden${1}${2}>x</p>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, st: api_static_fragment, h: api_element } = $api;
+  const { st: api_static_fragment, h: api_element } = $api;
   return [
     api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1),
     api_element("input", {

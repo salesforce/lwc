@@ -42,6 +42,7 @@ import {
     Comment,
     ForOf,
     BaseElement,
+    Element,
 } from '../shared/types';
 
 import CodeGen from './codegen';
@@ -73,6 +74,11 @@ function transform(codeGen: CodeGen): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
 
+        if (codeGen.staticNodes.has(element)) {
+            // do not process children of static nodes.
+            return codeGen.genHoistedElement(element as Element, slotParentName);
+        }
+
         const children = transformChildren(element);
 
         // Check wether it has the special directive lwc:dynamic
@@ -94,9 +100,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
             res = codeGen.getSlot(element.slotName, databag, defaultSlot);
         } else {
-            res = codeGen.staticNodes.has(element)
-                ? codeGen.genHoistedElement(element, slotParentName)
-                : codeGen.genElement(name, databag, children);
+            res = codeGen.genElement(name, databag, children);
         }
 
         return res;

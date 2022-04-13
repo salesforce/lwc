@@ -10,13 +10,13 @@ const $hoisted4 = parseFragment`<noframes${1}${2}><p${1}${2}>It seems your brows
 let $fragment5;
 const $hoisted5 = parseFragment`<noscript${1}${2}><!-- anchor linking to external file --> <a href="https://www.mozilla.com/">External Link</a></noscript>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, st: api_static_fragment, h: api_element } = $api;
+  const { st: api_static_fragment } = $api;
   return [
     api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1),
     api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 3),
     api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 5),
-    api_static_fragment($fragment4 || ($fragment4 = $hoisted4()), 8),
-    api_static_fragment($fragment5 || ($fragment5 = $hoisted5()), 10),
+    api_static_fragment($fragment4 || ($fragment4 = $hoisted4()), 7),
+    api_static_fragment($fragment5 || ($fragment5 = $hoisted5()), 9),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -10,7 +10,6 @@ const stc1 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     k: api_key,
-    t: api_text,
     st: api_static_fragment,
     h: api_element,
     i: api_iterator,

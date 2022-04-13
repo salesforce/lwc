@@ -1,6 +1,6 @@
 import _nsFoo from "ns/foo";
 import _nsBar from "ns/bar";
-import { parseFragment, registerTemplate, sanitizeAttribute } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
 let $fragment1;
 const $hoisted1 = parseFragment`<a class="test${0}" data-foo="datafoo" aria-hidden="h" role="presentation" href="/foo" title="test" tabindex="-1"${2}></a>`;
 let $fragment2;
@@ -46,12 +46,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 3,
     }),
-    api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 6),
-    api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 8),
+    api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 5),
+    api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 7),
     api_element("div", {
       className: $cmp.foo,
       attrs: stc2,
-      key: 9,
+      key: 8,
     }),
   ];
   /*LWC compiler vX.X.X*/

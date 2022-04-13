@@ -84,7 +84,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         }),
       ])
     ),
-    api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 13),
+    api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 11),
   ];
   /*LWC compiler vX.X.X*/
 }

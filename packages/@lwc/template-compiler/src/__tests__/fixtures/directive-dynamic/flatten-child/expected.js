@@ -6,7 +6,6 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    t: api_text,
     st: api_static_fragment,
     dc: api_dynamic_component,
     f: api_flatten,

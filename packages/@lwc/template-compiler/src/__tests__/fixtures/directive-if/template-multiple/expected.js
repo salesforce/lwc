@@ -6,7 +6,7 @@ const $hoisted2 = parseFragment`<p${1}${2}>2</p>`;
 let $fragment3;
 const $hoisted3 = parseFragment`<p${1}${2}>3</p>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, st: api_static_fragment } = $api;
+  const { st: api_static_fragment } = $api;
   return [
     $cmp.isTrue
       ? api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1)

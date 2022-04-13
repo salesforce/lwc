@@ -9,7 +9,7 @@ const stc0 = {
   key: 0,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, st: api_static_fragment, h: api_element } = $api;
+  const { st: api_static_fragment, h: api_element } = $api;
   return [
     api_element("section", stc0, [
       $cmp.isTrue
