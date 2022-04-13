@@ -52,6 +52,23 @@ commands:
       - attach_workspace:
           at: ~/lwc
 
+  save_coverage:
+    description: Save current job's coverage
+    parameters:
+      path:
+        type: string
+        default: .
+    steps:
+      - persist_to_workspace:
+          root: ~/lwc/packages/integration-karma/coverage
+          paths:
+            - ${<< parameters.path >>}
+
+  load_coverage:
+    description: Load coverage
+    steps:
+      - attach_workspace:
+          at: ~/lwc/packages/integration-karma/coverage
 
   # Sauce connect
   start_sauce_connect:
@@ -167,7 +184,8 @@ jobs:
           working_directory: packages/integration-karma
           environment:
             COVERAGE: 1
-      - save_workspace
+      - save_coverage:
+          path: native-*/**/*
 
   test_karma_native_shadow:
     executor: node
@@ -180,12 +198,13 @@ jobs:
           disable_synthetic: true
           compat: false
           force_native_shadow_mode: false
-      - save_workspace
+      - save_coverage:
+          path: synthetic-*/**/*
 
   compute_coverage:
     executor: node
     steps:
-      - load_workspace
+      - load_coverage
       - run:
           name: Compute karma coverage
           command: yarn coverage
