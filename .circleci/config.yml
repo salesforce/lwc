@@ -101,7 +101,7 @@ commands:
               <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >>
               <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
               <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
-              yarn sauce
+              yarn sauce --log-level debug
 
 
 # Jobs definition
@@ -219,21 +219,19 @@ workflows:
           filters:
             <<: *ignore_forks
           requires:
-            - build
+            - test_unit
 
       - test_integration:
           filters:
             <<: *ignore_forks
           requires:
             - test_unit
-            - test_karma
 
       - test_integration_compat:
           filters:
             <<: *ignore_forks
           requires:
             - test_unit
-            - test_karma
 
   build_and_test_for_forked_repos:
     jobs:
