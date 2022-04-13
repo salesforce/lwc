@@ -115,18 +115,36 @@ function validateLightDomTemplate(template: Template, vm: VM) {
     }
 }
 
+enum FragmentCache {
+    HAS_TOKEN = 1, // 2^0
+    HAS_SCOPED_STYLE = 2, // 2^1
+    SHADOW_MODE_SYNTHETIC = 4, // 2^2
+}
+
 export function parseFragment(strings: string[], ...keys: number[]): () => Element {
+    const cache = Object.create(null);
+
     return function (): Element {
         const {
             context: { hasScopedStyles, stylesheetToken },
             shadowMode,
         } = getVMBeingRendered()!;
         const hasStyleToken = !isUndefined(stylesheetToken);
+        const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
+
+        const cacheKey =
+            (hasStyleToken ? FragmentCache.HAS_TOKEN : 0) | // @todo: can this change?
+            (hasScopedStyles ? FragmentCache.HAS_SCOPED_STYLE : 0) | // if styles are reset, we need to recompute.
+            (isSyntheticShadow ? FragmentCache.SHADOW_MODE_SYNTHETIC : 0); // mixed mode support.
+
+        if (!isUndefined(cache[cacheKey])) {
+            return cache[cacheKey];
+        }
+
         const classToken = hasScopedStyles && hasStyleToken ? ' ' + stylesheetToken : '';
         const classAttrToken =
             hasScopedStyles && hasStyleToken ? ` class="${stylesheetToken}"` : '';
-        const attrToken =
-            hasStyleToken && shadowMode === ShadowMode.Synthetic ? ' ' + stylesheetToken : '';
+        const attrToken = hasStyleToken && isSyntheticShadow ? ' ' + stylesheetToken : '';
 
         let htmlFragment = '';
         for (let i = 0, n = keys.length; i < n; i++) {
@@ -144,7 +162,9 @@ export function parseFragment(strings: string[], ...keys: number[]): () => Eleme
 
         htmlFragment += strings[strings.length - 1];
 
-        return createFragment(htmlFragment);
+        cache[cacheKey] = createFragment(htmlFragment);
+
+        return cache[cacheKey];
     };
 }
 

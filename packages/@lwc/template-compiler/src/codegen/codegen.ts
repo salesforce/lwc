@@ -532,15 +532,7 @@ export default class CodeGen {
 
         const idx = this.hoistedNodes.length;
         return this._renderApiCall(RENDER_APIS.staticFragment, [
-            t.logicalExpression(
-                '||',
-                t.identifier(`$fragment${idx}`),
-                t.assignmentExpression(
-                    '=',
-                    t.identifier(`$fragment${idx}`),
-                    t.callExpression(t.identifier(`$hoisted${idx}`), [])
-                )
-            ),
+            t.callExpression(t.identifier(`$fragment${idx}`), []),
             t.literal(key),
         ]);
     }
