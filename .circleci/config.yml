@@ -138,7 +138,6 @@ jobs:
           name: Run unit tests
           command: yarn test:ci
 
-
   test_karma:
     executor: node
     environment:
@@ -168,11 +167,29 @@ jobs:
           working_directory: packages/integration-karma
           environment:
             COVERAGE: 1
+      - save_workspace
+
+  test_karma_native_shadow:
+    executor: node
+    environment:
+      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_karma_native_shadow
+    steps:
+      - load_workspace
+      - start_sauce_connect
+      - run_karma:
+          disable_synthetic: true
+          compat: false
+          force_native_shadow_mode: false
+      - save_workspace
+
+  compute_coverage:
+    executor: node
+    steps:
+      - load_workspace
       - run:
           name: Compute karma coverage
           command: yarn coverage
           working_directory: packages/integration-karma
-
 
   test_integration:
     executor: node
@@ -220,6 +237,19 @@ workflows:
             <<: *ignore_forks
           requires:
             - build
+
+      - test_karma_native_shadow:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - build
+
+      - compute_coverage:
+          filters:
+            <<: *ignore_forks
+          requires:
+            - test_karma
+            - test_karma_native_shadow
 
       - test_integration:
           filters:
