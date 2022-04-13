@@ -2,9 +2,14 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from './x/container/container';
 import MultipleStyles from './x/multipleStyles/multipleStyles';
 
-if (!process.env.NATIVE_SHADOW) {
-    describe('Mixed mode for static content', () => {
-        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
+if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
+    /* compat will have the token when rendering in native*/ describe('Mixed mode for static content', () => {
+        beforeEach(() => {
+            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
+        });
+        afterEach(() => {
+            setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', false);
+        });
 
         ['native', 'synthetic'].forEach((firstRenderMode) => {
             it(`should set the tokens for synthetic shadow when it renders first in ${firstRenderMode}`, () => {
