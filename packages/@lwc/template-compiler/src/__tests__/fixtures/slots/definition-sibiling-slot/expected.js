@@ -1,8 +1,6 @@
 import { parseFragment, registerTemplate } from "lwc";
-let $fragment1;
-const $hoisted1 = parseFragment`<p${1}${2}>Default slot other content</p>`;
-let $fragment2;
-const $hoisted2 = parseFragment`<p${1}${2}>Default slot content</p>`;
+const $fragment1 = parseFragment`<p${1}${2}>Default slot other content</p>`;
+const $fragment2 = parseFragment`<p${1}${2}>Default slot content</p>`;
 const stc0 = {
   key: 0,
 };
@@ -22,20 +20,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_slot(
         "other",
         stc1,
-        [
-          api_static_fragment(
-            $fragment1 || ($fragment1 = $hoisted1()),
-            "@other:3"
-          ),
-        ],
+        [api_static_fragment($fragment1(), "@other:3")],
         $slotset
       ),
-      api_slot(
-        "",
-        stc2,
-        [api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), "@:6")],
-        $slotset
-      ),
+      api_slot("", stc2, [api_static_fragment($fragment2(), "@:6")], $slotset),
     ]),
   ];
   /*LWC compiler vX.X.X*/

@@ -1,6 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-let $fragment1;
-const $hoisted1 = parseFragment`<p${1}${2}>items</p>`;
+const $fragment1 = parseFragment`<p${1}${2}>items</p>`;
 const stc0 = {
   key: 0,
 };
@@ -25,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: stc1,
             key: api_key(1, item.id),
           },
-          [api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 3)]
+          [api_static_fragment($fragment1(), 3)]
         );
       })
     ),

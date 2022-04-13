@@ -1,7 +1,6 @@
 import _xFoo from "x/foo";
 import { parseFragment, registerTemplate } from "lwc";
-let $fragment1;
-const $hoisted1 = parseFragment`<p hidden${1}${2}>x</p>`;
+const $fragment1 = parseFragment`<p hidden${1}${2}>x</p>`;
 const stc0 = {
   props: {
     autofocus: "true",
@@ -29,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
   } = $api;
   return [
-    api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1),
+    api_static_fragment($fragment1(), 1),
     api_custom_element("x-foo", _xFoo, stc0),
     api_element("input", {
       attrs: {

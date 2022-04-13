@@ -1,10 +1,7 @@
 import { parseFragment, registerTemplate } from "lwc";
-let $fragment1;
-const $hoisted1 = parseFragment`<stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1"${1}${2}></stop>`;
-let $fragment2;
-const $hoisted2 = parseFragment`<stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${1}${2}></stop>`;
-let $fragment3;
-const $hoisted3 = parseFragment`<ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${1}${2}>`;
+const $fragment1 = parseFragment`<stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1"${1}${2}></stop>`;
+const $fragment2 = parseFragment`<stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1"${1}${2}></stop>`;
+const $fragment3 = parseFragment`<ellipse cx="200" cy="70" rx="85" ry="55" fill="url(#grad1)"${1}${2}>`;
 const stc0 = {
   attrs: {
     height: "150",
@@ -36,12 +33,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             svg: true,
           },
           [
-            api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 4),
-            api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 6),
+            api_static_fragment($fragment1(), 4),
+            api_static_fragment($fragment2(), 6),
           ]
         ),
       ]),
-      api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 8),
+      api_static_fragment($fragment3(), 8),
     ]),
   ];
   /*LWC compiler vX.X.X*/

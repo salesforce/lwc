@@ -1,13 +1,9 @@
 import _xFoo from "x/foo";
 import { parseFragment, registerTemplate } from "lwc";
-let $fragment1;
-const $hoisted1 = parseFragment`<input required value="boolean present"${1}${2}>`;
-let $fragment2;
-const $hoisted2 = parseFragment`<input required="" value="empty string"${1}${2}>`;
-let $fragment3;
-const $hoisted3 = parseFragment`<input required="other than true" value="string value"${1}${2}>`;
-let $fragment4;
-const $hoisted4 = parseFragment`<input required="3" value="integer value"${1}${2}>`;
+const $fragment1 = parseFragment`<input required value="boolean present"${1}${2}>`;
+const $fragment2 = parseFragment`<input required="" value="empty string"${1}${2}>`;
+const $fragment3 = parseFragment`<input required="other than true" value="string value"${1}${2}>`;
+const $fragment4 = parseFragment`<input required="3" value="integer value"${1}${2}>`;
 const stc0 = {
   value: "computed value",
 };
@@ -43,9 +39,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
   } = $api;
   return [
-    api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1),
-    api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 3),
-    api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 5),
+    api_static_fragment($fragment1(), 1),
+    api_static_fragment($fragment2(), 3),
+    api_static_fragment($fragment3(), 5),
     api_element("input", {
       attrs: {
         required: $cmp.computed ? "" : null,
@@ -53,7 +49,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       props: stc0,
       key: 6,
     }),
-    api_static_fragment($fragment4 || ($fragment4 = $hoisted4()), 8),
+    api_static_fragment($fragment4(), 8),
     api_custom_element("x-foo", _xFoo, stc1, [api_text("boolean present")]),
     api_custom_element("x-foo", _xFoo, stc2, [api_text("empty string")]),
     api_custom_element("x-foo", _xFoo, stc3, [api_text("string value")]),

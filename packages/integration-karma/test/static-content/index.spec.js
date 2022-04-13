@@ -2,28 +2,30 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from './x/container/container';
 import MultipleStyles from './x/multipleStyles/multipleStyles';
 
-describe('Mixed mode for static content', () => {
-    setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
+if (!process.env.NATIVE_SHADOW) {
+    describe('Mixed mode for static content', () => {
+        setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);
 
-    ['native', 'synthetic'].forEach((firstRenderMode) => {
-        it(`should set the tokens for synthetic shadow when it renders first in ${firstRenderMode}`, () => {
-            const elm = createElement('x-container', { is: Container });
-            elm.syntheticFirst = firstRenderMode === 'synthetic';
-            document.body.appendChild(elm);
+        ['native', 'synthetic'].forEach((firstRenderMode) => {
+            it(`should set the tokens for synthetic shadow when it renders first in ${firstRenderMode}`, () => {
+                const elm = createElement('x-container', { is: Container });
+                elm.syntheticFirst = firstRenderMode === 'synthetic';
+                document.body.appendChild(elm);
 
-            const syntheticMode = elm.shadowRoot
-                .querySelector('x-component')
-                .shadowRoot.querySelector('div');
-            const nativeMode = elm.shadowRoot
-                .querySelector('x-native')
-                .shadowRoot.querySelector('x-component')
-                .shadowRoot.querySelector('div');
+                const syntheticMode = elm.shadowRoot
+                    .querySelector('x-component')
+                    .shadowRoot.querySelector('div');
+                const nativeMode = elm.shadowRoot
+                    .querySelector('x-native')
+                    .shadowRoot.querySelector('x-component')
+                    .shadowRoot.querySelector('div');
 
-            expect(syntheticMode.hasAttribute('x-component_component')).toBe(true);
-            expect(nativeMode.hasAttribute('x-component_component')).toBe(false);
+                expect(syntheticMode.hasAttribute('x-component_component')).toBe(true);
+                expect(nativeMode.hasAttribute('x-component_component')).toBe(false);
+            });
         });
     });
-});
+}
 
 describe('static content when stylesheets change', () => {
     it('should reflect correct token for scoped styles', () => {

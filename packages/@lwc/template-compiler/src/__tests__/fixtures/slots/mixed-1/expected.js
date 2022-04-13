@@ -1,14 +1,9 @@
 import { parseFragment, registerTemplate } from "lwc";
-let $fragment1;
-const $hoisted1 = parseFragment`<p${1}${2}>Before header</p>`;
-let $fragment2;
-const $hoisted2 = parseFragment`<p${1}${2}>In</p>`;
-let $fragment3;
-const $hoisted3 = parseFragment`<p${1}${2}>between</p>`;
-let $fragment4;
-const $hoisted4 = parseFragment`<p${1}${2}>Default body</p>`;
-let $fragment5;
-const $hoisted5 = parseFragment`<p${1}${2}>Default footer</p>`;
+const $fragment1 = parseFragment`<p${1}${2}>Before header</p>`;
+const $fragment2 = parseFragment`<p${1}${2}>In</p>`;
+const $fragment3 = parseFragment`<p${1}${2}>between</p>`;
+const $fragment4 = parseFragment`<p${1}${2}>Default body</p>`;
+const $fragment5 = parseFragment`<p${1}${2}>Default footer</p>`;
 const stc0 = {
   key: 0,
 };
@@ -36,25 +31,15 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_element("section", stc0, [
-      api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 2),
+      api_static_fragment($fragment1(), 2),
       api_slot("header", stc1, [api_text("Default header")], $slotset),
-      api_static_fragment($fragment2 || ($fragment2 = $hoisted2()), 5),
-      api_static_fragment($fragment3 || ($fragment3 = $hoisted3()), 7),
-      api_slot(
-        "",
-        stc2,
-        [api_static_fragment($fragment4 || ($fragment4 = $hoisted4()), "@:10")],
-        $slotset
-      ),
+      api_static_fragment($fragment2(), 5),
+      api_static_fragment($fragment3(), 7),
+      api_slot("", stc2, [api_static_fragment($fragment4(), "@:10")], $slotset),
       api_slot(
         "footer",
         stc3,
-        [
-          api_static_fragment(
-            $fragment5 || ($fragment5 = $hoisted5()),
-            "@footer:13"
-          ),
-        ],
+        [api_static_fragment($fragment5(), "@footer:13")],
         $slotset
       ),
     ]),

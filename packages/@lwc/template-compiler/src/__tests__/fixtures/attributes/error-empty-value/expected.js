@@ -1,7 +1,6 @@
 import _fooBar from "foo/bar";
 import { parseFragment, registerTemplate } from "lwc";
-let $fragment1;
-const $hoisted1 = parseFragment`<p title=""${1}${2}></p>`;
+const $fragment1 = parseFragment`<p title=""${1}${2}></p>`;
 const stc0 = {
   props: {
     content: "",
@@ -12,7 +11,7 @@ const stc0 = {
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment, c: api_custom_element } = $api;
   return [
-    api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 1),
+    api_static_fragment($fragment1(), 1),
     api_custom_element("foo-bar", _fooBar, stc0),
   ];
   /*LWC compiler vX.X.X*/

@@ -1,6 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-let $fragment1;
-const $hoisted1 = parseFragment`<li${1}${2}>Last</li>`;
+const $fragment1 = parseFragment`<li${1}${2}>Last</li>`;
 const stc0 = {
   key: 0,
 };
@@ -29,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             [api_text(api_dynamic_text(item))]
           );
         }),
-        api_static_fragment($fragment1 || ($fragment1 = $hoisted1()), 3),
+        api_static_fragment($fragment1(), 3),
       ])
     ),
   ];
