@@ -34,27 +34,6 @@ const LWC_PACKAGE_EXPORTS = {
     WIRE_DECORATOR: 'wire',
 };
 
-const LWC_SUPPORTED_APIS = new Set([
-    // From "@lwc/engine-core"
-    ...Object.values(LWC_PACKAGE_EXPORTS),
-    'getComponentDef',
-    'getComponentConstructor',
-    'isComponentConstructor',
-    'createContextProvider',
-    'readonly',
-    'register',
-    'setFeatureFlagForTest',
-    'unwrap',
-
-    // From "@lwc/engine-dom"
-    'hydrateComponent',
-    'buildCustomElementConstructor',
-    'createElement',
-
-    // From "@lwc/engine-server"
-    'renderComponent',
-]);
-
 const LWC_COMPONENT_PROPERTIES = {
     PUBLIC_PROPS: 'publicProps',
     PUBLIC_METHODS: 'publicMethods',
@@ -79,7 +58,6 @@ module.exports = {
     DISALLOWED_PROP_SET,
     LWC_PACKAGE_ALIAS,
     LWC_PACKAGE_EXPORTS,
-    LWC_SUPPORTED_APIS,
     LWC_COMPONENT_PROPERTIES,
     REGISTER_COMPONENT_ID,
     REGISTER_DECORATORS_ID,

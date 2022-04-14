@@ -18,28 +18,6 @@ export const LWCClassErrors = {
             'Invalid import. The argument "{0}" must be a stringLiteral for dynamic imports when strict mode is enabled.',
         url: '',
     },
-
-    INVALID_IMPORT_MISSING_DEFAULT_EXPORT: {
-        code: 1089,
-        message: 'Invalid import. "{0}" doesn\'t have default export.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED: {
-        code: 1090,
-        message:
-            'Invalid import. Namespace imports are not allowed on "{0}", instead use named imports "import { {1} } from \'{2}\'".',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    INVALID_IMPORT_PROHIBITED_API: {
-        code: 1091,
-        message: 'Invalid import. "{0}" is not part of the lwc api.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
 };
 
 export const DecoratorErrors = {

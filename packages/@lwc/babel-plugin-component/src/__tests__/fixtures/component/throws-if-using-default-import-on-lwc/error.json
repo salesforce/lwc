@@ -1,9 +1,0 @@
-{
-    "message": "LWC1089: Invalid import. \"lwc\" doesn't have default export.",
-    "loc": {
-        "line": 1,
-        "column": 7,
-        "start": 7,
-        "length": 6
-    }
-}
