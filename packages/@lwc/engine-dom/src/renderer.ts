@@ -192,6 +192,7 @@ export function cloneNode(node: Node, deep: boolean): Node {
 }
 
 export function createFragment(html: string): Node | null {
+    // Not doing document.createFragment(html) because of IE11.
     return document.createRange().createContextualFragment(html).firstChild;
 }
 

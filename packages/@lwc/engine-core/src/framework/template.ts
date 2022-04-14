@@ -116,13 +116,12 @@ function validateLightDomTemplate(template: Template, vm: VM) {
 }
 
 enum FragmentCache {
-    HAS_TOKEN = 1, // 2^0
-    HAS_SCOPED_STYLE = 2, // 2^1
-    SHADOW_MODE_SYNTHETIC = 4, // 2^2
+    HAS_SCOPED_STYLE = 1, // 2^0
+    SHADOW_MODE_SYNTHETIC = 2, // 2^1
 }
 
 export function parseFragment(strings: string[], ...keys: number[]): () => Element {
-    const cache = Object.create(null);
+    const cache = create(null);
 
     return function (): Element {
         const {
@@ -132,10 +131,10 @@ export function parseFragment(strings: string[], ...keys: number[]): () => Eleme
         const hasStyleToken = !isUndefined(stylesheetToken);
         const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
 
-        const cacheKey =
-            (hasStyleToken ? FragmentCache.HAS_TOKEN : 0) | // @todo: can this change?
-            (hasScopedStyles ? FragmentCache.HAS_SCOPED_STYLE : 0) | // if styles are reset, we need to recompute.
-            (isSyntheticShadow ? FragmentCache.SHADOW_MODE_SYNTHETIC : 0); // mixed mode support.
+        const cacheKey = hasStyleToken
+            ? (hasScopedStyles ? FragmentCache.HAS_SCOPED_STYLE : 0) | // if styles are reset, we need to recompute.
+              (isSyntheticShadow ? FragmentCache.SHADOW_MODE_SYNTHETIC : 0) // mixed mode support.
+            : 0; // if there's no style token, it is going to always be the same output regardless of scoped styles or shadow mode.
 
         if (!isUndefined(cache[cacheKey])) {
             return cache[cacheKey];
