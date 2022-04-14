@@ -29,13 +29,6 @@ export function setIsSyntheticShadowDefined(isSyntheticShadowDefinedImpl: boolea
     isSyntheticShadowDefined = isSyntheticShadowDefinedImpl;
 }
 
-type HTMLElementType = typeof HTMLElement;
-let HTMLElementExported: HTMLElementType;
-export { HTMLElementExported as HTMLElement };
-export function setHTMLElement(HTMLElementImpl: HTMLElementType) {
-    HTMLElementExported = HTMLElementImpl;
-}
-
 //
 // Functions
 //
@@ -46,19 +39,23 @@ export function setIsHydrating(isHydratingImpl: isHydratingFunc) {
     isHydrating = isHydratingImpl;
 }
 
-type insertFunc = (node: N, parent: E, anchor: N | null) => void;
+type insertFunc = (node: N, parent: E, anchor: N | null, isCustomElement?: boolean) => void;
 export let insert: insertFunc;
 export function setInsert(insertImpl: insertFunc) {
     insert = insertImpl;
 }
 
-type removeFunc = (node: N, parent: E) => void;
+type removeFunc = (node: N, parent: E, isCustomElement?: boolean) => void;
 export let remove: removeFunc;
 export function setRemove(removeImpl: removeFunc) {
     remove = removeImpl;
 }
 
-type createElementFunc = (tagName: string, namespace?: string) => E;
+type createElementFunc = (
+    tagName: string,
+    namespace: string | undefined,
+    isCustomElement?: boolean
+) => E;
 export let createElement: createElementFunc;
 export function setCreateElement(createElementImpl: createElementFunc) {
     createElement = createElementImpl;
@@ -266,18 +263,8 @@ export function setAssertInstanceOfHTMLElement(
     assertInstanceOfHTMLElement = assertInstanceOfHTMLElementImpl;
 }
 
-type defineCustomElementFunc = (
-    name: string,
-    constructor: CustomElementConstructor,
-    options?: ElementDefinitionOptions
-) => void;
-export let defineCustomElement: defineCustomElementFunc;
-export function setDefineCustomElement(defineCustomElementImpl: defineCustomElementFunc) {
-    defineCustomElement = defineCustomElementImpl;
-}
-
-type getCustomElementFunc = (name: string) => CustomElementConstructor | undefined;
-export let getCustomElement: getCustomElementFunc;
-export function setGetCustomElement(getCustomElementImpl: getCustomElementFunc) {
-    getCustomElement = getCustomElementImpl;
+type defineLightningElementFunc = (name: string) => void;
+export let defineLightningElement: defineLightningElementFunc;
+export function setDefineLightningElement(defineLightningElementImpl: defineLightningElementFunc) {
+    defineLightningElement = defineLightningElementImpl;
 }

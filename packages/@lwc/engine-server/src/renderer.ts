@@ -10,11 +10,14 @@ import {
     isBooleanAttribute,
     isGlobalHtmlAttribute,
     isAriaAttribute,
-    create,
-    StringToLowerCase,
     htmlPropertyToAttribute,
     noop,
 } from '@lwc/shared';
+import {
+    constructCustomElement,
+    connectCustomElement,
+    disconnectCustomElement,
+} from '@lwc/engine-core';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
@@ -25,39 +28,7 @@ function unsupportedMethod(name: string): () => never {
     };
 }
 
-function createElement(name: string): HostElement {
-    return {
-        type: HostNodeType.Element,
-        name,
-        parent: null,
-        shadowRoot: null,
-        children: [],
-        attributes: [],
-        eventListeners: {},
-    };
-}
-
-const registry: Record<string, CustomElementConstructor> = create(null);
-const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-function registerCustomElement(name: string, ctor: CustomElementConstructor) {
-    if (name !== StringToLowerCase.call(name) || registry[name]) {
-        throw new TypeError(`Invalid Registration`);
-    }
-    registry[name] = ctor;
-    reverseRegistry.set(ctor, name);
-}
-
-class HTMLElementImpl {
-    constructor() {
-        const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        return createElement(name);
-    }
-}
+const registryOfTagNames = new Set<string>();
 
 export const ssr: boolean = true;
 
@@ -75,7 +46,7 @@ export const isSyntheticShadowDefined: boolean = false;
 type N = HostNode;
 type E = HostElement;
 
-export function insert(node: N, parent: E, anchor: N | null) {
+export function insert(node: N, parent: E, anchor: N | null, _isCustomElement?: boolean) {
     if (node.parent !== null && node.parent !== parent) {
         const nodeIndex = node.parent.children.indexOf(node);
         node.parent.children.splice(nodeIndex, 1);
@@ -91,12 +62,35 @@ export function insert(node: N, parent: E, anchor: N | null) {
     }
 }
 
-export function remove(node: N, parent: E) {
+export function remove(node: N, parent: E, _isCustomElement?: boolean) {
     const nodeIndex = parent.children.indexOf(node);
     parent.children.splice(nodeIndex, 1);
 }
 
-export { createElement };
+export function createElement(
+    name: string,
+    _namespace: string | undefined,
+    isCustomElement?: boolean
+): HostElement {
+    const elm = {
+        type: HostNodeType.Element,
+        tagName: name,
+        name,
+        parent: null,
+        shadowRoot: null,
+        children: [],
+        attributes: [],
+        eventListeners: {},
+    } as any;
+    if (isCustomElement) {
+        if (registryOfTagNames.has(name)) {
+            (elm as any).$connectedCallback$ = () => connectCustomElement(elm as HTMLElement);
+            (elm as any).$disconnectedCallback$ = () => disconnectCustomElement(elm as HTMLElement);
+            constructCustomElement(elm as HTMLElement, false);
+        }
+    }
+    return elm as HostElement;
+}
 
 export function createText(content: string): HostNode {
     return {
@@ -389,20 +383,12 @@ export const getLastElementChild = unsupportedMethod('getLastElementChild') as (
     element: HostElement
 ) => HostElement | null;
 
-export function defineCustomElement(
-    name: string,
-    constructor: CustomElementConstructor,
-    _options?: ElementDefinitionOptions
-) {
-    registerCustomElement(name, constructor);
+export function defineLightningElement(name: string) {
+    if (registryOfTagNames.has(name)) {
+        return; // nothing to do if the element was already defined.
+    }
+    registryOfTagNames.add(name);
 }
-
-export function getCustomElement(name: string): CustomElementConstructor | undefined {
-    return registry[name];
-}
-
-const HTMLElementExported = HTMLElementImpl as typeof HTMLElement;
-export { HTMLElementExported as HTMLElement };
 
 /* noop */
 export const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;

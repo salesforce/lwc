@@ -19,7 +19,13 @@ import {
     isUndefined,
 } from '@lwc/shared';
 
-import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
+import {
+    isSyntheticShadowDefined,
+    ssr,
+    remove,
+    isNativeShadowDefined,
+    defineLightningElement,
+} from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
 
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
@@ -42,6 +48,7 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
+import { hydrateRoot } from './hydration';
 
 import type { HostNode, HostElement } from '../renderer';
 
@@ -216,6 +223,24 @@ export function disconnectRootElement(elm: any) {
     resetComponentStateWhenRemoved(vm);
 }
 
+// triggered by the diffing algo
+export function connectCustomElement(elm: any) {
+    const vm = getAssociatedVM(elm);
+    runConnectedCallback(vm);
+}
+
+// triggered by the diffing algo
+export function disconnectCustomElement(elm: any) {
+    const vm = getAssociatedVM(elm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(
+            vm.state === VMState.connected || vm.state === VMState.disconnected,
+            `${vm} must have been connected.`
+        );
+    }
+    resetComponentStateWhenRemoved(vm);
+}
+
 export function appendVM(vm: VM) {
     rehydrate(vm);
 }
@@ -242,18 +267,6 @@ function resetComponentStateWhenRemoved(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         removeActiveVM(vm);
     }
-}
-
-// this method is triggered by the diffing algo only when a vnode from the
-// old vnode.children is removed from the DOM.
-export function removeVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            vm.state === VMState.connected || vm.state === VMState.disconnected,
-            `${vm} must have been connected.`
-        );
-    }
-    resetComponentStateWhenRemoved(vm);
 }
 
 export function createVM<HostNode, HostElement>(
@@ -335,6 +348,32 @@ export function createVM<HostNode, HostElement>(
     }
 
     return vm;
+}
+
+export function upgradeElement(
+    elm: HTMLElement,
+    ctor: LightningElementConstructor,
+    mode: ShadowRootMode,
+    props?: { [name: string]: any }
+): boolean {
+    if (isPendingConstruction(elm)) {
+        const vm = createVM(elm, ctor, {
+            tagName: elm.tagName.toLowerCase(),
+            owner: null,
+            mode,
+        });
+        if (props) {
+            for (const [key, value] of Object.entries(props)) {
+                (elm as any)[key] = value;
+            }
+        }
+        if (isPendingHydrating(elm)) {
+            hydrateRoot(vm);
+            connectRootElement(elm);
+        }
+        return true;
+    }
+    return false;
 }
 
 function computeShadowMode(def: ComponentDef, owner: VM | null) {
@@ -721,4 +760,39 @@ export function forceRehydration(vm: VM) {
         markComponentAsDirty(vm);
         scheduleRehydration(vm);
     }
+}
+
+// Using a WeakMap instead of a WeakSet because this one works in IE11 :(
+const hydrationQueue = new WeakMap<HTMLElement, 1>();
+const pendingConstructionQueue = new WeakMap<HTMLElement, 1>();
+
+export function constructCustomElement(elm: HTMLElement, isConnected: boolean) {
+    if (isConnected) {
+        hydrationQueue.set(elm, 1);
+    }
+    pendingConstructionQueue.set(elm, 1);
+}
+
+export function registerTagName(tagName: string) {
+    // Should never get a tag with upper case letter at this point, the compiler should
+    // produce only tags with lowercase letters
+    // But, for backwards compatibility, we will lower case the tagName
+    tagName = tagName.toLowerCase();
+    defineLightningElement(tagName);
+}
+
+export function isPendingHydrating(elm: HTMLElement): boolean {
+    if (hydrationQueue.has(elm)) {
+        hydrationQueue.delete(elm);
+        return true;
+    }
+    return false;
+}
+
+export function isPendingConstruction(elm: HTMLElement): boolean {
+    if (pendingConstructionQueue.has(elm)) {
+        pendingConstructionQueue.delete(elm);
+        return true;
+    }
+    return false;
 }

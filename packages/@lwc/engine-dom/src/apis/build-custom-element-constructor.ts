@@ -6,7 +6,8 @@
  */
 
 import {
-    createVM,
+    upgradeElement,
+    constructCustomElement,
     connectRootElement,
     disconnectRootElement,
     getComponentHtmlPrototype,
@@ -56,17 +57,13 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
     return class extends HtmlPrototype {
         constructor() {
             super();
-
+            constructCustomElement(this, this.isConnected);
             if (this.isConnected) {
                 // this if block is hit when there's already an un-upgraded element in the DOM with the same tag name.
                 hydrateComponent(this, Ctor, {});
                 hydratedCustomElements.add(this);
             } else {
-                createVM(this, Ctor, {
-                    mode: 'open',
-                    owner: null,
-                    tagName: this.tagName,
-                });
+                upgradeElement(this, Ctor, 'open');
             }
         }
         connectedCallback() {

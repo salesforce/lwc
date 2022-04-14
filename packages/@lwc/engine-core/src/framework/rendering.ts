@@ -32,20 +32,16 @@ import {
 
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
-import { getUpgradableConstructor } from './upgradable-element';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import {
     createVM,
     appendVM,
-    removeVM,
     rerenderVM,
-    getAssociatedVMIfPresent,
-    runConnectedCallback,
     VM,
-    VMState,
     ShadowMode,
     RenderMode,
     LwcDomMode,
+    isPendingConstruction,
 } from './vm';
 import {
     VNode,
@@ -198,7 +194,6 @@ function patchElement(n1: VElement, n2: VElement) {
 function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
     const { sel, owner } = vnode;
 
-    const UpgradableConstructor = getUpgradableConstructor(sel);
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced
@@ -206,10 +201,11 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
      * an upgradable custom element.
      */
     let vm: VM | undefined;
-    const elm = new UpgradableConstructor((elm: HTMLElement) => {
+    const elm = createElement(sel, undefined, true);
+    if (isPendingConstruction(elm)) {
         // the custom element from the registry is expecting an upgrade callback
         vm = createViewModelHook(elm, vnode);
-    });
+    }
 
     linkNodeToShadow(elm, owner);
     vnode.elm = elm;
@@ -217,20 +213,10 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
 
     if (vm) {
         allocateChildren(vnode, vm);
-    } else if (vnode.ctor !== UpgradableConstructor) {
-        throw new TypeError(`Incorrect Component Constructor`);
     }
 
     patchElementPropsAndAttrs(null, vnode);
-    insertNode(elm, parent, anchor);
-
-    if (vm) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
-        }
-        runConnectedCallback(vm);
-    }
-
+    insertNode(elm, parent, anchor, true);
     mountVNodes(vnode.children, elm, null);
 
     if (vm) {
@@ -281,23 +267,11 @@ function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
     if (doRemove) {
-        removeNode(elm!, parent);
+        removeNode(elm!, parent, type === VNodeType.CustomElement);
     }
 
-    switch (type) {
-        case VNodeType.Element:
-            unmountVNodes(vnode.children, elm as ParentNode);
-            break;
-
-        case VNodeType.CustomElement: {
-            const { vm } = vnode;
-
-            // No need to unmount the children here, `removeVM` will take care of removing the
-            // children.
-            if (!isUndefined(vm)) {
-                removeVM(vm);
-            }
-        }
+    if (type === VNodeType.Element) {
+        unmountVNodes(vnode.children, elm as ParentNode);
     }
 }
 
@@ -360,21 +334,21 @@ function updateTextContent(vnode: VText | VComment) {
     }
 }
 
-function insertNode(node: Node, parent: Node, anchor: Node | null) {
+function insertNode(node: Node, parent: Node, anchor: Node | null, isCustomElement?: boolean) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    insert(node, parent, anchor);
+    insert(node, parent, anchor, isCustomElement);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
 }
 
-export function removeNode(node: Node, parent: ParentNode) {
+export function removeNode(node: Node, parent: ParentNode, isCustomElement?: boolean) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    remove(node, parent);
+    remove(node, parent, isCustomElement);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
@@ -457,15 +431,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
 }
 
 function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
-    let vm = getAssociatedVMIfPresent(elm);
-
-    // There is a possibility that a custom element is registered under tagName, in which case, the
-    // initialization is already carry on, and there is nothing else to do here since this hook is
-    // called right after invoking `document.createElement`.
-    if (!isUndefined(vm)) {
-        return vm;
-    }
-
+    // This method is only called for pivots pending to be upgraded.
     const { sel, mode, ctor, owner } = vnode;
 
     setScopeTokenClassIfNecessary(elm, owner);
@@ -478,7 +444,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
         }
     }
 
-    vm = createVM(elm, ctor, {
+    const vm = createVM(elm, ctor, {
         mode,
         owner,
         tagName: sel,
