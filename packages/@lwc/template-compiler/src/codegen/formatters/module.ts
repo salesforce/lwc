@@ -38,10 +38,8 @@ function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
 }
 
 function generateHoistedNodes(codegen: CodeGen): t.VariableDeclaration[] {
-    return codegen.hoistedNodes.map((value, index) => {
-        return t.variableDeclaration('const', [
-            t.variableDeclarator(t.identifier(`$fragment${index + 1}`), value),
-        ]);
+    return codegen.hoistedNodes.map(({ identifier, expr }) => {
+        return t.variableDeclaration('const', [t.variableDeclarator(identifier, expr)]);
     });
 }
 

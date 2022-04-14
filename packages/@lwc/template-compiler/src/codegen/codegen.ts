@@ -98,7 +98,7 @@ export default class CodeGen {
     private scope: Scope;
 
     readonly staticNodes: Set<ChildNode>;
-    readonly hoistedNodes: t.Expression[] = [];
+    readonly hoistedNodes: Array<{ identifier: t.Identifier; expr: t.Expression }> = [];
 
     currentId = 0;
     currentKey = 0;
@@ -441,11 +441,14 @@ export default class CodeGen {
             )
         );
 
-        this.hoistedNodes.push(expr);
+        const identifier = t.identifier(`$fragment${this.hoistedNodes.length + 1}`);
+        this.hoistedNodes.push({
+            identifier,
+            expr,
+        });
 
-        const idx = this.hoistedNodes.length;
         return this._renderApiCall(RENDER_APIS.staticFragment, [
-            t.callExpression(t.identifier(`$fragment${idx}`), []),
+            t.callExpression(identifier, []),
             t.literal(key),
         ]);
     }

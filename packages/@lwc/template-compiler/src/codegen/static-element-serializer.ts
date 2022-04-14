@@ -5,9 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { htmlEscape, isVoidElement } from '@lwc/shared';
-import { Attribute, ChildNode, Element, Literal, Property } from '../shared/types';
+import { ChildNode, Element, Literal } from '../shared/types';
 import { isElement, isText, isComment } from '../shared/ast';
 
+// Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
+
+// Text nodes child of these tags should not be escaped (https://html.spec.whatwg.org/#serialising-html-fragments).
 const rawContentElements = new Set([
     'STYLE',
     'SCRIPT',
@@ -16,7 +19,6 @@ const rawContentElements = new Set([
     'NOEMBED',
     'NOFRAMES',
     'PLAINTEXT',
-    'NOSCRIPT',
 ]);
 
 function serializeAttrs(element: Element): string {
@@ -28,8 +30,8 @@ function serializeAttrs(element: Element): string {
     const attrs: string[] = [];
     let hasClassAttr = false;
 
-    const collector = ({ name, value }: Attribute | Property) => {
-        let v = (value as Literal).value;
+    const collector = ({ name, value }: { name: string; value: string | boolean }) => {
+        let v = value;
 
         if (name === 'class') {
             hasClassAttr = true;
@@ -42,8 +44,26 @@ function serializeAttrs(element: Element): string {
         }
     };
 
-    element.attributes.forEach(collector);
-    element.properties.forEach(collector);
+    element.attributes
+        .map((attr) => {
+            return {
+                name: attr.name,
+                value: (attr.value as Literal).value,
+            };
+        })
+        .forEach(collector);
+    // This is tightly coupled with the logic in the parser that decides when an attribute should be
+    // a property: https://github.com/salesforce/lwc/blob/master/packages/%40lwc/template-compiler/src/parser/attribute.ts#L198-L218
+    // Because a component can't be a static element, we only look in the property bag on value and checked attribute
+    // from the input.
+    element.properties
+        .map((prop) => {
+            return {
+                name: prop.attributeName,
+                value: (prop.value as Literal).value,
+            };
+        })
+        .forEach(collector);
 
     return (attrs.length > 0 ? ' ' : '') + attrs.join(' ') + (hasClassAttr ? '${2}' : '${1}${2}');
 }
