@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { VOID_ELEMENTS } from '@lwc/shared';
+import { htmlEscape, isVoidElement } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import {
@@ -12,6 +12,7 @@ import {
     BaseElement,
     ChildNode,
     Element,
+    Literal,
     LWCDirectiveRenderMode,
     Node,
     Property,
@@ -31,8 +32,7 @@ import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
 
-const selfClosingTagNames = new Set(VOID_ELEMENTS.map((t) => t.toUpperCase()));
-const noEscapedContent = new Set([
+const rawContentElements = new Set([
     'STYLE',
     'SCRIPT',
     'XMP',
@@ -42,25 +42,6 @@ const noEscapedContent = new Set([
     'PLAINTEXT',
     'NOSCRIPT',
 ]);
-
-//Escaping regexes
-const AMP_REGEX = /&/g;
-const NBSP_REGEX = /\u00a0/g;
-const DOUBLE_QUOTE_REGEX = /"/g;
-const LT_REGEX = /</g;
-const GT_REGEX = />/g;
-
-function escapeString(str: string, attrMode: boolean): string {
-    str = str.replace(AMP_REGEX, '&amp;').replace(NBSP_REGEX, '&nbsp;');
-
-    if (attrMode) {
-        str = str.replace(DOUBLE_QUOTE_REGEX, '&quot;');
-    } else {
-        str = str.replace(LT_REGEX, '&lt;').replace(GT_REGEX, '&gt;');
-    }
-
-    return str;
-}
 
 function serializeAttrs(element: Element): string {
     /**
@@ -72,14 +53,14 @@ function serializeAttrs(element: Element): string {
     let hasClassAttr = false;
 
     const collector = ({ name, value }: Attribute | Property) => {
-        let v = (value as any).value;
+        let v = (value as Literal).value;
 
         if (name === 'class') {
             hasClassAttr = true;
             v += '${0}';
         }
         if (typeof v === 'string') {
-            attrs.push(`${name}="${escapeString(v, true)}"`);
+            attrs.push(`${name}="${htmlEscape(v, true)}"`);
         } else {
             attrs.push(name);
         }
@@ -88,7 +69,7 @@ function serializeAttrs(element: Element): string {
     element.attributes.forEach(collector);
     element.properties.forEach(collector);
 
-    return attrs.join(' ') + (hasClassAttr ? '${2}' : '${1}${2}');
+    return (attrs.length > 0 ? ' ' : '') + attrs.join(' ') + (hasClassAttr ? '${2}' : '${1}${2}');
 }
 
 function serializeChildren(children: ChildNode[], parentTagName: string): string {
@@ -98,13 +79,17 @@ function serializeChildren(children: ChildNode[], parentTagName: string): string
         if (isElement(child)) {
             html += serializeStaticElement(child);
         } else if (isText(child)) {
-            if (noEscapedContent.has(parentTagName.toUpperCase())) {
+            if (rawContentElements.has(parentTagName.toUpperCase())) {
                 html += child.raw;
             } else {
-                html += escapeString((child.value as any).value, false);
+                html += htmlEscape((child.value as Literal<string>).value);
             }
         } else if (isComment(child)) {
-            html += `<!--${escapeString(child.value, false)}-->`;
+            html += `<!--${htmlEscape(child.value)}-->`;
+        } else {
+            throw new TypeError(
+                'Unknown node found while serializing static content. Allowed nodes types are: Element, Text and Comment.'
+            );
         }
     });
 
@@ -114,15 +99,12 @@ function serializeChildren(children: ChildNode[], parentTagName: string): string
 export function serializeStaticElement(element: Element): string {
     const tagName = element.name;
 
-    let html = '<';
-    html += tagName;
-    const serializedAttrs = serializeAttrs(element);
-    const hasAttrs = element.attributes.length > 0 || element.properties.length > 0;
-    html += (hasAttrs ? ' ' : '') + serializedAttrs + '>';
+    let html = '<' + tagName + serializeAttrs(element) + '>';
 
     html += serializeChildren(element.children, tagName);
 
-    if (!selfClosingTagNames.has(tagName.toUpperCase()) || element.children.length > 0) {
+    // element.children.length > 0 can happen in the SVG namespace.
+    if (!isVoidElement(tagName) || element.children.length > 0) {
         html += `</${tagName}>`;
     }
 
