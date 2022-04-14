@@ -27,6 +27,7 @@ import {
     isDynamicDirective,
     isKeyDirective,
     isDomDirective,
+    isElement,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
@@ -42,7 +43,6 @@ import {
     Comment,
     ForOf,
     BaseElement,
-    Element,
 } from '../shared/types';
 
 import CodeGen from './codegen';
@@ -74,9 +74,9 @@ function transform(codeGen: CodeGen): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
 
-        if (codeGen.staticNodes.has(element)) {
+        if (codeGen.staticNodes.has(element) && isElement(element)) {
             // do not process children of static nodes.
-            return codeGen.genHoistedElement(element as Element, slotParentName);
+            return codeGen.genHoistedElement(element, slotParentName);
         }
 
         const children = transformChildren(element);

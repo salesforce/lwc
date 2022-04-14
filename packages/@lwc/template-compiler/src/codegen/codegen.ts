@@ -9,7 +9,6 @@ import { NormalizedConfig } from '../config';
 
 import * as t from '../shared/estree';
 import {
-    BaseElement,
     ChildNode,
     Element,
     Expression,
@@ -18,23 +17,10 @@ import {
     Root,
 } from '../shared/types';
 import { PARSE_FRAGMENT_METHOD_NAME, TEMPLATE_PARAMS } from '../shared/constants';
-import {
-    isBaseElement,
-    isComment,
-    isComponent,
-    isPreserveCommentsDirective,
-    isRenderModeDirective,
-    isSlot,
-    isText,
-} from '../shared/ast';
-import { isArrayExpression, isLiteral } from '../shared/estree';
-import {
-    isAllowedFragOnlyUrlsXHTML,
-    isFragmentOnlyUrl,
-    isIdReferencingAttribute,
-    isSvgUseHref,
-} from '../parser/attribute';
-import { serializeStaticElement } from './helpers';
+import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
+import { isArrayExpression } from '../shared/estree';
+import { getStaticNodes } from './helpers';
+import { serializeStaticElement } from './static-element-serializer';
 
 type RenderPrimitive =
     | 'iterator'
@@ -81,79 +67,6 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
 interface Scope {
     parent: Scope | null;
     declaration: Set<string>;
-}
-
-function getStaticNodes(root: Root): Set<ChildNode> {
-    const hoistedNodes = new Set<ChildNode>();
-
-    function isStaticNode(node: BaseElement): boolean {
-        let result = true;
-        const {
-            name: nodeName,
-            namespace = '',
-            attributes,
-            directives,
-            properties,
-            listeners,
-        } = node;
-
-        result &&= !isSlot(node); // slot element can't be static.
-        result &&= !isComponent(node); // components are not static.
-
-        // it is an element.
-        result &&= !attributes.some(({ name, value }) => {
-            return (
-                !isLiteral(value) ||
-                name === 'slot' ||
-                // check for ScopedId
-                name === 'id' ||
-                name === 'spellcheck' || // spellcheck is specially handled by the vnodes. @todo: alternatively we could add/remove those that are static
-                isIdReferencingAttribute(name) ||
-                // Check for ScopedFragId
-                (isSvgUseHref(nodeName, name, namespace) &&
-                    isFragmentOnlyUrl(value.value as string)) ||
-                (isAllowedFragOnlyUrlsXHTML(nodeName, name, namespace) &&
-                    isFragmentOnlyUrl(value.value as string))
-            );
-        }); // all attrs are static
-        result &&= directives.length === 0; // do not have any directive
-        result &&= properties.every((prop) => isLiteral(prop.value)); // all properties are static
-        result &&= listeners.length === 0; // do not have any event listener
-
-        return result;
-    }
-
-    function collectStaticNodes(node: ChildNode) {
-        let childrenAreStatic = true;
-        let nodeIsStatic;
-
-        if (isText(node)) {
-            nodeIsStatic = isLiteral(node.value);
-        } else if (isComment(node)) {
-            nodeIsStatic = true;
-        } else {
-            // it is ForBlock | If | BaseElement
-            node.children.forEach((childNode) => {
-                collectStaticNodes(childNode);
-
-                childrenAreStatic = childrenAreStatic && hoistedNodes.has(childNode);
-            });
-
-            nodeIsStatic = isBaseElement(node) && isStaticNode(node);
-        }
-
-        if (nodeIsStatic && childrenAreStatic) {
-            // let's unmark the children as static. So in the codegen we generate the outermost static node.
-            if (isBaseElement(node)) {
-                node.children.forEach((childNode) => hoistedNodes.delete(childNode));
-            }
-            hoistedNodes.add(node);
-        }
-    }
-
-    root.children.forEach((childNode) => collectStaticNodes(childNode));
-
-    return hoistedNodes;
 }
 
 export default class CodeGen {

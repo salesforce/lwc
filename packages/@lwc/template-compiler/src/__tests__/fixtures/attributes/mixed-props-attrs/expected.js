@@ -1,9 +1,8 @@
 import _nsFoo from "ns/foo";
 import _nsBar from "ns/bar";
-import { parseFragment, registerTemplate } from "lwc";
+import { parseFragment, registerTemplate, sanitizeAttribute } from "lwc";
 const $fragment1 = parseFragment`<a class="test${0}" data-foo="datafoo" aria-hidden="h" role="presentation" href="/foo" title="test" tabindex="-1"${2}></a>`;
-const $fragment2 = parseFragment`<svg class="cubano${0}" focusable="true"${2}><use xlink:href="xx"${1}${2}></use></svg>`;
-const $fragment3 = parseFragment`<table bgcolor="x"${1}${2}></table>`;
+const $fragment2 = parseFragment`<table bgcolor="x"${1}${2}></table>`;
 const stc0 = {
   r: true,
 };
@@ -11,6 +10,16 @@ const stc1 = {
   "data-xx": "foo",
 };
 const stc2 = {
+  classMap: {
+    cubano: true,
+  },
+  attrs: {
+    focusable: "true",
+  },
+  key: 4,
+  svg: true,
+};
+const stc3 = {
   "aria-hidden": "hidden",
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -43,11 +52,24 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 3,
     }),
-    api_static_fragment($fragment2(), 5),
-    api_static_fragment($fragment3(), 7),
+    api_element("svg", stc2, [
+      api_element("use", {
+        attrs: {
+          "xlink:href": sanitizeAttribute(
+            "use",
+            "http://www.w3.org/2000/svg",
+            "xlink:href",
+            "xx"
+          ),
+        },
+        key: 5,
+        svg: true,
+      }),
+    ]),
+    api_static_fragment($fragment2(), 7),
     api_element("div", {
       className: $cmp.foo,
-      attrs: stc2,
+      attrs: stc3,
       key: 8,
     }),
   ];

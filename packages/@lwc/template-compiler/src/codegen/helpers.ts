@@ -4,19 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlEscape, isVoidElement } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import {
-    Attribute,
-    BaseElement,
-    ChildNode,
-    Element,
-    Literal,
-    LWCDirectiveRenderMode,
-    Node,
-    Property,
-} from '../shared/types';
+import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
 import {
     isParentNode,
     isSlot,
@@ -31,85 +21,13 @@ import {
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import CodeGen from './codegen';
-
-const rawContentElements = new Set([
-    'STYLE',
-    'SCRIPT',
-    'XMP',
-    'IFRAME',
-    'NOEMBED',
-    'NOFRAMES',
-    'PLAINTEXT',
-    'NOSCRIPT',
-]);
-
-function serializeAttrs(element: Element): string {
-    /**
-     * 0: styleToken in existing class attr
-     * 1: styleToken for added class attr
-     * 2: styleToken as attr
-     */
-    const attrs: string[] = [];
-    let hasClassAttr = false;
-
-    const collector = ({ name, value }: Attribute | Property) => {
-        let v = (value as Literal).value;
-
-        if (name === 'class') {
-            hasClassAttr = true;
-            v += '${0}';
-        }
-        if (typeof v === 'string') {
-            attrs.push(`${name}="${htmlEscape(v, true)}"`);
-        } else {
-            attrs.push(name);
-        }
-    };
-
-    element.attributes.forEach(collector);
-    element.properties.forEach(collector);
-
-    return (attrs.length > 0 ? ' ' : '') + attrs.join(' ') + (hasClassAttr ? '${2}' : '${1}${2}');
-}
-
-function serializeChildren(children: ChildNode[], parentTagName: string): string {
-    let html = '';
-
-    children.forEach((child) => {
-        if (isElement(child)) {
-            html += serializeStaticElement(child);
-        } else if (isText(child)) {
-            if (rawContentElements.has(parentTagName.toUpperCase())) {
-                html += child.raw;
-            } else {
-                html += htmlEscape((child.value as Literal<string>).value);
-            }
-        } else if (isComment(child)) {
-            html += `<!--${htmlEscape(child.value)}-->`;
-        } else {
-            throw new TypeError(
-                'Unknown node found while serializing static content. Allowed nodes types are: Element, Text and Comment.'
-            );
-        }
-    });
-
-    return html;
-}
-
-export function serializeStaticElement(element: Element): string {
-    const tagName = element.name;
-
-    let html = '<' + tagName + serializeAttrs(element) + '>';
-
-    html += serializeChildren(element.children, tagName);
-
-    // element.children.length > 0 can happen in the SVG namespace.
-    if (!isVoidElement(tagName) || element.children.length > 0) {
-        html += `</${tagName}>`;
-    }
-
-    return html;
-}
+import { isLiteral } from '../shared/estree';
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toPropertyName(name)}`);
@@ -303,4 +221,69 @@ export function parseClassNames(classNames: string): string[] {
         .split(CLASSNAME_DELIMITER)
         .map((className) => className.trim())
         .filter((className) => className.length);
+}
+
+function isStaticNode(node: BaseElement): boolean {
+    let result = true;
+    const { name: nodeName, namespace = '', attributes, directives, properties, listeners } = node;
+
+    result &&= isElement(node);
+
+    // it is an element.
+    result &&= attributes.every(({ name, value }) => {
+        return (
+            isLiteral(value) &&
+            name !== 'slot' &&
+            // check for ScopedId
+            name !== 'id' &&
+            name !== 'spellcheck' && // spellcheck is specially handled by the vnodes. @todo: alternatively we could add/remove those that are static
+            !isIdReferencingAttribute(name) &&
+            // svg href needs sanitization.
+            !isSvgUseHref(nodeName, name, namespace) &&
+            // Check for ScopedFragId
+            !(
+                isAllowedFragOnlyUrlsXHTML(nodeName, name, namespace) &&
+                isFragmentOnlyUrl(value.value as string)
+            )
+        );
+    }); // all attrs are static
+    result &&= directives.length === 0; // do not have any directive
+    result &&= properties.every((prop) => isLiteral(prop.value)); // all properties are static
+    result &&= listeners.length === 0; // do not have any event listener
+
+    return result;
+}
+
+function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>) {
+    let childrenAreStatic = true;
+    let nodeIsStatic;
+
+    if (isText(node)) {
+        nodeIsStatic = isLiteral(node.value);
+    } else if (isComment(node)) {
+        nodeIsStatic = true;
+    } else {
+        // it is ForBlock | If | BaseElement
+        node.children.forEach((childNode) => {
+            collectStaticNodes(childNode, staticNodes);
+
+            childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
+        });
+
+        nodeIsStatic = isBaseElement(node) && isStaticNode(node);
+    }
+
+    if (nodeIsStatic && childrenAreStatic) {
+        staticNodes.add(node);
+    }
+}
+
+export function getStaticNodes(root: Root): Set<ChildNode> {
+    const staticNodes = new Set<ChildNode>();
+
+    root.children.forEach((childNode) => {
+        collectStaticNodes(childNode, staticNodes);
+    });
+
+    return staticNodes;
 }

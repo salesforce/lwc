@@ -1,5 +1,3 @@
 import { LightningElement } from 'lwc';
 
-export default class Xlink extends LightningElement {
-    href = '/foo';
-}
+export default class Xlink extends LightningElement {}
