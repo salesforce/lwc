@@ -236,7 +236,7 @@ function isStaticNode(node: BaseElement): boolean {
             name !== 'slot' &&
             // check for ScopedId
             name !== 'id' &&
-            name !== 'spellcheck' && // spellcheck is specially handled by the vnodes. @todo: alternatively we could add/remove those that are static
+            name !== 'spellcheck' && // spellcheck is specially handled by the vnodes.
             !isIdReferencingAttribute(name) &&
             // svg href needs sanitization.
             !isSvgUseHref(nodeName, name, namespace) &&
