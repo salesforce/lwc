@@ -6,7 +6,10 @@
  */
 import featureFlags from '@lwc/features';
 import { isNull, isFalse, defineProperties, defineProperty } from '@lwc/shared';
-import { isDelegatingFocus, isSyntheticShadowHost } from './shadow-root';
+
+import { getInnerText } from '../3rdparty/inner-text';
+import { isNodeShadowed } from '../shared/node-ownership';
+import { isGlobalPatchingSkipped } from '../shared/utils';
 import {
     hasAttribute,
     innerTextGetter,
@@ -16,6 +19,8 @@ import {
     tabIndexGetter,
     tabIndexSetter,
 } from '../env/element';
+
+import { isDelegatingFocus, isSyntheticShadowHost } from './shadow-root';
 import {
     disableKeyboardFocusNavigationRoutines,
     enableKeyboardFocusNavigationRoutines,
@@ -27,9 +32,6 @@ import {
     ignoreFocusIn,
     isKeyboardFocusNavigationRoutineEnabled,
 } from './focus';
-import { isNodeShadowed } from '../shared/node-ownership';
-import { isGlobalPatchingSkipped } from '../shared/utils';
-import { getInnerText } from '../3rdparty/inner-text';
 
 const { blur, focus } = HTMLElement.prototype;
 

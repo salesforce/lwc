@@ -20,11 +20,12 @@ import {
     isNull,
 } from '@lwc/shared';
 
+import { logError } from '../shared/logger';
+import { getComponentTag } from '../shared/format';
+
 import { LightningElement } from './base-lightning-element';
 import { globalHTMLProperties } from './attributes';
 import { getAssociatedVM, getAssociatedVMIfPresent } from './vm';
-import { logError } from '../shared/logger';
-import { getComponentTag } from '../shared/format';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(

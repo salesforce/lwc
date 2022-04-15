@@ -7,11 +7,11 @@
 
 'use strict';
 
-const { COMPAT, SYNTHETIC_SHADOW_ENABLED } = require('../../shared/options');
-const TAGS = require('./tags');
-
-const localConfig = require('./base');
 const { getSauceConfig } = require('../utils');
+const { COMPAT, SYNTHETIC_SHADOW_ENABLED } = require('../../shared/options');
+
+const TAGS = require('./tags');
+const localConfig = require('./base');
 
 const SAUCE_BROWSERS = [
     // Standard browsers

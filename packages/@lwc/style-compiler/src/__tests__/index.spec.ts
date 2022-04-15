@@ -7,9 +7,11 @@
 import fs from 'fs';
 import path from 'path';
 import { testFixtureDir } from 'jest-utils-lwc-internals';
-import type { CssSyntaxError } from 'postcss';
 import { LWC_VERSION } from '@lwc/shared';
+
 import { transform, Config } from '../index';
+
+import type { CssSyntaxError } from 'postcss';
 
 function normalizeError(err: Error) {
     if (err.name === 'CssSyntaxError') {

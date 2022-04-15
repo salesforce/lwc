@@ -6,9 +6,10 @@
  */
 import { assert, isFalse, isFunction, isUndefined } from '@lwc/shared';
 
+import { ReactiveObserver } from '../libs/mutation-tracker';
+
 import { invokeComponentRenderMethod, isInvokingRender, invokeEventListener } from './invoker';
 import { VM, scheduleRehydration } from './vm';
-import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { VNodes } from './vnodes';

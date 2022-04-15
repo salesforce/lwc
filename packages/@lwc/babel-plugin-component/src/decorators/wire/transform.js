@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { isWireDecorator } = require('./shared');
 const { LWC_COMPONENT_PROPERTIES } = require('../../constants');
+
+const { isWireDecorator } = require('./shared');
 
 const WIRE_PARAM_PREFIX = '$';
 const WIRE_CONFIG_ARG_NAME = '$cmp';

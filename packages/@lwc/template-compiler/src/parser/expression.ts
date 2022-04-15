@@ -8,12 +8,11 @@ import { Node, parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'ac
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
 import * as t from '../shared/estree';
+import { NormalizedConfig } from '../config';
+import { Expression, Identifier, SourceLocation } from '../shared/types';
 
 import ParserCtx from './parser';
 import { isReservedES6Keyword } from './utils/javascript';
-
-import { NormalizedConfig } from '../config';
-import { Expression, Identifier, SourceLocation } from '../shared/types';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';

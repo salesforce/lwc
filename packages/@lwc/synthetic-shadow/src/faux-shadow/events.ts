@@ -17,11 +17,14 @@ import {
     isUndefined,
     toString,
 } from '@lwc/shared';
-import { eventToShadowRootMap, getHost, getShadowRoot } from './shadow-root';
+
+import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { addEventListener, removeEventListener } from '../env/event-target';
-import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
+
 import { shouldInvokeListener } from '../shared/event-target';
+
+import { eventToShadowRootMap, getHost, getShadowRoot } from './shadow-root';
 
 export const enum EventListenerContext {
     CUSTOM_ELEMENT_LISTENER,

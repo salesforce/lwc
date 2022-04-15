@@ -20,7 +20,6 @@ import {
 } from '@lwc/shared';
 
 import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
-import type { HostNode, HostElement } from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
 
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
@@ -43,6 +42,8 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
+
+import type { HostNode, HostElement } from '../renderer';
 
 type ShadowRootMode = 'open' | 'closed';
 

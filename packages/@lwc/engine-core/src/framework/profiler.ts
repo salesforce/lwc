@@ -6,8 +6,8 @@
  */
 import { isUndefined, noop } from '@lwc/shared';
 
-import { RenderMode, ShadowMode, VM } from './vm';
 import { getComponentTag } from '../shared/format';
+import { RenderMode, ShadowMode, VM } from './vm';
 
 export const enum OperationId {
     Constructor = 0,

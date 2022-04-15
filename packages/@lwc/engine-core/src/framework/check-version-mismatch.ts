@@ -5,10 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
+
+import { logError } from '../shared/logger';
+
 import { Template } from './template';
 import { StylesheetFactory } from './stylesheet';
 import { LightningElementConstructor } from './base-lightning-element';
-import { logError } from '../shared/logger';
 
 let warned = false;
 

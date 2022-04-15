@@ -21,18 +21,11 @@ import {
     getPrototypeOf,
     isObject,
 } from '@lwc/shared';
-import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
+
+import { innerHTMLSetter } from '../env/element';
 import { dispatchEvent } from '../env/event-target';
-import {
-    shadowRootQuerySelector,
-    shadowRootQuerySelectorAll,
-    shadowRootChildNodes,
-    isNodeOwnedBy,
-    isSlotElement,
-} from './traverse';
-import { getTextContent } from '../3rdparty/polymer/text-content';
-import { createStaticNodeList } from '../shared/static-node-list';
 import { DocumentPrototypeActiveElement, createComment } from '../env/document';
+import { isInstanceOfNativeShadowRoot, isNativeShadowRootDefined } from '../env/shadow-root';
 import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -46,15 +39,26 @@ import {
     COMMENT_NODE,
     Node,
 } from '../env/node';
-import { isInstanceOfNativeShadowRoot, isNativeShadowRootDefined } from '../env/shadow-root';
-import { fauxElementFromPoint } from '../shared/faux-element-from-point';
-import { createStaticHTMLCollection } from '../shared/static-html-collection';
+
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
-import { getInternalChildNodes } from './node';
-import { innerHTMLSetter } from '../env/element';
-import { setNodeKey, setNodeOwnerKey } from '../shared/node-ownership';
+import { getTextContent } from '../3rdparty/polymer/text-content';
+
 import { getOwnerDocument } from '../shared/utils';
+import { createStaticNodeList } from '../shared/static-node-list';
+import { setNodeKey, setNodeOwnerKey } from '../shared/node-ownership';
+import { fauxElementFromPoint } from '../shared/faux-element-from-point';
 import { fauxElementsFromPoint } from '../shared/faux-elements-from-point';
+import { createStaticHTMLCollection } from '../shared/static-html-collection';
+
+import { getInternalChildNodes } from './node';
+import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
+import {
+    shadowRootQuerySelector,
+    shadowRootQuerySelectorAll,
+    shadowRootChildNodes,
+    isNodeOwnedBy,
+    isSlotElement,
+} from './traverse';
 
 const InternalSlot = new WeakMap<any, ShadowRootRecord>();
 const { createDocumentFragment } = document;
