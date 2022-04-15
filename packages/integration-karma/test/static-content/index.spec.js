@@ -1,6 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from './x/container/container';
 import MultipleStyles from './x/multipleStyles/multipleStyles';
+import SvgNs from './x/svgNs/svgNs';
 
 if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
     /* compat will have the token when rendering in native*/ describe('Mixed mode for static content', () => {
@@ -54,5 +55,18 @@ describe('static content when stylesheets change', () => {
             .then(() => {
                 expect(elm.shadowRoot.querySelector('div').getAttribute('class')).toBe('foo');
             });
+    });
+});
+
+describe('svg and static content', () => {
+    it('should use correct namespace', () => {
+        const elm = createElement('x-svg-ns', { is: SvgNs });
+        document.body.appendChild(elm);
+
+        const allStaticNodes = elm.querySelectorAll('.static');
+
+        allStaticNodes.forEach((node) => {
+            expect(node.namespaceURI).toBe('http://www.w3.org/2000/svg');
+        });
     });
 });

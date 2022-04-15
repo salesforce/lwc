@@ -42,7 +42,7 @@ import {
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { VNodes } from './vnodes';
-import { createFragment } from '../renderer';
+import { createFragment, getFirstChild } from '../renderer';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -120,59 +120,71 @@ const enum FragmentCache {
     SHADOW_MODE_SYNTHETIC = 1 << 1,
 }
 
-export function parseFragment(strings: string[], ...keys: number[]): () => Element {
-    const cache = create(null);
+function buildParseFragmentFn(
+    createFragmentFn: (html: string) => Element
+): (strings: string[], ...keys: number[]) => () => Element {
+    return (strings: string[], ...keys: number[]) => {
+        const cache = create(null);
 
-    return function (): Element {
-        const {
-            context: { hasScopedStyles, stylesheetToken },
-            shadowMode,
-        } = getVMBeingRendered()!;
-        const hasStyleToken = !isUndefined(stylesheetToken);
-        const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
+        return function (): Element {
+            const {
+                context: { hasScopedStyles, stylesheetToken },
+                shadowMode,
+            } = getVMBeingRendered()!;
+            const hasStyleToken = !isUndefined(stylesheetToken);
+            const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
 
-        let cacheKey = 0;
-        if (hasStyleToken && hasScopedStyles) {
-            cacheKey |= FragmentCache.HAS_SCOPED_STYLE;
-        }
-        if (hasStyleToken && isSyntheticShadow) {
-            cacheKey |= FragmentCache.SHADOW_MODE_SYNTHETIC;
-        }
-
-        if (!isUndefined(cache[cacheKey])) {
-            return cache[cacheKey];
-        }
-
-        const classToken = hasScopedStyles && hasStyleToken ? ' ' + stylesheetToken : '';
-        const classAttrToken =
-            hasScopedStyles && hasStyleToken ? ` class="${stylesheetToken}"` : '';
-        const attrToken = hasStyleToken && isSyntheticShadow ? ' ' + stylesheetToken : '';
-
-        let htmlFragment = '';
-        for (let i = 0, n = keys.length; i < n; i++) {
-            switch (keys[i]) {
-                case 0: // styleToken in existing class attr
-                    htmlFragment += strings[i] + classToken;
-                    break;
-                case 1: // styleToken for added class attr
-                    htmlFragment += strings[i] + classAttrToken;
-                    break;
-                case 2: // styleToken as attr
-                    htmlFragment += strings[i] + attrToken;
-                    break;
-                case 3: // ${1}${2}
-                    htmlFragment += strings[i] + classAttrToken + attrToken;
-                    break;
+            let cacheKey = 0;
+            if (hasStyleToken && hasScopedStyles) {
+                cacheKey |= FragmentCache.HAS_SCOPED_STYLE;
             }
-        }
+            if (hasStyleToken && isSyntheticShadow) {
+                cacheKey |= FragmentCache.SHADOW_MODE_SYNTHETIC;
+            }
 
-        htmlFragment += strings[strings.length - 1];
+            if (!isUndefined(cache[cacheKey])) {
+                return cache[cacheKey];
+            }
 
-        cache[cacheKey] = createFragment(htmlFragment);
+            const classToken = hasScopedStyles && hasStyleToken ? ' ' + stylesheetToken : '';
+            const classAttrToken =
+                hasScopedStyles && hasStyleToken ? ` class="${stylesheetToken}"` : '';
+            const attrToken = hasStyleToken && isSyntheticShadow ? ' ' + stylesheetToken : '';
 
-        return cache[cacheKey];
+            let htmlFragment = '';
+            for (let i = 0, n = keys.length; i < n; i++) {
+                switch (keys[i]) {
+                    case 0: // styleToken in existing class attr
+                        htmlFragment += strings[i] + classToken;
+                        break;
+                    case 1: // styleToken for added class attr
+                        htmlFragment += strings[i] + classAttrToken;
+                        break;
+                    case 2: // styleToken as attr
+                        htmlFragment += strings[i] + attrToken;
+                        break;
+                    case 3: // ${1}${2}
+                        htmlFragment += strings[i] + classAttrToken + attrToken;
+                        break;
+                }
+            }
+
+            htmlFragment += strings[strings.length - 1];
+
+            cache[cacheKey] = createFragmentFn(htmlFragment);
+
+            return cache[cacheKey];
+        };
     };
 }
+
+// Note: at the moment this code executes, createFragment have not being set.
+export const parseFragment = buildParseFragmentFn((html) => createFragment(html));
+export const parseSVGFragment = buildParseFragmentFn((html) => {
+    const fragment = createFragment('<svg>' + html + '</svg>');
+
+    return getFirstChild(fragment);
+});
 
 export function evaluateTemplate(vm: VM, html: Template): VNodes {
     if (process.env.NODE_ENV !== 'production') {

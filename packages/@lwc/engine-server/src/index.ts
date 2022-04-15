@@ -10,7 +10,10 @@ import './polyfills';
 // Renderer initialization -------------------------------------------------------------------------
 import './initializeRenderer';
 
+import { parseFragment } from '@lwc/engine-core';
+
 // Engine-core public APIs -------------------------------------------------------------------------
+export { parseFragment as parseSVGFragment };
 export {
     createContextProvider,
     register,

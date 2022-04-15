@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
+import { SVG_NAMESPACE } from '@lwc/shared';
+
 import { NormalizedConfig } from '../config';
 
 import * as t from '../shared/estree';
@@ -16,7 +18,11 @@ import {
     LWCDirectiveRenderMode,
     Root,
 } from '../shared/types';
-import { PARSE_FRAGMENT_METHOD_NAME, TEMPLATE_PARAMS } from '../shared/constants';
+import {
+    PARSE_FRAGMENT_METHOD_NAME,
+    PARSE_SVG_FRAGMENT_METHOD_NAME,
+    TEMPLATE_PARAMS,
+} from '../shared/constants';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
 import { getStaticNodes } from './helpers';
@@ -421,11 +427,16 @@ export default class CodeGen {
                 : this.generateKey();
         const html = serializeStaticElement(element, this.preserveComments);
 
-        this.usedLwcApis.add(PARSE_FRAGMENT_METHOD_NAME);
+        const parseMethod =
+            element.name !== 'svg' && element.namespace === SVG_NAMESPACE
+                ? PARSE_SVG_FRAGMENT_METHOD_NAME
+                : PARSE_FRAGMENT_METHOD_NAME;
+
+        this.usedLwcApis.add(parseMethod);
 
         // building the taggedTemplate expression as if it were a string
         const expr = t.taggedTemplateExpression(
-            t.identifier(PARSE_FRAGMENT_METHOD_NAME),
+            t.identifier(parseMethod),
             t.templateLiteral(
                 [
                     {

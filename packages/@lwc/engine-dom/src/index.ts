@@ -30,6 +30,7 @@ export {
     getComponentDef,
     isComponentConstructor,
     parseFragment,
+    parseSVGFragment,
     swapComponent,
     swapStyle,
     swapTemplate,
