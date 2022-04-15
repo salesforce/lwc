@@ -1,10 +1,7 @@
-import { createElement, LightningElement } from 'lwc';
+import { createElement, LightningElement, registerTemplate, registerComponent } from 'lwc';
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
-
-// TODO [#1284]: Import this from the lwc module once we move validation from compiler to linter
-const { registerTemplate, registerComponent } = LWC;
 
 if (!process.env.COMPAT) {
     describe('compiler version mismatch', () => {

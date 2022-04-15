@@ -1,9 +1,6 @@
-import { createElement } from 'lwc';
-
-// TODO [#1869]: getting the global API from global LWC in tests until it is allowed in compiler
-const { swapStyle } = LWC;
-
+import { createElement, swapStyle } from 'lwc';
 import Simple from 'base/simple';
+
 const { blockStyle, inlineStyle, noneStyle } = Simple;
 
 describe('style swapping', () => {
