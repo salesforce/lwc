@@ -103,7 +103,7 @@ export default class CodeGen {
      */
     private scope: Scope;
 
-    readonly staticNodes: Set<ChildNode>;
+    readonly staticNodes: Set<ChildNode> = new Set<ChildNode>();
     readonly hoistedNodes: Array<{ identifier: t.Identifier; expr: t.Expression }> = [];
 
     currentId = 0;
@@ -127,7 +127,9 @@ export default class CodeGen {
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        this.staticNodes = getStaticNodes(root);
+        if (!config.disableStaticContentOptimization) {
+            this.staticNodes = getStaticNodes(root);
+        }
         this.renderMode =
             root.directives.find(isRenderModeDirective)?.value.value ??
             LWCDirectiveRenderMode.shadow;

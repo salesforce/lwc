@@ -24,6 +24,11 @@ export interface Config {
      * When true, HTML comments in the template will be preserved.
      */
     preserveHtmlComments?: boolean;
+
+    /**
+     * When true, the template compiler will not generate optimized code for static content.
+     */
+    disableStaticContentOptimization?: boolean;
 }
 
 export type NormalizedConfig = Required<Config>;
@@ -32,6 +37,7 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'preserveHtmlComments',
+    'disableStaticContentOptimization',
 ]);
 
 export function normalizeConfig(config: Config): NormalizedConfig {
@@ -52,6 +58,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
+        disableStaticContentOptimization: false,
         ...config,
     };
 }
