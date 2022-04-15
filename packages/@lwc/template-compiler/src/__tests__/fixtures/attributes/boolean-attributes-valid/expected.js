@@ -1,6 +1,6 @@
 import _xFoo from "x/foo";
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p hidden${1}${2}>x</p>`;
+const $fragment1 = parseFragment`<p hidden${3}>x</p>`;
 const stc0 = {
   props: {
     autofocus: "true",

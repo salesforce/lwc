@@ -1,8 +1,8 @@
 import _xCustomComponent from "x/customComponent";
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<unknonwtag${1}${2}></unknonwtag>`;
-const $fragment2 = parseFragment`<span${1}${2}>valid tags should not warn</span>`;
-const $fragment3 = parseFragment`<spam${1}${2}>this tag has a typo</spam>`;
+const $fragment1 = parseFragment`<unknonwtag${3}></unknonwtag>`;
+const $fragment2 = parseFragment`<span${3}>valid tags should not warn</span>`;
+const $fragment3 = parseFragment`<spam${3}>this tag has a typo</spam>`;
 const stc0 = {
   props: {
     someTruthyValue: true,

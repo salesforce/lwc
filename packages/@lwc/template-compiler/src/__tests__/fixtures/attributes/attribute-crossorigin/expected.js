@@ -1,7 +1,7 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<img src="http://www.example.com/image.png" crossorigin="anonymous"${1}${2}>`;
-const $fragment2 = parseFragment`<video src="http://www.example.com/video.mp4" crossorigin="anonymous"${1}${2}></video>`;
-const $fragment3 = parseFragment`<audio src="http://www.example.com/video.mp3" crossorigin="anonymous"${1}${2}></audio>`;
+const $fragment1 = parseFragment`<img src="http://www.example.com/image.png" crossorigin="anonymous"${3}>`;
+const $fragment2 = parseFragment`<video src="http://www.example.com/video.mp4" crossorigin="anonymous"${3}></video>`;
+const $fragment3 = parseFragment`<audio src="http://www.example.com/video.mp3" crossorigin="anonymous"${3}></audio>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment } = $api;
   return [

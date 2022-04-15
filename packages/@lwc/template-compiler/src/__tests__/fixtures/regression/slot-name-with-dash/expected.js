@@ -1,5 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p${1}${2}>Test slot content</p>`;
+const $fragment1 = parseFragment`<p${3}>Test slot content</p>`;
 const stc0 = {
   attrs: {
     name: "secret-slot",

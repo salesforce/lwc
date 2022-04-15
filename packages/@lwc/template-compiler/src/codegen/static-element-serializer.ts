@@ -65,15 +65,19 @@ function serializeAttrs(element: Element): string {
         })
         .forEach(collector);
 
-    return (attrs.length > 0 ? ' ' : '') + attrs.join(' ') + (hasClassAttr ? '${2}' : '${1}${2}');
+    return (attrs.length > 0 ? ' ' : '') + attrs.join(' ') + (hasClassAttr ? '${2}' : '${3}');
 }
 
-function serializeChildren(children: ChildNode[], parentTagName: string): string {
+function serializeChildren(
+    children: ChildNode[],
+    parentTagName: string,
+    preserveComments: boolean
+): string {
     let html = '';
 
     children.forEach((child) => {
         if (isElement(child)) {
-            html += serializeStaticElement(child);
+            html += serializeStaticElement(child, preserveComments);
         } else if (isText(child)) {
             if (rawContentElements.has(parentTagName.toUpperCase())) {
                 html += child.raw;
@@ -81,7 +85,7 @@ function serializeChildren(children: ChildNode[], parentTagName: string): string
                 html += htmlEscape((child.value as Literal<string>).value);
             }
         } else if (isComment(child)) {
-            html += `<!--${htmlEscape(child.value)}-->`;
+            html += preserveComments ? `<!--${htmlEscape(child.value)}-->` : '';
         } else {
             throw new TypeError(
                 'Unknown node found while serializing static content. Allowed nodes types are: Element, Text and Comment.'
@@ -92,12 +96,12 @@ function serializeChildren(children: ChildNode[], parentTagName: string): string
     return html;
 }
 
-export function serializeStaticElement(element: Element): string {
+export function serializeStaticElement(element: Element, preserveComments: boolean): string {
     const tagName = element.name;
 
     let html = '<' + tagName + serializeAttrs(element) + '>';
 
-    html += serializeChildren(element.children, tagName);
+    html += serializeChildren(element.children, tagName, preserveComments);
 
     // element.children.length > 0 can happen in the SVG namespace.
     if (!isVoidElement(tagName) || element.children.length > 0) {

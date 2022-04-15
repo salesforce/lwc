@@ -1,6 +1,6 @@
 import _xB from "x/b";
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<div${1}${2}></div>`;
+const $fragment1 = parseFragment`<div${3}></div>`;
 const stc0 = {
   key: 0,
 };

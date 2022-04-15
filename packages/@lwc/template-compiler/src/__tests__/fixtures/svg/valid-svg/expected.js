@@ -1,5 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<svg${1}${2}><a${1}${2}></a><circle${1}${2}><!-- &lt;clipPath&gt;&lt;/clipPath&gt; --><defs${1}${2}></defs><desc${1}${2}></desc><ellipse${1}${2}><filter${1}${2}></filter><g${1}${2}></g><line${1}${2}><marker${1}${2}></marker><mask${1}${2}></mask><path${1}${2}><pattern${1}${2}></pattern><polygon${1}${2}></polygon><polyline${1}${2}></polyline><rect${1}${2}><stop${1}${2}></stop><symbol${1}${2}></symbol><text${1}${2}></text><!-- &lt;textPath&gt;&lt;/textPath&gt; --><title${1}${2}></title><tspan${1}${2}></tspan><use${1}${2}></use></svg>`;
+const $fragment1 = parseFragment`<svg${3}><a${3}></a><circle${3}><defs${3}></defs><desc${3}></desc><ellipse${3}><filter${3}></filter><g${3}></g><line${3}><marker${3}></marker><mask${3}></mask><path${3}><pattern${3}></pattern><polygon${3}></polygon><polyline${3}></polyline><rect${3}><stop${3}></stop><symbol${3}></symbol><text${3}></text><title${3}></title><tspan${3}></tspan><use${3}></use></svg>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment } = $api;
   return [api_static_fragment($fragment1(), 1)];

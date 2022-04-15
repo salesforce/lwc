@@ -419,7 +419,7 @@ export default class CodeGen {
             slotParentName !== undefined
                 ? `@${slotParentName}:${this.generateKey()}`
                 : this.generateKey();
-        const html = serializeStaticElement(element);
+        const html = serializeStaticElement(element, this.preserveComments);
 
         this.usedLwcApis.add(PARSE_FRAGMENT_METHOD_NAME);
 

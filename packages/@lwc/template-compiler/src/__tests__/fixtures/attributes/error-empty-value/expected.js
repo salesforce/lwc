@@ -1,6 +1,6 @@
 import _fooBar from "foo/bar";
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p title=""${1}${2}></p>`;
+const $fragment1 = parseFragment`<p title=""${3}></p>`;
 const stc0 = {
   props: {
     content: "",

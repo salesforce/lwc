@@ -1,5 +1,5 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<li${1}${2}>Last</li>`;
+const $fragment1 = parseFragment`<li${3}>Last</li>`;
 const stc0 = {
   key: 0,
 };

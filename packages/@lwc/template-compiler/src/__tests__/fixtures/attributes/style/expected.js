@@ -1,11 +1,11 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<div style="color: blue"${1}${2}></div>`;
-const $fragment2 = parseFragment`<div style="color: blue;"${1}${2}></div>`;
-const $fragment3 = parseFragment`<div style="color: blue ;"${1}${2}></div>`;
-const $fragment4 = parseFragment`<div style="box-shadow: 10px 5px 5px black;"${1}${2}></div>`;
-const $fragment5 = parseFragment`<div style="font-size: 12px; background: blue; color:red ;"${1}${2}></div>`;
-const $fragment6 = parseFragment`<div style="font-size: 12px;background: blue; color:red ;"${1}${2}></div>`;
-const $fragment7 = parseFragment`<div style="background-color:rgba(255,0,0,0.3)"${1}${2}></div>`;
+const $fragment1 = parseFragment`<div style="color: blue"${3}></div>`;
+const $fragment2 = parseFragment`<div style="color: blue;"${3}></div>`;
+const $fragment3 = parseFragment`<div style="color: blue ;"${3}></div>`;
+const $fragment4 = parseFragment`<div style="box-shadow: 10px 5px 5px black;"${3}></div>`;
+const $fragment5 = parseFragment`<div style="font-size: 12px; background: blue; color:red ;"${3}></div>`;
+const $fragment6 = parseFragment`<div style="font-size: 12px;background: blue; color:red ;"${3}></div>`;
+const $fragment7 = parseFragment`<div style="background-color:rgba(255,0,0,0.3)"${3}></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { st: api_static_fragment } = $api;
   return [

@@ -1,9 +1,9 @@
 import _xFoo from "x/foo";
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p hidden${1}${2}>boolean present</p>`;
-const $fragment2 = parseFragment`<p hidden=""${1}${2}>empty string, should be true</p>`;
-const $fragment3 = parseFragment`<p hidden="other than true"${1}${2}>string value, should be true</p>`;
-const $fragment4 = parseFragment`<p hidden="3"${1}${2}>integer value, should be true</p>`;
+const $fragment1 = parseFragment`<p hidden${3}>boolean present</p>`;
+const $fragment2 = parseFragment`<p hidden=""${3}>empty string, should be true</p>`;
+const $fragment3 = parseFragment`<p hidden="other than true"${3}>string value, should be true</p>`;
+const $fragment4 = parseFragment`<p hidden="3"${3}>integer value, should be true</p>`;
 const stc0 = {
   props: {
     hidden: true,

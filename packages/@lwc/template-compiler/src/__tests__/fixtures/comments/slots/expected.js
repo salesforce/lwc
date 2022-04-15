@@ -1,6 +1,6 @@
 import _xChild from "x/child";
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p${1}${2}>slot content</p>`;
+const $fragment1 = parseFragment`<p${3}>slot content</p>`;
 const stc0 = {
   key: 0,
 };

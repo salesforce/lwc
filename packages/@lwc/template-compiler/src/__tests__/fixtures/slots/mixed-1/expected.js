@@ -1,9 +1,9 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p${1}${2}>Before header</p>`;
-const $fragment2 = parseFragment`<p${1}${2}>In</p>`;
-const $fragment3 = parseFragment`<p${1}${2}>between</p>`;
-const $fragment4 = parseFragment`<p${1}${2}>Default body</p>`;
-const $fragment5 = parseFragment`<p${1}${2}>Default footer</p>`;
+const $fragment1 = parseFragment`<p${3}>Before header</p>`;
+const $fragment2 = parseFragment`<p${3}>In</p>`;
+const $fragment3 = parseFragment`<p${3}>between</p>`;
+const $fragment4 = parseFragment`<p${3}>Default body</p>`;
+const $fragment5 = parseFragment`<p${3}>Default footer</p>`;
 const stc0 = {
   key: 0,
 };

@@ -1,6 +1,6 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p${1}${2}>Sibling</p>`;
-const $fragment2 = parseFragment`<p${1}${2}>Default slot content</p>`;
+const $fragment1 = parseFragment`<p${3}>Sibling</p>`;
+const $fragment2 = parseFragment`<p${3}>Default slot content</p>`;
 const stc0 = {
   key: 0,
 };

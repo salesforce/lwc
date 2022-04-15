@@ -1,7 +1,7 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p${1}${2}>Last child</p>`;
-const $fragment2 = parseFragment`<p${1}${2}>Last child</p>`;
-const $fragment3 = parseFragment`<section class="s4${0}"${2}><p${1}${2}>Other child1</p><p${1}${2}>Other child2</p></section>`;
+const $fragment1 = parseFragment`<p${3}>Last child</p>`;
+const $fragment2 = parseFragment`<p${3}>Last child</p>`;
+const $fragment3 = parseFragment`<section class="s4${0}"${2}><p${3}>Other child1</p><p${3}>Other child2</p></section>`;
 const stc0 = {
   classMap: {
     s1: true,

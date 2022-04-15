@@ -1,20 +1,20 @@
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<feFlood x="25%" y="25%" width="50%" height="50%" flood-color="green" flood-opacity="0.75"${1}${2}>`;
-const $fragment2 = parseFragment`<feBlend x="25%" y="25%" width="50%" height="50%" in2="SourceGraphic" mode="multiply"${1}${2}>`;
-const $fragment3 = parseFragment`<feMerge x="25%" y="25%" width="50%" height="50%"${1}${2}><feMergeNode in="SourceGraphic"${1}${2}><feMergeNode in="FillPaint"${1}${2}></feMerge>`;
-const $fragment4 = parseFragment`<g fill="none" stroke="blue" stroke-width="4"${1}${2}><rect width="200" height="200"${1}${2}><line x2="200" y2="200"${1}${2}><line x1="200" y2="200"${1}${2}></g>`;
-const $fragment5 = parseFragment`<circle fill="green" filter="url(#flood)" cx="100" cy="100" r="90"${1}${2}>`;
-const $fragment6 = parseFragment`<g transform="translate(200 0)"${1}${2}><g fill="none" stroke="blue" stroke-width="4"${1}${2}><rect width="200" height="200"${1}${2}><line x2="200" y2="200"${1}${2}><line x1="200" y2="200"${1}${2}></g><circle fill="green" filter="url(#blend)" cx="100" cy="100" r="90"${1}${2}></g>`;
-const $fragment7 = parseFragment`<g transform="translate(0 200)"${1}${2}><g fill="none" stroke="blue" stroke-width="4"${1}${2}><rect width="200" height="200"${1}${2}><line x2="200" y2="200"${1}${2}><line x1="200" y2="200"${1}${2}></g><circle fill="green" fill-opacity="0.5" filter="url(#merge)" cx="100" cy="100" r="90"${1}${2}></g>`;
-const $fragment8 = parseFragment`<rect fill="none" stroke="blue" x="1" y="1" width="598" height="248"${1}${2}>`;
-const $fragment9 = parseFragment`<g${1}${2}><rect x="50" y="25" width="100" height="200" filter="url(#Default)"${1}${2}><rect x="50" y="25" width="100" height="200" fill="none" stroke="green"${1}${2}><rect x="250" y="25" width="100" height="200" filter="url(#Fitted)"${1}${2}><rect x="250" y="25" width="100" height="200" fill="none" stroke="green"${1}${2}><rect x="450" y="25" width="100" height="200" filter="url(#Shifted)"${1}${2}><rect x="450" y="25" width="100" height="200" fill="none" stroke="green"${1}${2}></g>`;
-const $fragment10 = parseFragment`<desc${1}${2}>Produces a 3D lighting effect.</desc>`;
-const $fragment11 = parseFragment`<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"${1}${2}>`;
-const $fragment12 = parseFragment`<feOffset in="blur" dx="4" dy="4" result="offsetBlur"${1}${2}>`;
-const $fragment13 = parseFragment`<feSpecularLighting in="blur" surfaceScale="5" specularConstant=".75" specularExponent="20" lighting-color="#bbbbbb" result="specOut"${1}${2}><fePointLight x="-5000" y="-10000" z="20000"${1}${2}></feSpecularLighting>`;
-const $fragment14 = parseFragment`<feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut"${1}${2}>`;
-const $fragment15 = parseFragment`<feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litPaint"${1}${2}>`;
-const $fragment16 = parseFragment`<feMerge${1}${2}><feMergeNode in="offsetBlur"${1}${2}><feMergeNode in="litPaint"${1}${2}></feMerge>`;
+const $fragment1 = parseFragment`<feFlood x="25%" y="25%" width="50%" height="50%" flood-color="green" flood-opacity="0.75"${3}>`;
+const $fragment2 = parseFragment`<feBlend x="25%" y="25%" width="50%" height="50%" in2="SourceGraphic" mode="multiply"${3}>`;
+const $fragment3 = parseFragment`<feMerge x="25%" y="25%" width="50%" height="50%"${3}><feMergeNode in="SourceGraphic"${3}><feMergeNode in="FillPaint"${3}></feMerge>`;
+const $fragment4 = parseFragment`<g fill="none" stroke="blue" stroke-width="4"${3}><rect width="200" height="200"${3}><line x2="200" y2="200"${3}><line x1="200" y2="200"${3}></g>`;
+const $fragment5 = parseFragment`<circle fill="green" filter="url(#flood)" cx="100" cy="100" r="90"${3}>`;
+const $fragment6 = parseFragment`<g transform="translate(200 0)"${3}><g fill="none" stroke="blue" stroke-width="4"${3}><rect width="200" height="200"${3}><line x2="200" y2="200"${3}><line x1="200" y2="200"${3}></g><circle fill="green" filter="url(#blend)" cx="100" cy="100" r="90"${3}></g>`;
+const $fragment7 = parseFragment`<g transform="translate(0 200)"${3}><g fill="none" stroke="blue" stroke-width="4"${3}><rect width="200" height="200"${3}><line x2="200" y2="200"${3}><line x1="200" y2="200"${3}></g><circle fill="green" fill-opacity="0.5" filter="url(#merge)" cx="100" cy="100" r="90"${3}></g>`;
+const $fragment8 = parseFragment`<rect fill="none" stroke="blue" x="1" y="1" width="598" height="248"${3}>`;
+const $fragment9 = parseFragment`<g${3}><rect x="50" y="25" width="100" height="200" filter="url(#Default)"${3}><rect x="50" y="25" width="100" height="200" fill="none" stroke="green"${3}><rect x="250" y="25" width="100" height="200" filter="url(#Fitted)"${3}><rect x="250" y="25" width="100" height="200" fill="none" stroke="green"${3}><rect x="450" y="25" width="100" height="200" filter="url(#Shifted)"${3}><rect x="450" y="25" width="100" height="200" fill="none" stroke="green"${3}></g>`;
+const $fragment10 = parseFragment`<desc${3}>Produces a 3D lighting effect.</desc>`;
+const $fragment11 = parseFragment`<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"${3}>`;
+const $fragment12 = parseFragment`<feOffset in="blur" dx="4" dy="4" result="offsetBlur"${3}>`;
+const $fragment13 = parseFragment`<feSpecularLighting in="blur" surfaceScale="5" specularConstant=".75" specularExponent="20" lighting-color="#bbbbbb" result="specOut"${3}><fePointLight x="-5000" y="-10000" z="20000"${3}></feSpecularLighting>`;
+const $fragment14 = parseFragment`<feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut"${3}>`;
+const $fragment15 = parseFragment`<feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litPaint"${3}>`;
+const $fragment16 = parseFragment`<feMerge${3}><feMergeNode in="offsetBlur"${3}><feMergeNode in="litPaint"${3}></feMerge>`;
 const stc0 = {
   attrs: {
     width: "400",
