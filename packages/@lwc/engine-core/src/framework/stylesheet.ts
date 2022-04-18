@@ -6,15 +6,7 @@
  */
 import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
-import {
-    getClassList,
-    removeAttribute,
-    setAttribute,
-    insertGlobalStylesheet,
-    ssr,
-    isHydrating,
-    insertStylesheet,
-} from '../renderer';
+import { getClassList, removeAttribute, setAttribute, ssr, insertStylesheet } from '../renderer';
 
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -207,9 +199,9 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
     const { renderMode, shadowMode } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
-            insertGlobalStylesheet(stylesheets[i]);
+            insertStylesheet(stylesheets[i]);
         }
-    } else if (ssr || isHydrating()) {
+    } else if (ssr || vm.hydrated) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
         //       This works in the client, because the stylesheets are created, and cached in the VM
         //       the first time the VM renders.
@@ -217,17 +209,12 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
         // native shadow or light DOM, SSR
         const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
         return createInlineStyleVNode(combinedStylesheetContent);
+        // If it's being removed, we don't need to do anything. The vdom diffing will take care of it.
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
-        const isGlobal = isNull(root);
         for (let i = 0; i < stylesheets.length; i++) {
-            if (isGlobal) {
-                insertGlobalStylesheet(stylesheets[i]);
-            } else {
-                // local level
-                insertStylesheet(stylesheets[i], root!.shadowRoot!);
-            }
+            insertStylesheet(stylesheets[i], root?.shadowRoot ?? undefined);
         }
     }
     return null;

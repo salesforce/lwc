@@ -25,4 +25,14 @@ describe('style swapping', () => {
                 );
             });
     });
+
+    afterEach(() => {
+        // FIXME: Currently, hot swapping does not actually remove styles from the DOM
+        for (const elm of document.head.querySelectorAll('style')) {
+            elm.parentElement.removeChild(elm);
+        }
+        if (document.adoptedStyleSheets) {
+            document.adoptedStyleSheets = [];
+        }
+    });
 });

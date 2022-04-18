@@ -36,6 +36,7 @@ function createVMWithProps(element: Element, Ctor: typeof LightningElement, prop
         mode: 'open',
         owner: null,
         tagName: element.tagName.toLowerCase(),
+        hydrated: true,
     });
 
     for (const [key, value] of Object.entries(props)) {

@@ -204,6 +204,7 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
         mode,
         owner,
         tagName: sel,
+        hydrated: true,
     });
 
     vnode.elm = elm;

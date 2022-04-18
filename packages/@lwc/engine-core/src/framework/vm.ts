@@ -111,6 +111,8 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly context: Context;
     /** The owner VM or null for root elements. */
     readonly owner: VM<N, E> | null;
+    /** Whether or not the VM was hydrated */
+    readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
     readonly renderMode: RenderMode;
     shadowMode: ShadowMode;
@@ -263,9 +265,10 @@ export function createVM<HostNode, HostElement>(
         mode: ShadowRootMode;
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
+        hydrated?: boolean;
     }
 ): VM {
-    const { mode, owner, tagName } = options;
+    const { mode, owner, tagName, hydrated } = options;
     const def = getComponentInternalDef(ctor);
 
     const vm: VM = {
@@ -286,6 +289,7 @@ export function createVM<HostNode, HostElement>(
         cmpSlots: create(null),
         oar: create(null),
         cmpTemplate: null,
+        hydrated: Boolean(hydrated),
 
         renderMode: def.renderMode,
         shadowMode: computeShadowMode(def, owner),
