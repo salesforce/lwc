@@ -598,27 +598,27 @@ export const ParserDiagnostics = {
     KEY_SHOULD_BE_IN_ITERATION: {
         code: 1149,
         message:
-          'Invalid key attribute on element <{0}>. The key attribute should be applied to an element with for:each or iterator:*, or to a direct child of a <template> element with for:each or iterator:*. This key will be ignored, and may throw an error in future versions of LWC.',
+            'Invalid key attribute on element <{0}>. The key attribute should be applied to an element with for:each or iterator:*, or to a direct child of a <template> element with for:each or iterator:*. This key will be ignored, and may throw an error in future versions of LWC.',
         level: DiagnosticLevel.Warning,
     },
     LWC_REF_INVALID_ELEMENT: {
         code: 1150,
         message:
-          'Invalid lwc:ref usage on element "{0}". The directive can\'t be used on a slot or a template element.',
+            'Invalid lwc:ref usage on element "{0}". The directive can\'t be used on a slot or a template element.',
         level: DiagnosticLevel.Error,
         url: '',
     },
     LWC_REF_INVALID_VALUE: {
         code: 1151,
         message:
-          'Invalid lwc:ref usage on element "{0}". The directive binding must be a non-empty string.',
+            'Invalid lwc:ref usage on element "{0}". The directive binding must be a non-empty string.',
         level: DiagnosticLevel.Error,
         url: '',
     },
     LWC_REF_INVALID_LOCATION_INSIDE_ITERATION: {
         code: 1152,
         message:
-          'Invalid lwc:ref usage on element "{0}". lwc:ref cannot be used inside for:each or an iterator.',
+            'Invalid lwc:ref usage on element "{0}". lwc:ref cannot be used inside for:each or an iterator.',
         level: DiagnosticLevel.Error,
         url: '',
     },

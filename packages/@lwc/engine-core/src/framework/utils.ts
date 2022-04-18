@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, isFunction, isNull, isUndefined, seal } from "@lwc/shared";
-import { StylesheetFactory, TemplateStylesheetFactories } from "./stylesheet";
-import { RefVNodes, VM } from "./vm";
-import { VNode } from "./vnodes";
+import { ArrayPush, create, isFunction, isNull, isUndefined, seal } from '@lwc/shared';
+import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
+import { RefVNodes, VM } from './vm';
+import { VNode } from './vnodes';
 
 type Callback = () => void;
 
