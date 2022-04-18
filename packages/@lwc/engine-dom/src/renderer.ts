@@ -21,7 +21,7 @@ import {
     getOwnPropertyDescriptor,
 } from '@lwc/shared';
 
-const globalStylesheets: { [content: string]: true } = create(null);
+const globalStylesheets: { [content: string]: HTMLStyleElement } = create(null);
 
 if (process.env.NODE_ENV === 'development') {
     // @ts-ignore
@@ -43,7 +43,8 @@ const supportsMutableAdoptedStyleSheets =
     getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
 const styleElements: { [content: string]: HTMLStyleElement } = create(null);
 const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
-const shadowRootsToStyleSheets = new WeakMap<ShadowRoot, { [content: string]: true }>();
+const shadowRootsToStyleSheets = new WeakMap<ShadowRoot, { [content: string]: HTMLStyleElement }>();
+const stylesToUsageCount = new WeakMap<HTMLStyleElement | CSSStyleSheet, number>();
 
 export let getCustomElement: any;
 export let defineCustomElement: any;
@@ -72,6 +73,16 @@ function isCustomElementRegistryAvailable() {
     }
 }
 
+function incrementOrDecrementUsageCount(elm: HTMLStyleElement | CSSStyleSheet, delta: number) {
+    let count = stylesToUsageCount.get(elm);
+    if (isUndefined(count)) {
+        count = 0;
+    }
+    count += delta;
+    stylesToUsageCount.set(elm, count);
+    return count;
+}
+
 function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
     // It's important for CSSStyleSheets to be unique based on their content, so that
     // `shadowRoot.adoptedStyleSheets.includes(sheet)` works.
@@ -81,6 +92,7 @@ function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
         styleSheet.replaceSync(content);
         styleSheets[content] = styleSheet;
     }
+    incrementOrDecrementUsageCount(styleSheet, 1);
     const { adoptedStyleSheets } = target;
     if (!adoptedStyleSheets.includes(styleSheet)) {
         if (supportsMutableAdoptedStyleSheets) {
@@ -93,6 +105,25 @@ function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
     }
 }
 
+function removeConstructableStyleSheet(content: string, target: ShadowRoot) {
+    const styleSheet = styleSheets[content];
+
+    if (isUndefined(styleSheet)) {
+        return;
+    }
+    const count = incrementOrDecrementUsageCount(styleSheet, -1);
+    if (count === 0) {
+        const { adoptedStyleSheets } = target;
+        if (adoptedStyleSheets.includes(styleSheet)) {
+            if (supportsMutableAdoptedStyleSheets) {
+                adoptedStyleSheets.splice(adoptedStyleSheets.indexOf(styleSheet), 1);
+            } else {
+                target.adoptedStyleSheets = [...adoptedStyleSheets].filter((_) => _ !== styleSheet);
+            }
+        }
+    }
+}
+
 function insertStyleElement(content: string, target: ShadowRoot) {
     // Avoid inserting duplicate `<style>`s
     let sheets = shadowRootsToStyleSheets.get(target);
@@ -100,10 +131,11 @@ function insertStyleElement(content: string, target: ShadowRoot) {
         sheets = create(null);
         shadowRootsToStyleSheets.set(target, sheets!);
     }
-    if (sheets![content]) {
+    const existingElement = sheets![content];
+    if (!isUndefined(existingElement)) {
+        incrementOrDecrementUsageCount(existingElement, 1);
         return;
     }
-    sheets![content] = true;
 
     // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
     // faster to call `cloneNode()` on an existing node than to recreate it every time.
@@ -116,7 +148,27 @@ function insertStyleElement(content: string, target: ShadowRoot) {
     } else {
         elm = elm.cloneNode(true) as HTMLStyleElement;
     }
+    sheets![content] = elm;
     target.appendChild(elm);
+    incrementOrDecrementUsageCount(elm, 1);
+}
+
+function removeStyleElement(content: string, target: ShadowRoot) {
+    const sheets = shadowRootsToStyleSheets.get(target);
+    if (isUndefined(sheets)) {
+        return;
+    }
+    const elm = sheets![content];
+    if (isUndefined(elm)) {
+        return;
+    }
+    const count = incrementOrDecrementUsageCount(elm, -1);
+    if (count === 0) {
+        if (elm.parentNode === target) {
+            target.removeChild(elm);
+        }
+        delete sheets![content];
+    }
 }
 
 if (isCustomElementRegistryAvailable()) {
@@ -350,17 +402,33 @@ export function isConnected(node: Node): boolean {
 }
 
 export function insertGlobalStylesheet(content: string): void {
-    if (!isUndefined(globalStylesheets[content])) {
+    const existingElement = globalStylesheets[content];
+    if (!isUndefined(existingElement)) {
+        incrementOrDecrementUsageCount(existingElement, 1);
         return;
     }
-
-    globalStylesheets[content] = true;
 
     const elm = document.createElement('style');
     elm.type = 'text/css';
     elm.textContent = content;
 
+    globalStylesheets[content] = elm;
     globalStylesheetsParentElement.appendChild(elm);
+    incrementOrDecrementUsageCount(elm, 1);
+}
+
+export function removeGlobalStylesheet(content: string): void {
+    const elm = globalStylesheets[content];
+    if (isUndefined(elm)) {
+        return;
+    }
+    const count = incrementOrDecrementUsageCount(elm, -1);
+    if (count === 0) {
+        if (elm.parentNode === globalStylesheetsParentElement) {
+            globalStylesheetsParentElement.removeChild(elm);
+        }
+        delete globalStylesheets[content];
+    }
 }
 
 export function insertStylesheet(content: string, target: ShadowRoot): void {
@@ -369,6 +437,15 @@ export function insertStylesheet(content: string, target: ShadowRoot): void {
     } else {
         // Fall back to <style> element
         insertStyleElement(content, target);
+    }
+}
+
+export function removeStylesheet(content: string, target: ShadowRoot): void {
+    if (supportsConstructableStyleSheets) {
+        removeConstructableStyleSheet(content, target);
+    } else {
+        // Fall back to <style> element
+        removeStyleElement(content, target);
     }
 }
 

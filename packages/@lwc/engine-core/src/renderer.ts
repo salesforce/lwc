@@ -258,6 +258,18 @@ export function setInsertStylesheet(insertStylesheetImpl: insertStylesheetFunc) 
     insertStylesheet = insertStylesheetImpl;
 }
 
+type removeGlobalStylesheetFunc = (content: string) => void;
+export let removeGlobalStylesheet: insertGlobalStylesheetFunc;
+export function setRemoveGlobalStylesheet(removeGlobalStylesheetImpl: removeGlobalStylesheetFunc) {
+    removeGlobalStylesheet = removeGlobalStylesheetImpl;
+}
+
+type removeStylesheetFunc = (content: string, target: ShadowRoot) => void;
+export let removeStylesheet: removeStylesheetFunc;
+export function setRemoveStylesheet(removeStylesheetImpl: removeStylesheetFunc) {
+    removeStylesheet = removeStylesheetImpl;
+}
+
 type assertInstanceOfHTMLElementFunc = (elm: any, msg: string) => void;
 export let assertInstanceOfHTMLElement: assertInstanceOfHTMLElementFunc;
 export function setAssertInstanceOfHTMLElement(

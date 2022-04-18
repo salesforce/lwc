@@ -331,6 +331,9 @@ export const insertGlobalStylesheet = noop as (content: string) => void;
 // synthetic shadow.
 export const insertStylesheet = noop as (content: string, target: any) => void;
 
+export const removeGlobalStylesheet = noop as (content: string) => void;
+export const removeStylesheet = noop as (content: string, target: any) => void;
+
 // Noop on SSR.
 export const addEventListener = noop as (
     target: HostNode,

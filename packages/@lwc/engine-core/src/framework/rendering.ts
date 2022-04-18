@@ -297,6 +297,7 @@ function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
             if (!isUndefined(vm)) {
                 removeVM(vm);
             }
+            break;
         }
     }
 }

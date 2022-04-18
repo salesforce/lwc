@@ -14,6 +14,8 @@ import {
     ssr,
     isHydrating,
     insertStylesheet,
+    removeGlobalStylesheet,
+    removeStylesheet,
 } from '../renderer';
 
 import api from './api';
@@ -203,11 +205,17 @@ function getNearestNativeShadowComponent(vm: VM): VM | null {
     return owner;
 }
 
-export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
+function createOrRemoveStylesheet(vm: VM, stylesheets: string[], remove: true): null;
+function createOrRemoveStylesheet(vm: VM, stylesheets: string[], remove: false): VNode | null;
+function createOrRemoveStylesheet(vm: VM, stylesheets: string[], remove: boolean) {
     const { renderMode, shadowMode } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
-            insertGlobalStylesheet(stylesheets[i]);
+            if (remove) {
+                removeGlobalStylesheet(stylesheets[i]);
+            } else {
+                insertGlobalStylesheet(stylesheets[i]);
+            }
         }
     } else if (ssr || isHydrating()) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
@@ -215,20 +223,39 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
         //       the first time the VM renders.
 
         // native shadow or light DOM, SSR
-        const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
-        return createInlineStyleVNode(combinedStylesheetContent);
+        if (!remove) {
+            const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
+            return createInlineStyleVNode(combinedStylesheetContent);
+        }
+        // If it's being removed, we don't need to do anything. The vdom diffing will take care of it.
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
         const isGlobal = isNull(root);
         for (let i = 0; i < stylesheets.length; i++) {
             if (isGlobal) {
-                insertGlobalStylesheet(stylesheets[i]);
+                if (remove) {
+                    removeGlobalStylesheet(stylesheets[i]);
+                } else {
+                    insertGlobalStylesheet(stylesheets[i]);
+                }
             } else {
                 // local level
-                insertStylesheet(stylesheets[i], root!.shadowRoot!);
+                if (remove) {
+                    removeStylesheet(stylesheets[i], root!.shadowRoot!);
+                } else {
+                    insertStylesheet(stylesheets[i], root!.shadowRoot!);
+                }
             }
         }
     }
     return null;
+}
+
+export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
+    return createOrRemoveStylesheet(vm, stylesheets, false);
+}
+
+export function unrenderStylesheet(vm: VM, stylesheets: string[]) {
+    createOrRemoveStylesheet(vm, stylesheets, true);
 }

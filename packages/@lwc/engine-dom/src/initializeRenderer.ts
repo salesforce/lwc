@@ -46,6 +46,8 @@ import {
     setSetText,
     setSsr,
     setAddEventListener,
+    setRemoveGlobalStylesheet,
+    setRemoveStylesheet,
 } from '@lwc/engine-core';
 
 import {
@@ -89,6 +91,8 @@ import {
     setText,
     ssr,
     addEventListener,
+    removeStylesheet,
+    removeGlobalStylesheet,
 } from './renderer';
 
 setAssertInstanceOfHTMLElement(assertInstanceOfHTMLElement);
@@ -125,6 +129,8 @@ setQuerySelectorAll(querySelectorAll);
 setRemove(remove);
 setRemoveAttribute(removeAttribute);
 setRemoveEventListener(removeEventListener);
+setRemoveGlobalStylesheet(removeGlobalStylesheet);
+setRemoveStylesheet(removeStylesheet);
 setSetAttribute(setAttribute);
 setSetCSSStyleProperty(setCSSStyleProperty);
 setSetProperty(setProperty);
