@@ -7,18 +7,18 @@
 const assert = require('assert');
 const URL = '/mouseover';
 
-describe('mouseover', () => {
-    beforeEach(async () => {
-        await browser.url(URL);
-    });
+if (process.env.COMPAT === 'false') {
+    describe('mouseover', () => {
+        beforeEach(async () => {
+            await browser.url(URL);
+        });
 
-    it('should be able to trigger programmatic mouseover', async () => {
-        const component = await browser.$('integration-mouseover');
-        const elementToHover = await component.shadow$('.mouseover');
-        // This might seem like a roundabout way to mouse over an element, but this puts ChromeDriver into the
-        // code path where it calls elementsFromPoint, which is what we're trying to test:
-        // https://github.com/bayandin/chromedriver/blob/ad6ede8/js/get_element_location.js#L122
-        if (typeof browser.performActions === 'function') {
+        it('should be able to trigger programmatic mouseover', async () => {
+            const component = await browser.$('integration-mouseover');
+            const elementToHover = await component.shadow$('.mouseover');
+            // This might seem like a roundabout way to mouse over an element, but this puts ChromeDriver into the
+            // code path where it calls elementsFromPoint, which is what we're trying to test:
+            // https://github.com/bayandin/chromedriver/blob/ad6ede8/js/get_element_location.js#L122
             await browser.performActions([
                 {
                     type: 'pointer',
@@ -37,13 +37,10 @@ describe('mouseover', () => {
                     ],
                 },
             ]);
-        } else {
-            // IE driver does not support performActions, fall back to moveTo()
-            await elementToHover.moveTo();
-        }
 
-        const successElement = await component.shadow$('.hovering');
-        const exists = await successElement.isExisting();
-        assert.strictEqual(exists, true);
+            const successElement = await component.shadow$('.hovering');
+            const exists = await successElement.isExisting();
+            assert.strictEqual(exists, true);
+        });
     });
-});
+}
