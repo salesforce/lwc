@@ -1,8 +1,6 @@
-import { createElement } from 'lwc';
+import { createElement, register } from 'lwc';
 
 import XHooks from 'x/hooks';
-
-const { register } = LWC;
 
 describe('Service hooks', () => {
     let entries = [];

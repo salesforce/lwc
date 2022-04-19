@@ -1,10 +1,7 @@
-import { createElement } from 'lwc';
+import { createElement, registerTemplate } from 'lwc';
 
 import DynamicTemplate, { template1, template2 } from 'x/dynamicTemplate';
 import RenderThrow from 'x/renderThrow';
-
-// TODO [#1284]: Import this from the lwc module once we move validation from compiler to linter
-const { registerTemplate } = LWC;
 
 function testInvalidTemplate(type, template) {
     it(`throws an error if returns ${type}`, () => {

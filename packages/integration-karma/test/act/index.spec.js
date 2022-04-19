@@ -1,4 +1,11 @@
-import { createElement, LightningElement } from 'lwc';
+import {
+    createElement,
+    LightningElement,
+    registerComponent,
+    registerTemplate,
+    registerDecorators,
+} from 'lwc';
+
 import HtmlTags from 'html/tags';
 import UiSomething from 'ui/something';
 import UiSomethingElse from 'ui/somethingElse';
@@ -29,9 +36,6 @@ import testStyleAttr from './act-components/test-style-attr';
 // Tests that confirm that the runtime LWC engine-dom is compatible with the compiled templates
 // from the ACTCompiler
 describe('ACTCompiler', () => {
-    // These can't be imported from 'lwc'` because @lwc/rollup-plugin won't allow it
-    const { registerComponent, registerTemplate, registerDecorators } = LWC;
-
     function createComponentFromTemplate(
         template,
         { props = {}, propsToTrack = [], methods = {} } = {}

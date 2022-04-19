@@ -1,7 +1,4 @@
-import { createElement } from 'lwc';
-
-// TODO [#1869]: getting the global API from global LWC in tests until it is allowed in compiler
-const { swapTemplate } = LWC;
+import { createElement, swapTemplate } from 'lwc';
 
 import Simple from 'base/simple';
 import Advanced from 'base/advanced';
