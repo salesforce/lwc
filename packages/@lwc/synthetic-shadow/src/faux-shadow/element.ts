@@ -17,15 +17,7 @@ import {
     KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
-import { attachShadow, getShadowRoot, isSyntheticShadowHost } from './shadow-root';
-import {
-    getNodeOwner,
-    getAllMatches,
-    getFilteredChildNodes,
-    getFirstMatch,
-    getAllSlottedMatches,
-    getFirstSlottedMatch,
-} from './traverse';
+
 import {
     attachShadow as originalAttachShadow,
     childrenGetter,
@@ -42,19 +34,31 @@ import {
     querySelectorAll as elementQuerySelectorAll,
     shadowRootGetter as originalShadowRootGetter,
 } from '../env/element';
+
+import { getOuterHTML } from '../3rdparty/polymer/outer-html';
+
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
-import { getInternalChildNodes, hasMountedChildren } from './node';
-import { getOuterHTML } from '../3rdparty/polymer/outer-html';
+import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import {
     getNodeKey,
     getNodeNearestOwnerKey,
     getNodeOwnerKey,
     isNodeShadowed,
 } from '../shared/node-ownership';
-import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
+
 import { assignedSlotGetterPatched } from './slot';
+import { getInternalChildNodes, hasMountedChildren } from './node';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
+import { attachShadow, getShadowRoot, isSyntheticShadowHost } from './shadow-root';
+import {
+    getNodeOwner,
+    getAllMatches,
+    getFilteredChildNodes,
+    getFirstMatch,
+    getAllSlottedMatches,
+    getFirstSlottedMatch,
+} from './traverse';
 
 const enum ShadowDomSemantic {
     Disabled,

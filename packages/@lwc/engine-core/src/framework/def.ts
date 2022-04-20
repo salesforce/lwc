@@ -26,6 +26,13 @@ import {
     isUndefined,
     keys,
 } from '@lwc/shared';
+
+import { RenderMode, ShadowSupportMode } from '../framework/vm';
+import {
+    isCircularModuleDependency,
+    resolveCircularModuleDependency,
+} from '../shared/circular-module-dependencies';
+
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
 import { Template } from './template';
@@ -33,17 +40,12 @@ import { LightningElement, LightningElementConstructor } from './base-lightning-
 import { lightningBasedDescriptors } from './base-lightning-element';
 import { PropType, getDecoratorsMeta } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
-import { RenderMode, ShadowSupportMode } from '../framework/vm';
 
 import {
     BaseBridgeElement,
     HTMLBridgeElementFactory,
     HTMLElementConstructor,
 } from './base-bridge-element';
-import {
-    isCircularModuleDependency,
-    resolveCircularModuleDependency,
-} from '../shared/circular-module-dependencies';
 import { getComponentOrSwappedComponent } from './hot-swaps';
 
 export interface ComponentDef {

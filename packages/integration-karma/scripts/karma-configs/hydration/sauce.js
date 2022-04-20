@@ -7,8 +7,9 @@
 
 'use strict';
 
-const localConfig = require('./base');
 const { getSauceConfig } = require('../utils');
+const localConfig = require('./base');
+
 const TAGS = ['hydration'];
 const SUITE_NAME = 'integration-karma-hydration';
 

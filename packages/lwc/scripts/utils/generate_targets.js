@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const workerpool = require('workerpool');
-const isCI = require('is-ci');
 const os = require('os');
+
+const isCI = require('is-ci');
+const workerpool = require('workerpool');
+
 const isNucleus = process.env.NUCLEUS;
 
 // Group the targets based on their input configuration, which allows us to run

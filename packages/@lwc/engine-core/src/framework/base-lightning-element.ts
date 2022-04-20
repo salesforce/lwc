@@ -24,6 +24,9 @@ import {
     KEY__SYNTHETIC_MODE,
     setPrototypeOf,
 } from '@lwc/shared';
+
+import { logError } from '../shared/logger';
+import { getComponentTag } from '../shared/format';
 import {
     getChildren,
     getChildNodes,
@@ -47,6 +50,7 @@ import {
     querySelector,
     querySelectorAll,
 } from '../renderer';
+
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
@@ -60,8 +64,6 @@ import {
 } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
-import { logError } from '../shared/logger';
-import { getComponentTag } from '../shared/format';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { lockerLivePropertyKey } from './membrane';
 

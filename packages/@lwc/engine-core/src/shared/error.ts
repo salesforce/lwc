@@ -7,9 +7,8 @@
 
 import { defineProperty, isFrozen, isUndefined } from '@lwc/shared';
 
-import { getErrorComponentStack } from './format';
-
 import { VM } from '../framework/vm';
+import { getErrorComponentStack } from './format';
 
 export function addErrorComponentStack(vm: VM, error: any): void {
     if (!isFrozen(error) && isUndefined(error.wcStack)) {
