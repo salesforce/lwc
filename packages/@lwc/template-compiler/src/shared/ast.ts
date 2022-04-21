@@ -32,6 +32,7 @@ import {
     ForOf,
     LWCDirectiveRenderMode,
     If,
+    IfBlock,
     ElementSourceLocation,
     InnerHTMLDirective,
     Directive,
@@ -190,6 +191,21 @@ export function ifNode(
         location: elementLocation,
         directiveLocation,
         children: [],
+    };
+}
+
+export function ifBlockNode(
+    condition: Expression,
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
+): IfBlock {
+    return {
+        type: 'IfBlock',
+        condition,
+        location: elementLocation,
+        directiveLocation,
+        children: [],
+        childrenFalse: [],
     };
 }
 
@@ -354,6 +370,10 @@ export function isForBlock(node: BaseNode): node is ForBlock {
 
 export function isIf(node: BaseNode): node is If {
     return node.type === 'If';
+}
+
+export function isIfBlock(node: BaseNode): node is IfBlock {
+    return node.type === 'IfBlock';
 }
 
 export function isParentNode(node: BaseNode): node is ParentNode {

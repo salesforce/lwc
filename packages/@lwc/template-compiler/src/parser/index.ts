@@ -30,6 +30,7 @@ import {
     LWCDirectiveRenderMode,
     LWCDirectiveDomMode,
     If,
+    IfBlock,
     Property,
 } from '../shared/types';
 import ParserCtx from './parser';
@@ -226,7 +227,7 @@ function parseElementDirectives(
 ): ParentNode | undefined {
     let current: ParentNode | undefined;
 
-    const parsers = [parseForEach, parseForOf, parseIf];
+    const parsers = [parseForEach, parseForOf, parseIf, parseIfBlock];
     for (const parser of parsers) {
         const prev = current || parent;
         const node = parser(ctx, parsedAttr, parse5ElmLocation);
@@ -434,6 +435,27 @@ function parseIf(
         ifAttribute.value,
         ast.sourceLocation(parse5ElmLocation),
         ifAttribute.location
+    );
+}
+
+function parseIfBlock(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parse5ElmLocation: parse5.ElementLocation
+): IfBlock | undefined {
+    const ifBlockAttribute = parsedAttr.pick("lwc:if");
+    if (!ifBlockAttribute) {
+        return;
+    }
+
+    if (!ast.isExpression(ifBlockAttribute.value)) {
+        ctx.throwOnNode(ParserDiagnostics.IF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION, ifBlockAttribute);
+    }
+
+    return ast.ifBlockNode(
+        ifBlockAttribute.value,
+        ast.sourceLocation(parse5ElmLocation),
+        ifBlockAttribute.location
     );
 }
 

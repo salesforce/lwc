@@ -18,6 +18,7 @@ import {
     isStringLiteral,
     isForBlock,
     isIf,
+    isIfBlock,
     isForEach,
     isBaseElement,
     isExpression,
@@ -35,6 +36,7 @@ import {
     ChildNode,
     Text,
     If,
+    IfBlock,
     ForBlock,
     ForEach,
     Attribute,
@@ -148,6 +150,10 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformElement(child, slotParentName));
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
+            } else if(isIfBlock(child)) {
+                res.push(transformForIfBlock(child));
+            } else {
+                // Todo: create validation for case when there's invalid AST nodes
             }
         }
 
@@ -191,6 +197,35 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
+    function transformIfBlock(ifBlockNode: IfBlock): t.Expression | t.Expression[] {
+        const expression = transformChildren(ifBlockNode);
+        let res: t.Expression | t.Expression[];
+
+        if (t.isArrayExpression(expression)) {
+            // Bind the expression once for all the template children
+            const testExpression = codeGen.bindExpression(ifBlockNode.condition);
+
+            res = t.arrayExpression(
+                expression.elements.map((element) =>
+                    element !== null
+                        ? applyInlineIfBlock(ifBlockNode, element as t.Expression, testExpression)
+                        : null
+                )
+            );
+        } else {
+            // If the template has a single children, make sure the ternary expression returns an array
+            res = applyInlineIfBlock(ifBlockNode, expression, undefined, t.arrayExpression([]));
+        }
+
+        if (t.isArrayExpression(res)) {
+            // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
+            // typecast it to t.Expression[]
+            res = res.elements as t.Expression[];
+        }
+
+        return res;
+    }
+
     function applyInlineIf(
         ifNode: If,
         node: t.Expression,
@@ -217,6 +252,20 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
+    }
+
+
+    function applyInlineIfBlock(
+        ifNode: IfBlock,
+        node: t.Expression,
+        testExpression: t.Expression,
+        falseValue?: t.Expression
+    ): t.Expression {
+        if (!testExpression) {
+            testExpression = codeGen.bindExpression(ifNode.condition);
+        }
+
+        return t.conditionalExpression(testExpression, node, falseValue ?? t.literal(null));
     }
 
     function transformForBlock(forBlock: ForBlock): t.Expression {

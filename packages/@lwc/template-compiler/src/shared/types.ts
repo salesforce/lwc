@@ -170,10 +170,30 @@ interface DirectiveParentNode extends BaseParentNode {
     directiveLocation: SourceLocation;
 }
 
+/**
+ * 
+ * 
+if - else
+  true Expression
+  false Expression
+
+if - else if - else
+   <parent node>
+      true child <Expression>
+      false child 
+          <parent node> IfBlock
+            
+ */
 export interface If extends DirectiveParentNode {
     type: 'If';
     modifier: string;
     condition: Expression;
+}
+
+export interface IfBlock extends DirectiveParentNode {
+    type: 'IfBlock';
+    condition: Expression;
+    childrenFalse: ChildNode[];
 }
 
 export interface ForEach extends DirectiveParentNode {
@@ -191,8 +211,8 @@ export interface ForOf extends DirectiveParentNode {
 
 export type ForBlock = ForEach | ForOf;
 
-export type ParentNode = Root | ForBlock | If | BaseElement;
+export type ParentNode = Root | ForBlock | If | IfBlock | BaseElement;
 
-export type ChildNode = ForBlock | If | BaseElement | Comment | Text;
+export type ChildNode = ForBlock | If | IfBlock | BaseElement | Comment | Text;
 
-export type Node = Root | ForBlock | If | BaseElement | Comment | Text;
+export type Node = Root | ForBlock | If | IfBlock | BaseElement | Comment | Text;

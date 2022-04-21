@@ -602,4 +602,10 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+    IF_BLOCK_DIRECTIVE_SHOULD_BE_EXPRESSION: {
+        code: 1150,
+        message: 'lwc:if directive value should be an expression',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
