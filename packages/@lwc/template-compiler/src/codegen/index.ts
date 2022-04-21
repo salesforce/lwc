@@ -151,7 +151,8 @@ function transform(codeGen: CodeGen): t.Expression {
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
             } else if(isIfBlock(child)) {
-                res.push(transformForIfBlock(child));
+                const children = transformIfBlock(child);
+                Array.isArray(children) ? res.push(...children) : res.push(children);
             } else {
                 // Todo: create validation for case when there's invalid AST nodes
             }
@@ -213,8 +214,9 @@ function transform(codeGen: CodeGen): t.Expression {
                 )
             );
         } else {
+            throw new Error("TODO!");
             // If the template has a single children, make sure the ternary expression returns an array
-            res = applyInlineIfBlock(ifBlockNode, expression, undefined, t.arrayExpression([]));
+            res = applyInlineIfBlock(ifBlockNode, expression, undefined as any, t.arrayExpression([]));
         }
 
         if (t.isArrayExpression(res)) {
