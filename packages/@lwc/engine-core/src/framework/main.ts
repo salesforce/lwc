@@ -95,3 +95,6 @@ export {
     setSsr,
     setAddEventListener,
 } from '../renderer';
+
+// Experimental or Internal APIs
+export { getComponentConstructor } from './get-component-constructor';

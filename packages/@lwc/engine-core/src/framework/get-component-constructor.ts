@@ -6,7 +6,8 @@
  */
 
 import { isUndefined } from '@lwc/shared';
-import { getAssociatedVMIfPresent, LightningElement } from '@lwc/engine-core';
+import { LightningElement } from './base-lightning-element';
+import { getAssociatedVMIfPresent } from './vm';
 
 /**
  * EXPERIMENTAL: This function provides access to the component constructor, given an HTMLElement.
@@ -14,13 +15,10 @@ import { getAssociatedVMIfPresent, LightningElement } from '@lwc/engine-core';
  */
 export function getComponentConstructor(elm: HTMLElement): typeof LightningElement | null {
     let ctor: typeof LightningElement | null = null;
+    const vm = getAssociatedVMIfPresent(elm);
 
-    if (elm instanceof HTMLElement) {
-        const vm = getAssociatedVMIfPresent(elm);
-
-        if (!isUndefined(vm)) {
-            ctor = vm.def.ctor;
-        }
+    if (!isUndefined(vm)) {
+        ctor = vm.def.ctor;
     }
 
     return ctor;
