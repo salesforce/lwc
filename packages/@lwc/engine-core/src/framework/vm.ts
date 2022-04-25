@@ -289,7 +289,7 @@ export function createVM<HostNode, HostElement>(
 
         renderMode: def.renderMode,
         shadowMode: computeShadowMode(def, owner),
-        nearestSRMode: owner?.shadowRoot ? owner.shadowMode : owner?.nearestSRMode || null,
+        nearestSRMode: owner?.shadowRoot ? owner.shadowMode : (owner?.nearestSRMode ?? null),
 
         context: {
             stylesheetToken: undefined,
@@ -355,7 +355,7 @@ function computeShadowMode(def: ComponentDef, owner: VM | null) {
                     // transitively opts all of its descendants into native.
                     // Synthetic if neither this component nor any of its ancestors are configured
                     // to be native.
-                    shadowMode = owner?.nearestSRMode || ShadowMode.Synthetic;
+                    shadowMode = owner?.nearestSRMode ?? ShadowMode.Synthetic;
                 }
             } else {
                 shadowMode = ShadowMode.Synthetic;
