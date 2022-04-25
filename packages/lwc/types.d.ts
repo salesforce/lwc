@@ -193,17 +193,17 @@ declare module 'lwc' {
      * @param adapter the adapter used to provision data
      * @param config configuration object for the adapter
      */
-    export function wire(
-        adapter: WireAdapterConstructor | LegacyWireAdapterConstructor,
-        config?: WireConfigValue
+    export function wire<T, R>(
+        adapter: WireAdapterConstructor<T> | LegacyWireAdapterConstructor<T, R>,
+        config?: T
     ): PropertyDecorator;
 
-    type LegacyWireAdapterConstructor = (config?: any) => any;
+    type LegacyWireAdapterConstructor<T, R> = (config?: T) => R;
     type WireConfigValue = Record<string, any>;
     type ContextValue = Record<string, any>;
 
-    interface WireAdapter {
-        update(config: WireConfigValue, context?: ContextValue): void;
+    interface WireAdapter<T> {
+        update(config: T, context?: ContextValue): void;
         connect(): void;
         disconnect(): void;
     }
@@ -220,12 +220,28 @@ declare module 'lwc' {
         consumerDisconnectedCallback?: (consumer: ContextConsumer) => void;
     }
 
-    interface WireAdapterConstructor {
-        new (callback: WireDataCallback): WireAdapter;
+    interface WireAdapterConstructor<T> {
+        new (callback: WireDataCallback): WireAdapter<T>;
         configSchema?: Record<string, WireAdapterSchemaValue>;
         contextSchema?: Record<string, WireAdapterSchemaValue>;
     }
 
     type Contextualizer = (elm: EventTarget, options: ContextProviderOptions) => void;
-    export function createContextProvider(config: WireAdapterConstructor): Contextualizer;
+    export function createContextProvider<T>(config: WireAdapterConstructor<T>): Contextualizer;
+}
+
+declare interface WiredValue<T extends (...args: any) => any> {
+    error?: FetchResponse;
+    data?: Awaited<ReturnType<T>>;
+}
+
+declare interface FetchResponse<T = any> {
+    // The body of the response, which is defined by the underlying API.
+    body: T | Array<T>;
+    // Specifies whether the response was successful or not. For an error, ok is always false and contains a status in the range 400–599.
+    ok: boolean;
+    // Contains the status code of the response, for example, 404 if a resource is not found or 500 for an internal server error.
+    status: number;
+    // Contains the status message corresponding to the status code, for example, NOT_FOUND for a status code of 404.
+    statusText: string;
 }
