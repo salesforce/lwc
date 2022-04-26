@@ -44,7 +44,10 @@ const supportsMutableAdoptedStyleSheets =
 const styleElements: { [content: string]: HTMLStyleElement } = create(null);
 const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
 const shadowRootsToStyleSheets = new WeakMap<ShadowRoot, { [content: string]: HTMLStyleElement }>();
-const stylesToUsageCount = new WeakMap<HTMLStyleElement | CSSStyleSheet, number>();
+const stylesToUsageCount = new WeakMap<
+    HTMLStyleElement | CSSStyleSheet,
+    WeakMap<ShadowRoot | Document, number>
+>();
 
 export let getCustomElement: any;
 export let defineCustomElement: any;
@@ -73,14 +76,30 @@ function isCustomElementRegistryAvailable() {
     }
 }
 
-function incrementOrDecrementUsageCount(elm: HTMLStyleElement | CSSStyleSheet, delta: number) {
-    let count = stylesToUsageCount.get(elm);
+function incrementOrDecrementUsageCount(
+    style: HTMLStyleElement | CSSStyleSheet,
+    root: ShadowRoot | Document,
+    delta: number
+) {
+    let rootsToCounts = stylesToUsageCount.get(style);
+    if (isUndefined(rootsToCounts)) {
+        rootsToCounts = new WeakMap();
+        stylesToUsageCount.set(style, rootsToCounts);
+    }
+    let count = rootsToCounts.get(root);
     if (isUndefined(count)) {
         count = 0;
     }
     count += delta;
-    stylesToUsageCount.set(elm, count);
+    rootsToCounts.set(root, count);
     return count;
+}
+
+function incrementOrDecrementGlobalUsageCount(
+    elm: HTMLStyleElement | CSSStyleSheet,
+    delta: number
+) {
+    return incrementOrDecrementUsageCount(elm, document, delta);
 }
 
 function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
@@ -92,7 +111,7 @@ function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
         styleSheet.replaceSync(content);
         styleSheets[content] = styleSheet;
     }
-    incrementOrDecrementUsageCount(styleSheet, 1);
+    incrementOrDecrementUsageCount(styleSheet, target, 1);
     const { adoptedStyleSheets } = target;
     if (!adoptedStyleSheets.includes(styleSheet)) {
         if (supportsMutableAdoptedStyleSheets) {
@@ -111,7 +130,7 @@ function removeConstructableStyleSheet(content: string, target: ShadowRoot) {
     if (isUndefined(styleSheet)) {
         return;
     }
-    const count = incrementOrDecrementUsageCount(styleSheet, -1);
+    const count = incrementOrDecrementUsageCount(styleSheet, target, -1);
     if (count === 0) {
         const { adoptedStyleSheets } = target;
         if (adoptedStyleSheets.includes(styleSheet)) {
@@ -133,7 +152,7 @@ function insertStyleElement(content: string, target: ShadowRoot) {
     }
     const existingElement = sheets![content];
     if (!isUndefined(existingElement)) {
-        incrementOrDecrementUsageCount(existingElement, 1);
+        incrementOrDecrementUsageCount(existingElement, target, 1);
         return;
     }
 
@@ -150,7 +169,7 @@ function insertStyleElement(content: string, target: ShadowRoot) {
     }
     sheets![content] = elm;
     target.appendChild(elm);
-    incrementOrDecrementUsageCount(elm, 1);
+    incrementOrDecrementUsageCount(elm, target, 1);
 }
 
 function removeStyleElement(content: string, target: ShadowRoot) {
@@ -162,7 +181,7 @@ function removeStyleElement(content: string, target: ShadowRoot) {
     if (isUndefined(elm)) {
         return;
     }
-    const count = incrementOrDecrementUsageCount(elm, -1);
+    const count = incrementOrDecrementUsageCount(elm, target, -1);
     if (count === 0) {
         if (elm.parentNode === target) {
             target.removeChild(elm);
@@ -404,7 +423,7 @@ export function isConnected(node: Node): boolean {
 export function insertGlobalStylesheet(content: string): void {
     const existingElement = globalStylesheets[content];
     if (!isUndefined(existingElement)) {
-        incrementOrDecrementUsageCount(existingElement, 1);
+        incrementOrDecrementGlobalUsageCount(existingElement, 1);
         return;
     }
 
@@ -414,7 +433,7 @@ export function insertGlobalStylesheet(content: string): void {
 
     globalStylesheets[content] = elm;
     globalStylesheetsParentElement.appendChild(elm);
-    incrementOrDecrementUsageCount(elm, 1);
+    incrementOrDecrementGlobalUsageCount(elm, 1);
 }
 
 export function removeGlobalStylesheet(content: string): void {
@@ -422,7 +441,7 @@ export function removeGlobalStylesheet(content: string): void {
     if (isUndefined(elm)) {
         return;
     }
-    const count = incrementOrDecrementUsageCount(elm, -1);
+    const count = incrementOrDecrementGlobalUsageCount(elm, -1);
     if (count === 0) {
         if (elm.parentNode === globalStylesheetsParentElement) {
             globalStylesheetsParentElement.removeChild(elm);
