@@ -82,17 +82,7 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
-let hydrating = false;
-
-export function setIsHydrating(value: boolean) {
-    hydrating = value;
-}
-
 export const ssr: boolean = false;
-
-export function isHydrating(): boolean {
-    return hydrating;
-}
 
 export const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
@@ -127,10 +117,8 @@ export function nextSibling(node: Node): Node | null {
 }
 
 export function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
-    if (hydrating) {
-        return element.shadowRoot!;
-    }
-    return element.attachShadow(options);
+    const internals = (element as any).attachInternals?.();
+    return internals?.shadowRoot || element.shadowRoot || element.attachShadow(options);
 }
 
 export function setText(node: Node, content: string): void {

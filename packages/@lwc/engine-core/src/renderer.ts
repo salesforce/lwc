@@ -40,12 +40,6 @@ export function setHTMLElement(HTMLElementImpl: HTMLElementType) {
 // Functions
 //
 
-type isHydratingFunc = () => boolean;
-export let isHydrating: isHydratingFunc;
-export function setIsHydrating(isHydratingImpl: isHydratingFunc) {
-    isHydrating = isHydratingImpl;
-}
-
 type insertFunc = (node: N, parent: E, anchor: N | null) => void;
 export let insert: insertFunc;
 export function setInsert(insertImpl: insertFunc) {

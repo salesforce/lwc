@@ -61,14 +61,6 @@ class HTMLElementImpl {
 
 export const ssr: boolean = true;
 
-export function setIsHydrating(_value: boolean) {
-    /* No-op in SSR */
-}
-
-export function isHydrating(): boolean {
-    return false;
-}
-
 export const isNativeShadowDefined: boolean = false;
 export const isSyntheticShadowDefined: boolean = false;
 

@@ -81,7 +81,6 @@ export {
     setHTMLElement,
     setInsert,
     setIsConnected,
-    setIsHydrating,
     setIsNativeShadowDefined,
     setIsSyntheticShadowDefined,
     setNextSibling,

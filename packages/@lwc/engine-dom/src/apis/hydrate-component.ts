@@ -13,7 +13,6 @@ import {
     getAssociatedVMIfPresent,
 } from '@lwc/engine-core';
 import { isFunction, isNull, isObject } from '@lwc/shared';
-import { setIsHydrating } from '../renderer';
 
 function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElement) {
     if (element.shadowRoot) {
@@ -76,16 +75,9 @@ export function hydrateComponent(
     }
 
     try {
-        // Let the renderer know we are hydrating, so it does not replace the existing shadowRoot
-        // and uses the same algo to create the stylesheets as in SSR.
-        setIsHydrating(true);
-
         const vm = createVMWithProps(element, Ctor, props);
 
         hydrateRoot(vm);
-
-        // set it back since now we finished hydration.
-        setIsHydrating(false);
     } catch (e) {
         // Fallback: In case there's an error while hydrating, let's log the error, and replace the element content
         //           with the client generated DOM.
@@ -98,11 +90,7 @@ export function hydrateComponent(
 
         // we need to recreate the vm with the hydration flag on, so it re-uses the existing shadowRoot.
         createVMWithProps(element, Ctor, props);
-        setIsHydrating(false);
 
         connectRootElement(element);
-    } finally {
-        // in case there's an error during recovery
-        setIsHydrating(false);
     }
 }

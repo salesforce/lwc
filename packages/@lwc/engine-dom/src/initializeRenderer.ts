@@ -29,7 +29,6 @@ import {
     setHTMLElement,
     setInsert,
     setIsConnected,
-    setIsHydrating,
     setIsNativeShadowDefined,
     setIsSyntheticShadowDefined,
     setNextSibling,
@@ -71,7 +70,6 @@ import {
     HTMLElement,
     insert,
     isConnected,
-    isHydrating,
     isNativeShadowDefined,
     isSyntheticShadowDefined,
     nextSibling,
@@ -112,7 +110,6 @@ setGetProperty(getProperty);
 setHTMLElement(HTMLElement);
 setInsert(insert);
 setIsConnected(isConnected);
-setIsHydrating(isHydrating);
 setIsNativeShadowDefined(isNativeShadowDefined);
 setIsSyntheticShadowDefined(isSyntheticShadowDefined);
 setNextSibling(nextSibling);
