@@ -15,11 +15,13 @@ import { getAssociatedVMIfPresent } from './vm';
  */
 export function getComponentConstructor(elm: HTMLElement): typeof LightningElement | null {
     let ctor: typeof LightningElement | null = null;
-    const vm = getAssociatedVMIfPresent(elm);
-
-    if (!isUndefined(vm)) {
-        ctor = vm.def.ctor;
+    // intentionally checking for undefined due to some funky libraries patching weakmap.get
+    // to throw when undefined.
+    if (!isUndefined(elm)) {
+        const vm = getAssociatedVMIfPresent(elm);
+        if (!isUndefined(vm)) {
+            ctor = vm.def.ctor;
+        }
     }
-
     return ctor;
 }
