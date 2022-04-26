@@ -289,7 +289,7 @@ export function createVM<HostNode, HostElement>(
 
         renderMode: def.renderMode,
         shadowMode: computeShadowMode(def, owner),
-        nearestSRMode: owner?.shadowRoot ? owner.shadowMode : (owner?.nearestSRMode ?? null),
+        nearestSRMode: owner?.shadowRoot ? owner.shadowMode : owner?.nearestSRMode ?? null,
 
         context: {
             stylesheetToken: undefined,
