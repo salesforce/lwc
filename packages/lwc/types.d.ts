@@ -229,19 +229,3 @@ declare module 'lwc' {
     type Contextualizer = (elm: EventTarget, options: ContextProviderOptions) => void;
     export function createContextProvider<T>(config: WireAdapterConstructor<T>): Contextualizer;
 }
-
-declare interface WiredValue<T extends (...args: any) => any> {
-    error?: FetchResponse;
-    data?: Awaited<ReturnType<T>>;
-}
-
-declare interface FetchResponse<T = any> {
-    // The body of the response, which is defined by the underlying API.
-    body: T | Array<T>;
-    // Specifies whether the response was successful or not. For an error, ok is always false and contains a status in the range 400–599.
-    ok: boolean;
-    // Contains the status code of the response, for example, 404 if a resource is not found or 500 for an internal server error.
-    status: number;
-    // Contains the status message corresponding to the status code, for example, NOT_FOUND for a status code of 404.
-    statusText: string;
-}
