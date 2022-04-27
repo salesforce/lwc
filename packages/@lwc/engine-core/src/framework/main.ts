@@ -42,6 +42,9 @@ export { getUpgradableConstructor } from './upgradable-element';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 export { setHooks } from './overridable-hooks';
 
+// Experimental or Internal APIs
+export { getComponentConstructor } from './get-component-constructor';
+
 // Types -------------------------------------------------------------------------------------------
 export type {
     ConfigValue as WireConfigValue,

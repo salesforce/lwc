@@ -6,7 +6,8 @@
  */
 
 import { isUndefined } from '@lwc/shared';
-import { getAssociatedVMIfPresent, LightningElement } from '@lwc/engine-core';
+import { LightningElement } from './base-lightning-element';
+import { getAssociatedVMIfPresent } from './vm';
 
 /**
  * EXPERIMENTAL: This function provides access to the component constructor, given an HTMLElement.
@@ -14,14 +15,13 @@ import { getAssociatedVMIfPresent, LightningElement } from '@lwc/engine-core';
  */
 export function getComponentConstructor(elm: HTMLElement): typeof LightningElement | null {
     let ctor: typeof LightningElement | null = null;
-
-    if (elm instanceof HTMLElement) {
+    // intentionally checking for undefined due to some funky libraries patching weakmap.get
+    // to throw when undefined.
+    if (!isUndefined(elm)) {
         const vm = getAssociatedVMIfPresent(elm);
-
         if (!isUndefined(vm)) {
             ctor = vm.def.ctor;
         }
     }
-
     return ctor;
 }
