@@ -101,12 +101,12 @@ describe('unrendering styles', () => {
                     .then(() => {
                         expect(getDivColor(children[0])).toEqual('rgb(255, 0, 0)');
                         expect(getDivColor(children[1])).toEqual('rgb(255, 0, 0)');
-                        parent.remove();
+                        parent.delete();
                         children = getChildren();
                     })
                     .then(() => {
                         expect(getDivColor(children[0])).toEqual('rgb(255, 0, 0)');
-                        parent.remove();
+                        parent.delete();
                         children = getChildren();
                     })
                     .then(() => {
@@ -187,7 +187,7 @@ describe('unrendering styles', () => {
 
                     // when removing one component, we don't expect the other one
                     // to also unrender its style
-                    childA.parentElement.removeChild(childA);
+                    childA.parentNode.removeChild(childA);
                     return Promise.resolve().then(() => {
                         expect(getDivColor(childB)).toEqual('rgb(255, 0, 0)');
                     });

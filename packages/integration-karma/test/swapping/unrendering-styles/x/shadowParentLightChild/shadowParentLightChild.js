@@ -7,7 +7,7 @@ export default class extends LightningElement {
         this.items.push(this.items.length);
     }
 
-    @api remove() {
+    @api delete() {
         this.items.pop();
     }
 }
