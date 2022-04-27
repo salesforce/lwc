@@ -14,7 +14,7 @@ describe('unrendering styles', () => {
             Component: LightParentShadowChild,
         },
         {
-            name: 'light child, shadow parent',
+            name: 'shadow parent. light child',
             Component: ShadowParentLightChild,
         },
     ];
@@ -139,4 +139,60 @@ describe('unrendering styles', () => {
             });
         });
     });
+
+    for (const caseA of cases.slice(0, 1)) {
+        for (const caseB of cases.slice(2, 3)) {
+            if (caseA === caseB) {
+                continue;
+            }
+            describe(`mixing 1) ${caseA.name} and 2) ${caseB.name}`, () => {
+                const setup = (Component) => {
+                    const parent = createElement('x-parent', { is: Component });
+                    document.body.appendChild(parent);
+                    const child = (parent.shadowRoot || parent).querySelector('x-light,x-shadow');
+                    return child;
+                };
+
+                const getDivColor = (child) => {
+                    return getComputedStyle((child.shadowRoot || child).querySelector('div')).color;
+                };
+
+                if (process.env.NATIVE_SHADOW) {
+                    // In synthetic mode, we can't guarantee the correct style swapping for light children. Their styles
+                    // are effectively global at all times. So swapping from template A to template B causes
+                    // both <style>s to be present globally in the DOM.
+                    it('does not remove styles when swapping template on unrelated component', () => {
+                        const childA = setup(caseA.Component);
+                        const childB = setup(caseB.Component);
+
+                        expect(getDivColor(childA)).toEqual('rgb(255, 0, 0)');
+                        expect(getDivColor(childB)).toEqual('rgb(255, 0, 0)');
+
+                        // when unrendering the template from one, we don't expect the other one
+                        // to also unrender its style
+                        childA.next();
+                        return Promise.resolve().then(() => {
+                            expect(getDivColor(childA)).toEqual('rgb(0, 0, 255)');
+                            expect(getDivColor(childB)).toEqual('rgb(255, 0, 0)');
+                        });
+                    });
+                }
+
+                it('does not remove styles when disconnecting unrelated component', () => {
+                    const childA = setup(caseA.Component);
+                    const childB = setup(caseB.Component);
+
+                    expect(getDivColor(childA)).toEqual('rgb(255, 0, 0)');
+                    expect(getDivColor(childB)).toEqual('rgb(255, 0, 0)');
+
+                    // when removing one component, we don't expect the other one
+                    // to also unrender its style
+                    childA.remove();
+                    return Promise.resolve().then(() => {
+                        expect(getDivColor(childB)).toEqual('rgb(255, 0, 0)');
+                    });
+                });
+            });
+        }
+    }
 });
