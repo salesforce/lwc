@@ -140,8 +140,8 @@ describe('unrendering styles', () => {
         });
     });
 
-    for (const caseA of cases.slice(0, 1)) {
-        for (const caseB of cases.slice(2, 3)) {
+    for (const caseA of cases) {
+        for (const caseB of cases) {
             if (caseA === caseB) {
                 continue;
             }
