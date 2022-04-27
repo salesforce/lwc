@@ -241,6 +241,6 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
     return createOrRemoveStylesheet(vm, stylesheets, true);
 }
 
-export function unrenderStylesheet(vm: VM, stylesheets: string[]) {
+export function removeStylesheet(vm: VM, stylesheets: string[]) {
     createOrRemoveStylesheet(vm, stylesheets, false);
 }

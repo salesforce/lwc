@@ -42,7 +42,7 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
-import { getStylesheetsContent, unrenderStylesheet } from './stylesheet';
+import { getStylesheetsContent, removeStylesheet } from './stylesheet';
 
 import type { HostNode, HostElement } from '../renderer';
 
@@ -223,7 +223,7 @@ function removeStyles(vm: VM) {
     const { cmpTemplate } = vm;
     if (!isNull(cmpTemplate)) {
         const stylesheets = getStylesheetsContent(vm, cmpTemplate);
-        unrenderStylesheet(vm, stylesheets);
+        removeStylesheet(vm, stylesheets);
     }
 }
 
@@ -672,7 +672,7 @@ export function resetComponentRoot(vm: VM) {
 
     if (!isNull(cmpTemplate)) {
         const stylesheets = getStylesheetsContent(vm, cmpTemplate);
-        unrenderStylesheet(vm, stylesheets);
+        removeStylesheet(vm, stylesheets);
     }
 }
 
