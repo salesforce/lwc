@@ -187,7 +187,7 @@ describe('unrendering styles', () => {
 
                     // when removing one component, we don't expect the other one
                     // to also unrender its style
-                    childA.remove();
+                    childA.parentElement.removeChild(childA);
                     return Promise.resolve().then(() => {
                         expect(getDivColor(childB)).toEqual('rgb(255, 0, 0)');
                     });
