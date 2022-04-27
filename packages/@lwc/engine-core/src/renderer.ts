@@ -245,29 +245,10 @@ export let isConnected: isConnectedFunc;
 export function setIsConnected(isConnectedImpl: isConnectedFunc) {
     isConnected = isConnectedImpl;
 }
-
-type insertGlobalStylesheetFunc = (content: string) => void;
-export let insertGlobalStylesheet: insertGlobalStylesheetFunc;
-export function setInsertGlobalStylesheet(insertGlobalStylesheetImpl: insertGlobalStylesheetFunc) {
-    insertGlobalStylesheet = insertGlobalStylesheetImpl;
-}
-
-type insertStylesheetFunc = (content: string, target: ShadowRoot) => void;
-export let insertStylesheet: insertStylesheetFunc;
-export function setInsertStylesheet(insertStylesheetImpl: insertStylesheetFunc) {
-    insertStylesheet = insertStylesheetImpl;
-}
-
-type removeGlobalStylesheetFunc = (content: string) => void;
-export let removeGlobalStylesheet: insertGlobalStylesheetFunc;
-export function setRemoveGlobalStylesheet(removeGlobalStylesheetImpl: removeGlobalStylesheetFunc) {
-    removeGlobalStylesheet = removeGlobalStylesheetImpl;
-}
-
-type removeStylesheetFunc = (content: string, target: ShadowRoot) => void;
-export let removeStylesheet: removeStylesheetFunc;
-export function setRemoveStylesheet(removeStylesheetImpl: removeStylesheetFunc) {
-    removeStylesheet = removeStylesheetImpl;
+type toggleStyleSheetFunc = (content: string, insert: boolean, target?: ShadowRoot) => void;
+export let toggleStyleSheet: toggleStyleSheetFunc;
+export function setToggleStyleSheet(toggleStyleSheetImpl: toggleStyleSheetFunc) {
+    toggleStyleSheet = toggleStyleSheetImpl;
 }
 
 type assertInstanceOfHTMLElementFunc = (elm: any, msg: string) => void;

@@ -28,8 +28,6 @@ import {
     setGetProperty,
     setHTMLElement,
     setInsert,
-    setInsertGlobalStylesheet,
-    setInsertStylesheet,
     setIsConnected,
     setIsHydrating,
     setIsNativeShadowDefined,
@@ -46,8 +44,7 @@ import {
     setSetText,
     setSsr,
     setAddEventListener,
-    setRemoveGlobalStylesheet,
-    setRemoveStylesheet,
+    setToggleStyleSheet,
 } from '@lwc/engine-core';
 
 import {
@@ -73,8 +70,6 @@ import {
     getProperty,
     HTMLElement,
     insert,
-    insertGlobalStylesheet,
-    insertStylesheet,
     isConnected,
     isHydrating,
     isNativeShadowDefined,
@@ -91,8 +86,7 @@ import {
     setText,
     ssr,
     addEventListener,
-    removeStylesheet,
-    removeGlobalStylesheet,
+    toggleStyleSheet,
 } from './renderer';
 
 setAssertInstanceOfHTMLElement(assertInstanceOfHTMLElement);
@@ -117,8 +111,6 @@ setGetLastElementChild(getLastElementChild);
 setGetProperty(getProperty);
 setHTMLElement(HTMLElement);
 setInsert(insert);
-setInsertGlobalStylesheet(insertGlobalStylesheet);
-setInsertStylesheet(insertStylesheet);
 setIsConnected(isConnected);
 setIsHydrating(isHydrating);
 setIsNativeShadowDefined(isNativeShadowDefined);
@@ -129,11 +121,10 @@ setQuerySelectorAll(querySelectorAll);
 setRemove(remove);
 setRemoveAttribute(removeAttribute);
 setRemoveEventListener(removeEventListener);
-setRemoveGlobalStylesheet(removeGlobalStylesheet);
-setRemoveStylesheet(removeStylesheet);
 setSetAttribute(setAttribute);
 setSetCSSStyleProperty(setCSSStyleProperty);
 setSetProperty(setProperty);
 setSetText(setText);
 setSsr(ssr);
 setAddEventListener(addEventListener);
+setToggleStyleSheet(toggleStyleSheet);

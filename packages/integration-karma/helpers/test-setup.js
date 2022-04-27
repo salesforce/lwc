@@ -31,7 +31,7 @@ afterEach(function () {
     knownChildren = undefined;
     // Need to clear this or else the engine will think there's a <style> in the <head>
     // that already has the style, even though we just removed it
-    window.__lwcResetGlobalStylesheets();
+    window.__lwcResetGlobalStyleSheets();
 });
 
 // Run some logic before all tests have run and after all tests have run to ensure that

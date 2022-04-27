@@ -10,12 +10,9 @@ import {
     getClassList,
     removeAttribute,
     setAttribute,
-    insertGlobalStylesheet,
     ssr,
     isHydrating,
-    insertStylesheet,
-    removeGlobalStylesheet,
-    removeStylesheet,
+    toggleStyleSheet,
 } from '../renderer';
 
 import api from './api';
@@ -205,17 +202,13 @@ function getNearestNativeShadowComponent(vm: VM): VM | null {
     return owner;
 }
 
-function createOrRemoveStylesheet(vm: VM, stylesheets: string[], remove: true): null;
-function createOrRemoveStylesheet(vm: VM, stylesheets: string[], remove: false): VNode | null;
-function createOrRemoveStylesheet(vm: VM, stylesheets: string[], remove: boolean) {
+function createOrRemoveStylesheet(vm: VM, stylesheets: string[], insert: false): null;
+function createOrRemoveStylesheet(vm: VM, stylesheets: string[], insert: true): VNode | null;
+function createOrRemoveStylesheet(vm: VM, stylesheets: string[], insert: boolean) {
     const { renderMode, shadowMode } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
-            if (remove) {
-                removeGlobalStylesheet(stylesheets[i]);
-            } else {
-                insertGlobalStylesheet(stylesheets[i]);
-            }
+            toggleStyleSheet(stylesheets[i], insert);
         }
     } else if (ssr || isHydrating()) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
@@ -223,7 +216,7 @@ function createOrRemoveStylesheet(vm: VM, stylesheets: string[], remove: boolean
         //       the first time the VM renders.
 
         // native shadow or light DOM, SSR
-        if (!remove) {
+        if (insert) {
             const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
             return createInlineStyleVNode(combinedStylesheetContent);
         }
@@ -234,18 +227,10 @@ function createOrRemoveStylesheet(vm: VM, stylesheets: string[], remove: boolean
         const isGlobal = isNull(root);
         for (let i = 0; i < stylesheets.length; i++) {
             if (isGlobal) {
-                if (remove) {
-                    removeGlobalStylesheet(stylesheets[i]);
-                } else {
-                    insertGlobalStylesheet(stylesheets[i]);
-                }
+                toggleStyleSheet(stylesheets[i], insert);
             } else {
                 // local level
-                if (remove) {
-                    removeStylesheet(stylesheets[i], root!.shadowRoot!);
-                } else {
-                    insertStylesheet(stylesheets[i], root!.shadowRoot!);
-                }
+                toggleStyleSheet(stylesheets[i], insert, root!.shadowRoot!);
             }
         }
     }
@@ -253,9 +238,9 @@ function createOrRemoveStylesheet(vm: VM, stylesheets: string[], remove: boolean
 }
 
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    return createOrRemoveStylesheet(vm, stylesheets, false);
+    return createOrRemoveStylesheet(vm, stylesheets, true);
 }
 
 export function unrenderStylesheet(vm: VM, stylesheets: string[]) {
-    createOrRemoveStylesheet(vm, stylesheets, true);
+    createOrRemoveStylesheet(vm, stylesheets, false);
 }

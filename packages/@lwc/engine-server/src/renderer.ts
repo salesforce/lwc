@@ -325,14 +325,7 @@ export function isConnected(node: HostNode) {
 
 // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
 // synthetic shadow.
-export const insertGlobalStylesheet = noop as (content: string) => void;
-
-// Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
-// synthetic shadow.
-export const insertStylesheet = noop as (content: string, target: any) => void;
-
-export const removeGlobalStylesheet = noop as (content: string) => void;
-export const removeStylesheet = noop as (content: string, target: any) => void;
+export const toggleStyleSheet = noop as (content: string, insert: boolean, target: any) => void;
 
 // Noop on SSR.
 export const addEventListener = noop as (
