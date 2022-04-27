@@ -18,7 +18,6 @@ branches:
         - lwc/lwc-platform
         - salesforce/lwr
         - salesforce/utam-docs
-        - salesforcedevs/developer-website
         - uiplatform/nucleus
   release:
     pull-request:
