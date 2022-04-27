@@ -101,12 +101,12 @@ describe('unrendering styles', () => {
                     .then(() => {
                         expect(getDivColor(children[0])).toEqual('rgb(255, 0, 0)');
                         expect(getDivColor(children[1])).toEqual('rgb(255, 0, 0)');
-                        parent.remove();
+                        document.body.removeChild(parent);
                         children = getChildren();
                     })
                     .then(() => {
                         expect(getDivColor(children[0])).toEqual('rgb(255, 0, 0)');
-                        parent.remove();
+                        document.body.removeChild(parent);
                         children = getChildren();
                     })
                     .then(() => {
