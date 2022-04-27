@@ -206,6 +206,7 @@ export function toggleStyleSheet(content: string, insert: boolean, target?: Shad
             removeGlobalStyleSheet(content);
         }
     } else {
+        // local
         if (insert) {
             insertStyleSheet(content, target);
         } else {
