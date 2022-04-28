@@ -86,6 +86,12 @@ export interface FeatureFlagMap {
      * of next tick. It only affects wire configurations that depend on component values.
      */
     ENABLE_WIRE_SYNC_EMIT: FeatureFlagValue;
+
+    /**
+     * Flag to disable removal of unused style sheets from the DOM. Setting this flag to true reverts
+     * to older LWC behavior where style sheets were only appended to the DOM, never removed.
+     */
+    DISABLE_STYLE_REMOVAL: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
