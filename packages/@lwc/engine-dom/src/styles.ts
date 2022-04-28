@@ -18,7 +18,6 @@ if (process.env.NODE_ENV === 'development') {
     };
 }
 
-const globalStyleSheetsParentElement: Element = document.head || document.body || document;
 // This check for constructable styleSheets is similar to Fast's:
 // https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
 // See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
@@ -29,39 +28,45 @@ const supportsMutableAdoptedStyleSheets =
     getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
 const styleElements: { [content: string]: HTMLStyleElement } = create(null);
 const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
-const shadowRootsToStyleSheets = new WeakMap<ShadowRoot, { [content: string]: HTMLStyleElement }>();
-const stylesToUsageCount = new WeakMap<
-    HTMLStyleElement | CSSStyleSheet,
-    WeakMap<ShadowRoot | Document, number>
->();
+const targetsToStyleSheets: WeakMap<
+    ShadowRoot | Document,
+    { [content: string]: HTMLStyleElement }
+> = new WeakMap();
+const stylesToUsageCount: WeakMap<
+    ShadowRoot | Document,
+    WeakMap<HTMLStyleElement | CSSStyleSheet, number>
+> = new WeakMap();
+
+function isDocument(target: ShadowRoot | Document): target is Document {
+    return !isUndefined((target as Document).head);
+}
+
+function getStylesToUsageCounts(target: ShadowRoot | Document) {
+    let stylesToCounts = stylesToUsageCount.get(target);
+    if (isUndefined(stylesToCounts)) {
+        stylesToCounts = new WeakMap();
+        stylesToUsageCount.set(target, stylesToCounts);
+    }
+    return stylesToCounts;
+}
 
 function incrementOrDecrementUsageCount(
     style: HTMLStyleElement | CSSStyleSheet,
-    root: ShadowRoot | Document,
+    target: ShadowRoot | Document,
     delta: number
 ) {
-    let rootsToCounts = stylesToUsageCount.get(style);
-    if (isUndefined(rootsToCounts)) {
-        rootsToCounts = new WeakMap();
-        stylesToUsageCount.set(style, rootsToCounts);
-    }
-    let count = rootsToCounts.get(root);
+    const stylesToCounts = getStylesToUsageCounts(target);
+
+    let count = stylesToCounts.get(style);
     if (isUndefined(count)) {
         count = 0;
     }
     count += delta;
-    rootsToCounts.set(root, count);
+    stylesToCounts.set(style, count);
     return count;
 }
 
-function incrementOrDecrementGlobalUsageCount(
-    elm: HTMLStyleElement | CSSStyleSheet,
-    delta: number
-) {
-    return incrementOrDecrementUsageCount(elm, document, delta);
-}
-
-function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
+function insertConstructableStyleSheet(content: string, target: ShadowRoot | Document) {
     // It's important for CSSStyleSheets to be unique based on their content, so that
     // `shadowRoot.adoptedStyleSheets.includes(sheet)` works.
     let styleSheet = styleSheets[content];
@@ -83,7 +88,7 @@ function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
     }
 }
 
-function removeConstructableStyleSheet(content: string, target: ShadowRoot) {
+function removeConstructableStyleSheet(content: string, target: ShadowRoot | Document) {
     const styleSheet = styleSheets[content];
 
     if (isUndefined(styleSheet)) {
@@ -102,12 +107,12 @@ function removeConstructableStyleSheet(content: string, target: ShadowRoot) {
     }
 }
 
-function insertStyleElement(content: string, target: ShadowRoot) {
+function insertStyleElement(content: string, target: ShadowRoot | Document) {
     // Avoid inserting duplicate `<style>`s
-    let sheets = shadowRootsToStyleSheets.get(target);
+    let sheets = targetsToStyleSheets.get(target);
     if (isUndefined(sheets)) {
         sheets = create(null);
-        shadowRootsToStyleSheets.set(target, sheets!);
+        targetsToStyleSheets.set(target, sheets!);
     }
     const existingElement = sheets![content];
     if (!isUndefined(existingElement)) {
@@ -127,12 +132,13 @@ function insertStyleElement(content: string, target: ShadowRoot) {
         elm = elm.cloneNode(true) as HTMLStyleElement;
     }
     sheets![content] = elm;
-    target.appendChild(elm);
+    const targetAnchorPoint = isDocument(target) ? target.head : target;
+    targetAnchorPoint.appendChild(elm);
     incrementOrDecrementUsageCount(elm, target, 1);
 }
 
-function removeStyleElement(content: string, target: ShadowRoot) {
-    const sheets = shadowRootsToStyleSheets.get(target);
+function removeStyleElement(content: string, target: ShadowRoot | Document) {
+    const sheets = targetsToStyleSheets.get(target);
     if (isUndefined(sheets)) {
         return;
     }
@@ -142,44 +148,15 @@ function removeStyleElement(content: string, target: ShadowRoot) {
     }
     const count = incrementOrDecrementUsageCount(elm, target, -1);
     if (count === 0) {
-        if (elm.parentNode === target) {
-            target.removeChild(elm);
+        const targetAnchorPoint = isDocument(target) ? target.head : target;
+        if (elm.parentNode === targetAnchorPoint) {
+            targetAnchorPoint.removeChild(elm);
         }
         delete sheets![content];
     }
 }
 
-function insertGlobalStyleSheet(content: string): void {
-    const existingElement = globalStyleSheets[content];
-    if (!isUndefined(existingElement)) {
-        incrementOrDecrementGlobalUsageCount(existingElement, 1);
-        return;
-    }
-
-    const elm = document.createElement('style');
-    elm.type = 'text/css';
-    elm.textContent = content;
-
-    globalStyleSheets[content] = elm;
-    globalStyleSheetsParentElement.appendChild(elm);
-    incrementOrDecrementGlobalUsageCount(elm, 1);
-}
-
-function removeGlobalStyleSheet(content: string): void {
-    const elm = globalStyleSheets[content];
-    if (isUndefined(elm)) {
-        return;
-    }
-    const count = incrementOrDecrementGlobalUsageCount(elm, -1);
-    if (count === 0) {
-        if (elm.parentNode === globalStyleSheetsParentElement) {
-            globalStyleSheetsParentElement.removeChild(elm);
-        }
-        delete globalStyleSheets[content];
-    }
-}
-
-function insertStyleSheet(content: string, target: ShadowRoot): void {
+function insertStyleSheet(content: string, target: ShadowRoot | Document): void {
     if (supportsConstructableStyleSheets) {
         insertConstructableStyleSheet(content, target);
     } else {
@@ -188,7 +165,7 @@ function insertStyleSheet(content: string, target: ShadowRoot): void {
     }
 }
 
-function removeStyleSheet(content: string, target: ShadowRoot): void {
+function removeStyleSheet(content: string, target: ShadowRoot | Document): void {
     if (supportsConstructableStyleSheets) {
         removeConstructableStyleSheet(content, target);
     } else {
@@ -198,19 +175,10 @@ function removeStyleSheet(content: string, target: ShadowRoot): void {
 }
 
 export function toggleStyleSheet(content: string, insert: boolean, target?: ShadowRoot): void {
-    if (isUndefined(target)) {
-        // global
-        if (insert) {
-            insertGlobalStyleSheet(content);
-        } else {
-            removeGlobalStyleSheet(content);
-        }
+    const documentOrShadowRoot = isUndefined(target) ? document : target;
+    if (insert) {
+        insertStyleSheet(content, documentOrShadowRoot);
     } else {
-        // local
-        if (insert) {
-            insertStyleSheet(content, target);
-        } else {
-            removeStyleSheet(content, target);
-        }
+        removeStyleSheet(content, documentOrShadowRoot);
     }
 }

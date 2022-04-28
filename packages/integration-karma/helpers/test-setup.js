@@ -8,6 +8,7 @@
 // Global beforeEach/afterEach/etc logic to run before and after each test
 
 var knownChildren;
+var knownAdoptedStylesheets;
 
 // After each test, clean up any DOM elements that were inserted into the document
 // <head> or <body>, plus any global <style>s the engine might think are there.
@@ -20,6 +21,9 @@ function getChildren() {
 
 beforeEach(function () {
     knownChildren = getChildren();
+    if ('adoptedStyleSheets' in document) {
+        knownAdoptedStylesheets = Array.prototype.slice.call(document.adoptedStyleSheets);
+    }
 });
 
 afterEach(function () {
@@ -32,6 +36,10 @@ afterEach(function () {
     // Need to clear this or else the engine will think there's a <style> in the <head>
     // that already has the style, even though we just removed it
     window.__lwcResetGlobalStyleSheets();
+    // If any constructable stylesheets were added to the document, we need to reset those
+    if ('adoptedStyleSheets' in document) {
+        document.adoptedStyleSheets = knownAdoptedStylesheets;
+    }
 });
 
 // Run some logic before all tests have run and after all tests have run to ensure that

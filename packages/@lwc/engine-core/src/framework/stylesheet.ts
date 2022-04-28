@@ -224,14 +224,8 @@ function createOrRemoveStylesheet(vm: VM, stylesheets: string[], insert: boolean
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
-        const isGlobal = isNull(root);
         for (let i = 0; i < stylesheets.length; i++) {
-            if (isGlobal) {
-                toggleStyleSheet(stylesheets[i], insert);
-            } else {
-                // local level
-                toggleStyleSheet(stylesheets[i], insert, root!.shadowRoot!);
-            }
+            toggleStyleSheet(stylesheets[i], insert, root?.shadowRoot ?? undefined);
         }
     }
     return null;
