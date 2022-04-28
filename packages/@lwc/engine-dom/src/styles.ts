@@ -45,14 +45,14 @@ function isDocument(target: ShadowRoot | Document): target is Document {
     return !isUndefined((target as Document).head);
 }
 
-function createFreshStyleElement(content: string): HTMLStyleElement {
+function createFreshStyleElement(content: string) {
     const elm = document.createElement('style');
     elm.type = 'text/css';
     elm.textContent = content;
     return elm;
 }
 
-function createStyleElement(content: string): HTMLStyleElement {
+function createStyleElement(content: string) {
     // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
     // and will render the incorrect styles if we do things that way. It's just
     // a perf optimization, so we can skip it for IE11.
@@ -100,7 +100,7 @@ function getStyleElementForTarget(target: ShadowRoot | Document, content: string
     }
 }
 
-function createOrGetConstructableStyleSheet(content: string): CSSStyleSheet {
+function createOrGetConstructableStyleSheet(content: string) {
     // It's important for CSSStyleSheets to be unique based on their content, so
     // that adoptedStyleSheets.indexOf(sheet) works
     let styleSheet = styleSheets[content];
@@ -183,7 +183,7 @@ function removeStyleElement(content: string, target: ShadowRoot | Document) {
     }
 }
 
-function insertStyleSheet(content: string, target: ShadowRoot | Document): void {
+function insertStyleSheet(content: string, target: ShadowRoot | Document) {
     const count = incrementOrDecrementUsageCount(content, target, 1);
     if (count > 1) {
         // already inserted
@@ -197,7 +197,7 @@ function insertStyleSheet(content: string, target: ShadowRoot | Document): void 
     }
 }
 
-function removeStyleSheet(content: string, target: ShadowRoot | Document): void {
+function removeStyleSheet(content: string, target: ShadowRoot | Document) {
     const count = incrementOrDecrementUsageCount(content, target, -1);
     if (count > 0) {
         // style sheet is still in use
@@ -211,7 +211,7 @@ function removeStyleSheet(content: string, target: ShadowRoot | Document): void 
     }
 }
 
-export function toggleStyleSheet(content: string, insert: boolean, target?: ShadowRoot): void {
+export function toggleStyleSheet(content: string, insert: boolean, target?: ShadowRoot) {
     const documentOrShadowRoot = isUndefined(target) ? document : target;
     if (insert) {
         insertStyleSheet(content, documentOrShadowRoot);
