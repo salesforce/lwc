@@ -151,13 +151,16 @@ function insertStyleElement(content: string, target: ShadowRoot | Document) {
 }
 
 function removeStyleElement(content: string, target: ShadowRoot | Document) {
-    const elm = getStyleElementForTarget(target, content);
+    // This element cannot be undefined, because we're doing the bookkeeping
+    // to know which elements are appended to which targets
+    const elm = getStyleElementForTarget(target, content)!;
+
     unsetStyleElementForTarget(target, content);
-    if (!isUndefined(elm)) {
-        const targetAnchorPoint = isDocument(target) ? target.head : target;
-        if (elm.parentNode === targetAnchorPoint) {
-            targetAnchorPoint.removeChild(elm);
-        }
+    const targetAnchorPoint = isDocument(target) ? target.head : target;
+    if (elm.parentNode === targetAnchorPoint) {
+        // It's possible for the element to no longer be attached to the target,
+        // if somebody else removed it (e.g. the cleanup code in our Karma tests)
+        targetAnchorPoint.removeChild(elm);
     }
 }
 
