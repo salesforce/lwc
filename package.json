@@ -8,20 +8,20 @@
   },
   "scripts": {
     "prepare": "husky install && yarn build",
-    "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
+    "clean": "yarn nx run-many --target=clean --all && lerna clean --yes && rm -rf node_modules",
     "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
     "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
     "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",
-    "build": "lerna run build --ignore perf-benchmarks --ignore perf-benchmarks-components --ignore integration-tests",
+    "build": "yarn nx run-many --target=build --all --exclude=perf-benchmarks,perf-benchmarks-components,integration-tests",
     "build:performance": "yarn run build:performance:components && yarn run build:performance:benchmarks",
-    "build:performance:components": "lerna exec --scope perf-benchmarks-components -- yarn build",
-    "build:performance:benchmarks": "lerna exec --scope perf-benchmarks -- yarn build",
-    "dev": "lerna run dev --parallel --ignore perf-benchmarks --ignore perf-benchmarks-components --ignore integration-tests",
+    "build:performance:components": "yarn nx build perf-benchmarks-components",
+    "build:performance:benchmarks": "yarn nx build perf-benchmarks",
+    "dev": "yarn build && yarn nx run-many --target=dev --all --exclude=perf-benchmarks,perf-benchmarks-components,integration-tests",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
     "test:ci": "yarn test --no-cache --coverage --runInBand",
-    "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
-    "test:performance": "lerna exec --scope perf-benchmarks -- yarn test",
+    "test:integration": "yarn nx sauce integration-tests",
+    "test:performance": "yarn nx test perf-benchmarks",
     "release:publish:ci": "./scripts/release/publish.mjs",
     "release:version": "./scripts/release/version.mjs"
   },
@@ -62,7 +62,8 @@
     "ts-jest": "^27.1.4",
     "tslib": "^2.3.1",
     "typescript": "4.6.3",
-    "workerpool": "^6.2.0"
+    "workerpool": "^6.2.0",
+    "nx": "14.0.3"
   },
   "lint-staged": {
     "**/*.{js,mjs,ts}": "eslint",
