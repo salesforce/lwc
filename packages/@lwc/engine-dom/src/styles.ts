@@ -88,7 +88,9 @@ function setStyleElementForTarget(
 
 function unsetStyleElementForTarget(target: ShadowRoot | Document, content: string) {
     const contentsToStyleElements = targetsToStyleElements.get(target);
-    delete contentsToStyleElements![content];
+    if (!isUndefined(contentsToStyleElements)) {
+        delete contentsToStyleElements![content];
+    }
 }
 
 function getStyleElementForTarget(target: ShadowRoot | Document, content: string) {
@@ -169,9 +171,6 @@ function removeStyleElement(content: string, target: ShadowRoot | Document) {
     const elm = getStyleElementForTarget(target, content);
 
     if (isUndefined(elm)) {
-        // In principle this element should not be undefined, since we're doing
-        // the bookkeeping to know which elements are appended to which targets.
-        // But just in case, bail out early
         return;
     }
 
