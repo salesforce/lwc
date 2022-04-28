@@ -24,6 +24,12 @@ const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 const TEST_HYDRATE = require.resolve('../../../helpers/test-hydrate');
 
+// Fix Node warning about >10 event listeners ("Possible EventEmitter memory leak detected").
+// This is due to the fact that we are running so many simultaneous rollup commands
+// on so many files. For every `*.spec.js` file, Rollup adds a listener at
+// this line: https://github.com/rollup/rollup/blob/35cbfae/src/utils/hookActions.ts#L37
+process.setMaxListeners(1000);
+
 function getFiles() {
     return [
         createPattern(LWC_ENGINE),

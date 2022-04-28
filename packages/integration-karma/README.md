@@ -8,7 +8,7 @@ Karma integration test for `@lwc/compiler`, `@lwc/engine-dom`, and `@lwc/synthet
 
 Starts the Karma server in `watch` mode and start Google Chrome. Note that you can open different browsers to run the tests in parallel on all the browsers. While the server in running, updating a fixture will trigger the suite to run.
 
-### `yarn start:hydration`
+### `yarn hydration:start`
 
 Starts the Karma server in `watch` mode and start Google Chrome, to run the hydration test suite. Note that you can open different browsers to run the tests in parallel on all the browsers. While the server in running, updating a fixture will trigger the suite to run.
 
@@ -16,7 +16,7 @@ Starts the Karma server in `watch` mode and start Google Chrome, to run the hydr
 
 Run the test suite a single time on Google Chrome.
 
-### `yarn test:hydration`
+### `yarn hydration:test`
 
 Run the hydration test suite a single time on Google Chrome.
 
