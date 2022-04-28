@@ -34,6 +34,12 @@
         "target": "package",
         "projects": "dependencies"
       }
+    ],
+    "dev": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
     ]
   },
   "affected": {

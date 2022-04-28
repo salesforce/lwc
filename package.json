@@ -16,7 +16,7 @@
     "build:performance": "yarn run build:performance:components && yarn run build:performance:benchmarks",
     "build:performance:components": "yarn nx build perf-benchmarks-components",
     "build:performance:benchmarks": "yarn nx build perf-benchmarks",
-    "dev": "yarn build && yarn nx run-many --target=dev --all --exclude=perf-benchmarks,perf-benchmarks-components,integration-tests",
+    "dev": "yarn nx run-many --target=dev --all --exclude=perf-benchmarks,perf-benchmarks-components,integration-tests",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
     "test:ci": "yarn test --no-cache --coverage --runInBand",
