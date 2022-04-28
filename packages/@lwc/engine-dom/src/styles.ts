@@ -7,119 +7,40 @@
 
 import { isUndefined, create, getOwnPropertyDescriptor, isArray, isFunction } from '@lwc/shared';
 
-const globalStyleSheets: { [content: string]: HTMLStyleElement } = create(null);
+//
+// Feature detection
+//
 
-if (process.env.NODE_ENV === 'development') {
-    // @ts-ignore
-    window.__lwcResetGlobalStyleSheets = () => {
-        for (const key of Object.keys(globalStyleSheets)) {
-            delete globalStyleSheets[key];
-        }
-    };
-}
-
-// This check for constructable styleSheets is similar to Fast's:
+// This check for constructable style sheets is similar to Fast's:
 // https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
 // See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
 const supportsConstructableStyleSheets =
     isFunction(CSSStyleSheet.prototype.replaceSync) && isArray(document.adoptedStyleSheets);
+// If length is writable, then mutable adopted style sheets are supported. See:
+// https://chromestatus.com/feature/5638996492288000
 const supportsMutableAdoptedStyleSheets =
     supportsConstructableStyleSheets &&
     getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
+
+//
+// StyleSheet cache
+//
+
+// Global catch of style elements used for fast cloning
 const styleElements: { [content: string]: HTMLStyleElement } = create(null);
+// Global cache of CSSStyleSheets because these need to be unique based on content
 const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
-const targetsToStyleSheets: WeakMap<
-    ShadowRoot | Document,
-    { [content: string]: HTMLStyleElement }
-> = new WeakMap();
-const stylesToUsageCount: WeakMap<
-    ShadowRoot | Document,
-    WeakMap<HTMLStyleElement | CSSStyleSheet, number>
-> = new WeakMap();
+// Bookkeeping to know how many components/templates are relying on a given style sheet
+const stylesToUsageCount: WeakMap<ShadowRoot | Document, { [content: string]: number }> =
+    new WeakMap();
+// Bookkeeping of appended style elements so that we don't have to manually search the DOM to find elements we appended
+const targetsToStyleElements: WeakMap<ShadowRoot | Document, HTMLStyleElement> = new WeakMap();
 
 function isDocument(target: ShadowRoot | Document): target is Document {
     return !isUndefined((target as Document).head);
 }
 
-function getStylesToUsageCounts(target: ShadowRoot | Document) {
-    let stylesToCounts = stylesToUsageCount.get(target);
-    if (isUndefined(stylesToCounts)) {
-        stylesToCounts = new WeakMap();
-        stylesToUsageCount.set(target, stylesToCounts);
-    }
-    return stylesToCounts;
-}
-
-function incrementOrDecrementUsageCount(
-    style: HTMLStyleElement | CSSStyleSheet,
-    target: ShadowRoot | Document,
-    delta: number
-) {
-    const stylesToCounts = getStylesToUsageCounts(target);
-
-    let count = stylesToCounts.get(style);
-    if (isUndefined(count)) {
-        count = 0;
-    }
-    count += delta;
-    stylesToCounts.set(style, count);
-    return count;
-}
-
-function insertConstructableStyleSheet(content: string, target: ShadowRoot | Document) {
-    // It's important for CSSStyleSheets to be unique based on their content, so that
-    // `shadowRoot.adoptedStyleSheets.includes(sheet)` works.
-    let styleSheet = styleSheets[content];
-    if (isUndefined(styleSheet)) {
-        styleSheet = new CSSStyleSheet();
-        styleSheet.replaceSync(content);
-        styleSheets[content] = styleSheet;
-    }
-    incrementOrDecrementUsageCount(styleSheet, target, 1);
-    const { adoptedStyleSheets } = target;
-    if (!adoptedStyleSheets.includes(styleSheet)) {
-        if (supportsMutableAdoptedStyleSheets) {
-            // This is only supported in later versions of Chromium:
-            // https://chromestatus.com/feature/5638996492288000
-            adoptedStyleSheets.push(styleSheet);
-        } else {
-            target.adoptedStyleSheets = [...adoptedStyleSheets, styleSheet];
-        }
-    }
-}
-
-function removeConstructableStyleSheet(content: string, target: ShadowRoot | Document) {
-    const styleSheet = styleSheets[content];
-
-    if (isUndefined(styleSheet)) {
-        return;
-    }
-    const count = incrementOrDecrementUsageCount(styleSheet, target, -1);
-    if (count === 0) {
-        const { adoptedStyleSheets } = target;
-        if (adoptedStyleSheets.includes(styleSheet)) {
-            if (supportsMutableAdoptedStyleSheets) {
-                adoptedStyleSheets.splice(adoptedStyleSheets.indexOf(styleSheet), 1);
-            } else {
-                target.adoptedStyleSheets = [...adoptedStyleSheets].filter((_) => _ !== styleSheet);
-            }
-        }
-    }
-}
-
-function insertStyleElement(content: string, target: ShadowRoot | Document) {
-    // Avoid inserting duplicate `<style>`s
-    let sheets = targetsToStyleSheets.get(target);
-    if (isUndefined(sheets)) {
-        sheets = create(null);
-        targetsToStyleSheets.set(target, sheets!);
-    }
-    const existingElement = sheets![content];
-    if (!isUndefined(existingElement)) {
-        incrementOrDecrementUsageCount(existingElement, target, 1);
-        return;
-    }
-
+function createStyleElement(content: string): HTMLStyleElement {
     // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
     // faster to call `cloneNode()` on an existing node than to recreate it every time.
     let elm = styleElements[content];
@@ -131,29 +52,100 @@ function insertStyleElement(content: string, target: ShadowRoot | Document) {
     } else {
         elm = elm.cloneNode(true) as HTMLStyleElement;
     }
-    sheets![content] = elm;
+    return elm;
+}
+
+function createOrGetConstructableStyleSheet(content: string): CSSStyleSheet {
+    // It's important for CSSStyleSheets to be unique based on their content, so
+    // that adoptedStyleSheets.indexOf(sheet) works
+    let styleSheet = styleSheets[content];
+    if (isUndefined(styleSheet)) {
+        styleSheet = new CSSStyleSheet();
+        styleSheet.replaceSync(content);
+        styleSheets[content] = styleSheet;
+    }
+    return styleSheet;
+}
+
+function getStylesToUsageCounts(target: ShadowRoot | Document) {
+    let stylesToCounts = stylesToUsageCount.get(target);
+    if (isUndefined(stylesToCounts)) {
+        stylesToCounts = create(null);
+        stylesToUsageCount.set(target, stylesToCounts!);
+    }
+    return stylesToCounts!;
+}
+
+function incrementOrDecrementUsageCount(
+    content: string,
+    target: ShadowRoot | Document,
+    delta: number
+) {
+    const stylesToCounts = getStylesToUsageCounts(target);
+
+    let count = stylesToCounts[content];
+    if (isUndefined(count)) {
+        count = 0;
+    }
+    count += delta;
+    stylesToCounts[content] = count;
+    return count;
+}
+
+function insertConstructableStyleSheet(content: string, target: ShadowRoot | Document) {
+    const count = incrementOrDecrementUsageCount(content, target, 1);
+    if (count > 1) {
+        // already inserted
+        return;
+    }
+    const styleSheet = createOrGetConstructableStyleSheet(content);
+    const { adoptedStyleSheets } = target;
+    if (supportsMutableAdoptedStyleSheets) {
+        // This is only supported in later versions of Chromium:
+        // https://chromestatus.com/feature/5638996492288000
+        adoptedStyleSheets.push(styleSheet);
+    } else {
+        target.adoptedStyleSheets = [...adoptedStyleSheets, styleSheet];
+    }
+}
+
+function removeConstructableStyleSheet(content: string, target: ShadowRoot | Document) {
+    const count = incrementOrDecrementUsageCount(content, target, -1);
+    if (count > 0) {
+        // style sheet is still in use
+        return;
+    }
+    const styleSheet = createOrGetConstructableStyleSheet(content);
+    const { adoptedStyleSheets } = target;
+    if (supportsMutableAdoptedStyleSheets) {
+        adoptedStyleSheets.splice(adoptedStyleSheets.indexOf(styleSheet), 1);
+    } else {
+        target.adoptedStyleSheets = [...adoptedStyleSheets].filter((_) => _ !== styleSheet);
+    }
+}
+
+function insertStyleElement(content: string, target: ShadowRoot | Document) {
+    const count = incrementOrDecrementUsageCount(content, target, 1);
+    if (count > 1) {
+        // already inserted
+        return;
+    }
+    const elm = createStyleElement(content);
     const targetAnchorPoint = isDocument(target) ? target.head : target;
     targetAnchorPoint.appendChild(elm);
-    incrementOrDecrementUsageCount(elm, target, 1);
+    targetsToStyleElements.set(target, elm);
 }
 
 function removeStyleElement(content: string, target: ShadowRoot | Document) {
-    const sheets = targetsToStyleSheets.get(target);
-    if (isUndefined(sheets)) {
+    const count = incrementOrDecrementUsageCount(content, target, -1);
+    if (count > 0) {
+        // style sheet is still in use
         return;
     }
-    const elm = sheets![content];
-    if (isUndefined(elm)) {
-        return;
-    }
-    const count = incrementOrDecrementUsageCount(elm, target, -1);
-    if (count === 0) {
-        const targetAnchorPoint = isDocument(target) ? target.head : target;
-        if (elm.parentNode === targetAnchorPoint) {
-            targetAnchorPoint.removeChild(elm);
-        }
-        delete sheets![content];
-    }
+    const elm = targetsToStyleElements.get(target)!;
+    const targetAnchorPoint = isDocument(target) ? target.head : target;
+    targetAnchorPoint.removeChild(elm);
+    targetsToStyleElements.delete(target);
 }
 
 function insertStyleSheet(content: string, target: ShadowRoot | Document): void {

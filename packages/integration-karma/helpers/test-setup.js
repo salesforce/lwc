@@ -35,7 +35,6 @@ afterEach(function () {
     knownChildren = undefined;
     // Need to clear this or else the engine will think there's a <style> in the <head>
     // that already has the style, even though we just removed it
-    window.__lwcResetGlobalStyleSheets();
     // If any constructable stylesheets were added to the document, we need to reset those
     if ('adoptedStyleSheets' in document) {
         document.adoptedStyleSheets = knownAdoptedStylesheets;
