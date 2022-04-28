@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined, create, getOwnPropertyDescriptor, isArray, isFunction } from '@lwc/shared';
+import { isUndefined, getOwnPropertyDescriptor, isArray, isFunction } from '@lwc/shared';
 
 //
 // Feature detection
@@ -28,17 +28,16 @@ const isIE11 = !isUndefined((document as any).documentMode);
 // Style sheet cache
 //
 
-// Global catch of style elements used for fast cloning
-const styleElements: { [content: string]: HTMLStyleElement } = create(null);
+// Global cache of style elements used for fast cloning
+const styleElements: Map<string, HTMLStyleElement> = new Map();
 // Global cache of CSSStyleSheets because these need to be unique based on content
-const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
+const styleSheets: Map<string, CSSStyleSheet> = new Map();
 // Bookkeeping to know how many components/templates are relying on a given style sheet
-const stylesToUsageCount: WeakMap<ShadowRoot | Document, { [content: string]: number }> =
-    new WeakMap();
+const stylesToUsageCount: WeakMap<ShadowRoot | Document, Map<string, number>> = new WeakMap();
 // Bookkeeping of appended style elements so that we don't have to manually search the DOM to find elements we appended
 const targetsToStyleElements: WeakMap<
     ShadowRoot | Document,
-    { [content: string]: HTMLStyleElement }
+    Map<string, HTMLStyleElement>
 > = new WeakMap();
 
 function isDocument(target: ShadowRoot | Document): target is Document {
@@ -60,11 +59,11 @@ function createStyleElement(content: string) {
         return createFreshStyleElement(content);
     }
 
-    let elm = styleElements[content];
+    let elm = styleElements.get(content);
     if (isUndefined(elm)) {
         // We don't clone every time, because that would be a perf tax on the first time
         elm = createFreshStyleElement(content);
-        styleElements[content] = elm;
+        styleElements.set(content, elm);
     } else {
         // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
         // faster to call `cloneNode()` on an existing node than to recreate it every time.
@@ -80,34 +79,34 @@ function setStyleElementForTarget(
 ) {
     let contentsToStyleElements = targetsToStyleElements.get(target);
     if (isUndefined(contentsToStyleElements)) {
-        contentsToStyleElements = create(null);
-        targetsToStyleElements.set(target, contentsToStyleElements!);
+        contentsToStyleElements = new Map();
+        targetsToStyleElements.set(target, contentsToStyleElements);
     }
-    contentsToStyleElements![content] = elm;
+    contentsToStyleElements.set(content, elm);
 }
 
 function unsetStyleElementForTarget(target: ShadowRoot | Document, content: string) {
     const contentsToStyleElements = targetsToStyleElements.get(target);
     if (!isUndefined(contentsToStyleElements)) {
-        delete contentsToStyleElements![content];
+        contentsToStyleElements.delete(content);
     }
 }
 
 function getStyleElementForTarget(target: ShadowRoot | Document, content: string) {
     const contentsToStyleElements = targetsToStyleElements.get(target);
     if (!isUndefined(contentsToStyleElements)) {
-        return contentsToStyleElements[content];
+        return contentsToStyleElements.get(content);
     }
 }
 
 function createOrGetConstructableStyleSheet(content: string) {
     // It's important for CSSStyleSheets to be unique based on their content, so
     // that adoptedStyleSheets.indexOf(sheet) works
-    let styleSheet = styleSheets[content];
+    let styleSheet = styleSheets.get(content);
     if (isUndefined(styleSheet)) {
         styleSheet = new CSSStyleSheet();
         styleSheet.replaceSync(content);
-        styleSheets[content] = styleSheet;
+        styleSheets.set(content, styleSheet);
     }
     return styleSheet;
 }
@@ -115,10 +114,10 @@ function createOrGetConstructableStyleSheet(content: string) {
 function getStylesToUsageCounts(target: ShadowRoot | Document) {
     let stylesToCounts = stylesToUsageCount.get(target);
     if (isUndefined(stylesToCounts)) {
-        stylesToCounts = create(null);
-        stylesToUsageCount.set(target, stylesToCounts!);
+        stylesToCounts = new Map();
+        stylesToUsageCount.set(target, stylesToCounts);
     }
-    return stylesToCounts!;
+    return stylesToCounts;
 }
 
 function incrementOrDecrementUsageCount(
@@ -128,12 +127,12 @@ function incrementOrDecrementUsageCount(
 ) {
     const stylesToCounts = getStylesToUsageCounts(target);
 
-    let count = stylesToCounts[content];
+    let count = stylesToCounts.get(content);
     if (isUndefined(count)) {
         count = 0;
     }
     count += delta;
-    stylesToCounts[content] = count;
+    stylesToCounts.set(content, count);
     return count;
 }
 
