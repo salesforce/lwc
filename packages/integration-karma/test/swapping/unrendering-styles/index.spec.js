@@ -198,12 +198,15 @@ describe('unrendering styles', () => {
     }
 
     describe('feature flag', () => {
-        beforeAll(() => {
+        beforeEach(() => {
             setFeatureFlagForTest('DISABLE_STYLE_REMOVAL', true);
         });
 
-        afterAll(() => {
+        afterEach(() => {
             setFeatureFlagForTest('DISABLE_STYLE_REMOVAL', false);
+            // Reset the counts for keeping track of the used style sheets. It will be off
+            // because we aren't decrementing the count.
+            window.__lwcResetGlobalStyleSheetCounts();
         });
 
         it('does not remove style sheets if DISABLE_STYLE_REMOVAL is true', () => {

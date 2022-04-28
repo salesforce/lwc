@@ -40,6 +40,17 @@ const targetsToStyleElements: WeakMap<
     Map<string, HTMLStyleElement>
 > = new WeakMap();
 
+//
+// Test utilities
+//
+
+if (process.env.NODE_ENV === 'development') {
+    // @ts-ignore
+    window.__lwcResetGlobalStyleSheetCounts = () => {
+        stylesToUsageCount.delete(document);
+    };
+}
+
 function isDocument(target: ShadowRoot | Document): target is Document {
     return !isUndefined((target as Document).head);
 }
