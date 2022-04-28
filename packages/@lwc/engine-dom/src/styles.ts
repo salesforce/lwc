@@ -166,9 +166,14 @@ function insertStyleElement(content: string, target: ShadowRoot | Document) {
 }
 
 function removeStyleElement(content: string, target: ShadowRoot | Document) {
-    // This element cannot be undefined, because we're doing the bookkeeping
-    // to know which elements are appended to which targets
-    const elm = getStyleElementForTarget(target, content)!;
+    const elm = getStyleElementForTarget(target, content);
+
+    if (isUndefined(elm)) {
+        // In principle this element should not be undefined, since we're doing
+        // the bookkeeping to know which elements are appended to which targets.
+        // But just in case, bail out early
+        return;
+    }
 
     unsetStyleElementForTarget(target, content);
     const targetAnchorPoint = isDocument(target) ? target.head : target;
