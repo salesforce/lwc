@@ -48,6 +48,7 @@ function createStyleElement(content: string): HTMLStyleElement {
     // faster to call `cloneNode()` on an existing node than to recreate it every time.
     let elm = styleElements[content];
     if (isUndefined(elm)) {
+        // We don't clone every time, because that would be a perf tax on the first time
         elm = document.createElement('style');
         elm.type = 'text/css';
         elm.textContent = content;
