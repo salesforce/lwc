@@ -23,7 +23,7 @@ const supportsMutableAdoptedStyleSheets =
     getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
 
 //
-// StyleSheet cache
+// Style sheet cache
 //
 
 // Global catch of style elements used for fast cloning
