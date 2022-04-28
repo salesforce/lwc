@@ -43,17 +43,30 @@ function isDocument(target: ShadowRoot | Document): target is Document {
     return !isUndefined((target as Document).head);
 }
 
+function createFreshStyleElement(content: string): HTMLStyleElement {
+    const elm = document.createElement('style');
+    elm.type = 'text/css';
+    elm.textContent = content;
+    return elm;
+}
+
 function createStyleElement(content: string): HTMLStyleElement {
-    // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
-    // faster to call `cloneNode()` on an existing node than to recreate it every time.
+    // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
+    // and will render the incorrect styles if we do things that way. It's just
+    // a perf optimization, so we can skip it for IE11.
+    if (!isUndefined((document as any).documentMode)) {
+        // Detect IE, via https://stackoverflow.com/a/9851769
+        return createFreshStyleElement(content);
+    }
+
     let elm = styleElements[content];
     if (isUndefined(elm)) {
         // We don't clone every time, because that would be a perf tax on the first time
-        elm = document.createElement('style');
-        elm.type = 'text/css';
-        elm.textContent = content;
+        elm = createFreshStyleElement(content);
         styleElements[content] = elm;
     } else {
+        // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
+        // faster to call `cloneNode()` on an existing node than to recreate it every time.
         elm = elm.cloneNode(true) as HTMLStyleElement;
     }
     return elm;
