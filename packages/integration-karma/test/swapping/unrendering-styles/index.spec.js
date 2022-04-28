@@ -1,8 +1,7 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import LightParentLightChild from 'x/lightParentLightChild';
 import LightParentShadowChild from 'x/lightParentShadowChild';
 import ShadowParentLightChild from 'x/shadowParentLightChild';
-import Light from 'x/light';
 
 describe('unrendering styles', () => {
     const cases = [
@@ -196,42 +195,4 @@ describe('unrendering styles', () => {
             });
         }
     }
-
-    describe('feature flag', () => {
-        beforeEach(() => {
-            setFeatureFlagForTest('DISABLE_STYLE_REMOVAL', true);
-        });
-
-        afterEach(() => {
-            setFeatureFlagForTest('DISABLE_STYLE_REMOVAL', false);
-            // Reset the counts for keeping track of the used style sheets. It will be off
-            // because we aren't decrementing the count.
-            window.__lwcResetGlobalStyleSheetCounts();
-        });
-
-        it('does not remove style sheets if DISABLE_STYLE_REMOVAL is true', () => {
-            const elm = createElement('x-shadow', { is: Light });
-            document.body.appendChild(elm);
-            expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(255, 0, 0)');
-            elm.next();
-            return Promise.resolve()
-                .then(() => {
-                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 255)'
-                    );
-                    elm.next();
-                })
-                .then(() => {
-                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 255)'
-                    );
-                    elm.next();
-                })
-                .then(() => {
-                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
-                        'rgb(0, 0, 255)'
-                    );
-                });
-        });
-    });
 });
