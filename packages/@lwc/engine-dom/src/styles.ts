@@ -21,6 +21,8 @@ const supportsConstructableStyleSheets =
 const supportsMutableAdoptedStyleSheets =
     supportsConstructableStyleSheets &&
     getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
+// Detect IE, via https://stackoverflow.com/a/9851769
+const isIE11 = !isUndefined((document as any).documentMode);
 
 //
 // Style sheet cache
@@ -54,8 +56,7 @@ function createStyleElement(content: string): HTMLStyleElement {
     // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
     // and will render the incorrect styles if we do things that way. It's just
     // a perf optimization, so we can skip it for IE11.
-    if (!isUndefined((document as any).documentMode)) {
-        // Detect IE, via https://stackoverflow.com/a/9851769
+    if (isIE11) {
         return createFreshStyleElement(content);
     }
 
