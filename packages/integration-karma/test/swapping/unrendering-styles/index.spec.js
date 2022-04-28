@@ -2,7 +2,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import LightParentLightChild from 'x/lightParentLightChild';
 import LightParentShadowChild from 'x/lightParentShadowChild';
 import ShadowParentLightChild from 'x/shadowParentLightChild';
-import Shadow from 'x/shadow';
+import Light from 'x/light';
 
 describe('unrendering styles', () => {
     const cases = [
@@ -207,27 +207,25 @@ describe('unrendering styles', () => {
         });
 
         it('does not remove style sheets if DISABLE_STYLE_REMOVAL is true', () => {
-            const elm = createElement('x-shadow', { is: Shadow });
+            const elm = createElement('x-shadow', { is: Light });
             document.body.appendChild(elm);
-            expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-                'rgb(255, 0, 0)'
-            );
+            expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(255, 0, 0)');
             elm.next();
             return Promise.resolve()
                 .then(() => {
-                    expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
+                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
                         'rgb(0, 0, 255)'
                     );
                     elm.next();
                 })
                 .then(() => {
-                    expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
+                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
                         'rgb(0, 0, 255)'
                     );
                     elm.next();
                 })
                 .then(() => {
-                    expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
+                    expect(getComputedStyle(elm.querySelector('div')).color).toEqual(
                         'rgb(0, 0, 255)'
                     );
                 });
