@@ -52,7 +52,7 @@ commands:
       - run:
           name: << parameters.command_name >>
           working_directory: << parameters.working_directory >>
-          command: >
+          command: |
             retry() {
                MAX_RETRY=<< parameters.retry_count >>
                n=0
@@ -66,11 +66,11 @@ commands:
                  exit 1
                fi
             }
-            <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >>
-            <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >>
-            <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
-            <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
-            retry << parameters.command >>
+            <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
+            <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
+            <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
+            <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
+            retry "<< parameters.command >>"
   # Setup
   restore_yarn_cache:
     description: Restore Yarn cache from previous build
