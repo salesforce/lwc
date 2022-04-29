@@ -112,6 +112,8 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly context: Context;
     /** The owner VM or null for root elements. */
     readonly owner: VM<N, E> | null;
+    /** Whether or not the VM was hydrated */
+    readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
     renderMode: RenderMode;
     shadowMode: ShadowMode;
@@ -279,9 +281,10 @@ export function createVM<HostNode, HostElement>(
         mode: ShadowRootMode;
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
+        hydrated?: boolean;
     }
 ): VM {
-    const { mode, owner, tagName } = options;
+    const { mode, owner, tagName, hydrated } = options;
     const def = getComponentInternalDef(ctor);
 
     const vm: VM = {
@@ -302,6 +305,7 @@ export function createVM<HostNode, HostElement>(
         cmpSlots: create(null),
         oar: create(null),
         cmpTemplate: null,
+        hydrated: Boolean(hydrated),
 
         renderMode: def.renderMode,
 
@@ -670,7 +674,10 @@ export function resetComponentRoot(vm: VM) {
     runChildNodesDisconnectedCallback(vm);
     vm.velements = EmptyArray;
 
-    if (!isNull(cmpTemplate)) {
+    // If the component was hydrated, then we shouldn't call removeStylesheet
+    // because it didn't actually insert any global stylesheets. If we did
+    // call removeStylesheet, the stylesheet count would become -1.
+    if (!vm.hydrated && !isNull(cmpTemplate)) {
         const stylesheets = getStylesheetsContent(vm, cmpTemplate);
         removeStylesheet(vm, stylesheets);
     }

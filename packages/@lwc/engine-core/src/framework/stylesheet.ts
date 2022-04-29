@@ -7,14 +7,7 @@
 import features from '@lwc/features';
 import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
-import {
-    getClassList,
-    removeAttribute,
-    setAttribute,
-    ssr,
-    isHydrating,
-    toggleStyleSheet,
-} from '../renderer';
+import { getClassList, removeAttribute, setAttribute, ssr, toggleStyleSheet } from '../renderer';
 
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -211,7 +204,7 @@ function createOrRemoveStylesheet(vm: VM, stylesheets: string[], insert: boolean
         for (let i = 0; i < stylesheets.length; i++) {
             toggleStyleSheet(stylesheets[i], insert);
         }
-    } else if (ssr || isHydrating()) {
+    } else if (ssr || vm.hydrated) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
         //       This works in the client, because the stylesheets are created, and cached in the VM
         //       the first time the VM renders.
