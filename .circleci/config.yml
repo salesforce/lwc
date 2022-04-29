@@ -30,7 +30,7 @@ commands:
       command:
         description: Command to run
         type: string
-      name:
+      command_name:
         description: Command step name
         type: string
       working_directory:
@@ -42,7 +42,7 @@ commands:
         default: 3
     steps:
       - run:
-          name: << parameters.name >>
+          name: << parameters.command_name >>
           working_directory: << parameters.working_directory >>
           command: |
             retry() {
@@ -130,7 +130,7 @@ commands:
         default: true
     steps:
       - retry_until_success:
-          name: Run karma integration tests
+          command_name: Run karma integration tests
           working_directory: packages/integration-karma
           command: >
               <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >>
@@ -218,7 +218,7 @@ jobs:
       - load_workspace
       - start_sauce_connect
       - retry_until_success:
-          name: Run integration test - Chrome SauceLabs
+          command_name: Run integration test - Chrome SauceLabs
           command: yarn sauce:prod --browsers chrome
           working_directory: packages/integration-tests
 
@@ -231,7 +231,7 @@ jobs:
       - load_workspace
       - start_sauce_connect
       - retry_until_success:
-          name: Run integration test - IE11 SauceLabs
+          command_name: Run integration test - IE11 SauceLabs
           command: yarn sauce:prod_compat --browsers ie11
           working_directory: packages/integration-tests
 
