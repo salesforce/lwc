@@ -188,7 +188,7 @@ function removeStyleElement(content: string, target: ShadowRoot | Document) {
     const targetAnchorPoint = isDocument(target) ? target.head : target;
     if (elm.parentNode === targetAnchorPoint) {
         // It's possible for the element to no longer be attached to the target,
-        // if somebody else removed it (e.g. the cleanup code in our Karma tests)
+        // if somebody else removed it (e.g. from the document <head>)
         targetAnchorPoint.removeChild(elm);
     }
 }

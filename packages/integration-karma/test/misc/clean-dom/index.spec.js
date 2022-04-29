@@ -9,16 +9,8 @@ describe('clean DOM', () => {
             document.body.appendChild(el);
             expect(document.querySelector(`.body-${i}`)).toEqual(el);
 
-            // insert to the head as well
-            const style = document.createElement('style');
-            style.textContent = 'html { background-color: green }';
-            style.className = `head-${i}`;
-            document.head.appendChild(style);
-            expect(document.querySelector(`.head-${i}`)).toEqual(style);
-
             // check that we don't have dirty DOM nodes from the other test
             expect(document.querySelector(`.body-${1 - i}`)).toBeNull();
-            expect(document.querySelector(`.head-${1 - i}`)).toBeNull();
         });
     }
 });
