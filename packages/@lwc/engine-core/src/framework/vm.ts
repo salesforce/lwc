@@ -221,7 +221,7 @@ export function appendVM(vm: VM) {
 }
 
 function removeStyles(vm: VM) {
-    // Remove any styles used by this template when disconnecting
+    // Remove any styles used by this template when no longer needed
     const { cmpTemplate } = vm;
     if (!isNull(cmpTemplate)) {
         const stylesheets = getStylesheetsContent(vm, cmpTemplate);
@@ -660,7 +660,7 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const { children, renderRoot, cmpTemplate } = vm;
+    const { children, renderRoot } = vm;
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
@@ -674,12 +674,12 @@ export function resetComponentRoot(vm: VM) {
     runChildNodesDisconnectedCallback(vm);
     vm.velements = EmptyArray;
 
-    // If the component was hydrated, then we shouldn't call removeStylesheet
-    // because it didn't actually insert any global stylesheets. If we did
-    // call removeStylesheet, the stylesheet count would become -1.
-    if (!vm.hydrated && !isNull(cmpTemplate)) {
-        const stylesheets = getStylesheetsContent(vm, cmpTemplate);
-        removeStylesheet(vm, stylesheets);
+    // If the component was hydrated, then we shouldn't remove the stylesheets
+    // because it didn't actually insert any shared stylesheets – hydrated components
+    // use inline <styles>. Removing the styles here would cause the stylesheet
+    // count to become negative.
+    if (!vm.hydrated) {
+        removeStyles(vm);
     }
 }
 
