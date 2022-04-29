@@ -30,6 +30,9 @@ commands:
       command:
         description: Command to run
         type: string
+      name:
+        description: Command step name
+        type: string
       working_directory:
         description: Directory to run the command in
         type: string
@@ -38,22 +41,24 @@ commands:
         type: integer
         default: 3
     steps:
-      - run: |
-          cd << parameters.working_directory >>
-          retry() {
-             MAX_RETRY=<< parameters.retry_count >>
-             n=0
-             until [ $n -ge $MAX_RETRY ]
-             do
-                "$@" && break
-                n=$[$n+1]
-             done
-             if [ $n -ge $MAX_RETRY ]; then
-               echo "failed: ${@}" >&2
-               exit 1
-             fi
-          }
-          retry << parameters.command >>
+      - run:
+          name: << parameters.name >>
+          working_directory: << parameters.working_directory >>
+          command: |
+            retry() {
+               MAX_RETRY=<< parameters.retry_count >>
+               n=0
+               until [ $n -ge $MAX_RETRY ]
+               do
+                  "$@" && break
+                  n=$[$n+1]
+               done
+               if [ $n -ge $MAX_RETRY ]; then
+                 echo "failed: ${@}" >&2
+                 exit 1
+               fi
+            }
+            retry << parameters.command >>
   # Setup
   restore_yarn_cache:
     description: Restore Yarn cache from previous build
