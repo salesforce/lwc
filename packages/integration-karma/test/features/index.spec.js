@@ -29,11 +29,11 @@ describe('feature flags', () => {
 
         it('works', () => {
             window.dispatchEvent(new CustomEvent('test-dummy-flag'));
-            expect(packages.sort()).toEqual([
-                '@lwc/engine-core',
-                '@lwc/engine-dom',
-                '@lwc/synthetic-shadow',
-            ]);
+            const expected = ['@lwc/engine-core', '@lwc/engine-dom'];
+            if (!process.env.NATIVE_SHADOW) {
+                expected.push('@lwc/synthetic-shadow');
+            }
+            expect(packages.sort()).toEqual(expected);
         });
     });
 
