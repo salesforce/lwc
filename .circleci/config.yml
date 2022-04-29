@@ -70,7 +70,7 @@ commands:
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
             <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
-            retry "<< parameters.command >>"
+            retry << parameters.command >>
   # Setup
   restore_yarn_cache:
     description: Restore Yarn cache from previous build
