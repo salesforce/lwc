@@ -23,6 +23,37 @@ executors:
 
 # Custom commands definition
 commands:
+  # Based on https://circleci.com/developer/orbs/orb/kimh/run-with-retry
+  retry_until_success:
+    description: Retry command multiple times until it succeeds
+    parameters:
+      command:
+        description: Command to run
+        type: string
+      working_directory:
+        description: Directory to run the command in
+        type: string
+      retry_count:
+        description: Number of retry
+        type: integer
+        default: 3
+    steps:
+      - run: |
+          cd << parameters.working_directory >>
+          retry() {
+             MAX_RETRY=<< parameters.retry_count >>
+             n=0
+             until [ $n -ge $MAX_RETRY ]
+             do
+                "$@" && break
+                n=$[$n+1]
+             done
+             if [ $n -ge $MAX_RETRY ]; then
+               echo "failed: ${@}" >&2
+               exit 1
+             fi
+          }
+          retry << parameters.command >>
   # Setup
   restore_yarn_cache:
     description: Restore Yarn cache from previous build
@@ -93,7 +124,7 @@ commands:
         type: boolean
         default: true
     steps:
-      - run:
+      - retry_until_success:
           name: Run karma integration tests
           working_directory: packages/integration-karma
           command: >
@@ -181,7 +212,7 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - run:
+      - retry_until_success:
           name: Run integration test - Chrome SauceLabs
           command: yarn sauce:prod --browsers chrome
           working_directory: packages/integration-tests
@@ -194,7 +225,7 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - run:
+      - retry_until_success:
           name: Run integration test - IE11 SauceLabs
           command: yarn sauce:prod_compat --browsers ie11
           working_directory: packages/integration-tests
