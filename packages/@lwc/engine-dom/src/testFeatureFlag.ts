@@ -7,7 +7,7 @@
 
 import features from '@lwc/features';
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && typeof window !== 'undefined') {
     window.addEventListener('test-dummy-flag', () => {
         let hasFlag = false;
         if (features.DUMMY_TEST_FLAG) {
