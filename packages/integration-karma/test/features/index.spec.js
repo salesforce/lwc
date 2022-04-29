@@ -30,7 +30,7 @@ describe('feature flags', () => {
         it('works', () => {
             window.dispatchEvent(new CustomEvent('test-dummy-flag'));
             const expected = ['@lwc/engine-core', '@lwc/engine-dom'];
-            if (!process.env.NATIVE_SHADOW) {
+            if (process.env.SYNTHETIC_SHADOW_ENABLED) {
                 expected.push('@lwc/synthetic-shadow');
             }
             expect(packages.sort()).toEqual(expected);
