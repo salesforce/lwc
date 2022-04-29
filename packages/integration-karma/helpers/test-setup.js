@@ -8,18 +8,18 @@
 // Global beforeEach/afterEach/etc logic to run before and after each test
 
 var knownBodyChildren;
-// After each test, clean up any DOM elements that were inserted into the document <body>
 
-function getChildren() {
+// After each test, clean up any DOM elements that were inserted into the document <body>
+function getBodyChildren() {
     return Array.prototype.slice.apply(document.body.children);
 }
 
 beforeEach(function () {
-    knownBodyChildren = getChildren();
+    knownBodyChildren = getBodyChildren();
 });
 
 afterEach(function () {
-    getChildren().forEach(function (child) {
+    getBodyChildren().forEach(function (child) {
         if (knownBodyChildren.indexOf(child) === -1) {
             child.parentElement.removeChild(child);
         }
