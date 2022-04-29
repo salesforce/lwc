@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import features from '@lwc/features';
 import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
 import {
@@ -236,5 +237,7 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
 }
 
 export function removeStylesheet(vm: VM, stylesheets: string[]) {
-    createOrRemoveStylesheet(vm, stylesheets, false);
+    if (!features.DISABLE_STYLE_REMOVAL) {
+        createOrRemoveStylesheet(vm, stylesheets, false);
+    }
 }
