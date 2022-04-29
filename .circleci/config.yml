@@ -58,7 +58,7 @@ commands:
                n=0
                until [ $n -ge $MAX_RETRY ]
                do
-                  echo "Try $[$n+1]/$MAX_RETRY..." 
+                  echo "Try $[$n+1]/$MAX_RETRY..."
                   "$@" && break
                   n=$[$n+1]
                done
