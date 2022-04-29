@@ -31,12 +31,12 @@ afterEach(function () {
 // no test dirtied the DOM with leftover elements
 var originalBodyChildren;
 beforeAll(function () {
-    originalBodyChildren = Array.prototype.slice.call(document.body.children);
+    originalBodyChildren = getBodyChildren();
 });
 
 // Throwing an Error in afterAll will cause a non-zero exit code
 afterAll(function () {
-    var bodyChildren = Array.prototype.slice.call(document.body.children);
+    var bodyChildren = getBodyChildren();
 
     bodyChildren.forEach(function (child, i) {
         if (originalBodyChildren[i] !== child) {
