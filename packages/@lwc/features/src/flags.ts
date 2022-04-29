@@ -18,7 +18,6 @@ const features: FeatureFlagMap = {
     ENABLE_NODE_PATCH: null,
     ENABLE_REACTIVE_SETTER: null,
     ENABLE_WIRE_SYNC_EMIT: null,
-    DISABLE_STYLE_REMOVAL: null,
 };
 
 if (!globalThis.lwcRuntimeFlags) {
