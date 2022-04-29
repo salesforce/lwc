@@ -7,7 +7,7 @@ describe('host element', () => {
         document.body.appendChild(element);
         if (process.env.NATIVE_SHADOW) {
             // synthetic shadow returns null here even though it successfully inserts the div
-            expect(element.firstChild.tagName).toEqual('FAKE');
+            expect(element.firstChild.tagName).toEqual('DIV');
         }
     });
 });
