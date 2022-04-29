@@ -39,6 +39,15 @@ commands:
       coverage:
         type: boolean
         default: false
+      compat:
+        type: boolean
+        default: false
+      disable_synthetic:
+        type: boolean
+        default: false
+      force_native_shadow_mode:
+        type: boolean
+        default: false
     steps:
       - run:
           name: << parameters.command_name >>
@@ -57,6 +66,9 @@ commands:
                  exit 1
                fi
             }
+            <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >>
+            <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >>
+            <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
             retry << parameters.command >>
   # Setup
@@ -132,12 +144,11 @@ commands:
       - retry_until_success:
           command_name: Run karma integration tests
           working_directory: packages/integration-karma
-          command: >
-              <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >>
-              <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >>
-              <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
-              <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
-              yarn sauce
+          disable_synthetic: parameters.disable_synthetic
+          force_native_shadow_mode: parameters.force_native_shadow_mode
+          compat: parameters.compat
+          coverage: parameters.coverage
+          command: yarn sauce
 
 
 # Jobs definition
