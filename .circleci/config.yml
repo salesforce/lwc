@@ -58,11 +58,12 @@ commands:
                n=0
                until [ $n -ge $MAX_RETRY ]
                do
+                  echo "Try $[$n+1]/$MAX_RETRY..." 
                   "$@" && break
                   n=$[$n+1]
                done
                if [ $n -ge $MAX_RETRY ]; then
-                 echo "failed: ${@}" >&2
+                 echo "Failed: ${@}" >&2
                  exit 1
                fi
             }
