@@ -28,23 +28,22 @@ commands:
     description: Retry command multiple times until it succeeds
     parameters:
       command:
-        description: Command to run
         type: string
       command_name:
-        description: Command step name
         type: string
       working_directory:
-        description: Directory to run the command in
         type: string
       retry_count:
-        description: Number of retry
         type: integer
         default: 3
+      coverage:
+        type: boolean
+        default: false
     steps:
       - run:
           name: << parameters.command_name >>
           working_directory: << parameters.working_directory >>
-          command: |
+          command: >
             retry() {
                MAX_RETRY=<< parameters.retry_count >>
                n=0
@@ -58,6 +57,7 @@ commands:
                  exit 1
                fi
             }
+            <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
             retry << parameters.command >>
   # Setup
   restore_yarn_cache:
@@ -198,12 +198,11 @@ jobs:
           disable_synthetic: false
           compat: false
           force_native_shadow_mode: true
-      - run:
-          name: Run karma hydration tests
+      - retry_until_success:
+          command_name: Run karma hydration tests
           command: yarn hydration:sauce
           working_directory: packages/integration-karma
-          environment:
-            COVERAGE: 1
+          coverage: true
       - run:
           name: Compute karma coverage
           command: yarn coverage
