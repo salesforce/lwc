@@ -144,10 +144,10 @@ commands:
       - retry_until_success:
           command_name: Run karma integration tests
           working_directory: packages/integration-karma
-          disable_synthetic: parameters.disable_synthetic
-          force_native_shadow_mode: parameters.force_native_shadow_mode
-          compat: parameters.compat
-          coverage: parameters.coverage
+          disable_synthetic: << parameters.disable_synthetic >>
+          force_native_shadow_mode: << parameters.force_native_shadow_mode >>
+          compat: << parameters.compat >>
+          coverage: << parameters.coverage >>
           command: yarn sauce
 
 
