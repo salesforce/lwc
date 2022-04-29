@@ -7,8 +7,20 @@
 
 import features from '@lwc/features';
 
-if (process.env.NODE_ENV !== 'production') {
-    if (features.ENABLE_TEST_EXCEPTION) {
-        throw new Error('Compile-time processing of feature flags is broken.');
-    }
+if (process.env.NODE_ENV !== 'production' && typeof window !== 'undefined') {
+    window.addEventListener('test-dummy-flag', () => {
+        let hasFlag = false;
+        if (features.DUMMY_TEST_FLAG) {
+            hasFlag = true;
+        }
+
+        window.dispatchEvent(
+            new CustomEvent('has-dummy-flag', {
+                detail: {
+                    package: '@lwc/synthetic-shadow',
+                    hasFlag,
+                },
+            })
+        );
+    });
 }

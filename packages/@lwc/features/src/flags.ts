@@ -8,6 +8,7 @@ import { create, keys, defineProperty, isUndefined, isBoolean, globalThis } from
 import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
 const features: FeatureFlagMap = {
+    DUMMY_TEST_FLAG: null,
     ENABLE_ELEMENT_PATCH: null,
     ENABLE_FORCE_NATIVE_SHADOW_MODE_FOR_TEST: null,
     ENABLE_HMR: null,
@@ -18,7 +19,6 @@ const features: FeatureFlagMap = {
     ENABLE_NODE_PATCH: null,
     ENABLE_REACTIVE_SETTER: null,
     ENABLE_WIRE_SYNC_EMIT: null,
-    ENABLE_TEST_EXCEPTION: null,
 };
 
 if (!globalThis.lwcRuntimeFlags) {

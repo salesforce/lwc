@@ -5,9 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// Tests
-import './testFeatureFlag';
-
 // Collecting env references before patching anything
 import './env/node';
 import './env/element';
@@ -42,3 +39,6 @@ import './faux-shadow/html-element';
 import './faux-shadow/slot';
 import './faux-shadow/portal';
 import './faux-shadow/shadow-token';
+
+// Tests
+import './testFeatureFlag';
