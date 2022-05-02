@@ -7,7 +7,7 @@
 import { ArrayPush, create, isFunction, isNull, isUndefined, seal } from '@lwc/shared';
 import { StylesheetFactory, TemplateStylesheetFactories } from './stylesheet';
 import { RefVNodes, VM } from './vm';
-import { VNode } from './vnodes';
+import { VBaseElement } from './vnodes';
 
 type Callback = () => void;
 
