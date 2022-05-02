@@ -112,7 +112,7 @@ export function setRefVNode(vm: VM, ref: string | undefined, vnode: VBaseElement
 
         // In cases of conflict (two elements with the same ref), prefer, the last one,
         // in depth-first traversal order.
-        if (!(ref in refVNodes) || refVNodes[ref].key! < vnode.key!) {
+        if (!(ref in refVNodes) || refVNodes[ref].key < vnode.key) {
             refVNodes[ref] = vnode;
         }
     }
