@@ -5,14 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// Tests -------------------------------------------------------------------------------------------
-import './testFeatureFlag.ts';
-
 // Polyfills ---------------------------------------------------------------------------------------
 import './polyfills/aria-properties/main';
 
 // Renderer initialization -------------------------------------------------------------------------
 import './initializeRenderer';
+
+// Tests -------------------------------------------------------------------------------------------
+import './testFeatureFlag.ts';
 
 // Engine-core public APIs -------------------------------------------------------------------------
 export {

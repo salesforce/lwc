@@ -17,6 +17,11 @@ export type FeatureFlagValue = boolean | null;
 
 export interface FeatureFlagMap {
     /**
+     * This is only used to test that feature flags are actually working
+     */
+    DUMMY_TEST_FLAG: FeatureFlagValue;
+
+    /**
      * LWC engine flag to enable mixed shadow mode. Setting this flag to `true` enables usage of
      * native shadow DOM even when the synthetic shadow polyfill is applied.
      */
@@ -86,12 +91,6 @@ export interface FeatureFlagMap {
      * of next tick. It only affects wire configurations that depend on component values.
      */
     ENABLE_WIRE_SYNC_EMIT: FeatureFlagValue;
-
-    /**
-     * This is only used to test that feature flags are actually working. If set to true, it
-     * should throw an error.
-     */
-    ENABLE_TEST_EXCEPTION: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
