@@ -100,7 +100,7 @@ export interface Context {
     wiredDisconnecting: Array<() => void>;
 }
 
-export type RefVNodes = { [name: string]: VNode };
+export type RefVNodes = { [name: string]: VBaseElement };
 
 export interface VM<N = HostNode, E = HostElement> {
     /** The host element */
