@@ -16,22 +16,21 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
   } = $api;
   return [
-    api_custom_element(
-      "a-b",
-      _aB,
-      stc0,
-      $cmp.isTrue
-        ? api_iterator($cmp.items, function (item) {
-            return api_element(
-              "p",
-              {
-                key: api_key(1, item.id),
-              },
-              [api_text("X")]
-            );
-          })
-        : stc1
-    ),
+    api_custom_element("a-b", _aB, stc0, {
+      "": function () {
+        return $cmp.isTrue
+          ? api_iterator($cmp.items, function (item) {
+              return api_element(
+                "p",
+                {
+                  key: api_key(1, item.id),
+                },
+                [api_text("X")]
+              );
+            })
+          : stc1;
+      },
+    }),
   ];
   /*LWC compiler vX.X.X*/
 }

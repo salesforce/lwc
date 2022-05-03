@@ -27,6 +27,7 @@ import {
     isDynamicDirective,
     isKeyDirective,
     isDomDirective,
+    isElement,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
@@ -42,6 +43,10 @@ import {
     Comment,
     ForOf,
     BaseElement,
+    Element,
+    Slot,
+    Component,
+    Literal,
 } from '../shared/types';
 
 import * as t from '../shared/estree';
@@ -68,35 +73,65 @@ import {
 import { format as formatModule } from './formatters/module';
 
 function transform(codeGen: CodeGen): t.Expression {
-    function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
-        const databag = elementDataBag(element, slotParentName);
-        let res: t.Expression;
+    function transformElement(element: Element | Slot, slotParentName?: string): t.Expression {
+        const { name } = element;
 
-        const children = transformChildren(element);
+        const databag = elementDataBag(element, slotParentName);
+        const children = transformChildren(element.children, element);
+
+        if (isSlot(element)) {
+            return codeGen.getSlot(element.slotName, databag, children);
+        } else {
+            return codeGen.genElement(name, databag, children);
+        }
+    }
+
+    function transformComponent(element: Component, slotParentName?: string): t.Expression {
+        const { name, children } = element;
+        const databag = elementDataBag(element, slotParentName);
+
+        const groupedChildren: { [name: string]: ChildNode[] } = {};
+
+        for (const child of children) {
+            let slotName = '';
+
+            // FIXME: Handle other directive elements like `if` and `foreach`
+            if (isElement(child)) {
+                const slotAttribute = child.attributes.find((attr) => attr.name === 'slot');
+                if (slotAttribute) {
+                    slotName = (slotAttribute.value as Literal<string>).value;
+                }
+            }
+
+            let group = groupedChildren[slotName];
+            if (!group) {
+                group = groupedChildren[slotName] = [];
+            }
+
+            group.push(child);
+        }
+
+        const transformedChildren = Object.fromEntries(
+            Object.entries(groupedChildren).map(([slotName, children]) => [
+                slotName,
+                transformChildren(children, element),
+            ])
+        );
 
         // Check wether it has the special directive lwc:dynamic
-        const { name } = element;
         const dynamic = element.directives.find(isDynamicDirective);
 
         if (dynamic) {
             const expression = codeGen.bindExpression(dynamic.value);
-            res = codeGen.genDynamicElement(name, expression, databag, children);
-        } else if (isComponent(element)) {
-            res = codeGen.genCustomElement(
+            return codeGen.genDynamicElement(name, expression, databag, transformedChildren);
+        } else {
+            return codeGen.genCustomElement(
                 name,
                 identifierFromComponentName(name),
                 databag,
-                children
+                transformedChildren
             );
-        } else if (isSlot(element)) {
-            const defaultSlot = children;
-
-            res = codeGen.getSlot(element.slotName, databag, defaultSlot);
-        } else {
-            res = codeGen.genElement(name, databag, children);
         }
-
-        return res;
     }
 
     function transformText(consecutiveText: Text[]): t.Expression {
@@ -111,9 +146,8 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genComment(comment.value);
     }
 
-    function transformChildren(parent: ParentNode): t.Expression {
+    function transformChildren(children: ChildNode[], parent: ParentNode): t.Expression {
         const res: t.Expression[] = [];
-        const children = parent.children;
         const childrenIterator = children[Symbol.iterator]();
         let current: IteratorResult<ChildNode>;
 
@@ -145,7 +179,15 @@ function transform(codeGen: CodeGen): t.Expression {
                 Array.isArray(children) ? res.push(...children) : res.push(children);
             } else if (isBaseElement(child)) {
                 const slotParentName = isSlot(parent) ? parent.slotName : undefined;
-                res.push(transformElement(child, slotParentName));
+
+                let elmExpression: t.Expression;
+                if (isComponent(child)) {
+                    elmExpression = transformComponent(child, slotParentName);
+                } else {
+                    elmExpression = transformElement(child, slotParentName);
+                }
+
+                res.push(elmExpression);
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
             }
@@ -163,7 +205,7 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformIf(ifNode: If): t.Expression | t.Expression[] {
-        const expression = transformChildren(ifNode);
+        const expression = transformChildren(ifNode.children, ifNode);
         let res: t.Expression | t.Expression[];
 
         if (t.isArrayExpression(expression)) {
@@ -250,7 +292,7 @@ function transform(codeGen: CodeGen): t.Expression {
             codeGen.declareIdentifier(forBlock.iterator);
         }
 
-        const children = transformChildren(forBlock);
+        const children = transformChildren(forBlock.children, forBlock);
         codeGen.endScope();
 
         return children;
@@ -530,7 +572,8 @@ function transform(codeGen: CodeGen): t.Expression {
         return t.objectExpression(data);
     }
 
-    return transformChildren(codeGen.root);
+    const { root } = codeGen;
+    return transformChildren(root.children, root);
 }
 
 function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {

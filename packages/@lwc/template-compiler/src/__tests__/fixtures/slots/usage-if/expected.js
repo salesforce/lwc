@@ -22,10 +22,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, c: api_custom_element } = $api;
   return [
     api_element("section", stc0, [
-      api_custom_element("ns-cmp", _nsCmp, stc1, [
-        $cmp.isTrue ? api_element("p", stc2, [api_text("S1")]) : null,
-        api_element("p", stc3, [api_text("S2")]),
-      ]),
+      api_custom_element("ns-cmp", _nsCmp, stc1, {
+        "": function () {
+          return [
+            $cmp.isTrue ? api_element("p", stc2, [api_text("S1")]) : null,
+          ];
+        },
+        true: function () {
+          return [api_element("p", stc3, [api_text("S2")])];
+        },
+      }),
     ]),
   ];
   /*LWC compiler vX.X.X*/

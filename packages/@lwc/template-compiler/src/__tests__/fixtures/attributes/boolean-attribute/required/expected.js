@@ -77,9 +77,21 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       key: 3,
     }),
     api_element("input", stc4),
-    api_custom_element("x-foo", _xFoo, stc5, [api_text("boolean present")]),
-    api_custom_element("x-foo", _xFoo, stc6, [api_text("empty string")]),
-    api_custom_element("x-foo", _xFoo, stc7, [api_text("string value")]),
+    api_custom_element("x-foo", _xFoo, stc5, {
+      "": function () {
+        return [api_text("boolean present")];
+      },
+    }),
+    api_custom_element("x-foo", _xFoo, stc6, {
+      "": function () {
+        return [api_text("empty string")];
+      },
+    }),
+    api_custom_element("x-foo", _xFoo, stc7, {
+      "": function () {
+        return [api_text("string value")];
+      },
+    }),
     api_custom_element(
       "x-foo",
       _xFoo,
@@ -89,9 +101,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 8,
       },
-      [api_text("computed value, should be resolved in component")]
+      {
+        "": function () {
+          return [api_text("computed value, should be resolved in component")];
+        },
+      }
     ),
-    api_custom_element("x-foo", _xFoo, stc8, [api_text("integer value")]),
+    api_custom_element("x-foo", _xFoo, stc8, {
+      "": function () {
+        return [api_text("integer value")];
+      },
+    }),
   ];
   /*LWC compiler vX.X.X*/
 }

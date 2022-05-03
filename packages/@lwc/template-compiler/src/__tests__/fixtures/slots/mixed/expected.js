@@ -20,19 +20,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return [
     api_element("div", stc0, [
-      api_custom_element(
-        "x-b",
-        _xB,
-        stc1,
-        api_flatten([
-          $cmp.isLoading ? api_element("div", stc2) : null,
-          $cmp.haveLoadedItems
-            ? api_iterator($cmp.menuItems, function (item) {
-                return api_text("x");
-              })
-            : stc3,
-        ])
-      ),
+      api_custom_element("x-b", _xB, stc1, {
+        "": function () {
+          return api_flatten([
+            $cmp.isLoading ? api_element("div", stc2) : null,
+            $cmp.haveLoadedItems
+              ? api_iterator($cmp.menuItems, function (item) {
+                  return api_text("x");
+                })
+              : stc3,
+          ]);
+        },
+      }),
     ]),
   ];
   /*LWC compiler vX.X.X*/

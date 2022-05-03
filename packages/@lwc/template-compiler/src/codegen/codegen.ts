@@ -134,13 +134,28 @@ export default class CodeGen {
         tagName: string,
         componentClass: t.Identifier,
         data: t.ObjectExpression,
-        children: t.Expression
+        children: { [slotName: string]: t.Expression }
     ) {
         this.referencedComponents.add(tagName);
 
         const args: t.Expression[] = [t.literal(tagName), componentClass, data];
-        if (!isArrayExpression(children) || children.elements.length > 0) {
-            args.push(children); // only generate children if non-empty
+
+        // only generate children if non-empty
+        if (Object.keys(children).length) {
+            const childrenExpression = t.objectExpression(
+                Object.entries(children).map(([slotName, children]) =>
+                    t.property(
+                        t.literal(slotName),
+                        t.functionExpression(
+                            null,
+                            [],
+                            t.blockStatement([t.returnStatement(children)])
+                        )
+                    )
+                )
+            );
+
+            args.push(childrenExpression);
         }
 
         return this._renderApiCall(RENDER_APIS.customElement, args);
@@ -149,11 +164,26 @@ export default class CodeGen {
         tagName: string,
         ctor: t.Expression,
         data: t.ObjectExpression,
-        children: t.Expression
+        children: { [slotName: string]: t.Expression }
     ) {
         const args: t.Expression[] = [t.literal(tagName), ctor, data];
-        if (!isArrayExpression(children) || children.elements.length > 0) {
-            args.push(children); // only generate children if non-empty
+
+        // only generate children if non-empty
+        if (Object.keys(children).length) {
+            const childrenExpression = t.objectExpression(
+                Object.entries(children).map(([slotName, children]) =>
+                    t.property(
+                        t.literal(slotName),
+                        t.functionExpression(
+                            null,
+                            [],
+                            t.blockStatement([t.returnStatement(children)])
+                        )
+                    )
+                )
+            );
+
+            args.push(childrenExpression);
         }
 
         return this._renderApiCall(RENDER_APIS.dynamicCtor, args);
