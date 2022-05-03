@@ -19,6 +19,7 @@ export const enum VNodeType {
 export type VNode = VText | VComment | VElement | VCustomElement;
 export type VParentElement = VElement | VCustomElement;
 export type VNodes = Readonly<Array<VNode | null>>;
+export type SlottedVNodes = Readonly<Record<string, () => VNodes>>;
 
 export interface BaseVNode {
     type: VNodeType;
@@ -45,9 +46,9 @@ export interface VComment extends BaseVNode {
 export interface VBaseElement extends BaseVNode {
     sel: string;
     data: VElementData;
-    children: VNodes;
     elm: Element | undefined;
     key: Key;
+    children: VNodes;
 }
 
 export interface VElement extends VBaseElement {
@@ -58,8 +59,8 @@ export interface VCustomElement extends VBaseElement {
     type: VNodeType.CustomElement;
     mode: 'closed' | 'open';
     ctor: any;
-    aChildren: VNodes | undefined;
     vm: VM | undefined;
+    slot: SlottedVNodes;
 }
 
 export interface VNodeData {

@@ -27,9 +27,9 @@ import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
-import { EmptyArray } from './utils';
+import { EmptyArray, EmptyObject } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
+import { ShadowMode, VM, RenderMode } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
@@ -41,6 +41,7 @@ import {
     VComment,
     VElementData,
     VNodeType,
+    SlottedVNodes,
 } from './vnodes';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
@@ -127,19 +128,15 @@ function s(
     slotName: string,
     data: VElementData,
     children: VNodes,
-    slotset: SlotSet | undefined
+    slottedVNodes: SlottedVNodes | undefined
 ): VElement | VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     }
-    if (
-        !isUndefined(slotset) &&
-        !isUndefined(slotset[slotName]) &&
-        slotset[slotName].length !== 0
-    ) {
-        children = slotset[slotName];
+    if (!isUndefined(slottedVNodes) && !isUndefined(slottedVNodes[slotName])) {
+        children = slottedVNodes[slotName]();
     }
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, shadowMode } = vmBeingRendered;
@@ -149,7 +146,6 @@ function s(
         return children;
     }
     if (shadowMode === ShadowMode.Synthetic) {
-        // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
         sc(children);
     }
     return h('slot', data, children);
@@ -160,7 +156,7 @@ function c(
     sel: string,
     Ctor: LightningElementConstructor,
     data: VElementData,
-    children: VNodes = EmptyArray
+    slot: SlottedVNodes = EmptyObject
 ): VCustomElement {
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
@@ -168,7 +164,7 @@ function c(
         assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
         assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         assert.isTrue(
-            arguments.length === 3 || isArray(children),
+            arguments.length === 3 || isObject(slot),
             `c() 4nd argument data must be an array.`
         );
         // checking reserved internal data properties
@@ -186,34 +182,23 @@ function c(
                 vmBeingRendered
             );
         }
-        if (arguments.length === 4) {
-            forEach.call(children, (childVnode: VNode | null | undefined) => {
-                if (childVnode != null) {
-                    assert.isTrue(
-                        'type' in childVnode &&
-                            'sel' in childVnode &&
-                            'elm' in childVnode &&
-                            'key' in childVnode,
-                        `${childVnode} is not a vnode.`
-                    );
-                }
-            });
-        }
     }
+
     const { key } = data;
-    let elm, aChildren, vm;
+    let elm, vm;
+
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
         sel,
         data,
-        children,
         elm,
         key,
+        slot,
+        children: EmptyArray,
 
         ctor: Ctor,
         owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
-        aChildren,
         vm,
     };
     addVNodeToChildLWC(vnode);
@@ -453,13 +438,13 @@ function dc(
     sel: string,
     Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
-    children: VNodes = EmptyArray
+    slotted: SlottedVNodes = EmptyObject
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `dc() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `dc() 3nd argument data must be an object.`);
         assert.isTrue(
-            arguments.length === 3 || isArray(children),
+            arguments.length === 3 || isObject(slotted),
             `dc() 4nd argument data must be an array.`
         );
     }
@@ -481,7 +466,7 @@ function dc(
     // Shallow clone is necessary here becuase VElementData may be shared across VNodes due to
     // hoisting optimization.
     const newData = { ...data, key: `dc:${idx}:${data.key}` };
-    return c(sel, Ctor, newData, children);
+    return c(sel, Ctor, newData, slotted);
 }
 
 /**

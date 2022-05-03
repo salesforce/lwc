@@ -41,7 +41,7 @@ import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
-import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
+import { VNodes, VCustomElement, VNode, VNodeType, SlottedVNodes } from './vnodes';
 
 import type { HostNode, HostElement } from '../renderer';
 
@@ -49,10 +49,6 @@ type ShadowRootMode = 'open' | 'closed';
 
 export interface TemplateCache {
     [key: string]: any;
-}
-
-export interface SlotSet {
-    [key: string]: VNodes;
 }
 
 export const enum VMState {
@@ -130,7 +126,7 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The component public properties. */
     cmpProps: { [name: string]: any };
     /** The mapping between the slot names and the slotted VNodes. */
-    cmpSlots: SlotSet;
+    cmpSlots: SlottedVNodes;
     /** The component internal reactive properties. */
     cmpFields: { [name: string]: any };
     /** Flag indicating if the component has been scheduled for rerendering. */

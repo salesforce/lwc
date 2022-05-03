@@ -18,7 +18,7 @@ import {
 } from '../renderer';
 
 import { cloneAndOmitKey, parseStyleText } from './utils';
-import { allocateChildren, mount, removeNode } from './rendering';
+import { allocateSlottedContent, mount, removeNode } from './rendering';
 import {
     createVM,
     runConnectedCallback,
@@ -209,7 +209,7 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
     vnode.elm = elm;
     vnode.vm = vm;
 
-    allocateChildren(vnode, vm);
+    allocateSlottedContent(vnode, vm);
     patchElementPropsAndAttrs(vnode);
 
     // Insert hook section:

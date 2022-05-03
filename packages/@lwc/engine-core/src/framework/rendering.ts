@@ -5,12 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayPush,
     assert,
-    create,
     isArray,
     isTrue,
-    isFalse,
     isNull,
     isUndefined,
     keys,
@@ -30,8 +27,8 @@ import {
     isSyntheticShadowDefined,
 } from '../renderer';
 
-import { EmptyArray } from './utils';
-import { markComponentAsDirty } from './component';
+// import { EmptyArray } from './utils';
+// import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import {
@@ -56,7 +53,7 @@ import {
     VComment,
     Key,
     VBaseElement,
-    isVBaseElement,
+    // isVBaseElement,
     isSameVnode,
     VNodeType,
 } from './vnodes';
@@ -216,7 +213,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
     vnode.vm = vm;
 
     if (vm) {
-        allocateChildren(vnode, vm);
+        allocateSlottedContent(vnode, vm);
     } else if (vnode.ctor !== UpgradableConstructor) {
         throw new TypeError(`Incorrect Component Constructor`);
     }
@@ -246,7 +243,7 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
     if (!isUndefined(vm)) {
         // in fallback mode, the allocation will always set children to
         // empty and delegate the real allocation to the slot elements
-        allocateChildren(n2, vm);
+        allocateSlottedContent(n2, vm);
     }
 
     // in fallback mode, the children will be always empty, so, nothing
@@ -430,29 +427,21 @@ function fallbackElmHook(elm: Element, vnode: VBaseElement) {
     }
 }
 
-export function allocateChildren(vnode: VCustomElement, vm: VM) {
-    // A component with slots will re-render because:
-    // 1- There is a change of the internal state.
-    // 2- There is a change on the external api (ex: slots)
-    //
-    // In case #1, the vnodes in the cmpSlots will be reused since they didn't changed. This routine emptied the
-    // slotted children when those VCustomElement were rendered and therefore in subsequent calls to allocate children
-    // in a reused VCustomElement, there won't be any slotted children.
-    // For those cases, we will use the reference for allocated children stored when rendering the fresh VCustomElement.
-    //
-    // In case #2, we will always get a fresh VCustomElement.
-    const children = vnode.aChildren || vnode.children;
-
-    vm.aChildren = children;
-
+export function allocateSlottedContent(vnode: VCustomElement, vm: VM) {
+    const { slot } = vnode;
     const { renderMode, shadowMode } = vm;
-    if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
-        // slow path
-        allocateInSlot(vm, children);
-        // save the allocated children in case this vnode is reused.
-        vnode.aChildren = children;
-        // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
-        vnode.children = EmptyArray;
+
+    if (renderMode == RenderMode.Shadow && shadowMode === ShadowMode.Native) {
+        const children = [];
+
+        for (const key of keys(slot)) {
+            const slotVnodes = slot[key]();
+            children.push(...slotVnodes);
+        }
+
+        vnode.children = children;
+    } else {
+        vm.cmpSlots = slot;
     }
 }
 
@@ -494,48 +483,48 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
     return vm;
 }
 
-function allocateInSlot(vm: VM, children: VNodes) {
-    const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null));
-    for (let i = 0, len = children.length; i < len; i += 1) {
-        const vnode = children[i];
-        if (isNull(vnode)) {
-            continue;
-        }
+// function allocateInSlot(vm: VM, children: VNodes) {
+//     const { cmpSlots: oldSlots } = vm;
+//     const cmpSlots = (vm.cmpSlots = create(null));
+//     for (let i = 0, len = children.length; i < len; i += 1) {
+//         const vnode = children[i];
+//         if (isNull(vnode)) {
+//             continue;
+//         }
 
-        let slotName = '';
-        if (isVBaseElement(vnode)) {
-            slotName = (vnode.data.attrs?.slot as string) || '';
-        }
+//         let slotName = '';
+//         if (isVBaseElement(vnode)) {
+//             slotName = (vnode.data.attrs?.slot as string) || '';
+//         }
 
-        const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
-        ArrayPush.call(vnodes, vnode);
-    }
-    if (isFalse(vm.isDirty)) {
-        // We need to determine if the old allocation is really different from the new one
-        // and mark the vm as dirty
-        const oldKeys = keys(oldSlots);
-        if (oldKeys.length !== keys(cmpSlots).length) {
-            markComponentAsDirty(vm);
-            return;
-        }
-        for (let i = 0, len = oldKeys.length; i < len; i += 1) {
-            const key = oldKeys[i];
-            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
-                markComponentAsDirty(vm);
-                return;
-            }
-            const oldVNodes = oldSlots[key];
-            const vnodes = cmpSlots[key];
-            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
-                if (oldVNodes[j] !== vnodes[j]) {
-                    markComponentAsDirty(vm);
-                    return;
-                }
-            }
-        }
-    }
-}
+//         const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
+//         ArrayPush.call(vnodes, vnode);
+//     }
+//     if (isFalse(vm.isDirty)) {
+//         // We need to determine if the old allocation is really different from the new one
+//         // and mark the vm as dirty
+//         const oldKeys = keys(oldSlots);
+//         if (oldKeys.length !== keys(cmpSlots).length) {
+//             markComponentAsDirty(vm);
+//             return;
+//         }
+//         for (let i = 0, len = oldKeys.length; i < len; i += 1) {
+//             const key = oldKeys[i];
+//             if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
+//                 markComponentAsDirty(vm);
+//                 return;
+//             }
+//             const oldVNodes = oldSlots[key];
+//             const vnodes = cmpSlots[key];
+//             for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
+//                 if (oldVNodes[j] !== vnodes[j]) {
+//                     markComponentAsDirty(vm);
+//                     return;
+//                 }
+//             }
+//         }
+//     }
+// }
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();

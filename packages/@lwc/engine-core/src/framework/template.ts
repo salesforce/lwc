@@ -22,14 +22,7 @@ import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
 import api, { RenderAPI } from './api';
-import {
-    resetComponentRoot,
-    runWithBoundaryProtection,
-    SlotSet,
-    TemplateCache,
-    VM,
-    RenderMode,
-} from './vm';
+import { resetComponentRoot, runWithBoundaryProtection, TemplateCache, VM, RenderMode } from './vm';
 import { EmptyArray } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
@@ -40,10 +33,10 @@ import {
 } from './stylesheet';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { VNodes } from './vnodes';
+import { SlottedVNodes, VNodes } from './vnodes';
 
 export interface Template {
-    (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
+    (api: RenderAPI, cmp: object, slotSet: SlottedVNodes, cache: TemplateCache): VNodes;
 
     /** The list of slot names used in the template. */
     slots?: string[];
@@ -75,14 +68,6 @@ function validateSlots(vm: VM, html: Template) {
     const { slots = EmptyArray } = html;
 
     for (const slotName in cmpSlots) {
-        // eslint-disable-next-line lwc-internal/no-production-assert
-        assert.isTrue(
-            isArray(cmpSlots[slotName]),
-            `Slots can only be set to an array, instead received ${toString(
-                cmpSlots[slotName]
-            )} for slot "${slotName}" in ${vm}.`
-        );
-
         if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO [#1297]: this should never really happen because the compiler should always validate
             // eslint-disable-next-line lwc-internal/no-production-assert
