@@ -24,7 +24,7 @@ executors:
 # Custom commands definition
 commands:
   # Based on https://circleci.com/developer/orbs/orb/kimh/run-with-retry
-  retry_until_success:
+  retry_karma:
     description: Retry command multiple times until it succeeds
     parameters:
       command:
@@ -142,7 +142,7 @@ commands:
         type: boolean
         default: true
     steps:
-      - retry_until_success:
+      - retry_karma:
           command_name: Run karma integration tests
           working_directory: packages/integration-karma
           disable_synthetic: << parameters.disable_synthetic >>
@@ -210,7 +210,7 @@ jobs:
           disable_synthetic: false
           compat: false
           force_native_shadow_mode: true
-      - retry_until_success:
+      - retry_karma:
           command_name: Run karma hydration tests
           command: yarn hydration:sauce
           working_directory: packages/integration-karma
@@ -228,7 +228,7 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - retry_until_success:
+      - retry_karma:
           command_name: Run integration test - Chrome SauceLabs
           command: yarn sauce:prod --browsers chrome
           working_directory: packages/integration-tests
@@ -241,7 +241,7 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - retry_until_success:
+      - retry_karma:
           command_name: Run integration test - IE11 SauceLabs
           command: yarn sauce:prod_compat --browsers ie11
           working_directory: packages/integration-tests
