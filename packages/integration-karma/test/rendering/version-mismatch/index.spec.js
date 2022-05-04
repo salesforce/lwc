@@ -1,4 +1,10 @@
-import { createElement, LightningElement, registerTemplate, registerComponent, registerStylesheets } from 'lwc';
+import {
+    createElement,
+    LightningElement,
+    registerTemplate,
+    registerComponent,
+    registerStylesheets,
+} from 'lwc';
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
