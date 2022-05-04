@@ -93,8 +93,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         },
                     };
                 },
-                compare: function compare(actual, expectedMessage) {
-                    function matchMessage(message) {
+                compare: function compare(actual, expectedMessages) {
+                    function matchMessage(message, expectedMessage) {
                         if (typeof expectedMessage === 'string') {
                             return message === expectedMessage;
                         } else {
@@ -102,14 +102,19 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         }
                     }
 
+                    if (!Array.isArray(expectedMessages)) {
+                        expectedMessages = [expectedMessages];
+                    }
+
                     if (typeof actual !== 'function') {
                         throw new Error('Expected function to throw error.');
                     } else if (
-                        typeof expectedMessage !== 'string' &&
-                        !(expectedMessage instanceof RegExp)
+                        expectedMessages.some(
+                            (message) => typeof message !== 'string' && !(message instanceof RegExp)
+                        )
                     ) {
                         throw new Error(
-                            'Expected a string or a RegExp to compare the thrown error against.'
+                            'Expected a string or a RegExp to compare the thrown error against, or an array of such.'
                         );
                     }
 
@@ -147,36 +152,39 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                             return fail(
                                 'Expected console.' +
                                     methodName +
-                                    ' to called once with "' +
-                                    expectedMessage +
-                                    '", but was never called.'
+                                    ' to called with ' +
+                                    JSON.stringify(expectedMessages) +
+                                    ', but was never called.'
                             );
-                        } else if (callsArgs.length === 1) {
-                            var actualMessage = formatConsoleCall(callsArgs[0]);
-
-                            if (!matchMessage(actualMessage)) {
+                        } else {
+                            if (callsArgs.length !== expectedMessages.length) {
                                 return fail(
                                     'Expected console.' +
                                         methodName +
-                                        ' to be called with "' +
-                                        expectedMessage +
-                                        '", but was called with "' +
-                                        actualMessage +
-                                        '".'
+                                        ' to be called ' +
+                                        expectedMessages.length +
+                                        ' time(s), but was called ' +
+                                        callsArgs.length +
+                                        ' time(s).'
                                 );
-                            } else {
-                                return pass();
                             }
-                        } else {
-                            return fail(
-                                'Expected console.' +
-                                    methodName +
-                                    ' to never called, but it was called ' +
-                                    callsArgs.length +
-                                    ' with ' +
-                                    formattedCalls +
-                                    '.'
-                            );
+                            for (var i = 0; i < callsArgs.length; i++) {
+                                var callsArg = callsArgs[i];
+                                var expectedMessage = expectedMessages[i];
+                                var actualMessage = formatConsoleCall(callsArg);
+                                if (!matchMessage(actualMessage, expectedMessage)) {
+                                    return fail(
+                                        'Expected console.' +
+                                            methodName +
+                                            ' to be called with "' +
+                                            expectedMessage +
+                                            '", but was called with "' +
+                                            actualMessage +
+                                            '".'
+                                    );
+                                }
+                            }
+                            return pass();
                         }
                     }
                 },

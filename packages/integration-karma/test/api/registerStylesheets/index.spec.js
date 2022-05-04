@@ -17,6 +17,31 @@ describe('registerStylesheets', () => {
         expect(template.stylesheetToken).toEqual('newToken');
     });
 
+    it('should warn when setting tmpl.stylesheetTokens', () => {
+        const template = registerTemplate(() => []);
+        const stylesheet = () => 'div { color: red }';
+        registerStylesheets(template, 'myToken', [stylesheet]);
+
+        expect(template.stylesheetTokens).toEqual({
+            hostAttribute: 'myToken-host',
+            shadowAttribute: 'myToken',
+        });
+
+        expect(() => {
+            template.stylesheetTokens = {
+                hostAttribute: 'newToken-host',
+                shadowAttribute: 'newToken',
+            };
+        }).toLogErrorDev(
+            /Dynamically setting the "stylesheetTokens" property on a template function is deprecated and may be removed in a future version of LWC./
+        );
+
+        expect(template.stylesheetTokens).toEqual({
+            hostAttribute: 'newToken-host',
+            shadowAttribute: 'newToken',
+        });
+    });
+
     it('should warn when setting tmpl.stylesheets', () => {
         const template = registerTemplate(() => []);
         const stylesheet = () => 'div { color: red }';
