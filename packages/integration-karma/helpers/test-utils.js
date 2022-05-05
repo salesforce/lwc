@@ -109,9 +109,9 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                     if (typeof actual !== 'function') {
                         throw new Error('Expected function to throw error.');
                     } else if (
-                        expectedMessages.some(
-                            (message) => typeof message !== 'string' && !(message instanceof RegExp)
-                        )
+                        expectedMessages.some(function (message) {
+                            return typeof message !== 'string' && !(message instanceof RegExp);
+                        })
                     ) {
                         throw new Error(
                             'Expected a string or a RegExp to compare the thrown error against, or an array of such.'
