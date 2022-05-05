@@ -34,6 +34,8 @@ export function registerTemplate(tpl: Template): Template {
     // on top of stylesheetToken for anyone who is accessing the old internal API.
     // Details: https://salesforce.quip.com/v1rmAFu2cKAr
     defineProperty(tpl, 'stylesheetTokens', {
+        enumerable: true,
+        configurable: true,
         get() {
             const { stylesheetToken } = this;
             if (isUndefined(stylesheetToken)) {

@@ -70,6 +70,7 @@ function serialize(
         `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`
     );
     let buffer = '';
+    buffer += `import { freezeTemplate } from "lwc";\n\n`;
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
     buffer += `import _implicitScopedStylesheets from "${scopedCssRelPath}?scoped=true";\n\n`;
     buffer += code;
@@ -83,6 +84,7 @@ function serialize(
     buffer += 'if (_implicitStylesheets || _implicitScopedStylesheets) {\n';
     buffer += `  tmpl.stylesheetToken = "${scopeToken}"\n`;
     buffer += '}\n';
+    buffer += 'freezeTemplate(tmpl);\n';
 
     return buffer;
 }
