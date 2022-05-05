@@ -71,6 +71,7 @@ function warnOnArrayMutation(stylesheets: TemplateStylesheetFactories) {
                 `Mutating the "stylesheets" array on a template function ` +
                     `is deprecated and may be removed in a future version of LWC.`
             );
+            // @ts-ignore
             return originalArrayMethod.apply(this, arguments);
         };
     }
