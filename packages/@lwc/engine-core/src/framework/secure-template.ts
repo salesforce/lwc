@@ -22,7 +22,7 @@ export function isTemplateRegistered(tpl: Template): boolean {
 
 let templateWarningsSilenced = false;
 
-export function setTemplateWarningsSilenced(silenced: boolean) {
+export function setTemplateMutationWarningsSilenced(silenced: boolean) {
     templateWarningsSilenced = silenced;
 }
 
@@ -59,8 +59,8 @@ export function registerTemplate(tmpl: Template): Template {
                         `is deprecated and may be removed in a future version of LWC.`
                 );
             }
-            // Avoid silencing twice (for both stylesheetToken and stylesheetTokens)
-            setTemplateWarningsSilenced(true);
+            // Avoid logging twice (for both stylesheetToken and stylesheetTokens)
+            setTemplateMutationWarningsSilenced(true);
             try {
                 // If the value is null or some other exotic object, you would be broken anyway in the past
                 // because the engine would try to access hostAttribute/shadowAttribute, which would throw an error.
@@ -69,7 +69,7 @@ export function registerTemplate(tmpl: Template): Template {
                     ? undefined
                     : (value as any).shadowAttribute;
             } finally {
-                setTemplateWarningsSilenced(false);
+                setTemplateMutationWarningsSilenced(false);
             }
         },
     });

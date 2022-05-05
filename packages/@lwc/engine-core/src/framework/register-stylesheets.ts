@@ -9,7 +9,7 @@ import { Template } from './template';
 import { TemplateStylesheetFactories } from './stylesheet';
 import { flattenStylesheets } from './utils';
 import { checkVersionMismatch } from './check-version-mismatch';
-import { setTemplateWarningsSilenced } from './secure-template';
+import { setTemplateMutationWarningsSilenced } from './secure-template';
 
 export function registerStylesheets(
     tmpl: Template,
@@ -17,12 +17,12 @@ export function registerStylesheets(
     ...stylesheetLists: Array<TemplateStylesheetFactories | undefined>
 ) {
     // Don't warn on setting the stylesheetToken / stylesheet if the engine is doing the setting
-    setTemplateWarningsSilenced(true);
+    setTemplateMutationWarningsSilenced(true);
     try {
         tmpl.stylesheetToken = stylesheetToken;
         tmpl.stylesheets = [];
     } finally {
-        setTemplateWarningsSilenced(false);
+        setTemplateMutationWarningsSilenced(false);
     }
     for (const stylesheets of stylesheetLists) {
         if (!isUndefined(stylesheets)) {
