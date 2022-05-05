@@ -61,4 +61,34 @@ describe('registerStylesheets', () => {
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(newStylesheet);
     });
+
+    it('should warn when mutating tmpl.stylesheets array', () => {
+        const template = registerTemplate(() => []);
+        const stylesheet = () => 'div { color: red }';
+        registerStylesheets(template, 'myToken', [stylesheet]);
+
+        expect(template.stylesheets.length).toEqual(1);
+        expect(template.stylesheets[0]).toBe(stylesheet);
+
+        const newStylesheet = () => 'div { color: blue }';
+
+        expect(() => {
+            template.stylesheets.push(newStylesheet);
+        }).toLogErrorDev(
+            /Mutating the "stylesheets" array on a template function is deprecated and may be removed in a future version of LWC./
+        );
+
+        expect(template.stylesheets.length).toEqual(2);
+        expect(template.stylesheets[0]).toBe(stylesheet);
+        expect(template.stylesheets[1]).toBe(newStylesheet);
+
+        expect(() => {
+            template.stylesheets.pop();
+        }).toLogErrorDev(
+            /Mutating the "stylesheets" array on a template function is deprecated and may be removed in a future version of LWC./
+        );
+
+        expect(template.stylesheets.length).toEqual(1);
+        expect(template.stylesheets[0]).toBe(stylesheet);
+    });
 });
