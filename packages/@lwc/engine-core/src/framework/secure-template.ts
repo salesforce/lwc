@@ -20,10 +20,10 @@ export function isTemplateRegistered(tpl: Template): boolean {
     return signedTemplateSet.has(tpl);
 }
 
-let templateWarningsSilenced = false;
+let mutationWarningsSilenced = false;
 
 export function setTemplateMutationWarningsSilenced(silenced: boolean) {
-    templateWarningsSilenced = silenced;
+    mutationWarningsSilenced = silenced;
 }
 
 /**
@@ -83,7 +83,7 @@ export function registerTemplate(tmpl: Template): Template {
                     return value;
                 },
                 set(newValue) {
-                    if (!templateWarningsSilenced) {
+                    if (!mutationWarningsSilenced) {
                         logError(
                             `Dynamically setting the "${prop}" property on a template function ` +
                                 `is deprecated and may be removed in a future version of LWC.`
