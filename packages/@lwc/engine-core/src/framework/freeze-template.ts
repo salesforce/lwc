@@ -22,6 +22,9 @@ import { logError } from '../shared/logger';
 import { Template } from './template';
 import { TemplateStylesheetFactories } from './stylesheet';
 
+// See @lwc/engine-core/src/framework/template.ts
+const TEMPLATE_PROPS = ['slots', 'stylesheetToken', 'stylesheets', 'renderMode'] as const;
+
 // Via https://www.npmjs.com/package/object-observer
 const ARRAY_MUTATION_METHODS = [
     'pop',
@@ -85,7 +88,7 @@ export function freezeTemplate(tmpl: Template) {
         if (!isUndefined(tmpl.stylesheets)) {
             warnOnArrayMutation(tmpl.stylesheets);
         }
-        for (const prop of ['stylesheetToken', 'stylesheets'] as const) {
+        for (const prop of TEMPLATE_PROPS) {
             let value = tmpl[prop];
             defineProperty(tmpl, prop, {
                 enumerable: true,

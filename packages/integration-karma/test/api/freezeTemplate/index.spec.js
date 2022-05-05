@@ -100,6 +100,40 @@ describe('freezeTemplate', () => {
         expect(template.stylesheets[0]).toBe(stylesheet);
     });
 
+    it('should warn when setting tmpl.slots', () => {
+        const template = registerTemplate(() => []);
+        const originalSlots = [];
+        template.slots = originalSlots;
+        freezeTemplate(template);
+
+        expect(template.slots).toBe(originalSlots);
+
+        const newSlots = [];
+        expect(() => {
+            template.slots = newSlots;
+        }).toLogErrorDev(
+            /Dynamically setting the "slots" property on a template function is deprecated and may be removed in a future version of LWC./
+        );
+
+        expect(template.slots).toBe(newSlots);
+    });
+
+    it('should warn when setting tmpl.renderMOde', () => {
+        const template = registerTemplate(() => []);
+        template.renderMode = 'light';
+        freezeTemplate(template);
+
+        expect(template.renderMode).toBe('light');
+
+        expect(() => {
+            template.renderMode = undefined;
+        }).toLogErrorDev(
+            /Dynamically setting the "renderMode" property on a template function is deprecated and may be removed in a future version of LWC./
+        );
+
+        expect(template.renderMode).toBe(undefined);
+    });
+
     it('tmpl expando props are enumerable and configurable', () => {
         const template = registerTemplate(() => []);
         const stylesheet = () => 'div { color: red }';
@@ -107,7 +141,13 @@ describe('freezeTemplate', () => {
         template.stylesheetToken = 'myToken';
         freezeTemplate(template);
 
-        for (const prop of ['stylesheets', 'stylesheetToken', 'stylesheetTokens']) {
+        for (const prop of [
+            'stylesheets',
+            'stylesheetToken',
+            'stylesheetTokens',
+            'renderMode',
+            'slots',
+        ]) {
             const descriptor = Object.getOwnPropertyDescriptor(template, prop);
             expect(descriptor.enumerable).toEqual(true);
             expect(descriptor.configurable).toEqual(true);
