@@ -17,6 +17,7 @@ import {
     isObject,
     isTrue,
     isUndefined,
+    keys,
 } from '@lwc/shared';
 
 import {
@@ -363,8 +364,10 @@ export function upgradeElement(
             mode,
         });
         if (props) {
-            for (const [key, value] of Object.entries(props)) {
-                (elm as any)[key] = value;
+            const names = keys(props);
+            for (let i = 0, len = names.length; i < len; i += 1) {
+                const key = names[i];
+                (elm as any)[key] = props[key];
             }
         }
         if (isPendingHydrating(elm)) {

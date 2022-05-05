@@ -384,9 +384,6 @@ export const getLastElementChild = unsupportedMethod('getLastElementChild') as (
 ) => HostElement | null;
 
 export function defineLightningElement(name: string) {
-    if (registryOfTagNames.has(name)) {
-        return; // nothing to do if the element was already defined.
-    }
     registryOfTagNames.add(name);
 }
 

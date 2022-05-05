@@ -186,9 +186,6 @@ if (isCustomElementRegistryAvailable()) {
     };
 
     defineLightningElement = function defineLightningElement(name: string) {
-        if (registryOfTagNames.has(name)) {
-            return;
-        }
         registryOfTagNames.add(name);
     };
 }

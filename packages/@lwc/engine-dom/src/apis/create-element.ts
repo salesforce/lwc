@@ -12,6 +12,7 @@ import {
     disconnectRootElement,
     LightningElement,
 } from '@lwc/engine-core';
+import { createElement as rendererCreateElement } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
@@ -96,7 +97,7 @@ export function createElement(
     sel = sel.toLowerCase();
     registerTagName(sel);
 
-    const elm = document.createElement(sel);
+    const elm = rendererCreateElement(sel, undefined, true) as HTMLElement;
     const mode = options.mode !== 'closed' ? 'open' : 'closed';
     if (upgradeElement(elm, Ctor, mode)) {
         ConnectingSlot.set(elm, connectRootElement);
