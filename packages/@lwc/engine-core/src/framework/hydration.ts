@@ -27,6 +27,7 @@ import {
     LwcDomMode,
     VM,
     runRenderedCallback,
+    isPendingConstruction,
 } from './vm';
 import {
     VNodes,
@@ -200,6 +201,10 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
 
     const { sel, mode, ctor, owner } = vnode;
 
+    if (!isPendingConstruction(elm as HTMLElement)) {
+        // There is a possibility that a custom element is registered.
+        return elm;
+    }
     const vm = createVM(elm, ctor, {
         mode,
         owner,

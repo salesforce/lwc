@@ -29,7 +29,7 @@ import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, SlotSet, VM, RenderMode } from './vm';
+import { ShadowMode, SlotSet, VM, RenderMode, registerTagName } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
@@ -202,6 +202,11 @@ function c(
     }
     const { key } = data;
     let elm, aChildren, vm;
+
+    // define LWC pivot custom element in the global registry when needed
+    // this should eventually we moved to the compiled template.
+    registerTagName(sel);
+
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
         sel,

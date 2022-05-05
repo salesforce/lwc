@@ -20,13 +20,15 @@ export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 // Internal APIs used by renderers -----------------------------------------------------------------
 export { getComponentHtmlPrototype } from './def';
 export {
-    createVM,
+    upgradeElement,
+    registerTagName,
     connectRootElement,
     disconnectRootElement,
+    constructCustomElement,
+    connectCustomElement,
+    disconnectCustomElement,
     getAssociatedVMIfPresent,
 } from './vm';
-
-export { hydrateRoot } from './hydration';
 
 // Internal APIs used by compiled code -------------------------------------------------------------
 export { registerComponent } from './component';
@@ -38,7 +40,6 @@ export { unwrap } from './membrane';
 export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
-export { getUpgradableConstructor } from './upgradable-element';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 export { setHooks } from './overridable-hooks';
 
@@ -62,14 +63,13 @@ export {
     setCreateComment,
     setCreateElement,
     setCreateText,
-    setDefineCustomElement,
+    setDefineLightningElement,
     setDispatchEvent,
     setGetAttribute,
     setGetBoundingClientRect,
     setGetChildNodes,
     setGetChildren,
     setGetClassList,
-    setGetCustomElement,
     setGetElementsByClassName,
     setGetElementsByTagName,
     setGetFirstChild,
@@ -77,7 +77,6 @@ export {
     setGetLastChild,
     setGetLastElementChild,
     setGetProperty,
-    setHTMLElement,
     setInsert,
     setInsertGlobalStylesheet,
     setInsertStylesheet,

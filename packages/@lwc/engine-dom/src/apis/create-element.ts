@@ -6,12 +6,13 @@
  */
 import { assert, assign, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
 import {
-    createVM,
+    upgradeElement,
+    registerTagName,
     connectRootElement,
     disconnectRootElement,
     LightningElement,
-    getUpgradableConstructor,
 } from '@lwc/engine-core';
+import { createElement as rendererCreateElement } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
@@ -93,30 +94,19 @@ export function createElement(
         );
     }
 
-    const UpgradableConstructor = getUpgradableConstructor(sel);
-    let wasComponentUpgraded: boolean = false;
-    // the custom element from the registry is expecting an upgrade callback
-    /**
-     * Note: if the upgradable constructor does not expect, or throw when we new it
-     * with a callback as the first argument, we could implement a more advanced
-     * mechanism that only passes that argument if the constructor is known to be
-     * an upgradable custom element.
-     */
-    const element = new UpgradableConstructor((elm: HTMLElement) => {
-        createVM(elm, Ctor, {
-            tagName: sel,
-            mode: options.mode !== 'closed' ? 'open' : 'closed',
-            owner: null,
-        });
+    sel = sel.toLowerCase();
+    registerTagName(sel);
+
+    const elm = rendererCreateElement(sel, undefined, true) as HTMLElement;
+    const mode = options.mode !== 'closed' ? 'open' : 'closed';
+    if (upgradeElement(elm, Ctor, mode)) {
         ConnectingSlot.set(elm, connectRootElement);
         DisconnectingSlot.set(elm, disconnectRootElement);
-        wasComponentUpgraded = true;
-    });
-    if (!wasComponentUpgraded) {
+    } else {
         /* eslint-disable-next-line no-console */
         console.error(
             `Unexpected tag name "${sel}". This name is a registered custom element, preventing LWC to upgrade the element.`
         );
     }
-    return element;
+    return elm;
 }

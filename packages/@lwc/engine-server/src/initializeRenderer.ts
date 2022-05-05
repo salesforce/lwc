@@ -11,14 +11,13 @@ import {
     setCreateComment,
     setCreateElement,
     setCreateText,
-    setDefineCustomElement,
+    setDefineLightningElement,
     setDispatchEvent,
     setGetAttribute,
     setGetBoundingClientRect,
     setGetChildNodes,
     setGetChildren,
     setGetClassList,
-    setGetCustomElement,
     setGetElementsByClassName,
     setGetElementsByTagName,
     setGetFirstChild,
@@ -26,7 +25,6 @@ import {
     setGetLastChild,
     setGetLastElementChild,
     setGetProperty,
-    setHTMLElement,
     setInsert,
     setInsertGlobalStylesheet,
     setInsertStylesheet,
@@ -54,14 +52,13 @@ import {
     createComment,
     createElement,
     createText,
-    defineCustomElement,
+    defineLightningElement,
     dispatchEvent,
     getAttribute,
     getBoundingClientRect,
     getChildNodes,
     getChildren,
     getClassList,
-    getCustomElement,
     getElementsByClassName,
     getElementsByTagName,
     getFirstChild,
@@ -69,7 +66,6 @@ import {
     getLastChild,
     getLastElementChild,
     getProperty,
-    HTMLElement,
     insert,
     insertGlobalStylesheet,
     insertStylesheet,
@@ -96,14 +92,13 @@ setAttachShadow(attachShadow);
 setCreateComment(createComment);
 setCreateElement(createElement);
 setCreateText(createText);
-setDefineCustomElement(defineCustomElement);
+setDefineLightningElement(defineLightningElement);
 setDispatchEvent(dispatchEvent);
 setGetAttribute(getAttribute);
 setGetBoundingClientRect(getBoundingClientRect);
 setGetChildNodes(getChildNodes);
 setGetChildren(getChildren);
 setGetClassList(getClassList);
-setGetCustomElement(getCustomElement);
 setGetElementsByClassName(getElementsByClassName);
 setGetElementsByTagName(getElementsByTagName);
 setGetFirstChild(getFirstChild);
@@ -111,7 +106,6 @@ setGetFirstElementChild(getFirstElementChild);
 setGetLastChild(getLastChild);
 setGetLastElementChild(getLastElementChild);
 setGetProperty(getProperty);
-setHTMLElement(HTMLElement);
 setInsert(insert);
 setInsertGlobalStylesheet(insertGlobalStylesheet);
 setInsertStylesheet(insertStylesheet);

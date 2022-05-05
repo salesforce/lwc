@@ -31,6 +31,7 @@ export function createContextProvider(adapter: WireAdapterConstructor) {
     }
     adapterContextToken = guid();
     setAdapterToken(adapter, adapterContextToken);
+    // [TODO #2813]: this doesn't work on IE11
     const providers = new WeakSet<EventTarget>();
 
     return (elm: EventTarget, options: ContextProviderOptions) => {
