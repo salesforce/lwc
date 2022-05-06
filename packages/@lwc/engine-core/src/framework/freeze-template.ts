@@ -114,12 +114,10 @@ export function freezeTemplate(tmpl: Template) {
             configurable: true,
             get: originalDescriptor!.get,
             set(value) {
-                if (process.env.NODE_ENV !== 'production') {
-                    logError(
-                        `Dynamically setting the "stylesheetTokens" property on a template function ` +
-                            `is deprecated and may be removed in a future version of LWC.`
-                    );
-                }
+                logError(
+                    `Dynamically setting the "stylesheetTokens" property on a template function ` +
+                        `is deprecated and may be removed in a future version of LWC.`
+                );
                 // Avoid logging twice (for both stylesheetToken and stylesheetTokens)
                 mutationWarningsSilenced = true;
                 originalDescriptor!.set!.call(this, value);
