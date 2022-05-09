@@ -209,7 +209,6 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
         // native shadow or light DOM, SSR
         const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
         return createInlineStyleVNode(combinedStylesheetContent);
-        // If it's being removed, we don't need to do anything. The vdom diffing will take care of it.
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
