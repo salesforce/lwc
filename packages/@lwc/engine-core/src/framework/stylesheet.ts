@@ -212,8 +212,10 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
+        // null root means a global style
+        const target = isNull(root) ? undefined : root.shadowRoot!;
         for (let i = 0; i < stylesheets.length; i++) {
-            insertStylesheet(stylesheets[i], root?.shadowRoot ?? undefined);
+            insertStylesheet(stylesheets[i], target);
         }
     }
     return null;
