@@ -1,6 +1,0 @@
-import { LightningElement, track } from 'lwc';
-
-export default class extends LightningElement {
-    static renderMode = 'light';
-    @track items = [0];
-}
