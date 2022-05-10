@@ -16,8 +16,10 @@ import { isUndefined, getOwnPropertyDescriptor, isArray, isFunction } from '@lwc
 // See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
 const supportsConstructableStylesheets =
     isFunction(CSSStyleSheet.prototype.replaceSync) && isArray(document.adoptedStyleSheets);
-// If length is writable, then mutable adopted style sheets are supported. See:
-// https://chromestatus.com/feature/5638996492288000
+// The original adoptedStylesheet proposal used a frozen array. A follow-up proposal made the array mutable.
+// Chromium 99+ and Firefox 101+ support mutable arrays. We check if the array is mutable, to ensure backward compat.
+// (If the length is writable, then the array is mutable.) See: https://chromestatus.com/feature/5638996492288000
+// TODO [#2828]: Re-evaluate this in the future once we drop support for older browser versions.
 const supportsMutableAdoptedStyleSheets =
     supportsConstructableStylesheets &&
     getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
@@ -99,8 +101,6 @@ function insertConstructableStylesheet(content: string, target: ShadowRoot | Doc
     const stylesheet = createOrGetConstructableStylesheet(content);
     const { adoptedStyleSheets } = target;
     if (supportsMutableAdoptedStyleSheets) {
-        // This is only supported in later versions of Chromium:
-        // https://chromestatus.com/feature/5638996492288000
         adoptedStyleSheets.push(stylesheet);
     } else {
         target.adoptedStyleSheets = [...adoptedStyleSheets, stylesheet];
@@ -114,6 +114,9 @@ function insertStyleElement(content: string, target: ShadowRoot | Document) {
 }
 
 function doInsertStylesheet(content: string, target: ShadowRoot | Document) {
+    // Constructable stylesheets are only supported in certain browsers:
+    // https://caniuse.com/mdn-api_document_adoptedstylesheets
+    // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2460
     if (supportsConstructableStylesheets) {
         insertConstructableStylesheet(content, target);
     } else {
