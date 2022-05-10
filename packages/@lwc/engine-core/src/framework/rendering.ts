@@ -441,7 +441,10 @@ export function allocateSlottedContent(vnode: VCustomElement, vm: VM) {
 
         vnode.children = children;
     } else {
-        vm.cmpSlots = slot;
+        vm.cmpSlots = {
+            owner: vm,
+            vnodes: slot
+        };
     }
 }
 

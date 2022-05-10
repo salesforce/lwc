@@ -51,6 +51,17 @@ export interface TemplateCache {
     [key: string]: any;
 }
 
+export interface SlotSet {
+    /** 
+     * The owner the slots belongs to. The owner is needed since slotted content might be rendered
+     * outside the standard rendering cycle. 
+     * 
+     * FIXME: This should be removed once VNode storing a back pointer to its owner.
+     */
+    owner: VM;
+    vnodes: SlottedVNodes; 
+}
+
 export const enum VMState {
     created,
     connected,
@@ -125,8 +136,8 @@ export interface VM<N = HostNode, E = HostElement> {
     velements: VCustomElement[];
     /** The component public properties. */
     cmpProps: { [name: string]: any };
-    /** The mapping between the slot names and the slotted VNodes. */
-    cmpSlots: SlottedVNodes;
+    /** The slotted content associated with the component. */
+    cmpSlots: SlotSet;
     /** The component internal reactive properties. */
     cmpFields: { [name: string]: any };
     /** Flag indicating if the component has been scheduled for rerendering. */

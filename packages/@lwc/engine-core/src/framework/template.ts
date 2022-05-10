@@ -22,7 +22,7 @@ import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
 import api, { RenderAPI } from './api';
-import { resetComponentRoot, runWithBoundaryProtection, TemplateCache, VM, RenderMode } from './vm';
+import { resetComponentRoot, runWithBoundaryProtection, TemplateCache, VM, RenderMode, SlotSet } from './vm';
 import { EmptyArray } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
@@ -33,10 +33,10 @@ import {
 } from './stylesheet';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { SlottedVNodes, VNodes } from './vnodes';
+import { VNodes } from './vnodes';
 
 export interface Template {
-    (api: RenderAPI, cmp: object, slotSet: SlottedVNodes, cache: TemplateCache): VNodes;
+    (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
 
     /** The list of slot names used in the template. */
     slots?: string[];

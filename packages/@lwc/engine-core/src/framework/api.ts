@@ -29,7 +29,7 @@ import { invokeEventListener } from './invoker';
 import { getVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, VM, RenderMode } from './vm';
+import { ShadowMode, VM, RenderMode, SlotSet } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
@@ -128,16 +128,20 @@ function s(
     slotName: string,
     data: VElementData,
     children: VNodes,
-    slottedVNodes: SlottedVNodes | undefined
+    slottedVNodes: SlotSet | undefined
 ): VElement | VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     }
-    if (!isUndefined(slottedVNodes) && !isUndefined(slottedVNodes[slotName])) {
+
+    if (!isUndefined(slottedVNodes) && !isUndefined(slottedVNodes.vnodes[slotName])) {
+        const vmBeingRendered = getVMBeingRendered()!;
         children = slottedVNodes[slotName]();
+        const vmBeingRendered = getVMBeingRendered()!;
     }
+
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, shadowMode } = vmBeingRendered;
 
