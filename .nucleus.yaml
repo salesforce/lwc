@@ -30,6 +30,9 @@ branches:
   spring22:
     pull-request:
       <<: *branch-definition
+  summer22:
+    pull-request:
+      <<: *branch-definition
 steps:
   node-conformance:
     run:
@@ -50,3 +53,8 @@ steps:
   npm-configure-for-publish:
     params:
       registry-url: https://registry.npmjs.org
+  npm-publish-release:
+    params:
+      # this must be set in the .nucleus.yaml file for each backport branch, to
+      # avoid publishing to the "latest" npm dist tag
+      tag: summer22
