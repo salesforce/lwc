@@ -32,7 +32,8 @@ const isIE11 = !isUndefined((document as any).documentMode);
 
 // Global cache of style elements used for fast cloning
 let styleElements: Map<string, HTMLStyleElement> = new Map();
-// Global cache of CSSStyleSheets because these need to be unique based on content
+// Global cache of CSSStyleSheets because these need to be unique based on content so the browser
+// can optimize repeated usages across multiple shadow roots
 let stylesheets: Map<string, CSSStyleSheet> = new Map();
 // Bookkeeping of targets to CSS that has already been injected into them, so we don't duplicate
 let shadowRootsToInsertedStylesheets: WeakMap<ShadowRoot, Set<string>> = new WeakMap();
