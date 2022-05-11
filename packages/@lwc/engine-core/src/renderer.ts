@@ -245,14 +245,7 @@ export let isConnected: isConnectedFunc;
 export function setIsConnected(isConnectedImpl: isConnectedFunc) {
     isConnected = isConnectedImpl;
 }
-
-type insertGlobalStylesheetFunc = (content: string) => void;
-export let insertGlobalStylesheet: insertGlobalStylesheetFunc;
-export function setInsertGlobalStylesheet(insertGlobalStylesheetImpl: insertGlobalStylesheetFunc) {
-    insertGlobalStylesheet = insertGlobalStylesheetImpl;
-}
-
-type insertStylesheetFunc = (content: string, target: ShadowRoot) => void;
+type insertStylesheetFunc = (content: string, target?: ShadowRoot) => void;
 export let insertStylesheet: insertStylesheetFunc;
 export function setInsertStylesheet(insertStylesheetImpl: insertStylesheetFunc) {
     insertStylesheet = insertStylesheetImpl;

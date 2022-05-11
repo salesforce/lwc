@@ -80,8 +80,6 @@ export {
     setGetProperty,
     setHTMLElement,
     setInsert,
-    setInsertGlobalStylesheet,
-    setInsertStylesheet,
     setIsConnected,
     setIsHydrating,
     setIsNativeShadowDefined,
@@ -98,4 +96,5 @@ export {
     setSetText,
     setSsr,
     setAddEventListener,
+    setInsertStylesheet,
 } from '../renderer';
