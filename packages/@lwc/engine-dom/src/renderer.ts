@@ -116,8 +116,8 @@ export function nextSibling(node: Node): Node | null {
     return node.nextSibling;
 }
 
-export function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
-    const internals = (element as any).attachInternals?.();
+export function attachShadow(element: HTMLElement, options: ShadowRootInit): ShadowRoot {
+    const internals = element.attachInternals?.();
     return internals?.shadowRoot || element.shadowRoot || element.attachShadow(options);
 }
 
