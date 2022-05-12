@@ -32,15 +32,15 @@ const isIE11 = !isUndefined((document as any).documentMode);
 
 type CacheData = {
     // Global cache of style elements is used for fast cloning.
-    // Global cache of CSSStyleSheets is used because these need to be unique based on content so the browser
-    // can optimize repeated usages across multiple shadow roots
+    // Global cache of CSSStyleSheets is used because these need to be unique based on content, so the browser
+    // can optimize repeated usages across multiple shadow roots.
     stylesheet: CSSStyleSheet | HTMLStyleElement;
-    // Bookkeeping of targets to CSS that has already been injected into them, so we don't duplicate
-    // Note this will never be used by IE11 (because it only uses global styles), so WeakSet support is not important
+    // Bookkeeping of shadow roots that have already had this CSS injected into them, so we don't duplicate stylesheets.
+    // Note this will never be used by IE11 (because it only uses global styles), so WeakSet support is not important.
     roots: WeakSet<ShadowRoot> | undefined;
-    // Same as above, but for the global document to avoid an extra WeakMap lookup for this common case
+    // Same as above, but for the global document to avoid an extra WeakMap lookup for this common case.
     global: boolean;
-    // Keep track of whether the style element has been used already so we know if we need to clone it
+    // Keep track of whether the style element has been used already, so we know if we need to clone it.
     used: boolean;
 };
 
