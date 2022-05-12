@@ -45,11 +45,14 @@ export default function templateTransform(
         throw CompilerError.from(fatalError, { filename });
     }
 
+    const warnings = result.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
+
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
         code: serialize(result.code, filename, options),
         map: { mappings: '' },
+        warnings,
     };
 }
 

@@ -24,7 +24,8 @@
     ],
     "devDependencies": {
         "@lwc/compiler": "2.13.3",
-        "@lwc/engine-dom": "2.13.3"
+        "@lwc/engine-dom": "2.13.3",
+        "@lwc/errors": "2.13.3"
     },
     "dependencies": {
         "@lwc/module-resolver": "2.13.3",
