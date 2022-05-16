@@ -104,11 +104,11 @@ function insertConstructableStylesheet(
     target: ShadowRoot | Document,
     cacheData: ConstrutableStylesheetCacheData
 ) {
-    const { adoptedStyleSheets } = target;
     let { stylesheet } = cacheData;
     if (isUndefined(stylesheet)) {
         cacheData.stylesheet = stylesheet = createConstructableStylesheet(content);
     }
+    const { adoptedStyleSheets } = target;
     // Mutable adopted stylesheets are only supported in certain browsers.
     // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2683
     if (supportsMutableAdoptedStyleSheets) {
