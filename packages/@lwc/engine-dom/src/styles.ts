@@ -30,15 +30,30 @@ const isIE11 = !isUndefined((document as any).documentMode);
 // Style sheet cache
 //
 
-// Global cache of style elements used for fast cloning
-let styleElements: Map<string, HTMLStyleElement> = new Map();
-// Global cache of CSSStyleSheets because these need to be unique based on content so the browser
-// can optimize repeated usages across multiple shadow roots
-let stylesheets: Map<string, CSSStyleSheet> = new Map();
-// Bookkeeping of targets to CSS that has already been injected into them, so we don't duplicate
-let shadowRootsToInsertedStylesheets: WeakMap<ShadowRoot, Set<string>> = new WeakMap();
-// Same as above, but for the global document to avoid an extra WeakMap lookup for this common case
-let globalInsertedStylesheets: Set<string> = new Set();
+interface CacheData {
+    // Global cache of style elements is used for fast cloning.
+    // Global cache of CSSStyleSheets is used because these need to be unique based on content, so the browser
+    // can optimize repeated usages across multiple shadow roots.
+    stylesheet: CSSStyleSheet | HTMLStyleElement;
+    // Bookkeeping of shadow roots that have already had this CSS injected into them, so we don't duplicate stylesheets.
+    // Note this will never be used by IE11 (because it only uses global styles), so WeakSet support is not important.
+    roots: WeakSet<ShadowRoot> | undefined;
+    // Same as above, but for the global document to avoid an extra WeakMap lookup for this common case.
+    global: boolean;
+    // Keep track of whether the <style> element has been used already, so we know if we need to clone it.
+    // Note that this has no impact on browsers that support constructable stylesheets.
+    used: boolean;
+}
+
+interface ConstructableStylesheetCacheData extends CacheData {
+    stylesheet: CSSStyleSheet;
+}
+
+interface StyleElementCacheData extends CacheData {
+    stylesheet: HTMLStyleElement;
+}
+
+const stylesheetCache: Map<String, CacheData> = new Map();
 
 //
 // Test utilities
@@ -47,10 +62,7 @@ let globalInsertedStylesheets: Set<string> = new Set();
 if (process.env.NODE_ENV === 'development') {
     // @ts-ignore
     window.__lwcResetGlobalStylesheets = () => {
-        styleElements = new Map();
-        stylesheets = new Map();
-        shadowRootsToInsertedStylesheets = new WeakMap();
-        globalInsertedStylesheets = new Set();
+        stylesheetCache.clear();
     };
 }
 
@@ -65,42 +77,39 @@ function createFreshStyleElement(content: string) {
     return elm;
 }
 
-function createStyleElement(content: string) {
-    // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
-    // and will render the incorrect styles if we do things that way. It's just
-    // a perf optimization, so we can skip it for IE11.
-    if (isIE11) {
-        return createFreshStyleElement(content);
-    }
-
-    let elm = styleElements.get(content);
-    if (isUndefined(elm)) {
-        // We don't clone every time, because that would be a perf tax on the first time
-        elm = createFreshStyleElement(content);
-        styleElements.set(content, elm);
-    } else {
+function createStyleElement(content: string, cacheData: StyleElementCacheData) {
+    const { stylesheet, used } = cacheData;
+    // If the <style> was already used, then we should clone it. We cannot insert
+    // the same <style> in two places in the DOM.
+    if (used) {
+        // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
+        // and will render the incorrect styles if we do things that way. It's just
+        // a perf optimization, so we can skip it for IE11.
+        if (isIE11) {
+            return createFreshStyleElement(content);
+        }
         // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
         // faster to call `cloneNode()` on an existing node than to recreate it every time.
-        elm = elm.cloneNode(true) as HTMLStyleElement;
+        return stylesheet.cloneNode(true) as HTMLStyleElement;
     }
-    return elm;
-}
-
-function createOrGetConstructableStylesheet(content: string) {
-    // It's important for CSSStyleSheets to be unique based on their content, so
-    // that adoptedStyleSheets.indexOf(sheet) works
-    let stylesheet = stylesheets.get(content);
-    if (isUndefined(stylesheet)) {
-        stylesheet = new CSSStyleSheet();
-        stylesheet.replaceSync(content);
-        stylesheets.set(content, stylesheet);
-    }
+    // We don't clone every time, because that would be a perf tax on the first time
+    cacheData.used = true;
     return stylesheet;
 }
 
-function insertConstructableStylesheet(content: string, target: ShadowRoot | Document) {
-    const stylesheet = createOrGetConstructableStylesheet(content);
+function createConstructableStylesheet(content: string) {
+    const stylesheet = new CSSStyleSheet();
+    stylesheet.replaceSync(content);
+    return stylesheet;
+}
+
+function insertConstructableStylesheet(
+    content: string,
+    target: ShadowRoot | Document,
+    cacheData: ConstructableStylesheetCacheData
+) {
     const { adoptedStyleSheets } = target;
+    const { stylesheet } = cacheData;
     // Mutable adopted stylesheets are only supported in certain browsers.
     // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2683
     if (supportsMutableAdoptedStyleSheets) {
@@ -110,43 +119,77 @@ function insertConstructableStylesheet(content: string, target: ShadowRoot | Doc
     }
 }
 
-function insertStyleElement(content: string, target: ShadowRoot | Document) {
-    const elm = createStyleElement(content);
+function insertStyleElement(
+    content: string,
+    target: ShadowRoot | Document,
+    cacheData: StyleElementCacheData
+) {
+    const elm = createStyleElement(content, cacheData);
     const targetAnchorPoint = isDocument(target) ? target.head : target;
     targetAnchorPoint.appendChild(elm);
 }
 
-function doInsertStylesheet(content: string, target: ShadowRoot | Document) {
+function doInsertStylesheet(content: string, target: ShadowRoot | Document, cacheData: CacheData) {
     // Constructable stylesheets are only supported in certain browsers:
     // https://caniuse.com/mdn-api_document_adoptedstylesheets
     // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2460
     if (supportsConstructableStylesheets) {
-        insertConstructableStylesheet(content, target);
+        insertConstructableStylesheet(
+            content,
+            target,
+            cacheData as ConstructableStylesheetCacheData
+        );
     } else {
         // Fall back to <style> element
-        insertStyleElement(content, target);
+        insertStyleElement(content, target, cacheData as StyleElementCacheData);
     }
 }
 
-function getInsertedStylesheetsForShadowRoot(target: ShadowRoot) {
-    let insertedStylesheets = shadowRootsToInsertedStylesheets.get(target);
-    if (isUndefined(insertedStylesheets)) {
-        insertedStylesheets = new Set();
-        shadowRootsToInsertedStylesheets.set(target, insertedStylesheets);
+function getCacheData(content: string) {
+    let cacheData = stylesheetCache.get(content);
+    if (isUndefined(cacheData)) {
+        cacheData = {
+            stylesheet: supportsConstructableStylesheets
+                ? createConstructableStylesheet(content)
+                : createFreshStyleElement(content),
+            roots: undefined,
+            global: false,
+            used: false,
+        };
+        stylesheetCache.set(content, cacheData);
     }
-    return insertedStylesheets;
+    return cacheData;
 }
 
-export function insertStylesheet(content: string, target?: ShadowRoot) {
-    const isGlobal = isUndefined(target);
-    const insertedStylesheets = isGlobal
-        ? globalInsertedStylesheets
-        : getInsertedStylesheetsForShadowRoot(target);
-    if (insertedStylesheets.has(content)) {
+function insertGlobalStylesheet(content: string) {
+    const cacheData = getCacheData(content);
+    if (cacheData.global) {
         // already inserted
         return;
     }
-    insertedStylesheets.add(content);
-    const documentOrShadowRoot = isGlobal ? document : target;
-    doInsertStylesheet(content, documentOrShadowRoot);
+    cacheData.global = true; // mark inserted
+    doInsertStylesheet(content, document, cacheData);
+}
+
+function insertLocalStylesheet(content: string, target: ShadowRoot) {
+    const cacheData = getCacheData(content);
+    let { roots } = cacheData;
+    if (isUndefined(roots)) {
+        roots = cacheData.roots = new WeakSet(); // lazily initialize (not needed for global styles)
+    } else if (roots.has(target)) {
+        // already inserted
+        return;
+    }
+    roots.add(target); // mark inserted
+    doInsertStylesheet(content, target, cacheData);
+}
+
+export function insertStylesheet(content: string, target?: ShadowRoot) {
+    if (isUndefined(target)) {
+        // global
+        insertGlobalStylesheet(content);
+    } else {
+        // local
+        insertLocalStylesheet(content, target);
+    }
 }
