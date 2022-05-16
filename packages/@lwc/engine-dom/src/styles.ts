@@ -30,7 +30,7 @@ const isIE11 = !isUndefined((document as any).documentMode);
 // Style sheet cache
 //
 
-type CacheData = {
+interface CacheData {
     // Global cache of style elements is used for fast cloning.
     // Global cache of CSSStyleSheets is used because these need to be unique based on content, so the browser
     // can optimize repeated usages across multiple shadow roots.
