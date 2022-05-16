@@ -63,6 +63,13 @@ async function getCompiledModule(dirName) {
         cache,
 
         external: ['lwc', 'test-utils', '@test/loader'], // @todo: add ssr modules for test-utils and @test/loader
+
+        onwarn(warning) {
+            // Ignore warnings from our own Rollup plugin
+            if (warning.plugin !== 'rollup-plugin-lwc-compiler') {
+                console.warn(warning.message);
+            }
+        },
     });
 
     const { watchFiles } = bundle;

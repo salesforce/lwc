@@ -69,6 +69,13 @@ function createPreprocessor(config, emitter, logger) {
                 // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
                 // globally in the page before running the tests.
                 external: ['lwc', 'wire-service', 'test-utils', '@test/loader'],
+
+                onwarn(warning) {
+                    // Ignore warnings from our own Rollup plugin
+                    if (warning.plugin !== 'rollup-plugin-lwc-compiler') {
+                        console.warn(warning.message);
+                    }
+                },
             });
 
             watcher.watchSuite(input, bundle.watchFiles);
