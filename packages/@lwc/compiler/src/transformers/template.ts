@@ -45,11 +45,16 @@ export default function templateTransform(
         throw CompilerError.from(fatalError, { filename });
     }
 
+    // The "Error" diagnostic level makes no sense to include here, because it would already have been
+    // thrown above. As for "Log" and "Fatal", they are currently unused.
+    const warnings = result.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
+
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
         code: serialize(result.code, filename, options),
         map: { mappings: '' },
+        warnings,
     };
 }
 
