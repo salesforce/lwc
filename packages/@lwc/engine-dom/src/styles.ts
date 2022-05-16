@@ -75,18 +75,18 @@ function createFreshStyleElement(content: string) {
 }
 
 function createStyleElement(content: string, cacheData: StyleElementCacheData) {
+    if (isIE11) {
+        // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
+        // and will render the incorrect styles if we do things that way. It's just
+        // a perf optimization, so we can skip it for IE11.
+        return createFreshStyleElement(content);
+    }
     let { stylesheet } = cacheData;
     if (isUndefined(stylesheet)) {
         // Create the style element on-demand
         cacheData.stylesheet = stylesheet = createFreshStyleElement(content);
         // We don't clone every time, because that would be a perf tax on the first time
         return stylesheet;
-    }
-    if (isIE11) {
-        // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
-        // and will render the incorrect styles if we do things that way. It's just
-        // a perf optimization, so we can skip it for IE11.
-        return createFreshStyleElement(content);
     }
     // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
     // faster to call `cloneNode()` on an existing node than to recreate it every time.
