@@ -7,7 +7,9 @@
 
 import features from '@lwc/features';
 
-if (process.env.NODE_ENV !== 'production' && typeof window !== 'undefined') {
+// Only used in LWC's Karma tests
+// @ts-ignore
+if (process.env.NODE_ENV !== 'production' && typeof __karma__ !== 'undefined') {
     window.addEventListener('test-dummy-flag', () => {
         let hasFlag = false;
         if (features.DUMMY_TEST_FLAG) {
