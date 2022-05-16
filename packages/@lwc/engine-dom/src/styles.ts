@@ -34,12 +34,15 @@ interface CacheData {
     // Global cache of style elements is used for fast cloning.
     // Global cache of CSSStyleSheets is used because these need to be unique based on content, so the browser
     // can optimize repeated usages across multiple shadow roots.
-    stylesheet: CSSStyleSheet | HTMLStyleElement | undefined;
+    stylesheet: CSSStyleSheet | HTMLStyleElement;
     // Bookkeeping of shadow roots that have already had this CSS injected into them, so we don't duplicate stylesheets.
     // Note this will never be used by IE11 (because it only uses global styles), so WeakSet support is not important.
     roots: WeakSet<ShadowRoot> | undefined;
     // Same as above, but for the global document to avoid an extra WeakMap lookup for this common case.
     global: boolean;
+    // Keep track of whether the <style> element has been used already, so we know if we need to clone it.
+    // Note that this has no impact on browsers that support constructable stylesheets.
+    used: boolean;
 }
 
 interface ConstrutableStylesheetCacheData extends CacheData {
@@ -75,22 +78,23 @@ function createFreshStyleElement(content: string) {
 }
 
 function createStyleElement(content: string, cacheData: StyleElementCacheData) {
-    if (isIE11) {
+    const { stylesheet, used } = cacheData;
+    // If the <style> was already used, then we should clone it. We cannot insert
+    // the same <style> in two places in the DOM.
+    if (used) {
         // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
         // and will render the incorrect styles if we do things that way. It's just
         // a perf optimization, so we can skip it for IE11.
-        return createFreshStyleElement(content);
+        if (isIE11) {
+            return createFreshStyleElement(content);
+        }
+        // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
+        // faster to call `cloneNode()` on an existing node than to recreate it every time.
+        return stylesheet.cloneNode(true) as HTMLStyleElement;
     }
-    let { stylesheet } = cacheData;
-    if (isUndefined(stylesheet)) {
-        // Create the style element on-demand
-        cacheData.stylesheet = stylesheet = createFreshStyleElement(content);
-        // We don't clone every time, because that would be a perf tax on the first time
-        return stylesheet;
-    }
-    // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
-    // faster to call `cloneNode()` on an existing node than to recreate it every time.
-    return stylesheet.cloneNode(true) as HTMLStyleElement;
+    // We don't clone every time, because that would be a perf tax on the first time
+    cacheData.used = true;
+    return stylesheet;
 }
 
 function createConstructableStylesheet(content: string) {
@@ -104,11 +108,8 @@ function insertConstructableStylesheet(
     target: ShadowRoot | Document,
     cacheData: ConstrutableStylesheetCacheData
 ) {
-    let { stylesheet } = cacheData;
-    if (isUndefined(stylesheet)) {
-        cacheData.stylesheet = stylesheet = createConstructableStylesheet(content);
-    }
     const { adoptedStyleSheets } = target;
+    const { stylesheet } = cacheData;
     // Mutable adopted stylesheets are only supported in certain browsers.
     // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2683
     if (supportsMutableAdoptedStyleSheets) {
@@ -148,9 +149,12 @@ function getCacheData(content: string) {
     let cacheData = stylesheetCache.get(content);
     if (isUndefined(cacheData)) {
         cacheData = {
-            stylesheet: undefined,
+            stylesheet: supportsConstructableStylesheets
+                ? createConstructableStylesheet(content)
+                : createFreshStyleElement(content),
             roots: undefined,
             global: false,
+            used: false,
         };
         stylesheetCache.set(content, cacheData);
     }
