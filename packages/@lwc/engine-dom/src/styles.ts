@@ -45,7 +45,7 @@ interface CacheData {
     used: boolean;
 }
 
-interface ConstrutableStylesheetCacheData extends CacheData {
+interface ConstructableStylesheetCacheData extends CacheData {
     stylesheet: CSSStyleSheet;
 }
 
@@ -106,7 +106,7 @@ function createConstructableStylesheet(content: string) {
 function insertConstructableStylesheet(
     content: string,
     target: ShadowRoot | Document,
-    cacheData: ConstrutableStylesheetCacheData
+    cacheData: ConstructableStylesheetCacheData
 ) {
     const { adoptedStyleSheets } = target;
     const { stylesheet } = cacheData;
@@ -137,7 +137,7 @@ function doInsertStylesheet(content: string, target: ShadowRoot | Document, cach
         insertConstructableStylesheet(
             content,
             target,
-            cacheData as ConstrutableStylesheetCacheData
+            cacheData as ConstructableStylesheetCacheData
         );
     } else {
         // Fall back to <style> element
