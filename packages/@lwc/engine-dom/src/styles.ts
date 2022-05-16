@@ -42,7 +42,7 @@ interface CacheData {
     global: boolean;
     // Keep track of whether the style element has been used already, so we know if we need to clone it.
     used: boolean;
-};
+}
 
 interface ConstrutableStylesheetCacheData extends CacheData {
     stylesheet: CSSStyleSheet;
