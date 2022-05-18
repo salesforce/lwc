@@ -70,10 +70,10 @@ function createPreprocessor(config, emitter, logger) {
                 // globally in the page before running the tests.
                 external: ['lwc', 'wire-service', 'test-utils', '@test/loader'],
 
-                onwarn(warning) {
+                onwarn(warning, warn) {
                     // Ignore warnings from our own Rollup plugin
                     if (warning.plugin !== 'rollup-plugin-lwc-compiler') {
-                        console.warn(warning.message);
+                        warn(warning);
                     }
                 },
             });
