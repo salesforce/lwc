@@ -276,7 +276,7 @@ function mountVNodes(
 }
 
 function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
-    const { type, elm } = vnode;
+    const { type, elm, sel } = vnode;
 
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
@@ -284,9 +284,10 @@ function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
         removeNode(elm!, parent);
     }
 
+    const removeChildren = sel === 'slot'; // slot content is removed to trigger slotchange event when removing slot
     switch (type) {
         case VNodeType.Element:
-            unmountVNodes(vnode.children, elm as ParentNode);
+            unmountVNodes(vnode.children, elm as ParentNode, removeChildren);
             break;
 
         case VNodeType.CustomElement: {
