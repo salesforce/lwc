@@ -284,7 +284,9 @@ function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
         removeNode(elm!, parent);
     }
 
-    const removeChildren = sel === 'slot'; // slot content is removed to trigger slotchange event when removing slot
+    // Slot content is removed to trigger slotchange event when removing slot.
+    // Only required for synthetic shadow.
+    const removeChildren = sel === 'slot' && vnode.owner.shadowMode === ShadowMode.Synthetic;
     switch (type) {
         case VNodeType.Element:
             unmountVNodes(vnode.children, elm as ParentNode, removeChildren);
