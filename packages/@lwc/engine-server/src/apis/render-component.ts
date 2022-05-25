@@ -5,13 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { createVM, connectRootElement, LightningElement } from '@lwc/engine-core';
-import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
 import * as renderer from '../renderer';
-import { createElement } from '../renderer';
 import { serializeElement } from '../serializer';
 import { HostElement, HostNodeType } from '../types';
+import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 
 const FakeRootElement: HostElement = {
     type: HostNodeType.Element,
@@ -46,7 +45,7 @@ export function renderComponent(
         );
     }
 
-    const element = createElement(tagName);
+    const element = renderer.createElement(tagName);
     createVM(element, Ctor, renderer as unknown as RendererAPI, {
         mode: 'open',
         owner: null,

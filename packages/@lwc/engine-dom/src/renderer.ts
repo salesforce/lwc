@@ -281,4 +281,4 @@ export function assertInstanceOfHTMLElement(elm: any, msg: string) {
 }
 
 const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
-export { HTMLElementExported as HTMLElement };
+export { HTMLElementExported };

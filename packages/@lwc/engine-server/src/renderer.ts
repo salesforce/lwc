@@ -398,7 +398,7 @@ export function getCustomElement(name: string): CustomElementConstructor | undef
 }
 
 const HTMLElementExported = HTMLElementImpl as typeof HTMLElement;
-export { HTMLElementExported as HTMLElement };
+export { HTMLElementExported };
 
 /* noop */
 export const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
