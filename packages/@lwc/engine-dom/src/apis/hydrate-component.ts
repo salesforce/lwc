@@ -12,10 +12,10 @@ import {
     connectRootElement,
     getAssociatedVMIfPresent,
 } from '@lwc/engine-core';
-import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 import { isFunction, isNull, isObject } from '@lwc/shared';
 import * as renderer from '../renderer';
 import { setIsHydrating } from '../renderer';
+import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 
 function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElement) {
     if (element.shadowRoot) {

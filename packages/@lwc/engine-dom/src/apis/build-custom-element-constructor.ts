@@ -12,9 +12,9 @@ import {
     getComponentHtmlPrototype,
     LightningElement,
 } from '@lwc/engine-core';
-import type { RendererAPI } from '@lwc/engine-core/types/renderer';
-import { hydrateComponent } from './hydrate-component';
 import * as renderer from '../renderer';
+import { hydrateComponent } from './hydrate-component';
+import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;

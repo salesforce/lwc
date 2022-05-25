@@ -12,8 +12,8 @@ import {
     LightningElement,
     getUpgradableConstructor,
 } from '@lwc/engine-core';
-import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 import * as renderer from '../renderer';
+import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
