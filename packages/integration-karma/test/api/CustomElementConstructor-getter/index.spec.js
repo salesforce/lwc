@@ -1,7 +1,8 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, createElement } from 'lwc';
 
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
+import Exists from 'x/exists';
 
 // We can't register standard custom elements if we run compat because of the transformation applied to the component
 // constructor.
@@ -106,6 +107,14 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
             expect(elm.title).toBe('foo');
             expect(elm.number).toBe(10);
+        });
+    });
+
+    describe('customElements.get()', () => {
+        it('should register a component and get it from the registry', () => {
+            const elm = createElement('x-exists', { is: Exists });
+            document.body.appendChild(elm);
+            expect(customElements.get('x-exists')).not.toBeUndefined();
         });
     });
 }
