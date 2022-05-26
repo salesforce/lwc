@@ -112,6 +112,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
     describe('customElements.get()', () => {
         it('should register a component and get it from the registry', () => {
+            expect(customElements.get('x-exists')).toBeUndefined();
             const elm = createElement('x-exists', { is: Exists });
             document.body.appendChild(elm);
             expect(customElements.get('x-exists')).not.toBeUndefined();
