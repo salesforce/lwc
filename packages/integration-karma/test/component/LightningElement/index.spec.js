@@ -6,14 +6,18 @@ import NotReturningThis from 'x/notReturningThis';
 import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
 
 it('should throw when trying to invoke the constructor manually', () => {
-    expect(() => {
+    const callNew = () => {
         new LightningElement();
-    }).toThrowError(/Illegal constructor/);
+    };
+    expect(callNew).toThrowError(TypeError);
+    expect(callNew).toThrowError('Illegal constructor');
 
-    expect(() => {
+    const callNewWithExtend = () => {
         class Test extends LightningElement {}
         new Test();
-    }).toThrowError(/Illegal constructor/);
+    };
+    expect(callNewWithExtend).toThrowError(TypeError);
+    expect(callNewWithExtend).toThrowError('Illegal constructor');
 });
 
 it('should have no property enumerable on the component instance', () => {

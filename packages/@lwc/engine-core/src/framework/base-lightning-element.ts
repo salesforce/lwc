@@ -212,6 +212,8 @@ export const LightningElement: LightningElementConstructor = function (
 ): LightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
+        // TypeError matches the spec for an illegal custom element constructor:
+        // https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-api
         throw new TypeError('Illegal constructor');
     }
 
