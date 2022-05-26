@@ -15,15 +15,12 @@ import {
     KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
-    StringToLowerCase,
     isFunction,
 } from '@lwc/shared';
 import { patchCustomElementRegistry } from './patches/global-registry';
 
 export { insertStylesheet } from './styles';
 
-export let getCustomElement: any;
-export let defineCustomElement: any;
 let HTMLElementConstructor;
 
 function isCustomElementRegistryAvailable() {
@@ -50,24 +47,9 @@ function isCustomElementRegistryAvailable() {
 }
 
 if (isCustomElementRegistryAvailable()) {
-    getCustomElement = customElements.get.bind(customElements);
-    defineCustomElement = customElements.define.bind(customElements);
     HTMLElementConstructor = HTMLElement;
 } else {
-    const registry: Record<string, CustomElementConstructor> = create(null);
     const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-    defineCustomElement = function define(name: string, ctor: CustomElementConstructor) {
-        if (name !== StringToLowerCase.call(name) || registry[name]) {
-            throw new TypeError(`Invalid Registration`);
-        }
-        registry[name] = ctor;
-        reverseRegistry.set(ctor, name);
-    };
-
-    getCustomElement = function get(name: string): CustomElementConstructor | undefined {
-        return registry[name];
-    };
 
     HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
         if (!(this instanceof HTMLElement)) {

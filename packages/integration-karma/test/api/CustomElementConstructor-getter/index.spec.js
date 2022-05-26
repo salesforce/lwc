@@ -110,7 +110,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         });
     });
 
-    describe('customElements.get()', () => {
+    describe.skip('customElements.get()', () => {
         it('should register a component and get it from the registry', () => {
             expect(customElements.get('x-exists')).toBeUndefined();
             const elm = createElement('x-exists', { is: Exists });
