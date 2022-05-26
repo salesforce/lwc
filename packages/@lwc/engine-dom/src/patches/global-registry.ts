@@ -257,16 +257,14 @@ export function patchCustomElementRegistry() {
     const { customElements: nativeRegistry } = window;
     const { define: nativeDefine, whenDefined: nativeWhenDefined, get: nativeGet } = nativeRegistry;
 
-    if (process.env.NODE_ENV !== 'production') {
-        if ((nativeRegistry as any)[registryPatchedSymbol]) {
-            throw new Error(
-                'patchCustomElementRegistry was called twice in the same JavaScript environment. ' +
-                    'Please ensure you are loading the LWC engine only once. ' +
-                    'If this is a Jest environment, check your Jest/JSDOM configuration.'
-            );
-        }
-        (nativeRegistry as any)[registryPatchedSymbol] = true;
+    if ((nativeRegistry as any)[registryPatchedSymbol]) {
+        throw new Error(
+            'patchCustomElementRegistry was called twice in the same JavaScript environment. ' +
+                'Please ensure you are loading the LWC engine only once. ' +
+                'If this is a Jest environment, check your Jest/JSDOM configuration.'
+        );
     }
+    (nativeRegistry as any)[registryPatchedSymbol] = true;
 
     // patch for the global registry define mechanism
     CustomElementRegistry.prototype.define = function define(
