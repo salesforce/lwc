@@ -16,7 +16,7 @@ import {
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
     StringToLowerCase,
-    isFunction
+    isFunction,
 } from '@lwc/shared';
 import { patchCustomElementRegistry } from './patches/global-registry';
 
@@ -140,14 +140,14 @@ export function isHydrating(): boolean {
 
 export const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
-  Element.prototype,
-  KEY__SHADOW_TOKEN
+    Element.prototype,
+    KEY__SHADOW_TOKEN
 );
 
 export function createElement(tagName: string, namespace?: string): Element {
     return isUndefined(namespace)
-      ? document.createElement(tagName)
-      : document.createElementNS(namespace, tagName);
+        ? document.createElement(tagName)
+        : document.createElementNS(namespace, tagName);
 }
 
 export function createText(content: string): Node {
@@ -190,11 +190,11 @@ export function setProperty(node: Node, key: string, value: any): void {
         if (node instanceof Element && !(key in node)) {
             // TODO [#1297]: Move this validation to the compiler
             assert.fail(
-              `Unknown public property "${key}" of element <${
-                node.tagName
-              }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
-                key
-              )}".`
+                `Unknown public property "${key}" of element <${
+                    node.tagName
+                }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
+                    key
+                )}".`
             );
         }
     }
@@ -203,24 +203,24 @@ export function setProperty(node: Node, key: string, value: any): void {
 }
 
 export function getAttribute(
-  element: Element,
-  name: string,
-  namespace?: string | null
+    element: Element,
+    name: string,
+    namespace?: string | null
 ): string | null {
     return isUndefined(namespace)
-      ? element.getAttribute(name)
-      : element.getAttributeNS(namespace, name);
+        ? element.getAttribute(name)
+        : element.getAttributeNS(namespace, name);
 }
 
 export function setAttribute(
-  element: Element,
-  name: string,
-  value: string,
-  namespace?: string | null
+    element: Element,
+    name: string,
+    value: string,
+    namespace?: string | null
 ): void {
     return isUndefined(namespace)
-      ? element.setAttribute(name, value)
-      : element.setAttributeNS(namespace, name, value);
+        ? element.setAttribute(name, value)
+        : element.setAttributeNS(namespace, name, value);
 }
 
 export function removeAttribute(element: Element, name: string, namespace?: string | null): void {
@@ -232,19 +232,19 @@ export function removeAttribute(element: Element, name: string, namespace?: stri
 }
 
 export function addEventListener(
-  target: Node,
-  type: string,
-  callback: EventListener,
-  options?: AddEventListenerOptions | boolean
+    target: Node,
+    type: string,
+    callback: EventListener,
+    options?: AddEventListenerOptions | boolean
 ): void {
     target.addEventListener(type, callback, options);
 }
 
 export function removeEventListener(
-  target: Node,
-  type: string,
-  callback: EventListener,
-  options?: EventListenerOptions | boolean
+    target: Node,
+    type: string,
+    callback: EventListener,
+    options?: EventListenerOptions | boolean
 ): void {
     target.removeEventListener(type, callback, options);
 }
@@ -258,17 +258,17 @@ export function getClassList(element: Element): DOMTokenList {
 }
 
 export function setCSSStyleProperty(
-  element: Element,
-  name: string,
-  value: string,
-  important: boolean
+    element: Element,
+    name: string,
+    value: string,
+    important: boolean
 ): void {
     // TODO [#0]: How to avoid this type casting? Shall we use a different type interface to
     // represent elements in the engine?
     (element as HTMLElement | SVGElement).style.setProperty(
-      name,
-      value,
-      important ? 'important' : ''
+        name,
+        value,
+        important ? 'important' : ''
     );
 }
 

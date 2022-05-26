@@ -123,5 +123,5 @@ setSetText(setText);
 setSsr(ssr);
 setAddEventListener(addEventListener);
 setInsertStylesheet(insertStylesheet);
-setGetUpgradableElement(getUpgradableElement)
+setGetUpgradableElement(getUpgradableElement);
 setGetUserConstructor(getUserConstructor);
