@@ -70,7 +70,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
             const definition = UserCtor
                 ? getDefinitionForConstructor(UserCtor)
                 : definitionsByTag.get(tagName);
-            if (definition) {
+            if (!isUndefined(definition)) {
                 internalUpgrade(this, registeredDefinition, definition);
             } else {
                 // This is the case in which there is no global definition, and
@@ -86,7 +86,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
         }
         connectedCallback(this: HTMLElement) {
             const definition = definitionForElement.get(this);
-            if (definition) {
+            if (!isUndefined(definition)) {
                 // Delegate out to user callback
                 definition.connectedCallback && definition.connectedCallback.call(this);
             } else {
@@ -100,7 +100,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
         }
         disconnectedCallback(this: HTMLElement) {
             const definition = definitionForElement.get(this);
-            if (definition) {
+            if (!isUndefined(definition)) {
                 // Delegate out to user callback
                 definition.disconnectedCallback && definition.disconnectedCallback.call(this);
             } else {
@@ -342,7 +342,7 @@ export function patchCustomElementRegistry() {
             if (isUndefined(promise)) {
                 const definition = definitionsByTag.get(tagName);
                 if (!isUndefined(definition)) {
-                    return Promise.resolve(definition.UserCtor);
+                    return definition.UserCtor;
                 }
                 let resolve: (constructor: CustomElementConstructor) => void;
                 promise = new Promise((r) => (resolve = r));
