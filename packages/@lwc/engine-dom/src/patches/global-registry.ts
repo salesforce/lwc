@@ -327,7 +327,7 @@ export function patchCustomElementRegistry() {
     CustomElementRegistry.prototype.get = function get(
         this: CustomElementRegistry,
         tagName: string
-    ): any {
+    ): CustomElementConstructor | undefined {
         return nativeGet.call(this, tagName) && definitionsByTag.get(tagName)?.UserCtor;
     };
 
@@ -386,6 +386,8 @@ export function patchCustomElementRegistry() {
         if (isUndefined(PivotCtor)) {
             const definition = getDefinitionForConstructor(constructor);
             PivotCtor = createPivotingClass(tagName, definition);
+            definitionsByTag.set(tagName, definition);
+            definitionsByClass.set(constructor, definition);
             // Register a pivoting class which will LWC initializations
             nativeDefine.call(nativeRegistry, tagName, PivotCtor);
         }
