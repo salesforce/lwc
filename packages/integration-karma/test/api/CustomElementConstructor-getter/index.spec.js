@@ -111,7 +111,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         });
     });
 
-    describe('customElements.get()', () => {
+    describe('defining custom elements', () => {
         it('should register a component with createElement and get it from the registry', () => {
             expect(customElements.get('x-exists')).toBeUndefined();
             createElement('x-exists', { is: Exists });
