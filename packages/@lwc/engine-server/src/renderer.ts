@@ -330,23 +330,105 @@ function isConnected(node: HostNode) {
 // synthetic shadow.
 const insertStylesheet = noop as (content: string, target: any) => void;
 
-// Noop on SSR.
-const addEventListener = noop as (
-    target: HostNode,
+function addEventListener(
+    node: N,
     type: string,
     callback: EventListener,
-    options?: AddEventListenerOptions | boolean
-) => void;
+    useCaptureOrOptions?: AddEventListenerOptions | boolean
+): void {
+    if (node.type !== 'element') {
+        return;
+    }
 
-// Noop on SSR.
-const removeEventListener = noop as (
-    target: HostNode,
+    let savedCallback = callback;
+
+    if (useCaptureOrOptions) {
+        if (useCaptureOrOptions === true || useCaptureOrOptions.capture) {
+            // Capturing listeners aren't meaningful in SSR, since the capture phase
+            // is not supported. However, we don't need to break apps that register
+            // these listeners.
+            return;
+        }
+        if (useCaptureOrOptions.once) {
+            savedCallback = (...args) => {
+                try {
+                    callback(...args);
+                } finally {
+                    removeEventListener(node, type, savedCallback);
+                }
+            };
+        }
+
+        // In the SSR context, `passive` event listeners are not meaningful and are ignored.
+        // Additionally, we do not currently support AbortSignals, so the `signal` option
+        // is also ignored.
+    }
+
+    if (!(type in node.eventListeners)) {
+        node.eventListeners[type] = new Set();
+    }
+    node.eventListeners[type].add(savedCallback);
+}
+
+function removeEventListener(
+    node: N,
     type: string,
-    callback: EventListener,
-    options?: AddEventListenerOptions | boolean
-) => void;
+    callback: EventListener
+    // captured listeners aren't supported in SSR, so options are ignored
+): void {
+    if (node.type !== 'element') {
+        return;
+    }
+    const eventListeners = node.eventListeners[type];
+    if (eventListeners) {
+        eventListeners.delete(callback);
+    }
+}
 
-const dispatchEvent = unsupportedMethod('dispatchEvent') as (target: any, event: Event) => boolean;
+type EventProperty = keyof Event;
+function dispatchEvent(target: HostNode, event: Event): boolean {
+    if (target.type !== 'element') {
+        return true;
+    }
+
+    let currentNode: HostElement | null = target;
+    let stop = false;
+    let stopImmediately = false;
+
+    const stopPropagation = () => {
+        stop = true;
+    };
+    const stopImmediatePropagation = () => {
+        stop = true;
+        stopImmediately = true;
+    };
+    const eventProxy = new Proxy<Event>(event, {
+        get(eventObj, property: EventProperty) {
+            if (property === 'stopPropagation') {
+                return stopPropagation;
+            } else if (property === 'stopImmediatePropagation') {
+                return stopImmediatePropagation;
+            }
+            return eventObj[property];
+        },
+    });
+
+    do {
+        const callbacks: Set<EventListener> | undefined = currentNode.eventListeners[event.type];
+        if (callbacks) {
+            for (const callback of callbacks) {
+                if (!stopImmediately) {
+                    callback(eventProxy);
+                }
+            }
+        }
+        currentNode = currentNode.parent;
+    } while (!stop && currentNode);
+
+    // `preventDefault` is not supported, so the return value will never be false.
+    return true;
+}
+
 const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
     element: HostElement
 ) => DOMRect;

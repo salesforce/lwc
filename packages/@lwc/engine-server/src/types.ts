@@ -52,7 +52,7 @@ export interface HostElement {
     shadowRoot: HostShadowRoot | null;
     children: HostChildNode[];
     attributes: HostAttribute[];
-    eventListeners: Record<string, Function[]>;
+    eventListeners: Record<string, Set<EventListener>>;
 }
 
 export type HostNode = HostText | HostElement | HostComment;
