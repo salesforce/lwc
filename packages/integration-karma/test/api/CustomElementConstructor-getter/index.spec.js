@@ -121,7 +121,6 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         it('should invoke whenDefined for components registered with createElement', () => {
             expect(customElements.get('x-when-defined')).toBeUndefined();
             const promise = customElements.whenDefined('x-when-defined');
-            expect(typeof promise.then).toEqual('function');
             createElement('x-when-defined', { is: WhenDefined });
             expect(customElements.get('x-when-defined')).not.toBeUndefined();
             return promise.then((ctor) => {
