@@ -274,7 +274,9 @@ export function patchCustomElementRegistry() {
         options?: ElementDefinitionOptions
     ): void {
         if (options && options.extends) {
-            throw new DOMException('NotSupportedError: ');
+            throw new DOMException(
+                'NotSupportedError: "extends" key in customElements.define() options is not supported.'
+            );
         }
         nativeGet.call(this, tagName); // SyntaxError if The provided name is not a valid custom element name.
         tagName = tagName.toLowerCase();

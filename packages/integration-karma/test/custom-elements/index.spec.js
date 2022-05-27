@@ -38,11 +38,26 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 const promise = customElements.whenDefined(tag);
                 expect(customElements.get(tag)).toBeUndefined();
                 create(tag, Component);
-                expect(typeof customElements.get(tag)).toEqual('function');
-                return promise.then((ctor) => {
-                    expect(typeof ctor).toEqual('function');
+                const Ctor = customElements.get(tag);
+                expect(typeof Ctor).toEqual('function');
+                return promise.then((Ctor) => {
+                    expect(typeof Ctor).toEqual('function');
                 });
             });
+        });
+    });
+
+    describe('patched registry', () => {
+        it('throws error for unsupported "extends" option', () => {
+            const func = () => {
+                customElements.define('x-unsupported-extends', class extends HTMLElement {}, {
+                    extends: 'button',
+                });
+            };
+            expect(func).toThrowError(DOMException);
+            expect(func).toThrowError(
+                'NotSupportedError: "extends" key in customElements.define() options is not supported.'
+            );
         });
     });
 }
