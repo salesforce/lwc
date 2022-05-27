@@ -1,9 +1,7 @@
-import { LightningElement, createElement } from 'lwc';
+import { LightningElement } from 'lwc';
 
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
-import Exists from 'x/exists';
-import WhenDefined from 'x/whenDefined';
 
 // We can't register standard custom elements if we run compat because of the transformation applied to the component
 // constructor.
@@ -108,23 +106,6 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
             expect(elm.title).toBe('foo');
             expect(elm.number).toBe(10);
-        });
-    });
-
-    describe('defining custom elements', () => {
-        it('should register a component with createElement and get it from the registry', () => {
-            expect(customElements.get('x-exists')).toBeUndefined();
-            createElement('x-exists', { is: Exists });
-            expect(customElements.get('x-exists')).not.toBeUndefined();
-        });
-
-        it('should invoke whenDefined for components registered with createElement', () => {
-            expect(customElements.get('x-when-defined')).toBeUndefined();
-            const promise = customElements.whenDefined('x-when-defined');
-            createElement('x-when-defined', { is: WhenDefined });
-            return promise.then((ctor) => {
-                expect(typeof ctor).toEqual('function');
-            });
         });
     });
 }
