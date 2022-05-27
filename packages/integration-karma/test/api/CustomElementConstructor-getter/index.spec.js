@@ -122,7 +122,6 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             expect(customElements.get('x-when-defined')).toBeUndefined();
             const promise = customElements.whenDefined('x-when-defined');
             createElement('x-when-defined', { is: WhenDefined });
-            expect(customElements.get('x-when-defined')).not.toBeUndefined();
             return promise.then((ctor) => {
                 expect(typeof ctor).toEqual('function');
             });
