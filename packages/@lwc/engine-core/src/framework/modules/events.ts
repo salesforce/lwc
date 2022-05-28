@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-
+import { getRendererFromVNode } from '../../renderer';
 import { VBaseElement } from '../vnodes';
 
 export function applyEventListeners(vnode: VBaseElement) {
@@ -18,11 +18,7 @@ export function applyEventListeners(vnode: VBaseElement) {
         return;
     }
 
-    const {
-        owner: {
-            renderer: { addEventListener },
-        },
-    } = vnode;
+    const { addEventListener } = getRendererFromVNode(vnode);
     for (const name in on) {
         const handler = on[name];
         addEventListener(elm, name, handler);

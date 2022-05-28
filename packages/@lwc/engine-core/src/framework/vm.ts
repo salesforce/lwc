@@ -21,6 +21,7 @@ import {
 
 import { addErrorComponentStack } from '../shared/error';
 
+import { HostNode, HostElement, RendererAPI, getRendererFromVM } from '../renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
@@ -41,7 +42,6 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
-import type { HostNode, HostElement, RendererAPI } from '../renderer';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -475,8 +475,8 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
 export function runRenderedCallback(vm: VM) {
     const {
         def: { renderedCallback },
-        renderer: { ssr },
     } = vm;
+    const { ssr } = getRendererFromVM(vm);
 
     if (isTrue(ssr)) {
         return;
@@ -654,11 +654,8 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const {
-        children,
-        renderRoot,
-        renderer: { remove },
-    } = vm;
+    const { children, renderRoot } = vm;
+    const { remove } = getRendererFromVM(vm);
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
@@ -674,9 +671,7 @@ export function resetComponentRoot(vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
-    const {
-        renderer: { ssr },
-    } = vm;
+    const { ssr } = getRendererFromVM(vm);
     if (isTrue(ssr) || isTrue(vm.isScheduled)) {
         return;
     }

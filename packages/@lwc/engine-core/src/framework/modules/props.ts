@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, isUndefined } from '@lwc/shared';
-
+import { getRendererFromVNode } from '../../renderer';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
 
@@ -27,13 +27,8 @@ export function patchProps(oldVnode: VBaseElement | null, vnode: VBaseElement) {
     }
 
     const isFirstPatch = isNull(oldVnode);
-    const {
-        elm,
-        sel,
-        owner: {
-            renderer: { getProperty, setProperty },
-        },
-    } = vnode;
+    const { elm, sel } = vnode;
+    const { getProperty, setProperty } = getRendererFromVNode(vnode);
 
     for (const key in props) {
         const cur = props[key];

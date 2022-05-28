@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-
+import { getRendererFromVNode } from '../../renderer';
 import { VBaseElement } from '../vnodes';
 
 // The HTML class property becomes the vnode.data.classMap object when defined as a string in the template.
@@ -15,14 +15,14 @@ export function applyStaticClassAttribute(vnode: VBaseElement) {
     const {
         elm,
         data: { classMap },
-        owner: { renderer },
     } = vnode;
 
     if (isUndefined(classMap)) {
         return;
     }
 
-    const classList = renderer.getClassList(elm);
+    const { getClassList } = getRendererFromVNode(vnode);
+    const classList = getClassList(elm);
     for (const name in classMap) {
         classList.add(name);
     }

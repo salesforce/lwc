@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, isUndefined, StringCharCodeAt, XML_NAMESPACE, XLINK_NAMESPACE } from '@lwc/shared';
+import { getRendererFromVNode } from '../../renderer';
 
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
@@ -23,12 +24,8 @@ export function patchAttributes(oldVnode: VBaseElement | null, vnode: VBaseEleme
         return;
     }
 
-    const {
-        elm,
-        owner: {
-            renderer: { setAttribute, removeAttribute },
-        },
-    } = vnode;
+    const { elm } = vnode;
+    const { setAttribute, removeAttribute } = getRendererFromVNode(vnode);
     for (const key in attrs) {
         const cur = attrs[key];
         const old = oldAttrs[key];

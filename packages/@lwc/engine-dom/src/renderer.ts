@@ -30,7 +30,7 @@ function isCustomElementRegistryAvailable() {
     try {
         // dereference HTMLElement global because babel wraps globals in compat mode with a
         // _wrapNativeSuper()
-        // This is a problem because LWCUpgradableElement extends renderer.HTMLElement which does not
+        // This is a problem because LWCUpgradableElement extends renderer.HTMLElementExported which does not
         // get wrapped by babel.
         const HTMLElementAlias = HTMLElement;
         // In case we use compat mode with a modern browser, the compat mode transformation

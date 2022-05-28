@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-
+import { getRendererFromVNode } from '../../renderer';
 import { VBaseElement } from '../vnodes';
 
 // The HTML style property becomes the vnode.data.styleDecls object when defined as a string in the template.
@@ -15,15 +15,15 @@ export function applyStaticStyleAttribute(vnode: VBaseElement) {
     const {
         elm,
         data: { styleDecls },
-        owner: { renderer },
     } = vnode;
 
     if (isUndefined(styleDecls)) {
         return;
     }
 
+    const { setCSSStyleProperty } = getRendererFromVNode(vnode);
     for (let i = 0; i < styleDecls.length; i++) {
         const [prop, value, important] = styleDecls[i];
-        renderer.setCSSStyleProperty(elm, prop, value, important);
+        setCSSStyleProperty(elm, prop, value, important);
     }
 }

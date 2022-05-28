@@ -13,6 +13,7 @@ import {
     noop,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
+import { getRendererFromVM } from '../renderer';
 import { LightningElement } from './base-lightning-element';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';
@@ -127,8 +128,8 @@ function createContextWatcher(
     const {
         elm,
         context: { wiredConnecting, wiredDisconnecting },
-        renderer: { dispatchEvent },
     } = vm;
+    const { dispatchEvent } = getRendererFromVM(vm);
     // waiting for the component to be connected to formally request the context via the token
     ArrayPush.call(wiredConnecting, () => {
         // This event is responsible for connecting the host element with another

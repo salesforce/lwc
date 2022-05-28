@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { VM } from './vm';
+import type { VM } from './vm';
+import type { RendererAPI } from '../renderer';
 
 export type Key = string | number;
 
@@ -74,6 +75,7 @@ export interface VNodeData {
     readonly context?: Readonly<Record<string, Readonly<Record<string, any>>>>;
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;
+    readonly renderer?: RendererAPI;
 }
 
 export interface VElementData extends VNodeData {

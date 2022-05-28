@@ -18,6 +18,7 @@ import {
     KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 
+import { getRendererFromVM, getRendererFromVNode, RendererAPI } from '../renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -56,7 +57,6 @@ import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
-import type { RendererAPI } from '../renderer';
 
 export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode): void {
     if (hasDynamicChildren(c2)) {
@@ -131,7 +131,7 @@ function patchText(n1: VText, n2: VText) {
 
 function mountText(vnode: VText, parent: ParentNode, anchor: Node | null) {
     const { owner } = vnode;
-    const { renderer } = owner;
+    const renderer = getRendererFromVM(owner);
     const { createText } = renderer;
 
     const textNode = (vnode.elm = createText(vnode.text));
@@ -152,7 +152,7 @@ function patchComment(n1: VComment, n2: VComment) {
 
 function mountComment(vnode: VComment, parent: ParentNode, anchor: Node | null) {
     const { owner } = vnode;
-    const { renderer } = owner;
+    const renderer = getRendererFromVM(owner);
     const { createComment } = renderer;
 
     const commentNode = (vnode.elm = createComment(vnode.text));
@@ -166,8 +166,8 @@ function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) 
         sel,
         owner,
         data: { svg },
-        owner: { renderer },
     } = vnode;
+    const renderer = getRendererFromVNode(vnode);
     const { createElement } = renderer;
 
     const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
@@ -192,8 +192,7 @@ function patchElement(n1: VElement, n2: VElement) {
 
 function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
     const { sel, owner } = vnode;
-    const { renderer } = owner;
-
+    const renderer = getRendererFromVNode(vnode);
     const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
@@ -272,16 +271,14 @@ function mountVNodes(
 }
 
 function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
-    const {
-        type,
-        elm,
-        sel,
-        owner: { renderer },
-    } = vnode;
+    const { type, elm, sel } = vnode;
 
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
     if (doRemove) {
+        // The vnode might or might not have a data.renderer associated to it
+        // but the removal used here is from the owner instead.
+        const renderer = getRendererFromVM(vnode.owner);
         removeNode(elm!, parent, renderer);
     }
 
@@ -335,12 +332,9 @@ function setElementShadowToken(elm: Element, token: string) {
 }
 
 // Set the scope token class for *.scoped.css styles
-function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
-    const {
-        cmpTemplate,
-        context,
-        renderer: { getClassList },
-    } = owner;
+function setScopeTokenClassIfNecessary(elm: Element, owner: VM, renderer: RendererAPI) {
+    const { cmpTemplate, context } = owner;
+    const { getClassList } = renderer;
     const token = cmpTemplate?.stylesheetToken;
     if (!isUndefined(token) && context.hasScopedStyles) {
         // TODO [#2762]: this dot notation with add is probably problematic
@@ -350,13 +344,8 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
 }
 
 function linkNodeToShadow(elm: Node, owner: VM) {
-    const {
-        renderRoot,
-        renderMode,
-        shadowMode,
-        renderer: { isSyntheticShadowDefined },
-    } = owner;
-
+    const { renderRoot, renderMode, shadowMode } = owner;
+    const { isSyntheticShadowDefined } = getRendererFromVM(owner);
     // TODO [#1164]: this should eventually be done by the polyfill directly
     if (isSyntheticShadowDefined) {
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
@@ -366,13 +355,8 @@ function linkNodeToShadow(elm: Node, owner: VM) {
 }
 
 function updateTextContent(vnode: VText | VComment) {
-    const {
-        elm,
-        text,
-        owner: {
-            renderer: { setText },
-        },
-    } = vnode;
+    const { elm, text } = vnode;
+    const { setText } = getRendererFromVM(vnode.owner);
 
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
@@ -420,7 +404,8 @@ function patchElementPropsAndAttrs(oldVnode: VBaseElement | null, vnode: VBaseEl
 
 function fallbackElmHook(elm: Element, vnode: VBaseElement) {
     const { owner } = vnode;
-    setScopeTokenClassIfNecessary(elm, owner);
+    const renderer = getRendererFromVNode(vnode);
+    setScopeTokenClassIfNecessary(elm, owner, renderer);
     if (owner.shadowMode === ShadowMode.Synthetic) {
         const {
             data: { context },
@@ -490,9 +475,9 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
     }
 
     const { sel, mode, ctor, owner } = vnode;
-    const { renderer } = owner;
+    const renderer = getRendererFromVNode(vnode);
 
-    setScopeTokenClassIfNecessary(elm, owner);
+    setScopeTokenClassIfNecessary(elm, owner, renderer);
     if (owner.shadowMode === ShadowMode.Synthetic) {
         const { stylesheetToken } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value
@@ -629,23 +614,20 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patch(oldStartVnode, newEndVnode);
+            const renderer = getRendererFromVM(newEndVnode.owner);
             insertNode(
                 oldStartVnode.elm!,
                 parent,
-                newEndVnode.owner.renderer.nextSibling(oldEndVnode.elm!),
-                newEndVnode.owner.renderer
+                renderer.nextSibling(oldEndVnode.elm!),
+                renderer
             );
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
             patch(oldEndVnode, newStartVnode);
-            insertNode(
-                newStartVnode.elm!,
-                parent,
-                oldStartVnode.elm!,
-                newStartVnode.owner.renderer
-            );
+            const renderer = getRendererFromVM(newStartVnode.owner);
+            insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
         } else {
@@ -677,12 +659,8 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
 
                         // We've already cloned at least once, so it's no longer read-only
                         (oldCh as any[])[idxInOld] = undefined;
-                        insertNode(
-                            elmToMove.elm!,
-                            parent,
-                            oldStartVnode.elm!,
-                            elmToMove.owner.renderer
-                        );
+                        const renderer = getRendererFromVM(elmToMove.owner);
+                        insertNode(elmToMove.elm!, parent, oldStartVnode.elm!, renderer);
                     }
                 }
                 newStartVnode = newCh[++newStartIdx];
