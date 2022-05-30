@@ -352,7 +352,7 @@ function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
             unmountVNodes(
                 isUndefined(vnode.aChildren) ? vnode.children : vnode.aChildren,
                 (elm as ParentNode) ?? parent,
-                !elm && doRemove
+                true // slot content is removed to trigger `slotchange` event when removing slot.
             );
             break;
 
@@ -579,13 +579,6 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM) {
         }
 
         const { vnodes } = (cmpSlots[slotName] = cmpSlots[slotName] || { owner, vnodes: [] });
-        // re-keying the vnodes is necessary to avoid conflicts with default content for the slot
-        // which might have similar keys. Each vnode will always have a key that
-        // starts with a numeric character from compiler. In this case, we add a unique
-        // notation for slotted vnodes keys, e.g.: `@foo:1:1`
-        if (!isUndefined(vnode.key)) {
-            vnode.key = `@${slotName}:${vnode.key}`;
-        }
         ArrayPush.call(vnodes, vnode);
     }
     if (isFalse(vm.isDirty)) {
