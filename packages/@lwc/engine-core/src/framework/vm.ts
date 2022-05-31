@@ -116,9 +116,6 @@ export interface VM<N = HostNode, E = HostElement> {
     /** Rendering operations associated with the VM */
     readonly renderMode: RenderMode;
     shadowMode: ShadowMode;
-    /** Transitive support for native Shadow DOM. A component in native mode
-     * transitively opts all of its descendants into native. */
-    readonly nearestShadowMode: ShadowMode | null;
     /** The component creation index. */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -290,10 +287,8 @@ export function createVM<HostNode, HostElement>(
         oar: create(null),
         cmpTemplate: null,
         hydrated: Boolean(hydrated),
-
         renderMode: def.renderMode,
         shadowMode: computeShadowMode(def, owner),
-        nearestShadowMode: owner?.shadowRoot ? owner.shadowMode : owner?.nearestShadowMode ?? null,
 
         context: {
             stylesheetToken: undefined,
@@ -359,7 +354,7 @@ function computeShadowMode(def: ComponentDef, owner: VM | null) {
                     // transitively opts all of its descendants into native.
                     // Synthetic if neither this component nor any of its ancestors are configured
                     // to be native.
-                    shadowMode = owner?.nearestShadowMode ?? ShadowMode.Synthetic;
+                    shadowMode = owner?.shadowMode ?? ShadowMode.Synthetic;
                 }
             } else {
                 shadowMode = ShadowMode.Synthetic;
