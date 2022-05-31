@@ -44,7 +44,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     );
 
                     expect(synthetic.label.id).not.toEqual('foo');
-                    expect(synthetic.input.getAttribute('aria-labelledby')).toMatch(/^foo-/);
+                    expect(synthetic.input.getAttribute('aria-labelledby')).not.toEqual('foo');
                     expect(synthetic.label.id).toEqual(
                         synthetic.input.getAttribute('aria-labelledby')
                     );
