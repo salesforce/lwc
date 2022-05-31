@@ -8,6 +8,7 @@
 import {
     setAssertInstanceOfHTMLElement,
     setAttachShadow,
+    setCloneNode,
     setCreateComment,
     setCreateElement,
     setCreateFragment,
@@ -29,8 +30,6 @@ import {
     setGetProperty,
     setHTMLElement,
     setInsert,
-    setInsertGlobalStylesheet,
-    setInsertStylesheet,
     setIsConnected,
     setIsHydrating,
     setIsNativeShadowDefined,
@@ -47,14 +46,16 @@ import {
     setSetText,
     setSsr,
     setAddEventListener,
-    setCloneNode,
+    setInsertStylesheet,
 } from '@lwc/engine-core';
 
 import {
     assertInstanceOfHTMLElement,
     attachShadow,
+    cloneNode,
     createComment,
     createElement,
+    createFragment,
     createText,
     defineCustomElement,
     dispatchEvent,
@@ -73,8 +74,6 @@ import {
     getProperty,
     HTMLElement,
     insert,
-    insertGlobalStylesheet,
-    insertStylesheet,
     isConnected,
     isHydrating,
     isNativeShadowDefined,
@@ -91,8 +90,7 @@ import {
     setText,
     ssr,
     addEventListener,
-    createFragment,
-    cloneNode,
+    insertStylesheet,
 } from './renderer';
 
 setAssertInstanceOfHTMLElement(assertInstanceOfHTMLElement);
@@ -119,8 +117,6 @@ setGetLastElementChild(getLastElementChild);
 setGetProperty(getProperty);
 setHTMLElement(HTMLElement);
 setInsert(insert);
-setInsertGlobalStylesheet(insertGlobalStylesheet);
-setInsertStylesheet(insertStylesheet);
 setIsConnected(isConnected);
 setIsHydrating(isHydrating);
 setIsNativeShadowDefined(isNativeShadowDefined);
@@ -137,3 +133,4 @@ setSetProperty(setProperty);
 setSetText(setText);
 setSsr(ssr);
 setAddEventListener(addEventListener);
+setInsertStylesheet(insertStylesheet);

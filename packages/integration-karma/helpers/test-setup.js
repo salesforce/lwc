@@ -8,18 +8,30 @@
 // Global beforeEach/afterEach/etc logic to run before and after each test
 
 var knownChildren;
+var knownAdoptedStyleSheets;
+
+function getHeadChildren() {
+    return Array.prototype.slice.apply(document.head.children);
+}
+
+function getBodyChildren() {
+    return Array.prototype.slice.apply(document.body.children);
+}
+
+function getAdoptedStyleSheets() {
+    return Array.prototype.slice.call(document.adoptedStyleSheets || []);
+}
 
 // After each test, clean up any DOM elements that were inserted into the document
-// <head> or <body>, plus any global <style>s the engine might think are there.
+// <head> or <body>, plus any global <style>s or adopted style sheets.
 
 function getChildren() {
-    return []
-        .concat(Array.prototype.slice.apply(document.head.children))
-        .concat(Array.prototype.slice.apply(document.body.children));
+    return [].concat(getHeadChildren()).concat(getBodyChildren());
 }
 
 beforeEach(function () {
     knownChildren = getChildren();
+    knownAdoptedStyleSheets = getAdoptedStyleSheets();
 });
 
 afterEach(function () {
@@ -28,7 +40,11 @@ afterEach(function () {
             child.parentElement.removeChild(child);
         }
     });
+    if (document.adoptedStyleSheets) {
+        document.adoptedStyleSheets = knownAdoptedStyleSheets;
+    }
     knownChildren = undefined;
+    knownAdoptedStyleSheets = undefined;
     // Need to clear this or else the engine will think there's a <style> in the <head>
     // that already has the style, even though we just removed it
     window.__lwcResetGlobalStylesheets();
@@ -38,15 +54,18 @@ afterEach(function () {
 // no test dirtied the DOM with leftover elements
 var originalHeadChildren;
 var originalBodyChildren;
+var originalAdoptedStyleSheets;
 beforeAll(function () {
-    originalHeadChildren = Array.prototype.slice.call(document.head.children);
-    originalBodyChildren = Array.prototype.slice.call(document.body.children);
+    originalHeadChildren = getHeadChildren();
+    originalBodyChildren = getBodyChildren();
+    originalAdoptedStyleSheets = getAdoptedStyleSheets();
 });
 
 // Throwing an Error in afterAll will cause a non-zero exit code
 afterAll(function () {
-    var headChildren = Array.prototype.slice.call(document.head.children);
-    var bodyChildren = Array.prototype.slice.call(document.body.children);
+    var headChildren = getHeadChildren();
+    var bodyChildren = getBodyChildren();
+    var adoptedStyleSheets = getAdoptedStyleSheets();
 
     headChildren.forEach(function (child, i) {
         if (originalHeadChildren[i] !== child) {
@@ -57,6 +76,14 @@ afterAll(function () {
     bodyChildren.forEach(function (child, i) {
         if (originalBodyChildren[i] !== child) {
             throw new Error('Unexpected element left in the <body> by a test: ' + child.outerHTML);
+        }
+    });
+
+    adoptedStyleSheets.forEach(function (sheet, i) {
+        if (originalAdoptedStyleSheets[i] !== sheet) {
+            throw new Error(
+                'Unexpected adopted style sheet left in the document by a test: ' + sheet
+            );
         }
     });
 });

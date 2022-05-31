@@ -4,14 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const fs = require('fs-extra');
 const path = require('path');
+
+const fs = require('fs-extra');
 const rollup = require('rollup');
+const { getModulePath } = require('lwc');
 const rollupLwcCompilerPlugin = require('@lwc/rollup-plugin');
 const rollupCompatPlugin = require('rollup-plugin-compat');
 const rollupReplacePlugin = require('@rollup/plugin-replace');
 const compatPolyfills = require('compat-polyfills');
-const { getModulePath } = require('lwc');
+
 const templates = require('../src/shared/templates.js');
 
 // -- Build Config -------------------------------------------

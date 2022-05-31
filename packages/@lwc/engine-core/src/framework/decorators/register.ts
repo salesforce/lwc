@@ -15,18 +15,20 @@ import {
     isFalse,
 } from '@lwc/shared';
 import { LightningElementConstructor } from '../base-lightning-element';
-import { internalWireFieldDecorator } from './wire';
-import { internalTrackDecorator } from './track';
-import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from './api';
+
+import { EmptyObject } from '../utils';
+import { logError } from '../../shared/logger';
+import { createObservedFieldPropertyDescriptor } from '../observed-fields';
 import {
     WireAdapterConstructor,
     storeWiredMethodMeta,
     storeWiredFieldMeta,
     ConfigCallback,
 } from '../wiring';
-import { EmptyObject } from '../utils';
-import { createObservedFieldPropertyDescriptor } from '../observed-fields';
-import { logError } from '../../shared/logger';
+
+import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from './api';
+import { internalTrackDecorator } from './track';
+import { internalWireFieldDecorator } from './wire';
 
 // data produced by compiler
 type WireCompilerMeta = Record<string, WireCompilerDef>;

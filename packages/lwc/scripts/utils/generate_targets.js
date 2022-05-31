@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const workerpool = require('workerpool');
-const isCI = require('is-ci');
 const os = require('os');
-const isNucleus = process.env.NUCLEUS;
+const isCI = require('is-ci');
+const workerpool = require('workerpool');
 
 // Group the targets based on their input configuration, which allows us to run
 // rollup.rollup() once per unique input combination, and then bundle.generate
@@ -29,7 +28,6 @@ async function buildTargets(targets) {
 
     const pool = workerpool.pool(require.resolve('./child_worker.js'), {
         maxWorkers: isCI ? 2 : os.cpus().length,
-        workerType: isNucleus ? 'process' : 'auto', // workers+swc cause segfault in Nucleus
     });
     try {
         const targetGroups = groupByInputOptions(targets);

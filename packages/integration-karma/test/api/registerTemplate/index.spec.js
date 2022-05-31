@@ -1,7 +1,4 @@
-// TODO [#1284]: Import this from the lwc module once we move validation from compiler to linter
-const { registerTemplate } = LWC;
-
-import { createElement } from 'lwc';
+import { createElement, registerTemplate } from 'lwc';
 import { LightningElement } from 'lwc';
 
 it('should accepts a function return the same value', () => {

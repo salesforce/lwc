@@ -5,12 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayReduce, ArrayPush, assert, isNull, isUndefined, ArrayFilter } from '@lwc/shared';
-import {
-    getHost,
-    getShadowRoot,
-    getShadowRootResolver,
-    isSyntheticShadowHost,
-} from './shadow-root';
+
+import { arrayFromCollection } from '../shared/utils';
+import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
 import { querySelectorAll } from '../env/element';
 import {
     childNodesGetter,
@@ -20,8 +17,13 @@ import {
     parentElementGetter,
     Node,
 } from '../env/node';
-import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
-import { arrayFromCollection } from '../shared/utils';
+
+import {
+    getHost,
+    getShadowRoot,
+    getShadowRootResolver,
+    isSyntheticShadowHost,
+} from './shadow-root';
 
 // when finding a slot in the DOM, we can fold it if it is contained
 // inside another slot.

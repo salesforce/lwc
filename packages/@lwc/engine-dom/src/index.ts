@@ -11,6 +11,9 @@ import './polyfills/aria-properties/main';
 // Renderer initialization -------------------------------------------------------------------------
 import './initializeRenderer';
 
+// Tests -------------------------------------------------------------------------------------------
+import './testFeatureFlag.ts';
+
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
     createContextProvider,
@@ -23,6 +26,7 @@ export {
     setFeatureFlag,
     setFeatureFlagForTest,
     registerTemplate,
+    freezeTemplate,
     registerComponent,
     registerDecorators,
     sanitizeAttribute,
@@ -34,6 +38,7 @@ export {
     swapComponent,
     swapStyle,
     swapTemplate,
+    getComponentConstructor,
     __unstable__ProfilerControl,
 } from '@lwc/engine-core';
 
@@ -41,6 +46,5 @@ export {
 export { hydrateComponent } from './apis/hydrate-component';
 export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './apis/build-custom-element-constructor';
 export { createElement } from './apis/create-element';
-export { getComponentConstructor } from './apis/get-component-constructor';
 export { isNodeFromTemplate } from './apis/is-node-from-template';
 export { LightningElement } from './apis/lightning-element';

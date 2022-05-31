@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { isApiDecorator } = require('./shared');
 const {
     DECORATOR_TYPES,
     LWC_COMPONENT_PROPERTIES: { PUBLIC_METHODS, PUBLIC_PROPS },
 } = require('../../constants');
+
+const { isApiDecorator } = require('./shared');
 
 const PUBLIC_PROP_BIT_MASK = {
     PROPERTY: 0,

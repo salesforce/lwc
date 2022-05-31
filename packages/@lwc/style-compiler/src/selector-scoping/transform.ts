@@ -16,11 +16,11 @@ import {
     attribute,
 } from 'postcss-selector-parser';
 
-import validateSelectors from './validate';
-
 import { isDirPseudoClass } from '../utils/rtl';
 import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
 import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
+
+import validateSelectors from './validate';
 
 type ChildNode = Exclude<Node, Selector>;
 

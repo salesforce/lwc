@@ -1,6 +1,6 @@
 {
     "name": "@lwc/compiler",
-    "version": "2.12.1",
+    "version": "2.14.0",
     "description": "LWC compiler",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -23,14 +23,14 @@
         "dist/"
     ],
     "dependencies": {
-        "@babel/core": "~7.17.8",
+        "@babel/core": "~7.17.10",
         "@babel/plugin-proposal-class-properties": "~7.16.7",
         "@babel/plugin-proposal-object-rest-spread": "~7.17.3",
-        "@lwc/babel-plugin-component": "2.12.1",
-        "@lwc/errors": "2.12.1",
-        "@lwc/shared": "2.12.1",
-        "@lwc/style-compiler": "2.12.1",
-        "@lwc/template-compiler": "2.12.1"
+        "@lwc/babel-plugin-component": "2.14.0",
+        "@lwc/errors": "2.14.0",
+        "@lwc/shared": "2.14.0",
+        "@lwc/style-compiler": "2.14.0",
+        "@lwc/template-compiler": "2.14.0"
     },
     "publishConfig": {
         "access": "public"

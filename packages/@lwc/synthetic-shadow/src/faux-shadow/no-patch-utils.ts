@@ -5,10 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayFilter, ArraySlice, isNull, isUndefined } from '@lwc/shared';
-import { isSyntheticShadowHost } from './shadow-root';
-import { getAllMatches, getNodeOwner, getAllSlottedMatches } from './traverse';
+
 import { getNodeKey, getNodeNearestOwnerKey, getNodeOwnerKey } from '../shared/node-ownership';
 import { isGlobalPatchingSkipped } from '../shared/utils';
+
+import { isSyntheticShadowHost } from './shadow-root';
+import { getAllMatches, getNodeOwner, getAllSlottedMatches } from './traverse';
 
 /**
  * This methods filters out elements that are not in the same shadow root of context.

@@ -9,8 +9,8 @@
  * Forms the JSON results from multiple Tachometer runs and outputs a Markdown table of results.
  */
 
-import { markdownTable } from 'markdown-table';
 import fs from 'fs/promises';
+import { markdownTable } from 'markdown-table';
 
 function avg(a, b) {
     return (a + b) / 2;

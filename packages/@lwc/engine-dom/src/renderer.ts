@@ -11,39 +11,13 @@ import {
     hasOwnProperty,
     htmlPropertyToAttribute,
     globalThis,
-    isFunction,
     isUndefined,
-    isArray,
     KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
     StringToLowerCase,
-    getOwnPropertyDescriptor,
 } from '@lwc/shared';
-
-const globalStylesheets: { [content: string]: true } = create(null);
-
-if (process.env.NODE_ENV === 'development') {
-    // @ts-ignore
-    window.__lwcResetGlobalStylesheets = () => {
-        for (const key of Object.keys(globalStylesheets)) {
-            delete globalStylesheets[key];
-        }
-    };
-}
-
-const globalStylesheetsParentElement: Element = document.head || document.body || document;
-// This check for constructable stylesheets is similar to Fast's:
-// https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
-// See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
-const supportsConstructableStyleSheets =
-    isFunction(CSSStyleSheet.prototype.replaceSync) && isArray(document.adoptedStyleSheets);
-const supportsMutableAdoptedStyleSheets =
-    supportsConstructableStyleSheets &&
-    getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
-const styleElements: { [content: string]: HTMLStyleElement } = create(null);
-const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
-const shadowRootsToStyleSheets = new WeakMap<ShadowRoot, { [content: string]: true }>();
+export { insertStylesheet } from './styles';
 
 export let getCustomElement: any;
 export let defineCustomElement: any;
@@ -70,53 +44,6 @@ function isCustomElementRegistryAvailable() {
     } catch {
         return false;
     }
-}
-
-function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
-    // It's important for CSSStyleSheets to be unique based on their content, so that
-    // `shadowRoot.adoptedStyleSheets.includes(sheet)` works.
-    let styleSheet = styleSheets[content];
-    if (isUndefined(styleSheet)) {
-        styleSheet = new CSSStyleSheet();
-        styleSheet.replaceSync(content);
-        styleSheets[content] = styleSheet;
-    }
-    const { adoptedStyleSheets } = target;
-    if (!adoptedStyleSheets.includes(styleSheet)) {
-        if (supportsMutableAdoptedStyleSheets) {
-            // This is only supported in later versions of Chromium:
-            // https://chromestatus.com/feature/5638996492288000
-            adoptedStyleSheets.push(styleSheet);
-        } else {
-            target.adoptedStyleSheets = [...adoptedStyleSheets, styleSheet];
-        }
-    }
-}
-
-function insertStyleElement(content: string, target: ShadowRoot) {
-    // Avoid inserting duplicate `<style>`s
-    let sheets = shadowRootsToStyleSheets.get(target);
-    if (isUndefined(sheets)) {
-        sheets = create(null);
-        shadowRootsToStyleSheets.set(target, sheets!);
-    }
-    if (sheets![content]) {
-        return;
-    }
-    sheets![content] = true;
-
-    // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
-    // faster to call `cloneNode()` on an existing node than to recreate it every time.
-    let elm = styleElements[content];
-    if (isUndefined(elm)) {
-        elm = document.createElement('style');
-        elm.type = 'text/css';
-        elm.textContent = content;
-        styleElements[content] = elm;
-    } else {
-        elm = elm.cloneNode(true) as HTMLStyleElement;
-    }
-    target.appendChild(elm);
 }
 
 if (isCustomElementRegistryAvailable()) {
@@ -355,29 +282,6 @@ export function getLastElementChild(element: Element): Element | null {
 
 export function isConnected(node: Node): boolean {
     return node.isConnected;
-}
-
-export function insertGlobalStylesheet(content: string): void {
-    if (!isUndefined(globalStylesheets[content])) {
-        return;
-    }
-
-    globalStylesheets[content] = true;
-
-    const elm = document.createElement('style');
-    elm.type = 'text/css';
-    elm.textContent = content;
-
-    globalStylesheetsParentElement.appendChild(elm);
-}
-
-export function insertStylesheet(content: string, target: ShadowRoot): void {
-    if (supportsConstructableStyleSheets) {
-        insertConstructableStyleSheet(content, target);
-    } else {
-        // Fall back to <style> element
-        insertStyleElement(content, target);
-    }
 }
 
 export function assertInstanceOfHTMLElement(elm: any, msg: string) {

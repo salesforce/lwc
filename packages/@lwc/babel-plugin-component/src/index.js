@@ -4,10 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { LWCClassErrors } = require('@lwc/errors');
-
 const component = require('./component');
-const { LWC_SUPPORTED_APIS } = require('./constants');
 const {
     decorators,
     removeImportedDecoratorSpecifiers,
@@ -16,7 +13,7 @@ const {
 const dedupeImports = require('./dedupe-imports');
 const dynamicImports = require('./dynamic-imports');
 const compilerVersionNumber = require('./compiler-version-number');
-const { generateError, getEngineImportSpecifiers } = require('./utils');
+const { getEngineImportSpecifiers } = require('./utils');
 
 /**
  * The transform is done in 2 passes:
@@ -43,17 +40,6 @@ module.exports = function LwcClassTransform(api) {
             Program: {
                 enter(path) {
                     const engineImportSpecifiers = getEngineImportSpecifiers(path);
-
-                    // Validate what is imported from 'lwc'. This validation will eventually be moved out from the compiler
-                    // and into a lint rule.
-                    engineImportSpecifiers.forEach(({ name }) => {
-                        if (!LWC_SUPPORTED_APIS.has(name)) {
-                            throw generateError(path, {
-                                errorInfo: LWCClassErrors.INVALID_IMPORT_PROHIBITED_API,
-                                messageArgs: [name],
-                            });
-                        }
-                    });
 
                     // Validate the usage of LWC decorators.
                     validateImportedLwcDecoratorUsage(engineImportSpecifiers);

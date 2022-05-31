@@ -9,25 +9,10 @@ import * as parse5 from 'parse5';
 import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE } from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel } from '@lwc/errors';
 
-import { cleanTextNode, decodeTextContent, parseHTML } from './html';
-
-import {
-    attributeName,
-    attributeToPropertyName,
-    isAttribute,
-    isProhibitedIsAttribute,
-    isTabIndexAttribute,
-    isValidHTMLAttribute,
-    isValidTabIndexAttributeValue,
-    normalizeAttributeValue,
-    ParsedAttribute,
-} from './attribute';
-
-import { isExpression, parseExpression, parseIdentifier } from './expression';
-
 import * as t from '../shared/estree';
 import * as parse5Utils from '../shared/parse5';
 import * as ast from '../shared/ast';
+import State from '../state';
 import {
     TemplateParseResult,
     Attribute,
@@ -47,10 +32,21 @@ import {
     If,
     Property,
 } from '../shared/types';
-
 import ParserCtx from './parser';
 
-import State from '../state';
+import { cleanTextNode, decodeTextContent, parseHTML } from './html';
+import { isExpression, parseExpression, parseIdentifier } from './expression';
+import {
+    attributeName,
+    attributeToPropertyName,
+    isAttribute,
+    isProhibitedIsAttribute,
+    isTabIndexAttribute,
+    isValidHTMLAttribute,
+    isValidTabIndexAttributeValue,
+    normalizeAttributeValue,
+    ParsedAttribute,
+} from './attribute';
 
 import {
     DASHED_TAGNAME_ELEMENT_SET,

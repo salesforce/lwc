@@ -15,7 +15,7 @@ import {
     toString,
 } from '@lwc/shared';
 
-import { isDelegatingFocus, isSyntheticShadowHost } from './shadow-root';
+import { addEventListener, removeEventListener } from '../env/event-target';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
 import {
     DocumentPrototypeActiveElement,
@@ -36,14 +36,16 @@ import {
     getAttribute,
     hasAttribute,
 } from '../env/element';
-import { addEventListener, removeEventListener } from '../env/event-target';
 import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_PRECEDING,
     DOCUMENT_POSITION_FOLLOWING,
 } from '../env/node';
+
 import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
+
+import { isDelegatingFocus, isSyntheticShadowHost } from './shadow-root';
 
 const FocusableSelector = `
     [contenteditable],

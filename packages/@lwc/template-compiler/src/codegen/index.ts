@@ -45,6 +45,15 @@ import {
     BaseElement,
 } from '../shared/types';
 
+import * as t from '../shared/estree';
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isAttribute,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
+
 import CodeGen from './codegen';
 import {
     identifierFromComponentName,
@@ -57,17 +66,7 @@ import {
     hasIdAttribute,
     styleMapToStyleDeclsAST,
 } from './helpers';
-
 import { format as formatModule } from './formatters/module';
-
-import * as t from '../shared/estree';
-import {
-    isAllowedFragOnlyUrlsXHTML,
-    isAttribute,
-    isFragmentOnlyUrl,
-    isIdReferencingAttribute,
-    isSvgUseHref,
-} from '../parser/attribute';
 
 function transform(codeGen: CodeGen): t.Expression {
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {

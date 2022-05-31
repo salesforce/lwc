@@ -9,8 +9,9 @@ import * as he from 'he';
 
 import { ParserDiagnostics } from '@lwc/errors';
 
-import ParserCtx from './parser';
 import { sourceLocation } from '../shared/ast';
+
+import ParserCtx from './parser';
 import { errorCodesToErrorOn, errorCodesToWarnOn } from './parse5Errors';
 
 function getLwcErrorFromParse5Error(code: string) {

@@ -42,6 +42,7 @@ const { code } = await transform(source, filename, options);
 
 -   `code` (string) - the compiled source code.
 -   `map` (object) - the generated source map.
+-   `warnings` (array, optional) - the array of diagnostic warnings, if any.
 
 ### `version`
 

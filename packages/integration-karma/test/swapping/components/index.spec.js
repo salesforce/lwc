@@ -1,7 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
-
-// TODO [#1869]: getting the global API from global LWC in tests until it is allowed in compiler
-const { swapComponent } = LWC;
+import { createElement, setFeatureFlagForTest, swapComponent } from 'lwc';
 
 import Container from 'base/container';
 import A from 'base/a';

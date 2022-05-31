@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const { DecoratorErrors } = require('@lwc/errors');
-const { isApiDecorator } = require('./shared');
+
+const { generateError } = require('../../utils');
 const {
     AMBIGUOUS_PROP_SET,
     DISALLOWED_PROP_SET,
@@ -13,7 +14,7 @@ const {
     DECORATOR_TYPES,
 } = require('../../constants');
 
-const { generateError } = require('../../utils');
+const { isApiDecorator } = require('./shared');
 
 function validateConflict(path, decorators) {
     const isPublicFieldTracked = decorators.some(

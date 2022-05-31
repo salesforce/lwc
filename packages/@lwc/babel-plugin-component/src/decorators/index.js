@@ -7,10 +7,6 @@
 const moduleImports = require('@babel/helper-module-imports');
 const { DecoratorErrors } = require('@lwc/errors');
 
-const api = require('./api');
-const wire = require('./wire');
-const track = require('./track');
-
 const { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } = require('../constants');
 const {
     generateError,
@@ -18,6 +14,10 @@ const {
     isSetterClassMethod,
     isGetterClassMethod,
 } = require('../utils');
+
+const api = require('./api');
+const wire = require('./wire');
+const track = require('./track');
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');

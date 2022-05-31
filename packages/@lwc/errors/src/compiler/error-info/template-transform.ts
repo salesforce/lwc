@@ -107,7 +107,7 @@ export const ParserDiagnostics = {
         code: 1041,
         message:
             'Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.',
-        level: DiagnosticLevel.Error,
+        level: DiagnosticLevel.Warning,
         url: '',
     },
 

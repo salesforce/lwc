@@ -16,9 +16,21 @@ describe('clean DOM', () => {
             document.head.appendChild(style);
             expect(document.querySelector(`.head-${i}`)).toEqual(style);
 
+            // insert adoptedStyleSheets too
+            if (document.adoptedStyleSheets) {
+                const styleSheet = new CSSStyleSheet();
+                styleSheet[`__lwc_${i}__`] = true;
+                document.adoptedStyleSheets = [...document.adoptedStyleSheets];
+            }
+
             // check that we don't have dirty DOM nodes from the other test
             expect(document.querySelector(`.body-${1 - i}`)).toBeNull();
             expect(document.querySelector(`.head-${1 - i}`)).toBeNull();
+            if (document.adoptedStyleSheets) {
+                expect(
+                    [...document.adoptedStyleSheets].find((_) => _[`__lwc_${1 - i}__`])
+                ).toBeUndefined();
+            }
         });
     }
 });

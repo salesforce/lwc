@@ -17,6 +17,7 @@ import {
     isUndefined,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
+
 import { Node } from '../env/node';
 import {
     parentNodeGetter,
@@ -35,6 +36,18 @@ import {
     childNodesGetter,
     isConnected,
 } from '../env/node';
+
+import { getTextContent } from '../3rdparty/polymer/text-content';
+
+import { isGlobalPatchingSkipped } from '../shared/utils';
+import { createStaticNodeList } from '../shared/static-node-list';
+import { getNodeNearestOwnerKey, getNodeOwnerKey, isNodeShadowed } from '../shared/node-ownership';
+
+import {
+    getShadowRoot,
+    getIE11FakeShadowRootPlaceholder,
+    isSyntheticShadowHost,
+} from './shadow-root';
 import {
     getNodeOwner,
     isSlotElement,
@@ -43,15 +56,6 @@ import {
     getFilteredChildNodes,
     isSyntheticSlotElement,
 } from './traverse';
-import { getTextContent } from '../3rdparty/polymer/text-content';
-import {
-    getShadowRoot,
-    getIE11FakeShadowRootPlaceholder,
-    isSyntheticShadowHost,
-} from './shadow-root';
-import { getNodeNearestOwnerKey, getNodeOwnerKey, isNodeShadowed } from '../shared/node-ownership';
-import { createStaticNodeList } from '../shared/static-node-list';
-import { isGlobalPatchingSkipped } from '../shared/utils';
 
 /**
  * This method checks whether or not the content of the node is computed

@@ -14,17 +14,17 @@ import {
     SVG_NAMESPACE,
 } from '@lwc/shared';
 
+import { isComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';
+import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
+import ParserCtx from './parser';
 import {
     EXPRESSION_SYMBOL_END,
     EXPRESSION_SYMBOL_START,
     isExpression,
     isPotentialExpression,
 } from './expression';
-
-import { Attribute, BaseElement, SourceLocation } from '../shared/types';
-
 import {
     ATTR_NAME,
     DATA_RE,
@@ -37,9 +37,6 @@ import {
     KNOWN_HTML_ELEMENTS,
     TEMPLATE_DIRECTIVES,
 } from './constants';
-
-import { isComponent } from '../shared/ast';
-import ParserCtx from './parser';
 
 function isQuotedAttribute(rawAttribute: string) {
     const [, value] = rawAttribute.split('=');

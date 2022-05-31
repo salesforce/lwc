@@ -6,13 +6,13 @@
  */
 import { assert, isFunction, isUndefined, noop } from '@lwc/shared';
 
+import { addErrorComponentStack } from '../shared/error';
+
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { VM, runWithBoundaryProtection } from './vm';
 import { LightningElement, LightningElementConstructor } from './base-lightning-element';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { VNodes } from './vnodes';
-
-import { addErrorComponentStack } from '../shared/error';
 
 export let isInvokingRender: boolean = false;
 

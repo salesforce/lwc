@@ -25,6 +25,7 @@ export {
     setFeatureFlag,
     setFeatureFlagForTest,
     registerTemplate,
+    freezeTemplate,
     registerComponent,
     registerDecorators,
     sanitizeAttribute,
