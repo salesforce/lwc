@@ -20,7 +20,7 @@ import {
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-
+import { createFragment, getFirstChild } from '../renderer';
 import api, { RenderAPI } from './api';
 import {
     RenderMode,
@@ -42,7 +42,6 @@ import {
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { VNodes } from './vnodes';
-import { createFragment, getFirstChild } from '../renderer';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;

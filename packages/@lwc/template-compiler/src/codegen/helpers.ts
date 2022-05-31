@@ -20,7 +20,6 @@ import {
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
-import CodeGen from './codegen';
 import { isLiteral } from '../shared/estree';
 import {
     isAllowedFragOnlyUrlsXHTML,
@@ -28,6 +27,7 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
+import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toPropertyName(name)}`);
