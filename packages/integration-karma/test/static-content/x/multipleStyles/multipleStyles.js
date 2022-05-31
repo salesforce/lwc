@@ -1,22 +1,27 @@
 import { LightningElement, api } from 'lwc';
-import aTpl from './a.html';
-import bTpl from './b.html';
+import aTemplate from './a.html';
+import bTemplate from './b.html';
 import aCss from './a.css';
 import bCss from './b.scoped.css?scoped=true';
 
-const tplMap = {
-    a: aTpl,
-    b: bTpl,
+const templateMap = {
+    a: aTemplate,
+    b: bTemplate,
 };
 export default class Container extends LightningElement {
-    @api tpl = 'a';
-    @api useScopeCss = false;
+    _template = aTemplate;
+
+    @api
+    updateTemplate({ name, useScopedCss }) {
+        const template = templateMap[name];
+
+        // TODO [#2826]: freeze the template object and stop supporting setting the stylesheets
+        template.stylesheets = useScopedCss ? [...aCss, ...bCss] : [...aCss];
+
+        this._template = template;
+    }
 
     render() {
-        const template = tplMap[this.tpl];
-
-        template.stylesheets = this.useScopeCss ? [...aCss, ...bCss] : [...aCss];
-
-        return template;
+        return this._template;
     }
 }
