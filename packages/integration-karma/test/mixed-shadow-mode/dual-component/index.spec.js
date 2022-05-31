@@ -43,7 +43,7 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                             .shadowRoot.querySelector('x-component')
                     );
 
-                    expect(synthetic.label.id).toMatch(/^foo-/);
+                    expect(synthetic.label.id).not.toEqual('foo');
                     expect(synthetic.input.getAttribute('aria-labelledby')).toMatch(/^foo-/);
                     expect(synthetic.label.id).toEqual(
                         synthetic.input.getAttribute('aria-labelledby')
