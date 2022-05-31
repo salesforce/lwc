@@ -54,6 +54,15 @@ it('should fire slotchange on replace', () => {
     });
 });
 
+it('should fire slotchange when slot is removed', () => {
+    child.setSlotChangeCount(0);
+    child.removeSlot();
+
+    return waitForSlotChange().then(() => {
+        expect(child.getSlotChangeCount()).toBe(1);
+    });
+});
+
 it('should fire slotchange when listener added programmatically', () => {
     let count = 0;
 
