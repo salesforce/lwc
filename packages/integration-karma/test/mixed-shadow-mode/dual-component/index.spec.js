@@ -2,7 +2,8 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import { extractDataIds } from 'test-utils';
 import Container from 'x/container';
 
-// compat will have the token when rendering in native
+// In compat mode, native components and synthetic components will both render
+// in synthetic style; there's no difference.
 if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
     describe('dual component', () => {
         beforeEach(() => {
