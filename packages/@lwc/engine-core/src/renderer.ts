@@ -27,7 +27,7 @@ export function getRendererFromVNode(vnode: VBaseElement): RendererAPI {
 }
 
 export function getRendererFromVM(vm: VM): RendererAPI {
-    return vm.renderer || defaultRenderer;
+    return vm.renderer;
 }
 
 export interface RendererAPI {
