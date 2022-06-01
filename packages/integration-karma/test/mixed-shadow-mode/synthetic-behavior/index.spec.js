@@ -21,33 +21,33 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
         const scenarios = [
             {
                 Component: ParentAnyChildAny,
-                nativeLeaf: true,
                 tagName: 'x-parent-any-child-any',
+                nativeLeaf: true,
             },
             {
                 Component: ParentAnyChildReset,
-                nativeLeaf: true,
                 tagName: 'x-parent-any-child-reset',
+                nativeLeaf: true,
             },
             {
                 Component: ParentResetChildAny,
-                nativeLeaf: true,
                 tagName: 'x-parent-reset-child-any',
+                nativeLeaf: true,
             },
             {
                 Component: ParentResetChildReset,
-                nativeLeaf: false,
                 tagName: 'x-parent-reset-child-reset',
+                nativeLeaf: false,
             },
             {
                 Component: ParentLightChildAny,
-                nativeLeaf: true,
                 tagName: 'x-parent-light-child-any',
+                nativeLeaf: true,
             },
             {
                 Component: ParentLightChildReset,
-                nativeLeaf: false,
                 tagName: 'x-parent-light-child-reset',
+                nativeLeaf: false,
             },
         ];
 
@@ -63,7 +63,10 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                 });
 
                 it(`should set the scope attributes only in synthetic shadow`, () => {
-                    expect(ids.div.hasAttribute('x-component_component')).toBe(!nativeLeaf);
+                    const attributes = Array.from(ids.div.attributes)
+                        .map((_) => _.name)
+                        .filter((_) => _ !== 'data-id');
+                    expect(attributes.length).toEqual(nativeLeaf ? 0 : 1);
                     expect(getComputedStyle(ids.div).color).toEqual('rgb(0, 0, 255)');
                 });
 
