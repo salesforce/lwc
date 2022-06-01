@@ -84,11 +84,13 @@ function patch(n1: VNode, n2: VNode) {
 
     switch (n2.type) {
         case VNodeType.Text:
-            patchText(n1 as VText, n2);
+            // VText has no special capability, fallback to the owner's renderer
+            patchText(n1 as VText, n2, getRendererFromVM(n2.owner));
             break;
 
         case VNodeType.Comment:
-            patchComment(n1 as VComment, n2);
+            // VComment has no special capability, fallback to the owner's renderer
+            patchComment(n1 as VComment, n2, getRendererFromVM(n2.owner));
             break;
 
         case VNodeType.Element:
@@ -104,77 +106,86 @@ function patch(n1: VNode, n2: VNode) {
 export function mount(node: VNode, parent: ParentNode, anchor: Node | null) {
     switch (node.type) {
         case VNodeType.Text:
-            mountText(node, parent, anchor);
+            // VText has no special capability, fallback to the owner's renderer
+            mountText(node, parent, anchor, getRendererFromVM(node.owner));
             break;
 
         case VNodeType.Comment:
-            mountComment(node, parent, anchor);
+            // VComment has no special capability, fallback to the owner's renderer
+            mountComment(node, parent, anchor, getRendererFromVM(node.owner));
             break;
 
         case VNodeType.Element:
-            mountElement(node, parent, anchor);
+            mountElement(node, parent, anchor, getRendererFromVNode(node));
             break;
 
         case VNodeType.CustomElement:
-            mountCustomElement(node, parent, anchor);
+            mountCustomElement(node, parent, anchor, getRendererFromVNode(node));
             break;
     }
 }
 
-function patchText(n1: VText, n2: VText) {
+function patchText(n1: VText, n2: VText, renderer: RendererAPI) {
     n2.elm = n1.elm;
 
     if (n2.text !== n1.text) {
-        updateTextContent(n2);
+        updateTextContent(n2, renderer);
     }
 }
 
-function mountText(vnode: VText, parent: ParentNode, anchor: Node | null) {
+function mountText(vnode: VText, parent: ParentNode, anchor: Node | null, renderer: RendererAPI) {
     const { owner } = vnode;
-    const renderer = getRendererFromVM(owner);
     const { createText } = renderer;
 
     const textNode = (vnode.elm = createText(vnode.text));
-    linkNodeToShadow(textNode, owner);
+    linkNodeToShadow(textNode, owner, renderer);
 
     insertNode(textNode, parent, anchor, renderer);
 }
 
-function patchComment(n1: VComment, n2: VComment) {
+function patchComment(n1: VComment, n2: VComment, renderer: RendererAPI) {
     n2.elm = n1.elm;
 
     // FIXME: Comment nodes should be static, we shouldn't need to diff them together. However
     // it is the case today.
     if (n2.text !== n1.text) {
-        updateTextContent(n2);
+        updateTextContent(n2, renderer);
     }
 }
 
-function mountComment(vnode: VComment, parent: ParentNode, anchor: Node | null) {
+function mountComment(
+    vnode: VComment,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
     const { owner } = vnode;
-    const renderer = getRendererFromVM(owner);
     const { createComment } = renderer;
 
     const commentNode = (vnode.elm = createComment(vnode.text));
-    linkNodeToShadow(commentNode, owner);
+    linkNodeToShadow(commentNode, owner, renderer);
 
     insertNode(commentNode, parent, anchor, renderer);
 }
 
-function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) {
+function mountElement(
+    vnode: VElement,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
     const {
         sel,
         owner,
         data: { svg },
     } = vnode;
-    const renderer = getRendererFromVNode(vnode);
     const { createElement } = renderer;
 
     const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
     const elm = createElement(sel, namespace);
-    linkNodeToShadow(elm, owner);
+    linkNodeToShadow(elm, owner, renderer);
 
-    fallbackElmHook(elm, vnode);
+    fallbackElmHook(elm, vnode, renderer);
     vnode.elm = elm;
 
     patchElementPropsAndAttrs(null, vnode);
@@ -190,9 +201,13 @@ function patchElement(n1: VElement, n2: VElement) {
     patchChildren(n1.children, n2.children, elm);
 }
 
-function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
+function mountCustomElement(
+    vnode: VCustomElement,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
     const { sel, owner } = vnode;
-    const renderer = getRendererFromVNode(vnode);
     const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
@@ -203,10 +218,10 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
     let vm: VM | undefined;
     const elm = new UpgradableConstructor((elm: HTMLElement) => {
         // the custom element from the registry is expecting an upgrade callback
-        vm = createViewModelHook(elm, vnode);
+        vm = createViewModelHook(elm, vnode, renderer);
     });
 
-    linkNodeToShadow(elm, owner);
+    linkNodeToShadow(elm, owner, renderer);
     vnode.elm = elm;
     vnode.vm = vm;
 
@@ -343,9 +358,9 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM, renderer: Render
     }
 }
 
-function linkNodeToShadow(elm: Node, owner: VM) {
+function linkNodeToShadow(elm: Node, owner: VM, renderer: RendererAPI) {
     const { renderRoot, renderMode, shadowMode } = owner;
-    const { isSyntheticShadowDefined } = getRendererFromVM(owner);
+    const { isSyntheticShadowDefined } = renderer;
     // TODO [#1164]: this should eventually be done by the polyfill directly
     if (isSyntheticShadowDefined) {
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
@@ -354,9 +369,9 @@ function linkNodeToShadow(elm: Node, owner: VM) {
     }
 }
 
-function updateTextContent(vnode: VText | VComment) {
+function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
     const { elm, text } = vnode;
-    const { setText } = getRendererFromVM(vnode.owner);
+    const { setText } = renderer;
 
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
@@ -402,9 +417,8 @@ function patchElementPropsAndAttrs(oldVnode: VBaseElement | null, vnode: VBaseEl
     patchProps(oldVnode, vnode);
 }
 
-function fallbackElmHook(elm: Element, vnode: VBaseElement) {
+function fallbackElmHook(elm: Element, vnode: VBaseElement, renderer: RendererAPI) {
     const { owner } = vnode;
-    const renderer = getRendererFromVNode(vnode);
     setScopeTokenClassIfNecessary(elm, owner, renderer);
     if (owner.shadowMode === ShadowMode.Synthetic) {
         const {
@@ -464,7 +478,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     }
 }
 
-function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
+function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: RendererAPI): VM {
     let vm = getAssociatedVMIfPresent(elm);
 
     // There is a possibility that a custom element is registered under tagName, in which case, the
@@ -475,7 +489,6 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
     }
 
     const { sel, mode, ctor, owner } = vnode;
-    const renderer = getRendererFromVNode(vnode);
 
     setScopeTokenClassIfNecessary(elm, owner, renderer);
     if (owner.shadowMode === ShadowMode.Synthetic) {

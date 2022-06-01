@@ -95,7 +95,7 @@ export function createElement(
         );
     }
 
-    const UpgradableConstructor = getUpgradableConstructor(sel, renderer as unknown as RendererAPI);
+    const UpgradableConstructor = getUpgradableConstructor(sel, renderer as RendererAPI);
     let wasComponentUpgraded: boolean = false;
     // the custom element from the registry is expecting an upgrade callback
     /**
@@ -105,7 +105,7 @@ export function createElement(
      * an upgradable custom element.
      */
     const element = new UpgradableConstructor((elm: HTMLElement) => {
-        createVM(elm, Ctor, renderer as unknown as RendererAPI, {
+        createVM(elm, Ctor, renderer as RendererAPI, {
             tagName: sel,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,

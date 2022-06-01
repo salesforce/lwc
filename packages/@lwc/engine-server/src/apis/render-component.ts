@@ -46,7 +46,7 @@ export function renderComponent(
     }
 
     const element = renderer.createElement(tagName);
-    createVM(element, Ctor, renderer as unknown as RendererAPI, {
+    createVM(element, Ctor, renderer as RendererAPI, {
         mode: 'open',
         owner: null,
         tagName,

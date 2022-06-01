@@ -34,7 +34,7 @@ function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElem
 }
 
 function createVMWithProps(element: Element, Ctor: typeof LightningElement, props: object) {
-    const vm = createVM(element, Ctor, renderer as unknown as RendererAPI, {
+    const vm = createVM(element, Ctor, renderer as RendererAPI, {
         mode: 'open',
         owner: null,
         tagName: element.tagName.toLowerCase(),

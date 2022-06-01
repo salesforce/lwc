@@ -64,7 +64,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
                 hydrateComponent(this, Ctor, {});
                 hydratedCustomElements.add(this);
             } else {
-                createVM(this, Ctor, renderer as unknown as RendererAPI, {
+                createVM(this, Ctor, renderer as RendererAPI, {
                     mode: 'open',
                     owner: null,
                     tagName: this.tagName,
