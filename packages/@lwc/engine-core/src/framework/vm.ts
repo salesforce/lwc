@@ -114,11 +114,8 @@ export interface VM<N = HostNode, E = HostElement> {
     /** Whether or not the VM was hydrated */
     readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
-    readonly renderMode: RenderMode;
+    renderMode: RenderMode;
     shadowMode: ShadowMode;
-    /** Transitive support for native Shadow DOM. A component in native mode
-     * transitively opts all of its descendants into native. */
-    readonly nearestShadowMode: ShadowMode | null;
     /** The component creation index. */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -258,6 +255,14 @@ export function removeVM(vm: VM) {
     resetComponentStateWhenRemoved(vm);
 }
 
+function getNearestShadowAncestor(vm: VM): VM | null {
+    let ancestor = vm.owner;
+    while (!isNull(ancestor) && ancestor.renderMode === RenderMode.Light) {
+        ancestor = ancestor.owner;
+    }
+    return ancestor;
+}
+
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
     ctor: LightningElementConstructor,
@@ -292,8 +297,6 @@ export function createVM<HostNode, HostElement>(
         hydrated: Boolean(hydrated),
 
         renderMode: def.renderMode,
-        shadowMode: computeShadowMode(def, owner),
-        nearestShadowMode: owner?.shadowRoot ? owner.shadowMode : owner?.nearestShadowMode ?? null,
 
         context: {
             stylesheetToken: undefined,
@@ -308,6 +311,7 @@ export function createVM<HostNode, HostElement>(
 
         // Properties set right after VM creation.
         tro: null!,
+        shadowMode: null!,
 
         // Properties set by the LightningElement constructor.
         component: null!,
@@ -319,6 +323,7 @@ export function createVM<HostNode, HostElement>(
         getHook,
     };
 
+    vm.shadowMode = computeShadowMode(vm);
     vm.tro = getTemplateReactiveObserver(vm);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -341,7 +346,9 @@ export function createVM<HostNode, HostElement>(
     return vm;
 }
 
-function computeShadowMode(def: ComponentDef, owner: VM | null) {
+function computeShadowMode(vm: VM) {
+    const { def } = vm;
+
     let shadowMode;
     if (isSyntheticShadowDefined) {
         if (def.renderMode === RenderMode.Light) {
@@ -355,11 +362,19 @@ function computeShadowMode(def: ComponentDef, owner: VM | null) {
                 if (def.shadowSupportMode === ShadowSupportMode.Any) {
                     shadowMode = ShadowMode.Native;
                 } else {
-                    // Transitive support for native Shadow DOM. A component in native mode
-                    // transitively opts all of its descendants into native.
-                    // Synthetic if neither this component nor any of its ancestors are configured
-                    // to be native.
-                    shadowMode = owner?.nearestShadowMode ?? ShadowMode.Synthetic;
+                    const shadowAncestor = getNearestShadowAncestor(vm);
+                    if (
+                        !isNull(shadowAncestor) &&
+                        shadowAncestor.shadowMode === ShadowMode.Native
+                    ) {
+                        // Transitive support for native Shadow DOM. A component in native mode
+                        // transitively opts all of its descendants into native.
+                        shadowMode = ShadowMode.Native;
+                    } else {
+                        // Synthetic if neither this component nor any of its ancestors are configured
+                        // to be native.
+                        shadowMode = ShadowMode.Synthetic;
+                    }
                 }
             } else {
                 shadowMode = ShadowMode.Synthetic;
