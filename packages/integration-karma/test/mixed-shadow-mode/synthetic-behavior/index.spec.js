@@ -1,5 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import { extractDataIds } from 'test-utils';
+import { extractDataIds, isNativeShadowRootInstance } from 'test-utils';
 import ParentAnyChildAny from 'x/parentAnyChildAny';
 import ParentAnyChildReset from 'x/parentAnyChildReset';
 import ParentResetChildAny from 'x/parentResetChildAny';
@@ -60,6 +60,10 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
                     elm = createElement(tagName, { is: Component });
                     document.body.appendChild(elm);
                     ids = extractDataIds(elm);
+                });
+
+                it('should render the shadow root in the correct shadow mode', () => {
+                    expect(isNativeShadowRootInstance(ids.leaf.shadowRoot)).toEqual(nativeLeaf);
                 });
 
                 it(`should set the scope attributes only in synthetic shadow`, () => {
