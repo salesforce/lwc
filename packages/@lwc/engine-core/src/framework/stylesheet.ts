@@ -6,7 +6,6 @@
  */
 import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
-import { getRendererFromVM } from '../renderer';
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
 import { Template } from './template';
@@ -49,8 +48,13 @@ function createInlineStyleVNode(content: string): VNode {
 }
 
 export function updateStylesheetToken(vm: VM, template: Template) {
-    const { elm, context, renderMode, shadowMode } = vm;
-    const { getClassList, removeAttribute, setAttribute } = getRendererFromVM(vm);
+    const {
+        elm,
+        context,
+        renderMode,
+        shadowMode,
+        renderer: { getClassList, removeAttribute, setAttribute },
+    } = vm;
     const { stylesheets: newStylesheets, stylesheetToken: newStylesheetToken } = template;
     const isSyntheticShadow =
         renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic;
@@ -196,8 +200,11 @@ function getNearestNativeShadowComponent(vm: VM): VM | null {
 }
 
 export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    const { renderMode, shadowMode } = vm;
-    const { ssr, insertStylesheet } = getRendererFromVM(vm);
+    const {
+        renderMode,
+        shadowMode,
+        renderer: { ssr, insertStylesheet },
+    } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
             insertStylesheet(stylesheets[i]);

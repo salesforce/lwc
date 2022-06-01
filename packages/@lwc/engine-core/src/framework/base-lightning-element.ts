@@ -28,7 +28,6 @@ import {
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
-import { getRendererFromVM } from '../renderer';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getWrappedComponentsListener } from './component';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
@@ -198,7 +197,7 @@ export const LightningElement: LightningElementConstructor = function (
     const { bridge } = def;
 
     if (process.env.NODE_ENV !== 'production') {
-        const { assertInstanceOfHTMLElement } = getRendererFromVM(vm);
+        const { assertInstanceOfHTMLElement } = vm.renderer;
         assertInstanceOfHTMLElement(
             vm.elm,
             `Component creation requires a DOM element to be associated to ${vm}.`
@@ -250,7 +249,7 @@ function doAttachShadow(vm: VM): ShadowRoot {
         shadowMode,
         def: { ctor },
     } = vm;
-    const { attachShadow } = getRendererFromVM(vm);
+    const { attachShadow } = vm.renderer;
 
     const shadowRoot = attachShadow(elm, {
         [KEY__SYNTHETIC_MODE]: shadowMode === ShadowMode.Synthetic,
@@ -285,7 +284,7 @@ LightningElement.prototype = {
     dispatchEvent(event: Event): boolean {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { dispatchEvent } = getRendererFromVM(vm);
+        const { dispatchEvent } = vm.renderer;
         return dispatchEvent(elm, event);
     },
 
@@ -296,7 +295,7 @@ LightningElement.prototype = {
     ): void {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { addEventListener } = getRendererFromVM(vm);
+        const { addEventListener } = vm.renderer;
 
         if (process.env.NODE_ENV !== 'production') {
             const vmBeingRendered = getVMBeingRendered();
@@ -325,7 +324,7 @@ LightningElement.prototype = {
     ): void {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { removeEventListener } = getRendererFromVM(vm);
+        const { removeEventListener } = vm.renderer;
 
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         removeEventListener(elm, type, wrappedListener, options);
@@ -334,21 +333,21 @@ LightningElement.prototype = {
     hasAttribute(name: string): boolean {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { getAttribute } = getRendererFromVM(vm);
+        const { getAttribute } = vm.renderer;
         return !isNull(getAttribute(elm, name));
     },
 
     hasAttributeNS(namespace: string | null, name: string): boolean {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { getAttribute } = getRendererFromVM(vm);
+        const { getAttribute } = vm.renderer;
         return !isNull(getAttribute(elm, name, namespace));
     },
 
     removeAttribute(name: string): void {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { removeAttribute } = getRendererFromVM(vm);
+        const { removeAttribute } = vm.renderer;
         unlockAttribute(elm, name);
         removeAttribute(elm, name);
         lockAttribute(elm, name);
@@ -357,7 +356,7 @@ LightningElement.prototype = {
     removeAttributeNS(namespace: string | null, name: string): void {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { removeAttribute } = getRendererFromVM(vm);
+        const { removeAttribute } = vm.renderer;
         unlockAttribute(elm, name);
         removeAttribute(elm, name, namespace);
         lockAttribute(elm, name);
@@ -366,21 +365,21 @@ LightningElement.prototype = {
     getAttribute(name: string): string | null {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { getAttribute } = getRendererFromVM(vm);
+        const { getAttribute } = vm.renderer;
         return getAttribute(elm, name);
     },
 
     getAttributeNS(namespace: string | null, name: string): string | null {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { getAttribute } = getRendererFromVM(vm);
+        const { getAttribute } = vm.renderer;
         return getAttribute(elm, name, namespace);
     },
 
     setAttribute(name: string, value: string): void {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { setAttribute } = getRendererFromVM(vm);
+        const { setAttribute } = vm.renderer;
 
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
@@ -397,7 +396,7 @@ LightningElement.prototype = {
     setAttributeNS(namespace: string | null, name: string, value: string): void {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { setAttribute } = getRendererFromVM(vm);
+        const { setAttribute } = vm.renderer;
 
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
@@ -414,7 +413,7 @@ LightningElement.prototype = {
     getBoundingClientRect(): ClientRect {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { getBoundingClientRect } = getRendererFromVM(vm);
+        const { getBoundingClientRect } = vm.renderer;
 
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'getBoundingClientRect()');
@@ -426,14 +425,14 @@ LightningElement.prototype = {
     get isConnected(): boolean {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { isConnected } = getRendererFromVM(vm);
+        const { isConnected } = vm.renderer;
         return isConnected(elm);
     },
 
     get classList(): DOMTokenList {
         const vm = getAssociatedVM(this);
         const { elm } = vm;
-        const { getClassList } = getRendererFromVM(vm);
+        const { getClassList } = vm.renderer;
 
         if (process.env.NODE_ENV !== 'production') {
             // TODO [#1290]: this still fails in dev but works in production, eventually, we should
@@ -469,7 +468,7 @@ LightningElement.prototype = {
 
     get children() {
         const vm = getAssociatedVM(this);
-        const renderer = getRendererFromVM(vm);
+        const renderer = vm.renderer;
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'children');
         }
@@ -478,7 +477,7 @@ LightningElement.prototype = {
 
     get childNodes() {
         const vm = getAssociatedVM(this);
-        const renderer = getRendererFromVM(vm);
+        const renderer = vm.renderer;
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'childNodes');
         }
@@ -487,7 +486,7 @@ LightningElement.prototype = {
 
     get firstChild() {
         const vm = getAssociatedVM(this);
-        const renderer = getRendererFromVM(vm);
+        const renderer = vm.renderer;
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'firstChild');
         }
@@ -496,7 +495,7 @@ LightningElement.prototype = {
 
     get firstElementChild() {
         const vm = getAssociatedVM(this);
-        const renderer = getRendererFromVM(vm);
+        const renderer = vm.renderer;
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'firstElementChild');
         }
@@ -505,7 +504,7 @@ LightningElement.prototype = {
 
     get lastChild() {
         const vm = getAssociatedVM(this);
-        const renderer = getRendererFromVM(vm);
+        const renderer = vm.renderer;
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'lastChild');
         }
@@ -514,7 +513,7 @@ LightningElement.prototype = {
 
     get lastElementChild() {
         const vm = getAssociatedVM(this);
-        const renderer = getRendererFromVM(vm);
+        const renderer = vm.renderer;
         if (process.env.NODE_ENV !== 'production') {
             warnIfInvokedDuringConstruction(vm, 'lastElementChild');
         }
@@ -547,7 +546,7 @@ for (const queryMethod of queryMethods) {
         value(this: LightningElement, arg: string) {
             const vm = getAssociatedVM(this);
             const { elm } = vm;
-            const renderer = getRendererFromVM(vm);
+            const renderer = vm.renderer;
 
             if (process.env.NODE_ENV !== 'production') {
                 warnIfInvokedDuringConstruction(vm, `${queryMethod}()`);

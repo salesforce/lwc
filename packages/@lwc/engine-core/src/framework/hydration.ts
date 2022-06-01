@@ -8,7 +8,7 @@ import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
-import { getRendererFromVM, getRendererFromVNode, RendererAPI } from '../renderer';
+import { getRendererFromVNode, RendererAPI } from '../renderer';
 import { cloneAndOmitKey, parseStyleText } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
@@ -61,14 +61,13 @@ function hydrateVM(vm: VM) {
     vm.children = children;
 
     const parentNode = vm.renderRoot;
-    const { getFirstChild } = getRendererFromVM(vm);
+    const { getFirstChild } = vm.renderer;
     hydrateChildren(getFirstChild(parentNode), children, parentNode, vm);
     runRenderedCallback(vm);
 }
 
-function hydrateNode(node: Node, vnode: VNode): Node | null {
+function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | null {
     let hydratedNode;
-    const renderer = getRendererFromVM(vnode.owner);
     switch (vnode.type) {
         case VNodeType.Text:
             // VText has no special capability, fallback to the owner's renderer
@@ -243,12 +242,13 @@ function hydrateChildren(
     let hasWarned = false;
     let nextNode: Node | null = node;
     let anchor: Node | null = null;
+    const { renderer } = owner;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
 
         if (!isNull(childVnode)) {
             if (nextNode) {
-                nextNode = hydrateNode(nextNode, childVnode);
+                nextNode = hydrateNode(nextNode, childVnode, renderer);
                 anchor = childVnode.elm!;
             } else {
                 hasMismatch = true;
@@ -261,7 +261,7 @@ function hydrateChildren(
                         );
                     }
                 }
-                mount(childVnode, parentNode, anchor);
+                mount(childVnode, parentNode, renderer, anchor);
                 anchor = childVnode.elm!;
             }
         }
@@ -281,7 +281,6 @@ function hydrateChildren(
         // a good reference to what element to act upon, we instead
         // rely on the vm's associated renderer for navigating to the
         // next node in the list to be hydrated.
-        const renderer = getRendererFromVM(owner);
         const { nextSibling } = renderer;
         do {
             const current = nextNode;
@@ -295,7 +294,7 @@ function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node |
     hasMismatch = true;
     const { getProperty } = renderer;
     const parentNode = getProperty(node, 'parentNode');
-    mount(vnode, parentNode, node);
+    mount(vnode, parentNode, renderer, node);
     removeNode(node, parentNode, renderer);
 
     return vnode.elm!;

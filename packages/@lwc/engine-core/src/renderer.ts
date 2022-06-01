@@ -1,4 +1,3 @@
-import { VM } from './framework/vm';
 import { VBaseElement } from './framework/vnodes';
 
 /*
@@ -24,10 +23,6 @@ export function setDefaultRenderer(renderer: RendererAPI) {
 
 export function getRendererFromVNode(vnode: VBaseElement): RendererAPI {
     return vnode.data.renderer || defaultRenderer;
-}
-
-export function getRendererFromVM(vm: VM): RendererAPI {
-    return vm.renderer;
 }
 
 export interface RendererAPI {

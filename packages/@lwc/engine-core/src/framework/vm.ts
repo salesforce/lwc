@@ -21,7 +21,7 @@ import {
 
 import { addErrorComponentStack } from '../shared/error';
 
-import { HostNode, HostElement, RendererAPI, getRendererFromVM } from '../renderer';
+import { HostNode, HostElement, RendererAPI } from '../renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
@@ -435,7 +435,7 @@ function rehydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { renderRoot, children: oldCh } = vm;
+    const { renderRoot, children: oldCh, renderer } = vm;
 
     // caching the new children collection
     vm.children = newCh;
@@ -453,7 +453,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    patchChildren(oldCh, newCh, renderRoot);
+                    patchChildren(oldCh, newCh, renderRoot, renderer);
                 },
                 () => {
                     // post
@@ -475,8 +475,8 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
 export function runRenderedCallback(vm: VM) {
     const {
         def: { renderedCallback },
+        renderer: { ssr },
     } = vm;
-    const { ssr } = getRendererFromVM(vm);
 
     if (isTrue(ssr)) {
         return;
@@ -654,8 +654,11 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const { children, renderRoot } = vm;
-    const { remove } = getRendererFromVM(vm);
+    const {
+        children,
+        renderRoot,
+        renderer: { remove },
+    } = vm;
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
@@ -671,7 +674,9 @@ export function resetComponentRoot(vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
-    const { ssr } = getRendererFromVM(vm);
+    const {
+        renderer: { ssr },
+    } = vm;
     if (isTrue(ssr) || isTrue(vm.isScheduled)) {
         return;
     }
