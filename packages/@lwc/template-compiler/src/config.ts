@@ -24,6 +24,17 @@ export interface Config {
      * When true, HTML comments in the template will be preserved.
      */
     preserveHtmlComments?: boolean;
+
+    sanitizeConfig?: SanitizeConfig;
+}
+
+export interface SanitizeConfig {
+    elements: {
+        tagName: string;
+        attributes?: string[];
+    }[];
+    directives: string[];
+    rendererModule?: string;
 }
 
 export type NormalizedConfig = Required<Config>;
@@ -40,6 +51,13 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         TemplateErrors.OPTIONS_MUST_BE_OBJECT
     );
 
+    invariant(
+        config.sanitizeConfig !== undefined &&
+            config.sanitizeConfig.elements.length ===
+                new Set(config.sanitizeConfig.elements.map((e) => e.tagName)).size,
+        TemplateErrors.OPTIONS_MUST_BE_OBJECT
+    );
+
     for (const property in config) {
         if (!AVAILABLE_OPTION_NAMES.has(property) && hasOwnProperty.call(config, property)) {
             throw generateCompilerError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, {
@@ -52,6 +70,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
+        sanitizeConfig: { elements: [], directives: [] },
         ...config,
     };
 }
