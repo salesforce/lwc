@@ -1,0 +1,11 @@
+<template>
+    <a-b class="s2">
+        <template if:true={isTrue}>
+            <div lwc:inner-html={ifRawHtml}></div>
+        </template>
+
+        <template for:each={items} for:item="item">
+            <div key={item.id} lwc:inner-html={item.forRawHtml}></div>
+        </template>
+    </a-b>
+</template>
