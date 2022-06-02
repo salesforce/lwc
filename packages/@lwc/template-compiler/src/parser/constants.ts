@@ -20,7 +20,10 @@ export const ITERATOR_RE = /^iterator:.*$/;
 export const EVENT_HANDLER_RE = /^on/;
 export const EVENT_HANDLER_NAME_RE = /^on[a-z][a-z0-9_]*$/;
 
-export const LWC_DIRECTIVES = {
+/**
+ * Mapping of Directive.type to string literals used in template
+ */
+export const LWC_DIRECTIVES: { [type: string]: string } = {
     DOM: 'lwc:dom',
     DYNAMIC: 'lwc:dynamic',
     INNER_HTML: 'lwc:inner-html',

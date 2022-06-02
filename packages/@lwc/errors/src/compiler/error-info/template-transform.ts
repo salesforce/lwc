@@ -39,6 +39,21 @@ export const TemplateErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    DUPLICATE_ELEMENT_ENTRY: {
+        code: 1150,
+        message: 'Sanitize config contains duplicate entry for {0} element tag',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_SANITIZE_CONFIG: {
+        code: 1151,
+        message:
+            'sanitizeConfig can be specified only when addSanitizationHooks config is set to true',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
 
 export const ParserDiagnostics = {

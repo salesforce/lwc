@@ -43,7 +43,7 @@ export default function compile(source: string, config: Config): TemplateCompile
         );
 
         if (!hasParsingError && parsingResults.root) {
-            code = generate(parsingResults.root, options);
+            code = generate(parsingResults.root, state);
         }
     } catch (error) {
         const diagnostic = normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error);

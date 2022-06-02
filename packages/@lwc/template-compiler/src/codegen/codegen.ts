@@ -7,8 +7,6 @@
 import { walk } from 'estree-walker';
 import { SVG_NAMESPACE } from '@lwc/shared';
 
-import { NormalizedConfig } from '../config';
-
 import * as t from '../shared/estree';
 import {
     ChildNode,
@@ -25,6 +23,7 @@ import {
 } from '../shared/constants';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
+import State from '../state';
 import { getStaticNodes } from './helpers';
 import { serializeStaticElement } from './static-element-serializer';
 
@@ -106,6 +105,11 @@ export default class CodeGen {
     readonly staticNodes: Set<ChildNode> = new Set<ChildNode>();
     readonly hoistedNodes: Array<{ identifier: t.Identifier; expr: t.Expression }> = [];
 
+    /**
+     * State maintains information about the current compilation configs.
+     */
+    readonly state: State;
+
     currentId = 0;
     currentKey = 0;
     innerHtmlInstances = 0;
@@ -119,15 +123,15 @@ export default class CodeGen {
 
     constructor({
         root,
-        config,
+        state,
         scopeFragmentId,
     }: {
         root: Root;
-        config: NormalizedConfig;
+        state: State;
         scopeFragmentId: boolean;
     }) {
         this.root = root;
-        if (!config.disableStaticContentOptimization) {
+        if (!state.config.disableStaticContentOptimization) {
             this.staticNodes = getStaticNodes(root);
         }
         this.renderMode =
@@ -135,10 +139,11 @@ export default class CodeGen {
             LWCDirectiveRenderMode.shadow;
         this.preserveComments =
             root.directives.find(isPreserveCommentsDirective)?.value.value ??
-            config.preserveHtmlComments;
+            state.config.preserveHtmlComments;
 
         this.scopeFragmentId = scopeFragmentId;
         this.scope = this.createScope();
+        this.state = state;
     }
 
     generateKey() {
