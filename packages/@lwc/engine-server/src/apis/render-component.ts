@@ -10,7 +10,6 @@ import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 import * as renderer from '../renderer';
 import { serializeElement } from '../serializer';
 import { HostElement, HostNodeType } from '../types';
-import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 
 const FakeRootElement: HostElement = {
     type: HostNodeType.Element,
@@ -46,7 +45,7 @@ export function renderComponent(
     }
 
     const element = renderer.createElement(tagName);
-    createVM(element, Ctor, renderer as RendererAPI, {
+    createVM(element, Ctor, renderer, {
         mode: 'open',
         owner: null,
         tagName,

@@ -13,7 +13,6 @@ import {
     getUpgradableConstructor,
 } from '@lwc/engine-core';
 import * as renderer from '../renderer';
-import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
@@ -95,7 +94,7 @@ export function createElement(
         );
     }
 
-    const UpgradableConstructor = getUpgradableConstructor(sel, renderer as RendererAPI);
+    const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
     let wasComponentUpgraded: boolean = false;
     // the custom element from the registry is expecting an upgrade callback
     /**
@@ -105,7 +104,7 @@ export function createElement(
      * an upgradable custom element.
      */
     const element = new UpgradableConstructor((elm: HTMLElement) => {
-        createVM(elm, Ctor, renderer as RendererAPI, {
+        createVM(elm, Ctor, renderer, {
             tagName: sel,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,

@@ -15,7 +15,6 @@ import {
 import { isFunction, isNull, isObject } from '@lwc/shared';
 import * as renderer from '../renderer';
 import { setIsHydrating } from '../renderer';
-import type { RendererAPI } from '@lwc/engine-core/types/renderer';
 
 function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElement) {
     if (element.shadowRoot) {
@@ -34,7 +33,7 @@ function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElem
 }
 
 function createVMWithProps(element: Element, Ctor: typeof LightningElement, props: object) {
-    const vm = createVM(element, Ctor, renderer as RendererAPI, {
+    const vm = createVM(element, Ctor, renderer, {
         mode: 'open',
         owner: null,
         tagName: element.tagName.toLowerCase(),
