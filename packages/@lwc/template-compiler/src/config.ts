@@ -6,6 +6,7 @@
  */
 import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
 import { hasOwnProperty } from '@lwc/shared';
+import { SanitizeConfig } from './shared/sanitize';
 
 export interface Config {
     /**
@@ -25,25 +26,52 @@ export interface Config {
      */
     preserveHtmlComments?: boolean;
 
-    sanitizeConfig?: SanitizeConfig;
-}
+    /**
+     * Should sanitization hooks be provided for certain elements in the template?
+     */
+    shouldSanitize?: boolean;
 
-export interface SanitizeConfig {
-    elements: {
-        tagName: string;
-        attributes?: string[];
-    }[];
-    directives: string[];
-    rendererModule?: string;
+    /**
+     * Specification to use to determine which nodes in the template require sanitization.
+     */
+    sanitizeConfig?: SanitizeConfig;
 }
 
 export type NormalizedConfig = Required<Config>;
 
 const AVAILABLE_OPTION_NAMES = new Set([
+    'addSanitizationHooks',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'preserveHtmlComments',
+    'sanitizeConfig',
 ]);
+
+function normalizeSanitizeConfig(config: SanitizeConfig): SanitizeConfig {
+    const normalizedConfig: SanitizeConfig = {
+        elements: config.elements.map((e) => {
+            return {
+                tagName: e.tagName.toLowerCase(),
+                attributes: e.attributes?.map((a) => a.toLowerCase()),
+            };
+        }),
+        directives: config.directives.map(String.prototype.toLowerCase),
+    };
+    if (config.rendererModule) {
+        normalizedConfig.rendererModule = config.rendererModule;
+    }
+
+    // Check for duplicate tag names
+    const tagNames: string[] = normalizedConfig.elements.map((e) => e.tagName);
+    const dupTagNames: string[] = tagNames.filter(
+        (item, index) => index !== tagNames.indexOf(item)
+    );
+    invariant(dupTagNames.length == 0, TemplateErrors.DUPLICATE_ELEMENT_ENTRY, [
+        dupTagNames.join(', '),
+    ]);
+
+    return normalizedConfig;
+}
 
 export function normalizeConfig(config: Config): NormalizedConfig {
     invariant(
@@ -51,11 +79,12 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         TemplateErrors.OPTIONS_MUST_BE_OBJECT
     );
 
-    invariant(
-        config.sanitizeConfig !== undefined &&
-            config.sanitizeConfig.elements.length ===
-                new Set(config.sanitizeConfig.elements.map((e) => e.tagName)).size,
-        TemplateErrors.OPTIONS_MUST_BE_OBJECT
+    if (config.sanitizeConfig) {
+        invariant(!!config.shouldSanitize, TemplateErrors.INVALID_SANITIZE_CONFIG);
+    }
+
+    const sanitizeConfig = normalizeSanitizeConfig(
+        config.sanitizeConfig ?? { elements: [], directives: [] }
     );
 
     for (const property in config) {
@@ -70,7 +99,8 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
-        sanitizeConfig: { elements: [], directives: [] },
+        shouldSanitize: false,
         ...config,
+        ...{ sanitizeConfig },
     };
 }

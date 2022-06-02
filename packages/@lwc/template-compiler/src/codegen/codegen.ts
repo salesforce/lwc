@@ -5,13 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { NormalizedConfig } from '../config';
 
 import * as t from '../shared/estree';
 import { Expression, Literal, LWCDirectiveRenderMode, Root } from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
+import State from '../state';
 
 type RenderPrimitive =
     | 'iterator'
@@ -86,6 +86,11 @@ export default class CodeGen {
      */
     private scope: Scope;
 
+    /**
+     * State maintains information about the current compilation configs.
+     */
+    readonly state: State;
+
     currentId = 0;
     currentKey = 0;
     innerHtmlInstances = 0;
@@ -99,11 +104,11 @@ export default class CodeGen {
 
     constructor({
         root,
-        config,
+        state,
         scopeFragmentId,
     }: {
         root: Root;
-        config: NormalizedConfig;
+        state: State;
         scopeFragmentId: boolean;
     }) {
         this.root = root;
@@ -112,10 +117,11 @@ export default class CodeGen {
             LWCDirectiveRenderMode.shadow;
         this.preserveComments =
             root.directives.find(isPreserveCommentsDirective)?.value.value ??
-            config.preserveHtmlComments;
+            state.config.preserveHtmlComments;
 
         this.scopeFragmentId = scopeFragmentId;
         this.scope = this.createScope();
+        this.state = state;
     }
 
     generateKey() {

@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 export const SECURE_REGISTER_TEMPLATE_METHOD_NAME = 'registerTemplate';
+export const RENDERER = 'renderer';
 export const LWC_MODULE_NAME = 'lwc';
 export const TEMPLATE_MODULES_PARAMETER: string = 'modules';
 
