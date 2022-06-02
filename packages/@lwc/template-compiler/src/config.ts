@@ -29,7 +29,7 @@ export interface Config {
     /**
      * Should sanitization hooks be provided for certain elements in the template?
      */
-    shouldSanitize?: boolean;
+    provideSanitizationHooks?: boolean;
 
     /**
      * Specification to use to determine which nodes in the template require sanitization.
@@ -43,8 +43,8 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'preserveHtmlComments',
+    'provideSanitizationHooks',
     'sanitizeConfig',
-    'shouldSanitize',
 ]);
 
 function normalizeSanitizeConfig(config: SanitizeConfig): SanitizeConfig {
@@ -80,7 +80,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
     );
 
     if (config.sanitizeConfig) {
-        invariant(!!config.shouldSanitize, TemplateErrors.INVALID_SANITIZE_CONFIG);
+        invariant(!!config.provideSanitizationHooks, TemplateErrors.INVALID_SANITIZE_CONFIG);
     }
 
     const sanitizeConfig = normalizeSanitizeConfig(
@@ -99,7 +99,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
-        shouldSanitize: false,
+        provideSanitizationHooks: false,
         ...config,
         ...{ sanitizeConfig },
     };
