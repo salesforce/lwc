@@ -31,3 +31,4 @@ export {
 // Engine-server public APIs -----------------------------------------------------------------------
 export { renderComponent } from './apis/render-component';
 export { LightningElement } from './apis/lightning-element';
+export { renderer } from './renderer';
