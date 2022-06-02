@@ -1,0 +1,7 @@
+{
+    "shouldSanitize": true,
+    "sanitizeConfig": {
+        "directives": ["lwc:inner-html"],
+        "elements": []
+    }
+}

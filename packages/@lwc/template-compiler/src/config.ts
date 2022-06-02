@@ -40,11 +40,11 @@ export interface Config {
 export type NormalizedConfig = Required<Config>;
 
 const AVAILABLE_OPTION_NAMES = new Set([
-    'addSanitizationHooks',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'preserveHtmlComments',
     'sanitizeConfig',
+    'shouldSanitize',
 ]);
 
 function normalizeSanitizeConfig(config: SanitizeConfig): SanitizeConfig {
@@ -55,7 +55,7 @@ function normalizeSanitizeConfig(config: SanitizeConfig): SanitizeConfig {
                 attributes: e.attributes?.map((a) => a.toLowerCase()),
             };
         }),
-        directives: config.directives.map(String.prototype.toLowerCase),
+        directives: config.directives.map((d) => d.toLowerCase()),
     };
     if (config.rendererModule) {
         normalizedConfig.rendererModule = config.rendererModule;

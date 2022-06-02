@@ -1,0 +1,11 @@
+{
+    "shouldSanitize": true,
+    "sanitizeConfig": {
+        "directives": [],
+        "elements": [
+            {
+                "tagName": "div"
+            }
+        ]
+    }
+}

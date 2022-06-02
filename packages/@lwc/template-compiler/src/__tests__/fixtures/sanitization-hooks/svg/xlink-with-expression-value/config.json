@@ -1,0 +1,10 @@
+{
+    "shouldSanitize": true,
+    "sanitizeConfig": {
+        "directives": [],
+        "elements": [{
+            "tagName": "use",
+            "attributes": ["href", "xlink:href"]
+        }]
+    }
+}
