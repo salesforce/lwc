@@ -18,7 +18,7 @@ import {
     KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 
-import { RendererAPI } from '../renderer';
+import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';

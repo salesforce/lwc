@@ -13,7 +13,7 @@ import {
     getAssociatedVMIfPresent,
 } from '@lwc/engine-core';
 import { isFunction, isNull, isObject } from '@lwc/shared';
-import * as renderer from '../renderer';
+import { renderer } from '../renderer';
 import { setIsHydrating } from '../renderer';
 
 function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElement) {

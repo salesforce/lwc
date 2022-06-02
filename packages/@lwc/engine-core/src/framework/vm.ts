@@ -21,7 +21,7 @@ import {
 
 import { addErrorComponentStack } from '../shared/error';
 
-import { HostNode, HostElement, RendererAPI } from '../renderer';
+import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';

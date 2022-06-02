@@ -12,7 +12,7 @@ import {
     LightningElement,
     getUpgradableConstructor,
 } from '@lwc/engine-core';
-import * as renderer from '../renderer';
+import { renderer } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node

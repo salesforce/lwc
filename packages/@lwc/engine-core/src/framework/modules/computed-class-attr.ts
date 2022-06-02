@@ -13,7 +13,7 @@ import {
     StringCharCodeAt,
     StringSlice,
 } from '@lwc/shared';
-import { RendererAPI } from '../../renderer';
+import { RendererAPI } from '../renderer';
 
 import { EmptyObject, SPACE_CHAR } from '../utils';
 import { VBaseElement } from '../vnodes';

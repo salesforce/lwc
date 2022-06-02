@@ -8,7 +8,7 @@ import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
-import { RendererAPI } from '../renderer';
+import { RendererAPI } from './renderer';
 import { cloneAndOmitKey, parseStyleText } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {

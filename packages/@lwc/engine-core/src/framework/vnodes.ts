@@ -6,7 +6,7 @@
  */
 
 import type { VM } from './vm';
-import type { RendererAPI } from '../renderer';
+import type { RendererAPI } from './renderer';
 
 export type Key = string | number;
 

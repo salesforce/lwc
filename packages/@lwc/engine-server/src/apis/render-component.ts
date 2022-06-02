@@ -7,7 +7,7 @@
 import { createVM, connectRootElement, LightningElement } from '@lwc/engine-core';
 import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
-import * as renderer from '../renderer';
+import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
 import { HostElement, HostNodeType } from '../types';
 

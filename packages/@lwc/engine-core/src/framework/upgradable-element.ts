@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined, isFunction } from '@lwc/shared';
-import type { RendererAPI } from '../renderer';
+import type { RendererAPI } from './renderer';
 
 type UpgradeCallback = (elm: HTMLElement) => void;
 

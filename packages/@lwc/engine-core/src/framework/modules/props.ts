@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, isUndefined } from '@lwc/shared';
-import { RendererAPI } from '../../renderer';
+import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
 

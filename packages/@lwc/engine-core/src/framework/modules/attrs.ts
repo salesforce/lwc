@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, isUndefined, StringCharCodeAt, XML_NAMESPACE, XLINK_NAMESPACE } from '@lwc/shared';
-import { RendererAPI } from '../../renderer';
+import { RendererAPI } from '../renderer';
 
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';

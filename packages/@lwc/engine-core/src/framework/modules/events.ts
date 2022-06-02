@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-import { RendererAPI } from '../../renderer';
+import { RendererAPI } from '../renderer';
 import { VBaseElement } from '../vnodes';
 
 export function applyEventListeners(vnode: VBaseElement, renderer: RendererAPI) {
