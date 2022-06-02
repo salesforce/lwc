@@ -121,10 +121,12 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
             break;
 
         case VNodeType.Element:
+            // If the vnode data has a renderer override use it, else fallback to owner's renderer
             mountElement(node, parent, anchor, node.data.renderer ?? renderer);
             break;
 
         case VNodeType.CustomElement:
+            // If the vnode data has a renderer override use it, else fallback to owner's renderer
             mountCustomElement(node, parent, anchor, node.data.renderer ?? renderer);
             break;
     }
