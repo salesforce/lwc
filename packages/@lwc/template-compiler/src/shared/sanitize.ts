@@ -21,7 +21,7 @@ export const LWC_DIRECTIVES: { [type: string]: string } = {
 
 export function isSanitizationHookRequired(element: BaseElement, state: State): boolean {
     let addSanitizationHook = false;
-    if (state.config.shouldSanitize) {
+    if (state.config.provideSanitizationHooks) {
         const { attributes } = element;
         // If any directives used are considered risky
         addSanitizationHook = element.directives.some((dir) => {
