@@ -8,7 +8,7 @@ import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
 
-import { getRendererFromVNode, RendererAPI } from '../renderer';
+import { RendererAPI } from '../renderer';
 import { cloneAndOmitKey, parseStyleText } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
@@ -80,11 +80,11 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
             break;
 
         case VNodeType.Element:
-            hydratedNode = hydrateElement(node, vnode, getRendererFromVNode(vnode));
+            hydratedNode = hydrateElement(node, vnode, vnode.data.renderer ?? renderer);
             break;
 
         case VNodeType.CustomElement:
-            hydratedNode = hydrateCustomElement(node, vnode, getRendererFromVNode(vnode));
+            hydratedNode = hydrateCustomElement(node, vnode, vnode.data.renderer ?? renderer);
             break;
     }
     return renderer.nextSibling(hydratedNode);
@@ -179,7 +179,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
         }
     }
 
-    patchElementPropsAndAttrs(vnode);
+    patchElementPropsAndAttrs(vnode, renderer);
 
     if (!isDomManual) {
         const { getFirstChild } = renderer;
@@ -214,7 +214,7 @@ function hydrateCustomElement(
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
-    patchElementPropsAndAttrs(vnode);
+    patchElementPropsAndAttrs(vnode, renderer);
 
     // Insert hook section:
     if (process.env.NODE_ENV !== 'production') {
@@ -300,9 +300,9 @@ function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node |
     return vnode.elm!;
 }
 
-function patchElementPropsAndAttrs(vnode: VBaseElement) {
-    applyEventListeners(vnode);
-    patchProps(null, vnode);
+function patchElementPropsAndAttrs(vnode: VBaseElement, renderer: RendererAPI) {
+    applyEventListeners(vnode, renderer);
+    patchProps(null, vnode, renderer);
 }
 
 function hasCorrectNodeType<T extends Node>(

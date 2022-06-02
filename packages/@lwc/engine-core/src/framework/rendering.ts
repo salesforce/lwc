@@ -18,7 +18,7 @@ import {
     KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 
-import { getRendererFromVNode, RendererAPI } from '../renderer';
+import { RendererAPI } from '../renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -99,11 +99,11 @@ function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
             break;
 
         case VNodeType.Element:
-            patchElement(n1 as VElement, n2, getRendererFromVNode(n2));
+            patchElement(n1 as VElement, n2, n2.data.renderer ?? renderer);
             break;
 
         case VNodeType.CustomElement:
-            patchCustomElement(n1 as VCustomElement, n2, getRendererFromVNode(n2));
+            patchCustomElement(n1 as VCustomElement, n2, n2.data.renderer ?? renderer);
             break;
     }
 }
@@ -121,11 +121,11 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
             break;
 
         case VNodeType.Element:
-            mountElement(node, parent, anchor, getRendererFromVNode(node));
+            mountElement(node, parent, anchor, node.data.renderer ?? renderer);
             break;
 
         case VNodeType.CustomElement:
-            mountCustomElement(node, parent, anchor, getRendererFromVNode(node));
+            mountCustomElement(node, parent, anchor, node.data.renderer ?? renderer);
             break;
     }
 }
@@ -193,7 +193,7 @@ function mountElement(
     fallbackElmHook(elm, vnode, renderer);
     vnode.elm = elm;
 
-    patchElementPropsAndAttrs(null, vnode);
+    patchElementPropsAndAttrs(null, vnode, renderer);
 
     insertNode(elm, parent, anchor, renderer);
     mountVNodes(vnode.children, elm, renderer, null);
@@ -202,7 +202,7 @@ function mountElement(
 function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
-    patchElementPropsAndAttrs(n1, n2);
+    patchElementPropsAndAttrs(n1, n2, renderer);
     patchChildren(n1.children, n2.children, elm, renderer);
 }
 
@@ -236,7 +236,7 @@ function mountCustomElement(
         throw new TypeError(`Incorrect Component Constructor`);
     }
 
-    patchElementPropsAndAttrs(null, vnode);
+    patchElementPropsAndAttrs(null, vnode, renderer);
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
@@ -257,7 +257,7 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement, renderer: Re
     const elm = (n2.elm = n1.elm!);
     const vm = (n2.vm = n1.vm);
 
-    patchElementPropsAndAttrs(n1, n2);
+    patchElementPropsAndAttrs(n1, n2, renderer);
     if (!isUndefined(vm)) {
         // in fallback mode, the allocation will always set children to
         // empty and delegate the real allocation to the slot elements
@@ -413,19 +413,23 @@ export function removeNode(node: Node, parent: ParentNode, renderer: RendererAPI
     }
 }
 
-function patchElementPropsAndAttrs(oldVnode: VBaseElement | null, vnode: VBaseElement) {
+function patchElementPropsAndAttrs(
+    oldVnode: VBaseElement | null,
+    vnode: VBaseElement,
+    renderer: RendererAPI
+) {
     if (isNull(oldVnode)) {
-        applyEventListeners(vnode);
-        applyStaticClassAttribute(vnode);
-        applyStaticStyleAttribute(vnode);
+        applyEventListeners(vnode, renderer);
+        applyStaticClassAttribute(vnode, renderer);
+        applyStaticStyleAttribute(vnode, renderer);
     }
 
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
-    patchClassAttribute(oldVnode, vnode);
-    patchStyleAttribute(oldVnode, vnode);
-    patchAttributes(oldVnode, vnode);
-    patchProps(oldVnode, vnode);
+    patchClassAttribute(oldVnode, vnode, renderer);
+    patchStyleAttribute(oldVnode, vnode, renderer);
+    patchAttributes(oldVnode, vnode, renderer);
+    patchProps(oldVnode, vnode, renderer);
 }
 
 function fallbackElmHook(elm: Element, vnode: VBaseElement, renderer: RendererAPI) {

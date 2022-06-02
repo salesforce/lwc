@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, isUndefined, StringCharCodeAt, XML_NAMESPACE, XLINK_NAMESPACE } from '@lwc/shared';
-import { getRendererFromVNode } from '../../renderer';
+import { RendererAPI } from '../../renderer';
 
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
@@ -13,7 +13,11 @@ import { VBaseElement } from '../vnodes';
 
 const ColonCharCode = 58;
 
-export function patchAttributes(oldVnode: VBaseElement | null, vnode: VBaseElement) {
+export function patchAttributes(
+    oldVnode: VBaseElement | null,
+    vnode: VBaseElement,
+    renderer: RendererAPI
+) {
     const { attrs } = vnode.data;
     if (isUndefined(attrs)) {
         return;
@@ -25,7 +29,7 @@ export function patchAttributes(oldVnode: VBaseElement | null, vnode: VBaseEleme
     }
 
     const { elm } = vnode;
-    const { setAttribute, removeAttribute } = getRendererFromVNode(vnode);
+    const { setAttribute, removeAttribute } = renderer;
     for (const key in attrs) {
         const cur = attrs[key];
         const old = oldAttrs[key];

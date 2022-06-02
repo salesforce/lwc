@@ -13,7 +13,7 @@ import {
     StringCharCodeAt,
     StringSlice,
 } from '@lwc/shared';
-import { getRendererFromVNode } from '../../renderer';
+import { RendererAPI } from '../../renderer';
 
 import { EmptyObject, SPACE_CHAR } from '../utils';
 import { VBaseElement } from '../vnodes';
@@ -56,7 +56,11 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
     return map;
 }
 
-export function patchClassAttribute(oldVnode: VBaseElement | null, vnode: VBaseElement) {
+export function patchClassAttribute(
+    oldVnode: VBaseElement | null,
+    vnode: VBaseElement,
+    renderer: RendererAPI
+) {
     const {
         elm,
         data: { className: newClass },
@@ -67,7 +71,7 @@ export function patchClassAttribute(oldVnode: VBaseElement | null, vnode: VBaseE
         return;
     }
 
-    const { getClassList } = getRendererFromVNode(vnode);
+    const { getClassList } = renderer;
     const classList = getClassList(elm!);
     const newClassMap = getMapFromClassName(newClass);
     const oldClassMap = getMapFromClassName(oldClass);

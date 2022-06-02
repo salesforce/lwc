@@ -1,5 +1,3 @@
-import { VBaseElement } from './framework/vnodes';
-
 /*
  * Copyright (c) 2018, salesforce.com, inc.
  * All rights reserved.
@@ -11,19 +9,6 @@ export type HostElement = any;
 
 type N = HostNode;
 type E = HostElement;
-
-let defaultRenderer: RendererAPI;
-
-export function setDefaultRenderer(renderer: RendererAPI) {
-    if (defaultRenderer !== undefined) {
-        throw Error(`Invalid Renderer Initialization`);
-    }
-    defaultRenderer = renderer;
-}
-
-export function getRendererFromVNode(vnode: VBaseElement): RendererAPI {
-    return vnode.data.renderer || defaultRenderer;
-}
 
 export interface RendererAPI {
     ssr: boolean;
