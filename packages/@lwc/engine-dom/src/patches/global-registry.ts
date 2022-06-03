@@ -214,15 +214,7 @@ function internalUpgrade(
     // constructor will reuse the instance by returning the upgradingInstance.
     // This is by far the most important piece of the puzzle
     upgradingInstance = instance;
-    try {
-        new instancedDefinition.UserCtor();
-    } catch (err) {
-        if (err instanceof TypeError && err.message === 'Illegal constructor') {
-            new instancedDefinition.UserCtor();
-        } else {
-            throw err;
-        }
-    }
+    new instancedDefinition.UserCtor();
 
     const { observedAttributes, attributeChangedCallback } = instancedDefinition;
     if (observedAttributes.size === 0 || isUndefined(attributeChangedCallback)) {
