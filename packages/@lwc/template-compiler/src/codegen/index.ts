@@ -53,7 +53,7 @@ import {
 } from '../parser/attribute';
 
 import State from '../state';
-import { isCustomizableRendererHookRequired } from '../shared/renderer-hooks';
+import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 import CodeGen from './codegen';
 import {
     identifierFromComponentName,
@@ -412,10 +412,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
-        const addSanitizationHook: boolean = isCustomizableRendererHookRequired(
-            element,
-            codeGen.state
-        );
+        const addSanitizationHook: boolean = isCustomRendererHookRequired(element, codeGen.state);
 
         // Attributes
         if (attributes.length) {

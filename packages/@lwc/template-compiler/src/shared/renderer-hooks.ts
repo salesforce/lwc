@@ -29,24 +29,26 @@ export const LWC_DIRECTIVES: { [type: string]: string } = {
     InnerHTML: 'lwc:inner-html',
 };
 
-export function isCustomizableRendererHookRequired(element: BaseElement, state: State): boolean {
+export function isCustomRendererHookRequired(element: BaseElement, state: State): boolean {
     let addSanitizationHook = false;
     if (state.config.provideCustomRendererHooks) {
-        const { attributes } = element;
-        // If any directives require custom renderer
-        addSanitizationHook = element.directives.some((dir) => {
-            return state.directivesReqCustomRenderer.has(LWC_DIRECTIVES[dir.name]);
-        });
-        if (addSanitizationHook) {
-            // Directives that require custom renderer are not allowed on custom elements
-            // Custom element cannot be allowed to have a custom renderer hook
-            // The renderer is cascaded down from the owner(custom element) to all its child nodes who
-            // do not have a renderer specified.
-            invariant(
-                element.type !== 'Component',
-                TemplateErrors.DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT,
-                [element.name, state.config.customRendererConfig.directives.join(', ')]
-            );
+        const { attributes, directives } = element;
+        if (directives.length) {
+            // If any directives require custom renderer
+            addSanitizationHook = directives.some((dir) => {
+                return state.directivesReqCustomRenderer.has(LWC_DIRECTIVES[dir.name]);
+            });
+            if (addSanitizationHook) {
+                // Directives that require custom renderer are not allowed on custom elements
+                // Custom element cannot be allowed to have a custom renderer hook
+                // The renderer is cascaded down from the owner(custom element) to all its child nodes who
+                // do not have a renderer specified.
+                invariant(
+                    element.type !== 'Component',
+                    TemplateErrors.DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT,
+                    [element.name, state.config.customRendererConfig.directives.join(', ')]
+                );
+            }
         }
         const customRendererAttributes = state.elementsReqCustomRenderer[element.name];
         // If element requires custom renderer

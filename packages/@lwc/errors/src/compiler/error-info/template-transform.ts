@@ -65,7 +65,7 @@ export const TemplateErrors = {
     DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT: {
         code: 1153,
         message:
-            'Usage of directives specified in customRendererConfig is diallowed on custom elements, but found {0} assigned one of {1} directives',
+            'Directives diallowed on custom elements due to customRendererConfig, found <{0}> assigned to one of [{1}] directives',
         level: DiagnosticLevel.Error,
         url: '',
     },

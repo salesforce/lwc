@@ -25,7 +25,6 @@ describe('customRendererConfig normalization', () => {
                         {
                             tagName: 'DIV',
                         },
-
                         {
                             tagName: 'SPAN',
                             attributes: ['STYLE'],
@@ -69,7 +68,6 @@ describe('customRendererConfig normalization', () => {
                             tagName: 'use',
                             attributes: ['href'],
                         },
-
                         {
                             tagName: 'use',
                             attributes: ['xlink:href'],
@@ -79,6 +77,25 @@ describe('customRendererConfig normalization', () => {
             })
         ).toThrowErrorMatchingInlineSnapshot(
             `"LWC1150: customRendererConfig contains duplicate entry for use element tag"`
+        );
+    });
+
+    it('should throw if custom element tag used', () => {
+        expect(() =>
+            normalizeConfig({
+                provideCustomRendererHooks: true,
+                customRendererConfig: {
+                    directives: [],
+                    elements: [
+                        {
+                            tagName: 'lightning-input',
+                            attributes: ['value'],
+                        },
+                    ],
+                },
+            })
+        ).toThrowErrorMatchingInlineSnapshot(
+            `"LWC1152: customRendererConfig should not contain a custom element tag, but found lightning-input"`
         );
     });
 });
