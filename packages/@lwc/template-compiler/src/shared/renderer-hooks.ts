@@ -53,7 +53,7 @@ export function isCustomRendererHookRequired(element: BaseElement, state: State)
         if (directives.length) {
             // If any directives require custom renderer
             addCustomRenderer = directives.some((dir) => {
-                return state.directivesReqCustomRenderer.has(LWC_DIRECTIVES[dir.name]);
+                return state.crDirectives.has(LWC_DIRECTIVES[dir.name]);
             });
             if (addCustomRenderer) {
                 // Directives that require custom renderer are not allowed on custom elements
@@ -67,17 +67,18 @@ export function isCustomRendererHookRequired(element: BaseElement, state: State)
                 );
             }
         }
-        const elementConfig = state.elementsReqCustomRenderer[element.name];
+        const elementConfig = state.crElmToConfigMap[element.name];
         // If element requires custom renderer
         if (elementConfig) {
+            const { namespace, attributes: attrConfig } = elementConfig;
             // if element config has namespace, then namespace has to be a match
-            if (elementConfig.namespace && element.namespace !== elementConfig.namespace) {
+            if (namespace && element.namespace !== namespace) {
                 return false;
             }
             // If no attributes are specified, then consider the element requires custom renderer
             if (
-                elementConfig.attributes === undefined ||
-                attributes.some((attribute) => elementConfig.attributes!.includes(attribute.name))
+                attrConfig.size === 0 ||
+                attributes.some((attribute) => attrConfig.has(attribute.name))
             ) {
                 addCustomRenderer = true;
             }

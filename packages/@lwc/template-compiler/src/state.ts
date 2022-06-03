@@ -6,25 +6,31 @@
  */
 
 import { NormalizedConfig } from './config';
-import { CustomRendererElementConfig } from './shared/renderer-hooks';
 
 export default class State {
     config: NormalizedConfig;
 
     /**
-     * For a fast look up for elements that need a custom renderer
+     * Look up custom renderer config by tag name.
      */
-    elementsReqCustomRenderer: { [tagName: string]: CustomRendererElementConfig };
-
-    directivesReqCustomRenderer: Set<string>;
+    crElmToConfigMap: {
+        [tagName: string]: { namespace: string | undefined; attributes: Set<string> };
+    };
+    /**
+     * Look up for directives that require custom renderer
+     */
+    crDirectives: Set<string>;
 
     constructor(config: NormalizedConfig) {
         this.config = config;
-        this.elementsReqCustomRenderer = config.customRendererConfig
+        this.crElmToConfigMap = config.customRendererConfig
             ? Object.fromEntries(
-                  config.customRendererConfig.elements.map((element) => [element.tagName, element])
+                  config.customRendererConfig.elements.map((element) => {
+                      const { tagName, attributes, namespace } = element;
+                      return [tagName, { namespace, attributes: new Set(attributes) }];
+                  })
               )
             : {};
-        this.directivesReqCustomRenderer = new Set(config.customRendererConfig?.directives);
+        this.crDirectives = new Set(config.customRendererConfig?.directives);
     }
 }
