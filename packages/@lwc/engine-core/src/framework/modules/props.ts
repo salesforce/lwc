@@ -5,9 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, isUndefined } from '@lwc/shared';
-
-import { getProperty, setProperty } from '../../renderer';
-
+import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
 
@@ -17,7 +15,11 @@ function isLiveBindingProp(sel: string, key: string): boolean {
     return sel === 'input' && (key === 'value' || key === 'checked');
 }
 
-export function patchProps(oldVnode: VBaseElement | null, vnode: VBaseElement) {
+export function patchProps(
+    oldVnode: VBaseElement | null,
+    vnode: VBaseElement,
+    renderer: RendererAPI
+) {
     const { props } = vnode.data;
     if (isUndefined(props)) {
         return;
@@ -30,6 +32,7 @@ export function patchProps(oldVnode: VBaseElement | null, vnode: VBaseElement) {
 
     const isFirstPatch = isNull(oldVnode);
     const { elm, sel } = vnode;
+    const { getProperty, setProperty } = renderer;
 
     for (const key in props) {
         const cur = props[key];
