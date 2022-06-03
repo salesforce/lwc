@@ -7,24 +7,16 @@
 import { normalizeConfig } from '../config';
 
 describe('customRendererConfig normalization', () => {
-    it('should throw if customRendererConfig is set and provideCustomRendererHooks is not set', () => {
-        expect(() =>
-            normalizeConfig({ customRendererConfig: { elements: [], directives: [] } })
-        ).toThrowErrorMatchingInlineSnapshot(
-            `"LWC1151: customRendererConfig can be specified only when provideCustomRendererHooks config is set to true"`
-        );
-    });
-
     it('should lower case all tag names and attributes', () => {
         expect(
             normalizeConfig({
-                provideCustomRendererHooks: true,
                 customRendererConfig: {
                     directives: [],
                     elements: [
                         {
                             tagName: 'DIV',
                         },
+
                         {
                             tagName: 'SPAN',
                             attributes: ['STYLE'],
@@ -39,12 +31,14 @@ describe('customRendererConfig normalization', () => {
                 "elements": Array [
                   Object {
                     "attributes": undefined,
+                    "namespace": undefined,
                     "tagName": "div",
                   },
                   Object {
                     "attributes": Array [
                       "style",
                     ],
+                    "namespace": undefined,
                     "tagName": "span",
                   },
                 ],
@@ -52,7 +46,6 @@ describe('customRendererConfig normalization', () => {
               "experimentalComputedMemberExpression": false,
               "experimentalDynamicDirective": false,
               "preserveHtmlComments": false,
-              "provideCustomRendererHooks": true,
             }
         `);
     });
@@ -60,7 +53,6 @@ describe('customRendererConfig normalization', () => {
     it('should throw on duplicate tag names', () => {
         expect(() =>
             normalizeConfig({
-                provideCustomRendererHooks: true,
                 customRendererConfig: {
                     directives: [],
                     elements: [
@@ -83,7 +75,6 @@ describe('customRendererConfig normalization', () => {
     it('should throw if custom element tag used', () => {
         expect(() =>
             normalizeConfig({
-                provideCustomRendererHooks: true,
                 customRendererConfig: {
                     directives: [],
                     elements: [

@@ -19,3 +19,14 @@ export const TEMPLATE_PARAMS: { [label: string]: string } = {
     SLOT_SET: '$slotset',
     CONTEXT: '$ctx',
 };
+
+export const DASHED_TAGNAME_ELEMENT_SET = new Set([
+    'annotation-xml',
+    'color-profile',
+    'font-face',
+    'font-face-src',
+    'font-face-uri',
+    'font-face-format',
+    'font-face-name',
+    'missing-glyph',
+]);

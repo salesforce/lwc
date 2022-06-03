@@ -1,4 +1,4 @@
-import { DASHED_TAGNAME_ELEMENT_SET } from '../parser/constants';
+import { DASHED_TAGNAME_ELEMENT_SET } from './constants';
 
 /*
  * Copyright (c) 2018, salesforce.com, inc.

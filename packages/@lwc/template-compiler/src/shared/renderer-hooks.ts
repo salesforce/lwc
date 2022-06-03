@@ -9,13 +9,29 @@ import State from '../state';
 import { BaseElement } from './types';
 
 /**
+ * Config representing criteria for an element match.
+ */
+export interface CustomRendererElementConfig {
+    /**
+     * Tag name to use to match an element.
+     */
+    tagName: string;
+    /**
+     * Optional namespace to match an element.
+     */
+    namespace?: string;
+    /**
+     * Specify attributes that need to be matched.
+     * This field is optional. When not set, the element is matched based on tag name and namespace.
+     */
+    attributes?: string[];
+}
+
+/**
  * Config to specify which elements and directives require a customizable renderer.
  */
 export interface CustomRendererConfig {
-    elements: {
-        tagName: string;
-        attributes?: string[];
-    }[];
+    elements: CustomRendererElementConfig[];
     directives: string[];
     rendererModule?: string;
 }
@@ -30,15 +46,15 @@ export const LWC_DIRECTIVES: { [type: string]: string } = {
 };
 
 export function isCustomRendererHookRequired(element: BaseElement, state: State): boolean {
-    let addSanitizationHook = false;
-    if (state.config.provideCustomRendererHooks) {
+    let addCustomRenderer = false;
+    if (state.config.customRendererConfig) {
         const { attributes, directives } = element;
         if (directives.length) {
             // If any directives require custom renderer
-            addSanitizationHook = directives.some((dir) => {
+            addCustomRenderer = directives.some((dir) => {
                 return state.directivesReqCustomRenderer.has(LWC_DIRECTIVES[dir.name]);
             });
-            if (addSanitizationHook) {
+            if (addCustomRenderer) {
                 // Directives that require custom renderer are not allowed on custom elements
                 // Custom element cannot be allowed to have a custom renderer hook
                 // The renderer is cascaded down from the owner(custom element) to all its child nodes who
@@ -50,17 +66,21 @@ export function isCustomRendererHookRequired(element: BaseElement, state: State)
                 );
             }
         }
-        const customRendererAttributes = state.elementsReqCustomRenderer[element.name];
+        const elementConfig = state.elementsReqCustomRenderer[element.name];
         // If element requires custom renderer
-        if (customRendererAttributes) {
+        if (elementConfig) {
+            // if element config has namespace, then namespace has to be a match
+            if (elementConfig.namespace && element.namespace !== elementConfig.namespace) {
+                return false;
+            }
             // If no attributes are specified, then consider the element requires custom renderer
             if (
-                customRendererAttributes.size === 0 ||
-                attributes.some((attribute) => customRendererAttributes.has(attribute.name))
+                elementConfig.attributes === undefined ||
+                attributes.some((attribute) => elementConfig.attributes!.includes(attribute.name))
             ) {
-                addSanitizationHook = true;
+                addCustomRenderer = true;
             }
         }
     }
-    return addSanitizationHook;
+    return addCustomRenderer;
 }

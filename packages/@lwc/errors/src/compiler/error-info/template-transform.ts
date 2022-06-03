@@ -47,23 +47,15 @@ export const TemplateErrors = {
         url: '',
     },
 
-    INVALID_CUSTOM_RENDERER_CONFIG: {
-        code: 1151,
-        message:
-            'customRendererConfig can be specified only when provideCustomRendererHooks config is set to true',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     CUSTOM_ELEMENT_TAG_DISALLOWED: {
-        code: 1152,
+        code: 1151,
         message: 'customRendererConfig should not contain a custom element tag, but found {0}',
         level: DiagnosticLevel.Error,
         url: '',
     },
 
     DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT: {
-        code: 1153,
+        code: 1152,
         message:
             'Directives diallowed on custom elements due to customRendererConfig, found <{0}> assigned to one of [{1}] directives',
         level: DiagnosticLevel.Error,

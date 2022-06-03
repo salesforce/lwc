@@ -6,6 +6,7 @@
  */
 
 import { NormalizedConfig } from './config';
+import { CustomRendererElementConfig } from './shared/renderer-hooks';
 
 export default class State {
     config: NormalizedConfig;
@@ -13,19 +14,20 @@ export default class State {
     /**
      * For a fast look up for elements that need a custom renderer
      */
-    elementsReqCustomRenderer: { [tagName: string]: Set<string> };
+    elementsReqCustomRenderer: { [tagName: string]: CustomRendererElementConfig };
 
     directivesReqCustomRenderer: Set<string>;
 
     constructor(config: NormalizedConfig) {
         this.config = config;
-        this.elementsReqCustomRenderer = config.customRendererConfig.elements.reduce(
-            (acc: { [tagName: string]: Set<string> }, e) => {
-                acc[e.tagName] = new Set(e.attributes ?? []);
-                return acc;
-            },
-            {}
-        );
-        this.directivesReqCustomRenderer = new Set(config.customRendererConfig.directives);
+        this.elementsReqCustomRenderer =
+            config.customRendererConfig?.elements.reduce(
+                (acc: { [tagName: string]: CustomRendererElementConfig }, e) => {
+                    acc[e.tagName] = e;
+                    return acc;
+                },
+                {}
+            ) ?? {};
+        this.directivesReqCustomRenderer = new Set(config.customRendererConfig?.directives);
     }
 }

@@ -28,46 +28,37 @@ export interface Config {
     preserveHtmlComments?: boolean;
 
     /**
-     * When true, the template compiler will not generate optimized code for static content.
-     */
-    disableStaticContentOptimization?: boolean;
-
-    /**
-    * Should sanitization hooks be provided for certain elements in the template?
-     * Should provide hooks to inject a custom renderer for certain elements in the template?
-     */
-    provideCustomRendererHooks?: boolean;
-
-    /**
      * Specification to use to determine which nodes in the template require custom renderer hooks.
      */
     customRendererConfig?: CustomRendererConfig;
 }
 
-export type NormalizedConfig = Required<Config>;
+export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
+    Partial<Pick<Config, 'customRendererConfig'>>;
 
 const AVAILABLE_OPTION_NAMES = new Set([
     'customRendererConfig',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'preserveHtmlComments',
-    'disableStaticContentOptimization',
-    'provideCustomRendererHooks',
 ]);
 
 function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {
+    const tagNames: string[] = [];
     const normalizedConfig: CustomRendererConfig = {
         elements: config.elements.map((e) => {
+            const tagName = e.tagName.toLowerCase();
             // Custom element cannot be allowed to have a custom renderer hook
             // The renderer is cascaded down from the owner(custom element) to all its child nodes who
             // do not have a renderer specified.
-            invariant(
-                !isCustomElementTag(e.tagName),
-                TemplateErrors.CUSTOM_ELEMENT_TAG_DISALLOWED,
-                [e.tagName]
-            );
+            invariant(!isCustomElementTag(tagName), TemplateErrors.CUSTOM_ELEMENT_TAG_DISALLOWED, [
+                e.tagName,
+            ]);
+
+            tagNames.push(tagName);
             return {
-                tagName: e.tagName.toLowerCase(),
+                tagName,
+                namespace: e.namespace?.toLowerCase(),
                 attributes: e.attributes?.map((a) => a.toLowerCase()),
             };
         }),
@@ -78,7 +69,6 @@ function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRend
     }
 
     // Check for duplicate tag names
-    const tagNames: string[] = normalizedConfig.elements.map((e) => e.tagName);
     const dupTagNames: string[] = tagNames.filter(
         (item, index) => index !== tagNames.indexOf(item)
     );
@@ -95,16 +85,9 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         TemplateErrors.OPTIONS_MUST_BE_OBJECT
     );
 
-    if (config.customRendererConfig) {
-        invariant(
-            !!config.provideCustomRendererHooks,
-            TemplateErrors.INVALID_CUSTOM_RENDERER_CONFIG
-        );
-    }
-
-    const customRendererConfig = normalizeCustomRendererConfig(
-        config.customRendererConfig ?? { elements: [], directives: [] }
-    );
+    const customRendererConfig = config.customRendererConfig
+        ? normalizeCustomRendererConfig(config.customRendererConfig)
+        : undefined;
 
     for (const property in config) {
         if (!AVAILABLE_OPTION_NAMES.has(property) && hasOwnProperty.call(config, property)) {
@@ -118,8 +101,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
-        disableStaticContentOptimization: false,
-        provideCustomRendererHooks: false,
         ...config,
         ...{ customRendererConfig },
     };

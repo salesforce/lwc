@@ -33,6 +33,7 @@ import {
     Property,
 } from '../shared/types';
 import { isCustomElementTag } from '../shared/utils';
+import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
 import ParserCtx from './parser';
 
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
@@ -48,9 +49,7 @@ import {
     normalizeAttributeValue,
     ParsedAttribute,
 } from './attribute';
-
 import {
-    DASHED_TAGNAME_ELEMENT_SET,
     DISALLOWED_HTML_TAGS,
     DISALLOWED_MATHML_TAGS,
     EVENT_HANDLER_NAME_RE,
