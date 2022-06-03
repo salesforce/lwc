@@ -1,6 +1,6 @@
 {
-    "provideSanitizationHooks": true,
-    "sanitizeConfig": {
+    "provideCustomRendererHooks": true,
+    "customRendererConfig": {
         "directives": [],
         "elements": [
             {

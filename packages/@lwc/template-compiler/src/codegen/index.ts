@@ -53,7 +53,7 @@ import {
 } from '../parser/attribute';
 
 import State from '../state';
-import { isSanitizationHookRequired } from '../shared/sanitize';
+import { isCustomizableRendererHookRequired } from '../shared/renderer-hooks';
 import CodeGen from './codegen';
 import {
     identifierFromComponentName,
@@ -412,7 +412,10 @@ function transform(codeGen: CodeGen): t.Expression {
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
-        const addSanitizationHook: boolean = isSanitizationHookRequired(element, codeGen.state);
+        const addSanitizationHook: boolean = isCustomizableRendererHookRequired(
+            element,
+            codeGen.state
+        );
 
         // Attributes
         if (attributes.length) {
@@ -484,8 +487,8 @@ function transform(codeGen: CodeGen): t.Expression {
             propsObj.properties.push(
                 t.property(
                     t.identifier('innerHTML'),
-                    // If lwc:inner-html is added as a risky directive, no need to add the legacy
-                    // sanitizeHtmlContent hook
+                    // If lwc:inner-html is added as a directive requiring custom renderer, no need
+                    // to add the legacy sanitizeHtmlContent hook
                     addSanitizationHook ? expr : codeGen.genSanitizedHtmlExpr(expr)
                 )
             );

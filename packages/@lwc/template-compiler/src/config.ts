@@ -6,7 +6,8 @@
  */
 import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
 import { hasOwnProperty } from '@lwc/shared';
-import { SanitizeConfig } from './shared/sanitize';
+import { CustomRendererConfig } from './shared/renderer-hooks';
+import { isCustomElementTag } from './shared/utils';
 
 export interface Config {
     /**
@@ -33,29 +34,38 @@ export interface Config {
 
     /**
     * Should sanitization hooks be provided for certain elements in the template?
+     * Should provide hooks to inject a custom renderer for certain elements in the template?
      */
-    provideSanitizationHooks?: boolean;
+    provideCustomRendererHooks?: boolean;
 
     /**
-     * Specification to use to determine which nodes in the template require sanitization.
+     * Specification to use to determine which nodes in the template require custom renderer hooks.
      */
-    sanitizeConfig?: SanitizeConfig;
+    customRendererConfig?: CustomRendererConfig;
 }
 
 export type NormalizedConfig = Required<Config>;
 
 const AVAILABLE_OPTION_NAMES = new Set([
+    'customRendererConfig',
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'preserveHtmlComments',
     'disableStaticContentOptimization',
-    'provideSanitizationHooks',
-    'sanitizeConfig',
+    'provideCustomRendererHooks',
 ]);
 
-function normalizeSanitizeConfig(config: SanitizeConfig): SanitizeConfig {
-    const normalizedConfig: SanitizeConfig = {
+function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {
+    const normalizedConfig: CustomRendererConfig = {
         elements: config.elements.map((e) => {
+            // Custom element cannot be allowed to have a custom renderer hook
+            // The renderer is cascaded down from the owner(custom element) to all its child nodes who
+            // do not have a renderer specified.
+            invariant(
+                !isCustomElementTag(e.tagName),
+                TemplateErrors.CUSTOM_ELEMENT_TAG_DISALLOWED,
+                [e.tagName]
+            );
             return {
                 tagName: e.tagName.toLowerCase(),
                 attributes: e.attributes?.map((a) => a.toLowerCase()),
@@ -85,12 +95,15 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         TemplateErrors.OPTIONS_MUST_BE_OBJECT
     );
 
-    if (config.sanitizeConfig) {
-        invariant(!!config.provideSanitizationHooks, TemplateErrors.INVALID_SANITIZE_CONFIG);
+    if (config.customRendererConfig) {
+        invariant(
+            !!config.provideCustomRendererHooks,
+            TemplateErrors.INVALID_CUSTOM_RENDERER_CONFIG
+        );
     }
 
-    const sanitizeConfig = normalizeSanitizeConfig(
-        config.sanitizeConfig ?? { elements: [], directives: [] }
+    const customRendererConfig = normalizeCustomRendererConfig(
+        config.customRendererConfig ?? { elements: [], directives: [] }
     );
 
     for (const property in config) {
@@ -106,8 +119,8 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
         disableStaticContentOptimization: false,
-        provideSanitizationHooks: false,
+        provideCustomRendererHooks: false,
         ...config,
-        ...{ sanitizeConfig },
+        ...{ customRendererConfig },
     };
 }

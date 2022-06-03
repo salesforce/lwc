@@ -42,15 +42,30 @@ export const TemplateErrors = {
 
     DUPLICATE_ELEMENT_ENTRY: {
         code: 1150,
-        message: 'Sanitize config contains duplicate entry for {0} element tag',
+        message: 'customRendererConfig contains duplicate entry for {0} element tag',
         level: DiagnosticLevel.Error,
         url: '',
     },
 
-    INVALID_SANITIZE_CONFIG: {
+    INVALID_CUSTOM_RENDERER_CONFIG: {
         code: 1151,
         message:
-            'sanitizeConfig can be specified only when addSanitizationHooks config is set to true',
+            'customRendererConfig can be specified only when provideCustomRendererHooks config is set to true',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    CUSTOM_ELEMENT_TAG_DISALLOWED: {
+        code: 1152,
+        message: 'customRendererConfig should not contain a custom element tag, but found {0}',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT: {
+        code: 1153,
+        message:
+            'Usage of directives specified in customRendererConfig is diallowed on custom elements, but found {0} assigned one of {1} directives',
         level: DiagnosticLevel.Error,
         url: '',
     },

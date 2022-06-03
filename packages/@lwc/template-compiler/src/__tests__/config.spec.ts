@@ -6,20 +6,20 @@
  */
 import { normalizeConfig } from '../config';
 
-describe('sanitizeConfig normalization', () => {
-    it('should throw if sanitizeConfig is set and provideSanitizationHooks is not set', () => {
+describe('customRendererConfig normalization', () => {
+    it('should throw if customRendererConfig is set and provideCustomRendererHooks is not set', () => {
         expect(() =>
-            normalizeConfig({ sanitizeConfig: { elements: [], directives: [] } })
+            normalizeConfig({ customRendererConfig: { elements: [], directives: [] } })
         ).toThrowErrorMatchingInlineSnapshot(
-            `"LWC1151: sanitizeConfig can be specified only when addSanitizationHooks config is set to true"`
+            `"LWC1151: customRendererConfig can be specified only when provideCustomRendererHooks config is set to true"`
         );
     });
 
     it('should lower case all tag names and attributes', () => {
         expect(
             normalizeConfig({
-                provideSanitizationHooks: true,
-                sanitizeConfig: {
+                provideCustomRendererHooks: true,
+                customRendererConfig: {
                     directives: [],
                     elements: [
                         {
@@ -35,11 +35,7 @@ describe('sanitizeConfig normalization', () => {
             })
         ).toMatchInlineSnapshot(`
             Object {
-              "experimentalComputedMemberExpression": false,
-              "experimentalDynamicDirective": false,
-              "preserveHtmlComments": false,
-              "provideSanitizationHooks": true,
-              "sanitizeConfig": Object {
+              "customRendererConfig": Object {
                 "directives": Array [],
                 "elements": Array [
                   Object {
@@ -54,6 +50,10 @@ describe('sanitizeConfig normalization', () => {
                   },
                 ],
               },
+              "experimentalComputedMemberExpression": false,
+              "experimentalDynamicDirective": false,
+              "preserveHtmlComments": false,
+              "provideCustomRendererHooks": true,
             }
         `);
     });
@@ -61,8 +61,8 @@ describe('sanitizeConfig normalization', () => {
     it('should throw on duplicate tag names', () => {
         expect(() =>
             normalizeConfig({
-                provideSanitizationHooks: true,
-                sanitizeConfig: {
+                provideCustomRendererHooks: true,
+                customRendererConfig: {
                     directives: [],
                     elements: [
                         {
@@ -78,7 +78,7 @@ describe('sanitizeConfig normalization', () => {
                 },
             })
         ).toThrowErrorMatchingInlineSnapshot(
-            `"LWC1150: Sanitize config contains duplicate entry for use element tag"`
+            `"LWC1150: customRendererConfig contains duplicate entry for use element tag"`
         );
     });
 });
