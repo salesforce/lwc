@@ -354,9 +354,7 @@ LightningElement.prototype = {
     },
 
     removeAttributeNS(namespace: string | null, name: string): void {
-        const vm = getAssociatedVM(this);
-        const { elm } = vm;
-        const { removeAttribute } = vm.renderer;
+        const { elm, renderer: { removeAttribute } } = getAssociatedVM(this);
         unlockAttribute(elm, name);
         removeAttribute(elm, name, namespace);
         lockAttribute(elm, name);
