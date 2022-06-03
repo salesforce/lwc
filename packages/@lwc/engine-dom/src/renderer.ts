@@ -117,7 +117,13 @@ export function nextSibling(node: Node): Node | null {
 }
 
 export function attachShadow(element: HTMLElement, options: ShadowRootInit): ShadowRoot {
-    const internals = element.attachInternals?.();
+    let internals: ElementInternals | undefined;
+    try {
+        internals = element.attachInternals?.();
+    } catch {
+        // unregistered elements will throw, in which case we go with plan B
+        // to inspect the open shadowRoot on the element.
+    }
     return internals?.shadowRoot || element.shadowRoot || element.attachShadow(options);
 }
 
