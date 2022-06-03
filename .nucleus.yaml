@@ -9,11 +9,8 @@ branches:
       auto-start-from-forks: false
       merge-method: disabled # do not auto-merge; we'll do it ourselves
       required-downstream-deps:
-        - communities/microsite-template-marketing
         - communities/shared-experience-components
         - communities/ui-b2b-components
-        - communities/ui-cms-components
-        - communities/ui-feeds-components
         - communities/ui-lightning-community
         - lwc/lwc-platform
         - salesforce/lwr
