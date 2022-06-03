@@ -60,8 +60,10 @@ function hydrateVM(vm: VM) {
     const children = renderComponent(vm);
     vm.children = children;
 
-    const parentNode = vm.renderRoot;
-    const { getFirstChild } = vm.renderer;
+    const {
+        renderRoot: parentNode,
+        renderer: { getFirstChild },
+    } = vm;
     hydrateChildren(getFirstChild(parentNode), children, parentNode, vm);
     runRenderedCallback(vm);
 }
