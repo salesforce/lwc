@@ -1,6 +1,6 @@
 {
     "name": "@lwc/template-compiler",
-    "version": "2.14.0",
+    "version": "2.14.1",
     "description": "Template compiler package",
     "homepage": "https://lwc.dev/",
     "repository": {
@@ -26,8 +26,8 @@
     },
     "//": "Currently can't upgrade estree-walker to v3.0.0 because it dropped CommonJS support: https://git.io/JXguS",
     "dependencies": {
-        "@lwc/errors": "2.14.0",
-        "@lwc/shared": "2.14.0",
+        "@lwc/errors": "2.14.1",
+        "@lwc/shared": "2.14.1",
         "acorn": "~8.7.1",
         "astring": "~1.8.3",
         "estree-walker": "~2.0.2",
