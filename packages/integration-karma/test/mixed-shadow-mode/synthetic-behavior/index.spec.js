@@ -6,6 +6,14 @@ import ParentResetChildAny from 'x/parentResetChildAny';
 import ParentResetChildReset from 'x/parentResetChildReset';
 import ParentLightChildAny from 'x/parentLightChildAny';
 import ParentLightChildReset from 'x/parentLightChildReset';
+import GrandparentAnyParentAnyChildAny from 'x/grandparentAnyParentAnyChildAny';
+import GrandparentAnyParentAnyChildReset from 'x/grandparentAnyParentAnyChildReset';
+import GrandparentAnyParentResetChildAny from 'x/grandparentAnyParentResetChildAny';
+import GrandparentAnyParentResetChildReset from 'x/grandparentAnyParentResetChildReset';
+import GrandparentResetParentAnyChildAny from 'x/grandparentResetParentAnyChildAny';
+import GrandparentResetParentAnyChildReset from 'x/grandparentResetParentAnyChildReset';
+import GrandparentResetParentResetChildAny from 'x/grandparentResetParentResetChildAny';
+import GrandparentResetParentResetChildReset from 'x/grandparentResetParentResetChildReset';
 
 // In compat mode, native components and synthetic components will both render
 // in synthetic style; there's no difference.
@@ -47,6 +55,46 @@ if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
             {
                 Component: ParentLightChildReset,
                 tagName: 'x-parent-light-child-reset',
+                nativeLeaf: false,
+            },
+            {
+                Component: GrandparentAnyParentAnyChildAny,
+                tagName: 'x-grandparent-any-parent-any-child-any',
+                nativeLeaf: true,
+            },
+            {
+                Component: GrandparentAnyParentAnyChildReset,
+                tagName: 'x-grandparent-any-parent-any-child-reset',
+                nativeLeaf: true,
+            },
+            {
+                Component: GrandparentAnyParentResetChildAny,
+                tagName: 'x-grandparent-any-parent-reset-child-any',
+                nativeLeaf: true,
+            },
+            {
+                Component: GrandparentAnyParentResetChildReset,
+                tagName: 'x-grandparent-any-parent-reset-child-reset',
+                nativeLeaf: true,
+            },
+            {
+                Component: GrandparentResetParentAnyChildAny,
+                tagName: 'x-grandparent-reset-parent-any-child-any',
+                nativeLeaf: true,
+            },
+            {
+                Component: GrandparentResetParentAnyChildReset,
+                tagName: 'x-grandparent-reset-parent-any-child-reset',
+                nativeLeaf: true,
+            },
+            {
+                Component: GrandparentResetParentResetChildAny,
+                tagName: 'x-grandparent-reset-parent-reset-child-any',
+                nativeLeaf: true,
+            },
+            {
+                Component: GrandparentResetParentResetChildReset,
+                tagName: 'x-grandparent-reset-parent-reset-child-reset',
                 nativeLeaf: false,
             },
         ];
