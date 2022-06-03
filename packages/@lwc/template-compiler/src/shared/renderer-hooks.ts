@@ -6,7 +6,7 @@
  */
 import { invariant, TemplateErrors } from '@lwc/errors';
 import State from '../state';
-import { BaseElement } from './types';
+import { BaseElement, ElementDirective } from './types';
 
 /**
  * Config representing criteria for an element match.
@@ -39,10 +39,11 @@ export interface CustomRendererConfig {
 /**
  * Mapping of Directive.name to string literals used in template
  */
-export const LWC_DIRECTIVES: { [type: string]: string } = {
+export const LWC_DIRECTIVES: Record<ElementDirective['name'], string> = {
     Dom: 'lwc:dom',
     Dynamic: 'lwc:dynamic',
     InnerHTML: 'lwc:inner-html',
+    Key: 'key',
 };
 
 export function isCustomRendererHookRequired(element: BaseElement, state: State): boolean {

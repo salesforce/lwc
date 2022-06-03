@@ -86,7 +86,7 @@ describe('customRendererConfig normalization', () => {
                 },
             })
         ).toThrowErrorMatchingInlineSnapshot(
-            `"LWC1152: customRendererConfig should not contain a custom element tag, but found lightning-input"`
+            `"LWC1151: customRendererConfig should not contain a custom element tag, but found lightning-input"`
         );
     });
 });

@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1153,
-            "message": "Unexpected compilation error: LWC1153: Directives diallowed on custom elements due to customRendererConfig, found <x-foo> assigned to one of [lwc:dynamic] directives",
+            "code": 1152,
+            "message": "Unexpected compilation error: LWC1152: Directives diallowed on custom elements due to customRendererConfig, found <x-foo> assigned to one of [lwc:dynamic] directives",
             "level": 1
         }
     ]

@@ -20,14 +20,11 @@ export default class State {
 
     constructor(config: NormalizedConfig) {
         this.config = config;
-        this.elementsReqCustomRenderer =
-            config.customRendererConfig?.elements.reduce(
-                (acc: { [tagName: string]: CustomRendererElementConfig }, e) => {
-                    acc[e.tagName] = e;
-                    return acc;
-                },
-                {}
-            ) ?? {};
+        this.elementsReqCustomRenderer = config.customRendererConfig
+            ? Object.fromEntries(
+                  config.customRendererConfig.elements.map((element) => [element.tagName, element])
+              )
+            : {};
         this.directivesReqCustomRenderer = new Set(config.customRendererConfig?.directives);
     }
 }

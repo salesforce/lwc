@@ -11,11 +11,17 @@ import { isCustomElementTag } from './shared/utils';
 
 export interface Config {
     /**
+     * Specification to use to determine which nodes in the template require custom renderer hooks.
+     */
+    customRendererConfig?: CustomRendererConfig;
+
+    /**
      * Enable computed member expression in the template. eg:
      *    <template>
      *        {list[0].name}
      *    </template>
      */
+
     experimentalComputedMemberExpression?: boolean;
     /**
      * Enable <x-foo lwc:directive={expr}>
@@ -26,11 +32,6 @@ export interface Config {
      * When true, HTML comments in the template will be preserved.
      */
     preserveHtmlComments?: boolean;
-
-    /**
-     * Specification to use to determine which nodes in the template require custom renderer hooks.
-     */
-    customRendererConfig?: CustomRendererConfig;
 }
 
 export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
