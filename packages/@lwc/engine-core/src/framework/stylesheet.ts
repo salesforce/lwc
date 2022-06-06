@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
+import { ArrayMap, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -199,7 +199,7 @@ function getNearestNativeShadowComponent(vm: VM): VM | null {
     return owner;
 }
 
-export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
+export function createStylesheet(vm: VM, stylesheets: string[]): VNode[] | null {
     const {
         renderMode,
         shadowMode,
@@ -215,8 +215,7 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
         //       the first time the VM renders.
 
         // native shadow or light DOM, SSR
-        const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
-        return createInlineStyleVNode(combinedStylesheetContent);
+        return ArrayMap.call(stylesheets, createInlineStyleVNode) as VNode[];
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
