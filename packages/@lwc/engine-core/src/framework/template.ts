@@ -6,7 +6,7 @@
  */
 import {
     ArrayIndexOf,
-    ArraySplice,
+    ArrayUnshift,
     assert,
     create,
     isArray,
@@ -202,7 +202,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
                 const { styleVNodes } = context;
                 if (!isNull(styleVNodes)) {
-                    ArraySplice.call(vnodes, 0, 0, ...styleVNodes);
+                    ArrayUnshift.apply(vnodes, styleVNodes);
                 }
             });
         },
