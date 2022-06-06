@@ -19,19 +19,7 @@ import {
     KEY__SHADOW_STATIC,
 } from '@lwc/shared';
 
-import {
-    remove,
-    insert,
-    nextSibling,
-    createElement,
-    createText,
-    setText,
-    createComment,
-    getClassList,
-    isSyntheticShadowDefined,
-    cloneNode,
-} from '../renderer';
-
+import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
@@ -72,15 +60,20 @@ import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 
-export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode): void {
+export function patchChildren(
+    c1: VNodes,
+    c2: VNodes,
+    parent: ParentNode,
+    renderer: RendererAPI
+): void {
     if (hasDynamicChildren(c2)) {
-        updateDynamicChildren(c1, c2, parent);
+        updateDynamicChildren(c1, c2, parent, renderer);
     } else {
-        updateStaticChildren(c1, c2, parent);
+        updateStaticChildren(c1, c2, parent, renderer);
     }
 }
 
-function patch(n1: VNode, n2: VNode) {
+function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
     if (n1 === n2) {
         return;
     }
@@ -98,19 +91,21 @@ function patch(n1: VNode, n2: VNode) {
 
     switch (n2.type) {
         case VNodeType.Text:
-            patchText(n1 as VText, n2);
+            // VText has no special capability, fallback to the owner's renderer
+            patchText(n1 as VText, n2, renderer);
             break;
 
         case VNodeType.Comment:
-            patchComment(n1 as VComment, n2);
+            // VComment has no special capability, fallback to the owner's renderer
+            patchComment(n1 as VComment, n2, renderer);
             break;
 
         case VNodeType.Element:
-            patchElement(n1 as VElement, n2);
+            patchElement(n1 as VElement, n2, n2.data.renderer ?? renderer);
             break;
 
         case VNodeType.CustomElement:
-            patchCustomElement(n1 as VCustomElement, n2);
+            patchCustomElement(n1 as VCustomElement, n2, n2.data.renderer ?? renderer);
             break;
 
         case VNodeType.Static:
@@ -119,98 +114,116 @@ function patch(n1: VNode, n2: VNode) {
     }
 }
 
-export function mount(node: VNode, parent: ParentNode, anchor: Node | null) {
+export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, anchor: Node | null) {
     switch (node.type) {
         case VNodeType.Text:
-            mountText(node, parent, anchor);
+            // VText has no special capability, fallback to the owner's renderer
+            mountText(node, parent, anchor, renderer);
             break;
 
         case VNodeType.Comment:
-            mountComment(node, parent, anchor);
+            // VComment has no special capability, fallback to the owner's renderer
+            mountComment(node, parent, anchor, renderer);
             break;
 
         case VNodeType.Element:
-            mountElement(node, parent, anchor);
+            // If the vnode data has a renderer override use it, else fallback to owner's renderer
+            mountElement(node, parent, anchor, node.data.renderer ?? renderer);
             break;
 
         case VNodeType.CustomElement:
-            mountCustomElement(node, parent, anchor);
+            // If the vnode data has a renderer override use it, else fallback to owner's renderer
+            mountCustomElement(node, parent, anchor, node.data.renderer ?? renderer);
             break;
 
         case VNodeType.Static:
-            mountStatic(node, parent, anchor);
+            mountStatic(node, parent, anchor, renderer);
             break;
     }
 }
 
-function patchText(n1: VText, n2: VText) {
+function patchText(n1: VText, n2: VText, renderer: RendererAPI) {
     n2.elm = n1.elm;
 
     if (n2.text !== n1.text) {
-        updateTextContent(n2);
+        updateTextContent(n2, renderer);
     }
 }
 
-function mountText(node: VText, parent: ParentNode, anchor: Node | null) {
-    const { owner } = node;
+function mountText(vnode: VText, parent: ParentNode, anchor: Node | null, renderer: RendererAPI) {
+    const { owner } = vnode;
+    const { createText } = renderer;
 
-    const textNode = (node.elm = createText(node.text));
-    linkNodeToShadow(textNode, owner);
+    const textNode = (vnode.elm = createText(vnode.text));
+    linkNodeToShadow(textNode, owner, renderer);
 
-    insertNode(textNode, parent, anchor);
+    insertNode(textNode, parent, anchor, renderer);
 }
 
-function patchComment(n1: VComment, n2: VComment) {
+function patchComment(n1: VComment, n2: VComment, renderer: RendererAPI) {
     n2.elm = n1.elm;
 
     // FIXME: Comment nodes should be static, we shouldn't need to diff them together. However
     // it is the case today.
     if (n2.text !== n1.text) {
-        updateTextContent(n2);
+        updateTextContent(n2, renderer);
     }
 }
 
-function mountComment(node: VComment, parent: ParentNode, anchor: Node | null) {
-    const { owner } = node;
+function mountComment(
+    vnode: VComment,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
+    const { owner } = vnode;
+    const { createComment } = renderer;
 
-    const commentNode = (node.elm = createComment(node.text));
-    linkNodeToShadow(commentNode, owner);
+    const commentNode = (vnode.elm = createComment(vnode.text));
+    linkNodeToShadow(commentNode, owner, renderer);
 
-    insertNode(commentNode, parent, anchor);
+    insertNode(commentNode, parent, anchor, renderer);
 }
 
-function mountElement(vnode: VElement, parent: ParentNode, anchor: Node | null) {
+function mountElement(
+    vnode: VElement,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
     const {
         sel,
         owner,
         data: { svg },
     } = vnode;
+    const { createElement } = renderer;
 
     const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
     const elm = createElement(sel, namespace);
-    linkNodeToShadow(elm, owner);
+    linkNodeToShadow(elm, owner, renderer);
 
-    fallbackElmHook(elm, vnode);
+    fallbackElmHook(elm, vnode, renderer);
     vnode.elm = elm;
 
-    patchElementPropsAndAttrs(null, vnode);
+    patchElementPropsAndAttrs(null, vnode, renderer);
 
-    insertNode(elm, parent, anchor);
-    mountVNodes(vnode.children, elm, null);
+    insertNode(elm, parent, anchor, renderer);
+    mountVNodes(vnode.children, elm, renderer, null);
 }
 
-function patchElement(n1: VElement, n2: VElement) {
+function patchElement(n1: VElement, n2: VElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
 
-    patchElementPropsAndAttrs(n1, n2);
-    patchChildren(n1.children, n2.children, elm);
+    patchElementPropsAndAttrs(n1, n2, renderer);
+    patchChildren(n1.children, n2.children, elm, renderer);
 }
 
-function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
+function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null, renderer: RendererAPI) {
     const { owner } = vnode;
+    const { cloneNode, isSyntheticShadowDefined } = renderer
     const elm = (vnode.elm = cloneNode(vnode.fragment, true));
 
-    linkNodeToShadow(elm, owner);
+    linkNodeToShadow(elm, owner, renderer);
 
     // Marks this node as Static to propagate the shadow resolver. must happen after elm is assigned to the proper shadow
     const { renderMode, shadowMode } = owner;
@@ -226,12 +239,17 @@ function mountStatic(vnode: VStatic, parent: ParentNode, anchor: Node | null) {
         patchElementWithRestrictions(elm, { isPortal: false, isLight });
     }
 
-    insertNode(elm, parent, anchor);
+    insertNode(elm, parent, anchor, renderer);
 }
-function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: Node | null) {
-    const { sel, owner } = vnode;
 
-    const UpgradableConstructor = getUpgradableConstructor(sel);
+function mountCustomElement(
+    vnode: VCustomElement,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
+    const { sel, owner } = vnode;
+    const UpgradableConstructor = getUpgradableConstructor(sel, renderer);
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced
@@ -241,10 +259,10 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
     let vm: VM | undefined;
     const elm = new UpgradableConstructor((elm: HTMLElement) => {
         // the custom element from the registry is expecting an upgrade callback
-        vm = createViewModelHook(elm, vnode);
+        vm = createViewModelHook(elm, vnode, renderer);
     });
 
-    linkNodeToShadow(elm, owner);
+    linkNodeToShadow(elm, owner, renderer);
     vnode.elm = elm;
     vnode.vm = vm;
 
@@ -254,8 +272,8 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
         throw new TypeError(`Incorrect Component Constructor`);
     }
 
-    patchElementPropsAndAttrs(null, vnode);
-    insertNode(elm, parent, anchor);
+    patchElementPropsAndAttrs(null, vnode, renderer);
+    insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
         if (process.env.NODE_ENV !== 'production') {
@@ -264,18 +282,18 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
         runConnectedCallback(vm);
     }
 
-    mountVNodes(vnode.children, elm, null);
+    mountVNodes(vnode.children, elm, renderer, null);
 
     if (vm) {
         appendVM(vm);
     }
 }
 
-function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
+function patchCustomElement(n1: VCustomElement, n2: VCustomElement, renderer: RendererAPI) {
     const elm = (n2.elm = n1.elm!);
     const vm = (n2.vm = n1.vm);
 
-    patchElementPropsAndAttrs(n1, n2);
+    patchElementPropsAndAttrs(n1, n2, renderer);
     if (!isUndefined(vm)) {
         // in fallback mode, the allocation will always set children to
         // empty and delegate the real allocation to the slot elements
@@ -284,7 +302,7 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
 
     // in fallback mode, the children will be always empty, so, nothing
     // will happen, but in native, it does allocate the light dom
-    patchChildren(n1.children, n2.children, elm);
+    patchChildren(n1.children, n2.children, elm, renderer);
 
     if (!isUndefined(vm)) {
         // this will probably update the shadowRoot, but only if the vm is in a dirty state
@@ -296,6 +314,7 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
 function mountVNodes(
     vnodes: VNodes,
     parent: ParentNode,
+    renderer: RendererAPI,
     anchor: Node | null,
     start: number = 0,
     end: number = vnodes.length
@@ -303,27 +322,34 @@ function mountVNodes(
     for (; start < end; ++start) {
         const vnode = vnodes[start];
         if (isVNode(vnode)) {
-            mount(vnode, parent, anchor);
+            mount(vnode, parent, renderer, anchor);
         }
     }
 }
 
-function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
+function unmount(
+    vnode: VNode,
+    parent: ParentNode,
+    renderer: RendererAPI,
+    doRemove: boolean = false
+) {
     const { type, elm, sel } = vnode;
 
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
     if (doRemove) {
-        removeNode(elm!, parent);
+        // The vnode might or might not have a data.renderer associated to it
+        // but the removal used here is from the owner instead.
+        removeNode(elm!, parent, renderer);
     }
 
     switch (type) {
         case VNodeType.Element: {
             // Slot content is removed to trigger slotchange event when removing slot.
             // Only required for synthetic shadow.
-            const removeChildren =
+            const shouldRemoveChildren =
                 sel === 'slot' && vnode.owner.shadowMode === ShadowMode.Synthetic;
-            unmountVNodes(vnode.children, elm as ParentNode, removeChildren);
+            unmountVNodes(vnode.children, elm as ParentNode, renderer, shouldRemoveChildren);
             break;
         }
 
@@ -342,6 +368,7 @@ function unmount(vnode: VNode, parent: ParentNode, doRemove: boolean = false) {
 function unmountVNodes(
     vnodes: VNodes,
     parent: ParentNode,
+    renderer: RendererAPI,
     doRemove: boolean = false,
     start: number = 0,
     end: number = vnodes.length
@@ -349,7 +376,7 @@ function unmountVNodes(
     for (; start < end; ++start) {
         const ch = vnodes[start];
         if (isVNode(ch)) {
-            unmount(ch, parent, doRemove);
+            unmount(ch, parent, renderer, doRemove);
         }
     }
 }
@@ -367,17 +394,20 @@ function setElementShadowToken(elm: Element, token: string) {
 }
 
 // Set the scope token class for *.scoped.css styles
-function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
+function setScopeTokenClassIfNecessary(elm: Element, owner: VM, renderer: RendererAPI) {
     const { cmpTemplate, context } = owner;
+    const { getClassList } = renderer;
     const token = cmpTemplate?.stylesheetToken;
     if (!isUndefined(token) && context.hasScopedStyles) {
+        // TODO [#2762]: this dot notation with add is probably problematic
+        // probably we should have a renderer api for just the add operation
         getClassList(elm).add(token);
     }
 }
 
-function linkNodeToShadow(elm: Node, owner: VM) {
+function linkNodeToShadow(elm: Node, owner: VM, renderer: RendererAPI) {
     const { renderRoot, renderMode, shadowMode } = owner;
-
+    const { isSyntheticShadowDefined } = renderer;
     // TODO [#1164]: this should eventually be done by the polyfill directly
     if (isSyntheticShadowDefined) {
         if (shadowMode === ShadowMode.Synthetic || renderMode === RenderMode.Light) {
@@ -386,8 +416,9 @@ function linkNodeToShadow(elm: Node, owner: VM) {
     }
 }
 
-function updateTextContent(vnode: VText | VComment) {
+function updateTextContent(vnode: VText | VComment, renderer: RendererAPI) {
     const { elm, text } = vnode;
+    const { setText } = renderer;
 
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
@@ -398,44 +429,48 @@ function updateTextContent(vnode: VText | VComment) {
     }
 }
 
-function insertNode(node: Node, parent: Node, anchor: Node | null) {
+function insertNode(node: Node, parent: Node, anchor: Node | null, renderer: RendererAPI) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    insert(node, parent, anchor);
+    renderer.insert(node, parent, anchor);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
 }
 
-export function removeNode(node: Node, parent: ParentNode) {
+export function removeNode(node: Node, parent: ParentNode, renderer: RendererAPI) {
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
-    remove(node, parent);
+    renderer.remove(node, parent);
     if (process.env.NODE_ENV !== 'production') {
         lockDomMutation();
     }
 }
 
-function patchElementPropsAndAttrs(oldVnode: VBaseElement | null, vnode: VBaseElement) {
+function patchElementPropsAndAttrs(
+    oldVnode: VBaseElement | null,
+    vnode: VBaseElement,
+    renderer: RendererAPI
+) {
     if (isNull(oldVnode)) {
-        applyEventListeners(vnode);
-        applyStaticClassAttribute(vnode);
-        applyStaticStyleAttribute(vnode);
+        applyEventListeners(vnode, renderer);
+        applyStaticClassAttribute(vnode, renderer);
+        applyStaticStyleAttribute(vnode, renderer);
     }
 
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
-    patchClassAttribute(oldVnode, vnode);
-    patchStyleAttribute(oldVnode, vnode);
-    patchAttributes(oldVnode, vnode);
-    patchProps(oldVnode, vnode);
+    patchClassAttribute(oldVnode, vnode, renderer);
+    patchStyleAttribute(oldVnode, vnode, renderer);
+    patchAttributes(oldVnode, vnode, renderer);
+    patchProps(oldVnode, vnode, renderer);
 }
 
-function fallbackElmHook(elm: Element, vnode: VBaseElement) {
+function fallbackElmHook(elm: Element, vnode: VBaseElement, renderer: RendererAPI) {
     const { owner } = vnode;
-    setScopeTokenClassIfNecessary(elm, owner);
+    setScopeTokenClassIfNecessary(elm, owner, renderer);
     if (owner.shadowMode === ShadowMode.Synthetic) {
         const {
             data: { context },
@@ -494,7 +529,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
     }
 }
 
-function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
+function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: RendererAPI): VM {
     let vm = getAssociatedVMIfPresent(elm);
 
     // There is a possibility that a custom element is registered under tagName, in which case, the
@@ -506,7 +541,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
 
     const { sel, mode, ctor, owner } = vnode;
 
-    setScopeTokenClassIfNecessary(elm, owner);
+    setScopeTokenClassIfNecessary(elm, owner, renderer);
     if (owner.shadowMode === ShadowMode.Synthetic) {
         const { stylesheetToken } = owner.context;
         // when running in synthetic shadow mode, we need to set the shadowToken value
@@ -516,7 +551,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement): VM {
         }
     }
 
-    vm = createVM(elm, ctor, {
+    vm = createVM(elm, ctor, renderer, {
         mode,
         owner,
         tagName: sel,
@@ -608,7 +643,12 @@ function createKeyToOldIdx(
     return map;
 }
 
-function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode) {
+function updateDynamicChildren(
+    oldCh: VNodes,
+    newCh: VNodes,
+    parent: ParentNode,
+    renderer: RendererAPI
+) {
     let oldStartIdx = 0;
     let newStartIdx = 0;
     let oldEndIdx = oldCh.length - 1;
@@ -633,23 +673,28 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
         } else if (!isVNode(newEndVnode)) {
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newStartVnode)) {
-            patch(oldStartVnode, newStartVnode);
+            patch(oldStartVnode, newStartVnode, renderer);
             oldStartVnode = oldCh[++oldStartIdx];
             newStartVnode = newCh[++newStartIdx];
         } else if (isSameVnode(oldEndVnode, newEndVnode)) {
-            patch(oldEndVnode, newEndVnode);
+            patch(oldEndVnode, newEndVnode, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
-            patch(oldStartVnode, newEndVnode);
-            insertNode(oldStartVnode.elm!, parent, nextSibling(oldEndVnode.elm!));
+            patch(oldStartVnode, newEndVnode, renderer);
+            insertNode(
+                oldStartVnode.elm!,
+                parent,
+                renderer.nextSibling(oldEndVnode.elm!),
+                renderer
+            );
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
-            patch(oldEndVnode, newStartVnode);
-            insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!);
+            patch(oldEndVnode, newStartVnode, renderer);
+            insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
         } else {
@@ -659,16 +704,16 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
             idxInOld = oldKeyToIdx[newStartVnode.key!];
             if (isUndefined(idxInOld)) {
                 // New element
-                mount(newStartVnode, parent, oldStartVnode.elm!);
+                mount(newStartVnode, parent, renderer, oldStartVnode.elm!);
                 newStartVnode = newCh[++newStartIdx];
             } else {
                 elmToMove = oldCh[idxInOld];
                 if (isVNode(elmToMove)) {
                     if (elmToMove.sel !== newStartVnode.sel) {
                         // New element
-                        mount(newStartVnode, parent, oldStartVnode.elm!);
+                        mount(newStartVnode, parent, renderer, oldStartVnode.elm!);
                     } else {
-                        patch(elmToMove, newStartVnode);
+                        patch(elmToMove, newStartVnode, renderer);
                         // Delete the old child, but copy the array since it is read-only.
                         // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
                         // so we only care about the `oldCh` object inside this function.
@@ -681,7 +726,7 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
 
                         // We've already cloned at least once, so it's no longer read-only
                         (oldCh as any[])[idxInOld] = undefined;
-                        insertNode(elmToMove.elm!, parent, oldStartVnode.elm!);
+                        insertNode(elmToMove.elm!, parent, oldStartVnode.elm!, renderer);
                     }
                 }
                 newStartVnode = newCh[++newStartIdx];
@@ -698,27 +743,27 @@ function updateDynamicChildren(oldCh: VNodes, newCh: VNodes, parent: ParentNode)
                 n = newCh[++i];
             } while (!isVNode(n) && i < newChEnd);
             before = isVNode(n) ? n.elm : null;
-            mountVNodes(newCh, parent, before, newStartIdx, newEndIdx + 1);
+            mountVNodes(newCh, parent, renderer, before, newStartIdx, newEndIdx + 1);
         } else {
-            unmountVNodes(oldCh, parent, true, oldStartIdx, oldEndIdx + 1);
+            unmountVNodes(oldCh, parent, renderer, true, oldStartIdx, oldEndIdx + 1);
         }
     }
 }
 
-function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
+function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, renderer: RendererAPI) {
     const c1Length = c1.length;
     const c2Length = c2.length;
 
     if (c1Length === 0) {
         // the old list is empty, we can directly insert anything new
-        mountVNodes(c2, parent, null);
+        mountVNodes(c2, parent, renderer, null);
         return;
     }
 
     if (c2Length === 0) {
         // the old list is nonempty and the new list is empty so we can directly remove all old nodes
         // this is the case in which the dynamic children of an if-directive should be removed
-        unmountVNodes(c1, parent, true);
+        unmountVNodes(c1, parent, renderer, true);
         return;
     }
 
@@ -733,14 +778,14 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode) {
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
                     // both vnodes are equivalent, and we just need to patch them
-                    patch(n1, n2);
+                    patch(n1, n2, renderer);
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null
-                    unmount(n1, parent, true);
+                    unmount(n1, parent, renderer, true);
                 }
             } else if (isVNode(n2)) {
-                mount(n2, parent, anchor);
+                mount(n2, parent, renderer, anchor);
                 anchor = n2.elm!;
             }
         }

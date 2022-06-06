@@ -20,7 +20,6 @@ import {
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { createFragment, getFirstChild } from '../renderer';
 import api, { RenderAPI } from './api';
 import {
     RenderMode,

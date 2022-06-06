@@ -13,6 +13,7 @@ import {
     getAssociatedVMIfPresent,
 } from '@lwc/engine-core';
 import { isFunction, isNull, isObject } from '@lwc/shared';
+import { renderer } from '../renderer';
 import { setIsHydrating } from '../renderer';
 
 function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElement) {
@@ -32,7 +33,7 @@ function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElem
 }
 
 function createVMWithProps(element: Element, Ctor: typeof LightningElement, props: object) {
-    const vm = createVM(element, Ctor, {
+    const vm = createVM(element, Ctor, renderer, {
         mode: 'open',
         owner: null,
         tagName: element.tagName.toLowerCase(),

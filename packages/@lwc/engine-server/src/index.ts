@@ -7,9 +7,6 @@
 // Polyfills ---------------------------------------------------------------------------------------
 import './polyfills';
 
-// Renderer initialization -------------------------------------------------------------------------
-import './initializeRenderer';
-
 import { parseFragment } from '@lwc/engine-core';
 
 // Engine-core public APIs -------------------------------------------------------------------------
@@ -38,3 +35,4 @@ export {
 // Engine-server public APIs -----------------------------------------------------------------------
 export { renderComponent } from './apis/render-component';
 export { LightningElement } from './apis/lightning-element';
+export { renderer } from './renderer';
