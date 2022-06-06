@@ -25,8 +25,6 @@ const definedPromises = new Map<string, Promise<CustomElementConstructor>>();
 const definedResolvers = new Map<string, (ctor: CustomElementConstructor) => void>();
 const awaitingUpgrade = new Map<string, Set<HTMLElement>>();
 
-const registryPatchedSymbol = Symbol.for('@@lwcRegistryPatched');
-
 interface Definition {
     UserCtor: CustomElementConstructor;
     PivotCtor?: CustomElementConstructor;
@@ -248,15 +246,6 @@ function getDefinitionForConstructor(constructor: CustomElementConstructor): Def
 export function patchCustomElementRegistry() {
     const { customElements: nativeRegistry } = window;
     const { define: nativeDefine, whenDefined: nativeWhenDefined, get: nativeGet } = nativeRegistry;
-
-    if ((nativeRegistry as any)[registryPatchedSymbol]) {
-        throw new Error(
-            'patchCustomElementRegistry was called twice in the same JavaScript environment. ' +
-                'Please ensure you are loading the LWC engine only once. ' +
-                'If this is a Jest environment, check your Jest/JSDOM configuration.'
-        );
-    }
-    (nativeRegistry as any)[registryPatchedSymbol] = true;
 
     // patch for the global registry define mechanism
     CustomElementRegistry.prototype.define = function define(
