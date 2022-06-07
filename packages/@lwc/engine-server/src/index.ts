@@ -26,6 +26,8 @@ export {
     setHooks,
     getComponentDef,
     isComponentConstructor,
+    parseFragment,
+    parseFragment as parseSVGFragment,
 } from '@lwc/engine-core';
 
 // Engine-server public APIs -----------------------------------------------------------------------

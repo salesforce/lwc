@@ -20,7 +20,6 @@ import {
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { createFragment, getFirstChild } from '../renderer';
 import api, { RenderAPI } from './api';
 import {
     RenderMode,
@@ -42,6 +41,7 @@ import {
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { VNodes } from './vnodes';
+import { RendererAPI } from './renderer';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -120,7 +120,7 @@ const enum FragmentCache {
 }
 
 function buildParseFragmentFn(
-    createFragmentFn: (html: string) => Element
+    createFragmentFn: (html: string, renderer: RendererAPI) => Element
 ): (strings: string[], ...keys: number[]) => () => Element {
     return (strings: string[], ...keys: number[]) => {
         const cache = create(null);
@@ -129,6 +129,7 @@ function buildParseFragmentFn(
             const {
                 context: { hasScopedStyles, stylesheetToken },
                 shadowMode,
+                renderer,
             } = getVMBeingRendered()!;
             const hasStyleToken = !isUndefined(stylesheetToken);
             const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
@@ -170,18 +171,22 @@ function buildParseFragmentFn(
 
             htmlFragment += strings[strings.length - 1];
 
-            cache[cacheKey] = createFragmentFn(htmlFragment);
+            cache[cacheKey] = createFragmentFn(htmlFragment, renderer);
 
             return cache[cacheKey];
         };
     };
 }
 
-// Note: at the moment this code executes, createFragment have not being set.
-export const parseFragment = buildParseFragmentFn((html) => createFragment(html));
-export const parseSVGFragment = buildParseFragmentFn((html) => {
-    const fragment = createFragment('<svg>' + html + '</svg>');
+// Note: at the moment this code executes, we don't have a renderer yet.
+export const parseFragment = buildParseFragmentFn((html, renderer) => {
+    const { createFragment } = renderer;
+    return createFragment(html);
+});
 
+export const parseSVGFragment = buildParseFragmentFn((html, renderer) => {
+    const { createFragment, getFirstChild } = renderer;
+    const fragment = createFragment('<svg>' + html + '</svg>');
     return getFirstChild(fragment);
 });
 
