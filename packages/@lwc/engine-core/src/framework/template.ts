@@ -180,7 +180,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.
                     const stylesheetsContent = getStylesheetsContent(vm, html);
-                    context.styleVNode =
+                    context.styleVNodes =
                         stylesheetsContent.length === 0
                             ? null
                             : createStylesheet(vm, stylesheetsContent);
@@ -200,9 +200,9 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 isUpdatingTemplate = true;
 
                 vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
-                const { styleVNode } = context;
-                if (!isNull(styleVNode)) {
-                    ArrayUnshift.call(vnodes, styleVNode);
+                const { styleVNodes } = context;
+                if (!isNull(styleVNodes)) {
+                    ArrayUnshift.apply(vnodes, styleVNodes);
                 }
             });
         },

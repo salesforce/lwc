@@ -37,23 +37,19 @@ function createElement(name: string): HostElement {
     };
 }
 
-export const ssr: boolean = true;
+const ssr: boolean = true;
 
-export function setIsHydrating(_value: boolean) {
-    /* No-op in SSR */
-}
-
-export function isHydrating(): boolean {
+function isHydrating(): boolean {
     return false;
 }
 
-export const isNativeShadowDefined: boolean = false;
-export const isSyntheticShadowDefined: boolean = false;
+const isNativeShadowDefined: boolean = false;
+const isSyntheticShadowDefined: boolean = false;
 
 type N = HostNode;
 type E = HostElement;
 
-export function insert(node: N, parent: E, anchor: N | null) {
+function insert(node: N, parent: E, anchor: N | null) {
     if (node.parent !== null && node.parent !== parent) {
         const nodeIndex = node.parent.children.indexOf(node);
         node.parent.children.splice(nodeIndex, 1);
@@ -69,14 +65,12 @@ export function insert(node: N, parent: E, anchor: N | null) {
     }
 }
 
-export function remove(node: N, parent: E) {
+function remove(node: N, parent: E) {
     const nodeIndex = parent.children.indexOf(node);
     parent.children.splice(nodeIndex, 1);
 }
 
-export { createElement };
-
-export function createText(content: string): HostNode {
+function createText(content: string): HostNode {
     return {
         type: HostNodeType.Text,
         value: String(content),
@@ -84,7 +78,7 @@ export function createText(content: string): HostNode {
     };
 }
 
-export function createComment(content: string): HostNode {
+function createComment(content: string): HostNode {
     return {
         type: HostNodeType.Comment,
         value: content,
@@ -92,7 +86,7 @@ export function createComment(content: string): HostNode {
     };
 }
 
-export function nextSibling(node: N) {
+function nextSibling(node: N) {
     const { parent } = node;
 
     if (isNull(parent)) {
@@ -103,7 +97,7 @@ export function nextSibling(node: N) {
     return (parent.children[nodeIndex + 1] as HostNode) || null;
 }
 
-export function attachShadow(element: E, config: ShadowRootInit) {
+function attachShadow(element: E, config: ShadowRootInit) {
     element.shadowRoot = {
         type: HostNodeType.ShadowRoot,
         children: [],
@@ -114,7 +108,7 @@ export function attachShadow(element: E, config: ShadowRootInit) {
     return element.shadowRoot as any;
 }
 
-export function getProperty(node: N, key: string) {
+function getProperty(node: N, key: string) {
     if (key in node) {
         return (node as any)[key];
     }
@@ -145,7 +139,7 @@ export function getProperty(node: N, key: string) {
     }
 }
 
-export function setProperty(node: N, key: string, value: any): void {
+function setProperty(node: N, key: string, value: any): void {
     if (key in node) {
         return ((node as any)[key] = value);
     }
@@ -191,7 +185,7 @@ export function setProperty(node: N, key: string, value: any): void {
     }
 }
 
-export function setText(node: N, content: string) {
+function setText(node: N, content: string) {
     if (node.type === HostNodeType.Text) {
         node.value = content;
     } else if (node.type === HostNodeType.Element) {
@@ -205,19 +199,14 @@ export function setText(node: N, content: string) {
     }
 }
 
-export function getAttribute(element: E, name: string, namespace: string | null = null) {
+function getAttribute(element: E, name: string, namespace: string | null = null) {
     const attribute = element.attributes.find(
         (attr) => attr.name === name && attr.namespace === namespace
     );
     return attribute ? attribute.value : null;
 }
 
-export function setAttribute(
-    element: E,
-    name: string,
-    value: string,
-    namespace: string | null = null
-) {
+function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
     const attribute = element.attributes.find(
         (attr) => attr.name === name && attr.namespace === namespace
     );
@@ -237,13 +226,13 @@ export function setAttribute(
     }
 }
 
-export function removeAttribute(element: E, name: string, namespace?: string | null) {
+function removeAttribute(element: E, name: string, namespace?: string | null) {
     element.attributes = element.attributes.filter(
         (attr) => attr.name !== name && attr.namespace !== namespace
     );
 }
 
-export function getClassList(element: E) {
+function getClassList(element: E) {
     function getClassAttribute(): HostAttribute {
         let classAttribute = element.attributes.find(
             (attr) => attr.name === 'class' && isNull(attr.namespace)
@@ -279,7 +268,7 @@ export function getClassList(element: E) {
     } as DOMTokenList;
 }
 
-export function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
+function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
     const styleAttribute = element.attributes.find(
         (attr) => attr.name === 'style' && isNull(attr.namespace)
     );
@@ -297,16 +286,16 @@ export function setCSSStyleProperty(element: E, name: string, value: string, imp
     }
 }
 
-export function isConnected(node: HostNode) {
+function isConnected(node: HostNode) {
     return !isNull(node.parent);
 }
 
 // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
 // synthetic shadow.
-export const insertStylesheet = noop as (content: string, target: any) => void;
+const insertStylesheet = noop as (content: string, target: any) => void;
 
 // Noop on SSR.
-export const addEventListener = noop as (
+const addEventListener = noop as (
     target: HostNode,
     type: string,
     callback: EventListener,
@@ -314,57 +303,48 @@ export const addEventListener = noop as (
 ) => void;
 
 // Noop on SSR.
-export const removeEventListener = noop as (
+const removeEventListener = noop as (
     target: HostNode,
     type: string,
     callback: EventListener,
     options?: AddEventListenerOptions | boolean
 ) => void;
 
-export const dispatchEvent = unsupportedMethod('dispatchEvent') as (
-    target: any,
-    event: Event
-) => boolean;
-export const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
+const dispatchEvent = unsupportedMethod('dispatchEvent') as (target: any, event: Event) => boolean;
+const getBoundingClientRect = unsupportedMethod('getBoundingClientRect') as (
     element: HostElement
 ) => DOMRect;
-export const querySelector = unsupportedMethod('querySelector') as (
+const querySelector = unsupportedMethod('querySelector') as (
     element: HostElement,
     selectors: string
 ) => Element | null;
-export const querySelectorAll = unsupportedMethod('querySelectorAll') as (
+const querySelectorAll = unsupportedMethod('querySelectorAll') as (
     element: HostElement,
     selectors: string
 ) => NodeList;
-export const getElementsByTagName = unsupportedMethod('getElementsByTagName') as (
+const getElementsByTagName = unsupportedMethod('getElementsByTagName') as (
     element: HostElement,
     tagNameOrWildCard: string
 ) => HTMLCollection;
-export const getElementsByClassName = unsupportedMethod('getElementsByClassName') as (
+const getElementsByClassName = unsupportedMethod('getElementsByClassName') as (
     element: HostElement,
     names: string
 ) => HTMLCollection;
-export const getChildren = unsupportedMethod('getChildren') as (
-    element: HostElement
-) => HTMLCollection;
-export const getChildNodes = unsupportedMethod('getChildNodes') as (
-    element: HostElement
-) => NodeList;
-export const getFirstChild = unsupportedMethod('getFirstChild') as (
+const getChildren = unsupportedMethod('getChildren') as (element: HostElement) => HTMLCollection;
+const getChildNodes = unsupportedMethod('getChildNodes') as (element: HostElement) => NodeList;
+const getFirstChild = unsupportedMethod('getFirstChild') as (
     element: HostElement
 ) => HostNode | null;
-export const getFirstElementChild = unsupportedMethod('getFirstElementChild') as (
+const getFirstElementChild = unsupportedMethod('getFirstElementChild') as (
     element: HostElement
 ) => HostElement | null;
-export const getLastChild = unsupportedMethod('getLastChild') as (
-    element: HostElement
-) => HostNode | null;
-export const getLastElementChild = unsupportedMethod('getLastElementChild') as (
+const getLastChild = unsupportedMethod('getLastChild') as (element: HostElement) => HostNode | null;
+const getLastElementChild = unsupportedMethod('getLastElementChild') as (
     element: HostElement
 ) => HostElement | null;
 
 /* noop */
-export const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
+const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 
 interface CustomElementConstructor {
     new (...params: any[]): HTMLElement;
@@ -384,7 +364,7 @@ function getUpgradableConstructor(name: string): UpgradableCustomElementConstruc
     } as unknown as UpgradableCustomElementConstructor;
 }
 
-export function getUpgradableElement(name: string): UpgradableCustomElementConstructor {
+function getUpgradableElement(name: string): UpgradableCustomElementConstructor {
     let ctor = localRegistryRecord[name];
     if (!isUndefined(ctor)) {
         return ctor;
@@ -394,6 +374,47 @@ export function getUpgradableElement(name: string): UpgradableCustomElementConst
 }
 
 type UpgradeCallback = (elm: HostElement) => void;
-export const getUserConstructor = (upgradeCallback: UpgradeCallback) => {
+const getUserConstructor = (upgradeCallback: UpgradeCallback) => {
     return upgradeCallback;
+};
+
+export const renderer = {
+    ssr,
+    isNativeShadowDefined,
+    isSyntheticShadowDefined,
+    isHydrating,
+    insert,
+    remove,
+    createElement,
+    createText,
+    createComment,
+    nextSibling,
+    attachShadow,
+    getProperty,
+    setProperty,
+    setText,
+    getAttribute,
+    setAttribute,
+    removeAttribute,
+    addEventListener,
+    removeEventListener,
+    dispatchEvent,
+    getClassList,
+    setCSSStyleProperty,
+    getBoundingClientRect,
+    querySelector,
+    querySelectorAll,
+    getElementsByTagName,
+    getElementsByClassName,
+    getChildren,
+    getChildNodes,
+    getFirstChild,
+    getFirstElementChild,
+    getLastChild,
+    getLastElementChild,
+    isConnected,
+    insertStylesheet,
+    assertInstanceOfHTMLElement,
+    getUpgradableElement,
+    getUserConstructor,
 };

@@ -7,9 +7,6 @@
 // Polyfills ---------------------------------------------------------------------------------------
 import './polyfills';
 
-// Renderer initialization -------------------------------------------------------------------------
-import './initializeRenderer';
-
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
     createContextProvider,
@@ -34,3 +31,4 @@ export {
 // Engine-server public APIs -----------------------------------------------------------------------
 export { renderComponent } from './apis/render-component';
 export { LightningElement } from './apis/lightning-element';
+export { renderer } from './renderer';

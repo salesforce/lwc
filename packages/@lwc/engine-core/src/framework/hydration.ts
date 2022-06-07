@@ -7,16 +7,8 @@
 import { isUndefined, ArrayJoin, assert, keys, isNull } from '@lwc/shared';
 
 import { logError, logWarn } from '../shared/logger';
-import {
-    getAttribute,
-    getClassList,
-    setText,
-    getProperty,
-    setProperty,
-    nextSibling,
-    getFirstChild,
-} from '../renderer';
 
+import { RendererAPI } from './renderer';
 import { cloneAndOmitKey, parseStyleText } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
@@ -68,41 +60,44 @@ function hydrateVM(vm: VM) {
     const children = renderComponent(vm);
     vm.children = children;
 
-    const parentNode = vm.renderRoot;
-
+    const {
+        renderRoot: parentNode,
+        renderer: { getFirstChild },
+    } = vm;
     hydrateChildren(getFirstChild(parentNode), children, parentNode, vm);
     runRenderedCallback(vm);
 }
 
-function hydrateNode(node: Node, vnode: VNode): Node | null {
+function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | null {
     let hydratedNode;
     switch (vnode.type) {
         case VNodeType.Text:
-            hydratedNode = hydrateText(node, vnode);
+            // VText has no special capability, fallback to the owner's renderer
+            hydratedNode = hydrateText(node, vnode, renderer);
             break;
 
         case VNodeType.Comment:
-            hydratedNode = hydrateComment(node, vnode);
+            // VComment has no special capability, fallback to the owner's renderer
+            hydratedNode = hydrateComment(node, vnode, renderer);
             break;
 
         case VNodeType.Element:
-            hydratedNode = hydrateElement(node, vnode);
+            hydratedNode = hydrateElement(node, vnode, vnode.data.renderer ?? renderer);
             break;
 
         case VNodeType.CustomElement:
-            hydratedNode = hydrateCustomElement(node, vnode);
+            hydratedNode = hydrateCustomElement(node, vnode, vnode.data.renderer ?? renderer);
             break;
     }
-
-    return nextSibling(hydratedNode);
+    return renderer.nextSibling(hydratedNode);
 }
 
-function hydrateText(node: Node, vnode: VText): Node | null {
-    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT)) {
-        return handleMismatch(node, vnode);
+function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | null {
+    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT, renderer)) {
+        return handleMismatch(node, vnode, renderer);
     }
-
     if (process.env.NODE_ENV !== 'production') {
+        const { getProperty } = renderer;
         const nodeValue = getProperty(node, 'nodeValue');
 
         if (nodeValue !== vnode.text && !(nodeValue === '\u200D' && vnode.text === '')) {
@@ -112,19 +107,19 @@ function hydrateText(node: Node, vnode: VText): Node | null {
             );
         }
     }
-
+    const { setText } = renderer;
     setText(node, vnode.text ?? null);
     vnode.elm = node;
 
     return node;
 }
 
-function hydrateComment(node: Node, vnode: VComment): Node | null {
-    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.COMMENT)) {
-        return handleMismatch(node, vnode);
+function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Node | null {
+    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.COMMENT, renderer)) {
+        return handleMismatch(node, vnode, renderer);
     }
-
     if (process.env.NODE_ENV !== 'production') {
+        const { getProperty } = renderer;
         const nodeValue = getProperty(node, 'nodeValue');
 
         if (nodeValue !== vnode.text) {
@@ -135,22 +130,24 @@ function hydrateComment(node: Node, vnode: VComment): Node | null {
         }
     }
 
+    const { setProperty } = renderer;
     setProperty(node, 'nodeValue', vnode.text ?? null);
     vnode.elm = node;
 
     return node;
 }
 
-function hydrateElement(elm: Node, vnode: VElement): Node | null {
+function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
     if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT) ||
-        !isMatchingElement(vnode, elm)
+        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+        !isMatchingElement(vnode, elm, renderer)
     ) {
-        return handleMismatch(elm, vnode);
+        return handleMismatch(elm, vnode, renderer);
     }
 
     vnode.elm = elm;
 
+    const { owner } = vnode;
     const { context } = vnode.data;
     const isDomManual = Boolean(
         !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LwcDomMode.Manual
@@ -159,7 +156,10 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
     if (isDomManual) {
         // it may be that this element has lwc:inner-html, we need to diff and in case are the same,
         // remove the innerHTML from props so it reuses the existing dom elements.
-        const { props } = vnode.data;
+        const {
+            data: { props },
+        } = vnode;
+        const { getProperty } = renderer;
         if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
             if (getProperty(elm, 'innerHTML') === props.innerHTML) {
                 // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
@@ -174,33 +174,38 @@ function hydrateElement(elm: Node, vnode: VElement): Node | null {
                             elm,
                             'tagName'
                         ).toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
-                        vnode.owner
+                        owner
                     );
                 }
             }
         }
     }
 
-    patchElementPropsAndAttrs(vnode);
+    patchElementPropsAndAttrs(vnode, renderer);
 
     if (!isDomManual) {
-        hydrateChildren(getFirstChild(elm), vnode.children, elm, vnode.owner);
+        const { getFirstChild } = renderer;
+        hydrateChildren(getFirstChild(elm), vnode.children, elm, owner);
     }
 
     return elm;
 }
 
-function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
+function hydrateCustomElement(
+    elm: Node,
+    vnode: VCustomElement,
+    renderer: RendererAPI
+): Node | null {
     if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT) ||
-        !isMatchingElement(vnode, elm)
+        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+        !isMatchingElement(vnode, elm, renderer)
     ) {
-        return handleMismatch(elm, vnode);
+        return handleMismatch(elm, vnode, renderer);
     }
 
     const { sel, mode, ctor, owner } = vnode;
 
-    const vm = createVM(elm, ctor, {
+    const vm = createVM(elm, ctor, renderer, {
         mode,
         owner,
         tagName: sel,
@@ -211,7 +216,7 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
     vnode.vm = vm;
 
     allocateChildren(vnode, vm);
-    patchElementPropsAndAttrs(vnode);
+    patchElementPropsAndAttrs(vnode, renderer);
 
     // Insert hook section:
     if (process.env.NODE_ENV !== 'production') {
@@ -220,6 +225,7 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
     runConnectedCallback(vm);
 
     if (vm.renderMode !== RenderMode.Light) {
+        const { getFirstChild } = renderer;
         // VM is not rendering in Light DOM, we can proceed and hydrate the slotted content.
         // Note: for Light DOM, this is handled while hydrating the VM
         hydrateChildren(getFirstChild(elm), vnode.children, elm, vm);
@@ -238,12 +244,13 @@ function hydrateChildren(
     let hasWarned = false;
     let nextNode: Node | null = node;
     let anchor: Node | null = null;
+    const { renderer } = owner;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
 
         if (!isNull(childVnode)) {
             if (nextNode) {
-                nextNode = hydrateNode(nextNode, childVnode);
+                nextNode = hydrateNode(nextNode, childVnode, renderer);
                 anchor = childVnode.elm!;
             } else {
                 hasMismatch = true;
@@ -256,7 +263,7 @@ function hydrateChildren(
                         );
                     }
                 }
-                mount(childVnode, parentNode, anchor);
+                mount(childVnode, parentNode, renderer, anchor);
                 anchor = childVnode.elm!;
             }
         }
@@ -272,34 +279,41 @@ function hydrateChildren(
                 );
             }
         }
+        // nextSibling is mostly harmless, and since we don't have
+        // a good reference to what element to act upon, we instead
+        // rely on the vm's associated renderer for navigating to the
+        // next node in the list to be hydrated.
+        const { nextSibling } = renderer;
         do {
             const current = nextNode;
             nextNode = nextSibling(nextNode);
-            removeNode(current, parentNode);
+            removeNode(current, parentNode, renderer);
         } while (nextNode);
     }
 }
 
-function handleMismatch(node: Node, vnode: VNode, msg?: string): Node | null {
+function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node | null {
     hasMismatch = true;
-    if (!isUndefined(msg)) {
-        if (process.env.NODE_ENV !== 'production') {
-            logError(msg, vnode.owner);
-        }
-    }
+    const { getProperty } = renderer;
     const parentNode = getProperty(node, 'parentNode');
-    mount(vnode, parentNode, node);
-    removeNode(node, parentNode);
+    mount(vnode, parentNode, renderer, node);
+    removeNode(node, parentNode, renderer);
 
     return vnode.elm!;
 }
 
-function patchElementPropsAndAttrs(vnode: VBaseElement) {
-    applyEventListeners(vnode);
-    patchProps(null, vnode);
+function patchElementPropsAndAttrs(vnode: VBaseElement, renderer: RendererAPI) {
+    applyEventListeners(vnode, renderer);
+    patchProps(null, vnode, renderer);
 }
 
-function hasCorrectNodeType<T extends Node>(vnode: VNode, node: Node, nodeType: number): node is T {
+function hasCorrectNodeType<T extends Node>(
+    vnode: VNode,
+    node: Node,
+    nodeType: number,
+    renderer: RendererAPI
+): node is T {
+    const { getProperty } = renderer;
     if (getProperty(node, 'nodeType') !== nodeType) {
         if (process.env.NODE_ENV !== 'production') {
             logError('Hydration mismatch: incorrect node type received', vnode.owner);
@@ -310,7 +324,8 @@ function hasCorrectNodeType<T extends Node>(vnode: VNode, node: Node, nodeType: 
     return true;
 }
 
-function isMatchingElement(vnode: VBaseElement, elm: Element) {
+function isMatchingElement(vnode: VBaseElement, elm: Element, renderer: RendererAPI) {
+    const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
@@ -325,14 +340,14 @@ function isMatchingElement(vnode: VBaseElement, elm: Element) {
         return false;
     }
 
-    const hasIncompatibleAttrs = validateAttrs(vnode, elm);
-    const hasIncompatibleClass = validateClassAttr(vnode, elm);
-    const hasIncompatibleStyle = validateStyleAttr(vnode, elm);
+    const hasIncompatibleAttrs = validateAttrs(vnode, elm, renderer);
+    const hasIncompatibleClass = validateClassAttr(vnode, elm, renderer);
+    const hasIncompatibleStyle = validateStyleAttr(vnode, elm, renderer);
 
     return hasIncompatibleAttrs && hasIncompatibleClass && hasIncompatibleStyle;
 }
 
-function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
+function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
     const {
         data: { attrs = {} },
     } = vnode;
@@ -342,15 +357,18 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
     for (const [attrName, attrValue] of Object.entries(attrs)) {
+        const { owner } = vnode;
+        const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
         if (String(attrValue) !== elmAttrValue) {
             if (process.env.NODE_ENV !== 'production') {
+                const { getProperty } = renderer;
                 logError(
                     `Mismatch hydrating element <${getProperty(
                         elm,
                         'tagName'
                     ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found "${elmAttrValue}"`,
-                    vnode.owner
+                    owner
                 );
             }
             nodesAreCompatible = false;
@@ -360,11 +378,11 @@ function validateAttrs(vnode: VBaseElement, elm: Element): boolean {
     return nodesAreCompatible;
 }
 
-function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
+function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
     const {
         data: { className, classMap },
     } = vnode;
-
+    const { getProperty, getClassList } = renderer;
     let nodesAreCompatible = true;
     let vnodeClassName;
 
@@ -410,10 +428,11 @@ function validateClassAttr(vnode: VBaseElement, elm: Element): boolean {
     return nodesAreCompatible;
 }
 
-function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
+function validateStyleAttr(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
     const {
         data: { style, styleDecls },
     } = vnode;
+    const { getAttribute } = renderer;
     const elmStyle = getAttribute(elm, 'style') || '';
     let vnodeStyle;
     let nodesAreCompatible = true;
@@ -449,6 +468,7 @@ function validateStyleAttr(vnode: VBaseElement, elm: Element): boolean {
 
     if (!nodesAreCompatible) {
         if (process.env.NODE_ENV !== 'production') {
+            const { getProperty } = renderer;
             logError(
                 `Mismatch hydrating element <${getProperty(
                     elm,

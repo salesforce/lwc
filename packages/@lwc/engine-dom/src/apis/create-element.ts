@@ -20,7 +20,7 @@ import {
     disconnectRootElement,
     LightningElement,
 } from '@lwc/engine-core';
-import { getUpgradableElement, getUserConstructor } from '../renderer';
+import { renderer } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line lwc-internal/no-global-node
@@ -102,6 +102,8 @@ export function createElement(
         );
     }
 
+    const { getUpgradableElement, getUserConstructor } = renderer;
+
     // tagName must be all lowercase, unfortunately, we have legacy code that is
     // passing `sel` as a camel-case, which makes them invalid custom elements name
     // the following line guarantees that this does not leaks beyond this point.
@@ -116,7 +118,7 @@ export function createElement(
      * an upgradable custom element.
      */
     const upgradeCallback = (elm: HTMLElement) => {
-        createVM(elm, Ctor, {
+        createVM(elm, Ctor, renderer, {
             tagName,
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,

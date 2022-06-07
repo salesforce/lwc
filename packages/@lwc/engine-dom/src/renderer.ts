@@ -7,106 +7,15 @@
 
 import {
     assert,
-    create,
     hasOwnProperty,
     htmlPropertyToAttribute,
     globalThis,
     isUndefined,
     KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SHADOW_TOKEN,
-    setPrototypeOf,
-    isFunction,
 } from '@lwc/shared';
-import { patchCustomElementRegistry } from './patches/global-registry';
-
-export { insertStylesheet } from './styles';
-
-let HTMLElementConstructor;
-
-function isCustomElementRegistryAvailable() {
-    if (typeof customElements === 'undefined') {
-        return false;
-    }
-    try {
-        // dereference HTMLElement global because babel wraps globals in compat mode with a
-        // _wrapNativeSuper()
-        // This is a problem because LWCUpgradableElement extends renderer.HTMLElement which does not
-        // get wrapped by babel.
-        const HTMLElementAlias = HTMLElement;
-        // In case we use compat mode with a modern browser, the compat mode transformation
-        // invokes the DOM api with an .apply() or .call() to initialize any DOM api sub-classing,
-        // which are not equipped to be initialized that way.
-        class clazz extends HTMLElementAlias {}
-
-        customElements.define('lwc-test-' + Math.floor(Math.random() * 1000000), clazz);
-        new clazz();
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-if (isCustomElementRegistryAvailable()) {
-    HTMLElementConstructor = HTMLElement;
-} else {
-    const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-    HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
-        if (!(this instanceof HTMLElement)) {
-            throw new TypeError(`Invalid Invocation`);
-        }
-        const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        const elm = document.createElement(name);
-        setPrototypeOf(elm, constructor.prototype);
-        return elm;
-    };
-    HTMLElementConstructor.prototype = HTMLElement.prototype;
-}
-
-type UpgradeCallback = (elm: HTMLElement) => void;
-interface UpgradableCustomElementConstructor extends CustomElementConstructor {
-    new (upgradeCallback?: UpgradeCallback): HTMLElement;
-}
-export let getUpgradableElement: (name: string) => CustomElementConstructor;
-export let getUserConstructor: (
-    upgradeCallback: UpgradeCallback
-) => UpgradableCustomElementConstructor | UpgradeCallback;
-if (isCustomElementRegistryAvailable()) {
-    const getPivotCustomElement = patchCustomElementRegistry();
-    const cachedConstructor: Record<string, CustomElementConstructor> = create(null);
-    getUpgradableElement = (name: string) => {
-        let Ctor = cachedConstructor[name];
-        if (!Ctor) {
-            class LWCUpgradableElement extends HTMLElement {}
-            Ctor = getPivotCustomElement(name, LWCUpgradableElement);
-        }
-        return Ctor;
-    };
-    getUserConstructor = (upgradeCallback: UpgradeCallback) => {
-        return class UserElement extends HTMLElement {
-            constructor() {
-                super();
-                upgradeCallback(this);
-            }
-        };
-    };
-} else {
-    // no registry available here
-    getUpgradableElement = (name: string): UpgradableCustomElementConstructor => {
-        return function (upgradeCallback?: UpgradeCallback) {
-            const elm = document.createElement(name);
-            if (isFunction(upgradeCallback)) {
-                upgradeCallback(elm); // nothing to do with the result for now
-            }
-            return elm;
-        } as unknown as UpgradableCustomElementConstructor;
-    };
-    getUserConstructor = (upgradeCallback: UpgradeCallback) => upgradeCallback;
-}
+import { insertStylesheet } from './styles';
+import { getUpgradableElement, getUserConstructor } from './customElements';
 
 let hydrating = false;
 
@@ -114,60 +23,60 @@ export function setIsHydrating(value: boolean) {
     hydrating = value;
 }
 
-export const ssr: boolean = false;
+const ssr: boolean = false;
 
-export function isHydrating(): boolean {
+function isHydrating(): boolean {
     return hydrating;
 }
 
-export const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
+const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
     Element.prototype,
     KEY__SHADOW_TOKEN
 );
 
-export function createElement(tagName: string, namespace?: string): Element {
+function createElement(tagName: string, namespace?: string): Element {
     return isUndefined(namespace)
         ? document.createElement(tagName)
         : document.createElementNS(namespace, tagName);
 }
 
-export function createText(content: string): Node {
+function createText(content: string): Node {
     return document.createTextNode(content);
 }
 
-export function createComment(content: string): Node {
+function createComment(content: string): Node {
     return document.createComment(content);
 }
 
-export function insert(node: Node, parent: Node, anchor: Node): void {
+function insert(node: Node, parent: Node, anchor: Node): void {
     parent.insertBefore(node, anchor);
 }
 
-export function remove(node: Node, parent: Node): void {
+function remove(node: Node, parent: Node): void {
     parent.removeChild(node);
 }
 
-export function nextSibling(node: Node): Node | null {
+function nextSibling(node: Node): Node | null {
     return node.nextSibling;
 }
 
-export function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
+function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
     if (hydrating) {
         return element.shadowRoot!;
     }
     return element.attachShadow(options);
 }
 
-export function setText(node: Node, content: string): void {
+function setText(node: Node, content: string): void {
     node.nodeValue = content;
 }
 
-export function getProperty(node: Node, key: string): any {
+function getProperty(node: Node, key: string): any {
     return (node as any)[key];
 }
 
-export function setProperty(node: Node, key: string, value: any): void {
+function setProperty(node: Node, key: string, value: any): void {
     if (process.env.NODE_ENV !== 'production') {
         if (node instanceof Element && !(key in node)) {
             // TODO [#1297]: Move this validation to the compiler
@@ -184,17 +93,13 @@ export function setProperty(node: Node, key: string, value: any): void {
     (node as any)[key] = value;
 }
 
-export function getAttribute(
-    element: Element,
-    name: string,
-    namespace?: string | null
-): string | null {
+function getAttribute(element: Element, name: string, namespace?: string | null): string | null {
     return isUndefined(namespace)
         ? element.getAttribute(name)
         : element.getAttributeNS(namespace, name);
 }
 
-export function setAttribute(
+function setAttribute(
     element: Element,
     name: string,
     value: string,
@@ -205,7 +110,7 @@ export function setAttribute(
         : element.setAttributeNS(namespace, name, value);
 }
 
-export function removeAttribute(element: Element, name: string, namespace?: string | null): void {
+function removeAttribute(element: Element, name: string, namespace?: string | null): void {
     if (isUndefined(namespace)) {
         element.removeAttribute(name);
     } else {
@@ -213,7 +118,7 @@ export function removeAttribute(element: Element, name: string, namespace?: stri
     }
 }
 
-export function addEventListener(
+function addEventListener(
     target: Node,
     type: string,
     callback: EventListener,
@@ -222,7 +127,7 @@ export function addEventListener(
     target.addEventListener(type, callback, options);
 }
 
-export function removeEventListener(
+function removeEventListener(
     target: Node,
     type: string,
     callback: EventListener,
@@ -231,15 +136,15 @@ export function removeEventListener(
     target.removeEventListener(type, callback, options);
 }
 
-export function dispatchEvent(target: Node, event: Event): boolean {
+function dispatchEvent(target: Node, event: Event): boolean {
     return target.dispatchEvent(event);
 }
 
-export function getClassList(element: Element): DOMTokenList {
+function getClassList(element: Element): DOMTokenList {
     return element.classList;
 }
 
-export function setCSSStyleProperty(
+function setCSSStyleProperty(
     element: Element,
     name: string,
     value: string,
@@ -254,54 +159,95 @@ export function setCSSStyleProperty(
     );
 }
 
-export function getBoundingClientRect(element: Element): DOMRect {
+function getBoundingClientRect(element: Element): DOMRect {
     return element.getBoundingClientRect();
 }
 
-export function querySelector(element: Element, selectors: string): Element | null {
+function querySelector(element: Element, selectors: string): Element | null {
     return element.querySelector(selectors);
 }
 
-export function querySelectorAll(element: Element, selectors: string): NodeList {
+function querySelectorAll(element: Element, selectors: string): NodeList {
     return element.querySelectorAll(selectors);
 }
 
-export function getElementsByTagName(element: Element, tagNameOrWildCard: string): HTMLCollection {
+function getElementsByTagName(element: Element, tagNameOrWildCard: string): HTMLCollection {
     return element.getElementsByTagName(tagNameOrWildCard);
 }
 
-export function getElementsByClassName(element: Element, names: string): HTMLCollection {
+function getElementsByClassName(element: Element, names: string): HTMLCollection {
     return element.getElementsByClassName(names);
 }
 
-export function getChildren(element: Element): HTMLCollection {
+function getChildren(element: Element): HTMLCollection {
     return element.children;
 }
 
-export function getChildNodes(element: Element): NodeList {
+function getChildNodes(element: Element): NodeList {
     return element.childNodes;
 }
 
-export function getFirstChild(element: Element): Node | null {
+function getFirstChild(element: Element): Node | null {
     return element.firstChild;
 }
 
-export function getFirstElementChild(element: Element): Element | null {
+function getFirstElementChild(element: Element): Element | null {
     return element.firstElementChild;
 }
 
-export function getLastChild(element: Element): Node | null {
+function getLastChild(element: Element): Node | null {
     return element.lastChild;
 }
 
-export function getLastElementChild(element: Element): Element | null {
+function getLastElementChild(element: Element): Element | null {
     return element.lastElementChild;
 }
 
-export function isConnected(node: Node): boolean {
+function isConnected(node: Node): boolean {
     return node.isConnected;
 }
 
-export function assertInstanceOfHTMLElement(elm: any, msg: string) {
+function assertInstanceOfHTMLElement(elm: any, msg: string) {
     assert.invariant(elm instanceof HTMLElement, msg);
 }
+
+export const renderer = {
+    ssr,
+    isNativeShadowDefined,
+    isSyntheticShadowDefined,
+    isHydrating,
+    insert,
+    remove,
+    createElement,
+    createText,
+    createComment,
+    nextSibling,
+    attachShadow,
+    getProperty,
+    setProperty,
+    setText,
+    getAttribute,
+    setAttribute,
+    removeAttribute,
+    addEventListener,
+    removeEventListener,
+    dispatchEvent,
+    getClassList,
+    setCSSStyleProperty,
+    getBoundingClientRect,
+    querySelector,
+    querySelectorAll,
+    getElementsByTagName,
+    getElementsByClassName,
+    getChildren,
+    getChildNodes,
+    getFirstChild,
+    getFirstElementChild,
+    getLastChild,
+    getLastElementChild,
+    isConnected,
+    insertStylesheet,
+    assertInstanceOfHTMLElement,
+    getUpgradableElement,
+    getUserConstructor,
+};
