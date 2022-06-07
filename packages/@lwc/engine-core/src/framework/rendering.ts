@@ -103,7 +103,7 @@ function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
         case VNodeType.Static:
             n2.elm = n1.elm;
             break;
-    
+
         case VNodeType.Element:
             patchElement(n1 as VElement, n2, n2.data.renderer ?? renderer);
             break;
@@ -130,7 +130,7 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
             // VStatic cannot have a custom renderer associated to them, using owner's renderer
             mountStatic(node, parent, anchor, renderer);
             break;
-    
+
         case VNodeType.Element:
             // If the vnode data has a renderer override use it, else fallback to owner's renderer
             mountElement(node, parent, anchor, node.data.renderer ?? renderer);
@@ -226,7 +226,7 @@ function mountStatic(
     renderer: RendererAPI
 ) {
     const { owner } = vnode;
-    const { cloneNode, isSyntheticShadowDefined, insertNode } = renderer;
+    const { cloneNode, isSyntheticShadowDefined } = renderer;
     const elm = (vnode.elm = cloneNode(vnode.fragment, true));
 
     linkNodeToShadow(elm, owner, renderer);
@@ -245,7 +245,7 @@ function mountStatic(
         patchElementWithRestrictions(elm, { isPortal: false, isLight });
     }
 
-    insertNode(elm, parent, anchor);
+    insertNode(elm, parent, anchor, renderer);
 }
 
 function mountCustomElement(
