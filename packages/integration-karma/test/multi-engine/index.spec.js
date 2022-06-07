@@ -1,6 +1,6 @@
 // fetch() does not work in IE
 if (!process.env.COMPAT) {
-    describe('multi-engine', () => {
+    describe('multiple copies of LWC engine loaded', () => {
         function getCode(src) {
             return fetch(src)
                 .then((resp) => resp.text())
@@ -21,51 +21,79 @@ if (!process.env.COMPAT) {
             return Promise.all(promises);
         }
 
-        function helloWorld(lwc, tagName) {
+        function helloWorld(tagName) {
             // basic hello world compiled LWC component
             function tmpl($api) {
                 const { t: api_text, h: api_element } = $api;
                 return [api_element('h1', { key: 0 }, [api_text('Hello world')])];
             }
 
-            lwc.registerTemplate(tmpl);
+            LWC.registerTemplate(tmpl);
             tmpl.stylesheets = [];
-            lwc.freezeTemplate(tmpl);
+            LWC.freezeTemplate(tmpl);
 
-            const Component = lwc.registerComponent(class extends lwc.LightningElement {}, {
+            const Component = LWC.registerComponent(class extends LWC.LightningElement {}, {
                 tmpl,
             });
 
-            const elm = lwc.createElement(tagName, { is: Component });
+            const elm = LWC.createElement(tagName, { is: Component });
             document.body.appendChild(elm);
         }
 
-        it('works with multiple copies of the LWC engine loaded', () => {
-            const iframe = document.createElement('iframe');
+        let iframe;
+        let engineScripts;
+
+        function evaluate(scriptOrScripts) {
+            if (!Array.isArray(scriptOrScripts)) {
+                scriptOrScripts = [scriptOrScripts];
+            }
+            for (const script of scriptOrScripts) {
+                iframe.contentWindow.eval(script);
+            }
+        }
+
+        beforeEach(() => {
+            iframe = document.createElement('iframe');
             iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
 
             document.body.appendChild(iframe);
-
             return getEngineCode().then((scripts) => {
-                const { contentWindow, contentDocument } = iframe;
-
-                for (const script of scripts) {
-                    contentWindow.eval(script);
-                }
-                contentWindow.eval('(' + helloWorld.toString() + ')(LWC, "x-foo");');
-                expect(
-                    contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                        .textContent
-                ).toEqual('Hello world');
-                for (const script of scripts) {
-                    contentWindow.eval(script);
-                }
-                contentWindow.eval('(' + helloWorld.toString() + ')(LWC, "x-bar");');
-                expect(
-                    contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
-                        .textContent
-                ).toEqual('Hello world');
+                engineScripts = scripts;
             });
+        });
+
+        it('creates elements', () => {
+            evaluate(engineScripts);
+            evaluate(`(${helloWorld})('x-foo')`);
+            expect(
+                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                    .textContent
+            ).toEqual('Hello world');
+            evaluate(engineScripts);
+            evaluate(`(${helloWorld})('x-bar')`);
+            expect(
+                iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
+                    .textContent
+            ).toEqual('Hello world');
+        });
+
+        it('errors on duplicate tag names', () => {
+            evaluate(engineScripts);
+            evaluate(`(${helloWorld})('x-foo')`);
+            expect(
+                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                    .textContent
+            ).toEqual('Hello world');
+            evaluate(engineScripts);
+            expect(() => {
+                try {
+                    evaluate(`(${helloWorld})('x-foo')`);
+                } catch (err) {
+                    // Rethrowing the error is necessary because otherwise Jasmine
+                    // gets confused by the iframe's Error object versus our Error object
+                    throw new Error(err.message);
+                }
+            }).toThrowError(/the name "x-foo" has already been used with this registry/);
         });
     });
 }
