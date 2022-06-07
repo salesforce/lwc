@@ -1,6 +1,5 @@
 import {
     createElement,
-    freezeTemplate,
     LightningElement,
     registerComponent,
     registerTemplate,
@@ -86,7 +85,7 @@ describe('ACTCompiler', () => {
                 case 'html/tags':
                     return HtmlTags;
                 case 'lwc':
-                    return { freezeTemplate, registerComponent, registerTemplate };
+                    return { registerComponent, registerTemplate };
                 case 'nested/htmlTags':
                     return NestedHtmlTags;
                 case 'ui/another':

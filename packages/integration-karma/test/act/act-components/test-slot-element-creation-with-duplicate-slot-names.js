@@ -68,12 +68,14 @@ export default function (define) {
                 ];
             }
 
-            lwc.registerTemplate(tmpl);
+            var _tmpl = lwc.registerTemplate(tmpl);
             tmpl.slots = ['first'];
             tmpl.stylesheets = [];
             tmpl.stylesheetToken = 'records-recordLayout2_recordLayout2';
-            lwc.freezeTemplate(tmpl);
-            return tmpl;
+            var recordLayout2 = lwc.registerComponent(_tmpl, {
+                tmpl: _tmpl,
+            });
+            return recordLayout2;
         }
     );
 }
