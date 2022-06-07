@@ -26,12 +26,10 @@ export default function (define) {
             ];
         }
 
-        var _tmpl = lwc.registerTemplate(tmpl);
+        lwc.registerTemplate(tmpl);
         tmpl.stylesheets = [];
         tmpl.stylesheetToken = 'records-recordLayout2_recordLayout2';
-        var recordLayout2 = lwc.registerComponent(_tmpl, {
-            tmpl: _tmpl,
-        });
-        return recordLayout2;
+        lwc.freezeTemplate(tmpl);
+        return tmpl;
     });
 }
