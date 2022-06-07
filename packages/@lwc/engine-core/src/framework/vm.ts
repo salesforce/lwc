@@ -87,8 +87,8 @@ export interface Context {
     hasTokenInAttribute: boolean | undefined;
     /** Whether or not light DOM scoped styles are present in the stylesheets. */
     hasScopedStyles: boolean | undefined;
-    /** The VNode injected in all the shadow trees to apply the associated component stylesheets. */
-    styleVNode: VNode | null;
+    /** The VNodes injected in all the shadow trees to apply the associated component stylesheets. */
+    styleVNodes: VNode[] | null;
     /** Object used by the template function to store information that can be reused between
      *  different render cycle of the same template. */
     tplCache: TemplateCache;
@@ -304,7 +304,7 @@ export function createVM<HostNode, HostElement>(
             hasTokenInClass: undefined,
             hasTokenInAttribute: undefined,
             hasScopedStyles: undefined,
-            styleVNode: null,
+            styleVNodes: null,
             tplCache: EmptyObject,
             wiredConnecting: EmptyArray,
             wiredDisconnecting: EmptyArray,
