@@ -81,5 +81,28 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             'x-interop-lwc-constructor',
             Interop.CustomElementConstructor
         );
+
+        function testDuplicateLwcRegistration(testCase, tag, WebComponentConstructor) {
+            it(`should register duplicate tag via lwc.createElement to override element registered with ${testCase}`, () => {
+                customElements.define(tag, WebComponentConstructor);
+                const customElement = document.createElement(tag);
+                document.body.appendChild(customElement);
+                const lwcElement = createElement(tag, { is: Interop });
+                document.body.appendChild(lwcElement);
+                // Both elements will be created with the same tag
+                expect(customElement.tagName.toLowerCase()).toEqual(tag);
+                expect(lwcElement.tagName.toLowerCase()).toEqual(tag);
+            });
+        }
+        testDuplicateLwcRegistration(
+            'anonymous class',
+            'x-interop-native-wc',
+            class extends HTMLElement {}
+        );
+        testDuplicateLwcRegistration(
+            'CustomElementConstructor getter',
+            'x-interop-lwc-wcclass',
+            Interop.CustomElementConstructor
+        );
     });
 }
