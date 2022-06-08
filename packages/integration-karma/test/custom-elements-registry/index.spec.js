@@ -1,3 +1,7 @@
+// Old versions of Safari use the second error message
+const alreadyUsedErrorMessage =
+    /(has already been used with this registry|Cannot define multiple custom elements with the same tag name)/;
+
 function getCode(src) {
     return fetch(src)
         .then((resp) => resp.text())
@@ -110,7 +114,7 @@ describe('custom elements registry', () => {
             evaluate(engineScripts);
             expect(() => {
                 evaluate(`(${createLWC})('x-foo')`);
-            }).toThrowError(/the name "x-foo" has already been used with this registry/);
+            }).toThrowError(alreadyUsedErrorMessage);
         });
     });
 
@@ -138,7 +142,7 @@ describe('custom elements registry', () => {
             evaluate(engineScripts);
             expect(() => {
                 evaluate(`(${createLWC})('x-foo')`);
-            }).toThrowError(/the name "x-foo" has already been used with this registry/);
+            }).toThrowError(alreadyUsedErrorMessage);
             expect(
                 iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                     .textContent
