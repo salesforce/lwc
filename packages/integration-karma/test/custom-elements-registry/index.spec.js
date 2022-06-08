@@ -1,6 +1,6 @@
-// Old versions of Safari use the second error message
+// Error message differs between browsers
 const alreadyUsedErrorMessage =
-    /(has already been used with this registry|Cannot define multiple custom elements with the same tag name)/;
+    /(has already been used with this registry|Cannot define multiple custom elements with the same tag name|has already been defined as a custom element)/;
 
 function getCode(src) {
     return fetch(src)
