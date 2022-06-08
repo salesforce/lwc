@@ -311,7 +311,14 @@ export function patchCustomElementRegistry() {
         this: CustomElementRegistry,
         tagName: string
     ): CustomElementConstructor | undefined {
-        return nativeGet.call(this, tagName) && definitionsByTag.get(tagName)?.UserCtor;
+        const NativeCtor = nativeGet.call(this, tagName);
+        if (!isUndefined(NativeCtor)) {
+            const definition = definitionsByTag.get(tagName);
+            if (!isUndefined(definition)) {
+                return definition.UserCtor; // defined by the patched custom elements registry
+            }
+            return NativeCtor; // defined before the patched custom elements registry loaded
+        }
     };
 
     CustomElementRegistry.prototype.whenDefined = function whenDefined(
