@@ -174,6 +174,7 @@ describe('custom elements registry', () => {
             ).toEqual('Not LWC!');
         });
 
+        // TODO [#2877]: element is not upgraded
         // fit('can upgrade elements that existed before engine loads - LWC', () => {
         //     evaluate(() => document.body.appendChild(document.createElement('x-foo')))
         //     evaluate(engineScripts)
@@ -181,17 +182,12 @@ describe('custom elements registry', () => {
         //     expect(iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC')
         // })
 
-        // fit('can do customElements.whenDefined() for element registered before engine loads', () => {
-        //     evaluate(`(${createVanilla})()`)
-        //     evaluate(engineScripts)
-        //     const promise = evaluate(() => {
-        //         return customElements.whenDefined('x-foo').then(ctor => {
-        //             console.log('defined', ctor)
-        //         })
-        //     })
-        //     return promise.then(Ctor => {
-        //         expect(Ctor.name).toEqual('MyCustomElement')
-        //     })
-        // })
+        it('can do customElements.whenDefined() for element registered before engine loads', () => {
+            evaluate(`(${createVanilla})()`);
+            evaluate(engineScripts);
+            return evaluate(() => customElements.whenDefined('x-foo')).then((Ctor) => {
+                expect(Ctor.name).toEqual('MyCustomElement');
+            });
+        });
     });
 });
