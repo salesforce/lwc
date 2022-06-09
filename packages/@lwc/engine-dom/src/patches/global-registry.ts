@@ -19,8 +19,10 @@ const pendingRegistryForElement = new WeakMap<HTMLElement, Definition>();
 const definitionForConstructor = new WeakMap<CustomElementConstructor, Definition>();
 
 const pivotCtorByTag = new Map<string, CustomElementConstructor>();
-const definitionsByTag = new Map<string, Definition>();
-const definitionsByClass = new Map<CustomElementConstructor, Definition>();
+const globalDefinitionsByTag = new Map<string, Definition>();
+const localDefinitionsByTag = new Map<string, Definition>();
+const globalDefinitionsByClass = new Map<CustomElementConstructor, Definition>();
+const localDefinitionsByClass = new Map<CustomElementConstructor, Definition>();
 const definedPromises = new Map<string, Promise<CustomElementConstructor>>();
 const definedResolvers = new Map<string, (ctor: CustomElementConstructor) => void>();
 const awaitingUpgrade = new Map<string, Set<HTMLElement>>();
@@ -67,7 +69,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
             super();
             const definition = UserCtor
                 ? getDefinitionForConstructor(UserCtor)
-                : definitionsByTag.get(tagName);
+                : globalDefinitionsByTag.get(tagName);
             if (!isUndefined(definition)) {
                 internalUpgrade(this, registeredDefinition, definition);
             } else {
@@ -243,6 +245,16 @@ function getDefinitionForConstructor(constructor: CustomElementConstructor): Def
     return definition;
 }
 
+function flushWhenDefined(tagName: string, Ctor: CustomElementConstructor) {
+    // Flush whenDefined callbacks
+    const resolver = definedResolvers.get(tagName);
+    if (resolver) {
+        definedResolvers.delete(tagName);
+        definedPromises.delete(tagName);
+        resolver(Ctor);
+    }
+}
+
 export function patchCustomElementRegistry() {
     const { customElements: nativeRegistry } = window;
     const { define: nativeDefine, whenDefined: nativeWhenDefined, get: nativeGet } = nativeRegistry;
@@ -260,20 +272,19 @@ export function patchCustomElementRegistry() {
             );
         }
         nativeGet.call(this, tagName); // SyntaxError if The provided name is not a valid custom element name.
-        tagName = tagName.toLowerCase();
-        if (!isUndefined(definitionsByTag.get(tagName))) {
+        if (!isUndefined(globalDefinitionsByTag.get(tagName))) {
             throw new DOMException(
                 `Failed to execute 'define' on 'CustomElementRegistry': the name "${tagName}" has already been used with this registry`
             );
         }
         const definition = getDefinitionForConstructor(constructor);
-        if (!isUndefined(definitionsByClass.get(constructor))) {
+        if (!isUndefined(globalDefinitionsByClass.get(constructor))) {
             throw new DOMException(
                 `Failed to execute 'define' on 'CustomElementRegistry': this constructor has already been used with this registry`
             );
         }
-        definitionsByTag.set(tagName, definition);
-        definitionsByClass.set(constructor, definition);
+        globalDefinitionsByTag.set(tagName, definition);
+        globalDefinitionsByClass.set(constructor, definition);
         let PivotCtor = pivotCtorByTag.get(tagName);
         if (isUndefined(PivotCtor)) {
             PivotCtor = createPivotingClass(tagName, definition);
@@ -300,11 +311,7 @@ export function patchCustomElementRegistry() {
                 }
             }
         }
-        // Flush whenDefined callbacks
-        const resolver = definedResolvers.get(tagName);
-        if (resolver) {
-            resolver(constructor);
-        }
+        flushWhenDefined(tagName, constructor);
     };
 
     CustomElementRegistry.prototype.get = function get(
@@ -313,7 +320,7 @@ export function patchCustomElementRegistry() {
     ): CustomElementConstructor | undefined {
         const NativeCtor = nativeGet.call(this, tagName);
         if (!isUndefined(NativeCtor)) {
-            const definition = definitionsByTag.get(tagName);
+            const definition = globalDefinitionsByTag.get(tagName);
             if (!isUndefined(definition)) {
                 return definition.UserCtor; // defined by the patched custom elements registry
             }
@@ -328,9 +335,13 @@ export function patchCustomElementRegistry() {
         return nativeWhenDefined.call(this, tagName).then(() => {
             let promise = definedPromises.get(tagName);
             if (isUndefined(promise)) {
-                const definition = definitionsByTag.get(tagName);
+                const definition = globalDefinitionsByTag.get(tagName);
                 if (!isUndefined(definition)) {
                     return definition.UserCtor;
+                }
+                const localDefinition = localDefinitionsByTag.get(tagName);
+                if (!isUndefined(localDefinition) && !isUndefined(localDefinition.PivotCtor)) {
+                    return localDefinition.PivotCtor;
                 }
                 let resolve: (constructor: CustomElementConstructor) => void;
                 promise = new Promise((r) => (resolve = r));
@@ -355,9 +366,12 @@ export function patchCustomElementRegistry() {
         // This is possible when the user register it via global registry and instantiate
         // it via `new Ctor()`.
         const { constructor } = this;
-        const definition = definitionsByClass.get(constructor as CustomElementConstructor);
+        let definition = globalDefinitionsByClass.get(constructor as CustomElementConstructor);
         if (isUndefined(definition) || !definition.PivotCtor) {
-            throw new TypeError('Illegal constructor');
+            definition = localDefinitionsByClass.get(constructor as CustomElementConstructor);
+            if (isUndefined(definition) || !definition.PivotCtor) {
+                throw new TypeError('Illegal constructor');
+            }
         }
         // This constructor is ONLY invoked when it is the user instantiating
         // an element via new Ctor while Ctor is a registered global constructor.
@@ -376,8 +390,9 @@ export function patchCustomElementRegistry() {
         if (isUndefined(PivotCtor)) {
             const definition = getDefinitionForConstructor(constructor);
             PivotCtor = createPivotingClass(tagName, definition);
-            definitionsByTag.set(tagName, definition);
-            definitionsByClass.set(constructor, definition);
+            definition.PivotCtor = PivotCtor;
+            localDefinitionsByTag.set(tagName, definition);
+            localDefinitionsByClass.set(constructor, definition);
             // Register a pivoting class which will LWC initializations
             nativeDefine.call(nativeRegistry, tagName, PivotCtor);
         }

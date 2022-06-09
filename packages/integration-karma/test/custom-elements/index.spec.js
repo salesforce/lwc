@@ -4,6 +4,8 @@ import Nonce2 from 'x/nonce2';
 import Nonce3 from 'x/nonce3';
 import Nonce4 from 'x/nonce4';
 import Nonce5 from 'x/nonce5';
+import Nonce6 from 'x/nonce6';
+import Nonce7 from 'x/nonce7';
 
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
@@ -91,18 +93,17 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             );
         });
 
-        it('throws if non-LWC custom element uses the same tag name as LWC custom elements', () => {
+        it('allows non-LWC custom element to use the same tag name as LWC custom elements', () => {
             const elm = createElement('x-nonce3', { is: Nonce3 });
             document.body.appendChild(elm);
             expect(elm.tagName.toLowerCase()).toEqual('x-nonce3');
             expect(elm.expectedTagName).toEqual('x-nonce3');
 
             class Foo extends HTMLElement {}
-            expect(() => {
-                customElements.define('x-nonce3', Foo);
-            }).toThrowError(
-                "Failed to execute 'define' on 'CustomElementRegistry': the name \"x-nonce3\" has already been used with this registry"
-            );
+            customElements.define('x-nonce3', Foo);
+            const elm2 = new Foo();
+            document.body.appendChild(elm2);
+            expect(elm2.tagName.toLowerCase()).toEqual('x-nonce3');
         });
 
         it('allows two LWC custom elements to use the same tag name', () => {
@@ -116,6 +117,23 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             document.body.appendChild(elm2);
             expect(elm2.tagName.toLowerCase()).toEqual('x-nonce4');
             expect(elm2.expectedTagName).toEqual('x-nonce5');
+        });
+
+        it('whenDefined() should always return the same constructor', () => {
+            createElement('x-nonce6', { is: Nonce6 });
+            let firstCtor;
+            return customElements
+                .whenDefined('x-nonce6')
+                .then((Ctor) => {
+                    expect(Ctor).not.toBeUndefined();
+                    firstCtor = Ctor;
+                    createElement('x-nonce6', { is: Nonce7 });
+                    return customElements.whenDefined('x-nonce6');
+                })
+                .then((Ctor) => {
+                    expect(Ctor).not.toBeUndefined();
+                    expect(Ctor).toBe(firstCtor);
+                });
         });
     });
 }

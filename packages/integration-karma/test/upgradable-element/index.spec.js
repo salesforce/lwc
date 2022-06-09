@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 
 import InteropParent from 'x/interopParent';
 import Interop from 'x/interop';
+import Interop2 from 'x/interop2';
 import Child from 'x/child';
 import DuplicateChild from 'x/dupChild';
 
@@ -60,15 +61,15 @@ const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in wind
 if (SUPPORTS_CUSTOM_ELEMENTS) {
     describe('duplicate registration', () => {
         function testDuplicateNativeRegistration(testCase, tag, wcClazz) {
-            it(`should throw when registering a duplicate tag in custom element registry with ${testCase}`, () => {
+            it(`should not throw when registering a duplicate tag in custom element registry with ${testCase}`, () => {
                 // First time the x-interop tag will be registered
                 const interop = createElement(tag, { is: Interop });
                 document.body.appendChild(interop);
-                expect(() => {
-                    customElements.define(tag, wcClazz);
-                }).toThrowError(
-                    /'x-([a-z]|-)*' has already been defined as a custom element|the name "x-([a-z]|-)*" has already been used with this registry|Cannot define multiple custom elements with the same tag name/
-                );
+                customElements.define(tag, wcClazz);
+                const native = document.createElement(tag);
+                document.body.appendChild(native);
+                expect(interop.tagName.toLowerCase()).toEqual(tag);
+                expect(native.tagName.toLowerCase()).toEqual(tag);
             });
         }
         testDuplicateNativeRegistration(
@@ -102,7 +103,8 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         testDuplicateLwcRegistration(
             'CustomElementConstructor getter',
             'x-interop-lwc-wcclass',
-            Interop.CustomElementConstructor
+            // must use a different constructor or else this will fail because of the other test
+            Interop2.CustomElementConstructor
         );
     });
 }

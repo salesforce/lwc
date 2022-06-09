@@ -1,5 +1,5 @@
 // Error message differs between browsers
-const alreadyUsedErrorMessage =
+const tagAlreadyUsedErrorMessage =
     /(has already been used with this registry|Cannot define multiple custom elements with the same tag name|has already been defined as a custom element)/;
 
 function getCode(src) {
@@ -18,11 +18,11 @@ function getEngineCode() {
     return Promise.all(promises);
 }
 
-function createLWC(tagName, skipInject) {
+function createLWC({ tagName = 'x-foo', skipInject = false, text = 'Hello LWC' } = {}) {
     // basic Hello LWC compiled LWC component
     function tmpl($api) {
         const { t: api_text, h: api_element } = $api;
-        return [api_element('h1', { key: 0 }, [api_text('Hello LWC')])];
+        return [api_element('h1', { key: 0 }, [api_text(text)])];
     }
 
     LWC.registerTemplate(tmpl);
@@ -42,7 +42,7 @@ function createLWC(tagName, skipInject) {
     }
 }
 
-function createVanilla(tagName, skipInject) {
+function createVanilla({ tagName = 'x-foo', skipInject = false } = {}) {
     customElements.define(
         tagName,
         class MyCustomElement extends HTMLElement {
@@ -91,13 +91,13 @@ describe('custom elements registry', () => {
     describe('multiple copies of LWC engine loaded', () => {
         it('creates elements', () => {
             evaluate(engineScripts);
-            evaluate(`(${createLWC})('x-foo')`);
+            evaluate(`(${createLWC})()`);
             expect(
                 iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                     .textContent
             ).toEqual('Hello LWC');
             evaluate(engineScripts);
-            evaluate(`(${createLWC})('x-bar')`);
+            evaluate(`(${createLWC})({ tagName: 'x-bar' })`);
             expect(
                 iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
                     .textContent
@@ -106,27 +106,29 @@ describe('custom elements registry', () => {
 
         it('errors on duplicate tag names', () => {
             evaluate(engineScripts);
-            evaluate(`(${createLWC})('x-foo')`);
+            evaluate(`(${createLWC})()`);
             expect(
                 iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                     .textContent
             ).toEqual('Hello LWC');
             evaluate(engineScripts);
-            expect(() => {
-                evaluate(`(${createLWC})('x-foo')`);
-            }).toThrowError(alreadyUsedErrorMessage);
+            evaluate(`(${createLWC})({ text: 'Hello LWC 2' })`);
+            const elements = iframe.contentDocument.querySelectorAll('x-foo');
+            expect(elements.length).toEqual(2);
+            expect(elements[0].shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC');
+            expect(elements[1].shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC 2');
         });
     });
 
     describe('custom element registered before LWC engine loads', () => {
         it('can register element when another element was registered before engine loaded', () => {
-            evaluate(`(${createVanilla})('x-foo')`);
+            evaluate(`(${createVanilla})()`);
             expect(
                 iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                     .textContent
             ).toEqual('Not LWC!');
             evaluate(engineScripts);
-            evaluate(`(${createLWC})('x-bar')`);
+            evaluate(`(${createLWC})({ tagName: 'x-bar' })`);
             expect(
                 iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
                     .textContent
@@ -134,15 +136,15 @@ describe('custom elements registry', () => {
         });
 
         it('throws error when another element with same tag name was registered before engine loaded', () => {
-            evaluate(`(${createVanilla})('x-foo')`);
+            evaluate(`(${createVanilla})()`);
             expect(
                 iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                     .textContent
             ).toEqual('Not LWC!');
             evaluate(engineScripts);
             expect(() => {
-                evaluate(`(${createLWC})('x-foo')`);
-            }).toThrowError(alreadyUsedErrorMessage);
+                evaluate(`(${createLWC})()`);
+            }).toThrowError(tagAlreadyUsedErrorMessage);
             expect(
                 iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                     .textContent
@@ -150,7 +152,7 @@ describe('custom elements registry', () => {
         });
 
         it('can do customElements.get() for element registered before engine loads', () => {
-            evaluate(`(${createVanilla})('x-foo')`);
+            evaluate(`(${createVanilla})()`);
             evaluate(engineScripts);
             const Ctor = evaluate(() => customElements.get('x-foo'));
             expect(Ctor.name).toEqual('MyCustomElement');
@@ -159,22 +161,22 @@ describe('custom elements registry', () => {
         it('can upgrade elements that existed before engine loads - vanilla', () => {
             evaluate(() => document.body.appendChild(document.createElement('x-foo')));
             evaluate(engineScripts);
-            evaluate(`(${createVanilla})('x-foo', true)`);
+            evaluate(`(${createVanilla})({ skipInject: true })`);
             expect(
                 iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                     .textContent
             ).toEqual('Not LWC!');
         });
 
-        // it('can upgrade elements that existed before engine loads - LWC', () => {
+        // fit('can upgrade elements that existed before engine loads - LWC', () => {
         //     evaluate(() => document.body.appendChild(document.createElement('x-foo')))
         //     evaluate(engineScripts)
-        //     evaluate(`(${createLWC})('x-foo', true)`)
+        //     evaluate(`(${createLWC})({ skipInject: true })`)
         //     expect(iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC')
         // })
 
-        // it('can do customElements.whenDefined() for element registered before engine loads', () => {
-        //     evaluate(`(${createVanilla})('x-foo')`)
+        // fit('can do customElements.whenDefined() for element registered before engine loads', () => {
+        //     evaluate(`(${createVanilla})()`)
         //     evaluate(engineScripts)
         //     const promise = evaluate(() => {
         //         return customElements.whenDefined('x-foo').then(ctor => {
