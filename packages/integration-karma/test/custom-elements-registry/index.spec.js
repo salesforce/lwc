@@ -81,8 +81,14 @@ describe('custom elements registry', () => {
     beforeEach(() => {
         iframe = document.createElement('iframe');
         iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
-
         document.body.appendChild(iframe);
+
+        if (window.__coverage__) {
+            // If istanbul coverage is enabled, we should proxy any calls in the iframe
+            // to window.__coverage__ to the main one, so that the coverage is properly computed.
+            iframe.contentWindow.__coverage__ = window.__coverage__;
+        }
+
         return getEngineCode().then((scripts) => {
             engineScripts = scripts;
         });
