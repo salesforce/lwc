@@ -8,6 +8,10 @@ import Nonce6 from 'x/nonce6';
 import Nonce7 from 'x/nonce7';
 import Nonce8 from 'x/nonce8';
 import Nonce9 from 'x/nonce9';
+import Nonce10 from 'x/nonce10';
+import Nonce11 from 'x/nonce11';
+import Nonce12 from 'x/nonce12';
+import Nonce13 from 'x/nonce13';
 
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
@@ -121,7 +125,17 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             expect(elm2.expectedTagName).toEqual('x-nonce5');
         });
 
-        it('whenDefined() should always return the same constructor', () => {
+        it('get() should always return the same constructor', () => {
+            createElement('x-nonce10', { is: Nonce10 });
+            const firstCtor = customElements.get('x-nonce10');
+            expect(firstCtor).not.toBeUndefined();
+            createElement('x-nonce10', { is: Nonce11 });
+            const secondCtor = customElements.get('x-nonce10');
+            expect(secondCtor).not.toBeUndefined();
+            expect(secondCtor).toBe(firstCtor);
+        });
+
+        it('whenDefined() should always return the same constructor - defined before whenDefined', () => {
             createElement('x-nonce6', { is: Nonce6 });
             let firstCtor;
             return customElements
@@ -131,6 +145,24 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     firstCtor = Ctor;
                     createElement('x-nonce6', { is: Nonce7 });
                     return customElements.whenDefined('x-nonce6');
+                })
+                .then((Ctor) => {
+                    expect(Ctor).not.toBeUndefined();
+                    expect(Ctor).toBe(firstCtor);
+                });
+        });
+
+        it('whenDefined() should always return the same constructor - defined after whenDefined', () => {
+            const promise = customElements.whenDefined('x-nonce12');
+            createElement('x-nonce12', { is: Nonce12 });
+            let firstCtor;
+            return promise
+                .then((Ctor) => {
+                    expect(Ctor).not.toBeUndefined();
+                    firstCtor = Ctor;
+                    const promise = customElements.whenDefined('x-nonce12');
+                    createElement('x-nonce12', { is: Nonce13 });
+                    return promise;
                 })
                 .then((Ctor) => {
                     expect(Ctor).not.toBeUndefined();
