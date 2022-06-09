@@ -8,6 +8,8 @@
 export const KEY__IS_NATIVE_SHADOW_ROOT_DEFINED = '$isNativeShadowRootDefined$';
 export const KEY__SHADOW_RESOLVER = '$shadowResolver$';
 export const KEY__SHADOW_RESOLVER_PRIVATE = '$$ShadowResolverKey$$';
+export const KEY__SHADOW_STATIC = '$shadowStaticNode$';
+export const KEY__SHADOW_STATIC_PRIVATE = '$shadowStaticNodeKey$';
 export const KEY__SHADOW_TOKEN = '$shadowToken$';
 export const KEY__SHADOW_TOKEN_PRIVATE = '$$ShadowTokenKey$$';
 export const KEY__SYNTHETIC_MODE = '$$lwc-synthetic-mode';
