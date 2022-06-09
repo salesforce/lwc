@@ -531,6 +531,36 @@ function applyLwcDirectives(
     applyLwcDynamicDirective(ctx, parsedAttr, element);
     applyLwcDomDirective(ctx, parsedAttr, element);
     applyLwcInnerHtmlDirective(ctx, parsedAttr, element);
+    applyLwcSlotDataDirective(ctx, parsedAttr, element);
+    applyLwcSlotBindDirective(ctx, parsedAttr, element);
+}
+
+function applyLwcSlotDataDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+) {
+    const slotDataAttribute = parsedAttr.pick('lwc:slot-data');
+    if (!slotDataAttribute) return;
+    const { value: slotDataAttr } = slotDataAttribute;
+    if (!ast.isStringLiteral(slotDataAttr)) {
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element);
+    }
+    element.directives.push(ast.slotDataDirective(slotDataAttr, slotDataAttribute.location));
+}
+
+function applyLwcSlotBindDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+) {
+    const slotBindDirective = parsedAttr.pick('lwc:slot-bind');
+    if (!slotBindDirective) return;
+    const { value: slotBindAttr } = slotBindDirective;
+    if (!ast.isExpression(slotBindAttr)) {
+        ctx.throwOnNode(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element);
+    }
+    element.directives.push(ast.slotBindDirective(slotBindAttr, slotBindDirective.location));
 }
 
 function applyLwcDynamicDirective(
@@ -780,7 +810,7 @@ function parseSlot(
     if (ctx.renderMode === LWCDirectiveRenderMode.light) {
         const invalidAttrs = parsedAttr
             .getAttributes()
-            .filter(({ name }) => name !== 'name')
+            .filter(({ name }) => !['name', 'lwc:slot-bind'].includes(name))
             .map(({ name }) => name);
 
         if (invalidAttrs.length) {

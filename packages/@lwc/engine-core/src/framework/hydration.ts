@@ -209,7 +209,7 @@ function hydrateCustomElement(elm: Node, vnode: VCustomElement): Node | null {
     vnode.elm = elm;
     vnode.vm = vm;
 
-    allocateSlottedContent(vnode, vm);
+    allocateSlottedContent(vnode, vm, owner);
     patchElementPropsAndAttrs(vnode);
 
     // Insert hook section:

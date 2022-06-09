@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayIndexOf,
     ArrayUnshift,
     assert,
     create,
@@ -18,12 +17,17 @@ import {
     KEY__SCOPED_CSS,
 } from '@lwc/shared';
 
-import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 
 import api, { RenderAPI } from './api';
-import { resetComponentRoot, runWithBoundaryProtection, TemplateCache, VM, RenderMode, SlotSet } from './vm';
-import { EmptyArray } from './utils';
+import {
+    resetComponentRoot,
+    runWithBoundaryProtection,
+    TemplateCache,
+    VM,
+    RenderMode,
+    SlotSet,
+} from './vm';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import {
     TemplateStylesheetFactories,
@@ -58,25 +62,25 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
-function validateSlots(vm: VM, html: Template) {
+function validateSlots(_vm: VM, _html: Template) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
 
-    const { cmpSlots } = vm;
-    const { slots = EmptyArray } = html;
-
-    for (const slotName in cmpSlots) {
-        if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
-            // TODO [#1297]: this should never really happen because the compiler should always validate
-            // eslint-disable-next-line lwc-internal/no-production-assert
-            logError(
-                `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
-                vm
-            );
-        }
-    }
+    // const { cmpSlots } = vm;
+    // const { slots = EmptyArray } = html;
+    //
+    // for (const slotName in cmpSlots) {
+    //     if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
+    //         // TODO [#1297]: this should never really happen because the compiler should always validate
+    //         // eslint-disable-next-line lwc-internal/no-production-assert
+    //         logError(
+    //             `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
+    //             vm
+    //         );
+    //     }
+    // }
 }
 
 function validateLightDomTemplate(template: Template, vm: VM) {

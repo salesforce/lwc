@@ -37,6 +37,8 @@ import {
     Directive,
     BaseElement,
     LWCDirectiveDomMode,
+    SlotDataDirective,
+    SlotBindDirective,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -215,6 +217,27 @@ export function keyDirective(value: Expression, location: SourceLocation): KeyDi
     };
 }
 
+export function slotDataDirective(
+    value: Literal<string>,
+    location: SourceLocation
+): SlotDataDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotData',
+        value,
+        location,
+    };
+}
+
+export function slotBindDirective(value: Expression, location: SourceLocation): SlotBindDirective {
+    return {
+        type: 'Directive',
+        name: 'SlotBind',
+        value,
+        location,
+    };
+}
+
 export function dynamicDirective(value: Expression, location: SourceLocation): DynamicDirective {
     return {
         type: 'Directive',
@@ -362,6 +385,14 @@ export function isParentNode(node: BaseNode): node is ParentNode {
 
 export function isDynamicDirective(directive: Directive): directive is DynamicDirective {
     return directive.name === 'Dynamic';
+}
+
+export function isSlotDataDirective(directive: Directive): directive is SlotDataDirective {
+    return directive.name === 'SlotData';
+}
+
+export function isSlotBindDirective(directive: Directive): directive is SlotBindDirective {
+    return directive.name === 'SlotBind';
 }
 
 export function isDomDirective(directive: Directive): directive is DomDirective {

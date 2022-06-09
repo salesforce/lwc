@@ -28,6 +28,8 @@ import {
     isKeyDirective,
     isDomDirective,
     isElement,
+    isSlotDataDirective,
+    isSlotBindDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
@@ -111,6 +113,15 @@ function transform(codeGen: CodeGen): t.Expression {
             group.push(child);
         }
 
+        const slotData = element.directives.find(isSlotDataDirective);
+        let slotDataValue = null;
+        if (slotData) {
+            slotDataValue = slotData.value.value;
+
+            codeGen.beginScope();
+            codeGen.declareIdentifier(t.identifier(slotDataValue));
+        }
+
         const transformedChildren = Object.fromEntries(
             Object.entries(groupedChildren).map(([slotName, children]) => [
                 slotName,
@@ -118,18 +129,29 @@ function transform(codeGen: CodeGen): t.Expression {
             ])
         );
 
+        if (slotDataValue) {
+            codeGen.endScope();
+        }
+
         // Check wether it has the special directive lwc:dynamic
         const dynamic = element.directives.find(isDynamicDirective);
 
         if (dynamic) {
             const expression = codeGen.bindExpression(dynamic.value);
-            return codeGen.genDynamicElement(name, expression, databag, transformedChildren);
+            return codeGen.genDynamicElement(
+                name,
+                expression,
+                databag,
+                transformedChildren,
+                slotDataValue
+            );
         } else {
             return codeGen.genCustomElement(
                 name,
                 identifierFromComponentName(name),
                 databag,
-                transformedChildren
+                transformedChildren,
+                slotDataValue
             );
         }
     }
@@ -444,6 +466,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
+        const slotBind = element.directives.find(isSlotBindDirective);
 
         // Attributes
         if (attributes.length) {
@@ -567,6 +590,14 @@ function transform(codeGen: CodeGen): t.Expression {
         // SVG handling
         if (element.namespace === SVG_NAMESPACE) {
             data.push(t.property(t.identifier('svg'), t.literal(true)));
+        }
+
+        if (slotBind) {
+            if (t.isIdentifier(slotBind.value)) {
+                data.push(
+                    t.property(t.identifier('slotData'), codeGen.bindExpression(slotBind.value))
+                );
+            }
         }
 
         return t.objectExpression(data);

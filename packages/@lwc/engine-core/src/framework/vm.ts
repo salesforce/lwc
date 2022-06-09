@@ -52,14 +52,15 @@ export interface TemplateCache {
 }
 
 export interface SlotSet {
-    /** 
+    /**
      * The owner the slots belongs to. The owner is needed since slotted content might be rendered
-     * outside the standard rendering cycle. 
-     * 
+     * outside the standard rendering cycle.
+     *
      * FIXME: This should be removed once VNode storing a back pointer to its owner.
      */
-    owner: VM;
-    vnodes: SlottedVNodes; 
+    slotChildren?: (slotData: any) => void;
+    owner?: VM;
+    vnodes?: SlottedVNodes;
 }
 
 export const enum VMState {

@@ -97,6 +97,16 @@ export interface DynamicDirective extends Directive {
     value: Expression;
 }
 
+export interface SlotDataDirective extends Directive {
+    name: 'SlotData';
+    value: Literal<string>;
+}
+
+export interface SlotBindDirective extends Directive {
+    name: 'SlotBind';
+    value: Expression;
+}
+
 export interface DomDirective extends Directive {
     name: 'Dom';
     value: Literal<'manual'>;
@@ -117,7 +127,13 @@ export interface PreserveCommentsDirective extends Directive {
     value: Literal<boolean>;
 }
 
-export type ElementDirective = KeyDirective | DynamicDirective | DomDirective | InnerHTMLDirective;
+export type ElementDirective =
+    | KeyDirective
+    | DynamicDirective
+    | DomDirective
+    | InnerHTMLDirective
+    | SlotDataDirective
+    | SlotBindDirective;
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
 export interface Text extends BaseNode {

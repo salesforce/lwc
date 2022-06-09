@@ -65,6 +65,7 @@ import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
+import { getVMBeingRendered, setVMBeingRendered } from './template';
 
 export function patchChildren(c1: VNodes, c2: VNodes, parent: ParentNode): void {
     if (hasDynamicChildren(c2)) {
@@ -213,7 +214,7 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
     vnode.vm = vm;
 
     if (vm) {
-        allocateSlottedContent(vnode, vm);
+        allocateSlottedContent(vnode, vm, owner);
     } else if (vnode.ctor !== UpgradableConstructor) {
         throw new TypeError(`Incorrect Component Constructor`);
     }
@@ -243,7 +244,7 @@ function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
     if (!isUndefined(vm)) {
         // in fallback mode, the allocation will always set children to
         // empty and delegate the real allocation to the slot elements
-        allocateSlottedContent(n2, vm);
+        allocateSlottedContent(n2, vm, vm.owner!);
     }
 
     // in fallback mode, the children will be always empty, so, nothing
@@ -427,23 +428,27 @@ function fallbackElmHook(elm: Element, vnode: VBaseElement) {
     }
 }
 
-export function allocateSlottedContent(vnode: VCustomElement, vm: VM) {
-    const { slot } = vnode;
+export function allocateSlottedContent(vnode: VCustomElement, vm: VM, owner: VM) {
+    const { slot, data } = vnode;
     const { renderMode, shadowMode } = vm;
 
     if (renderMode == RenderMode.Shadow && shadowMode === ShadowMode.Native) {
         const children = [];
 
+        const vmBeingRenderedInception = getVMBeingRendered();
+        setVMBeingRendered(vm);
         for (const key of keys(slot)) {
-            const slotVnodes = slot[key]();
+            const slotData = data.slotData;
+            const slotVnodes = slot[key].apply(undefined, slotData ? [slotData] : []);
             children.push(...slotVnodes);
         }
+        setVMBeingRendered(vmBeingRenderedInception);
 
         vnode.children = children;
     } else {
         vm.cmpSlots = {
-            owner: vm,
-            vnodes: slot
+            owner: owner,
+            vnodes: slot,
         };
     }
 }

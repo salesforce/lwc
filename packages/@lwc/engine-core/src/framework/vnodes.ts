@@ -19,7 +19,7 @@ export const enum VNodeType {
 export type VNode = VText | VComment | VElement | VCustomElement;
 export type VParentElement = VElement | VCustomElement;
 export type VNodes = Readonly<Array<VNode | null>>;
-export type SlottedVNodes = Readonly<Record<string, () => VNodes>>;
+export type SlottedVNodes = Readonly<Record<string, (args?: any) => VNodes>>;
 
 export interface BaseVNode {
     type: VNodeType;
@@ -75,6 +75,7 @@ export interface VNodeData {
     readonly context?: Readonly<Record<string, Readonly<Record<string, any>>>>;
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;
+    readonly slotData?: any;
 }
 
 export interface VElementData extends VNodeData {

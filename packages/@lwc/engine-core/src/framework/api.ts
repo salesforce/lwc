@@ -8,8 +8,8 @@ import {
     ArrayPush,
     assert,
     create as ObjectCreate,
-    freeze as ObjectFreeze,
     forEach,
+    freeze as ObjectFreeze,
     isArray,
     isFalse,
     isFunction,
@@ -26,22 +26,22 @@ import {
 import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';
-import { getVMBeingRendered } from './template';
+import { getVMBeingRendered, setVMBeingRendered } from './template';
 import { EmptyArray, EmptyObject } from './utils';
 import { isComponentConstructor } from './def';
-import { ShadowMode, VM, RenderMode, SlotSet } from './vm';
+import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
 import { LightningElementConstructor } from './base-lightning-element';
 import { markAsDynamicChildren } from './rendering';
 import {
+    SlottedVNodes,
+    VComment,
+    VCustomElement,
+    VElement,
+    VElementData,
     VNode,
     VNodes,
-    VElement,
-    VText,
-    VCustomElement,
-    VComment,
-    VElementData,
     VNodeType,
-    SlottedVNodes,
+    VText,
 } from './vnodes';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
@@ -128,7 +128,7 @@ function s(
     slotName: string,
     data: VElementData,
     children: VNodes,
-    slottedVNodes: SlotSet | undefined
+    slotSet: SlotSet | undefined
 ): VElement | VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
@@ -136,14 +136,21 @@ function s(
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     }
 
-    if (!isUndefined(slottedVNodes) && !isUndefined(slottedVNodes.vnodes[slotName])) {
-        const vmBeingRendered = getVMBeingRendered()!;
-        children = slottedVNodes[slotName]();
-        const vmBeingRendered = getVMBeingRendered()!;
-    }
-
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, shadowMode } = vmBeingRendered;
+
+    if (!(shadowMode === ShadowMode.Native && renderMode === RenderMode.Shadow)) {
+        if (
+            !isUndefined(slotSet) &&
+            !isUndefined(slotSet.vnodes) &&
+            !isUndefined(slotSet.vnodes[slotName])
+        ) {
+            setVMBeingRendered(slotSet.owner!);
+            const slotData = data.slotData;
+            children = slotSet.vnodes[slotName].apply(undefined, slotData ? [slotData] : []);
+            setVMBeingRendered(vmBeingRendered);
+        }
+    }
 
     if (renderMode === RenderMode.Light) {
         sc(children);

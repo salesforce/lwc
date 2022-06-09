@@ -134,7 +134,8 @@ export default class CodeGen {
         tagName: string,
         componentClass: t.Identifier,
         data: t.ObjectExpression,
-        children: { [slotName: string]: t.Expression }
+        children: { [slotName: string]: t.Expression },
+        slotDataValue: string | null
     ) {
         this.referencedComponents.add(tagName);
 
@@ -148,7 +149,7 @@ export default class CodeGen {
                         t.literal(slotName),
                         t.functionExpression(
                             null,
-                            [],
+                            slotDataValue ? [t.identifier(slotDataValue)] : [],
                             t.blockStatement([t.returnStatement(children)])
                         )
                     )
@@ -164,7 +165,8 @@ export default class CodeGen {
         tagName: string,
         ctor: t.Expression,
         data: t.ObjectExpression,
-        children: { [slotName: string]: t.Expression }
+        children: { [slotName: string]: t.Expression },
+        slotDataValue: string | null
     ) {
         const args: t.Expression[] = [t.literal(tagName), ctor, data];
 
@@ -176,7 +178,7 @@ export default class CodeGen {
                         t.literal(slotName),
                         t.functionExpression(
                             null,
-                            [],
+                            slotDataValue ? [t.identifier(slotDataValue)] : [],
                             t.blockStatement([t.returnStatement(children)])
                         )
                     )
