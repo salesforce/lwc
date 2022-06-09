@@ -6,6 +6,8 @@ import Nonce4 from 'x/nonce4';
 import Nonce5 from 'x/nonce5';
 import Nonce6 from 'x/nonce6';
 import Nonce7 from 'x/nonce7';
+import Nonce8 from 'x/nonce8';
+import Nonce9 from 'x/nonce9';
 
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
@@ -134,6 +136,26 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     expect(Ctor).not.toBeUndefined();
                     expect(Ctor).toBe(firstCtor);
                 });
+        });
+
+        it('calling document.createElement after lwc.createElement', () => {
+            const elm1 = createElement('x-nonce8', { is: Nonce8 });
+            document.body.appendChild(elm1);
+            const elm2 = document.createElement('x-nonce8');
+            document.body.appendChild(elm2);
+            expect(elm1.expectedTagName).toEqual('x-nonce8');
+            // TODO [#2877]: elm2 is not upgraded
+            // expect(elm2.expectedTagName).toEqual('x-nonce8')
+        });
+
+        it('calling lwc.createElement after document.createElement', () => {
+            const elm1 = document.createElement('x-nonce9');
+            document.body.appendChild(elm1);
+            const elm2 = createElement('x-nonce9', { is: Nonce9 });
+            document.body.appendChild(elm2);
+            expect(elm2.expectedTagName).toEqual('x-nonce9');
+            // TODO [#2877]: elm1 is not upgraded
+            // expect(elm1.expectedTagName).toEqual('x-nonce9')
         });
     });
 }
