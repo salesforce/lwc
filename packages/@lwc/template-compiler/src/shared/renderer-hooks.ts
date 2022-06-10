@@ -10,6 +10,7 @@ import { BaseElement, ElementDirective } from './types';
 
 /**
  * Config representing criteria for an element match.
+ * All conditions specified must be satisfied to be considered a match.
  */
 export interface CustomRendererElementConfig {
     /**
@@ -22,18 +23,26 @@ export interface CustomRendererElementConfig {
     namespace?: string;
     /**
      * Specify attributes that need to be matched.
-     * This field is optional. When not set, the element is matched based on tag name and namespace.
+     * This field is optional.
+     * If undefined or empty, attribute matching is skipped.
      */
     attributes?: string[];
 }
 
 /**
  * Config to specify which elements and directives require a customizable renderer.
+ * An element qualified if it matches the CustomRendererElementConfig OR the directives.
  */
 export interface CustomRendererConfig {
+    /**
+     * Element matching criteria. Element much satisfy all conditions of the CustomRendererElementConfig
+     */
     elements: CustomRendererElementConfig[];
+    /**
+     * List of lwc directives that qualify an element. An element must use at least 1
+     * directive to be considered a match
+     */
     directives: string[];
-    rendererModule?: string;
 }
 
 /**

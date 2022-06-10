@@ -71,9 +71,6 @@ function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRend
         }),
         directives: config.directives.map((d) => d.toLowerCase()),
     };
-    if (config.rendererModule) {
-        normalizedConfig.rendererModule = config.rendererModule;
-    }
 
     // Check for duplicate tag names
     const dupTagNames: string[] = tagNames.filter(
