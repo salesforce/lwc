@@ -14,7 +14,7 @@ type RecursiveRequired<T> = {
 const DEFAULT_OPTIONS = {
     isExplicitImport: false,
     preserveHtmlComments: false,
-    disableStaticContentOptimization: true,
+    disableStaticContentOptimization: false,
 };
 
 const DEFAULT_DYNAMIC_CMP_CONFIG: Required<DynamicComponentConfig> = {

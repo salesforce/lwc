@@ -58,7 +58,7 @@ describe('transformSync', () => {
         expect(code).not.toMatch('parseFragment');
     });
 
-    it('should not hoist static vnodes by default', () => {
+    it('should hoist static vnodes by default', () => {
         const template = `
             <template>
                 <img src="http://www.example.com/image.png" crossorigin="anonymous">
@@ -66,6 +66,6 @@ describe('transformSync', () => {
         `;
         const { code } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
 
-        expect(code).not.toMatch('parseFragment');
+        expect(code).toMatch('parseFragment');
     });
 });
