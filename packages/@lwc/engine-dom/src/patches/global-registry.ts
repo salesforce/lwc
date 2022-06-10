@@ -143,7 +143,6 @@ function getNewObservedAttributes(
     // Natively, the attributes observed by the registered definition are going to be taken
     // care of by the browser, only the difference between the two sets has to be taken
     // care by the patched version.
-    // TODO [#2877]: LWC components don't actually use observedAttributes, the size is never 0
     return new Set(
         [...instanceDefinition.observedAttributes].filter(
             (x) => !registeredDefinition.observedAttributes.has(x)
