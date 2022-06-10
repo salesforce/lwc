@@ -63,13 +63,13 @@ export let getUserConstructor: (
 ) => UpgradableCustomElementConstructor | UpgradeCallback;
 
 if (isCustomElementRegistryAvailable()) {
-    const getPivotCustomElement = patchCustomElementRegistry();
+    const definePivotCustomElement = patchCustomElementRegistry();
     const cachedConstructor: Record<string, CustomElementConstructor> = create(null);
     getUpgradableElement = (name: string) => {
         let Ctor = cachedConstructor[name];
         if (!Ctor) {
             class LWCUpgradableElement extends HTMLElement {}
-            Ctor = getPivotCustomElement(name, LWCUpgradableElement);
+            Ctor = definePivotCustomElement(name, LWCUpgradableElement);
         }
         return Ctor;
     };

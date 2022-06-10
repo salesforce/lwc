@@ -189,5 +189,14 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             // TODO [#2877]: elm1 is not upgraded
             // expect(elm1.expectedTagName).toEqual('x-nonce9')
         });
+
+        it('throws when new-ing an undefined HTMLElement constructor', () => {
+            class MyComponent extends HTMLElement {}
+            const callNew = () => {
+                new MyComponent();
+            };
+            expect(callNew).toThrowError(TypeError);
+            expect(callNew).toThrowError(/Illegal constructor/);
+        });
     });
 }

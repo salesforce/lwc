@@ -22,12 +22,11 @@ const pivotCtorByTag = new Map<string, CustomElementConstructor>();
 const globalDefinitionsByTag = new Map<string, Definition>();
 const localDefinitionsByTag = new Map<string, Definition>();
 const globalDefinitionsByClass = new Map<CustomElementConstructor, Definition>();
-const localDefinitionsByClass = new Map<CustomElementConstructor, Definition>();
 const awaitingUpgrade = new Map<string, Set<HTMLElement>>();
 
 interface Definition {
     UserCtor: CustomElementConstructor;
-    PivotCtor?: CustomElementConstructor;
+    PivotCtor: CustomElementConstructor | undefined;
     connectedCallback: (() => void) | void;
     disconnectedCallback: (() => void) | void;
     adoptedCallback: (() => void) | void;
@@ -43,6 +42,7 @@ function createDefinitionRecord(constructor: CustomElementConstructor): Definiti
     const observedAttributes = new Set(constructor.observedAttributes ?? []);
     return {
         UserCtor: constructor,
+        PivotCtor: undefined,
         connectedCallback,
         disconnectedCallback,
         adoptedCallback,
@@ -343,22 +343,23 @@ export function patchCustomElementRegistry() {
         // Upgrading case: the pivoting class constructor was run by the browser's
         // native custom elements and we're in the process of running the
         // "constructor-call trick" on the natively constructed instance, so just
-        // return that here
+        // return that here.
+        // This code path is also called when LWC `new`s a PivotCtor.
         const instance = upgradingInstance;
         if (!isUndefined(instance)) {
             upgradingInstance = undefined;
             return instance;
         }
-        // Construction case: we need to construct the pivoting instance and return it
+        // Construction case: we need to construct the pivoting instance and return it.
         // This is possible when the user register it via global registry and instantiate
         // it via `new Ctor()`.
         const { constructor } = this;
-        let definition = globalDefinitionsByClass.get(constructor as CustomElementConstructor);
+        const definition = globalDefinitionsByClass.get(constructor as CustomElementConstructor);
         if (isUndefined(definition) || isUndefined(definition.PivotCtor)) {
-            definition = localDefinitionsByClass.get(constructor as CustomElementConstructor);
-            if (isUndefined(definition) || isUndefined(definition.PivotCtor)) {
-                throw new TypeError('Illegal constructor');
-            }
+            // This code path is hit if someone `new`s a class that extends `HTMLElement` without
+            // doing `customElements.define()` first. This matches native browser behavior:
+            // https://stackoverflow.com/a/61883392
+            throw new TypeError('Illegal constructor');
         }
         // This constructor is ONLY invoked when it is the user instantiating
         // an element via new Ctor while Ctor is a registered global constructor.
@@ -369,18 +370,25 @@ export function patchCustomElementRegistry() {
     // @ts-ignore
     window.HTMLElement = HTMLElement;
 
-    // this method patches the dom and returns helper function for LWC to register names and associate
-    // them to a constructor while returning the pivot constructor ready to instantiate via `new`
-    return (tagName: string, constructor: CustomElementConstructor): CustomElementConstructor => {
+    // This method patches the dom and returns a helper function for LWC to register names and associate
+    // them to a constructor while returning the pivot constructor, ready to instantiate via `new`.
+    return function definePivotCustomElement(
+        tagName: string,
+        constructor: CustomElementConstructor
+    ): CustomElementConstructor {
         tagName = tagName.toLowerCase();
         let PivotCtor = pivotCtorByTag.get(tagName);
         if (isUndefined(PivotCtor)) {
             const definition = getDefinitionForConstructor(constructor);
             PivotCtor = createPivotingClass(tagName, definition);
             definition.PivotCtor = PivotCtor;
+            // We keep a local definitions by tag to keep track separately of our own custom elements
+            // compared to global ones.
+            // The reason we don't need a `localDefinitionsByClass` is because we don't care about duplicate
+            // classes – we will never call `definePivotCustomElement` twice with the same class
+            // but different tags.
             localDefinitionsByTag.set(tagName, definition);
-            localDefinitionsByClass.set(constructor, definition);
-            // Register a pivoting class which will LWC initializations
+            // Register a pivoting class as a global custom element
             nativeDefine.call(nativeRegistry, tagName, PivotCtor);
         }
         return PivotCtor;
