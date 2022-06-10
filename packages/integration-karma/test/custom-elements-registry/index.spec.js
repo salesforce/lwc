@@ -57,137 +57,144 @@ function createVanilla({ tagName = 'x-foo', skipInject = false } = {}) {
     }
 }
 
-describe('custom elements registry', () => {
-    let iframe;
-    let engineScripts;
+const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
-    function evaluate(scriptOrScripts) {
-        const inputIsArray = Array.isArray(scriptOrScripts);
-        const scripts = inputIsArray ? scriptOrScripts : [scriptOrScripts];
-        const results = [];
-        try {
-            for (const script of scripts) {
-                const scriptStr = typeof script === 'string' ? script : `(${script})()`;
-                results.push(iframe.contentWindow.eval(scriptStr));
+// Most of these tests only make sense in browsers that support custom elements
+if (SUPPORTS_CUSTOM_ELEMENTS) {
+    describe('custom elements registry', () => {
+        let iframe;
+        let engineScripts;
+
+        function evaluate(scriptOrScripts) {
+            const inputIsArray = Array.isArray(scriptOrScripts);
+            const scripts = inputIsArray ? scriptOrScripts : [scriptOrScripts];
+            const results = [];
+            try {
+                for (const script of scripts) {
+                    const scriptStr = typeof script === 'string' ? script : `(${script})()`;
+                    results.push(iframe.contentWindow.eval(scriptStr));
+                }
+            } catch (err) {
+                // Rethrowing the error is necessary because otherwise Jasmine
+                // gets confused by the iframe's Error object versus our Error object
+                throw new Error(err.message);
             }
-        } catch (err) {
-            // Rethrowing the error is necessary because otherwise Jasmine
-            // gets confused by the iframe's Error object versus our Error object
-            throw new Error(err.message);
-        }
-        return inputIsArray ? results : results[0];
-    }
-
-    beforeEach(() => {
-        iframe = document.createElement('iframe');
-        iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
-        document.body.appendChild(iframe);
-
-        if (window.__coverage__) {
-            // If istanbul coverage is enabled, we should proxy any calls in the iframe
-            // to window.__coverage__ to the main one, so that the coverage is properly computed.
-            iframe.contentWindow.__coverage__ = window.__coverage__;
+            return inputIsArray ? results : results[0];
         }
 
-        return getEngineCode().then((scripts) => {
-            engineScripts = scripts;
-        });
-    });
+        beforeEach(() => {
+            iframe = document.createElement('iframe');
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+            document.body.appendChild(iframe);
 
-    describe('multiple copies of LWC engine loaded', () => {
-        it('creates elements', () => {
-            evaluate(engineScripts);
-            evaluate(`(${createLWC})()`);
-            expect(
-                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Hello LWC');
-            evaluate(engineScripts);
-            evaluate(`(${createLWC})({ tagName: 'x-bar' })`);
-            expect(
-                iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Hello LWC');
+            if (window.__coverage__) {
+                // If istanbul coverage is enabled, we should proxy any calls in the iframe
+                // to window.__coverage__ to the main one, so that the coverage is properly computed.
+                iframe.contentWindow.__coverage__ = window.__coverage__;
+            }
+
+            return getEngineCode().then((scripts) => {
+                engineScripts = scripts;
+            });
         });
 
-        it('errors on duplicate tag names', () => {
-            evaluate(engineScripts);
-            evaluate(`(${createLWC})()`);
-            expect(
-                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Hello LWC');
-            evaluate(engineScripts);
-            evaluate(`(${createLWC})({ text: 'Hello LWC 2' })`);
-            const elements = iframe.contentDocument.querySelectorAll('x-foo');
-            expect(elements.length).toEqual(2);
-            expect(elements[0].shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC');
-            expect(elements[1].shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC 2');
-        });
-    });
-
-    describe('custom element registered before LWC engine loads', () => {
-        it('can register element when another element was registered before engine loaded', () => {
-            evaluate(`(${createVanilla})()`);
-            expect(
-                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Not LWC!');
-            evaluate(engineScripts);
-            evaluate(`(${createLWC})({ tagName: 'x-bar' })`);
-            expect(
-                iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Hello LWC');
-        });
-
-        it('throws error when another element with same tag name was registered before engine loaded', () => {
-            evaluate(`(${createVanilla})()`);
-            expect(
-                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Not LWC!');
-            evaluate(engineScripts);
-            expect(() => {
+        describe('multiple copies of LWC engine loaded', () => {
+            it('creates elements', () => {
+                evaluate(engineScripts);
                 evaluate(`(${createLWC})()`);
-            }).toThrowError(tagAlreadyUsedErrorMessage);
-            expect(
-                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Not LWC!');
+                expect(
+                    iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                        .textContent
+                ).toEqual('Hello LWC');
+                evaluate(engineScripts);
+                evaluate(`(${createLWC})({ tagName: 'x-bar' })`);
+                expect(
+                    iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
+                        .textContent
+                ).toEqual('Hello LWC');
+            });
+
+            it('errors on duplicate tag names', () => {
+                evaluate(engineScripts);
+                evaluate(`(${createLWC})()`);
+                expect(
+                    iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                        .textContent
+                ).toEqual('Hello LWC');
+                evaluate(engineScripts);
+                evaluate(`(${createLWC})({ text: 'Hello LWC 2' })`);
+                const elements = iframe.contentDocument.querySelectorAll('x-foo');
+                expect(elements.length).toEqual(2);
+                expect(elements[0].shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC');
+                expect(elements[1].shadowRoot.querySelector('h1').textContent).toEqual(
+                    'Hello LWC 2'
+                );
+            });
         });
 
-        it('can do customElements.get() for element registered before engine loads', () => {
-            evaluate(`(${createVanilla})()`);
-            evaluate(engineScripts);
-            const Ctor = evaluate(() => customElements.get('x-foo'));
-            expect(Ctor.name).toEqual('MyCustomElement');
-        });
+        describe('custom element registered before LWC engine loads', () => {
+            it('can register element when another element was registered before engine loaded', () => {
+                evaluate(`(${createVanilla})()`);
+                expect(
+                    iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                        .textContent
+                ).toEqual('Not LWC!');
+                evaluate(engineScripts);
+                evaluate(`(${createLWC})({ tagName: 'x-bar' })`);
+                expect(
+                    iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
+                        .textContent
+                ).toEqual('Hello LWC');
+            });
 
-        it('can upgrade elements that existed before engine loads - vanilla', () => {
-            evaluate(() => document.body.appendChild(document.createElement('x-foo')));
-            evaluate(engineScripts);
-            evaluate(`(${createVanilla})({ skipInject: true })`);
-            expect(
-                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Not LWC!');
-        });
+            it('throws error when another element with same tag name was registered before engine loaded', () => {
+                evaluate(`(${createVanilla})()`);
+                expect(
+                    iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                        .textContent
+                ).toEqual('Not LWC!');
+                evaluate(engineScripts);
+                expect(() => {
+                    evaluate(`(${createLWC})()`);
+                }).toThrowError(tagAlreadyUsedErrorMessage);
+                expect(
+                    iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                        .textContent
+                ).toEqual('Not LWC!');
+            });
 
-        // TODO [#2877]: element is not upgraded
-        // fit('can upgrade elements that existed before engine loads - LWC', () => {
-        //     evaluate(() => document.body.appendChild(document.createElement('x-foo')))
-        //     evaluate(engineScripts)
-        //     evaluate(`(${createLWC})({ skipInject: true })`)
-        //     expect(iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC')
-        // })
-
-        it('can do customElements.whenDefined() for element registered before engine loads', () => {
-            evaluate(`(${createVanilla})()`);
-            evaluate(engineScripts);
-            return evaluate(() => customElements.whenDefined('x-foo')).then((Ctor) => {
+            it('can do customElements.get() for element registered before engine loads', () => {
+                evaluate(`(${createVanilla})()`);
+                evaluate(engineScripts);
+                const Ctor = evaluate(() => customElements.get('x-foo'));
                 expect(Ctor.name).toEqual('MyCustomElement');
+            });
+
+            it('can upgrade elements that existed before engine loads - vanilla', () => {
+                evaluate(() => document.body.appendChild(document.createElement('x-foo')));
+                evaluate(engineScripts);
+                evaluate(`(${createVanilla})({ skipInject: true })`);
+                expect(
+                    iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                        .textContent
+                ).toEqual('Not LWC!');
+            });
+
+            // TODO [#2877]: element is not upgraded
+            // fit('can upgrade elements that existed before engine loads - LWC', () => {
+            //     evaluate(() => document.body.appendChild(document.createElement('x-foo')))
+            //     evaluate(engineScripts)
+            //     evaluate(`(${createLWC})({ skipInject: true })`)
+            //     expect(iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC')
+            // })
+
+            it('can do customElements.whenDefined() for element registered before engine loads', () => {
+                evaluate(`(${createVanilla})()`);
+                evaluate(engineScripts);
+                return evaluate(() => customElements.whenDefined('x-foo')).then((Ctor) => {
+                    expect(Ctor.name).toEqual('MyCustomElement');
+                });
             });
         });
     });
-});
+}
