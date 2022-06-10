@@ -31,7 +31,7 @@ export interface CustomRendererElementConfig {
 
 /**
  * Config to specify which elements and directives require a customizable renderer.
- * An element qualified if it matches the CustomRendererElementConfig OR the directives.
+ * An element is qualified if it matches the CustomRendererElementConfig OR the directives.
  */
 export interface CustomRendererConfig {
     /**
@@ -40,7 +40,8 @@ export interface CustomRendererConfig {
     elements: CustomRendererElementConfig[];
     /**
      * List of lwc directives that qualify an element. An element must use at least 1
-     * directive to be considered a match
+     * directive to be considered a match.
+     * If empty, elements matching is not done based on directives.
      */
     directives: string[];
 }
@@ -56,14 +57,14 @@ export const LWC_DIRECTIVES: Record<ElementDirective['name'], string> = {
 };
 
 function checkElement(element: BaseElement, state: State): boolean {
-    let addCustomRenderer = false;
     const { attributes, directives } = element;
     if (directives.length) {
+        let directiveMatched = false;
         // If any directives require custom renderer
-        addCustomRenderer = directives.some((dir) => {
+        directiveMatched = directives.some((dir) => {
             return state.crDirectives.has(LWC_DIRECTIVES[dir.name]);
         });
-        if (addCustomRenderer) {
+        if (directiveMatched) {
             // Directives that require custom renderer are not allowed on custom elements
             // Custom element cannot be allowed to have a custom renderer hook
             // The renderer is cascaded down from the owner(custom element) to all its child nodes who
@@ -73,6 +74,7 @@ function checkElement(element: BaseElement, state: State): boolean {
                 TemplateErrors.DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT,
                 [element.name, state.config.customRendererConfig!.directives.join(', ')]
             );
+            return true;
         }
     }
     const elementConfig = state.crElmToConfigMap[element.name];
@@ -88,10 +90,10 @@ function checkElement(element: BaseElement, state: State): boolean {
             attrConfig.size === 0 ||
             attributes.some((attribute) => attrConfig.has(attribute.name))
         ) {
-            addCustomRenderer = true;
+            return true;
         }
     }
-    return addCustomRenderer;
+    return false;
 }
 
 export function isCustomRendererHookRequired(element: BaseElement, state: State): boolean {
