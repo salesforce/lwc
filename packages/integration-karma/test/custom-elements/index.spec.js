@@ -14,7 +14,7 @@ import Nonce12 from 'x/nonce12';
 import Nonce13 from 'x/nonce13';
 import ObserveNothing from 'x/observeNothing';
 import ObserveFoo from 'x/observeFoo';
-import ObserveNothingThrowOnAttributeChangedCallback from 'x/observeNothingThrowOnAttributeChangedCallback';
+import ObserveNothingThrow from 'x/observeNothingThrow';
 import Component from 'x/component';
 
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
@@ -478,7 +478,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             customElements.define('x-no-observed-attrs-2', Custom);
 
             const lwcElm = createElement('x-no-observed-attrs-2', {
-                is: ObserveNothingThrowOnAttributeChangedCallback,
+                is: ObserveNothingThrow,
             });
             document.body.appendChild(lwcElm);
 
