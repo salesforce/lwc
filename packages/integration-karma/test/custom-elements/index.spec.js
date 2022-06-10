@@ -336,11 +336,12 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     document.body.appendChild(elm1);
                     const elm2 = createVanillaElement(tagName);
                     document.body.appendChild(elm2);
+                    const initialValue = elm2.getAttribute('foo');
                     // set an attr
                     elm2.setAttribute('foo', 'bar');
                     const firstChange = {
                         name: 'foo',
-                        oldValue: expectedPreexistingObservations[0]?.newValue ?? null,
+                        oldValue: initialValue,
                         newValue: 'bar',
                     };
                     expect(observations).toEqual([...expectedPreexistingObservations, firstChange]);
