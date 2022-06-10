@@ -6,6 +6,7 @@
  */
 
 import { NormalizedConfig } from './config';
+import { BaseElement } from './shared/types';
 
 export default class State {
     config: NormalizedConfig;
@@ -21,6 +22,11 @@ export default class State {
      */
     crDirectives: Set<string>;
 
+    /**
+     * Cache the result of elements that have already been checked if they require custom renderer
+     */
+    crCheckedElements: Map<BaseElement, boolean>;
+
     constructor(config: NormalizedConfig) {
         this.config = config;
         this.crElmToConfigMap = config.customRendererConfig
@@ -32,5 +38,6 @@ export default class State {
               )
             : {};
         this.crDirectives = new Set(config.customRendererConfig?.directives);
+        this.crCheckedElements = new Map<BaseElement, boolean>();
     }
 }

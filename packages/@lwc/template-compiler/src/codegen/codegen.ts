@@ -131,8 +131,9 @@ export default class CodeGen {
         scopeFragmentId: boolean;
     }) {
         this.root = root;
+
         if (!state.config.disableStaticContentOptimization) {
-            this.staticNodes = getStaticNodes(root);
+            this.staticNodes = getStaticNodes(root, state);
         }
         this.renderMode =
             root.directives.find(isRenderModeDirective)?.value.value ??

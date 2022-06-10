@@ -46,42 +46,54 @@ export const LWC_DIRECTIVES: Record<ElementDirective['name'], string> = {
     Key: 'key',
 };
 
+function checkElement(element: BaseElement, state: State): boolean {
+    let addCustomRenderer = false;
+    const { attributes, directives } = element;
+    if (directives.length) {
+        // If any directives require custom renderer
+        addCustomRenderer = directives.some((dir) => {
+            return state.crDirectives.has(LWC_DIRECTIVES[dir.name]);
+        });
+        if (addCustomRenderer) {
+            // Directives that require custom renderer are not allowed on custom elements
+            // Custom element cannot be allowed to have a custom renderer hook
+            // The renderer is cascaded down from the owner(custom element) to all its child nodes who
+            // do not have a renderer specified.
+            invariant(
+                element.type !== 'Component',
+                TemplateErrors.DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT,
+                [element.name, state.config.customRendererConfig!.directives.join(', ')]
+            );
+        }
+    }
+    const elementConfig = state.crElmToConfigMap[element.name];
+    // If element requires custom renderer
+    if (elementConfig) {
+        const { namespace, attributes: attrConfig } = elementConfig;
+        // if element config has namespace, then namespace has to be a match
+        if (namespace && element.namespace !== namespace) {
+            return false;
+        }
+        // If no attributes are specified, then consider the element requires custom renderer
+        if (
+            attrConfig.size === 0 ||
+            attributes.some((attribute) => attrConfig.has(attribute.name))
+        ) {
+            addCustomRenderer = true;
+        }
+    }
+    return addCustomRenderer;
+}
+
 export function isCustomRendererHookRequired(element: BaseElement, state: State): boolean {
     let addCustomRenderer = false;
     if (state.config.customRendererConfig) {
-        const { attributes, directives } = element;
-        if (directives.length) {
-            // If any directives require custom renderer
-            addCustomRenderer = directives.some((dir) => {
-                return state.crDirectives.has(LWC_DIRECTIVES[dir.name]);
-            });
-            if (addCustomRenderer) {
-                // Directives that require custom renderer are not allowed on custom elements
-                // Custom element cannot be allowed to have a custom renderer hook
-                // The renderer is cascaded down from the owner(custom element) to all its child nodes who
-                // do not have a renderer specified.
-                invariant(
-                    element.type !== 'Component',
-                    TemplateErrors.DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT,
-                    [element.name, state.config.customRendererConfig.directives.join(', ')]
-                );
-            }
-        }
-        const elementConfig = state.crElmToConfigMap[element.name];
-        // If element requires custom renderer
-        if (elementConfig) {
-            const { namespace, attributes: attrConfig } = elementConfig;
-            // if element config has namespace, then namespace has to be a match
-            if (namespace && element.namespace !== namespace) {
-                return false;
-            }
-            // If no attributes are specified, then consider the element requires custom renderer
-            if (
-                attrConfig.size === 0 ||
-                attributes.some((attribute) => attrConfig.has(attribute.name))
-            ) {
-                addCustomRenderer = true;
-            }
+        const cachedResult = state.crCheckedElements.get(element);
+        if (cachedResult !== undefined) {
+            return cachedResult;
+        } else {
+            addCustomRenderer = checkElement(element, state);
+            state.crCheckedElements.set(element, addCustomRenderer);
         }
     }
     return addCustomRenderer;

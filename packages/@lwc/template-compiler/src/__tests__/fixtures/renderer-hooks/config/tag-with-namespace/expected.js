@@ -1,4 +1,5 @@
-import { registerTemplate, renderer } from "lwc";
+import { parseFragment, registerTemplate, renderer } from "lwc";
+const $fragment1 = parseFragment`<use href="#myCircle" x="10" fill="blue"${3}></use>`;
 const stc0 = {
   classMap: {
     "slds-icon": true,
@@ -16,16 +17,13 @@ const stc1 = {
 const stc2 = {
   key: 2,
 };
-const stc3 = {
-  attrs: {
-    href: "#myCircle",
-    x: "10",
-    fill: "blue",
-  },
-  key: 4,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element, t: api_text, gid: api_scoped_id } = $api;
+  const {
+    h: api_element,
+    t: api_text,
+    gid: api_scoped_id,
+    st: api_static_fragment,
+  } = $api;
   return [
     api_element("svg", stc0, [
       api_element("use", {
@@ -47,7 +45,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         key: 3,
       }),
-      api_element("use", stc3),
+      api_static_fragment($fragment1(), 5),
     ]),
   ];
   /*LWC compiler vX.X.X*/

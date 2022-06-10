@@ -1,12 +1,10 @@
-import { registerTemplate, renderer } from "lwc";
+import { parseFragment, registerTemplate, renderer } from "lwc";
+const $fragment1 = parseFragment`<div${3}>Should not be transformed</div>`;
 const stc0 = {
   city: true,
 };
-const stc1 = {
-  key: 1,
-};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element } = $api;
+  const { t: api_text, h: api_element, st: api_static_fragment } = $api;
   return [
     api_element(
       "div",
@@ -17,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       [api_text("Should be transformed")]
     ),
-    api_element("div", stc1, [api_text("Should not be transformed")]),
+    api_static_fragment($fragment1(), 2),
   ];
   /*LWC compiler vX.X.X*/
 }
