@@ -27,6 +27,7 @@ import {
     isDynamicDirective,
     isKeyDirective,
     isDomDirective,
+    isElement,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 import {
@@ -71,6 +72,11 @@ function transform(codeGen: CodeGen): t.Expression {
     function transformElement(element: BaseElement, slotParentName?: string): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
+
+        if (codeGen.staticNodes.has(element) && isElement(element)) {
+            // do not process children of static nodes.
+            return codeGen.genHoistedElement(element, slotParentName);
+        }
 
         const children = transformChildren(element);
 
@@ -543,18 +549,22 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
         TEMPLATE_PARAMS.CONTEXT,
     ].map((id) => t.identifier(id));
 
-    const body: t.Statement[] = [
-        t.variableDeclaration('const', [
-            t.variableDeclarator(
-                t.objectPattern(
-                    Object.keys(codeGen.usedApis).map((name) =>
-                        t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
-                    )
-                ),
-                t.identifier(TEMPLATE_PARAMS.API)
-            ),
-        ]),
-    ];
+    const usedApis = Object.keys(codeGen.usedApis);
+    const body: t.Statement[] =
+        usedApis.length === 0
+            ? []
+            : [
+                  t.variableDeclaration('const', [
+                      t.variableDeclarator(
+                          t.objectPattern(
+                              usedApis.map((name) =>
+                                  t.assignmentProperty(t.identifier(name), codeGen.usedApis[name])
+                              )
+                          ),
+                          t.identifier(TEMPLATE_PARAMS.API)
+                      ),
+                  ]),
+              ];
 
     if (codeGen.memorizedIds.length) {
         body.push(

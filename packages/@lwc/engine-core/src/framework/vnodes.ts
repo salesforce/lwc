@@ -15,9 +15,10 @@ export const enum VNodeType {
     Comment,
     Element,
     CustomElement,
+    Static,
 }
 
-export type VNode = VText | VComment | VElement | VCustomElement;
+export type VNode = VText | VComment | VElement | VCustomElement | VStatic;
 export type VParentElement = VElement | VCustomElement;
 export type VNodes = Readonly<Array<VNode | null>>;
 
@@ -27,6 +28,13 @@ export interface BaseVNode {
     sel: string | undefined;
     key: Key | undefined;
     owner: VM;
+}
+
+export interface VStatic extends BaseVNode {
+    type: VNodeType.Static;
+    sel: undefined;
+    key: Key;
+    fragment: Element;
 }
 
 export interface VText extends BaseVNode {

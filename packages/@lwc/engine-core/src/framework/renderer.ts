@@ -25,6 +25,8 @@ export interface RendererAPI {
     isHydrating: () => boolean;
     insert: (node: N, parent: E, anchor: N | null) => void;
     remove: (node: N, parent: E) => void;
+    cloneNode: (node: N, deep: boolean) => N;
+    createFragment: (html: string) => N | null;
     createElement: (tagName: string, namespace?: string) => E;
     createText: (content: string) => N;
     createComment: (content: string) => N;

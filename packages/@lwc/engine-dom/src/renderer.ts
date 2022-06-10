@@ -35,6 +35,14 @@ export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
     KEY__SHADOW_TOKEN
 );
 
+function cloneNode(node: Node, deep: boolean): Node {
+    return node.cloneNode(deep);
+}
+
+function createFragment(html: string): Node | null {
+    return document.createRange().createContextualFragment(html).firstChild;
+}
+
 function createElement(tagName: string, namespace?: string): Element {
     return isUndefined(namespace)
         ? document.createElement(tagName)
@@ -218,6 +226,8 @@ export const renderer = {
     isHydrating,
     insert,
     remove,
+    cloneNode,
+    createFragment,
     createElement,
     createText,
     createComment,

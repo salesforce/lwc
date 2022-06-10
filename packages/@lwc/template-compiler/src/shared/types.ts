@@ -123,11 +123,13 @@ export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 export interface Text extends BaseNode {
     type: 'Text';
     value: Literal | Expression;
+    raw: string;
 }
 
 export interface Comment extends BaseNode {
     type: 'Comment';
     value: string;
+    raw: string;
 }
 
 export interface BaseParentNode extends BaseNode {

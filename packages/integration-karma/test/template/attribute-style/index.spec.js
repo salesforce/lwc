@@ -13,7 +13,7 @@ describe('static style attribute', () => {
         expect(target.style.position).toBe('absolute');
         expect(target.style.top).toBe('10px');
         if (!process.env.COMPAT) {
-            expect(target.style.getPropertyValue('--custom-property')).toBe('blue');
+            expect(target.style.getPropertyValue('--custom-property').trim()).toBe('blue');
         }
     });
 });

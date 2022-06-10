@@ -1,55 +1,45 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<p${3}>Before header</p>`;
+const $fragment2 = parseFragment`<p${3}>In</p>`;
+const $fragment3 = parseFragment`<p${3}>between</p>`;
+const $fragment4 = parseFragment`<p${3}>Default body</p>`;
+const $fragment5 = parseFragment`<p${3}>Default footer</p>`;
 const stc0 = {
   key: 0,
 };
 const stc1 = {
-  key: 1,
-};
-const stc2 = {
   attrs: {
     name: "header",
   },
-  key: 2,
-};
-const stc3 = {
   key: 3,
 };
-const stc4 = {
-  key: 4,
+const stc2 = {
+  key: 8,
 };
-const stc5 = {
-  key: 5,
-};
-const stc6 = {
-  key: "@:6",
-};
-const stc7 = {
+const stc3 = {
   attrs: {
     name: "footer",
   },
-  key: 7,
-};
-const stc8 = {
-  key: "@footer:8",
+  key: 11,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { t: api_text, h: api_element, s: api_slot } = $api;
+  const {
+    st: api_static_fragment,
+    t: api_text,
+    s: api_slot,
+    h: api_element,
+  } = $api;
   return [
     api_element("section", stc0, [
-      api_element("p", stc1, [api_text("Before header")]),
-      api_slot("header", stc2, [api_text("Default header")], $slotset),
-      api_element("p", stc3, [api_text("In")]),
-      api_element("p", stc4, [api_text("between")]),
-      api_slot(
-        "",
-        stc5,
-        [api_element("p", stc6, [api_text("Default body")])],
-        $slotset
-      ),
+      api_static_fragment($fragment1(), 2),
+      api_slot("header", stc1, [api_text("Default header")], $slotset),
+      api_static_fragment($fragment2(), 5),
+      api_static_fragment($fragment3(), 7),
+      api_slot("", stc2, [api_static_fragment($fragment4(), "@:10")], $slotset),
       api_slot(
         "footer",
-        stc7,
-        [api_element("p", stc8, [api_text("Default footer")])],
+        stc3,
+        [api_static_fragment($fragment5(), "@footer:13")],
         $slotset
       ),
     ]),

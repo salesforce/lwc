@@ -11,6 +11,9 @@ import './polyfills/aria-properties/main';
 // Tests -------------------------------------------------------------------------------------------
 import './testFeatureFlag.ts';
 
+// Tests -------------------------------------------------------------------------------------------
+import './testFeatureFlag.ts';
+
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
     createContextProvider,
@@ -30,6 +33,8 @@ export {
     setHooks,
     getComponentDef,
     isComponentConstructor,
+    parseFragment,
+    parseSVGFragment,
     swapComponent,
     swapStyle,
     swapTemplate,

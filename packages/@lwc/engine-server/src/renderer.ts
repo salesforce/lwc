@@ -16,7 +16,7 @@ import {
     isFunction,
 } from '@lwc/shared';
 
-import { HostNode, HostElement, HostAttribute, HostNodeType } from './types';
+import { HostNode, HostElement, HostAttribute, HostNodeType, HostChildNode } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
 function unsupportedMethod(name: string): () => never {
@@ -68,6 +68,18 @@ function insert(node: N, parent: E, anchor: N | null) {
 function remove(node: N, parent: E) {
     const nodeIndex = parent.children.indexOf(node);
     parent.children.splice(nodeIndex, 1);
+}
+
+function cloneNode(node: N): N {
+    return node;
+}
+
+function createFragment(html: string): HostChildNode {
+    return {
+        type: HostNodeType.Raw,
+        parent: null,
+        value: html,
+    };
 }
 
 function createText(content: string): HostNode {
@@ -385,6 +397,8 @@ export const renderer = {
     isHydrating,
     insert,
     remove,
+    cloneNode,
+    createFragment,
     createElement,
     createText,
     createComment,

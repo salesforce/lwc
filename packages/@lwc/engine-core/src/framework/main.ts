@@ -26,6 +26,7 @@ export {
     getAssociatedVMIfPresent,
 } from './vm';
 
+export { parseFragment, parseSVGFragment } from './template';
 export { hydrateRoot } from './hydration';
 
 // Internal APIs used by compiled code -------------------------------------------------------------
