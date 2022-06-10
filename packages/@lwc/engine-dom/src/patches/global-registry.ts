@@ -24,13 +24,15 @@ const localDefinitionsByTag = new Map<string, Definition>();
 const globalDefinitionsByClass = new Map<CustomElementConstructor, Definition>();
 const awaitingUpgrade = new Map<string, Set<HTMLElement>>();
 
+const EMPTY_SET = new Set();
+
 interface Definition {
     UserCtor: CustomElementConstructor;
     PivotCtor: CustomElementConstructor | undefined;
-    connectedCallback: (() => void) | void;
-    disconnectedCallback: (() => void) | void;
-    adoptedCallback: (() => void) | void;
-    attributeChangedCallback: ((name: string, oldValue: any, newValue: any) => void) | void;
+    connectedCallback: (() => void) | undefined;
+    disconnectedCallback: (() => void) | undefined;
+    adoptedCallback: (() => void) | undefined;
+    attributeChangedCallback: ((name: string, oldValue: any, newValue: any) => void) | undefined;
     observedAttributes: Set<string>;
 }
 
@@ -128,42 +130,58 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
     return PivotCtor;
 }
 
-function getObservedAttributesOffset(
+function getNewObservedAttributes(
     registeredDefinition: Definition,
-    instancedDefinition: Definition
+    instanceDefinition: Definition
 ) {
-    // natively, the attributes observed by the registered definition are going to be taken
+    const { observedAttributes, attributeChangedCallback } = instanceDefinition;
+    if (observedAttributes.size === 0 || isUndefined(attributeChangedCallback)) {
+        // This instance does not need to observe any attributes, no need to patch
+        return EMPTY_SET as Set<string>;
+    }
+
+    // Natively, the attributes observed by the registered definition are going to be taken
     // care of by the browser, only the difference between the two sets has to be taken
     // care by the patched version.
+    // TODO [#2877]: LWC components don't actually use observedAttributes, the size is never 0
     return new Set(
-        [...registeredDefinition.observedAttributes].filter(
-            (x) => !instancedDefinition.observedAttributes.has(x)
+        [...instanceDefinition.observedAttributes].filter(
+            (x) => !registeredDefinition.observedAttributes.has(x)
         )
     );
 }
 
-// Helper to patch CE class setAttribute/getAttribute to implement
-// attributeChangedCallback
+// Helper to patch `setAttribute`/`getAttribute` to implement `attributeChangedCallback`.
+// Why is this necessary? Well basically, you can't change the `observedAttributes` after
+// a custom element is defined. So with pivots, if two classes share the same tag name,
+// and the second class observes attributes that aren't observed by the first one,
+// then those attributes can never be observed by the native `observedAttributes` system.
+// So we have to simulate it by patching `getAttribute`/`removeAttribute`. Note that
+// we only do this when absolutely necessary, though; i.e. because we've determined
+// that we aren't observing the attributes we need to.
 function patchAttributes(
     instance: HTMLElement,
     registeredDefinition: Definition,
-    instancedDefinition: Definition
+    instanceDefinition: Definition
 ) {
-    const { observedAttributes, attributeChangedCallback } = instancedDefinition;
-    if (observedAttributes.size === 0 || isUndefined(attributeChangedCallback)) {
+    const newObservedAttributes = getNewObservedAttributes(
+        registeredDefinition,
+        instanceDefinition
+    );
+    if (getNewObservedAttributes(registeredDefinition, instanceDefinition).size === 0) {
         return;
     }
-    const offset = getObservedAttributesOffset(registeredDefinition, instancedDefinition);
-    if (offset.size === 0) {
-        return;
-    }
-    // instance level patches
+    const { attributeChangedCallback } = instanceDefinition;
+
+    // Patch the instance.
+    // Note we use the native `getAttribute` rather than the super's `getAttribute` because
+    // we don't actually want it to be observable that we're calling `getAttribute` from
+    // `setAttribute` and `removeAttribute`.
     defineProperties(instance, {
         setAttribute: {
             value: function setAttribute(name: string, value: any) {
-                if (offset.has(name)) {
+                if (newObservedAttributes.has(name)) {
                     const old = nativeGetAttribute.call(this, name);
-                    // maybe we want to call the super.setAttribute rather than the native one
                     nativeSetAttribute.call(this, name, value);
                     attributeChangedCallback!.call(this, name, old, value + '');
                 } else {
@@ -176,9 +194,8 @@ function patchAttributes(
         },
         removeAttribute: {
             value: function removeAttribute(name: string) {
-                if (offset.has(name)) {
+                if (newObservedAttributes.has(name)) {
                     const old = nativeGetAttribute.call(this, name);
-                    // maybe we want to call the super.removeAttribute rather than the native one
                     nativeRemoveAttribute.call(this, name);
                     attributeChangedCallback!.call(this, name, old, null);
                 } else {
@@ -192,6 +209,30 @@ function patchAttributes(
     });
 }
 
+function patchAttributesDuringUpgrade(
+    instance: HTMLElement,
+    registeredDefinition: Definition,
+    instanceDefinition: Definition
+) {
+    // The below case patches observed attributes for the case where the HTML element is upgraded
+    // from a pre-existing one in the DOM.
+    const newObservedAttributes = getNewObservedAttributes(
+        registeredDefinition,
+        instanceDefinition
+    );
+    if (getNewObservedAttributes(registeredDefinition, instanceDefinition).size === 0) {
+        return;
+    }
+    const { attributeChangedCallback } = instanceDefinition;
+    // Approximate observedAttributes from the user class, but only for the new observed attributes
+    newObservedAttributes.forEach((name) => {
+        if (nativeHasAttribute.call(instance, name)) {
+            const newValue = nativeGetAttribute.call(instance, name);
+            attributeChangedCallback!.call(instance, name, null, newValue);
+        }
+    });
+}
+
 // User extends this HTMLElement, which returns the CE being upgraded
 let upgradingInstance: HTMLElement | undefined;
 
@@ -199,36 +240,22 @@ let upgradingInstance: HTMLElement | undefined;
 function internalUpgrade(
     instance: HTMLElement,
     registeredDefinition: Definition,
-    instancedDefinition: Definition
+    instanceDefinition: Definition
 ) {
-    setPrototypeOf(instance, instancedDefinition.UserCtor.prototype);
-    definitionForElement.set(instance, instancedDefinition);
+    setPrototypeOf(instance, instanceDefinition.UserCtor.prototype);
+    definitionForElement.set(instance, instanceDefinition);
     // attributes patches when needed
-    if (instancedDefinition !== registeredDefinition) {
-        patchAttributes(instance, registeredDefinition, instancedDefinition);
+    if (instanceDefinition !== registeredDefinition) {
+        patchAttributes(instance, registeredDefinition, instanceDefinition);
     }
     // Tricking the construction path to believe that a new instance is being created,
     // that way it will execute the super initialization mechanism but the HTMLElement
     // constructor will reuse the instance by returning the upgradingInstance.
     // This is by far the most important piece of the puzzle
     upgradingInstance = instance;
-    new instancedDefinition.UserCtor();
+    new instanceDefinition.UserCtor();
 
-    const { observedAttributes, attributeChangedCallback } = instancedDefinition;
-    if (observedAttributes.size === 0 || isUndefined(attributeChangedCallback)) {
-        return;
-    }
-    const offset = getObservedAttributesOffset(registeredDefinition, instancedDefinition);
-    if (offset.size === 0) {
-        return;
-    }
-    // Approximate observedAttributes from the user class, but only for the offset attributes
-    offset.forEach((name) => {
-        if (nativeHasAttribute.call(instance, name)) {
-            const newValue = nativeGetAttribute.call(instance, name);
-            attributeChangedCallback!.call(instance, name, null, newValue);
-        }
-    });
+    patchAttributesDuringUpgrade(instance, registeredDefinition, instanceDefinition);
 }
 
 function getDefinitionForConstructor(constructor: CustomElementConstructor): Definition {
