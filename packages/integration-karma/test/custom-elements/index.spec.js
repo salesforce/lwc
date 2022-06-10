@@ -196,7 +196,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             // TODO [#2877]: elm1 is not upgraded
             // expect(elm1.expectedTagName).toEqual('x-nonce9')
         });
+    });
 
+    describe('errors', () => {
         it('throws when new-ing an undefined HTMLElement constructor', () => {
             class MyComponent extends HTMLElement {}
             const callNew = () => {
@@ -204,6 +206,41 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             };
             expect(callNew).toThrowError(TypeError);
             expect(callNew).toThrowError(/Illegal constructor/);
+        });
+
+        describe('throws when defining an invalid constructor', () => {
+            const invalidConstructors = [
+                {
+                    name: 'null',
+                    getConstructor: () => null,
+                },
+                {
+                    name: 'null proto',
+                    getConstructor: () => Object.create(null),
+                },
+                {
+                    name: 'bad proto',
+                    getConstructor: () => {
+                        const result = function () {};
+                        result.prototype = 2;
+                        return result;
+                    },
+                },
+            ];
+
+            invalidConstructors.forEach(({ name, getConstructor }) => {
+                it(name, () => {
+                    const define = () => {
+                        const NotAConstructor = getConstructor();
+                        customElements.define(
+                            `x-will-fail-${Math.round(Math.random() * 100000)}`,
+                            NotAConstructor
+                        );
+                    };
+                    expect(define).toThrowError(TypeError);
+                    expect(define).toThrowError(/The referenced constructor is not a constructor/);
+                });
+            });
         });
     });
 

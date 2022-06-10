@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { setPrototypeOf, isUndefined, defineProperties } from '@lwc/shared';
+import { setPrototypeOf, isUndefined, defineProperties, isObject, isFunction } from '@lwc/shared';
 
 const { HTMLElement: NativeHTMLElement } = window;
 const {
@@ -259,8 +259,8 @@ function internalUpgrade(
 }
 
 function getDefinitionForConstructor(constructor: CustomElementConstructor): Definition {
-    if (!constructor || !constructor.prototype || typeof constructor.prototype !== 'object') {
-        throw new TypeError(`The referenced constructor is not a constructor.`);
+    if (!isFunction(constructor) || !isObject(constructor.prototype)) {
+        throw new TypeError('The referenced constructor is not a constructor.');
     }
     let definition = definitionForConstructor.get(constructor);
     if (isUndefined(definition)) {
