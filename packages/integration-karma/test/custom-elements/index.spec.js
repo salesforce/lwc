@@ -14,6 +14,7 @@ import Nonce12 from 'x/nonce12';
 import Nonce13 from 'x/nonce13';
 import ObserveNothing from 'x/observeNothing';
 import ObserveFoo from 'x/observeFoo';
+import ObserveNothingThrowOnAttributeChangedCallback from 'x/observeNothingThrowOnAttributeChangedCallback';
 
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
@@ -405,5 +406,64 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 });
             }
         );
+
+        it('custom element with observedAttributes but no attributeChangedCallback', () => {
+            customElements.define(
+                'x-no-attr-change-cb',
+                class extends HTMLElement {
+                    static observedAttributes = ['foo'];
+                }
+            );
+
+            const elm = document.createElement('x-no-attr-change-cb');
+            document.body.appendChild(elm);
+
+            // Basically we just want to make sure nothing throws
+            elm.setAttribute('foo', 'bar');
+            elm.removeAttribute('foo');
+            expect(elm.getAttribute('foo')).toBeNull();
+        });
+
+        it('custom element with attributeChangedCallback but no observedAttributes', () => {
+            // The LWC component observes foo, but the vanilla component doesn't,
+            // so its attributeChangedCallback should never fire
+            const elm1 = createElement('x-no-observed-attrs', { is: ObserveFoo });
+            document.body.appendChild(elm1);
+            const observations = [];
+            class Custom extends HTMLElement {
+                attributeChangedCallback(name, oldValue, newValue) {
+                    observations.push({ name, oldValue, newValue });
+                }
+            }
+            customElements.define('x-no-observed-attrs', Custom);
+            const elm2 = new Custom();
+            document.body.appendChild(elm2);
+
+            elm2.setAttribute('foo', 'bar');
+            elm2.removeAttribute('foo');
+            expect(elm2.getAttribute('foo')).toBeNull();
+            expect(observations).toEqual([]);
+        });
+
+        it('LWC element with attributeChangedCallback but no observedAttributes', () => {
+            // The LWC component observes nothing, but the vanilla component observes foo.
+            // Changing the foo attribute on the LWC component should not fire attributeChangedCallback.
+            class Custom extends HTMLElement {
+                static observedAttributes = ['foo'];
+                attributeChangedCallback() {
+                    throw new Error('should not be invoked');
+                }
+            }
+            customElements.define('x-no-observed-attrs-2', Custom);
+
+            const lwcElm = createElement('x-no-observed-attrs-2', {
+                is: ObserveNothingThrowOnAttributeChangedCallback,
+            });
+            document.body.appendChild(lwcElm);
+
+            lwcElm.setAttribute('foo', 'bar');
+            lwcElm.removeAttribute('foo');
+            expect(lwcElm.getAttribute('foo')).toBeNull();
+        });
     });
 }
