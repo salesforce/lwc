@@ -15,6 +15,7 @@ import Nonce13 from 'x/nonce13';
 import ObserveNothing from 'x/observeNothing';
 import ObserveFoo from 'x/observeFoo';
 import ObserveNothingThrowOnAttributeChangedCallback from 'x/observeNothingThrowOnAttributeChangedCallback';
+import Component from 'x/component';
 
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
@@ -196,6 +197,26 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             expect(elm2.expectedTagName).toEqual('x-nonce9');
             // TODO [#2877]: elm1 is not upgraded
             // expect(elm1.expectedTagName).toEqual('x-nonce9')
+        });
+
+        it('pre-existing custom element, LWC defined first', () => {
+            const tagName = 'x-preexisting-in-dom';
+            const vanilla = document.createElement(tagName);
+            document.body.appendChild(vanilla);
+            const lwcElm = createElement(tagName, { is: Component });
+            document.body.appendChild(lwcElm);
+
+            customElements.define(
+                tagName,
+                class extends HTMLElement {
+                    constructor() {
+                        super();
+                        this.notLWC = true;
+                    }
+                }
+            );
+
+            expect(vanilla.notLWC).toEqual(true);
         });
     });
 

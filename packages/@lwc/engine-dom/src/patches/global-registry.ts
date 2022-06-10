@@ -310,16 +310,19 @@ export function patchCustomElementRegistry() {
         // to the UserCtor has a back-pointer to PivotCtor in case the user
         // new the UserCtor, so we know how to create the underlying element.
         definition.PivotCtor = PivotCtor;
-        // Upgrade any elements created in this scope before define was called
-        // which should be exhibit by LWC using a tagName (in a template)
-        // before the same tagName is registered as a global, while others
-        // are already created and waiting in the global context, that will
-        // require immediate upgrade when the new global tagName is defined.
+        // Upgrade any elements created in this scope before customElements.define
+        // was called, which should be exhibited by the following steps:
+        // 1) LWC registers a tagName for an LWC component.
+        // 2) Element with same tagName is created with document.createElement()
+        //    and inserted into DOM.
+        // 3) customElements.define() is called with tagName and non-LWC constructor.
+        // This requires immediate upgrade when the new global tagName is defined.
         const awaiting = awaitingUpgrade.get(tagName);
         if (!isUndefined(awaiting)) {
             awaitingUpgrade.delete(tagName);
             for (const element of awaiting) {
                 const registeredDefinition = pendingRegistryForElement.get(element);
+                // TODO [#2877]: is there a case where registeredDefinition is undefined?
                 if (!isUndefined(registeredDefinition)) {
                     pendingRegistryForElement.delete(element);
                     internalUpgrade(element, registeredDefinition, definition);
