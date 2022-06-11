@@ -255,7 +255,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     const define = () => {
                         const NotAConstructor = getConstructor();
                         customElements.define(
-                            `x-will-fail-${Math.round(Math.random() * 100000)}`,
+                            `x-will-fail-${Math.round(Math.random() * 1000000)}`,
                             NotAConstructor
                         );
                     };
