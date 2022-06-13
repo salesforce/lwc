@@ -105,6 +105,12 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             );
         });
 
+        it('throws error for invalid tag name', () => {
+            expect(() => {
+                customElements.define('invalid', class extends HTMLElement {});
+            }).toThrowError(/not a valid custom element name/);
+        });
+
         it('allows non-LWC custom element to use the same tag name as LWC custom elements', () => {
             const elm = createElement('x-nonce3', { is: Nonce3 });
             document.body.appendChild(elm);

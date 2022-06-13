@@ -281,6 +281,7 @@ export function patchCustomElementRegistry() {
         options?: ElementDefinitionOptions
     ): void {
         if (options && options.extends) {
+            // TODO [#2877]: should we support `extends`?
             throw new DOMException(
                 'NotSupportedError: "extends" key in customElements.define() options is not supported.'
             );
@@ -360,7 +361,7 @@ export function patchCustomElementRegistry() {
             // In this case, the custom element must have been defined before the registry patches
             // were applied. So return the non-pivot constructor
             if (isUndefined(NativeCtor)) {
-                // Apparent Chromium bug: https://bugs.chromium.org/p/chromium/issues/detail?id=1335247
+                // Chromium bug: https://bugs.chromium.org/p/chromium/issues/detail?id=1335247
                 // We can patch the correct behavior using customElements.get()
                 return nativeGet.call(nativeRegistry, tagName)!;
             }
@@ -399,7 +400,7 @@ export function patchCustomElementRegistry() {
     // @ts-ignore
     window.HTMLElement = HTMLElement;
 
-    // This method patches the dom and returns a helper function for LWC to register names and associate
+    // This method patches the DOM and returns a helper function for LWC to register names and associate
     // them to a constructor while returning the pivot constructor, ready to instantiate via `new`.
     return function definePivotCustomElement(
         tagName: string,
