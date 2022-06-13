@@ -12,6 +12,9 @@ import Nonce10 from 'x/nonce10';
 import Nonce11 from 'x/nonce11';
 import Nonce12 from 'x/nonce12';
 import Nonce13 from 'x/nonce13';
+import Nonce14 from 'x/nonce14';
+import Nonce15 from 'x/nonce15';
+import Nonce16 from 'x/nonce16';
 import ObserveNothing from 'x/observeNothing';
 import ObserveFoo from 'x/observeFoo';
 import ObserveNothingThrow from 'x/observeNothingThrow';
@@ -58,6 +61,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 expect(typeof Ctor).toEqual('function');
                 document.body.appendChild(elm);
                 expect(elm.expectedTagName).toEqual(tag);
+                // TODO [#2877]: Should LWC components be exposed via customElements.get/whenDefined?
                 return promise
                     .then((Ctor) => {
                         expect(typeof Ctor).toEqual('function');
@@ -184,6 +188,44 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         });
     });
 
+    describe('constructor', () => {
+        const notSupportedError =
+            /(Shadow root cannot be created on a host which already hosts a shadow tree|Operation is not supported|The operation is not supported)/;
+
+        it('new-ing an LWC component constructor from customElements.get()', () => {
+            createElement('x-nonce14', { is: Nonce14 });
+            const Ctor = customElements.get('x-nonce14');
+            const elm = new Ctor();
+            document.body.appendChild(elm);
+
+            // TODO [#2877]: element is not upgraded when new-ing the Ctor
+            expect(elm.expectedTagName).toBeUndefined();
+            // expect(elm.expectedTagName).toEqual('x-nonce14')
+        });
+
+        it('new-ing an LWC component via new CustomElementConstructor()', () => {
+            customElements.define('x-nonce15', Nonce15.CustomElementConstructor);
+
+            // TODO [#2877]: CustomElementConstructor throws an error
+            expect(() => {
+                const elm = new Nonce15.CustomElementConstructor();
+                document.body.appendChild(elm);
+            }).toThrowError(notSupportedError);
+        });
+
+        it('new-ing an LWC component defined with CustomElementConstructor, constructor from customElements.get()', () => {
+            customElements.define('x-nonce16', Nonce16.CustomElementConstructor);
+
+            const Ctor = customElements.get('x-nonce16');
+
+            // TODO [#2877]: CustomElementConstructor throws an error
+            expect(() => {
+                const elm = new Ctor();
+                document.body.appendChild(elm);
+            }).toThrowError(notSupportedError);
+        });
+    });
+
     describe('LWC elements and custom elements', () => {
         it('calling document.createElement after lwc.createElement', () => {
             const elm1 = createElement('x-nonce8', { is: Nonce8 });
@@ -191,7 +233,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             const elm2 = document.createElement('x-nonce8');
             document.body.appendChild(elm2);
             expect(elm1.expectedTagName).toEqual('x-nonce8');
+
             // TODO [#2877]: elm2 is not upgraded
+            expect(elm2.expectedTagName).toBeUndefined();
             // expect(elm2.expectedTagName).toEqual('x-nonce8')
         });
 
@@ -201,7 +245,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             const elm2 = createElement('x-nonce9', { is: Nonce9 });
             document.body.appendChild(elm2);
             expect(elm2.expectedTagName).toEqual('x-nonce9');
+
             // TODO [#2877]: elm1 is not upgraded
+            expect(elm1.expectedTagName).toBeUndefined();
             // expect(elm1.expectedTagName).toEqual('x-nonce9')
         });
 

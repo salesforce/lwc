@@ -20,7 +20,6 @@ const definitionForConstructor = new WeakMap<CustomElementConstructor, Definitio
 
 const pivotCtorByTag = new Map<string, CustomElementConstructor>();
 const globalDefinitionsByTag = new Map<string, Definition>();
-const localDefinitionsByTag = new Map<string, Definition>();
 const globalDefinitionsByClass = new Map<CustomElementConstructor, Definition>();
 const awaitingUpgrade = new Map<string, Set<HTMLElement>>();
 
@@ -354,10 +353,6 @@ export function patchCustomElementRegistry() {
             if (!isUndefined(definition)) {
                 return definition.UserCtor;
             }
-            const localDefinition = localDefinitionsByTag.get(tagName);
-            if (!isUndefined(localDefinition) && !isUndefined(localDefinition.UserCtor)) {
-                return localDefinition.UserCtor;
-            }
             // In this case, the custom element must have been defined before the registry patches
             // were applied. So return the non-pivot constructor
             if (isUndefined(NativeCtor)) {
@@ -412,12 +407,6 @@ export function patchCustomElementRegistry() {
             const definition = getDefinitionForConstructor(constructor);
             PivotCtor = createPivotingClass(tagName, definition);
             definition.PivotCtor = PivotCtor;
-            // We keep a local definitions by tag to keep track separately of our own custom elements
-            // compared to global ones.
-            // The reason we don't need a `localDefinitionsByClass` is because we don't care about duplicate
-            // classes – we will never call `definePivotCustomElement` twice with the same class
-            // but different tags.
-            localDefinitionsByTag.set(tagName, definition);
             // Register a pivoting class as a global custom element
             nativeDefine.call(nativeRegistry, tagName, PivotCtor);
         }
