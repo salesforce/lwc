@@ -112,7 +112,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         it('throws error for invalid tag name', () => {
             expect(() => {
                 customElements.define('invalid', class extends HTMLElement {});
-            }).toThrowError(/not a valid custom element name/);
+            }).toThrowError(/(not a valid custom element name|must contain a hyphen)/);
         });
 
         it('allows non-LWC custom element to use the same tag name as LWC custom elements', () => {
