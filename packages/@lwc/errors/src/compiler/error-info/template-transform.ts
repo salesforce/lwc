@@ -39,6 +39,28 @@ export const TemplateErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    DUPLICATE_ELEMENT_ENTRY: {
+        code: 1150,
+        message: 'customRendererConfig contains duplicate entry for {0} element tag',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    CUSTOM_ELEMENT_TAG_DISALLOWED: {
+        code: 1151,
+        message: 'customRendererConfig should not contain a custom element tag, but found {0}',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT: {
+        code: 1152,
+        message:
+            'Directives diallowed on custom elements due to customRendererConfig, found <{0}> assigned to one of [{1}] directives',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
 
 export const ParserDiagnostics = {

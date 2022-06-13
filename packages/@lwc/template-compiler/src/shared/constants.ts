@@ -7,6 +7,7 @@
 export const SECURE_REGISTER_TEMPLATE_METHOD_NAME = 'registerTemplate';
 export const PARSE_FRAGMENT_METHOD_NAME = 'parseFragment';
 export const PARSE_SVG_FRAGMENT_METHOD_NAME = 'parseSVGFragment';
+export const RENDERER = 'renderer';
 export const LWC_MODULE_NAME = 'lwc';
 export const TEMPLATE_MODULES_PARAMETER: string = 'modules';
 
@@ -18,3 +19,14 @@ export const TEMPLATE_PARAMS: { [label: string]: string } = {
     SLOT_SET: '$slotset',
     CONTEXT: '$ctx',
 };
+
+export const DASHED_TAGNAME_ELEMENT_SET = new Set([
+    'annotation-xml',
+    'color-profile',
+    'font-face',
+    'font-face-src',
+    'font-face-uri',
+    'font-face-format',
+    'font-face-name',
+    'missing-glyph',
+]);

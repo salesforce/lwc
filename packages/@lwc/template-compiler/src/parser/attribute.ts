@@ -18,6 +18,7 @@ import { isComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';
 import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
+import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
 import ParserCtx from './parser';
 import {
     EXPRESSION_SYMBOL_END,
@@ -32,7 +33,6 @@ import {
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     HTML_TAG,
-    DASHED_TAGNAME_ELEMENT_SET,
     ID_REFERENCING_ATTRIBUTES_SET,
     KNOWN_HTML_ELEMENTS,
     TEMPLATE_DIRECTIVES,
