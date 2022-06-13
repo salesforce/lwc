@@ -196,5 +196,64 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 });
             });
         });
+
+        describe('adoptedCallback', () => {
+            describe('calls adoptedCallback when element moves between documents', () => {
+                function defineVanillaAdopted() {
+                    customElements.define(
+                        'x-adopted',
+                        class extends HTMLElement {
+                            constructor() {
+                                super();
+                                // avoid class properties so Babel doesn't transform this class
+                                this._adopted = false;
+                            }
+
+                            adoptedCallback() {
+                                this._adopted = true;
+                            }
+                        }
+                    );
+                    document.body.appendChild(document.createElement('x-adopted'));
+                }
+
+                const scenarios = [
+                    {
+                        name: 'element defined before engine loads',
+                        getScripts: () => [defineVanillaAdopted, engineScripts],
+                    },
+                    {
+                        name: 'element defined after engine loads',
+                        getScripts: () => [engineScripts, defineVanillaAdopted],
+                    },
+                ];
+
+                scenarios.forEach(({ name, getScripts }) => {
+                    it(name, () => {
+                        for (const script of getScripts()) {
+                            evaluate(script);
+                        }
+                        expect(
+                            evaluate(() => document.querySelector('x-adopted')._adopted)
+                        ).toEqual(false);
+                        const elm = iframe.contentDocument.querySelector('x-adopted');
+                        elm.parentElement.removeChild(elm);
+                        expect(elm._adopted).toEqual(false);
+                        document.body.appendChild(elm);
+                        expect(elm._adopted).toEqual(true);
+                    });
+                });
+            });
+
+            it('does not call adoptedCallback if unnecessary', () => {
+                evaluate(engineScripts);
+                evaluate(`(${createVanilla})()`);
+
+                // We're basically just testing that this doesn't throw an error
+                const elm = iframe.contentDocument.querySelector('x-foo');
+                elm.parentElement.removeChild(elm);
+                document.body.appendChild(elm);
+            });
+        });
     });
 }
