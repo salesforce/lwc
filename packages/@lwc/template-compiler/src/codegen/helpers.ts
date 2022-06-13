@@ -27,6 +27,8 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
+import State from '../state';
+import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
@@ -254,7 +256,7 @@ function isStaticNode(node: BaseElement): boolean {
     return result;
 }
 
-function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>) {
+function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state: State) {
     let childrenAreStatic = true;
     let nodeIsStatic;
 
@@ -265,12 +267,13 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>) {
     } else {
         // it is ForBlock | If | BaseElement
         node.children.forEach((childNode) => {
-            collectStaticNodes(childNode, staticNodes);
+            collectStaticNodes(childNode, staticNodes, state);
 
             childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
         });
 
-        nodeIsStatic = isBaseElement(node) && isStaticNode(node);
+        nodeIsStatic =
+            isBaseElement(node) && !isCustomRendererHookRequired(node, state) && isStaticNode(node);
     }
 
     if (nodeIsStatic && childrenAreStatic) {
@@ -278,11 +281,11 @@ function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>) {
     }
 }
 
-export function getStaticNodes(root: Root): Set<ChildNode> {
+export function getStaticNodes(root: Root, state: State): Set<ChildNode> {
     const staticNodes = new Set<ChildNode>();
 
     root.children.forEach((childNode) => {
-        collectStaticNodes(childNode, staticNodes);
+        collectStaticNodes(childNode, staticNodes, state);
     });
 
     return staticNodes;

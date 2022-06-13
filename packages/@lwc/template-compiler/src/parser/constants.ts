@@ -137,17 +137,6 @@ export const DISALLOWED_MATHML_TAGS = new Set([
 
 export const VOID_ELEMENT_SET = new Set(HTML_VOID_ELEMENTS);
 
-export const DASHED_TAGNAME_ELEMENT_SET = new Set([
-    'annotation-xml',
-    'color-profile',
-    'font-face',
-    'font-face-src',
-    'font-face-uri',
-    'font-face-format',
-    'font-face-name',
-    'missing-glyph',
-]);
-
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     accesskey: 'accessKey',
     readonly: 'readOnly',

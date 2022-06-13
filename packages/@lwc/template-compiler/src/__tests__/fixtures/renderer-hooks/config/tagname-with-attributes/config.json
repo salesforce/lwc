@@ -1,0 +1,13 @@
+{
+    "customRendererConfig": {
+        "directives": [],
+        "elements": [
+            {
+                "tagName": "div",
+                "attributes": [
+                    "class"
+                ]
+            }
+        ]
+    }
+}
