@@ -19,7 +19,7 @@ function getEngineCode() {
 }
 
 function createLWC({ tagName = 'x-foo', skipInject = false, text = 'Hello LWC' } = {}) {
-    // basic Hello LWC compiled LWC component
+    // basic "Hello World" compiled LWC component
     function tmpl($api) {
         const { t: api_text, h: api_element } = $api;
         return [api_element('h1', { key: 0 }, [api_text(text)])];
