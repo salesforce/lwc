@@ -283,7 +283,6 @@ export function patchCustomElementRegistry() {
                 'NotSupportedError: "extends" key in customElements.define() options is not supported.'
             );
         }
-        nativeGet.call(this, tagName); // SyntaxError if The provided name is not a valid custom element name.
         if (!isUndefined(globalDefinitionsByTag.get(tagName))) {
             throw new DOMException(
                 `Failed to execute 'define' on 'CustomElementRegistry': the name "${tagName}" has already been used with this registry`
