@@ -174,15 +174,13 @@ function parseElement(
         validateElement(ctx, element, parse5Elm);
         validateAttributes(ctx, parsedAttr, element);
         validateProperties(ctx, element);
+    } else {
+        validateTemplate(ctx, parsedAttr, parse5Elm, parse5ElmLocation);
     }
 
-    validateTemplate(ctx, parsedAttr, parse5Elm, parse5ElmLocation);
-
-    const currentNode = element || directive;
-    if (currentNode) {
-        parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
-        validateChildren(ctx, element);
-    }
+    const currentNode = element ?? directive ?? parentNode;
+    parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
+    validateChildren(ctx, element);
 }
 
 function parseElementLocation(
@@ -976,24 +974,26 @@ function validateTemplate(
     parse5Elm: parse5.Element,
     parse5ElmLocation: parse5.ElementLocation
 ): void {
-    if (parse5Elm.tagName === 'template') {
-        const location = ast.sourceLocation(parse5ElmLocation);
+    const location = ast.sourceLocation(parse5ElmLocation);
 
-        // Empty templates not allowed outside of root
-        if (!parse5Elm.attrs.length) {
-            ctx.throwAtLocation(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, location);
-        }
+    // Empty templates not allowed outside of root
+    if (!parse5Elm.attrs.length) {
+        ctx.throwAtLocation(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, location);
+    }
 
-        if (parsedAttr.get(LWC_DIRECTIVES.INNER_HTML)) {
-            ctx.throwAtLocation(ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT, location, [
-                '<template>',
-            ]);
-        }
+    if (parsedAttr.get(LWC_DIRECTIVES.INNER_HTML)) {
+        ctx.throwAtLocation(ParserDiagnostics.LWC_INNER_HTML_INVALID_ELEMENT, location, [
+            '<template>',
+        ]);
+    }
 
-        // Non root templates only support for:each, iterator and if directives
-        if (parsedAttr.getAttributes().length) {
-            ctx.warnAtLocation(ParserDiagnostics.UNKNOWN_TEMPLATE_ATTRIBUTE, location);
-        }
+    // At this point in the parsing all supported attributes from a non root template
+    // should have been validated and removed from ParsedAttribute.
+    const templateAttrs = parsedAttr.getAttributes();
+    if (templateAttrs.length) {
+        ctx.warnAtLocation(ParserDiagnostics.INVALID_TEMPLATE_ATTRIBUTE, location, [
+            templateAttrs.map((attr) => attr.name).join(', '),
+        ]);
     }
 }
 
