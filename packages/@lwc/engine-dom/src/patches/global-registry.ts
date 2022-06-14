@@ -36,8 +36,6 @@ interface Definition {
 }
 
 function createDefinitionRecord(constructor: CustomElementConstructor): Definition {
-    // Since observedAttributes can't change, we approximate it by patching
-    // set/removeAttribute on the user's class
     const { connectedCallback, disconnectedCallback, adoptedCallback, attributeChangedCallback } =
         constructor.prototype;
     const observedAttributes = new Set(constructor.observedAttributes ?? []);
