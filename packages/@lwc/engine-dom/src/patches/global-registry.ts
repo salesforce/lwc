@@ -286,12 +286,12 @@ export function patchCustomElementRegistry() {
                 `Failed to execute 'define' on 'CustomElementRegistry': the name "${tagName}" has already been used with this registry`
             );
         }
-        const definition = getOrCreateDefinitionForConstructor(constructor);
         if (!isUndefined(globalDefinitionsByClass.get(constructor))) {
             throw new DOMException(
                 `Failed to execute 'define' on 'CustomElementRegistry': this constructor has already been used with this registry`
             );
         }
+        const definition = getOrCreateDefinitionForConstructor(constructor);
         let PivotCtor = pivotCtorByTag.get(tagName);
         if (isUndefined(PivotCtor)) {
             PivotCtor = createPivotingClass(tagName, definition);
