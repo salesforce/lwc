@@ -10,7 +10,6 @@ import {
     isBooleanAttribute,
     isGlobalHtmlAttribute,
     isAriaAttribute,
-    create,
     htmlPropertyToAttribute,
     noop,
     isFunction,
@@ -365,7 +364,7 @@ interface UpgradableCustomElementConstructor extends CustomElementConstructor {
     new (userCtor?: CustomElementConstructor): HTMLElement;
 }
 
-const localRegistryRecord: Record<string, UpgradableCustomElementConstructor> = create(null);
+const localRegistryRecord: Map<string, UpgradableCustomElementConstructor> = new Map();
 function getUpgradableConstructor(name: string): UpgradableCustomElementConstructor {
     return function (upgradeCallback?: UpgradeCallback) {
         const elm = createElement(name);
@@ -377,11 +376,12 @@ function getUpgradableConstructor(name: string): UpgradableCustomElementConstruc
 }
 
 function getUpgradableElement(name: string): UpgradableCustomElementConstructor {
-    let ctor = localRegistryRecord[name];
+    let ctor = localRegistryRecord.get(name);
     if (!isUndefined(ctor)) {
         return ctor;
     }
-    ctor = localRegistryRecord[name] = getUpgradableConstructor(name);
+    ctor = getUpgradableConstructor(name);
+    localRegistryRecord.set(name, ctor);
     return ctor;
 }
 
