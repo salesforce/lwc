@@ -65,7 +65,7 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
             // internal registry.
             super();
             const definition = UserCtor
-                ? getDefinitionForConstructor(UserCtor)
+                ? getOrCreateDefinitionForConstructor(UserCtor)
                 : globalDefinitionsByTag.get(tagName);
             if (!isUndefined(definition)) {
                 internalUpgrade(this, registeredDefinition, definition);
@@ -123,7 +123,6 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
         }
         static observedAttributes = [...registeredDefinition.observedAttributes];
     }
-    pivotCtorByTag.set(tagName, PivotCtor);
     return PivotCtor;
 }
 
@@ -254,16 +253,15 @@ function internalUpgrade(
     patchAttributesDuringUpgrade(instance, registeredDefinition, instanceDefinition);
 }
 
-function getDefinitionForConstructor(constructor: CustomElementConstructor): Definition {
+function getOrCreateDefinitionForConstructor(constructor: CustomElementConstructor): Definition {
     if (!isFunction(constructor) || !isObject(constructor.prototype)) {
         throw new TypeError('The referenced constructor is not a constructor.');
     }
-    let definition = definitionForConstructor.get(constructor);
-    if (isUndefined(definition)) {
-        definition = createDefinitionRecord(constructor);
-        definitionForConstructor.set(constructor, definition);
+    const definition = definitionForConstructor.get(constructor);
+    if (!isUndefined(definition)) {
+        return definition;
     }
-    return definition;
+    return createDefinitionRecord(constructor);
 }
 
 export function patchCustomElementRegistry() {
@@ -288,20 +286,24 @@ export function patchCustomElementRegistry() {
                 `Failed to execute 'define' on 'CustomElementRegistry': the name "${tagName}" has already been used with this registry`
             );
         }
-        const definition = getDefinitionForConstructor(constructor);
+        const definition = getOrCreateDefinitionForConstructor(constructor);
         if (!isUndefined(globalDefinitionsByClass.get(constructor))) {
             throw new DOMException(
                 `Failed to execute 'define' on 'CustomElementRegistry': this constructor has already been used with this registry`
             );
         }
-        globalDefinitionsByTag.set(tagName, definition);
-        globalDefinitionsByClass.set(constructor, definition);
         let PivotCtor = pivotCtorByTag.get(tagName);
         if (isUndefined(PivotCtor)) {
             PivotCtor = createPivotingClass(tagName, definition);
             // Register a pivoting class which will handle global registry initializations
             nativeDefine.call(nativeRegistry, tagName, PivotCtor);
         }
+        // Only cache after nativeDefine has been called, because if it throws an error
+        // (e.g. for an invalid tag name), then we don't want to cache anything.
+        definitionForConstructor.set(constructor, definition);
+        pivotCtorByTag.set(tagName, PivotCtor);
+        globalDefinitionsByTag.set(tagName, definition);
+        globalDefinitionsByClass.set(constructor, definition);
         // For globally defined custom elements, the definition associated
         // to the UserCtor has a back-pointer to PivotCtor in case the user
         // new the UserCtor, so we know how to create the underlying element.
@@ -401,11 +403,15 @@ export function patchCustomElementRegistry() {
         tagName = tagName.toLowerCase();
         let PivotCtor = pivotCtorByTag.get(tagName);
         if (isUndefined(PivotCtor)) {
-            const definition = getDefinitionForConstructor(constructor);
+            const definition = getOrCreateDefinitionForConstructor(constructor);
             PivotCtor = createPivotingClass(tagName, definition);
-            definition.PivotCtor = PivotCtor;
             // Register a pivoting class as a global custom element
             nativeDefine.call(nativeRegistry, tagName, PivotCtor);
+            definition.PivotCtor = PivotCtor;
+            // Only cache after nativeDefine has been called, because if it throws an error
+            // (e.g. for an invalid tag name), then we don't want to cache anything.
+            definitionForConstructor.set(constructor, definition);
+            pivotCtorByTag.set(tagName, PivotCtor);
         }
         return PivotCtor;
     };

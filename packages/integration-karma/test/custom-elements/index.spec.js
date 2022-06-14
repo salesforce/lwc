@@ -20,6 +20,8 @@ import ObserveFoo from 'x/observeFoo';
 import ObserveNothingThrow from 'x/observeNothingThrow';
 import Component from 'x/component';
 
+const invalidTagNameError = /(not a valid custom element name|must contain a hyphen)/;
+
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
 if (SUPPORTS_CUSTOM_ELEMENTS) {
@@ -109,12 +111,6 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             );
         });
 
-        it('throws error for invalid tag name', () => {
-            expect(() => {
-                customElements.define('invalid', class extends HTMLElement {});
-            }).toThrowError(/(not a valid custom element name|must contain a hyphen)/);
-        });
-
         it('allows non-LWC custom element to use the same tag name as LWC custom elements', () => {
             const elm = createElement('x-nonce3', { is: Nonce3 });
             document.body.appendChild(elm);
@@ -185,6 +181,43 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                     expect(Ctor).not.toBeUndefined();
                     expect(Ctor).toBe(firstCtor);
                 });
+        });
+
+        describe('defining an invalid tag name', () => {
+            const scenarios = [
+                {
+                    name: 'LWC component',
+                    define: (tagName) => {
+                        createElement(tagName, { is: Component });
+                    },
+                },
+                {
+                    name: 'Vanilla component',
+                    define: (tagName) => {
+                        customElements.define(tagName, class extends HTMLElement {});
+                    },
+                },
+            ];
+
+            scenarios.forEach(({ name, define }, i) => {
+                describe(name, () => {
+                    it('throws error', () => {
+                        expect(() => {
+                            define(`invalid${i}`);
+                        }).toThrowError(invalidTagNameError);
+                    });
+
+                    it('throws same error twice in a row', () => {
+                        expect(() => {
+                            define(`alsoinvalid${i}`);
+                        }).toThrowError(invalidTagNameError);
+
+                        expect(() => {
+                            define(`alsoinvalid${i}`);
+                        }).toThrowError(invalidTagNameError);
+                    });
+                });
+            });
         });
     });
 
