@@ -283,7 +283,7 @@ export function patchCustomElementRegistry() {
                 'NotSupportedError: "extends" key in customElements.define() options is not supported.'
             );
         }
-        if (!isUndefined(globalDefinitionsByTag.get(tagName))) {
+        if (globalDefinitionsByTag.has(tagName)) {
             throw new DOMException(
                 `Failed to execute 'define' on 'CustomElementRegistry': the name "${tagName}" has already been used with this registry`
             );
