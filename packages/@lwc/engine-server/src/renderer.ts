@@ -17,7 +17,7 @@ import {
     HTML_NAMESPACE,
 } from '@lwc/shared';
 
-import { HostNode, HostElement, HostAttribute, HostNodeType, HostChildNode } from './types';
+import { HostNode, HostElement, HostAttribute, HostNodeType, HostChildNode, HostShadowRoot } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
 function unsupportedMethod(name: string): () => never {
@@ -391,7 +391,7 @@ function dispatchEvent(target: HostNode, event: Event): boolean {
         return true;
     }
 
-    let currentNode: HostElement | null = target;
+    let currentNode: HostElement | HostShadowRoot | null = target;
     let stop = false;
     let stopImmediately = false;
 
@@ -423,7 +423,7 @@ function dispatchEvent(target: HostNode, event: Event): boolean {
             }
         }
         currentNode = currentNode.parent;
-    } while (!stop && currentNode);
+    } while (!stop && currentNode && currentNode.type !== HostNodeType.ShadowRoot);
 
     // `preventDefault` is not supported, so the return value will never be false.
     return true;
