@@ -67,8 +67,5 @@ export interface RendererAPI {
     isConnected: (node: N) => boolean;
     insertStylesheet: (content: string, target?: ShadowRoot) => void;
     assertInstanceOfHTMLElement: (elm: any, msg: string) => void;
-    getUpgradableElement: (name: string) => UpgradableCustomElementConstructor;
-    getUserConstructor: (
-        upgradeCallback: UpgradeCallback
-    ) => UpgradableCustomElementConstructor | UpgradeCallback;
+    defineCustomElement: (tagName: string, upgradeCallback: UpgradeCallback) => E;
 }

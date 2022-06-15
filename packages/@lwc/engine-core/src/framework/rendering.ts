@@ -254,7 +254,7 @@ function mountCustomElement(
     renderer: RendererAPI
 ) {
     const { sel, owner } = vnode;
-    const { getUpgradableElement, getUserConstructor } = renderer;
+    const { defineCustomElement } = renderer;
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced
@@ -267,10 +267,8 @@ function mountCustomElement(
         // the custom element from the registry is expecting an upgrade callback
         vm = createViewModelHook(elm, vnode, renderer);
     };
-    const UpgradableConstructor = getUpgradableElement(sel);
-    const UserConstructor = getUserConstructor(upgradeCallback);
 
-    const elm = new UpgradableConstructor(UserConstructor);
+    const elm = defineCustomElement(sel, upgradeCallback);
 
     linkNodeToShadow(elm, owner, renderer);
     vnode.elm = elm;
@@ -278,8 +276,6 @@ function mountCustomElement(
 
     if (vm) {
         allocateChildren(vnode, vm);
-    } else if (vnode.ctor !== UpgradableConstructor) {
-        throw new TypeError(`Incorrect Component Constructor`);
     }
 
     patchElementPropsAndAttrs(null, vnode, renderer);

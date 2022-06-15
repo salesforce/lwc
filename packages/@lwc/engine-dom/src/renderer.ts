@@ -15,7 +15,7 @@ import {
     KEY__SHADOW_TOKEN,
 } from '@lwc/shared';
 import { insertStylesheet } from './styles';
-import { getUpgradableElement, getUserConstructor } from './customElements';
+import { defineCustomElement } from './customElements';
 
 let hydrating = false;
 
@@ -231,6 +231,7 @@ export const renderer = {
     createElement,
     createText,
     createComment,
+    defineCustomElement,
     nextSibling,
     attachShadow,
     getProperty,
@@ -258,6 +259,4 @@ export const renderer = {
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,
-    getUpgradableElement,
-    getUserConstructor,
 };

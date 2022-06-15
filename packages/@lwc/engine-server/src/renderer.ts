@@ -357,38 +357,37 @@ const getLastElementChild = unsupportedMethod('getLastElementChild') as (
 /* noop */
 const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 
-interface CustomElementConstructor {
-    new (...params: any[]): HTMLElement;
-}
-interface UpgradableCustomElementConstructor extends CustomElementConstructor {
-    new (userCtor?: CustomElementConstructor): HTMLElement;
-}
+type UpgradeCallback = (elm: HostElement) => void;
+type CreateElementAndUpgrade = (upgradeCallback: UpgradeCallback) => HostElement;
 
-const localRegistryRecord: Map<string, UpgradableCustomElementConstructor> = new Map();
-function getUpgradableConstructor(name: string): UpgradableCustomElementConstructor {
-    return function (upgradeCallback?: UpgradeCallback) {
-        const elm = createElement(name);
+const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
+
+function createUpgradableElementConstructor(tagName: string) {
+    return function Ctor(upgradeCallback: UpgradeCallback) {
+        const elm = createElement(tagName);
         if (isFunction(upgradeCallback)) {
             upgradeCallback(elm); // nothing to do with the result for now
         }
         return elm;
-    } as unknown as UpgradableCustomElementConstructor;
+    };
 }
 
-function getUpgradableElement(name: string): UpgradableCustomElementConstructor {
-    let ctor = localRegistryRecord.get(name);
+function getUpgradableElement(tagName: string): CreateElementAndUpgrade {
+    let ctor = localRegistryRecord.get(tagName);
     if (!isUndefined(ctor)) {
         return ctor;
     }
-    ctor = getUpgradableConstructor(name);
-    localRegistryRecord.set(name, ctor);
+
+    ctor = createUpgradableElementConstructor(tagName);
+    localRegistryRecord.set(tagName, ctor);
     return ctor;
 }
 
-type UpgradeCallback = (elm: HostElement) => void;
-const getUserConstructor = (upgradeCallback: UpgradeCallback) => {
-    return upgradeCallback;
-};
+function defineCustomElement(tagName: string, upgradeCallback: UpgradeCallback): HostElement {
+    const UpgradableConstructor = getUpgradableElement(tagName);
+    // @ts-ignore
+    return new UpgradableConstructor(upgradeCallback);
+}
 
 export const renderer = {
     ssr,
@@ -402,6 +401,7 @@ export const renderer = {
     createElement,
     createText,
     createComment,
+    defineCustomElement,
     nextSibling,
     attachShadow,
     getProperty,
@@ -429,6 +429,4 @@ export const renderer = {
     isConnected,
     insertStylesheet,
     assertInstanceOfHTMLElement,
-    getUpgradableElement,
-    getUserConstructor,
 };

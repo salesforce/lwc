@@ -102,13 +102,12 @@ export function createElement(
         );
     }
 
-    const { getUpgradableElement, getUserConstructor } = renderer;
+    const { defineCustomElement } = renderer;
 
     // tagName must be all lowercase, unfortunately, we have legacy code that is
     // passing `sel` as a camel-case, which makes them invalid custom elements name
     // the following line guarantees that this does not leaks beyond this point.
     const tagName = StringToLowerCase.call(sel);
-    const UpgradableConstructor = getUpgradableElement(tagName);
     let wasComponentUpgraded: boolean = false;
     // the custom element from the registry is expecting an upgrade callback
     /**
@@ -127,8 +126,7 @@ export function createElement(
         DisconnectingSlot.set(elm, disconnectRootElement);
         wasComponentUpgraded = true;
     };
-    const UserConstructor = getUserConstructor(upgradeCallback);
-    const element = new UpgradableConstructor(UserConstructor);
+    const element = defineCustomElement(tagName, upgradeCallback);
     if (!wasComponentUpgraded) {
         /* eslint-disable-next-line no-console */
         console.error(

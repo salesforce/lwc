@@ -7,7 +7,16 @@
 import { create, isFunction, setPrototypeOf } from '@lwc/shared';
 import { patchCustomElementRegistry } from './patches/global-registry';
 
+export type UpgradeCallback = (elm: HTMLElement) => void;
+export interface UpgradableCustomElementConstructor extends CustomElementConstructor {
+    new (upgradeCallback: UpgradeCallback): HTMLElement;
+}
+
 let HTMLElementConstructor;
+let getUpgradableElement: (tagName: string) => CustomElementConstructor;
+let getUserConstructor: (
+    upgradeCallback: UpgradeCallback
+) => UpgradableCustomElementConstructor | UpgradeCallback;
 
 function isCustomElementRegistryAvailable() {
     if (typeof customElements === 'undefined') {
@@ -33,44 +42,14 @@ function isCustomElementRegistryAvailable() {
 
 if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor = HTMLElement;
-} else {
-    const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
-
-    HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
-        if (!(this instanceof HTMLElement)) {
-            throw new TypeError(`Invalid Invocation`);
-        }
-        const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
-            throw new TypeError(`Invalid Construction`);
-        }
-        const elm = document.createElement(name);
-        setPrototypeOf(elm, constructor.prototype);
-        return elm;
-    };
-    HTMLElementConstructor.prototype = HTMLElement.prototype;
-}
-
-export type UpgradeCallback = (elm: HTMLElement) => void;
-export interface UpgradableCustomElementConstructor extends CustomElementConstructor {
-    new (upgradeCallback?: UpgradeCallback): HTMLElement;
-}
-
-export let getUpgradableElement: (name: string) => CustomElementConstructor;
-export let getUserConstructor: (
-    upgradeCallback: UpgradeCallback
-) => UpgradableCustomElementConstructor | UpgradeCallback;
-
-if (isCustomElementRegistryAvailable()) {
     const definePivotCustomElement = patchCustomElementRegistry();
     const cachedConstructor: Record<string, CustomElementConstructor> = create(null);
-    getUpgradableElement = (name: string) => {
-        let Ctor = cachedConstructor[name];
+    getUpgradableElement = (tagName: string) => {
+        let Ctor = cachedConstructor[tagName];
         if (!Ctor) {
             // TODO [#2877]: should expose observedAttributes and attributeChangedCallback where necessary
             class LWCUpgradableElement extends HTMLElement {}
-            Ctor = definePivotCustomElement(name, LWCUpgradableElement);
+            Ctor = definePivotCustomElement(tagName, LWCUpgradableElement);
         }
         return Ctor;
     };
@@ -84,9 +63,26 @@ if (isCustomElementRegistryAvailable()) {
     };
 } else {
     // no registry available here
-    getUpgradableElement = (name: string): UpgradableCustomElementConstructor => {
-        return function (upgradeCallback?: UpgradeCallback) {
-            const elm = document.createElement(name);
+    const reverseRegistry: WeakMap<CustomElementConstructor, string> = new WeakMap();
+
+    HTMLElementConstructor = function HTMLElement(this: HTMLElement) {
+        if (!(this instanceof HTMLElement)) {
+            throw new TypeError(`Invalid Invocation`);
+        }
+        const { constructor } = this;
+        const tagName = reverseRegistry.get(constructor as CustomElementConstructor);
+        if (!tagName) {
+            throw new TypeError(`Invalid Construction`);
+        }
+        const elm = document.createElement(tagName);
+        setPrototypeOf(elm, constructor.prototype);
+        return elm;
+    };
+    HTMLElementConstructor.prototype = HTMLElement.prototype;
+
+    getUpgradableElement = (tagName: string): UpgradableCustomElementConstructor => {
+        return function (upgradeCallback: UpgradeCallback) {
+            const elm = document.createElement(tagName);
             if (isFunction(upgradeCallback)) {
                 upgradeCallback(elm); // nothing to do with the result for now
             }
@@ -94,4 +90,13 @@ if (isCustomElementRegistryAvailable()) {
         } as unknown as UpgradableCustomElementConstructor;
     };
     getUserConstructor = (upgradeCallback: UpgradeCallback) => upgradeCallback;
+}
+
+export function defineCustomElement(
+    tagName: string,
+    upgradeCallback: UpgradeCallback
+): HTMLElement {
+    const UpgradableConstructor = getUpgradableElement(tagName);
+    const UserConstructor = getUserConstructor(upgradeCallback);
+    return new UpgradableConstructor(UserConstructor);
 }
