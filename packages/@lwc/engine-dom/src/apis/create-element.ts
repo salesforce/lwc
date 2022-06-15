@@ -102,7 +102,7 @@ export function createElement(
         );
     }
 
-    const { defineCustomElement } = renderer;
+    const { createCustomElement } = renderer;
 
     // tagName must be all lowercase, unfortunately, we have legacy code that is
     // passing `sel` as a camel-case, which makes them invalid custom elements name
@@ -126,7 +126,7 @@ export function createElement(
         DisconnectingSlot.set(elm, disconnectRootElement);
         wasComponentUpgraded = true;
     };
-    const element = defineCustomElement(tagName, upgradeCallback);
+    const element = createCustomElement(tagName, upgradeCallback);
     if (!wasComponentUpgraded) {
         /* eslint-disable-next-line no-console */
         console.error(

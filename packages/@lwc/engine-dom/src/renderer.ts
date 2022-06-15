@@ -15,7 +15,7 @@ import {
     KEY__SHADOW_TOKEN,
 } from '@lwc/shared';
 import { insertStylesheet } from './styles';
-import { defineCustomElement } from './customElements';
+import { createCustomElement } from './customElements';
 
 let hydrating = false;
 
@@ -231,7 +231,7 @@ export const renderer = {
     createElement,
     createText,
     createComment,
-    defineCustomElement,
+    createCustomElement,
     nextSibling,
     attachShadow,
     getProperty,

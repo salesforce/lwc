@@ -254,7 +254,7 @@ function mountCustomElement(
     renderer: RendererAPI
 ) {
     const { sel, owner } = vnode;
-    const { defineCustomElement } = renderer;
+    const { createCustomElement } = renderer;
     /**
      * Note: if the upgradable constructor does not expect, or throw when we new it
      * with a callback as the first argument, we could implement a more advanced
@@ -268,7 +268,7 @@ function mountCustomElement(
         vm = createViewModelHook(elm, vnode, renderer);
     };
 
-    const elm = defineCustomElement(sel, upgradeCallback);
+    const elm = createCustomElement(sel, upgradeCallback);
 
     linkNodeToShadow(elm, owner, renderer);
     vnode.elm = elm;

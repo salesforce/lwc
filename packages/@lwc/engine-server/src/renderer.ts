@@ -383,7 +383,7 @@ function getUpgradableElement(tagName: string): CreateElementAndUpgrade {
     return ctor;
 }
 
-function defineCustomElement(tagName: string, upgradeCallback: UpgradeCallback): HostElement {
+function createCustomElement(tagName: string, upgradeCallback: UpgradeCallback): HostElement {
     const UpgradableConstructor = getUpgradableElement(tagName);
     // @ts-ignore
     return new UpgradableConstructor(upgradeCallback);
@@ -401,7 +401,7 @@ export const renderer = {
     createElement,
     createText,
     createComment,
-    defineCustomElement,
+    createCustomElement,
     nextSibling,
     attachShadow,
     getProperty,

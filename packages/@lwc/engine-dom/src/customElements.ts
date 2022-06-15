@@ -92,7 +92,7 @@ if (isCustomElementRegistryAvailable()) {
     getUserConstructor = (upgradeCallback: UpgradeCallback) => upgradeCallback;
 }
 
-export function defineCustomElement(
+export function createCustomElement(
     tagName: string,
     upgradeCallback: UpgradeCallback
 ): HTMLElement {
