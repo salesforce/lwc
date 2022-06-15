@@ -138,6 +138,7 @@ function s(
 
     const vmBeingRendered = getVMBeingRendered()!;
     const { renderMode, shadowMode } = vmBeingRendered;
+    const computedSlotName = slotName + data.key.toString();
 
     if (!(shadowMode === ShadowMode.Native && renderMode === RenderMode.Shadow)) {
         if (
@@ -150,6 +151,10 @@ function s(
             children = slotSet.vnodes[slotName].apply(undefined, slotData ? [slotData] : []);
             setVMBeingRendered(vmBeingRendered);
         }
+    } else {
+        if (!isUndefined(slotSet?.slotChildren)) {
+            slotSet?.slotChildren(data.slotData, computedSlotName);
+        }
     }
 
     if (renderMode === RenderMode.Light) {
@@ -158,6 +163,12 @@ function s(
     }
     if (shadowMode === ShadowMode.Synthetic) {
         sc(children);
+    }
+    if (data.slotData) {
+        data = {
+            ...data,
+            attrs: { ...data.attrs, name: computedSlotName },
+        };
     }
     return h('slot', data, children);
 }

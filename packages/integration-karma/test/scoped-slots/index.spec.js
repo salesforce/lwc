@@ -8,7 +8,7 @@ describe('Scoped slots', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.innerHTML).toEqual(
-            '<x-list><div><div>Hello LWC from Container</div></div><div><div>Hello Lit from Container</div></div></x-list>'
+            '<x-list><div slot="0:1">Hello LWC from Container</div><div slot="0:2">Hello Lit from Container</div></x-list>'
         );
     });
 
@@ -16,7 +16,7 @@ describe('Scoped slots', () => {
         const elm = createElement('x-nested', { is: Nested });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.innerHTML).toEqual(
-            '<x-child1><x-child2>from child 1 - from child 2</x-child2></x-child1>'
+            '<x-child1><x-child2 slot="0"><div slot="0">from child 1 - from child 2</div></x-child2></x-child1>'
         );
     });
 });

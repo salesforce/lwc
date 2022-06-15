@@ -7,55 +7,54 @@
 import {
     assert,
     isArray,
-    isTrue,
     isNull,
+    isTrue,
     isUndefined,
+    KEY__SHADOW_RESOLVER,
     keys,
     SVG_NAMESPACE,
-    KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 
 import {
-    remove,
-    insert,
-    nextSibling,
+    createComment,
     createElement,
     createText,
-    setText,
-    createComment,
     getClassList,
+    insert,
     isSyntheticShadowDefined,
+    nextSibling,
+    remove,
+    setText,
 } from '../renderer';
 
 // import { EmptyArray } from './utils';
 // import { markComponentAsDirty } from './component';
 import { getUpgradableConstructor } from './upgradable-element';
-import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
+import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
-    createVM,
     appendVM,
-    removeVM,
-    rerenderVM,
+    createVM,
     getAssociatedVMIfPresent,
+    LwcDomMode,
+    removeVM,
+    RenderMode,
+    rerenderVM,
     runConnectedCallback,
+    ShadowMode,
     VM,
     VMState,
-    ShadowMode,
-    RenderMode,
-    LwcDomMode,
 } from './vm';
 import {
-    VNode,
-    VNodes,
-    VCustomElement,
-    VElement,
-    VText,
-    VComment,
+    isSameVnode,
     Key,
     VBaseElement,
-    // isVBaseElement,
-    isSameVnode,
+    VComment,
+    VCustomElement,
+    VElement,
+    VNode,
+    VNodes,
     VNodeType,
+    VText,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -229,11 +228,11 @@ function mountCustomElement(vnode: VCustomElement, parent: ParentNode, anchor: N
         runConnectedCallback(vm);
     }
 
-    mountVNodes(vnode.children, elm, null);
-
     if (vm) {
         appendVM(vm);
     }
+    // mount the children last because scoped slots can populate children after the VM is rendered
+    mountVNodes(vnode.children, elm, null);
 }
 
 function patchCustomElement(n1: VCustomElement, n2: VCustomElement) {
@@ -429,22 +428,40 @@ function fallbackElmHook(elm: Element, vnode: VBaseElement) {
 }
 
 export function allocateSlottedContent(vnode: VCustomElement, vm: VM, owner: VM) {
-    const { slot, data } = vnode;
+    const { slot } = vnode;
     const { renderMode, shadowMode } = vm;
 
     if (renderMode == RenderMode.Shadow && shadowMode === ShadowMode.Native) {
-        const children = [];
+        vm.cmpSlots = {
+            slotChildren(slotData: any, computedSlotName: string) {
+                const children = [...vnode.children];
 
-        const vmBeingRenderedInception = getVMBeingRendered();
-        setVMBeingRendered(vm);
-        for (const key of keys(slot)) {
-            const slotData = data.slotData;
-            const slotVnodes = slot[key].apply(undefined, slotData ? [slotData] : []);
-            children.push(...slotVnodes);
-        }
-        setVMBeingRendered(vmBeingRenderedInception);
+                const vmBeingRenderedInception = getVMBeingRendered();
+                setVMBeingRendered(vm);
+                for (const key of keys(slot)) {
+                    let slotVnodes = slot[key].apply(undefined, slotData ? [slotData] : []);
 
-        vnode.children = children;
+                    if (slotData) {
+                        // add to the right named slot
+                        slotVnodes = slotVnodes.map((vnode) => {
+                            switch (vnode?.type) {
+                                case VNodeType.CustomElement:
+                                case VNodeType.Element:
+                                    vnode.data = {
+                                        ...vnode.data,
+                                        attrs: { ...vnode.data.attrs, slot: computedSlotName },
+                                    };
+                            }
+                            return vnode;
+                        });
+                    }
+                    children.push(...slotVnodes);
+                }
+                setVMBeingRendered(vmBeingRenderedInception);
+
+                vnode.children = children;
+            },
+        };
     } else {
         vm.cmpSlots = {
             owner: owner,

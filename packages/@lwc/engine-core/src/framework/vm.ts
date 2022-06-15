@@ -58,7 +58,7 @@ export interface SlotSet {
      *
      * FIXME: This should be removed once VNode storing a back pointer to its owner.
      */
-    slotChildren?: (slotData: any) => void;
+    slotChildren?: (slotData: any, slotName: string) => void;
     owner?: VM;
     vnodes?: SlottedVNodes;
 }
