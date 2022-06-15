@@ -36,11 +36,12 @@ describe('transformSync', () => {
                 <img src="http://www.example.com/image.png" crossorigin="anonymous">
             </template>
         `;
-        const { code } = transformSync(template, 'foo.html', {
+        const { code, warnings } = transformSync(template, 'foo.html', {
             enableStaticContentOptimization: true,
             ...TRANSFORMATION_OPTIONS,
         });
 
+        expect(warnings).toHaveLength(0);
         expect(code).toMatch('<img');
     });
 
@@ -50,12 +51,13 @@ describe('transformSync', () => {
                 <img src="http://www.example.com/image.png" crossorigin="anonymous">
             </template>
         `;
-        const { code } = transformSync(template, 'foo.html', {
+        const { code, warnings } = transformSync(template, 'foo.html', {
             enableStaticContentOptimization: false,
             ...TRANSFORMATION_OPTIONS,
         });
 
-        expect(code).not.toMatch('<img');
+        expect(warnings).toHaveLength(0);
+        expect(code).toMatch(`api_element("img"`);
     });
 
     it('should hoist static vnodes by default', () => {
@@ -64,8 +66,9 @@ describe('transformSync', () => {
                 <img src="http://www.example.com/image.png" crossorigin="anonymous">
             </template>
         `;
-        const { code } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
+        const { code, warnings } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
 
+        expect(warnings).toHaveLength(0);
         expect(code).toMatch('<img');
     });
 });
