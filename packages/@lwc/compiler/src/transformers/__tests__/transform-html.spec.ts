@@ -30,32 +30,32 @@ describe('transformSync', () => {
         expect(code).toContain(`tmpl.stylesheets = []`);
     });
 
-    it('should hoist static vnodes when disableStaticContentOptimization is set to false', () => {
+    it('should hoist static vnodes when enableStaticContentOptimization is set to true', () => {
         const template = `
             <template>
                 <img src="http://www.example.com/image.png" crossorigin="anonymous">
             </template>
         `;
         const { code } = transformSync(template, 'foo.html', {
-            disableStaticContentOptimization: false,
+            enableStaticContentOptimization: true,
             ...TRANSFORMATION_OPTIONS,
         });
 
-        expect(code).toMatch('parseFragment');
+        expect(code).toMatch('<img');
     });
 
-    it('should not hoist static vnodes when disableStaticContentOptimization is set to true', () => {
+    it('should not hoist static vnodes when enableStaticContentOptimization is set to false', () => {
         const template = `
             <template>
                 <img src="http://www.example.com/image.png" crossorigin="anonymous">
             </template>
         `;
         const { code } = transformSync(template, 'foo.html', {
-            disableStaticContentOptimization: true,
+            enableStaticContentOptimization: false,
             ...TRANSFORMATION_OPTIONS,
         });
 
-        expect(code).not.toMatch('parseFragment');
+        expect(code).not.toMatch('<img');
     });
 
     it('should hoist static vnodes by default', () => {
@@ -66,6 +66,6 @@ describe('transformSync', () => {
         `;
         const { code } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
 
-        expect(code).toMatch('parseFragment');
+        expect(code).toMatch('<img');
     });
 });

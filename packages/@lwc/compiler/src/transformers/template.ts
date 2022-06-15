@@ -27,7 +27,7 @@ export default function templateTransform(
     filename: string,
     options: NormalizedTransformOptions
 ): TransformResult {
-    const { experimentalDynamicComponent, preserveHtmlComments, disableStaticContentOptimization } =
+    const { experimentalDynamicComponent, preserveHtmlComments, enableStaticContentOptimization } =
         options;
     const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
 
@@ -36,7 +36,7 @@ export default function templateTransform(
         result = compile(src, {
             experimentalDynamicDirective,
             preserveHtmlComments,
-            disableStaticContentOptimization,
+            enableStaticContentOptimization,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });

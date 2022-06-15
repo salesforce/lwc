@@ -132,7 +132,7 @@ export default class CodeGen {
     }) {
         this.root = root;
 
-        if (!state.config.disableStaticContentOptimization) {
+        if (state.config.enableStaticContentOptimization) {
             this.staticNodes = getStaticNodes(root, state);
         }
         this.renderMode =

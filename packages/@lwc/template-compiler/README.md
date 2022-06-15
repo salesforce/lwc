@@ -51,7 +51,7 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`,
 -   `experimentalComputedMemberExpression` (boolean, optional, `false` by default) - set to `true` to enable computed member expression in the template, eg: `{list[0].name}`.
 -   `experimentalDynamicDirective` (boolean, optional, `false` by default) - set to `true` to allow the usage of `lwc:dynamic` directives in the template.
 -   `preserveHtmlComments` (boolean, optional, `false` by default) - set to `true` to disable the default behavior of stripping HTML comments.
--   `disableStaticContentOptimization` (boolean, optional, `false` by default) - set to `true` to disable static content optimizations.
+-   `enableStaticContentOptimization` (boolean, optional, `true` by default) - set to `false` to disable static content optimizations.
 -   `customRendererConfig` (CustomRendererConfig, optional) - specifies a configuration to use to match elements. Matched elements will get a custom renderer hook in the generated template.
 
     -   Example 1: Config to match `<use>` elements under the `svg` namespace and have `href` attribute set.

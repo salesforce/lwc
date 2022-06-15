@@ -14,7 +14,7 @@ type RecursiveRequired<T> = {
 const DEFAULT_OPTIONS = {
     isExplicitImport: false,
     preserveHtmlComments: false,
-    disableStaticContentOptimization: false,
+    enableStaticContentOptimization: true,
 };
 
 const DEFAULT_DYNAMIC_CMP_CONFIG: Required<DynamicComponentConfig> = {
@@ -68,7 +68,7 @@ export interface TransformOptions {
     isExplicitImport?: boolean;
     preserveHtmlComments?: boolean;
     scopedStyles?: boolean;
-    disableStaticContentOptimization?: boolean;
+    enableStaticContentOptimization?: boolean;
 }
 
 type RequiredTransformOptions = Omit<TransformOptions, 'name' | 'namespace' | 'scopedStyles'>;
