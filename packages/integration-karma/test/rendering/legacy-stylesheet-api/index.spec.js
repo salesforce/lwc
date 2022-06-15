@@ -1,14 +1,35 @@
 import { createElement } from 'lwc';
 import PatchesStylesheet from 'x/patchesStylesheet';
+import PatchesStylesheetOnStylesheet from 'x/patchesStylesheetOnStylesheet';
 import InspectStylesheets from 'x/inspectStylesheets';
 
 describe('legacy undocumented stylesheetTokens API', () => {
     it('can patch a template with stylesheets onto a template without stylesheets', () => {
         const elm = createElement('x-patches-stylesheet', { is: PatchesStylesheet });
-        document.body.appendChild(elm);
+        expect(() => {
+            document.body.appendChild(elm);
+        }).toLogErrorDev([
+            /Dynamically setting the "stylesheets" property on a template function is deprecated and may be removed in a future version of LWC./,
+            /Dynamically setting the "stylesheetToken" property on a template function is deprecated and may be removed in a future version of LWC./,
+        ]);
         const div = elm.shadowRoot.querySelector('div');
         expect(div.textContent).toEqual('without stylesheet');
         expect(getComputedStyle(div).color).toEqual('rgb(0, 0, 255)');
+    });
+
+    it('can patch a template with stylesheets onto a template with stylesheets', () => {
+        const elm = createElement('x-patches-stylesheet-on-stylesheet', {
+            is: PatchesStylesheetOnStylesheet,
+        });
+        expect(() => {
+            document.body.appendChild(elm);
+        }).toLogErrorDev([
+            /Dynamically setting the "stylesheets" property on a template function is deprecated and may be removed in a future version of LWC./,
+            /Dynamically setting the "stylesheetToken" property on a template function is deprecated and may be removed in a future version of LWC./,
+        ]);
+        const div = elm.shadowRoot.querySelector('div');
+        expect(div.textContent).toEqual('a');
+        expect(getComputedStyle(div).color).toEqual('rgb(0, 128, 0)');
     });
 
     it('reflects old stylesheetTokens API to/from new stylesheetToken API', () => {
@@ -28,8 +49,12 @@ describe('legacy undocumented stylesheetTokens API', () => {
         expect(typeof withoutStylesheet.stylesheetToken).toEqual('undefined');
         expect(typeof withoutStylesheet.stylesheetTokens).toEqual('undefined');
 
-        // patch the one with a stylesheet onto the one without
-        withoutStylesheet.stylesheetTokens = withStylesheet.stylesheetTokens;
+        expect(() => {
+            // patch the one with a stylesheet onto the one without
+            withoutStylesheet.stylesheetTokens = withStylesheet.stylesheetTokens;
+        }).toLogErrorDev(
+            /Dynamically setting the "stylesheetTokens" property on a template function is deprecated and may be removed in a future version of LWC./
+        );
 
         // stylesheetTokens should reflect stylesheetToken
         expect(withoutStylesheet.stylesheetTokens).toEqual(withStylesheet.stylesheetTokens);

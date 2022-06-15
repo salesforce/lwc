@@ -49,8 +49,41 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`,
 **Options:**
 
 -   `experimentalComputedMemberExpression` (boolean, optional, `false` by default) - set to `true` to enable computed member expression in the template, eg: `{list[0].name}`.
--   `experimentalDynamicDirective` (boolean, optional, `false` by default) - set to `true` to allow useges of `lwc:dynamic` directive in the template.
+-   `experimentalDynamicDirective` (boolean, optional, `false` by default) - set to `true` to allow the usage of `lwc:dynamic` directives in the template.
 -   `preserveHtmlComments` (boolean, optional, `false` by default) - set to `true` to disable the default behavior of stripping HTML comments.
+-   `disableStaticContentOptimization` (boolean, optional, `false` by default) - set to `true` to disable static content optimizations.
+-   `customRendererConfig` (CustomRendererConfig, optional) - specifies a configuration to use to match elements. Matched elements will get a custom renderer hook in the generated template.
+
+    -   Example 1: Config to match `<use>` elements under the `svg` namespace and have `href` attribute set.
+
+        ```
+        {
+            customRendererConfig: {
+                directives: [],
+                elements: [
+                    {
+                        tagName: 'use',
+                        namespace: 'http://www.w3.org/2000/svg',
+                        attributes: ['href']
+                    }
+                ]
+            }
+        }
+        ```
+
+    -   Example 2: Config to match `<script>` elements regardless of the attribute set. _Note:_ When `attributes` is not specified, attribute matching is skipped.
+        ```
+        {
+            customRendererConfig: {
+                directives: [],
+                elements: [
+                    {
+                        tagName: 'script'
+                    }
+                ]
+            }
+        }
+        ```
 
 **Return:**
 The method returns an object with the following fields:

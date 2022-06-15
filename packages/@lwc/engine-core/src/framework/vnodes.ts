@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { VM } from './vm';
+import type { VM } from './vm';
+import type { RendererAPI } from './renderer';
 
 export type Key = string | number;
 
@@ -14,9 +15,10 @@ export const enum VNodeType {
     Comment,
     Element,
     CustomElement,
+    Static,
 }
 
-export type VNode = VText | VComment | VElement | VCustomElement;
+export type VNode = VText | VComment | VElement | VCustomElement | VStatic;
 export type VParentElement = VElement | VCustomElement;
 export type VNodes = Readonly<Array<VNode | null>>;
 
@@ -26,6 +28,13 @@ export interface BaseVNode {
     sel: string | undefined;
     key: Key | undefined;
     owner: VM;
+}
+
+export interface VStatic extends BaseVNode {
+    type: VNodeType.Static;
+    sel: undefined;
+    key: Key;
+    fragment: Element;
 }
 
 export interface VText extends BaseVNode {
@@ -74,6 +83,7 @@ export interface VNodeData {
     readonly context?: Readonly<Record<string, Readonly<Record<string, any>>>>;
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;
+    readonly renderer?: RendererAPI;
 }
 
 export interface VElementData extends VNodeData {

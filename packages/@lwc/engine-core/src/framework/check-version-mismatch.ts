@@ -14,7 +14,8 @@ import { LightningElementConstructor } from './base-lightning-element';
 
 let warned = false;
 
-if (process.env.NODE_ENV === 'development') {
+// @ts-ignore
+if (process.env.NODE_ENV !== 'production' && typeof __karma__ !== 'undefined') {
     // @ts-ignore
     window.__lwcResetWarnedOnVersionMismatch = () => {
         warned = false;

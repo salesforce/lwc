@@ -32,6 +32,8 @@ import {
     If,
     Property,
 } from '../shared/types';
+import { isCustomElementTag } from '../shared/utils';
+import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
 import ParserCtx from './parser';
 
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
@@ -47,9 +49,7 @@ import {
     normalizeAttributeValue,
     ParsedAttribute,
 } from './attribute';
-
 import {
-    DASHED_TAGNAME_ELEMENT_SET,
     DISALLOWED_HTML_TAGS,
     DISALLOWED_MATHML_TAGS,
     EVENT_HANDLER_NAME_RE,
@@ -256,7 +256,7 @@ function parseBaseElement(
     } else if (tag !== 'template') {
         // Check if the element tag is a valid custom element name and is not part of known standard
         // element name containing a dash.
-        if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+        if (!isCustomElementTag(tag)) {
             element = ast.element(parse5Elm, parse5ElmLocation);
         } else {
             element = ast.component(parse5Elm, parse5ElmLocation);
@@ -332,7 +332,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
             value = ast.literal(decodeTextContent(token));
         }
 
-        parsedTextNodes.push(ast.text(value, location));
+        parsedTextNodes.push(ast.text(token, value, location));
     }
 
     return parsedTextNodes;
@@ -350,7 +350,7 @@ function parseComment(parse5Comment: parse5.CommentNode): Comment {
         );
     }
 
-    return ast.comment(decodeTextContent(parse5Comment.data), location);
+    return ast.comment(parse5Comment.data, decodeTextContent(parse5Comment.data), location);
 }
 
 function getTemplateRoot(

@@ -19,9 +19,9 @@ import {
     isUndefined,
 } from '@lwc/shared';
 
-import { isSyntheticShadowDefined, ssr, remove, isNativeShadowDefined } from '../renderer';
 import { addErrorComponentStack } from '../shared/error';
 
+import { HostNode, HostElement, RendererAPI } from './renderer';
 import { renderComponent, markComponentAsDirty, getTemplateReactiveObserver } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeServiceHook, Services } from './services';
@@ -42,8 +42,6 @@ import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from
 import { AccessorReactiveObserver } from './decorators/api';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType, VBaseElement } from './vnodes';
-
-import type { HostNode, HostElement } from '../renderer';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -89,8 +87,8 @@ export interface Context {
     hasTokenInAttribute: boolean | undefined;
     /** Whether or not light DOM scoped styles are present in the stylesheets. */
     hasScopedStyles: boolean | undefined;
-    /** The VNode injected in all the shadow trees to apply the associated component stylesheets. */
-    styleVNode: VNode | null;
+    /** The VNodes injected in all the shadow trees to apply the associated component stylesheets. */
+    styleVNodes: VNode[] | null;
     /** Object used by the template function to store information that can be reused between
      *  different render cycle of the same template. */
     tplCache: TemplateCache;
@@ -113,16 +111,13 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly context: Context;
     /** The owner VM or null for root elements. */
     readonly owner: VM<N, E> | null;
-    /**
-     * References to elements rendered using lwc:ref
-     */
+    /** References to elements rendered using lwc:ref */
     refVNodes: RefVNodes | null;
+    /** Whether or not the VM was hydrated */
+    readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
-    readonly renderMode: RenderMode;
+    renderMode: RenderMode;
     shadowMode: ShadowMode;
-    /** Transitive support for native Shadow DOM. A component in native mode
-     * transitively opts all of its descendants into native. */
-    readonly nearestShadowMode: ShadowMode | null;
     /** The component creation index. */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -171,6 +166,9 @@ export interface VM<N = HostNode, E = HostElement> {
     /** Hook invoked whenever a method is called on the component (life-cycle hooks, public
      *  properties and event handlers). This hook is used by Locker. */
     callHook: (cmp: LightningElement | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
+    /**
+     * Renderer API */
+    renderer: RendererAPI;
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -262,16 +260,26 @@ export function removeVM(vm: VM) {
     resetComponentStateWhenRemoved(vm);
 }
 
+function getNearestShadowAncestor(vm: VM): VM | null {
+    let ancestor = vm.owner;
+    while (!isNull(ancestor) && ancestor.renderMode === RenderMode.Light) {
+        ancestor = ancestor.owner;
+    }
+    return ancestor;
+}
+
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
     ctor: LightningElementConstructor,
+    renderer: RendererAPI,
     options: {
         mode: ShadowRootMode;
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
+        hydrated?: boolean;
     }
 ): VM {
-    const { mode, owner, tagName } = options;
+    const { mode, owner, tagName, hydrated } = options;
     const def = getComponentInternalDef(ctor);
 
     const vm: VM = {
@@ -293,17 +301,15 @@ export function createVM<HostNode, HostElement>(
         cmpSlots: create(null),
         oar: create(null),
         cmpTemplate: null,
+        hydrated: Boolean(hydrated),
 
         renderMode: def.renderMode,
-        shadowMode: computeShadowMode(def, owner),
-        nearestShadowMode: owner?.shadowRoot ? owner.shadowMode : owner?.nearestShadowMode ?? null,
-
         context: {
             stylesheetToken: undefined,
             hasTokenInClass: undefined,
             hasTokenInAttribute: undefined,
             hasScopedStyles: undefined,
-            styleVNode: null,
+            styleVNodes: null,
             tplCache: EmptyObject,
             wiredConnecting: EmptyArray,
             wiredDisconnecting: EmptyArray,
@@ -311,6 +317,7 @@ export function createVM<HostNode, HostElement>(
 
         // Properties set right after VM creation.
         tro: null!,
+        shadowMode: null!,
 
         // Properties set by the LightningElement constructor.
         component: null!,
@@ -320,8 +327,11 @@ export function createVM<HostNode, HostElement>(
         callHook,
         setHook,
         getHook,
+
+        renderer,
     };
 
+    vm.shadowMode = computeShadowMode(vm, renderer);
     vm.tro = getTemplateReactiveObserver(vm);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -344,7 +354,10 @@ export function createVM<HostNode, HostElement>(
     return vm;
 }
 
-function computeShadowMode(def: ComponentDef, owner: VM | null) {
+function computeShadowMode(vm: VM, renderer: RendererAPI) {
+    const { def } = vm;
+    const { isSyntheticShadowDefined, isNativeShadowDefined } = renderer;
+
     let shadowMode;
     if (isSyntheticShadowDefined) {
         if (def.renderMode === RenderMode.Light) {
@@ -358,11 +371,19 @@ function computeShadowMode(def: ComponentDef, owner: VM | null) {
                 if (def.shadowSupportMode === ShadowSupportMode.Any) {
                     shadowMode = ShadowMode.Native;
                 } else {
-                    // Transitive support for native Shadow DOM. A component in native mode
-                    // transitively opts all of its descendants into native.
-                    // Synthetic if neither this component nor any of its ancestors are configured
-                    // to be native.
-                    shadowMode = owner?.nearestShadowMode ?? ShadowMode.Synthetic;
+                    const shadowAncestor = getNearestShadowAncestor(vm);
+                    if (
+                        !isNull(shadowAncestor) &&
+                        shadowAncestor.shadowMode === ShadowMode.Native
+                    ) {
+                        // Transitive support for native Shadow DOM. A component in native mode
+                        // transitively opts all of its descendants into native.
+                        shadowMode = ShadowMode.Native;
+                    } else {
+                        // Synthetic if neither this component nor any of its ancestors are configured
+                        // to be native.
+                        shadowMode = ShadowMode.Synthetic;
+                    }
                 }
             } else {
                 shadowMode = ShadowMode.Synthetic;
@@ -419,7 +440,7 @@ function rehydrate(vm: VM) {
 }
 
 function patchShadowRoot(vm: VM, newCh: VNodes) {
-    const { renderRoot, children: oldCh } = vm;
+    const { renderRoot, children: oldCh, renderer } = vm;
 
     // caching the new children collection
     vm.children = newCh;
@@ -437,7 +458,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    patchChildren(oldCh, newCh, renderRoot);
+                    patchChildren(oldCh, newCh, renderRoot, renderer);
                 },
                 () => {
                     // post
@@ -459,6 +480,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
 export function runRenderedCallback(vm: VM) {
     const {
         def: { renderedCallback },
+        renderer: { ssr },
     } = vm;
 
     if (isTrue(ssr)) {
@@ -637,7 +659,11 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const { children, renderRoot } = vm;
+    const {
+        children,
+        renderRoot,
+        renderer: { remove },
+    } = vm;
 
     for (let i = 0, len = children.length; i < len; i++) {
         const child = children[i];
@@ -653,6 +679,9 @@ export function resetComponentRoot(vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
+    const {
+        renderer: { ssr },
+    } = vm;
     if (isTrue(ssr) || isTrue(vm.isScheduled)) {
         return;
     }

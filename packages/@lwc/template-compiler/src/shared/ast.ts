@@ -96,17 +96,23 @@ export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation
     };
 }
 
-export function text(value: Literal | Expression, parse5Location: parse5.Location): Text {
+export function text(
+    raw: string,
+    value: Literal | Expression,
+    parse5Location: parse5.Location
+): Text {
     return {
         type: 'Text',
+        raw,
         value,
         location: sourceLocation(parse5Location),
     };
 }
 
-export function comment(value: string, parse5Location: parse5.Location): Comment {
+export function comment(raw: string, value: string, parse5Location: parse5.Location): Comment {
     return {
         type: 'Comment',
+        raw,
         value,
         location: sourceLocation(parse5Location),
     };

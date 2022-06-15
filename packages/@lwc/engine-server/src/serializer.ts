@@ -5,9 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isVoidElement } from '@lwc/shared';
+import { isVoidElement, htmlEscape } from '@lwc/shared';
 
-import { htmlEscape } from './utils/html-escape';
 import { HostElement, HostShadowRoot, HostAttribute, HostChildNode, HostNodeType } from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {

@@ -7,7 +7,7 @@
 import { createVM, connectRootElement, LightningElement } from '@lwc/engine-core';
 import { isString, isFunction, isObject, isNull } from '@lwc/shared';
 
-import { createElement } from '../renderer';
+import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
 import { HostElement, HostNodeType } from '../types';
 
@@ -44,8 +44,8 @@ export function renderComponent(
         );
     }
 
-    const element = createElement(tagName);
-    createVM(element, Ctor, {
+    const element = renderer.createElement(tagName);
+    createVM(element, Ctor, renderer, {
         mode: 'open',
         owner: null,
         tagName,

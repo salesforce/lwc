@@ -42,6 +42,7 @@ function createEnvFile() {
                 MIXED_SHADOW: ${FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NATIVE_SHADOW: ${!SYNTHETIC_SHADOW_ENABLED || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NATIVE_SHADOW_ROOT_DEFINED: typeof ShadowRoot !== 'undefined',
+                SYNTHETIC_SHADOW_ENABLED: ${SYNTHETIC_SHADOW_ENABLED},
                 LWC_VERSION: ${JSON.stringify(LWC_VERSION)}
             }
         };

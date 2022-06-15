@@ -39,3 +39,6 @@ import './faux-shadow/html-element';
 import './faux-shadow/slot';
 import './faux-shadow/portal';
 import './faux-shadow/shadow-token';
+
+// Tests
+import './testFeatureFlag';

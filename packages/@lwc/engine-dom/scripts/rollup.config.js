@@ -11,6 +11,7 @@ const path = require('path');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const typescript = require('../../../../scripts/rollup/typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
+const lwcFeatures = require('../../../../scripts/rollup/lwcFeatures');
 const { version } = require('../package.json');
 
 const banner = `/* proxy-compat-disable */`;
@@ -35,6 +36,7 @@ module.exports = {
         }),
         typescript(),
         writeDistAndTypes(),
+        lwcFeatures(),
     ],
 
     onwarn({ code, message }) {

@@ -5,13 +5,27 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import { NormalizedConfig } from '../config';
+import { SVG_NAMESPACE } from '@lwc/shared';
 
 import * as t from '../shared/estree';
-import { Expression, Literal, LWCDirectiveRenderMode, Root } from '../shared/types';
-import { TEMPLATE_PARAMS } from '../shared/constants';
+import {
+    ChildNode,
+    Element,
+    Expression,
+    Literal,
+    LWCDirectiveRenderMode,
+    Root,
+} from '../shared/types';
+import {
+    PARSE_FRAGMENT_METHOD_NAME,
+    PARSE_SVG_FRAGMENT_METHOD_NAME,
+    TEMPLATE_PARAMS,
+} from '../shared/constants';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
+import State from '../state';
+import { getStaticNodes } from './helpers';
+import { serializeStaticElement } from './static-element-serializer';
 
 type RenderPrimitive =
     | 'iterator'
@@ -28,7 +42,8 @@ type RenderPrimitive =
     | 'scopedId'
     | 'scopedFragId'
     | 'comment'
-    | 'sanitizeHtmlContent';
+    | 'sanitizeHtmlContent'
+    | 'staticFragment';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -51,6 +66,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
     comment: { name: 'co', alias: 'api_comment' },
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
+    staticFragment: { name: 'st', alias: 'api_static_fragment' },
 };
 
 interface Scope {
@@ -86,6 +102,14 @@ export default class CodeGen {
      */
     private scope: Scope;
 
+    readonly staticNodes: Set<ChildNode> = new Set<ChildNode>();
+    readonly hoistedNodes: Array<{ identifier: t.Identifier; expr: t.Expression }> = [];
+
+    /**
+     * State maintains information about the current compilation configs.
+     */
+    readonly state: State;
+
     currentId = 0;
     currentKey = 0;
     innerHtmlInstances = 0;
@@ -99,23 +123,28 @@ export default class CodeGen {
 
     constructor({
         root,
-        config,
+        state,
         scopeFragmentId,
     }: {
         root: Root;
-        config: NormalizedConfig;
+        state: State;
         scopeFragmentId: boolean;
     }) {
         this.root = root;
+
+        if (!state.config.disableStaticContentOptimization) {
+            this.staticNodes = getStaticNodes(root, state);
+        }
         this.renderMode =
             root.directives.find(isRenderModeDirective)?.value.value ??
             LWCDirectiveRenderMode.shadow;
         this.preserveComments =
             root.directives.find(isPreserveCommentsDirective)?.value.value ??
-            config.preserveHtmlComments;
+            state.config.preserveHtmlComments;
 
         this.scopeFragmentId = scopeFragmentId;
         this.scope = this.createScope();
+        this.state = state;
     }
 
     generateKey() {
@@ -397,5 +426,49 @@ export default class CodeGen {
         });
 
         return expression as t.Expression;
+    }
+
+    genHoistedElement(element: Element, slotParentName?: string): t.Expression {
+        const key =
+            slotParentName !== undefined
+                ? `@${slotParentName}:${this.generateKey()}`
+                : this.generateKey();
+        const html = serializeStaticElement(element, this.preserveComments);
+
+        const parseMethod =
+            element.name !== 'svg' && element.namespace === SVG_NAMESPACE
+                ? PARSE_SVG_FRAGMENT_METHOD_NAME
+                : PARSE_FRAGMENT_METHOD_NAME;
+
+        this.usedLwcApis.add(parseMethod);
+
+        // building the taggedTemplate expression as if it were a string
+        const expr = t.taggedTemplateExpression(
+            t.identifier(parseMethod),
+            t.templateLiteral(
+                [
+                    {
+                        type: 'TemplateElement',
+                        tail: true,
+                        value: {
+                            raw: html,
+                            cooked: html,
+                        },
+                    },
+                ],
+                []
+            )
+        );
+
+        const identifier = t.identifier(`$fragment${this.hoistedNodes.length + 1}`);
+        this.hoistedNodes.push({
+            identifier,
+            expr,
+        });
+
+        return this._renderApiCall(RENDER_APIS.staticFragment, [
+            t.callExpression(identifier, []),
+            t.literal(key),
+        ]);
     }
 }

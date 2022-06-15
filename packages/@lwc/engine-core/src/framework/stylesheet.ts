@@ -4,17 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
-
-import {
-    getClassList,
-    removeAttribute,
-    setAttribute,
-    insertGlobalStylesheet,
-    ssr,
-    isHydrating,
-    insertStylesheet,
-} from '../renderer';
+import { ArrayMap, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
 
 import api from './api';
 import { RenderMode, ShadowMode, VM } from './vm';
@@ -58,7 +48,13 @@ function createInlineStyleVNode(content: string): VNode {
 }
 
 export function updateStylesheetToken(vm: VM, template: Template) {
-    const { elm, context, renderMode, shadowMode } = vm;
+    const {
+        elm,
+        context,
+        renderMode,
+        shadowMode,
+        renderer: { getClassList, removeAttribute, setAttribute },
+    } = vm;
     const { stylesheets: newStylesheets, stylesheetToken: newStylesheetToken } = template;
     const isSyntheticShadow =
         renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic;
@@ -203,31 +199,30 @@ function getNearestNativeShadowComponent(vm: VM): VM | null {
     return owner;
 }
 
-export function createStylesheet(vm: VM, stylesheets: string[]): VNode | null {
-    const { renderMode, shadowMode } = vm;
+export function createStylesheet(vm: VM, stylesheets: string[]): VNode[] | null {
+    const {
+        renderMode,
+        shadowMode,
+        renderer: { ssr, insertStylesheet },
+    } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
-            insertGlobalStylesheet(stylesheets[i]);
+            insertStylesheet(stylesheets[i]);
         }
-    } else if (ssr || isHydrating()) {
+    } else if (ssr || vm.hydrated) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
         //       This works in the client, because the stylesheets are created, and cached in the VM
         //       the first time the VM renders.
 
         // native shadow or light DOM, SSR
-        const combinedStylesheetContent = ArrayJoin.call(stylesheets, '\n');
-        return createInlineStyleVNode(combinedStylesheetContent);
+        return ArrayMap.call(stylesheets, createInlineStyleVNode) as VNode[];
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
-        const isGlobal = isNull(root);
+        // null root means a global style
+        const target = isNull(root) ? undefined : root.shadowRoot!;
         for (let i = 0; i < stylesheets.length; i++) {
-            if (isGlobal) {
-                insertGlobalStylesheet(stylesheets[i]);
-            } else {
-                // local level
-                insertStylesheet(stylesheets[i], root!.shadowRoot!);
-            }
+            insertStylesheet(stylesheets[i], target);
         }
     }
     return null;
