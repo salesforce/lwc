@@ -624,21 +624,21 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
     },
     LWC_REF_INVALID_ELEMENT: {
-        code: 1150,
+        code: 1153,
         message:
             'Invalid lwc:ref usage on element "{0}". The directive can\'t be used on a slot or a template element.',
         level: DiagnosticLevel.Error,
         url: '',
     },
     LWC_REF_INVALID_VALUE: {
-        code: 1151,
+        code: 1154,
         message:
             'Invalid lwc:ref usage on element "{0}". The directive binding must be a non-empty string.',
         level: DiagnosticLevel.Error,
         url: '',
     },
     LWC_REF_INVALID_LOCATION_INSIDE_ITERATION: {
-        code: 1152,
+        code: 1155,
         message:
             'Invalid lwc:ref usage on element "{0}". lwc:ref cannot be used inside for:each or an iterator.',
         level: DiagnosticLevel.Error,
