@@ -71,4 +71,42 @@ describe('transformSync', () => {
         expect(warnings).toHaveLength(0);
         expect(code).toMatch('<img');
     });
+
+    it('should provide custom renderer hooks when config specified', () => {
+        const template = `
+            <template>
+                <svg aria-hidden="true" class="slds-icon" title="when needed">
+                    <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#case"></use>
+                </svg>
+            </template>
+        `;
+        const { code, warnings } = transformSync(template, 'foo.html', {
+            customRendererConfig: {
+                directives: [],
+                elements: [
+                    {
+                        tagName: 'use',
+                        namespace: 'http://www.w3.org/2000/svg',
+                        attributes: ['href', 'xlink:href'],
+                    },
+                ],
+            },
+            ...TRANSFORMATION_OPTIONS,
+        });
+        expect(warnings).toHaveLength(0);
+        expect(code).toMatch('renderer: renderer');
+    });
+
+    it('should not provide custom renderer hooks when no config specified', () => {
+        const template = `
+            <template>
+                <svg aria-hidden="true" class="slds-icon" title="when needed">
+                    <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#case"></use>
+                </svg>
+            </template>
+        `;
+        const { code, warnings } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
+        expect(warnings).toHaveLength(0);
+        expect(code).not.toMatch('renderer: renderer');
+    });
 });
