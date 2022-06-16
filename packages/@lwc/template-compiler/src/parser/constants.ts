@@ -168,7 +168,6 @@ export const KNOWN_HTML_ELEMENTS = new Set(HTML_ELEMENTS.concat(HTML_VOID_ELEMEN
 export const HTML_TAG = {
     A: 'a',
     AREA: 'area',
-    USE: 'use',
     BODY: 'body',
     CAPTION: 'caption',
     COL: 'col',
@@ -181,6 +180,7 @@ export const HTML_TAG = {
     TH: 'th',
     THEAD: 'thead',
     TR: 'tr',
+    USE: 'use',
 };
 export const ATTR_NAME = {
     HREF: 'href',
