@@ -34,9 +34,9 @@ export interface Config {
     preserveHtmlComments?: boolean;
 
     /**
-     * When true, the template compiler will not generate optimized code for static content.
+     * When false, the template compiler will not generate optimized code for static content.
      */
-    disableStaticContentOptimization?: boolean;
+    enableStaticContentOptimization?: boolean;
 }
 
 export type NormalizedConfig = Required<Omit<Config, 'customRendererConfig'>> &
@@ -47,7 +47,7 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'experimentalComputedMemberExpression',
     'experimentalDynamicDirective',
     'preserveHtmlComments',
-    'disableStaticContentOptimization',
+    'enableStaticContentOptimization',
 ]);
 
 function normalizeCustomRendererConfig(config: CustomRendererConfig): CustomRendererConfig {
@@ -105,7 +105,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         preserveHtmlComments: false,
         experimentalComputedMemberExpression: false,
         experimentalDynamicDirective: false,
-        disableStaticContentOptimization: false,
+        enableStaticContentOptimization: true,
         ...config,
         ...{ customRendererConfig },
     };
