@@ -27,7 +27,6 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-import { isNonTopLevelTag } from '../parser/tag';
 import State from '../state';
 import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 import CodeGen from './codegen';
@@ -231,8 +230,6 @@ function isStaticNode(node: BaseElement): boolean {
     const { name: nodeName, namespace = '', attributes, directives, properties, listeners } = node;
 
     result &&= isElement(node);
-
-    result &&= !isNonTopLevelTag(node);
 
     // it is an element.
     result &&= attributes.every(({ name, value }) => {
