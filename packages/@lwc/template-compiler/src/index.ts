@@ -20,6 +20,7 @@ import generate from './codegen';
 import { TemplateCompileResult, TemplateParseResult } from './shared/types';
 
 export * from './shared/types';
+export { CustomRendererConfig, CustomRendererElementConfig } from './shared/renderer-hooks';
 export { Config } from './config';
 
 export function parse(source: string, config: Config = {}): TemplateParseResult {

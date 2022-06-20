@@ -168,6 +168,18 @@ export const KNOWN_HTML_ELEMENTS = new Set(HTML_ELEMENTS.concat(HTML_VOID_ELEMEN
 export const HTML_TAG = {
     A: 'a',
     AREA: 'area',
+    BODY: 'body',
+    CAPTION: 'caption',
+    COL: 'col',
+    COLGROUP: 'colgroup',
+    HEAD: 'head',
+    HTML: 'html',
+    TBODY: 'tbody',
+    TD: 'td',
+    TFOOT: 'tfoot',
+    TH: 'th',
+    THEAD: 'thead',
+    TR: 'tr',
     USE: 'use',
 };
 export const ATTR_NAME = {
@@ -175,3 +187,23 @@ export const ATTR_NAME = {
     XLINK_HREF: 'xlink:href',
 };
 export const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iterator:*/];
+
+// Tags that cannot be parsed at the top level of a fragment. Generated from
+// https://github.com/sindresorhus/html-tags/blob/95dcdd5/index.js
+// using the test:
+// document.createRange().createContextualFragment(`<${tag}></${tag}>`).firstChild === null
+// TODO [#2890]: use <template> instead, drop IE11 support for static optimization
+export const TAGS_THAT_CANNOT_BE_PARSED_AS_TOP_LEVEL = new Set([
+    HTML_TAG.BODY,
+    HTML_TAG.CAPTION,
+    HTML_TAG.COL,
+    HTML_TAG.COLGROUP,
+    HTML_TAG.HEAD,
+    HTML_TAG.HTML,
+    HTML_TAG.TBODY,
+    HTML_TAG.TD,
+    HTML_TAG.TFOOT,
+    HTML_TAG.TH,
+    HTML_TAG.THEAD,
+    HTML_TAG.TR,
+]);
