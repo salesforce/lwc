@@ -9,7 +9,7 @@ import * as astring from 'astring';
 import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT } from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
-import { isNonTopLevelTag } from '../parser/tag';
+import { isUnsafeTopLevelSerializableElement } from '../parser/tag';
 import {
     isComment,
     isText,
@@ -76,7 +76,7 @@ function transform(codeGen: CodeGen): t.Expression {
             codeGen.staticNodes.has(element) &&
             isElement(element) &&
             // Tags like <th> and <td> are okay as static fragments, but only if they're not at the top level
-            !isNonTopLevelTag(element)
+            !isUnsafeTopLevelSerializableElement(element)
         ) {
             // do not process children of static nodes.
             return codeGen.genHoistedElement(element, slotParentName);

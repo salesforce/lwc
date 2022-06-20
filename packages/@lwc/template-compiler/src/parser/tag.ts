@@ -8,6 +8,6 @@
 import { BaseElement } from '../shared/types';
 import { TAGS_THAT_CANNOT_BE_PARSED_AS_TOP_LEVEL } from './constants';
 
-export function isNonTopLevelTag(element: BaseElement) {
+export function isUnsafeTopLevelSerializableElement(element: BaseElement) {
     return TAGS_THAT_CANNOT_BE_PARSED_AS_TOP_LEVEL.has(element.name);
 }
