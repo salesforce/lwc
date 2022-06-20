@@ -1,7 +1,8 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import Container from './x/container/container';
-import MultipleStyles from './x/multipleStyles/multipleStyles';
-import SvgNs from './x/svgNs/svgNs';
+import Container from 'x/container';
+import MultipleStyles from 'x/multipleStyles';
+import SvgNs from 'x/svgNs';
+import Table from 'x/table';
 
 // In compat mode, the component will always render in synthetic mode with the scope attribute
 if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
@@ -88,6 +89,22 @@ describe('svg and static content', () => {
 
         allStaticNodes.forEach((node) => {
             expect(node.namespaceURI).toBe('http://www.w3.org/2000/svg');
+        });
+    });
+});
+
+describe('tables and static content', () => {
+    it('should work with a static <td>', () => {
+        const elm = createElement('x-table', { is: Table });
+        document.body.appendChild(elm);
+
+        expect(elm.shadowRoot.querySelectorAll('td').length).toEqual(0);
+
+        elm.addRow();
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelectorAll('td').length).toEqual(1);
+            expect(elm.shadowRoot.querySelector('td').textContent).toEqual('');
         });
     });
 });
