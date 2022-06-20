@@ -192,6 +192,7 @@ export const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iter
 // https://github.com/sindresorhus/html-tags/blob/95dcdd5/index.js
 // using the test:
 // document.createRange().createContextualFragment(`<${tag}></${tag}>`).firstChild === null
+// TODO [#2890]: use <template> instead, drop IE11 support for static optimization
 export const TAGS_THAT_CANNOT_BE_PARSED_AS_TOP_LEVEL = new Set([
     HTML_TAG.BODY,
     HTML_TAG.CAPTION,
