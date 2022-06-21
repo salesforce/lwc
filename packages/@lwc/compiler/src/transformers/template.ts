@@ -66,8 +66,8 @@ export default function templateTransform(
 }
 
 function escapeScopeToken(input: string) {
-    // Minimal escape for strings containing the "@", "#" characters, which are disallowed in CSS selectors
-    // and at the beginning of attribute names
+    // Minimal escape for strings containing the "@" and "#" characters, which are disallowed
+    // in certain cases in attribute names
     return input.replace(/@/g, '___at___').replace(/#/g, '___hash___');
 }
 
