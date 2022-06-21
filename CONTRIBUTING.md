@@ -89,7 +89,7 @@ Your test should now be running in the Chrome debugger which you can use to poke
 ### Integration Testing LWC
 
 When developing LWC, use integration testing to ensure functionality is correctly reflected in the browser. This repo has two integration test suites.
-- @lwc/integration-karma: Contains all integration tests that can run with javascript only. For information about usage and contribution, refer to this [documentation][@lwc/integration-karma-readme].
+- @lwc/integration-karma: Contains all integration tests that can run with javascript only. For information about usage and contribution, refer to this [documentation][integration-karma-readme].
 - @lwc/integration-tests: Contains all other integration tests that require web driver API support (e.g., focus, keyboard navigation). For information about usage and contribution, refer to this [documentation][integration-test-readme].
 
 ### Performance testing LWC
@@ -319,4 +319,4 @@ The footer should contain any information about **Breaking Changes** and is also
 [creating-a-pull-request]: https://help.github.com/articles/creating-a-pull-request/
 [eslint-integrations]: http://eslint.org/docs/user-guide/integrations
 [integration-test-readme]: https://github.com/salesforce/lwc/blob/master/packages/@lwc/integration-tests/README.md
-[@lwc/integration-karma-readme]: https://github.com/salesforce/lwc/blob/master/packages/@lwc/integration-karma/README.md
+[integration-karma-readme]: https://github.com/salesforce/lwc/blob/master/packages/@lwc/integration-karma/README.md
