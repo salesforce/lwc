@@ -18,7 +18,7 @@ To run an individual benchmark, do:
 
 ```shell
 cd packages/@lwc/perf-benchmarks
-../../node_modules/.bin/tach --config dist/__benchmarks__/path/to/tachometer.json
+../../../node_modules/.bin/tach --config dist/__benchmarks__/path/to/tachometer.json
 ```
 
 ## Manual testing
@@ -27,7 +27,7 @@ When the benchmark is not working, the best way to debug it locally is to load i
 
 ```shell
 cd packages/@lwc/perf-benchmarks
-../../node_modules/.bin/tach --manual --config dist/__benchmarks__/path/to/tachometer.json
+../../../node_modules/.bin/tach --manual --config dist/__benchmarks__/path/to/tachometer.json
 ```
 
 This will print out the URLs you can use to test manually.
