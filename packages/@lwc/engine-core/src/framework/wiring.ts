@@ -103,7 +103,7 @@ function createConfigWatcher(
     const computeConfigAndUpdate = () => {
         let config: ConfigValue;
         ro.observe(() => (config = configCallback(component)));
-        // eslint-disable-next-line lwc-internal/no-invalid-todo
+        // eslint-disable-next-line @lwc/lwc-internal/no-invalid-todo
         // TODO: dev-mode validation of config based on the adapter.configSchema
         // @ts-ignore it is assigned in the observe() callback
         callbackWhenConfigIsReady(config);
@@ -138,7 +138,7 @@ function createContextWatcher(
         // guarantee that the linkage can be forged.
         const contextRegistrationEvent = new WireContextRegistrationEvent(adapterContextToken, {
             setNewContext(newContext: ContextValue) {
-                // eslint-disable-next-line lwc-internal/no-invalid-todo
+                // eslint-disable-next-line @lwc/lwc-internal/no-invalid-todo
                 // TODO: dev-mode validation of config based on the adapter.contextSchema
                 callbackWhenContextIsReady(newContext);
             },
