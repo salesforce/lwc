@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1145,
-            "message": "LWC1145: Invalid attributes detected on template. The following attributes are not supported by templates in LWC: onfoo. For more information, please visit https://lwc.dev/guide/reference#html-template-directives",
+            "message": "LWC1145: Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: onfoo. For more information, please visit https://lwc.dev/guide/reference#html-template-directives",
             "level": 2,
             "location": {
                 "line": 3,
