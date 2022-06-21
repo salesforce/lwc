@@ -592,7 +592,7 @@ export const ParserDiagnostics = {
     INVALID_TEMPLATE_ATTRIBUTE: {
         code: 1145,
         message:
-            'Invalid attributes detected on template. The following attributes are not supported by templates in LWC: {0}. For more information, ' +
+            'Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: {0}. For more information, ' +
             'please visit https://lwc.dev/guide/reference#html-template-directives',
         level: DiagnosticLevel.Warning,
         url: '',
