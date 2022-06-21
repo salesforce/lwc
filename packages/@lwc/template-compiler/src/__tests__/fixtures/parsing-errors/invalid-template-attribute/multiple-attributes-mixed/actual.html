@@ -1,0 +1,14 @@
+<template>
+    <section>
+        <template if:true={showItems} for:each={items} for:item="item" onfoo={handleFoo}>
+            <!-- 
+                The current behavior is for the p element to be rendered to the DOM which is incorrect.
+                This will be replaced with an error message in the future but is kept here for now to preserve
+                backwards compatibility.
+            -->
+            <template class="slds-m-around_medium">
+                <p key={item.id}>1{item}</p>
+            </template>
+        </template>
+    </section>
+</template>

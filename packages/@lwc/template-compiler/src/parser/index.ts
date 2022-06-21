@@ -67,6 +67,8 @@ import {
     VOID_ELEMENT_SET,
 } from './constants';
 
+type TemplateElement = parse5.Element & { tagName: 'template' };
+
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
     // if not an expression, it is not referencing iterator index
@@ -148,6 +150,21 @@ function parseRoot(ctx: ParserCtx, parse5Elm: parse5.Element): Root {
     return root;
 }
 
+/**
+ * This function will create LWC AST nodes from an HTML element.
+ * A node is generated for each LWC HTML template directive attached to the
+ * element as well as the element itself (excluding template tag elements).
+ *
+ * The hierarchy of nodes created is as follows:
+ *
+ * For/Iterator -> If -> Element/Component/Slot
+ *
+ * For each node that's created, the parent will be the most recently
+ * created node otherwise it will be parentNode.
+ *
+ * Note: Not every node in the hierarchy is guaranteed to be created, for example,
+ * <div></div> will only create an Element node.
+ */
 function parseElement(
     ctx: ParserCtx,
     parse5Elm: parse5.Element,
@@ -156,7 +173,9 @@ function parseElement(
 ): void {
     const parse5ElmLocation = parseElementLocation(ctx, parse5Elm, parse5ParentLocation);
     const parsedAttr = parseAttributes(ctx, parse5Elm, parse5ElmLocation);
+    // Create an AST node for each LWC template directive and chain them into a parent child hierarchy
     const directive = parseElementDirectives(ctx, parsedAttr, parentNode, parse5ElmLocation);
+    // Create an AST node for the HTML element (excluding template tag elements) and add as child to parent
     const element = parseBaseElement(
         ctx,
         parsedAttr,
@@ -175,10 +194,19 @@ function parseElement(
         validateAttributes(ctx, parsedAttr, element);
         validateProperties(ctx, element);
     } else {
-        validateTemplate(ctx, parsedAttr, parse5Elm, parse5ElmLocation);
+        // parseBaseElement will always return an element EXCEPT when processing a <template>
+        validateTemplate(ctx, parsedAttr, parse5Elm as TemplateElement, parse5ElmLocation);
     }
 
+    // The next step is to assign children to the last AST node created by this function.
+    // If no element or directive was created, the HTML element is a template tag element without LWC HTML directives.
+    //
+    // ex: <template style="foo">hello</template>
+    //
+    // These type of templates should be ignored and throw an error however, for backwards compatibility,
+    // we will reparent their children to the template's parent.
     const currentNode = element ?? directive ?? parentNode;
+    // pareChildren will iterate through parse5Elm's children and assign newly created AST nodes as children of currentNode.
     parseChildren(ctx, parse5Elm, currentNode, parse5ElmLocation);
     validateChildren(ctx, element);
 }
@@ -971,13 +999,13 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
 function validateTemplate(
     ctx: ParserCtx,
     parsedAttr: ParsedAttribute,
-    parse5Elm: parse5.Element,
+    template: TemplateElement,
     parse5ElmLocation: parse5.ElementLocation
 ): void {
     const location = ast.sourceLocation(parse5ElmLocation);
 
     // Empty templates not allowed outside of root
-    if (!parse5Elm.attrs.length) {
+    if (!template.attrs.length) {
         ctx.throwAtLocation(ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE, location);
     }
 

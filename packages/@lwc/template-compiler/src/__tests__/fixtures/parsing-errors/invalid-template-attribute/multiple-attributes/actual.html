@@ -1,6 +1,6 @@
 <template>
     <section>
-        <template if:true={showItems} for:each={items} for:item="item" onfoo={handleFoo} class="slds-m-around_medium">
+        <template if:true={showItems} for:each={items} for:item="item" onfoo={handleFoo}>
             <p key={item.id}>1{item}</p>
         </template>
     </section>
