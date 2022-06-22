@@ -1,0 +1,32 @@
+{
+    "name": "@lwc/integration-karma",
+    "private": true,
+    "version": "2.18.0",
+    "scripts": {
+        "start": "karma start ./scripts/karma-configs/test/local.js",
+        "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
+        "test:compat": "COMPAT=1 yarn test",
+        "test:native": "DISABLE_SYNTHETIC=1 yarn test",
+        "hydration:start": "karma start ./scripts/karma-configs/hydration/local.js",
+        "hydration:test": "karma start ./scripts/karma-configs/hydration/local.js --single-run --browsers ChromeHeadless",
+        "hydration:sauce": "karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
+        "sauce": "karma start ./scripts/karma-configs/test/sauce.js --single-run",
+        "coverage": "node ./scripts/merge-coverage.js"
+    },
+    "devDependencies": {
+        "@lwc/compiler": "2.18.0",
+        "@lwc/engine-dom": "2.18.0",
+        "@lwc/engine-server": "2.18.0",
+        "@lwc/rollup-plugin": "2.18.0",
+        "@lwc/synthetic-shadow": "2.18.0",
+        "chokidar": "^3.5.3",
+        "istanbul-lib-coverage": "^3.2.0",
+        "istanbul-lib-report": "^3.0.0",
+        "istanbul-reports": "^3.1.4",
+        "karma": "^6.4.0",
+        "karma-chrome-launcher": "^3.1.0",
+        "karma-coverage": "^2.2.0",
+        "karma-jasmine": "^5.1.0",
+        "karma-sauce-launcher": "^4.3.6"
+    }
+}

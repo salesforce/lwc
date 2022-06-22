@@ -7,7 +7,22 @@
 module.exports = {
     testTimeout: 60000, // Default timeout for all tests in ms. Jest's default is 5000ms
     rootDir: '../..',
-    projects: ['<rootDir>/packages/@lwc/*'],
+    projects: [
+        '<rootDir>/packages/@lwc/babel-plugin-component',
+        '<rootDir>/packages/@lwc/compiler',
+        '<rootDir>/packages/@lwc/engine-core',
+        '<rootDir>/packages/@lwc/engine-dom',
+        '<rootDir>/packages/@lwc/engine-server',
+        '<rootDir>/packages/@lwc/errors',
+        '<rootDir>/packages/@lwc/features',
+        '<rootDir>/packages/@lwc/module-resolver',
+        '<rootDir>/packages/@lwc/rollup-plugin',
+        '<rootDir>/packages/@lwc/shared',
+        '<rootDir>/packages/@lwc/style-compiler',
+        '<rootDir>/packages/@lwc/synthetic-shadow',
+        '<rootDir>/packages/@lwc/template-compiler',
+        '<rootDir>/packages/@lwc/wire-service',
+    ],
     coverageThreshold: {
         global: {
             branches: 80,
