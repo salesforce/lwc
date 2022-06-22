@@ -353,11 +353,11 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
                 // we need to add the concatenation operator. Examples:
                 //   var(--x, 0 0 2px var(--y, #fff))
                 //   var(--x, var(--y, #fff) 0 0 2px)
-                const shouldAddConcatinator =
+                const shouldAddConcatenator =
                     token.type !== TokenType.divider &&
                     nextToken &&
                     nextToken.type !== TokenType.divider;
-                const concatOperator = shouldAddConcatinator ? ' + ' : '';
+                const concatOperator = shouldAddConcatenator ? ' + ' : '';
 
                 return buffer + normalizedToken + concatOperator;
             }, '');
