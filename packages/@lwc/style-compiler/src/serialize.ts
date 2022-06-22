@@ -344,15 +344,20 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
             tokens = reduceTokens(tokens);
             // The children tokens are a combination of identifiers, text and other expressions
             // Since we are producing evaluatable javascript we need to do the right scaping:
-            const exprToken = tokens.reduce((buffer, n, index) => {
-                const isTextToken = n.type === TokenType.text;
-                const normalizedToken = isTextToken ? JSON.stringify(n.value) : n.value;
+            const exprToken = tokens.reduce((buffer, token, index) => {
+                const isTextToken = token.type === TokenType.text;
+                const normalizedToken = isTextToken ? JSON.stringify(token.value) : token.value;
+                const nextToken = tokens[index + 1];
 
-                // If we have a token sequence of text + expression, we need to add the concatenation operator
-                // Example: var(--x, 0 0 2px var(--y, #fff)
-                const nextToken = isTextToken && tokens[index + 1];
-                const concatOperator =
-                    nextToken && nextToken.type === TokenType.expression ? ' + ' : '';
+                // If we have a token sequence of text + expression or expression + text,
+                // we need to add the concatenation operator. Examples:
+                //   var(--x, 0 0 2px var(--y, #fff))
+                //   var(--x, var(--y, #fff) 0 0 2px)
+                const shouldAddConcatinator =
+                    token.type !== TokenType.divider &&
+                    nextToken &&
+                    nextToken.type !== TokenType.divider;
+                const concatOperator = shouldAddConcatinator ? ' + ' : '';
 
                 return buffer + normalizedToken + concatOperator;
             }, '');
