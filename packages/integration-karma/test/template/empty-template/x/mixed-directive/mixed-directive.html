@@ -1,0 +1,7 @@
+<template>
+    <template if:true={show} for:each={items} for:item="item">
+        <template class="foo">
+            <li key={item.key}>{item.value}</li>
+        </template>
+    </template>
+</template>
