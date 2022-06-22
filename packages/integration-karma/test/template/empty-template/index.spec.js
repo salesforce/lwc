@@ -19,6 +19,7 @@ function testTemplateRendering(expected, actual) {
 
 // These tests are to preserve incorrect behavior in the @lwc/template-compiler.
 // The LWC team intends to remove this behavior but for now we're preserving it for backwards compatibility.
+// Work to be done in W-11296404
 
 describe('non-root templates without lwc directives', () => {
     it('should render text', () => {
