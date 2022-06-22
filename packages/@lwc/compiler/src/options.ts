@@ -6,6 +6,7 @@
  */
 import { CompilerValidationErrors, invariant } from '@lwc/errors';
 import { isUndefined, isBoolean, isObject } from '@lwc/shared';
+import { CustomRendererConfig } from '@lwc/template-compiler';
 
 type RecursiveRequired<T> = {
     [P in keyof T]-?: RecursiveRequired<T[P]>;
@@ -14,6 +15,7 @@ type RecursiveRequired<T> = {
 const DEFAULT_OPTIONS = {
     isExplicitImport: false,
     preserveHtmlComments: false,
+    enableStaticContentOptimization: true,
 };
 
 const DEFAULT_DYNAMIC_CMP_CONFIG: Required<DynamicComponentConfig> = {
@@ -67,13 +69,19 @@ export interface TransformOptions {
     isExplicitImport?: boolean;
     preserveHtmlComments?: boolean;
     scopedStyles?: boolean;
+    enableStaticContentOptimization?: boolean;
+    customRendererConfig?: CustomRendererConfig;
 }
 
-type RequiredTransformOptions = Omit<TransformOptions, 'name' | 'namespace' | 'scopedStyles'>;
+type RequiredTransformOptions = Omit<
+    TransformOptions,
+    'name' | 'namespace' | 'scopedStyles' | 'customRendererConfig'
+>;
 export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
     name?: string;
     namespace?: string;
     scopedStyles?: boolean;
+    customRendererConfig?: CustomRendererConfig;
 }
 
 export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {

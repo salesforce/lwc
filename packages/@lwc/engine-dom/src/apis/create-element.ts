@@ -15,7 +15,7 @@ import {
 import { renderer } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
-// eslint-disable-next-line lwc-internal/no-global-node
+// eslint-disable-next-line @lwc/lwc-internal/no-global-node
 const _Node = Node;
 
 type NodeSlotCallback = (element: Node) => void;

@@ -12,7 +12,7 @@ import { rollup } from 'rollup';
 // @ts-ignore
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { isVoidElement } from '@lwc/shared';
-import { testFixtureDir } from 'jest-utils-lwc-internals';
+import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
 import type * as lwc from '../index';
 
 interface FixtureModule {

@@ -27,7 +27,12 @@ export default function templateTransform(
     filename: string,
     options: NormalizedTransformOptions
 ): TransformResult {
-    const { experimentalDynamicComponent, preserveHtmlComments } = options;
+    const {
+        experimentalDynamicComponent,
+        preserveHtmlComments,
+        enableStaticContentOptimization,
+        customRendererConfig,
+    } = options;
     const experimentalDynamicDirective = Boolean(experimentalDynamicComponent);
 
     let result;
@@ -35,6 +40,8 @@ export default function templateTransform(
         result = compile(src, {
             experimentalDynamicDirective,
             preserveHtmlComments,
+            enableStaticContentOptimization,
+            customRendererConfig,
         });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
@@ -59,9 +66,9 @@ export default function templateTransform(
 }
 
 function escapeScopeToken(input: string) {
-    // Minimal escape for strings containing the "@" character, which is disallowed in CSS selectors
-    // and at the beginning of attribute names
-    return input.replace(/@/g, '___at___');
+    // Minimal escape for strings containing the "@" and "#" characters, which are disallowed
+    // in certain cases in attribute names
+    return input.replace(/@/g, '___at___').replace(/#/g, '___hash___');
 }
 
 function serialize(

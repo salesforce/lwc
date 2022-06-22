@@ -8,7 +8,7 @@
 
     "plugins": [
         "jest",
-        "lwc-internal",
+        "@lwc/lwc-internal",
         "@typescript-eslint",
         "import"
     ],
@@ -91,7 +91,7 @@
         "template-curly-spacing": "error",
         "yoda": "error",
 
-        "lwc-internal/no-invalid-todo": "error",
+        "@lwc/lwc-internal/no-invalid-todo": "error",
         "import/order": [
             "error",
             { "groups": ["builtin", "external", "internal", "parent", "index", "sibling", "object", "type"] }
@@ -106,7 +106,7 @@
                 "**/@lwc/synthetic-shadow/**"
             ],
             "rules": {
-                "lwc-internal/no-global-node": "error",
+                "@lwc/lwc-internal/no-global-node": "error",
                 "prefer-rest-params": "off",
                 "prefer-spread": "off"
             }
@@ -115,7 +115,7 @@
             "files": [
                 "**/__tests__/**",
                 "**/__mocks__/**",
-                "**/integration-karma/**"
+                "**/@lwc/integration-karma/**"
             ],
 
             "env": {
@@ -133,7 +133,7 @@
         },
         {
             "files": [
-                "**/integration-tests/**"
+                "**/@lwc/integration-tests/**"
             ],
 
             "globals": {
