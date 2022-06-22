@@ -9,8 +9,7 @@ import * as astring from 'astring';
 import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT } from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
-import { NormalizedConfig } from '../config';
-
+import { isUnsafeTopLevelSerializableElement } from '../parser/tag';
 import {
     isComment,
     isText,
@@ -29,7 +28,7 @@ import {
     isDomDirective,
     isElement,
 } from '../shared/ast';
-import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
+import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import {
     Root,
     ParentNode,
@@ -44,7 +43,6 @@ import {
     ForOf,
     BaseElement,
 } from '../shared/types';
-
 import * as t from '../shared/estree';
 import {
     isAllowedFragOnlyUrlsXHTML,
@@ -53,7 +51,8 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-
+import State from '../state';
+import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 import CodeGen from './codegen';
 import {
     identifierFromComponentName,
@@ -73,7 +72,12 @@ function transform(codeGen: CodeGen): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
 
-        if (codeGen.staticNodes.has(element) && isElement(element)) {
+        if (
+            codeGen.staticNodes.has(element) &&
+            isElement(element) &&
+            // Tags like <th> and <td> are okay as static fragments, but only if they're not at the top level
+            !isUnsafeTopLevelSerializableElement(element)
+        ) {
             // do not process children of static nodes.
             return codeGen.genHoistedElement(element, slotParentName);
         }
@@ -312,7 +316,11 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genIterator(iterable, iterationFunction);
     }
 
-    function computeAttrValue(attr: Attribute | Property, element: BaseElement): t.Expression {
+    function computeAttrValue(
+        attr: Attribute | Property,
+        element: BaseElement,
+        addLegacySanitizationHook: boolean
+    ): t.Expression {
         const { name: elmName, namespace = '' } = element;
         const { value: attrValue } = attr;
         // Evaluate properties based on their attribute name
@@ -340,7 +348,7 @@ function transform(codeGen: CodeGen): t.Expression {
             ) {
                 return codeGen.genScopedFragId(expression);
             }
-            if (isSvgUseHref(elmName, attrName, namespace)) {
+            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
                 codeGen.usedLwcApis.add('sanitizeAttribute');
 
                 return t.callExpression(t.identifier('sanitizeAttribute'), [
@@ -379,7 +387,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 return codeGen.genScopedFragId(attrValue.value);
             }
 
-            if (isSvgUseHref(elmName, attrName, namespace)) {
+            if (addLegacySanitizationHook && isSvgUseHref(elmName, attrName, namespace)) {
                 codeGen.usedLwcApis.add('sanitizeAttribute');
 
                 return t.callExpression(t.identifier('sanitizeAttribute'), [
@@ -408,6 +416,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const innerHTML = element.directives.find(isInnerHTMLDirective);
         const forKey = element.directives.find(isKeyDirective);
         const dom = element.directives.find(isDomDirective);
+        const addSanitizationHook = isCustomRendererHookRequired(element, codeGen.state);
 
         // Attributes
         if (attributes.length) {
@@ -444,7 +453,7 @@ function transform(codeGen: CodeGen): t.Expression {
                         data.push(t.property(t.identifier('styleDecls'), styleAST));
                     }
                 } else {
-                    rest[name] = computeAttrValue(attr, element);
+                    rest[name] = computeAttrValue(attr, element, !addSanitizationHook);
                 }
             }
 
@@ -463,7 +472,10 @@ function transform(codeGen: CodeGen): t.Expression {
         if (properties.length) {
             for (const prop of properties) {
                 propsObj.properties.push(
-                    t.property(t.literal(prop.name), computeAttrValue(prop, element))
+                    t.property(
+                        t.literal(prop.name),
+                        computeAttrValue(prop, element, !addSanitizationHook)
+                    )
                 );
             }
         }
@@ -474,7 +486,12 @@ function transform(codeGen: CodeGen): t.Expression {
                 ? t.literal(innerHTML.value.value)
                 : codeGen.bindExpression(innerHTML.value);
             propsObj.properties.push(
-                t.property(t.identifier('innerHTML'), codeGen.genSanitizedHtmlExpr(expr))
+                t.property(
+                    t.identifier('innerHTML'),
+                    // If lwc:inner-html is added as a directive requiring custom renderer, no need
+                    // to add the legacy sanitizeHtmlContent hook
+                    addSanitizationHook ? expr : codeGen.genSanitizedHtmlExpr(expr)
+                )
             );
         }
 
@@ -531,6 +548,11 @@ function transform(codeGen: CodeGen): t.Expression {
         // SVG handling
         if (element.namespace === SVG_NAMESPACE) {
             data.push(t.property(t.identifier('svg'), t.literal(true)));
+        }
+
+        if (addSanitizationHook) {
+            codeGen.usedLwcApis.add(RENDERER);
+            data.push(t.property(t.identifier(RENDERER), t.identifier(RENDERER)));
         }
 
         return t.objectExpression(data);
@@ -592,11 +614,11 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
     );
 }
 
-export default function (root: Root, config: NormalizedConfig): string {
+export default function (root: Root, state: State): string {
     const scopeFragmentId = hasIdAttribute(root);
     const codeGen = new CodeGen({
         root,
-        config,
+        state,
         scopeFragmentId,
     });
 

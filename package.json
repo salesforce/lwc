@@ -12,58 +12,58 @@
     "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
     "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
     "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",
-    "build": "lerna run build --ignore perf-benchmarks --ignore perf-benchmarks-components --ignore integration-tests",
+    "build": "lerna run build --ignore @lwc/perf-benchmarks --ignore @lwc/perf-benchmarks-components --ignore @lwc/integration-tests",
     "build:performance": "yarn run build:performance:components && yarn run build:performance:benchmarks",
-    "build:performance:components": "lerna exec --scope perf-benchmarks-components -- yarn build",
-    "build:performance:benchmarks": "lerna exec --scope perf-benchmarks -- yarn build",
-    "dev": "lerna run dev --parallel --ignore perf-benchmarks --ignore perf-benchmarks-components --ignore integration-tests",
+    "build:performance:components": "lerna exec --scope @lwc/perf-benchmarks-components -- yarn build",
+    "build:performance:benchmarks": "lerna exec --scope @lwc/perf-benchmarks -- yarn build",
+    "dev": "lerna run dev --parallel --ignore @lwc/perf-benchmarks --ignore @lwc/perf-benchmarks-components --ignore @lwc/integration-tests",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
     "test:ci": "yarn test --no-cache --coverage --runInBand",
-    "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
-    "test:performance": "lerna exec --scope perf-benchmarks -- yarn test",
+    "test:integration": "lerna exec --scope @lwc/integration-tests -- yarn sauce",
+    "test:performance": "lerna exec --scope @lwc/perf-benchmarks -- yarn test",
     "release:publish:ci": "./scripts/release/publish.mjs",
     "release:version": "./scripts/release/version.mjs"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.12",
-    "@babel/preset-env": "^7.17.12",
-    "@commitlint/cli": "^17.0.0",
+    "@babel/core": "^7.18.5",
+    "@babel/preset-env": "^7.18.2",
+    "@commitlint/cli": "^17.0.2",
+    "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
+    "@lwc/jest-utils-lwc-internals": "link:./scripts/jest/utils",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
-    "@rollup/plugin-typescript": "^8.3.2",
+    "@rollup/plugin-typescript": "^8.3.3",
     "@types/acorn": "^4.0.6",
     "@types/babel__core": "^7.1.19",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.5.1",
-    "@types/node": "^17.0.34",
-    "@typescript-eslint/eslint-plugin": "^5.24.0",
-    "@typescript-eslint/parser": "^5.24.0",
+    "@types/jest": "^28.1.2",
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
     "babel-plugin-tester": "^10.1.0",
     "bundlesize": "^0.18.1",
     "es5-proxy-compat": "^0.22.4",
-    "eslint": "^8.15.0",
+    "eslint": "^8.18.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jest": "^26.2.2",
-    "eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
+    "eslint-plugin-jest": "^26.5.3",
     "execa": "^6.1.0",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "husky": "^8.0.1",
     "is-ci": "^3.0.1",
     "isbinaryfile": "^5.0.0",
-    "jest": "^28.1.0",
-    "jest-environment-jsdom": "^28.1.0",
-    "jest-utils-lwc-internals": "link:./scripts/jest/utils",
-    "lerna": "^4.0.0",
-    "lint-staged": "^12.4.1",
-    "prettier": "^2.6.2",
-    "rollup": "^2.73.0",
+    "jest": "^28.1.1",
+    "jest-environment-jsdom": "^28.1.1",
+    "lerna": "^5.1.4",
+    "lint-staged": "^13.0.2",
+    "prettier": "^2.7.1",
+    "rollup": "^2.75.7",
     "rollup-plugin-compat": "^0.22.4",
-    "terser": "^5.13.1",
-    "ts-jest": "^28.0.2",
+    "terser": "^5.14.1",
+    "ts-jest": "^28.0.5",
     "tslib": "^2.4.0",
-    "typescript": "4.6.4",
+    "typescript": "4.7.4",
     "workerpool": "^6.2.0"
   },
   "lint-staged": {
@@ -72,18 +72,14 @@
   },
   "workspaces": [
     "packages/@lwc/*",
-    "packages/lwc",
-    "packages/integration-karma",
-    "packages/integration-tests",
-    "packages/perf-benchmarks",
-    "packages/perf-benchmarks-components"
+    "packages/lwc"
   ],
   "engines": {
     "node": ">=10"
   },
   "volta": {
-    "node": "16.13.1",
-    "yarn": "1.22.17"
+    "node": "16.15.1",
+    "yarn": "1.22.19"
   },
   "resolutions": {
     "//": [
@@ -91,9 +87,6 @@
       "iltorb: Native module used by bundlesize which slows down yarn install and may fail on some envs. Not needed."
     ],
     "jasmine-core": "3.10.1",
-    "iltorb": "npm:@stdlib/utils-noop@0.0.10"
-  },
-  "dependencies": {
     "iltorb": "npm:@stdlib/utils-noop@0.0.10"
   }
 }

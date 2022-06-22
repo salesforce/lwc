@@ -144,7 +144,7 @@ commands:
     steps:
       - retry_karma:
           command_name: Run karma integration tests
-          working_directory: packages/integration-karma
+          working_directory: packages/@lwc/integration-karma
           disable_synthetic: << parameters.disable_synthetic >>
           force_native_shadow_mode: << parameters.force_native_shadow_mode >>
           compat: << parameters.compat >>
@@ -213,12 +213,12 @@ jobs:
       - retry_karma:
           command_name: Run karma hydration tests
           command: yarn hydration:sauce
-          working_directory: packages/integration-karma
+          working_directory: packages/@lwc/integration-karma
           coverage: true
       - run:
           name: Compute karma coverage
           command: yarn coverage
-          working_directory: packages/integration-karma
+          working_directory: packages/@lwc/integration-karma
 
 
   test_integration:
@@ -231,7 +231,7 @@ jobs:
       - retry_karma:
           command_name: Run integration test - Chrome SauceLabs
           command: yarn sauce:prod --browsers chrome
-          working_directory: packages/integration-tests
+          working_directory: packages/@lwc/integration-tests
 
 
   test_integration_compat:
@@ -244,7 +244,7 @@ jobs:
       - retry_karma:
           command_name: Run integration test - IE11 SauceLabs
           command: yarn sauce:prod_compat --browsers ie11
-          working_directory: packages/integration-tests
+          working_directory: packages/@lwc/integration-tests
 
 
 # Workflows definition

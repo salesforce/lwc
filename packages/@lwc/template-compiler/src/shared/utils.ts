@@ -1,3 +1,5 @@
+import { DASHED_TAGNAME_ELEMENT_SET } from './constants';
+
 /*
  * Copyright (c) 2018, salesforce.com, inc.
  * All rights reserved.
@@ -20,4 +22,13 @@ export function toPropertyName(attr: string) {
     }
 
     return prop;
+}
+
+/**
+ * Test if given tag name is a custom element.
+ * @param tagName element tag name to test
+ * @returns true if given tag name represents a custom element, false otherwise.
+ */
+export function isCustomElementTag(tagName: string): boolean {
+    return tagName.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tagName);
 }

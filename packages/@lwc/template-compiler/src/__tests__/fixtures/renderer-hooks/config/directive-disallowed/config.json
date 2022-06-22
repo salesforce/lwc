@@ -1,0 +1,7 @@
+{
+    "experimentalDynamicDirective": true,
+    "customRendererConfig": {
+        "directives": ["lwc:dynamic"],
+        "elements": []
+    }
+}
