@@ -289,6 +289,10 @@ function tokenizeCss(data: string): Token[] {
     return tokens;
 }
 
+function isTextOrExpression(token: Token): boolean {
+    return token.type === TokenType.text || token.type == TokenType.expression;
+}
+
 /*
  * This method takes a tokenized CSS property value `1px solid var(--foo , bar)`
  * and transforms its custom variables in function calls
@@ -367,9 +371,7 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
                 // tokens (see above comment), a concatenator will never be required if
                 // `token` or `nextToken` is an identifier.
                 const shouldAddConcatenator =
-                    (token.type === TokenType.text || token.type == TokenType.expression) &&
-                    nextToken &&
-                    (nextToken.type === TokenType.text || nextToken.type === TokenType.expression);
+                    isTextOrExpression(token) && nextToken && isTextOrExpression(nextToken);
                 const concatOperator = shouldAddConcatenator ? ' + ' : '';
 
                 return buffer + normalizedToken + concatOperator;
