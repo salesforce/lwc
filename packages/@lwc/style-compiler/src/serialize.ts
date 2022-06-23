@@ -289,6 +289,10 @@ function tokenizeCss(data: string): Token[] {
     return tokens;
 }
 
+function isTextOrExpression(token: Token): boolean {
+    return token.type === TokenType.text || token.type == TokenType.expression;
+}
+
 /*
  * This method takes a tokenized CSS property value `1px solid var(--foo , bar)`
  * and transforms its custom variables in function calls
@@ -340,19 +344,35 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
     // If we inside a var() function we need to prepend and append to generate an expression
     if (type === 'function') {
         if (value === 'var') {
+            // `tokens` may include tokens of type `divider`, `expression`, `identifier`,
+            // and `text`. However, an identifier will only ever be adjacent to a divider,
+            // whereas text and expression tokens may be adjacent to one another. This is
+            // important below when inserting concatenetors.
+            //
+            // For fuller context, see the following conversation:
+            //   https://github.com/salesforce/lwc/pull/2902#discussion_r904626421
             let tokens = recursiveValueParse({ nodes }, true);
             tokens = reduceTokens(tokens);
-            // The children tokens are a combination of identifiers, text and other expressions
-            // Since we are producing evaluatable javascript we need to do the right scaping:
-            const exprToken = tokens.reduce((buffer, n, index) => {
-                const isTextToken = n.type === TokenType.text;
-                const normalizedToken = isTextToken ? JSON.stringify(n.value) : n.value;
+            const exprToken = tokens.reduce((buffer, token, index) => {
+                const isTextToken = token.type === TokenType.text;
+                const normalizedToken = isTextToken ? JSON.stringify(token.value) : token.value;
+                const nextToken = tokens[index + 1];
 
-                // If we have a token sequence of text + expression, we need to add the concatenation operator
-                // Example: var(--x, 0 0 2px var(--y, #fff)
-                const nextToken = isTextToken && tokens[index + 1];
-                const concatOperator =
-                    nextToken && nextToken.type === TokenType.expression ? ' + ' : '';
+                // If we have a token sequence of text + expression or expression + text,
+                // we need to add the concatenation operator. Examples:
+                //
+                //   Input:  var(--x, 0 0 2px var(--y, #fff))
+                //   Output: varResolver("--x", "0 0 2px " + varResolver("--y", "#fff"))
+                //
+                //   Input:  var(--x, var(--y, #fff) 0 0 2px)
+                //   Output: varResolver("--x", varResolver("--y", "#fff") + " 0 0 2px"))
+                //
+                // Since identifier tokens will never be adjacent to text or expression
+                // tokens (see above comment), a concatenator will never be required if
+                // `token` or `nextToken` is an identifier.
+                const shouldAddConcatenator =
+                    isTextOrExpression(token) && nextToken && isTextOrExpression(nextToken);
+                const concatOperator = shouldAddConcatenator ? ' + ' : '';
 
                 return buffer + normalizedToken + concatOperator;
             }, '');
