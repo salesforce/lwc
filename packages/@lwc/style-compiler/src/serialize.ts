@@ -351,8 +351,11 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
 
                 // If we have a token sequence of text + expression or expression + text,
                 // we need to add the concatenation operator. Examples:
-                //   var(--x, 0 0 2px var(--y, #fff))
-                //   var(--x, var(--y, #fff) 0 0 2px)
+                //   Input:  var(--x, 0 0 2px var(--y, #fff))
+                //   Output: varResolver("--x", "0 0 2px " + varResolver("--y", "#fff")
+                //
+                //   Input:  var(--x, var(--y, #fff) 0 0 2px)
+                //   Output: varResolver("--x", varResolver("--y", "#fff") + " 0 0 2px")
                 const shouldAddConcatenator =
                     token.type !== TokenType.divider &&
                     nextToken &&
