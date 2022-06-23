@@ -174,6 +174,7 @@ export const HTML_TAG = {
     COLGROUP: 'colgroup',
     HEAD: 'head',
     HTML: 'html',
+    SVG: 'svg',
     TBODY: 'tbody',
     TD: 'td',
     TFOOT: 'tfoot',

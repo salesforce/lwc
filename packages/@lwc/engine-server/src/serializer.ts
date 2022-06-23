@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isVoidElement, htmlEscape } from '@lwc/shared';
+import { htmlEscape } from '@lwc/shared';
 
 import { HostElement, HostShadowRoot, HostAttribute, HostChildNode, HostNodeType } from './types';
 
@@ -59,9 +59,7 @@ export function serializeElement(element: HostElement): string {
 
     output += children;
 
-    if (!isVoidElement(name)) {
-        output += `</${name}>`;
-    }
+    output += `</${name}>`;
 
     return output;
 }

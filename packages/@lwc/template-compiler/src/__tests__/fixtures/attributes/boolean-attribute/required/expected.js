@@ -1,9 +1,9 @@
 import _xFoo from "x/foo";
 import { parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<input required value="boolean present"${3}>`;
-const $fragment2 = parseFragment`<input required="" value="empty string"${3}>`;
-const $fragment3 = parseFragment`<input required="other than true" value="string value"${3}>`;
-const $fragment4 = parseFragment`<input required="3" value="integer value"${3}>`;
+const $fragment1 = parseFragment`<input required value="boolean present"${3}></input>`;
+const $fragment2 = parseFragment`<input required="" value="empty string"${3}></input>`;
+const $fragment3 = parseFragment`<input required="other than true" value="string value"${3}></input>`;
+const $fragment4 = parseFragment`<input required="3" value="integer value"${3}></input>`;
 const stc0 = {
   value: "computed value",
 };

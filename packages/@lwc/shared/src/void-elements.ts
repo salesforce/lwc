@@ -56,5 +56,5 @@ export const VOID_ELEMENTS = [
 const VOID_ELEMENTS_SET = new Set(VOID_ELEMENTS);
 
 export function isVoidElement(name: string): boolean {
-    return VOID_ELEMENTS_SET.has(name);
+    return VOID_ELEMENTS_SET.has(name.toLowerCase());
 }

@@ -11,7 +11,6 @@ import path from 'path';
 import { rollup } from 'rollup';
 // @ts-ignore
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { isVoidElement } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/jest-utils-lwc-internals';
 import type * as lwc from '../index';
 
@@ -75,9 +74,6 @@ function formatHTML(src: string): string {
     while (pos < src.length) {
         // Consume element tags and comments.
         if (src.charAt(pos) === '<') {
-            const tagNameMatch = src.slice(pos).match(/(\w+)/);
-
-            const isVoid = isVoidElement(tagNameMatch![0]);
             const isClosing = src.charAt(pos + 1) === '/';
             const isComment =
                 src.charAt(pos + 1) === '!' &&
@@ -96,7 +92,7 @@ function formatHTML(src: string): string {
 
             res += getPadding() + src.slice(start, pos) + '\n';
 
-            if (!isClosing && !isVoid && !isComment) {
+            if (!isClosing && !isComment) {
                 depth++;
             }
         }
