@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlEscape } from '@lwc/shared';
+import { htmlEscape, isVoidElement, HTML_NAMESPACE } from '@lwc/shared';
 import { ChildNode, Element, Literal } from '../shared/types';
 import { isElement, isText, isComment } from '../shared/ast';
 
@@ -97,13 +97,25 @@ function serializeChildren(
 }
 
 export function serializeStaticElement(element: Element, preserveComments: boolean): string {
-    const tagName = element.name;
+    const { name: tagName, namespace } = element;
 
-    let html = `<${tagName}${serializeAttrs(element)}>`;
+    let html = `<${tagName}${serializeAttrs(element)}`;
 
-    html += serializeChildren(element.children, tagName, preserveComments);
+    const childrenHtml = serializeChildren(element.children, tagName, preserveComments);
 
-    html += `</${tagName}>`;
+    // In the HTML namespace, some elements are "void", i.e. self-closing, and we want
+    // to serialize those without the unnecessary "/" character. For other namespaces,
+    // we need an explicit end tag (e.g. </foo>).
+    if (namespace === undefined || namespace === HTML_NAMESPACE) {
+        // undefined implies HTML
+        html += `>`;
+        if (!isVoidElement(tagName)) {
+            html += `${childrenHtml}</${tagName}>`;
+        }
+    } else {
+        // non-html namespace, e.g. svg or MathML
+        html += `>${childrenHtml}</${tagName}>`;
+    }
 
     return html;
 }

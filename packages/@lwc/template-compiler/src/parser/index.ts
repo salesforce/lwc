@@ -57,7 +57,7 @@ import {
     EXPRESSION_RE,
     IF_RE,
     ITERATOR_RE,
-    KNOWN_HTML_ELEMENTS,
+    KNOWN_HTML_AND_SVG_ELEMENTS,
     LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
     LWC_RE,
@@ -960,7 +960,12 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
     // containing an upper case character (inikulin/parse5#352).
     const hasClosingTag = Boolean(element.location.endTag);
     const isVoidElement = VOID_ELEMENT_SET.has(tag);
-    if (!isVoidElement && !hasClosingTag && tag === tag.toLocaleLowerCase()) {
+    if (
+        !isVoidElement &&
+        !hasClosingTag &&
+        tag === tag.toLocaleLowerCase() &&
+        namespace === HTML_NAMESPACE
+    ) {
         ctx.throwOnNode(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, element, [tag]);
     }
 
@@ -986,7 +991,7 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
 
         const isKnownTag =
             ast.isComponent(element) ||
-            KNOWN_HTML_ELEMENTS.has(tag) ||
+            KNOWN_HTML_AND_SVG_ELEMENTS.has(tag) ||
             SUPPORTED_SVG_TAGS.has(tag) ||
             DASHED_TAGNAME_ELEMENT_SET.has(tag);
 

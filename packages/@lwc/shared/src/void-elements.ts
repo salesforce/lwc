@@ -5,49 +5,21 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// The following list contains a mix of both void elements from the HTML and the XML namespace
-// without distinction.
+// Void elements are elements that self-close even without an explicit solidus (slash),
+// e.g. `</tagName>` or `<tagName />`. For instance, `<meta>` closes on its own; no need for a slash.
+// These only come from HTML; there are no void elements in the SVG or MathML namespaces.
+// See: https://html.spec.whatwg.org/multipage/syntax.html#syntax-tags
 export const VOID_ELEMENTS = [
     'area',
     'base',
     'br',
-    'circle',
     'col',
-    'ellipse',
-    'feBlend',
-    'feColorMatrix',
-    'feFuncR',
-    'feFuncG',
-    'feFuncB',
-    'feFuncA',
-    'feImage',
-    'feComposite',
-    'feConvolveMatrix',
-    'feDiffuseLighting',
-    'feDisplacementMap',
-    'feDropShadow',
-    'feFlood',
-    'feGaussianBlur',
-    'feMerge',
-    'feMergeNode',
-    'feMorphology',
-    'feOffset',
-    'feSpecularLighting',
-    'feTile',
-    'feTurbulence',
-    'fePointLight',
     'embed',
     'hr',
     'img',
     'input',
-    'keygen',
-    'line',
     'link',
-    'menuitem',
     'meta',
-    'param',
-    'path',
-    'rect',
     'source',
     'track',
     'wbr',

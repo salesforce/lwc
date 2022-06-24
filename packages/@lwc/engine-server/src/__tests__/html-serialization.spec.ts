@@ -8,7 +8,7 @@
 import path from 'path';
 import vm from 'vm';
 import { parseFragment, serialize } from 'parse5';
-import { rollup } from 'rollup';
+import { rollup, RollupWarning } from 'rollup';
 import replace from '@rollup/plugin-replace';
 import virtual from '@rollup/plugin-virtual';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
@@ -31,10 +31,14 @@ async function compileComponent(tagName: string, componentName: string) {
         componentName.split('/')[1] + '.js'
     );
 
+    const warnings: RollupWarning[] = [];
+
     const bundle = await rollup({
         input: '__entry__',
         external: ['lwc'],
-
+        onwarn(warning) {
+            warnings.push(warning);
+        },
         plugins: [
             virtual({
                 __entry__: `
@@ -68,7 +72,12 @@ async function compileComponent(tagName: string, componentName: string) {
         lwc: engineServer,
     });
     vm.runInContext(code, context);
-    return (context as any).result.component as string;
+    const html = (context as any).result.component as string;
+
+    return {
+        html,
+        warnings,
+    };
 }
 
 // Parse the compiled HTML and re-serialize to validate it against a real HTML parser
@@ -79,18 +88,46 @@ function parseAndReserialize(html: string): string {
 
 describe('html serialization', () => {
     it('serializes void HTML elements correctly', async () => {
-        const html = await compileComponent('x-html-void', 'x/htmlVoid');
+        const { html, warnings } = await compileComponent('x-html-void', 'x/htmlVoid');
         const parsedHtml = parseAndReserialize(html);
         expect(parsedHtml).toEqual(
             '<x-html-void><input type="text" value="one"><input type="text" value="two"></x-html-void>'
         );
+        expect(warnings.length).toEqual(0);
     });
 
-    it('serializes void SVG elements correctly', async () => {
-        const html = await compileComponent('x-svg-void', 'x/svgVoid');
+    it('serializes void HTML elements correctly with text in between', async () => {
+        const { html, warnings } = await compileComponent(
+            'x-html-void-adjacent-text',
+            'x/htmlVoidAdjacentText'
+        );
         const parsedHtml = parseAndReserialize(html);
         expect(parsedHtml).toEqual(
-            '<x-svg-void><svg xmlns="http://www.w3.org/2000/svg"><path d="M10 10"><path d="M20 20"></path></path></svg></x-svg-void>'
+            '<x-html-void-adjacent-text>before<input type="text" value="one">middle<input type="text" value="two">after</x-html-void-adjacent-text>'
         );
+        expect(warnings.length).toEqual(0);
+    });
+
+    it('serializes SVG path elements correctly', async () => {
+        const { html, warnings } = await compileComponent('x-svg-path', 'x/svgPath');
+        const parsedHtml = parseAndReserialize(html);
+        expect(parsedHtml).toEqual(
+            '<x-svg-path><svg xmlns="http://www.w3.org/2000/svg"><path d="M10 10"></path><path d="M20 20"></path></svg></x-svg-path>'
+        );
+        expect(warnings.length).toEqual(0);
+    });
+
+    it('serializes void HTML elements correctly in HTML namespace', async () => {
+        const { html, warnings } = await compileComponent(
+            'x-html-void-html-namespace',
+            'x/htmlVoidHtmlNamespace'
+        );
+        const parsedHtml = parseAndReserialize(html);
+        expect(parsedHtml).toEqual(
+            '<x-html-void-html-namespace><div xmlns="http://www.w3.org/1999/xhtml"><input type="text" value="one"><input type="text" value="two"></div></x-html-void-html-namespace>'
+        );
+        expect(warnings.map((_) => _.message)).toEqual([
+            '@lwc/rollup-plugin: LWC1057: xmlns is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div',
+        ]);
     });
 });
