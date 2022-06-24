@@ -23,10 +23,10 @@ const rawContentElements = new Set([
 
 /**
  * Escape all the characters that could break a JavaScript template string literal: "`" (backtick),
- * "${" (dollar + open curly).
+ * "${" (dollar + open curly) and "\" (backslash).
  */
 function templateStringEscape(str: string): string {
-    return str.replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+    return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 }
 
 function serializeAttrs(element: Element): string {
