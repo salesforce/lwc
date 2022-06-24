@@ -1,26 +1,8 @@
-import { parseSVGFragment, registerTemplate } from "lwc";
-const $fragment1 = parseSVGFragment`<path${3}></path>`;
-const $fragment2 = parseSVGFragment`<path${3}></path>`;
-const stc0 = {
-  key: 0,
-};
-const stc1 = {
-  attrs: {
-    xmlns: "http://www.w3.org/2000/svg",
-  },
-  key: 1,
-  svg: true,
-};
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<div${3}><svg xmlns="http://www.w3.org/2000/svg"${3}><path${3}></path><path${3}></path></svg></div>`;
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { st: api_static_fragment, h: api_element } = $api;
-  return [
-    api_element("div", stc0, [
-      api_element("svg", stc1, [
-        api_static_fragment($fragment1(), 3),
-        api_static_fragment($fragment2(), 5),
-      ]),
-    ]),
-  ];
+  const { st: api_static_fragment } = $api;
+  return [api_static_fragment($fragment1(), 1)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

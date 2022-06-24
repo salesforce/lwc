@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { HTML_TAG } from '../parser/constants';
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
@@ -231,8 +230,6 @@ function isStaticNode(node: BaseElement): boolean {
     const { name: nodeName, namespace = '', attributes, directives, properties, listeners } = node;
 
     result &&= isElement(node);
-
-    result &&= nodeName !== HTML_TAG.SVG; // SVG contents must be parsed using parseSVGFragment
 
     // it is an element.
     result &&= attributes.every(({ name, value }) => {
