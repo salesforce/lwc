@@ -1,5 +1,6 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from 'x/container';
+import Escape from 'x/escape';
 import MultipleStyles from 'x/multipleStyles';
 import SvgNs from 'x/svgNs';
 import Table from 'x/table';
@@ -106,5 +107,41 @@ describe('tables and static content', () => {
             expect(elm.shadowRoot.querySelectorAll('td').length).toEqual(1);
             expect(elm.shadowRoot.querySelector('td').textContent).toEqual('');
         });
+    });
+});
+
+describe('template literal escaping', () => {
+    it('should properly render escaped content', () => {
+        const elm = createElement('x-escape', { is: Escape });
+        document.body.appendChild(elm);
+
+        // "`"
+        [
+            () => elm.shadowRoot.querySelector('.backtick-text').textContent,
+            () => elm.shadowRoot.querySelector('.backtick-comment').firstChild.textContent,
+            () => elm.shadowRoot.querySelector('.backtick-attr').getAttribute('data-message'),
+        ].forEach((selector) => {
+            expect(selector()).toBe('Escape `me`');
+        });
+
+        // "\`"
+        [
+            () => elm.shadowRoot.querySelector('.backtick-escape-text').textContent,
+            () => elm.shadowRoot.querySelector('.backtick-escape-comment').firstChild.textContent,
+            () =>
+                elm.shadowRoot.querySelector('.backtick-escape-attr').getAttribute('data-message'),
+        ].forEach((selector) => {
+            expect(selector()).toBe('Escape \\`me`');
+        });
+
+        // "${"
+        expect(elm.shadowRoot.querySelector('.dollar-attr').getAttribute('data-message')).toBe(
+            'Escape ${me}'
+        );
+
+        // "\${"
+        expect(
+            elm.shadowRoot.querySelector('.dollar-escape-attr').getAttribute('data-message')
+        ).toBe('Escape \\${me}');
     });
 });
