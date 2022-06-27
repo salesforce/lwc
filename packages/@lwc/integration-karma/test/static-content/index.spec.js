@@ -115,13 +115,33 @@ describe('template literal escaping', () => {
         const elm = createElement('x-escape', { is: Escape });
         document.body.appendChild(elm);
 
-        expect(elm.shadowRoot.querySelector('.backtick-text').textContent).toBe('Escape `me`');
-        expect(elm.shadowRoot.querySelector('.backtick-attr').getAttribute('data-message')).toBe(
-            'Escape `me`'
-        );
+        // "`"
+        [
+            () => elm.shadowRoot.querySelector('.backtick-text').textContent,
+            () => elm.shadowRoot.querySelector('.backtick-comment').firstChild.textContent,
+            () => elm.shadowRoot.querySelector('.backtick-attr').getAttribute('data-message'),
+        ].forEach((selector) => {
+            expect(selector()).toBe('Escape `me`');
+        });
 
+        // "\`"
+        [
+            () => elm.shadowRoot.querySelector('.backtick-escape-text').textContent,
+            () => elm.shadowRoot.querySelector('.backtick-escape-comment').firstChild.textContent,
+            () =>
+                elm.shadowRoot.querySelector('.backtick-escape-attr').getAttribute('data-message'),
+        ].forEach((selector) => {
+            expect(selector()).toBe('Escape \\`me`');
+        });
+
+        // "${"
         expect(elm.shadowRoot.querySelector('.dollar-attr').getAttribute('data-message')).toBe(
             'Escape ${me}'
         );
+
+        // "\${"
+        expect(
+            elm.shadowRoot.querySelector('.dollar-escape-attr').getAttribute('data-message')
+        ).toBe('Escape \\${me}');
     });
 });
