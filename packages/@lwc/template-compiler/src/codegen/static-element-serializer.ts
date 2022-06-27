@@ -97,9 +97,9 @@ function serializeChildren(
 }
 
 export function serializeStaticElement(element: Element, preserveComments: boolean): string {
-    const { name: tagName } = element;
+    const { name: tagName, namespace } = element;
 
-    const isForeignElement = element.namespace !== HTML_NAMESPACE;
+    const isForeignElement = namespace !== HTML_NAMESPACE;
     const hasChildren = element.children.length > 0;
 
     let html = `<${tagName}${serializeAttrs(element)}`;
@@ -112,7 +112,7 @@ export function serializeStaticElement(element: Element, preserveComments: boole
     html += '>';
     html += serializeChildren(element.children, tagName, preserveComments);
 
-    if ((!isForeignElement && !isVoidElement(tagName)) || hasChildren) {
+    if (!isVoidElement(tagName, namespace) || hasChildren) {
         html += `</${tagName}>`;
     }
 

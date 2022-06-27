@@ -68,7 +68,7 @@ export function serializeElement(element: HostElement): string {
 
     output += serializeChildNodes(element.children);
 
-    if ((!isForeignElement && !isVoidElement(name)) || hasChildren) {
+    if (!isVoidElement(name, namespace) || hasChildren) {
         output += `</${name}>`;
     }
 

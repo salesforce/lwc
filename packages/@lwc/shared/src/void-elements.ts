@@ -5,11 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { HTML_NAMESPACE } from './namespaces';
+
 // Void elements are elements that self-close even without an explicit solidus (slash),
 // e.g. `</tagName>` or `<tagName />`. For instance, `<meta>` closes on its own; no need for a slash.
 // These only come from HTML; there are no void elements in the SVG or MathML namespaces.
 // See: https://html.spec.whatwg.org/multipage/syntax.html#syntax-tags
-export const VOID_ELEMENTS = [
+const VOID_ELEMENTS_SET = new Set([
     'area',
     'base',
     'br',
@@ -23,10 +25,8 @@ export const VOID_ELEMENTS = [
     'source',
     'track',
     'wbr',
-];
+]);
 
-const VOID_ELEMENTS_SET = new Set(VOID_ELEMENTS);
-
-export function isVoidElement(name: string): boolean {
-    return VOID_ELEMENTS_SET.has(name.toLowerCase());
+export function isVoidElement(name: string, namespace: string): boolean {
+    return namespace === HTML_NAMESPACE && VOID_ELEMENTS_SET.has(name.toLowerCase());
 }

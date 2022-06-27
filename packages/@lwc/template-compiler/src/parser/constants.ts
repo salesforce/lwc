@@ -7,7 +7,7 @@
 import { AriaAttrNameToPropNameMap } from '@lwc/shared';
 
 import { HTML_ATTRIBUTE_ELEMENT_MAP } from './utils/html-element-attributes';
-import { HTML_ELEMENTS, HTML_VOID_ELEMENTS } from './utils/html-elements';
+import { HTML_ELEMENTS } from './utils/html-elements';
 import { SVG_ELEMENTS } from './utils/svg-elements';
 
 export const EXPRESSION_RE = /(\{(?:.)+?\})/g;
@@ -136,8 +136,6 @@ export const DISALLOWED_MATHML_TAGS = new Set([
     'meta',
 ]);
 
-export const VOID_ELEMENT_SET = new Set(HTML_VOID_ELEMENTS);
-
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     accesskey: 'accessKey',
     readonly: 'readOnly',
@@ -164,11 +162,7 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: {
     [attr: string]: string[];
 } = HTML_ATTRIBUTE_ELEMENT_MAP;
 
-export const KNOWN_HTML_AND_SVG_ELEMENTS = new Set([
-    ...HTML_ELEMENTS,
-    ...HTML_VOID_ELEMENTS,
-    ...SVG_ELEMENTS,
-]);
+export const KNOWN_HTML_AND_SVG_ELEMENTS = new Set([...HTML_ELEMENTS, ...SVG_ELEMENTS]);
 
 export const HTML_TAG = {
     A: 'a',
