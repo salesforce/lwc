@@ -96,7 +96,8 @@ function formatHTML(src: string): string {
 
             res += getPadding() + src.slice(start, pos) + '\n';
 
-            if (!isClosing && !isVoid && !isComment) {
+            const isSelfClosing = src.charAt(pos - 2) === '/';
+            if (!isClosing && !isSelfClosing && !isVoid && !isComment) {
                 depth++;
             }
         }
