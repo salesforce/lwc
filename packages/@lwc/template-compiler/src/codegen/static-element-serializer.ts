@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlEscape, isVoidElement } from '@lwc/shared';
+import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { ChildNode, Element, Literal } from '../shared/types';
 import { isElement, isText, isComment } from '../shared/ast';
 
@@ -97,13 +97,22 @@ function serializeChildren(
 }
 
 export function serializeStaticElement(element: Element, preserveComments: boolean): string {
-    const { name: tagName } = element;
+    const { name: tagName, namespace } = element;
 
-    let html = `<${tagName}${serializeAttrs(element)}>`;
+    const isForeignElement = namespace !== HTML_NAMESPACE;
+    const hasChildren = element.children.length > 0;
 
+    let html = `<${tagName}${serializeAttrs(element)}`;
+
+    if (isForeignElement && !hasChildren) {
+        html += '/>';
+        return html;
+    }
+
+    html += '>';
     html += serializeChildren(element.children, tagName, preserveComments);
 
-    if (!isVoidElement(tagName)) {
+    if (!isVoidElement(tagName, namespace) || hasChildren) {
         html += `</${tagName}>`;
     }
 
