@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { htmlEscape, isVoidElement } from '@lwc/shared';
-import { ChildNode, Element, Literal } from '../shared/types';
+import { ChildNode, Comment, Element, Literal, Text } from '../shared/types';
 import { isElement, isText, isComment } from '../shared/ast';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
@@ -21,6 +21,14 @@ const rawContentElements = new Set([
     'PLAINTEXT',
 ]);
 
+/**
+ * Escape all the characters that could break a JavaScript template string literal: "`" (backtick),
+ * "${" (dollar + open curly) and "\" (backslash).
+ */
+function templateStringEscape(str: string): string {
+    return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+}
+
 function serializeAttrs(element: Element): string {
     /**
      * 0: styleToken in existing class attr
@@ -31,7 +39,7 @@ function serializeAttrs(element: Element): string {
     let hasClassAttr = false;
 
     const collector = ({ name, value }: { name: string; value: string | boolean }) => {
-        let v = value;
+        let v = typeof value === 'string' ? templateStringEscape(value) : value;
 
         if (name === 'class') {
             hasClassAttr = true;
@@ -79,13 +87,9 @@ function serializeChildren(
         if (isElement(child)) {
             html += serializeStaticElement(child, preserveComments);
         } else if (isText(child)) {
-            if (rawContentElements.has(parentTagName.toUpperCase())) {
-                html += child.raw;
-            } else {
-                html += htmlEscape((child.value as Literal<string>).value);
-            }
+            html += serializeTextNode(child, rawContentElements.has(parentTagName.toUpperCase()));
         } else if (isComment(child)) {
-            html += preserveComments ? `<!--${htmlEscape(child.value)}-->` : '';
+            html += serializeCommentNode(child, preserveComments);
         } else {
             throw new TypeError(
                 'Unknown node found while serializing static content. Allowed nodes types are: Element, Text and Comment.'
@@ -94,6 +98,21 @@ function serializeChildren(
     });
 
     return html;
+}
+
+function serializeCommentNode(comment: Comment, preserveComment: boolean): string {
+    return preserveComment ? `<!--${htmlEscape(templateStringEscape(comment.value))}-->` : '';
+}
+
+function serializeTextNode(text: Text, useRawContent: boolean): string {
+    let content;
+    if (useRawContent) {
+        content = text.raw;
+    } else {
+        content = htmlEscape((text.value as Literal<string>).value);
+    }
+
+    return templateStringEscape(content);
 }
 
 export function serializeStaticElement(element: Element, preserveComments: boolean): string {
