@@ -143,7 +143,7 @@ export interface AbstractBaseElement extends BaseParentNode {
     attributes: Attribute[];
     listeners: EventListener[];
     directives: ElementDirective[];
-    namespace?: string;
+    namespace: string;
 }
 
 export interface Element extends AbstractBaseElement {

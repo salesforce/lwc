@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlEscape, isVoidElement } from '@lwc/shared';
+import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { ChildNode, Comment, Element, Literal, Text } from '../shared/types';
 import { isElement, isText, isComment } from '../shared/ast';
 
@@ -116,14 +116,22 @@ function serializeTextNode(text: Text, useRawContent: boolean): string {
 }
 
 export function serializeStaticElement(element: Element, preserveComments: boolean): string {
-    const tagName = element.name;
+    const { name: tagName, namespace } = element;
 
-    let html = '<' + tagName + serializeAttrs(element) + '>';
+    const isForeignElement = namespace !== HTML_NAMESPACE;
+    const hasChildren = element.children.length > 0;
 
+    let html = `<${tagName}${serializeAttrs(element)}`;
+
+    if (isForeignElement && !hasChildren) {
+        html += '/>';
+        return html;
+    }
+
+    html += '>';
     html += serializeChildren(element.children, tagName, preserveComments);
 
-    // element.children.length > 0 can happen in the SVG namespace.
-    if (!isVoidElement(tagName) || element.children.length > 0) {
+    if (!isVoidElement(tagName, namespace) || hasChildren) {
         html += `</${tagName}>`;
     }
 

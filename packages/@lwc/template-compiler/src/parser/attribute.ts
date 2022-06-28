@@ -34,7 +34,7 @@ import {
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     HTML_TAG,
     ID_REFERENCING_ATTRIBUTES_SET,
-    KNOWN_HTML_ELEMENTS,
+    KNOWN_HTML_AND_SVG_ELEMENTS,
     TEMPLATE_DIRECTIVES,
 } from './constants';
 
@@ -221,7 +221,7 @@ export function isValidHTMLAttribute(tagName: string, attrName: string): boolean
         isTemplateDirective(attrName) ||
         SUPPORTED_SVG_TAGS.has(tagName) ||
         DASHED_TAGNAME_ELEMENT_SET.has(tagName) ||
-        !KNOWN_HTML_ELEMENTS.has(tagName)
+        !KNOWN_HTML_AND_SVG_ELEMENTS.has(tagName)
     ) {
         return true;
     }

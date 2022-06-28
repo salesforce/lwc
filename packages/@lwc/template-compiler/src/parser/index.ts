@@ -6,7 +6,7 @@
  */
 import * as parse5 from 'parse5';
 
-import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE } from '@lwc/shared';
+import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel } from '@lwc/errors';
 
 import * as t from '../shared/estree';
@@ -57,14 +57,13 @@ import {
     EXPRESSION_RE,
     IF_RE,
     ITERATOR_RE,
-    KNOWN_HTML_ELEMENTS,
+    KNOWN_HTML_AND_SVG_ELEMENTS,
     LWC_DIRECTIVES,
     LWC_DIRECTIVE_SET,
     LWC_RE,
     ROOT_TEMPLATE_DIRECTIVES,
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
-    VOID_ELEMENT_SET,
 } from './constants';
 
 type TemplateElement = parse5.Element & { tagName: 'template' };
@@ -959,8 +958,12 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
     // Note: Parse5 currently fails to collect end tag location for element with a tag name
     // containing an upper case character (inikulin/parse5#352).
     const hasClosingTag = Boolean(element.location.endTag);
-    const isVoidElement = VOID_ELEMENT_SET.has(tag);
-    if (!isVoidElement && !hasClosingTag && tag === tag.toLocaleLowerCase()) {
+    if (
+        !isVoidElement(tag, namespace) &&
+        !hasClosingTag &&
+        tag === tag.toLocaleLowerCase() &&
+        namespace === HTML_NAMESPACE
+    ) {
         ctx.throwOnNode(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, element, [tag]);
     }
 
@@ -986,7 +989,7 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
 
         const isKnownTag =
             ast.isComponent(element) ||
-            KNOWN_HTML_ELEMENTS.has(tag) ||
+            KNOWN_HTML_AND_SVG_ELEMENTS.has(tag) ||
             SUPPORTED_SVG_TAGS.has(tag) ||
             DASHED_TAGNAME_ELEMENT_SET.has(tag);
 

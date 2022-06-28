@@ -4,6 +4,9 @@ import Escape from 'x/escape';
 import MultipleStyles from 'x/multipleStyles';
 import SvgNs from 'x/svgNs';
 import Table from 'x/table';
+import SvgPath from 'x/svgPath';
+import SvgPathInDiv from 'x/svgPathInDiv';
+import SvgPathInG from 'x/svgPathInG';
 
 // In compat mode, the component will always render in synthetic mode with the scope attribute
 if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
@@ -90,6 +93,78 @@ describe('svg and static content', () => {
 
         allStaticNodes.forEach((node) => {
             expect(node.namespaceURI).toBe('http://www.w3.org/2000/svg');
+        });
+    });
+
+    function getDomStructure(elm) {
+        const tagName = elm.tagName.toLowerCase();
+        const result = { tagName };
+        for (let i = 0; i < elm.children.length; i++) {
+            const child = elm.children[i];
+            result.children = result.children || [];
+            result.children.push(getDomStructure(child));
+        }
+        return result;
+    }
+
+    it('should correctly parse <path>', () => {
+        const elm = createElement('x-svg-path', { is: SvgPath });
+        document.body.appendChild(elm);
+
+        expect(getDomStructure(elm.shadowRoot.firstChild)).toEqual({
+            tagName: 'svg',
+            children: [
+                {
+                    tagName: 'path',
+                },
+                {
+                    tagName: 'path',
+                },
+            ],
+        });
+    });
+
+    it('should correctly parse <path> in div', () => {
+        const elm = createElement('x-svg-path-in-div', { is: SvgPathInDiv });
+        document.body.appendChild(elm);
+
+        expect(getDomStructure(elm.shadowRoot.firstChild)).toEqual({
+            tagName: 'div',
+            children: [
+                {
+                    tagName: 'svg',
+                    children: [
+                        {
+                            tagName: 'path',
+                        },
+                        {
+                            tagName: 'path',
+                        },
+                    ],
+                },
+            ],
+        });
+    });
+
+    it('should correctly parse <path> in <g>', () => {
+        const elm = createElement('x-svg-path-in-g', { is: SvgPathInG });
+        document.body.appendChild(elm);
+
+        expect(getDomStructure(elm.shadowRoot.firstChild)).toEqual({
+            tagName: 'svg',
+            children: [
+                {
+                    tagName: 'g',
+                    children: [
+                        {
+                            tagName: 'path',
+                        },
+                        {
+                            tagName: 'path',
+                        },
+                    ],
+                },
+            ],
         });
     });
 });
