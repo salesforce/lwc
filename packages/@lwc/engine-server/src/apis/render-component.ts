@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { createVM, connectRootElement, LightningElement } from '@lwc/engine-core';
-import { isString, isFunction, isObject, isNull } from '@lwc/shared';
+import { isString, isFunction, isObject, isNull, HTML_NAMESPACE } from '@lwc/shared';
 
 import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
@@ -14,6 +14,7 @@ import { HostElement, HostNodeType } from '../types';
 const FakeRootElement: HostElement = {
     type: HostNodeType.Element,
     name: 'fake-root-element',
+    namespace: HTML_NAMESPACE,
     parent: null,
     shadowRoot: null,
     children: [],

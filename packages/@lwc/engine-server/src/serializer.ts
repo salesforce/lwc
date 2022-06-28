@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { htmlEscape, isVoidElement } from '@lwc/shared';
+import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 
 import { HostElement, HostShadowRoot, HostAttribute, HostChildNode, HostNodeType } from './types';
 
@@ -46,20 +46,30 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
 
 export function serializeElement(element: HostElement): string {
     let output = '';
-    const { name } = element;
+
+    const { name, namespace } = element;
+    const isForeignElement = namespace !== HTML_NAMESPACE;
+    const hasChildren = element.children.length > 0;
 
     const attrs = element.attributes.length ? ` ${serializeAttributes(element.attributes)}` : '';
-    const children = serializeChildNodes(element.children);
 
-    output += `<${name}${attrs}>`;
+    output += `<${name}${attrs}`;
+
+    // Note that foreign elements can have children but not shadow roots
+    if (isForeignElement && !hasChildren) {
+        output += '/>';
+        return output;
+    }
+
+    output += '>';
 
     if (element.shadowRoot) {
         output += serializeShadowRoot(element.shadowRoot);
     }
 
-    output += children;
+    output += serializeChildNodes(element.children);
 
-    if (!isVoidElement(name)) {
+    if (!isVoidElement(name, namespace) || hasChildren) {
         output += `</${name}>`;
     }
 

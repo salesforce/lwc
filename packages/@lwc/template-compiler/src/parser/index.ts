@@ -6,7 +6,7 @@
  */
 import * as parse5 from 'parse5';
 
-import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE } from '@lwc/shared';
+import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel } from '@lwc/errors';
 
 import * as t from '../shared/estree';
@@ -64,7 +64,6 @@ import {
     ROOT_TEMPLATE_DIRECTIVES,
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
-    VOID_ELEMENT_SET,
 } from './constants';
 
 type TemplateElement = parse5.Element & { tagName: 'template' };
@@ -959,9 +958,8 @@ function validateElement(ctx: ParserCtx, element: BaseElement, parse5Elm: parse5
     // Note: Parse5 currently fails to collect end tag location for element with a tag name
     // containing an upper case character (inikulin/parse5#352).
     const hasClosingTag = Boolean(element.location.endTag);
-    const isVoidElement = VOID_ELEMENT_SET.has(tag);
     if (
-        !isVoidElement &&
+        !isVoidElement(tag, namespace) &&
         !hasClosingTag &&
         tag === tag.toLocaleLowerCase() &&
         namespace === HTML_NAMESPACE
