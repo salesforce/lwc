@@ -55,6 +55,7 @@ export function serializeElement(element: HostElement): string {
 
     output += `<${name}${attrs}`;
 
+    // Note that foreign elements can have children but not shadow roots
     if (isForeignElement && !hasChildren) {
         output += '/>';
         return output;
