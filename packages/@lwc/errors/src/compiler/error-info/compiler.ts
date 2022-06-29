@@ -215,3 +215,9 @@ export const TransformerErrors = {
         url: '',
     },
 };
+
+export const COMPILER_PLUGIN_ERROR = {
+    code: 1153,
+    message: `An error occurred with plugin "{0}" at hook "{1}": {2}`,
+    level: DiagnosticLevel.Error,
+};
