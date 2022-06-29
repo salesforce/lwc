@@ -42,6 +42,7 @@ export interface HostShadowRoot {
     children: HostChildNode[];
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
+    parent: HostElement;
 }
 
 export interface HostElement {

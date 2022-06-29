@@ -139,6 +139,7 @@ function attachShadow(element: E, config: ShadowRootInit) {
         children: [],
         mode: config.mode,
         delegatesFocus: !!config.delegatesFocus,
+        parent: element,
     };
 
     return element.shadowRoot as any;
@@ -414,16 +415,23 @@ function dispatchEvent(target: HostNode, event: Event): boolean {
     });
 
     do {
-        const callbacks: Set<EventListener> | undefined = currentNode.eventListeners[event.type];
-        if (callbacks) {
-            for (const callback of callbacks) {
-                if (!stopImmediately) {
-                    callback(eventProxy);
+        if (currentNode.type === HostNodeType.Element) {
+            const callbacks: Set<EventListener> | undefined =
+                currentNode.eventListeners[event.type];
+            if (callbacks) {
+                for (const callback of callbacks) {
+                    if (!stopImmediately) {
+                        callback(eventProxy);
+                    }
                 }
             }
         }
         currentNode = currentNode.parent;
-    } while (!stop && currentNode && currentNode.type !== HostNodeType.ShadowRoot);
+    } while (
+        !stop &&
+        currentNode &&
+        (currentNode.type !== HostNodeType.ShadowRoot || event.composed === true)
+    );
 
     // `preventDefault` is not supported, so the return value will never be false.
     return true;
