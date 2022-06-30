@@ -7,7 +7,14 @@
 
 import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 
-import { HostElement, HostShadowRoot, HostAttribute, HostChildNode, HostNodeType } from './types';
+import {
+    HostElement,
+    HostShadowRoot,
+    HostAttribute,
+    HostChildNode,
+    HostNodeType,
+    HostTypeAttr,
+} from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
     return attributes
@@ -20,7 +27,7 @@ function serializeAttributes(attributes: HostAttribute[]): string {
 function serializeChildNodes(children: HostChildNode[]): string {
     return children
         .map((child): string => {
-            switch (child.type) {
+            switch (child[HostTypeAttr]) {
                 case HostNodeType.Text:
                     return child.value === '' ? '\u200D' : htmlEscape(child.value);
                 case HostNodeType.Comment:

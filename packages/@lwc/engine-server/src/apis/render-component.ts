@@ -9,10 +9,10 @@ import { isString, isFunction, isObject, isNull, HTML_NAMESPACE } from '@lwc/sha
 
 import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
-import { HostElement, HostNodeType } from '../types';
+import { HostElement, HostNodeType, HostTypeAttr } from '../types';
 
 const FakeRootElement: HostElement = {
-    type: HostNodeType.Element,
+    [HostTypeAttr]: HostNodeType.Element,
     tagName: 'fake-root-element',
     namespace: HTML_NAMESPACE,
     parent: null,

@@ -17,7 +17,14 @@ import {
     HTML_NAMESPACE,
 } from '@lwc/shared';
 
-import { HostNode, HostElement, HostAttribute, HostNodeType, HostChildNode } from './types';
+import {
+    HostNode,
+    HostElement,
+    HostAttribute,
+    HostNodeType,
+    HostChildNode,
+    HostTypeAttr,
+} from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
 function unsupportedMethod(name: string): () => never {
@@ -28,7 +35,7 @@ function unsupportedMethod(name: string): () => never {
 
 function createElement(name: string, namespace?: string): HostElement {
     return {
-        type: HostNodeType.Element,
+        [HostTypeAttr]: HostNodeType.Element,
         tagName: name,
         namespace: namespace ?? HTML_NAMESPACE,
         parent: null,
@@ -100,7 +107,7 @@ function cloneNode(node: N): N {
 
 function createFragment(html: string): HostChildNode {
     return {
-        type: HostNodeType.Raw,
+        [HostTypeAttr]: HostNodeType.Raw,
         parent: null,
         value: html,
     };
@@ -108,7 +115,7 @@ function createFragment(html: string): HostChildNode {
 
 function createText(content: string): HostNode {
     return {
-        type: HostNodeType.Text,
+        [HostTypeAttr]: HostNodeType.Text,
         value: String(content),
         parent: null,
     };
@@ -116,7 +123,7 @@ function createText(content: string): HostNode {
 
 function createComment(content: string): HostNode {
     return {
-        type: HostNodeType.Comment,
+        [HostTypeAttr]: HostNodeType.Comment,
         value: content,
         parent: null,
     };
@@ -135,7 +142,7 @@ function nextSibling(node: N) {
 
 function attachShadow(element: E, config: ShadowRootInit) {
     element.shadowRoot = {
-        type: HostNodeType.ShadowRoot,
+        [HostTypeAttr]: HostNodeType.ShadowRoot,
         children: [],
         mode: config.mode,
         delegatesFocus: !!config.delegatesFocus,
@@ -149,7 +156,7 @@ function getProperty(node: N, key: string) {
         return (node as any)[key];
     }
 
-    if (node.type === HostNodeType.Element) {
+    if (node[HostTypeAttr] === HostNodeType.Element) {
         const attrName = htmlPropertyToAttribute(key);
 
         // Handle all the boolean properties.
@@ -180,13 +187,13 @@ function setProperty(node: N, key: string, value: any): void {
         return ((node as any)[key] = value);
     }
 
-    if (node.type === HostNodeType.Element) {
+    if (node[HostTypeAttr] === HostNodeType.Element) {
         const attrName = htmlPropertyToAttribute(key);
 
         if (key === 'innerHTML') {
             node.children = [
                 {
-                    type: HostNodeType.Raw,
+                    [HostTypeAttr]: HostNodeType.Raw,
                     parent: node,
                     value,
                 },
@@ -222,12 +229,12 @@ function setProperty(node: N, key: string, value: any): void {
 }
 
 function setText(node: N, content: string) {
-    if (node.type === HostNodeType.Text) {
+    if (node[HostTypeAttr] === HostNodeType.Text) {
         node.value = content;
-    } else if (node.type === HostNodeType.Element) {
+    } else if (node[HostTypeAttr] === HostNodeType.Element) {
         node.children = [
             {
-                type: HostNodeType.Text,
+                [HostTypeAttr]: HostNodeType.Text,
                 parent: node,
                 value: content,
             },

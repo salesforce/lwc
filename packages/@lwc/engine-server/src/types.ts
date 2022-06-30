@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+export const HostTypeAttr = Symbol();
 
 export enum HostNodeType {
     Text = 'text',
@@ -14,19 +15,19 @@ export enum HostNodeType {
 }
 
 export interface HostText {
-    type: HostNodeType.Text;
+    [HostTypeAttr]: HostNodeType.Text;
     parent: HostElement | null;
     value: string;
 }
 
 export interface HostComment {
-    type: HostNodeType.Comment;
+    [HostTypeAttr]: HostNodeType.Comment;
     parent: HostElement | null;
     value: string;
 }
 
 export interface HostRaw {
-    type: HostNodeType.Raw;
+    [HostTypeAttr]: HostNodeType.Raw;
     parent: HostElement | null;
     value: string;
 }
@@ -38,14 +39,14 @@ export interface HostAttribute {
 }
 
 export interface HostShadowRoot {
-    type: HostNodeType.ShadowRoot;
+    [HostTypeAttr]: HostNodeType.ShadowRoot;
     children: HostChildNode[];
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
 }
 
 export interface HostElement {
-    type: HostNodeType.Element;
+    [HostTypeAttr]: HostNodeType.Element;
     tagName: string;
     namespace: string;
     parent: HostElement | null;
