@@ -13,7 +13,7 @@ import { HostElement, HostNodeType } from '../types';
 
 const FakeRootElement: HostElement = {
     type: HostNodeType.Element,
-    name: 'fake-root-element',
+    tagName: 'fake-root-element',
     namespace: HTML_NAMESPACE,
     parent: null,
     shadowRoot: null,

@@ -29,7 +29,7 @@ function unsupportedMethod(name: string): () => never {
 function createElement(name: string, namespace?: string): HostElement {
     return {
         type: HostNodeType.Element,
-        name,
+        tagName: name,
         namespace: namespace ?? HTML_NAMESPACE,
         parent: null,
         shadowRoot: null,
@@ -153,7 +153,7 @@ function getProperty(node: N, key: string) {
         const attrName = htmlPropertyToAttribute(key);
 
         // Handle all the boolean properties.
-        if (isBooleanAttribute(attrName, node.name)) {
+        if (isBooleanAttribute(attrName, node.tagName)) {
             return getAttribute(node, attrName) ?? false;
         }
 
@@ -164,7 +164,7 @@ function getProperty(node: N, key: string) {
 
         // Handle special elements live bindings. The checked property is already handled above
         // in the boolean case.
-        if (node.name === 'input' && key === 'value') {
+        if (node.tagName === 'input' && key === 'value') {
             return getAttribute(node, 'value') ?? '';
         }
     }
@@ -195,7 +195,7 @@ function setProperty(node: N, key: string, value: any): void {
         }
 
         // Handle all the boolean properties.
-        if (isBooleanAttribute(attrName, node.name)) {
+        if (isBooleanAttribute(attrName, node.tagName)) {
             return value === true
                 ? setAttribute(node, attrName, '')
                 : removeAttribute(node, attrName);
@@ -208,7 +208,7 @@ function setProperty(node: N, key: string, value: any): void {
 
         // Handle special elements live bindings. The checked property is already handled above
         // in the boolean case.
-        if (node.name === 'input' && attrName === 'value') {
+        if (node.tagName === 'input' && attrName === 'value') {
             return isNull(value) || isUndefined(value)
                 ? removeAttribute(node, 'value')
                 : setAttribute(node, 'value', value);

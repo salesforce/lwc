@@ -47,7 +47,7 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
 export function serializeElement(element: HostElement): string {
     let output = '';
 
-    const { name, namespace } = element;
+    const { tagName: name, namespace } = element;
     const isForeignElement = namespace !== HTML_NAMESPACE;
     const hasChildren = element.children.length > 0;
 

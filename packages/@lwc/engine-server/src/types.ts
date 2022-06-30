@@ -46,7 +46,7 @@ export interface HostShadowRoot {
 
 export interface HostElement {
     type: HostNodeType.Element;
-    name: string;
+    tagName: string;
     namespace: string;
     parent: HostElement | null;
     shadowRoot: HostShadowRoot | null;
