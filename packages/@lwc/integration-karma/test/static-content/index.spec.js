@@ -1,8 +1,12 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from 'x/container';
+import Escape from 'x/escape';
 import MultipleStyles from 'x/multipleStyles';
 import SvgNs from 'x/svgNs';
 import Table from 'x/table';
+import SvgPath from 'x/svgPath';
+import SvgPathInDiv from 'x/svgPathInDiv';
+import SvgPathInG from 'x/svgPathInG';
 
 // In compat mode, the component will always render in synthetic mode with the scope attribute
 if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
@@ -91,6 +95,78 @@ describe('svg and static content', () => {
             expect(node.namespaceURI).toBe('http://www.w3.org/2000/svg');
         });
     });
+
+    function getDomStructure(elm) {
+        const tagName = elm.tagName.toLowerCase();
+        const result = { tagName };
+        for (let i = 0; i < elm.children.length; i++) {
+            const child = elm.children[i];
+            result.children = result.children || [];
+            result.children.push(getDomStructure(child));
+        }
+        return result;
+    }
+
+    it('should correctly parse <path>', () => {
+        const elm = createElement('x-svg-path', { is: SvgPath });
+        document.body.appendChild(elm);
+
+        expect(getDomStructure(elm.shadowRoot.firstChild)).toEqual({
+            tagName: 'svg',
+            children: [
+                {
+                    tagName: 'path',
+                },
+                {
+                    tagName: 'path',
+                },
+            ],
+        });
+    });
+
+    it('should correctly parse <path> in div', () => {
+        const elm = createElement('x-svg-path-in-div', { is: SvgPathInDiv });
+        document.body.appendChild(elm);
+
+        expect(getDomStructure(elm.shadowRoot.firstChild)).toEqual({
+            tagName: 'div',
+            children: [
+                {
+                    tagName: 'svg',
+                    children: [
+                        {
+                            tagName: 'path',
+                        },
+                        {
+                            tagName: 'path',
+                        },
+                    ],
+                },
+            ],
+        });
+    });
+
+    it('should correctly parse <path> in <g>', () => {
+        const elm = createElement('x-svg-path-in-g', { is: SvgPathInG });
+        document.body.appendChild(elm);
+
+        expect(getDomStructure(elm.shadowRoot.firstChild)).toEqual({
+            tagName: 'svg',
+            children: [
+                {
+                    tagName: 'g',
+                    children: [
+                        {
+                            tagName: 'path',
+                        },
+                        {
+                            tagName: 'path',
+                        },
+                    ],
+                },
+            ],
+        });
+    });
 });
 
 describe('tables and static content', () => {
@@ -106,5 +182,41 @@ describe('tables and static content', () => {
             expect(elm.shadowRoot.querySelectorAll('td').length).toEqual(1);
             expect(elm.shadowRoot.querySelector('td').textContent).toEqual('');
         });
+    });
+});
+
+describe('template literal escaping', () => {
+    it('should properly render escaped content', () => {
+        const elm = createElement('x-escape', { is: Escape });
+        document.body.appendChild(elm);
+
+        // "`"
+        [
+            () => elm.shadowRoot.querySelector('.backtick-text').textContent,
+            () => elm.shadowRoot.querySelector('.backtick-comment').firstChild.textContent,
+            () => elm.shadowRoot.querySelector('.backtick-attr').getAttribute('data-message'),
+        ].forEach((selector) => {
+            expect(selector()).toBe('Escape `me`');
+        });
+
+        // "\`"
+        [
+            () => elm.shadowRoot.querySelector('.backtick-escape-text').textContent,
+            () => elm.shadowRoot.querySelector('.backtick-escape-comment').firstChild.textContent,
+            () =>
+                elm.shadowRoot.querySelector('.backtick-escape-attr').getAttribute('data-message'),
+        ].forEach((selector) => {
+            expect(selector()).toBe('Escape \\`me`');
+        });
+
+        // "${"
+        expect(elm.shadowRoot.querySelector('.dollar-attr').getAttribute('data-message')).toBe(
+            'Escape ${me}'
+        );
+
+        // "\${"
+        expect(
+            elm.shadowRoot.querySelector('.dollar-escape-attr').getAttribute('data-message')
+        ).toBe('Escape \\${me}');
     });
 });

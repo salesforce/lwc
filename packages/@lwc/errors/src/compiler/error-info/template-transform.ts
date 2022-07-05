@@ -589,10 +589,11 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
-    UNKNOWN_TEMPLATE_ATTRIBUTE: {
+    INVALID_TEMPLATE_ATTRIBUTE: {
         code: 1145,
         message:
-            'Non root templates only support for:each, iterator and if directives. All other attributes will be ignored.',
+            'Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: {0}. For more information, ' +
+            'please visit https://lwc.dev/guide/reference#html-template-directives',
         level: DiagnosticLevel.Warning,
         url: '',
     },

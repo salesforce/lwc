@@ -13,6 +13,7 @@ import {
     htmlPropertyToAttribute,
     noop,
     isFunction,
+    HTML_NAMESPACE,
 } from '@lwc/shared';
 
 import { HostNode, HostElement, HostAttribute, HostNodeType, HostChildNode } from './types';
@@ -24,10 +25,11 @@ function unsupportedMethod(name: string): () => never {
     };
 }
 
-function createElement(name: string): HostElement {
+function createElement(name: string, namespace?: string): HostElement {
     return {
         type: HostNodeType.Element,
         name,
+        namespace: namespace ?? HTML_NAMESPACE,
         parent: null,
         shadowRoot: null,
         children: [],

@@ -12,7 +12,6 @@ branches:
         - communities/shared-experience-components
         - communities/ui-b2b-components
         - communities/ui-lightning-community
-        - lwc/lwc-platform
         - salesforce/lwr
         - salesforce/utam-docs
         - uiplatform/nucleus

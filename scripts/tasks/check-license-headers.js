@@ -109,6 +109,7 @@ const CUSTOM_IGNORED_PATTERNS = [
     '/@lwc/integration-tests/src/(.(?!.*.spec.js$))*$',
     '/@lwc/integration-karma/test/.*$',
     '/@lwc/integration-karma/test-hydration/.*$',
+    '/@lwc/engine-server/src/__tests__/modules/.*$',
 ].map(createRegExp);
 
 const IGNORED_PATTERNS = [
@@ -144,7 +145,7 @@ function check() {
     if (invalidFiles.length > 0) {
         console.log(`Salesforce copyright header check failed for the following files:
   ${invalidFiles.join('\n  ')}
-Please include the header or add an exception for the file in \`scripts/checkCopyrightHeaders.js\``);
+Please include the header or add an exception for the file in \`scripts/check-license-headers.js\``);
         process.exit(1);
     }
 }
