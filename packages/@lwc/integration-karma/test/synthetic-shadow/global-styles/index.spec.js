@@ -1,6 +1,8 @@
 import { createElement } from 'lwc';
 import Component from 'x/component';
 
+// TODO [#2922]: remove this test when we can support document.adoptedStyleSheets.
+// Currently we can't, due to backwards compat.
 if (!process.env.NATIVE_SHADOW) {
     describe('global styles', () => {
         it('injects global styles in document.head in synthetic shadow', () => {
