@@ -428,7 +428,7 @@ function dispatchEvent(target: HostNode, event: Event): boolean {
             if (callbacks) {
                 for (const callback of callbacks) {
                     if (!stopImmediately) {
-                        callback(eventProxy);
+                        callback.call(target, eventProxy);
                     }
                 }
             }
