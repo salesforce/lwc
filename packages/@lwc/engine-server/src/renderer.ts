@@ -17,7 +17,14 @@ import {
     HTML_NAMESPACE,
 } from '@lwc/shared';
 
-import { HostNode, HostElement, HostAttribute, HostNodeType, HostChildNode, HostShadowRoot } from './types';
+import {
+    HostNode,
+    HostElement,
+    HostAttribute,
+    HostNodeType,
+    HostChildNode,
+    HostShadowRoot,
+} from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
 function unsupportedMethod(name: string): () => never {
@@ -430,6 +437,8 @@ function dispatchEvent(target: HostNode, event: Event): boolean {
     } while (
         !stop &&
         currentNode &&
+        // Events do not propagate through shadow boundaries unless composed
+        // is set to true.
         (currentNode.type !== HostNodeType.ShadowRoot || event.composed === true)
     );
 
