@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "name": "lwc-playground",
+  "version": "2.20.0",
+  "description": "Playground project to experiment with LWC.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/salesforce/lwc.git",
+    "directory": "playground"
+  },
+  "scripts": {
+    "dev": "rollup -c --watch",
+    "build": "rollup -c"
+  },
+  "devDependencies": {
+    "@lwc/rollup-plugin": "^2.20.3",
+    "@rollup/plugin-replace": "^4.0.0",
+    "lwc": "^2.20.3",
+    "rollup": "^2.75.7",
+    "rollup-plugin-serve": "^2.0.0"
+  }
+}

@@ -156,6 +156,15 @@
             "rules": {
                 "no-console": "off"
             }
+        },
+        {
+            "files": [
+                "playground/**/*"
+            ],
+
+            "env": {
+                "browser": true
+            }
         }
     ]
 }
