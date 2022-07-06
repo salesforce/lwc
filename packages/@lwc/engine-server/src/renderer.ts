@@ -400,7 +400,7 @@ function dispatchEvent(target: HostNode, event: Event): boolean {
     }
 
     let currentNode: HostElement | HostShadowRoot | null = target;
-    let stop = false;
+    let stop = !event.bubbles;
     let stopImmediately = false;
 
     const stopPropagation = () => {
