@@ -41,7 +41,7 @@ interface CacheData {
     // Same as above, but for the global document to avoid an extra WeakMap lookup for this common case.
     global: boolean;
     // Keep track of whether the <style> element has been used already, so we know if we need to clone it.
-    // Note that this has no impact on browsers that support constructable stylesheets.
+    // Note that this has no impact on constructable stylesheets, only <style> elements.
     used: boolean;
 }
 
@@ -64,10 +64,6 @@ if (process.env.NODE_ENV === 'development') {
     window.__lwcResetGlobalStylesheets = () => {
         stylesheetCache.clear();
     };
-}
-
-function isDocument(target: ShadowRoot | Document): target is Document {
-    return !isUndefined((target as Document).head);
 }
 
 function createFreshStyleElement(content: string) {
@@ -121,15 +117,14 @@ function insertConstructableStylesheet(
 
 function insertStyleElement(
     content: string,
-    target: ShadowRoot | Document,
+    target: ShadowRoot | HTMLHeadElement,
     cacheData: StyleElementCacheData
 ) {
     const elm = createStyleElement(content, cacheData);
-    const targetAnchorPoint = isDocument(target) ? target.head : target;
-    targetAnchorPoint.appendChild(elm);
+    target.appendChild(elm);
 }
 
-function doInsertStylesheet(content: string, target: ShadowRoot | Document, cacheData: CacheData) {
+function doInsertStylesheet(content: string, target: ShadowRoot, cacheData: CacheData) {
     // Constructable stylesheets are only supported in certain browsers:
     // https://caniuse.com/mdn-api_document_adoptedstylesheets
     // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2460
@@ -145,13 +140,14 @@ function doInsertStylesheet(content: string, target: ShadowRoot | Document, cach
     }
 }
 
-function getCacheData(content: string) {
+function getCacheData(content: string, forceStyleElement: boolean) {
     let cacheData = stylesheetCache.get(content);
     if (isUndefined(cacheData)) {
         cacheData = {
-            stylesheet: supportsConstructableStylesheets
-                ? createConstructableStylesheet(content)
-                : createFreshStyleElement(content),
+            stylesheet:
+                supportsConstructableStylesheets && !forceStyleElement
+                    ? createConstructableStylesheet(content)
+                    : createFreshStyleElement(content),
             roots: undefined,
             global: false,
             used: false,
@@ -162,17 +158,20 @@ function getCacheData(content: string) {
 }
 
 function insertGlobalStylesheet(content: string) {
-    const cacheData = getCacheData(content);
+    // Force a <style> element for global stylesheets. See comment below.
+    const cacheData = getCacheData(content, true);
     if (cacheData.global) {
         // already inserted
         return;
     }
     cacheData.global = true; // mark inserted
-    doInsertStylesheet(content, document, cacheData);
+
+    // TODO [#2922]: use document.adoptedStyleSheets in supported browsers. Currently we can't, due to backwards compat.
+    insertStyleElement(content, document.head, cacheData as StyleElementCacheData);
 }
 
 function insertLocalStylesheet(content: string, target: ShadowRoot) {
-    const cacheData = getCacheData(content);
+    const cacheData = getCacheData(content, false);
     let { roots } = cacheData;
     if (isUndefined(roots)) {
         roots = cacheData.roots = new WeakSet(); // lazily initialize (not needed for global styles)
