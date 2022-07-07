@@ -141,8 +141,7 @@ function getCacheData(content: string, useConstructableStylesheet: boolean): Cac
     // Create <style> elements or CSSStyleSheets on-demand, as needed
     if (useConstructableStylesheet && isUndefined(cacheData.stylesheet)) {
         cacheData.stylesheet = createConstructableStylesheet(content);
-    }
-    if (!useConstructableStylesheet && isUndefined(cacheData.element)) {
+    } else if (!useConstructableStylesheet && isUndefined(cacheData.element)) {
         cacheData.element = createFreshStyleElement(content);
     }
     return cacheData;
@@ -150,7 +149,7 @@ function getCacheData(content: string, useConstructableStylesheet: boolean): Cac
 
 function insertGlobalStylesheet(content: string) {
     // Force a <style> element for global stylesheets. See comment below.
-    const cacheData = getCacheData(content, true);
+    const cacheData = getCacheData(content, false);
     if (cacheData.global) {
         // already inserted
         return;
