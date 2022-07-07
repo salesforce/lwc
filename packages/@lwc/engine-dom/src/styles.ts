@@ -31,10 +31,11 @@ const isIE11 = !isUndefined((document as any).documentMode);
 //
 
 interface CacheData {
-    // Global cache of style elements is used for fast cloning.
     // Global cache of CSSStyleSheets is used because these need to be unique based on content, so the browser
     // can optimize repeated usages across multiple shadow roots.
-    stylesheet: CSSStyleSheet | HTMLStyleElement;
+    element: HTMLStyleElement | undefined;
+    // Global cache of style elements is used for fast cloning.
+    stylesheet: CSSStyleSheet | undefined;
     // Bookkeeping of shadow roots that have already had this CSS injected into them, so we don't duplicate stylesheets.
     // Note this will never be used by IE11 (because it only uses global styles), so WeakSet support is not important.
     roots: WeakSet<ShadowRoot> | undefined;
@@ -42,15 +43,7 @@ interface CacheData {
     global: boolean;
     // Keep track of whether the <style> element has been used already, so we know if we need to clone it.
     // Note that this has no impact on constructable stylesheets, only <style> elements.
-    used: boolean;
-}
-
-interface ConstructableStylesheetCacheData extends CacheData {
-    stylesheet: CSSStyleSheet;
-}
-
-interface StyleElementCacheData extends CacheData {
-    stylesheet: HTMLStyleElement;
+    usedElement: boolean;
 }
 
 const stylesheetCache: Map<String, CacheData> = new Map();
@@ -73,11 +66,11 @@ function createFreshStyleElement(content: string) {
     return elm;
 }
 
-function createStyleElement(content: string, cacheData: StyleElementCacheData) {
-    const { stylesheet, used } = cacheData;
+function createStyleElement(content: string, cacheData: CacheData) {
+    const { element, usedElement } = cacheData;
     // If the <style> was already used, then we should clone it. We cannot insert
     // the same <style> in two places in the DOM.
-    if (used) {
+    if (usedElement) {
         // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
         // and will render the incorrect styles if we do things that way. It's just
         // a perf optimization, so we can skip it for IE11.
@@ -86,11 +79,11 @@ function createStyleElement(content: string, cacheData: StyleElementCacheData) {
         }
         // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
         // faster to call `cloneNode()` on an existing node than to recreate it every time.
-        return stylesheet.cloneNode(true) as HTMLStyleElement;
+        return element!.cloneNode(true) as HTMLStyleElement;
     }
     // We don't clone every time, because that would be a perf tax on the first time
-    cacheData.used = true;
-    return stylesheet;
+    cacheData.usedElement = true;
+    return element!;
 }
 
 function createConstructableStylesheet(content: string) {
@@ -102,23 +95,23 @@ function createConstructableStylesheet(content: string) {
 function insertConstructableStylesheet(
     content: string,
     target: ShadowRoot | Document,
-    cacheData: ConstructableStylesheetCacheData
+    cacheData: CacheData
 ) {
     const { adoptedStyleSheets } = target;
     const { stylesheet } = cacheData;
     // Mutable adopted stylesheets are only supported in certain browsers.
     // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2683
     if (supportsMutableAdoptedStyleSheets) {
-        adoptedStyleSheets.push(stylesheet);
+        adoptedStyleSheets.push(stylesheet!);
     } else {
-        target.adoptedStyleSheets = [...adoptedStyleSheets, stylesheet];
+        target.adoptedStyleSheets = [...adoptedStyleSheets, stylesheet!];
     }
 }
 
 function insertStyleElement(
     content: string,
     target: ShadowRoot | HTMLHeadElement,
-    cacheData: StyleElementCacheData
+    cacheData: CacheData
 ) {
     const elm = createStyleElement(content, cacheData);
     target.appendChild(elm);
@@ -129,14 +122,10 @@ function doInsertStylesheet(content: string, target: ShadowRoot, cacheData: Cach
     // https://caniuse.com/mdn-api_document_adoptedstylesheets
     // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2460
     if (supportsConstructableStylesheets) {
-        insertConstructableStylesheet(
-            content,
-            target,
-            cacheData as ConstructableStylesheetCacheData
-        );
+        insertConstructableStylesheet(content, target, cacheData);
     } else {
         // Fall back to <style> element
-        insertStyleElement(content, target, cacheData as StyleElementCacheData);
+        insertStyleElement(content, target, cacheData);
     }
 }
 
@@ -144,15 +133,22 @@ function getCacheData(content: string, forceStyleElement: boolean) {
     let cacheData = stylesheetCache.get(content);
     if (isUndefined(cacheData)) {
         cacheData = {
-            stylesheet:
-                supportsConstructableStylesheets && !forceStyleElement
-                    ? createConstructableStylesheet(content)
-                    : createFreshStyleElement(content),
+            stylesheet: undefined,
+            element: undefined,
             roots: undefined,
             global: false,
-            used: false,
+            usedElement: false,
         };
         stylesheetCache.set(content, cacheData);
+    }
+
+    // Create <style> elements or CSSStyleSheets on-demand, as needed
+    const useConstructableStylesheet = supportsConstructableStylesheets && !forceStyleElement;
+    if (useConstructableStylesheet && isUndefined(cacheData.stylesheet)) {
+        cacheData.stylesheet = createConstructableStylesheet(content);
+    }
+    if (!useConstructableStylesheet && isUndefined(cacheData.element)) {
+        cacheData.element = createFreshStyleElement(content);
     }
     return cacheData;
 }
@@ -167,7 +163,7 @@ function insertGlobalStylesheet(content: string) {
     cacheData.global = true; // mark inserted
 
     // TODO [#2922]: use document.adoptedStyleSheets in supported browsers. Currently we can't, due to backwards compat.
-    insertStyleElement(content, document.head, cacheData as StyleElementCacheData);
+    insertStyleElement(content, document.head, cacheData);
 }
 
 function insertLocalStylesheet(content: string, target: ShadowRoot) {
