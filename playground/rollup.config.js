@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 import lwc from '@lwc/rollup-plugin';
 import replace from '@rollup/plugin-replace';
 import serve from 'rollup-plugin-serve';
