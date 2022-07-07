@@ -46,6 +46,14 @@ interface CacheData {
     usedElement: boolean;
 }
 
+interface ConstructableStylesheetCacheData extends CacheData {
+    stylesheet: CSSStyleSheet;
+}
+
+interface StyleElementCacheData extends CacheData {
+    element: HTMLStyleElement;
+}
+
 const stylesheetCache: Map<String, CacheData> = new Map();
 
 //
@@ -66,7 +74,7 @@ function createFreshStyleElement(content: string) {
     return elm;
 }
 
-function createStyleElement(content: string, cacheData: CacheData) {
+function createStyleElement(content: string, cacheData: StyleElementCacheData) {
     const { element, usedElement } = cacheData;
     // If the <style> was already used, then we should clone it. We cannot insert
     // the same <style> in two places in the DOM.
@@ -79,11 +87,11 @@ function createStyleElement(content: string, cacheData: CacheData) {
         }
         // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
         // faster to call `cloneNode()` on an existing node than to recreate it every time.
-        return element!.cloneNode(true) as HTMLStyleElement;
+        return element.cloneNode(true) as HTMLStyleElement;
     }
     // We don't clone every time, because that would be a perf tax on the first time
     cacheData.usedElement = true;
-    return element!;
+    return element;
 }
 
 function createConstructableStylesheet(content: string) {
@@ -95,41 +103,29 @@ function createConstructableStylesheet(content: string) {
 function insertConstructableStylesheet(
     content: string,
     target: ShadowRoot | Document,
-    cacheData: CacheData
+    cacheData: ConstructableStylesheetCacheData
 ) {
     const { adoptedStyleSheets } = target;
     const { stylesheet } = cacheData;
     // Mutable adopted stylesheets are only supported in certain browsers.
     // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2683
     if (supportsMutableAdoptedStyleSheets) {
-        adoptedStyleSheets.push(stylesheet!);
+        adoptedStyleSheets.push(stylesheet);
     } else {
-        target.adoptedStyleSheets = [...adoptedStyleSheets, stylesheet!];
+        target.adoptedStyleSheets = [...adoptedStyleSheets, stylesheet];
     }
 }
 
 function insertStyleElement(
     content: string,
     target: ShadowRoot | HTMLHeadElement,
-    cacheData: CacheData
+    cacheData: StyleElementCacheData
 ) {
     const elm = createStyleElement(content, cacheData);
     target.appendChild(elm);
 }
 
-function doInsertStylesheet(content: string, target: ShadowRoot, cacheData: CacheData) {
-    // Constructable stylesheets are only supported in certain browsers:
-    // https://caniuse.com/mdn-api_document_adoptedstylesheets
-    // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2460
-    if (supportsConstructableStylesheets) {
-        insertConstructableStylesheet(content, target, cacheData);
-    } else {
-        // Fall back to <style> element
-        insertStyleElement(content, target, cacheData);
-    }
-}
-
-function getCacheData(content: string, forceStyleElement: boolean) {
+function getCacheData(content: string, useConstructableStylesheet: boolean): CacheData {
     let cacheData = stylesheetCache.get(content);
     if (isUndefined(cacheData)) {
         cacheData = {
@@ -143,7 +139,6 @@ function getCacheData(content: string, forceStyleElement: boolean) {
     }
 
     // Create <style> elements or CSSStyleSheets on-demand, as needed
-    const useConstructableStylesheet = supportsConstructableStylesheets && !forceStyleElement;
     if (useConstructableStylesheet && isUndefined(cacheData.stylesheet)) {
         cacheData.stylesheet = createConstructableStylesheet(content);
     }
@@ -163,11 +158,11 @@ function insertGlobalStylesheet(content: string) {
     cacheData.global = true; // mark inserted
 
     // TODO [#2922]: use document.adoptedStyleSheets in supported browsers. Currently we can't, due to backwards compat.
-    insertStyleElement(content, document.head, cacheData);
+    insertStyleElement(content, document.head, cacheData as StyleElementCacheData);
 }
 
 function insertLocalStylesheet(content: string, target: ShadowRoot) {
-    const cacheData = getCacheData(content, false);
+    const cacheData = getCacheData(content, supportsConstructableStylesheets);
     let { roots } = cacheData;
     if (isUndefined(roots)) {
         roots = cacheData.roots = new WeakSet(); // lazily initialize (not needed for global styles)
@@ -176,7 +171,20 @@ function insertLocalStylesheet(content: string, target: ShadowRoot) {
         return;
     }
     roots.add(target); // mark inserted
-    doInsertStylesheet(content, target, cacheData);
+
+    // Constructable stylesheets are only supported in certain browsers:
+    // https://caniuse.com/mdn-api_document_adoptedstylesheets
+    // The reason we use it is for perf: https://github.com/salesforce/lwc/pull/2460
+    if (supportsConstructableStylesheets) {
+        insertConstructableStylesheet(
+            content,
+            target,
+            cacheData as ConstructableStylesheetCacheData
+        );
+    } else {
+        // Fall back to <style> element
+        insertStyleElement(content, target, cacheData as StyleElementCacheData);
+    }
 }
 
 export function insertStylesheet(content: string, target?: ShadowRoot) {
