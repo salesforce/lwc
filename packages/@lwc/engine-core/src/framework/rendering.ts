@@ -57,6 +57,7 @@ import { patchProps } from './modules/props';
 import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
+import { getScopeTokenClass } from './modules/scope-token-class';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 
@@ -401,10 +402,10 @@ function setElementShadowToken(elm: Element, token: string) {
 
 // Set the scope token class for *.scoped.css styles
 function setScopeTokenClassIfNecessary(elm: Element, owner: VM, renderer: RendererAPI) {
-    const { cmpTemplate, context } = owner;
-    const { getClassList } = renderer;
-    const token = cmpTemplate?.stylesheetToken;
-    if (!isUndefined(token) && context.hasScopedStyles) {
+    const token = getScopeTokenClass(owner);
+
+    if (token) {
+        const { getClassList } = renderer;
         // TODO [#2762]: this dot notation with add is probably problematic
         // probably we should have a renderer api for just the add operation
         getClassList(elm).add(token);

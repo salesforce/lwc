@@ -34,6 +34,7 @@ import {
 
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
+import { getScopeTokenClass } from './modules/scope-token-class';
 import { renderComponent } from './component';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
@@ -395,10 +396,28 @@ function validateAttrs(vnode: VBaseElement, elm: Element, renderer: RendererAPI)
 }
 
 function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: RendererAPI): boolean {
-    const {
-        data: { className, classMap },
-    } = vnode;
+    const { data, owner } = vnode;
+    let { className, classMap } = data;
     const { getProperty, getClassList } = renderer;
+    const scopedToken = getScopeTokenClass(owner);
+
+    // Classnames for scoped CSS are added directly to the DOM during rendering,
+    // or to the VDOM on the server in the case of SSR. As such, these classnames
+    // are never present in VDOM nodes in the browser.
+    //
+    // Consequently, hydration mismatches will occur if scoped CSS token classnames
+    // are rendered during SSR. This needs to be accounted for when validating.
+    if (scopedToken) {
+        if (!isUndefined(className) && !className.includes(scopedToken)) {
+            className = `${scopedToken} ${className}`;
+        } else if (!isUndefined(classMap) && !classMap[scopedToken]) {
+            classMap = {
+                ...classMap,
+                [scopedToken]: true,
+            };
+        }
+    }
+
     let nodesAreCompatible = true;
     let vnodeClassName;
 
