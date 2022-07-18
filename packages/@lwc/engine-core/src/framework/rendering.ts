@@ -22,6 +22,7 @@ import {
 import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
+import { getScopeTokenClass } from './stylesheet';
 import { getUpgradableConstructor } from './upgradable-element';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import {
@@ -57,7 +58,6 @@ import { patchProps } from './modules/props';
 import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
-import { getScopeTokenClass } from './modules/scope-token-class';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 

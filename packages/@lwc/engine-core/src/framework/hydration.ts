@@ -34,7 +34,7 @@ import {
 
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
-import { getScopeTokenClass } from './modules/scope-token-class';
+import { getScopeTokenClass } from './stylesheet';
 import { renderComponent } from './component';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
