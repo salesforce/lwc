@@ -404,7 +404,7 @@ function setElementShadowToken(elm: Element, token: string) {
 function setScopeTokenClassIfNecessary(elm: Element, owner: VM, renderer: RendererAPI) {
     const token = getScopeTokenClass(owner);
 
-    if (token) {
+    if (!isNull(token)) {
         const { getClassList } = renderer;
         // TODO [#2762]: this dot notation with add is probably problematic
         // probably we should have a renderer api for just the add operation
