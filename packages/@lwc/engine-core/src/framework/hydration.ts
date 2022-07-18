@@ -408,9 +408,9 @@ function validateClassAttr(vnode: VBaseElement, elm: Element, renderer: Renderer
     // Consequently, hydration mismatches will occur if scoped CSS token classnames
     // are rendered during SSR. This needs to be accounted for when validating.
     if (scopedToken) {
-        if (!isUndefined(className) && !className.includes(scopedToken)) {
+        if (!isUndefined(className)) {
             className = `${scopedToken} ${className}`;
-        } else if (!isUndefined(classMap) && !classMap[scopedToken]) {
+        } else if (!isUndefined(classMap)) {
             classMap = {
                 ...classMap,
                 [scopedToken]: true,
