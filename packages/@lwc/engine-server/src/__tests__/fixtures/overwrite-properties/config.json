@@ -1,7 +1,10 @@
 {
     "props": {
         "name": "my name", 
+        "namespace": "my namespace",
         "type": "my type",
-        "value": "my value"
+        "parent": "my parent",
+        "value": "my value",
+        "eventListeners": "my event listeners"
     }
 }

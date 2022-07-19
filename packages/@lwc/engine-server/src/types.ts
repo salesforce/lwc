@@ -4,7 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-export const HostTypeAttr = Symbol();
+
+export const HostNamespaceKey = Symbol();
+export const HostTypeKey = Symbol();
+export const HostParentKey = Symbol();
+export const HostEventListenersKey = Symbol();
 
 export enum HostNodeType {
     Text = 'text',
@@ -15,45 +19,45 @@ export enum HostNodeType {
 }
 
 export interface HostText {
-    [HostTypeAttr]: HostNodeType.Text;
-    parent: HostElement | null;
+    [HostTypeKey]: HostNodeType.Text;
+    [HostParentKey]: HostElement | null;
     value: string;
 }
 
 export interface HostComment {
-    [HostTypeAttr]: HostNodeType.Comment;
-    parent: HostElement | null;
+    [HostTypeKey]: HostNodeType.Comment;
+    [HostParentKey]: HostElement | null;
     value: string;
 }
 
 export interface HostRaw {
-    [HostTypeAttr]: HostNodeType.Raw;
-    parent: HostElement | null;
+    [HostTypeKey]: HostNodeType.Raw;
+    [HostParentKey]: HostElement | null;
     value: string;
 }
 
 export interface HostAttribute {
     name: string;
-    namespace: string | null;
+    [HostNamespaceKey]: string | null;
     value: string;
 }
 
 export interface HostShadowRoot {
-    [HostTypeAttr]: HostNodeType.ShadowRoot;
+    [HostTypeKey]: HostNodeType.ShadowRoot;
     children: HostChildNode[];
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
 }
 
 export interface HostElement {
-    [HostTypeAttr]: HostNodeType.Element;
+    [HostTypeKey]: HostNodeType.Element;
     tagName: string;
-    namespace: string;
-    parent: HostElement | null;
+    [HostNamespaceKey]: string;
+    [HostParentKey]: HostElement | null;
     shadowRoot: HostShadowRoot | null;
     children: HostChildNode[];
     attributes: HostAttribute[];
-    eventListeners: Record<string, Function[]>;
+    [HostEventListenersKey]: Record<string, Function[]>;
 }
 
 export type HostNode = HostText | HostElement | HostComment;

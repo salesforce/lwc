@@ -13,7 +13,8 @@ import {
     HostAttribute,
     HostChildNode,
     HostNodeType,
-    HostTypeAttr,
+    HostTypeKey,
+    HostNamespaceKey,
 } from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
@@ -27,7 +28,7 @@ function serializeAttributes(attributes: HostAttribute[]): string {
 function serializeChildNodes(children: HostChildNode[]): string {
     return children
         .map((child): string => {
-            switch (child[HostTypeAttr]) {
+            switch (child[HostTypeKey]) {
                 case HostNodeType.Text:
                     return child.value === '' ? '\u200D' : htmlEscape(child.value);
                 case HostNodeType.Comment:
@@ -54,13 +55,14 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
 export function serializeElement(element: HostElement): string {
     let output = '';
 
-    const { tagName: name, namespace } = element;
+    const tagName = element.tagName;
+    const namespace = element[HostNamespaceKey];
     const isForeignElement = namespace !== HTML_NAMESPACE;
     const hasChildren = element.children.length > 0;
 
     const attrs = element.attributes.length ? ` ${serializeAttributes(element.attributes)}` : '';
 
-    output += `<${name}${attrs}`;
+    output += `<${tagName}${attrs}`;
 
     // Note that foreign elements can have children but not shadow roots
     if (isForeignElement && !hasChildren) {
@@ -76,8 +78,8 @@ export function serializeElement(element: HostElement): string {
 
     output += serializeChildNodes(element.children);
 
-    if (!isVoidElement(name, namespace) || hasChildren) {
-        output += `</${name}>`;
+    if (!isVoidElement(tagName, namespace) || hasChildren) {
+        output += `</${tagName}>`;
     }
 
     return output;

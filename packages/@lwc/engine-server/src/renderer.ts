@@ -23,7 +23,10 @@ import {
     HostAttribute,
     HostNodeType,
     HostChildNode,
-    HostTypeAttr,
+    HostTypeKey,
+    HostNamespaceKey,
+    HostParentKey,
+    HostEventListenersKey,
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
@@ -33,16 +36,16 @@ function unsupportedMethod(name: string): () => never {
     };
 }
 
-function createElement(name: string, namespace?: string): HostElement {
+function createElement(tagName: string, namespace?: string): HostElement {
     return {
-        [HostTypeAttr]: HostNodeType.Element,
-        tagName: name,
-        namespace: namespace ?? HTML_NAMESPACE,
-        parent: null,
+        [HostTypeKey]: HostNodeType.Element,
+        tagName,
+        [HostNamespaceKey]: namespace ?? HTML_NAMESPACE,
+        [HostParentKey]: null,
         shadowRoot: null,
         children: [],
         attributes: [],
-        eventListeners: {},
+        [HostEventListenersKey]: {},
     };
 }
 
@@ -60,11 +63,11 @@ function registerCustomElement(name: string, ctor: CustomElementConstructor) {
 class HTMLElementImpl {
     constructor() {
         const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
+        const tagName = reverseRegistry.get(constructor as CustomElementConstructor);
+        if (!tagName) {
             throw new TypeError(`Invalid Construction`);
         }
-        return createElement(name);
+        return createElement(tagName);
     }
 }
 
@@ -81,12 +84,13 @@ type N = HostNode;
 type E = HostElement;
 
 function insert(node: N, parent: E, anchor: N | null) {
-    if (node.parent !== null && node.parent !== parent) {
-        const nodeIndex = node.parent.children.indexOf(node);
-        node.parent.children.splice(nodeIndex, 1);
+    const nodeParent = node[HostParentKey];
+    if (nodeParent !== null && nodeParent !== parent) {
+        const nodeIndex = nodeParent.children.indexOf(node);
+        nodeParent.children.splice(nodeIndex, 1);
     }
 
-    node.parent = parent;
+    node[HostParentKey] = parent;
 
     const anchorIndex = isNull(anchor) ? -1 : parent.children.indexOf(anchor);
     if (anchorIndex === -1) {
@@ -107,30 +111,30 @@ function cloneNode(node: N): N {
 
 function createFragment(html: string): HostChildNode {
     return {
-        [HostTypeAttr]: HostNodeType.Raw,
-        parent: null,
+        [HostTypeKey]: HostNodeType.Raw,
+        [HostParentKey]: null,
         value: html,
     };
 }
 
 function createText(content: string): HostNode {
     return {
-        [HostTypeAttr]: HostNodeType.Text,
+        [HostTypeKey]: HostNodeType.Text,
         value: String(content),
-        parent: null,
+        [HostParentKey]: null,
     };
 }
 
 function createComment(content: string): HostNode {
     return {
-        [HostTypeAttr]: HostNodeType.Comment,
+        [HostTypeKey]: HostNodeType.Comment,
         value: content,
-        parent: null,
+        [HostParentKey]: null,
     };
 }
 
 function nextSibling(node: N) {
-    const { parent } = node;
+    const parent = node[HostParentKey];
 
     if (isNull(parent)) {
         return null;
@@ -142,7 +146,7 @@ function nextSibling(node: N) {
 
 function attachShadow(element: E, config: ShadowRootInit) {
     element.shadowRoot = {
-        [HostTypeAttr]: HostNodeType.ShadowRoot,
+        [HostTypeKey]: HostNodeType.ShadowRoot,
         children: [],
         mode: config.mode,
         delegatesFocus: !!config.delegatesFocus,
@@ -156,7 +160,7 @@ function getProperty(node: N, key: string) {
         return (node as any)[key];
     }
 
-    if (node[HostTypeAttr] === HostNodeType.Element) {
+    if (node[HostTypeKey] === HostNodeType.Element) {
         const attrName = htmlPropertyToAttribute(key);
 
         // Handle all the boolean properties.
@@ -187,14 +191,14 @@ function setProperty(node: N, key: string, value: any): void {
         return ((node as any)[key] = value);
     }
 
-    if (node[HostTypeAttr] === HostNodeType.Element) {
+    if (node[HostTypeKey] === HostNodeType.Element) {
         const attrName = htmlPropertyToAttribute(key);
 
         if (key === 'innerHTML') {
             node.children = [
                 {
-                    [HostTypeAttr]: HostNodeType.Raw,
-                    parent: node,
+                    [HostTypeKey]: HostNodeType.Raw,
+                    [HostParentKey]: node,
                     value,
                 },
             ];
@@ -229,13 +233,13 @@ function setProperty(node: N, key: string, value: any): void {
 }
 
 function setText(node: N, content: string) {
-    if (node[HostTypeAttr] === HostNodeType.Text) {
+    if (node[HostTypeKey] === HostNodeType.Text) {
         node.value = content;
-    } else if (node[HostTypeAttr] === HostNodeType.Element) {
+    } else if (node[HostTypeKey] === HostNodeType.Element) {
         node.children = [
             {
-                [HostTypeAttr]: HostNodeType.Text,
-                parent: node,
+                [HostTypeKey]: HostNodeType.Text,
+                [HostParentKey]: node,
                 value: content,
             },
         ];
@@ -244,14 +248,14 @@ function setText(node: N, content: string) {
 
 function getAttribute(element: E, name: string, namespace: string | null = null) {
     const attribute = element.attributes.find(
-        (attr) => attr.name === name && attr.namespace === namespace
+        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
     return attribute ? attribute.value : null;
 }
 
 function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
     const attribute = element.attributes.find(
-        (attr) => attr.name === name && attr.namespace === namespace
+        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
 
     if (isUndefined(namespace)) {
@@ -261,7 +265,7 @@ function setAttribute(element: E, name: string, value: string, namespace: string
     if (isUndefined(attribute)) {
         element.attributes.push({
             name,
-            namespace,
+            [HostNamespaceKey]: namespace,
             value: String(value),
         });
     } else {
@@ -271,20 +275,20 @@ function setAttribute(element: E, name: string, value: string, namespace: string
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
     element.attributes = element.attributes.filter(
-        (attr) => attr.name !== name && attr.namespace !== namespace
+        (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace
     );
 }
 
 function getClassList(element: E) {
     function getClassAttribute(): HostAttribute {
         let classAttribute = element.attributes.find(
-            (attr) => attr.name === 'class' && isNull(attr.namespace)
+            (attr) => attr.name === 'class' && isNull(attr[HostNamespaceKey])
         );
 
         if (isUndefined(classAttribute)) {
             classAttribute = {
                 name: 'class',
-                namespace: null,
+                [HostNamespaceKey]: null,
                 value: '',
             };
             element.attributes.push(classAttribute);
@@ -313,7 +317,7 @@ function getClassList(element: E) {
 
 function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
     const styleAttribute = element.attributes.find(
-        (attr) => attr.name === 'style' && isNull(attr.namespace)
+        (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
     );
 
     const serializedProperty = `${name}: ${value}${important ? ' !important' : ''}`;
@@ -321,7 +325,7 @@ function setCSSStyleProperty(element: E, name: string, value: string, important:
     if (isUndefined(styleAttribute)) {
         element.attributes.push({
             name: 'style',
-            namespace: null,
+            [HostNamespaceKey]: null,
             value: serializedProperty,
         });
     } else {
@@ -330,7 +334,7 @@ function setCSSStyleProperty(element: E, name: string, value: string, important:
 }
 
 function isConnected(node: HostNode) {
-    return !isNull(node.parent);
+    return !isNull(node[HostParentKey]);
 }
 
 // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
