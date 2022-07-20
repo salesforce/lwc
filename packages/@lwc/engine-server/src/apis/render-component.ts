@@ -11,6 +11,7 @@ import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
 import {
     HostAttributesKey,
+    HostChildrenKey,
     HostElement,
     HostEventListenersKey,
     HostNamespaceKey,
@@ -26,7 +27,7 @@ const FakeRootElement: HostElement = {
     [HostNamespaceKey]: HTML_NAMESPACE,
     [HostParentKey]: null,
     [HostShadowRootKey]: null,
-    children: [],
+    [HostChildrenKey]: [],
     [HostAttributesKey]: [],
     [HostEventListenersKey]: {},
 };

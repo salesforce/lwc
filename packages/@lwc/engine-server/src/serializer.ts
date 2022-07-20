@@ -17,6 +17,7 @@ import {
     HostNamespaceKey,
     HostShadowRootKey,
     HostAttributesKey,
+    HostChildrenKey,
 } from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
@@ -51,7 +52,9 @@ function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
         attrs.push('shadowrootdelegatesfocus');
     }
 
-    return `<template ${attrs.join(' ')}>${serializeChildNodes(shadowRoot.children)}</template>`;
+    return `<template ${attrs.join(' ')}>${serializeChildNodes(
+        shadowRoot[HostChildrenKey]
+    )}</template>`;
 }
 
 export function serializeElement(element: HostElement): string {
@@ -60,7 +63,7 @@ export function serializeElement(element: HostElement): string {
     const tagName = element.tagName;
     const namespace = element[HostNamespaceKey];
     const isForeignElement = namespace !== HTML_NAMESPACE;
-    const hasChildren = element.children.length > 0;
+    const hasChildren = element[HostChildrenKey].length > 0;
 
     const attrs = element[HostAttributesKey].length
         ? ` ${serializeAttributes(element[HostAttributesKey])}`
@@ -80,7 +83,7 @@ export function serializeElement(element: HostElement): string {
         output += serializeShadowRoot(element[HostShadowRootKey]);
     }
 
-    output += serializeChildNodes(element.children);
+    output += serializeChildNodes(element[HostChildrenKey]);
 
     if (!isVoidElement(tagName, namespace) || hasChildren) {
         output += `</${tagName}>`;

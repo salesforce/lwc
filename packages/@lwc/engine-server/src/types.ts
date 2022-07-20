@@ -9,6 +9,7 @@ export const HostNamespaceKey = Symbol('namespace');
 export const HostTypeKey = Symbol('type');
 export const HostParentKey = Symbol('parent');
 export const HostShadowRootKey = Symbol('shadow-root');
+export const HostChildrenKey = Symbol('children');
 export const HostAttributesKey = Symbol('attributes');
 export const HostEventListenersKey = Symbol('event-listeners');
 
@@ -46,7 +47,7 @@ export interface HostAttribute {
 
 export interface HostShadowRoot {
     [HostTypeKey]: HostNodeType.ShadowRoot;
-    children: HostChildNode[];
+    [HostChildrenKey]: HostChildNode[];
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
 }
@@ -57,7 +58,7 @@ export interface HostElement {
     [HostNamespaceKey]: string;
     [HostParentKey]: HostElement | null;
     [HostShadowRootKey]: HostShadowRoot | null;
-    children: HostChildNode[];
+    [HostChildrenKey]: HostChildNode[];
     [HostAttributesKey]: HostAttribute[];
     [HostEventListenersKey]: Record<string, Function[]>;
 }

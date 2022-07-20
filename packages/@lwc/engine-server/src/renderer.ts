@@ -29,6 +29,7 @@ import {
     HostEventListenersKey,
     HostShadowRootKey,
     HostAttributesKey,
+    HostChildrenKey,
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
@@ -45,7 +46,7 @@ function createElement(tagName: string, namespace?: string): HostElement {
         [HostNamespaceKey]: namespace ?? HTML_NAMESPACE,
         [HostParentKey]: null,
         [HostShadowRootKey]: null,
-        children: [],
+        [HostChildrenKey]: [],
         [HostAttributesKey]: [],
         [HostEventListenersKey]: {},
     };
@@ -88,23 +89,23 @@ type E = HostElement;
 function insert(node: N, parent: E, anchor: N | null) {
     const nodeParent = node[HostParentKey];
     if (nodeParent !== null && nodeParent !== parent) {
-        const nodeIndex = nodeParent.children.indexOf(node);
-        nodeParent.children.splice(nodeIndex, 1);
+        const nodeIndex = nodeParent[HostChildrenKey].indexOf(node);
+        nodeParent[HostChildrenKey].splice(nodeIndex, 1);
     }
 
     node[HostParentKey] = parent;
 
-    const anchorIndex = isNull(anchor) ? -1 : parent.children.indexOf(anchor);
+    const anchorIndex = isNull(anchor) ? -1 : parent[HostChildrenKey].indexOf(anchor);
     if (anchorIndex === -1) {
-        parent.children.push(node);
+        parent[HostChildrenKey].push(node);
     } else {
-        parent.children.splice(anchorIndex, 0, node);
+        parent[HostChildrenKey].splice(anchorIndex, 0, node);
     }
 }
 
 function remove(node: N, parent: E) {
-    const nodeIndex = parent.children.indexOf(node);
-    parent.children.splice(nodeIndex, 1);
+    const nodeIndex = parent[HostChildrenKey].indexOf(node);
+    parent[HostChildrenKey].splice(nodeIndex, 1);
 }
 
 function cloneNode(node: N): N {
@@ -142,14 +143,14 @@ function nextSibling(node: N) {
         return null;
     }
 
-    const nodeIndex = parent.children.indexOf(node);
-    return (parent.children[nodeIndex + 1] as HostNode) || null;
+    const nodeIndex = parent[HostChildrenKey].indexOf(node);
+    return (parent[HostChildrenKey][nodeIndex + 1] as HostNode) || null;
 }
 
 function attachShadow(element: E, config: ShadowRootInit) {
     element[HostShadowRootKey] = {
         [HostTypeKey]: HostNodeType.ShadowRoot,
-        children: [],
+        [HostChildrenKey]: [],
         mode: config.mode,
         delegatesFocus: !!config.delegatesFocus,
     };
@@ -197,7 +198,7 @@ function setProperty(node: N, key: string, value: any): void {
         const attrName = htmlPropertyToAttribute(key);
 
         if (key === 'innerHTML') {
-            node.children = [
+            node[HostChildrenKey] = [
                 {
                     [HostTypeKey]: HostNodeType.Raw,
                     [HostParentKey]: node,
@@ -238,7 +239,7 @@ function setText(node: N, content: string) {
     if (node[HostTypeKey] === HostNodeType.Text) {
         node.value = content;
     } else if (node[HostTypeKey] === HostNodeType.Element) {
-        node.children = [
+        node[HostChildrenKey] = [
             {
                 [HostTypeKey]: HostNodeType.Text,
                 [HostParentKey]: node,
