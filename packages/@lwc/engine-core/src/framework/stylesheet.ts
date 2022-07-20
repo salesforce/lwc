@@ -189,6 +189,16 @@ function getNearestShadowComponent(vm: VM): VM | null {
     return owner;
 }
 
+/**
+ * If the component that is currently being rendered uses scoped styles,
+ * this returns the unique token for that scoped stylesheet. Otherwise
+ * it returns null.
+ */
+export function getScopeTokenClass(owner: VM): string | null {
+    const { cmpTemplate, context } = owner;
+    return (context.hasScopedStyles && cmpTemplate?.stylesheetToken) || null;
+}
+
 function getNearestNativeShadowComponent(vm: VM): VM | null {
     const owner = getNearestShadowComponent(vm);
     if (!isNull(owner) && owner.shadowMode === ShadowMode.Synthetic) {
