@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export const HostNamespaceKey = Symbol();
-export const HostTypeKey = Symbol();
-export const HostParentKey = Symbol();
-export const HostEventListenersKey = Symbol();
+export const HostNamespaceKey = Symbol('namespace');
+export const HostTypeKey = Symbol('type');
+export const HostParentKey = Symbol('parent');
+export const HostEventListenersKey = Symbol('event-listeners');
 
 export enum HostNodeType {
     Text = 'text',
