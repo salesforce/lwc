@@ -5,6 +5,8 @@
         "type": "my type",
         "parent": "my parent",
         "value": "my value",
+        "shadowRoot": "my shadow root",
+        "attributes": "my attributes",
         "eventListeners": "my event listeners"
     }
 }
