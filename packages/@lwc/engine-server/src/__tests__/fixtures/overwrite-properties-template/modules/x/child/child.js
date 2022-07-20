@@ -7,6 +7,7 @@ export default class Cmp extends LightningElement {
     @api parent;
     @api value;
     @api shadowRoot;
+    @api children;
     @api attributes;
     @api eventListeners;
 }

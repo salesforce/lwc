@@ -12,6 +12,7 @@ export const HostShadowRootKey = Symbol('shadow-root');
 export const HostChildrenKey = Symbol('children');
 export const HostAttributesKey = Symbol('attributes');
 export const HostEventListenersKey = Symbol('event-listeners');
+export const HostValueKey = Symbol('value');
 
 export enum HostNodeType {
     Text = 'text',
@@ -24,19 +25,19 @@ export enum HostNodeType {
 export interface HostText {
     [HostTypeKey]: HostNodeType.Text;
     [HostParentKey]: HostElement | null;
-    value: string;
+    [HostValueKey]: string;
 }
 
 export interface HostComment {
     [HostTypeKey]: HostNodeType.Comment;
     [HostParentKey]: HostElement | null;
-    value: string;
+    [HostValueKey]: string;
 }
 
 export interface HostRaw {
     [HostTypeKey]: HostNodeType.Raw;
     [HostParentKey]: HostElement | null;
-    value: string;
+    [HostValueKey]: string;
 }
 
 export interface HostAttribute {

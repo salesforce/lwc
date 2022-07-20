@@ -7,6 +7,7 @@ export default class Cmp extends LightningElement {
     parent = 'my parent';
     value = 'my value';
     shadowRoot = 'my shadow root';
+    children = 'my children';
     attributes = 'my attributes';
     eventListeners = 'my event listeners';
 }

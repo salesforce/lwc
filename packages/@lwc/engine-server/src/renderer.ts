@@ -30,6 +30,7 @@ import {
     HostShadowRootKey,
     HostAttributesKey,
     HostChildrenKey,
+    HostValueKey,
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
@@ -116,14 +117,14 @@ function createFragment(html: string): HostChildNode {
     return {
         [HostTypeKey]: HostNodeType.Raw,
         [HostParentKey]: null,
-        value: html,
+        [HostValueKey]: html,
     };
 }
 
 function createText(content: string): HostNode {
     return {
         [HostTypeKey]: HostNodeType.Text,
-        value: String(content),
+        [HostValueKey]: String(content),
         [HostParentKey]: null,
     };
 }
@@ -131,7 +132,7 @@ function createText(content: string): HostNode {
 function createComment(content: string): HostNode {
     return {
         [HostTypeKey]: HostNodeType.Comment,
-        value: content,
+        [HostValueKey]: content,
         [HostParentKey]: null,
     };
 }
@@ -202,7 +203,7 @@ function setProperty(node: N, key: string, value: any): void {
                 {
                     [HostTypeKey]: HostNodeType.Raw,
                     [HostParentKey]: node,
-                    value,
+                    [HostValueKey]: value,
                 },
             ];
             return;
@@ -237,13 +238,13 @@ function setProperty(node: N, key: string, value: any): void {
 
 function setText(node: N, content: string) {
     if (node[HostTypeKey] === HostNodeType.Text) {
-        node.value = content;
+        node[HostValueKey] = content;
     } else if (node[HostTypeKey] === HostNodeType.Element) {
         node[HostChildrenKey] = [
             {
                 [HostTypeKey]: HostNodeType.Text,
                 [HostParentKey]: node,
-                value: content,
+                [HostValueKey]: content,
             },
         ];
     }

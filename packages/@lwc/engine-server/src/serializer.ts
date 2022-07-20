@@ -18,6 +18,7 @@ import {
     HostShadowRootKey,
     HostAttributesKey,
     HostChildrenKey,
+    HostValueKey,
 } from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
@@ -33,11 +34,11 @@ function serializeChildNodes(children: HostChildNode[]): string {
         .map((child): string => {
             switch (child[HostTypeKey]) {
                 case HostNodeType.Text:
-                    return child.value === '' ? '\u200D' : htmlEscape(child.value);
+                    return child[HostValueKey] === '' ? '\u200D' : htmlEscape(child[HostValueKey]);
                 case HostNodeType.Comment:
-                    return `<!--${htmlEscape(child.value)}-->`;
+                    return `<!--${htmlEscape(child[HostValueKey])}-->`;
                 case HostNodeType.Raw:
-                    return child.value;
+                    return child[HostValueKey];
                 case HostNodeType.Element:
                     return serializeElement(child);
             }
