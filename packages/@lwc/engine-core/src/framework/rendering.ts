@@ -22,6 +22,7 @@ import {
 import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
 import { markComponentAsDirty } from './component';
+import { getScopeTokenClass } from './stylesheet';
 import { patchElementWithRestrictions, unlockDomMutation, lockDomMutation } from './restrictions';
 import {
     createVM,
@@ -401,10 +402,10 @@ function setElementShadowToken(elm: Element, token: string) {
 
 // Set the scope token class for *.scoped.css styles
 function setScopeTokenClassIfNecessary(elm: Element, owner: VM, renderer: RendererAPI) {
-    const { cmpTemplate, context } = owner;
-    const { getClassList } = renderer;
-    const token = cmpTemplate?.stylesheetToken;
-    if (!isUndefined(token) && context.hasScopedStyles) {
+    const token = getScopeTokenClass(owner);
+
+    if (!isNull(token)) {
+        const { getClassList } = renderer;
         // TODO [#2762]: this dot notation with add is probably problematic
         // probably we should have a renderer api for just the add operation
         getClassList(elm).add(token);
