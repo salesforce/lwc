@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// We use Symbols as the keys for HostElement properties to avoid conflicting
+// with public component properties defined by a component author.
 export const HostNamespaceKey = Symbol('namespace');
 export const HostTypeKey = Symbol('type');
 export const HostParentKey = Symbol('parent');
@@ -55,6 +57,8 @@ export interface HostShadowRoot {
 
 export interface HostElement {
     [HostTypeKey]: HostNodeType.Element;
+    // tagName cannot be used as a public component property as it is
+    // explicitly given only a getter, so it doesn't need to be a Symbol.
     tagName: string;
     [HostNamespaceKey]: string;
     [HostParentKey]: HostElement | null;
