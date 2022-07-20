@@ -2,7 +2,6 @@
     "extends": "../../../tsconfig.json",
 
     "compilerOptions": {
-        "experimentalDecorators": true,
         "sourceMap": false,
         "outDir": ".",
         "lib": ["dom", "es2018"]
