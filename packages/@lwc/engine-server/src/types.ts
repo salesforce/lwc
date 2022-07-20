@@ -5,6 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// We use Symbols as the keys for HostElement properties to avoid conflicting
+// with public component properties defined by a component author.
+export const HostNamespaceKey = Symbol('namespace');
+export const HostTypeKey = Symbol('type');
+export const HostParentKey = Symbol('parent');
+export const HostShadowRootKey = Symbol('shadow-root');
+export const HostChildrenKey = Symbol('children');
+export const HostAttributesKey = Symbol('attributes');
+export const HostEventListenersKey = Symbol('event-listeners');
+export const HostValueKey = Symbol('value');
+
 export enum HostNodeType {
     Text = 'text',
     Comment = 'comment',
@@ -14,45 +25,47 @@ export enum HostNodeType {
 }
 
 export interface HostText {
-    type: HostNodeType.Text;
-    parent: HostElement | null;
-    value: string;
+    [HostTypeKey]: HostNodeType.Text;
+    [HostParentKey]: HostElement | null;
+    [HostValueKey]: string;
 }
 
 export interface HostComment {
-    type: HostNodeType.Comment;
-    parent: HostElement | null;
-    value: string;
+    [HostTypeKey]: HostNodeType.Comment;
+    [HostParentKey]: HostElement | null;
+    [HostValueKey]: string;
 }
 
 export interface HostRaw {
-    type: HostNodeType.Raw;
-    parent: HostElement | null;
-    value: string;
+    [HostTypeKey]: HostNodeType.Raw;
+    [HostParentKey]: HostElement | null;
+    [HostValueKey]: string;
 }
 
 export interface HostAttribute {
     name: string;
-    namespace: string | null;
+    [HostNamespaceKey]: string | null;
     value: string;
 }
 
 export interface HostShadowRoot {
-    type: HostNodeType.ShadowRoot;
-    children: HostChildNode[];
+    [HostTypeKey]: HostNodeType.ShadowRoot;
+    [HostChildrenKey]: HostChildNode[];
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
 }
 
 export interface HostElement {
-    type: HostNodeType.Element;
-    name: string;
-    namespace: string;
-    parent: HostElement | null;
-    shadowRoot: HostShadowRoot | null;
-    children: HostChildNode[];
-    attributes: HostAttribute[];
-    eventListeners: Record<string, Function[]>;
+    [HostTypeKey]: HostNodeType.Element;
+    // tagName cannot be used as a public component property as it is
+    // explicitly given only a getter, so it doesn't need to be a Symbol.
+    tagName: string;
+    [HostNamespaceKey]: string;
+    [HostParentKey]: HostElement | null;
+    [HostShadowRootKey]: HostShadowRoot | null;
+    [HostChildrenKey]: HostChildNode[];
+    [HostAttributesKey]: HostAttribute[];
+    [HostEventListenersKey]: Record<string, Function[]>;
 }
 
 export type HostNode = HostText | HostElement | HostComment;

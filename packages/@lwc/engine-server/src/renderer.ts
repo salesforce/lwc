@@ -17,7 +17,21 @@ import {
     HTML_NAMESPACE,
 } from '@lwc/shared';
 
-import { HostNode, HostElement, HostAttribute, HostNodeType, HostChildNode } from './types';
+import {
+    HostNode,
+    HostElement,
+    HostAttribute,
+    HostNodeType,
+    HostChildNode,
+    HostTypeKey,
+    HostNamespaceKey,
+    HostParentKey,
+    HostEventListenersKey,
+    HostShadowRootKey,
+    HostAttributesKey,
+    HostChildrenKey,
+    HostValueKey,
+} from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
 function unsupportedMethod(name: string): () => never {
@@ -26,16 +40,16 @@ function unsupportedMethod(name: string): () => never {
     };
 }
 
-function createElement(name: string, namespace?: string): HostElement {
+function createElement(tagName: string, namespace?: string): HostElement {
     return {
-        type: HostNodeType.Element,
-        name,
-        namespace: namespace ?? HTML_NAMESPACE,
-        parent: null,
-        shadowRoot: null,
-        children: [],
-        attributes: [],
-        eventListeners: {},
+        [HostTypeKey]: HostNodeType.Element,
+        tagName,
+        [HostNamespaceKey]: namespace ?? HTML_NAMESPACE,
+        [HostParentKey]: null,
+        [HostShadowRootKey]: null,
+        [HostChildrenKey]: [],
+        [HostAttributesKey]: [],
+        [HostEventListenersKey]: {},
     };
 }
 
@@ -53,11 +67,11 @@ function registerCustomElement(name: string, ctor: CustomElementConstructor) {
 class HTMLElementImpl {
     constructor() {
         const { constructor } = this;
-        const name = reverseRegistry.get(constructor as CustomElementConstructor);
-        if (!name) {
+        const tagName = reverseRegistry.get(constructor as CustomElementConstructor);
+        if (!tagName) {
             throw new TypeError(`Invalid Construction`);
         }
-        return createElement(name);
+        return createElement(tagName);
     }
 }
 
@@ -74,24 +88,25 @@ type N = HostNode;
 type E = HostElement;
 
 function insert(node: N, parent: E, anchor: N | null) {
-    if (node.parent !== null && node.parent !== parent) {
-        const nodeIndex = node.parent.children.indexOf(node);
-        node.parent.children.splice(nodeIndex, 1);
+    const nodeParent = node[HostParentKey];
+    if (nodeParent !== null && nodeParent !== parent) {
+        const nodeIndex = nodeParent[HostChildrenKey].indexOf(node);
+        nodeParent[HostChildrenKey].splice(nodeIndex, 1);
     }
 
-    node.parent = parent;
+    node[HostParentKey] = parent;
 
-    const anchorIndex = isNull(anchor) ? -1 : parent.children.indexOf(anchor);
+    const anchorIndex = isNull(anchor) ? -1 : parent[HostChildrenKey].indexOf(anchor);
     if (anchorIndex === -1) {
-        parent.children.push(node);
+        parent[HostChildrenKey].push(node);
     } else {
-        parent.children.splice(anchorIndex, 0, node);
+        parent[HostChildrenKey].splice(anchorIndex, 0, node);
     }
 }
 
 function remove(node: N, parent: E) {
-    const nodeIndex = parent.children.indexOf(node);
-    parent.children.splice(nodeIndex, 1);
+    const nodeIndex = parent[HostChildrenKey].indexOf(node);
+    parent[HostChildrenKey].splice(nodeIndex, 1);
 }
 
 function cloneNode(node: N): N {
@@ -100,48 +115,48 @@ function cloneNode(node: N): N {
 
 function createFragment(html: string): HostChildNode {
     return {
-        type: HostNodeType.Raw,
-        parent: null,
-        value: html,
+        [HostTypeKey]: HostNodeType.Raw,
+        [HostParentKey]: null,
+        [HostValueKey]: html,
     };
 }
 
 function createText(content: string): HostNode {
     return {
-        type: HostNodeType.Text,
-        value: String(content),
-        parent: null,
+        [HostTypeKey]: HostNodeType.Text,
+        [HostValueKey]: String(content),
+        [HostParentKey]: null,
     };
 }
 
 function createComment(content: string): HostNode {
     return {
-        type: HostNodeType.Comment,
-        value: content,
-        parent: null,
+        [HostTypeKey]: HostNodeType.Comment,
+        [HostValueKey]: content,
+        [HostParentKey]: null,
     };
 }
 
 function nextSibling(node: N) {
-    const { parent } = node;
+    const parent = node[HostParentKey];
 
     if (isNull(parent)) {
         return null;
     }
 
-    const nodeIndex = parent.children.indexOf(node);
-    return (parent.children[nodeIndex + 1] as HostNode) || null;
+    const nodeIndex = parent[HostChildrenKey].indexOf(node);
+    return (parent[HostChildrenKey][nodeIndex + 1] as HostNode) || null;
 }
 
 function attachShadow(element: E, config: ShadowRootInit) {
-    element.shadowRoot = {
-        type: HostNodeType.ShadowRoot,
-        children: [],
+    element[HostShadowRootKey] = {
+        [HostTypeKey]: HostNodeType.ShadowRoot,
+        [HostChildrenKey]: [],
         mode: config.mode,
         delegatesFocus: !!config.delegatesFocus,
     };
 
-    return element.shadowRoot as any;
+    return element[HostShadowRootKey] as any;
 }
 
 function getProperty(node: N, key: string) {
@@ -149,11 +164,11 @@ function getProperty(node: N, key: string) {
         return (node as any)[key];
     }
 
-    if (node.type === HostNodeType.Element) {
+    if (node[HostTypeKey] === HostNodeType.Element) {
         const attrName = htmlPropertyToAttribute(key);
 
         // Handle all the boolean properties.
-        if (isBooleanAttribute(attrName, node.name)) {
+        if (isBooleanAttribute(attrName, node.tagName)) {
             return getAttribute(node, attrName) ?? false;
         }
 
@@ -164,7 +179,7 @@ function getProperty(node: N, key: string) {
 
         // Handle special elements live bindings. The checked property is already handled above
         // in the boolean case.
-        if (node.name === 'input' && key === 'value') {
+        if (node.tagName === 'input' && key === 'value') {
             return getAttribute(node, 'value') ?? '';
         }
     }
@@ -180,22 +195,22 @@ function setProperty(node: N, key: string, value: any): void {
         return ((node as any)[key] = value);
     }
 
-    if (node.type === HostNodeType.Element) {
+    if (node[HostTypeKey] === HostNodeType.Element) {
         const attrName = htmlPropertyToAttribute(key);
 
         if (key === 'innerHTML') {
-            node.children = [
+            node[HostChildrenKey] = [
                 {
-                    type: HostNodeType.Raw,
-                    parent: node,
-                    value,
+                    [HostTypeKey]: HostNodeType.Raw,
+                    [HostParentKey]: node,
+                    [HostValueKey]: value,
                 },
             ];
             return;
         }
 
         // Handle all the boolean properties.
-        if (isBooleanAttribute(attrName, node.name)) {
+        if (isBooleanAttribute(attrName, node.tagName)) {
             return value === true
                 ? setAttribute(node, attrName, '')
                 : removeAttribute(node, attrName);
@@ -208,7 +223,7 @@ function setProperty(node: N, key: string, value: any): void {
 
         // Handle special elements live bindings. The checked property is already handled above
         // in the boolean case.
-        if (node.name === 'input' && attrName === 'value') {
+        if (node.tagName === 'input' && attrName === 'value') {
             return isNull(value) || isUndefined(value)
                 ? removeAttribute(node, 'value')
                 : setAttribute(node, 'value', value);
@@ -222,29 +237,29 @@ function setProperty(node: N, key: string, value: any): void {
 }
 
 function setText(node: N, content: string) {
-    if (node.type === HostNodeType.Text) {
-        node.value = content;
-    } else if (node.type === HostNodeType.Element) {
-        node.children = [
+    if (node[HostTypeKey] === HostNodeType.Text) {
+        node[HostValueKey] = content;
+    } else if (node[HostTypeKey] === HostNodeType.Element) {
+        node[HostChildrenKey] = [
             {
-                type: HostNodeType.Text,
-                parent: node,
-                value: content,
+                [HostTypeKey]: HostNodeType.Text,
+                [HostParentKey]: node,
+                [HostValueKey]: content,
             },
         ];
     }
 }
 
 function getAttribute(element: E, name: string, namespace: string | null = null) {
-    const attribute = element.attributes.find(
-        (attr) => attr.name === name && attr.namespace === namespace
+    const attribute = element[HostAttributesKey].find(
+        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
     return attribute ? attribute.value : null;
 }
 
 function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
-    const attribute = element.attributes.find(
-        (attr) => attr.name === name && attr.namespace === namespace
+    const attribute = element[HostAttributesKey].find(
+        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
 
     if (isUndefined(namespace)) {
@@ -252,9 +267,9 @@ function setAttribute(element: E, name: string, value: string, namespace: string
     }
 
     if (isUndefined(attribute)) {
-        element.attributes.push({
+        element[HostAttributesKey].push({
             name,
-            namespace,
+            [HostNamespaceKey]: namespace,
             value: String(value),
         });
     } else {
@@ -263,24 +278,24 @@ function setAttribute(element: E, name: string, value: string, namespace: string
 }
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
-    element.attributes = element.attributes.filter(
-        (attr) => attr.name !== name && attr.namespace !== namespace
+    element[HostAttributesKey] = element[HostAttributesKey].filter(
+        (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace
     );
 }
 
 function getClassList(element: E) {
     function getClassAttribute(): HostAttribute {
-        let classAttribute = element.attributes.find(
-            (attr) => attr.name === 'class' && isNull(attr.namespace)
+        let classAttribute = element[HostAttributesKey].find(
+            (attr) => attr.name === 'class' && isNull(attr[HostNamespaceKey])
         );
 
         if (isUndefined(classAttribute)) {
             classAttribute = {
                 name: 'class',
-                namespace: null,
+                [HostNamespaceKey]: null,
                 value: '',
             };
-            element.attributes.push(classAttribute);
+            element[HostAttributesKey].push(classAttribute);
         }
 
         return classAttribute;
@@ -305,16 +320,16 @@ function getClassList(element: E) {
 }
 
 function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
-    const styleAttribute = element.attributes.find(
-        (attr) => attr.name === 'style' && isNull(attr.namespace)
+    const styleAttribute = element[HostAttributesKey].find(
+        (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
     );
 
     const serializedProperty = `${name}: ${value}${important ? ' !important' : ''}`;
 
     if (isUndefined(styleAttribute)) {
-        element.attributes.push({
+        element[HostAttributesKey].push({
             name: 'style',
-            namespace: null,
+            [HostNamespaceKey]: null,
             value: serializedProperty,
         });
     } else {
@@ -323,7 +338,7 @@ function setCSSStyleProperty(element: E, name: string, value: string, important:
 }
 
 function isConnected(node: HostNode) {
-    return !isNull(node.parent);
+    return !isNull(node[HostParentKey]);
 }
 
 // Noop on SSR (for now). This need to be reevaluated whenever we will implement support for
