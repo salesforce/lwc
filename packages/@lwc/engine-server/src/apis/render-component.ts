@@ -10,11 +10,13 @@ import { isString, isFunction, isObject, isNull, HTML_NAMESPACE } from '@lwc/sha
 import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
 import {
+    HostAttributesKey,
     HostElement,
     HostEventListenersKey,
     HostNamespaceKey,
     HostNodeType,
     HostParentKey,
+    HostShadowRootKey,
     HostTypeKey,
 } from '../types';
 
@@ -23,9 +25,9 @@ const FakeRootElement: HostElement = {
     tagName: 'fake-root-element',
     [HostNamespaceKey]: HTML_NAMESPACE,
     [HostParentKey]: null,
-    shadowRoot: null,
+    [HostShadowRootKey]: null,
     children: [],
-    attributes: [],
+    [HostAttributesKey]: [],
     [HostEventListenersKey]: {},
 };
 

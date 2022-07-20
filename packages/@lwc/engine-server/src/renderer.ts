@@ -27,6 +27,8 @@ import {
     HostNamespaceKey,
     HostParentKey,
     HostEventListenersKey,
+    HostShadowRootKey,
+    HostAttributesKey,
 } from './types';
 import { classNameToTokenList, tokenListToClassName } from './utils/classes';
 
@@ -42,9 +44,9 @@ function createElement(tagName: string, namespace?: string): HostElement {
         tagName,
         [HostNamespaceKey]: namespace ?? HTML_NAMESPACE,
         [HostParentKey]: null,
-        shadowRoot: null,
+        [HostShadowRootKey]: null,
         children: [],
-        attributes: [],
+        [HostAttributesKey]: [],
         [HostEventListenersKey]: {},
     };
 }
@@ -145,14 +147,14 @@ function nextSibling(node: N) {
 }
 
 function attachShadow(element: E, config: ShadowRootInit) {
-    element.shadowRoot = {
+    element[HostShadowRootKey] = {
         [HostTypeKey]: HostNodeType.ShadowRoot,
         children: [],
         mode: config.mode,
         delegatesFocus: !!config.delegatesFocus,
     };
 
-    return element.shadowRoot as any;
+    return element[HostShadowRootKey] as any;
 }
 
 function getProperty(node: N, key: string) {
@@ -247,14 +249,14 @@ function setText(node: N, content: string) {
 }
 
 function getAttribute(element: E, name: string, namespace: string | null = null) {
-    const attribute = element.attributes.find(
+    const attribute = element[HostAttributesKey].find(
         (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
     return attribute ? attribute.value : null;
 }
 
 function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
-    const attribute = element.attributes.find(
+    const attribute = element[HostAttributesKey].find(
         (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
     );
 
@@ -263,7 +265,7 @@ function setAttribute(element: E, name: string, value: string, namespace: string
     }
 
     if (isUndefined(attribute)) {
-        element.attributes.push({
+        element[HostAttributesKey].push({
             name,
             [HostNamespaceKey]: namespace,
             value: String(value),
@@ -274,14 +276,14 @@ function setAttribute(element: E, name: string, value: string, namespace: string
 }
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
-    element.attributes = element.attributes.filter(
+    element[HostAttributesKey] = element[HostAttributesKey].filter(
         (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace
     );
 }
 
 function getClassList(element: E) {
     function getClassAttribute(): HostAttribute {
-        let classAttribute = element.attributes.find(
+        let classAttribute = element[HostAttributesKey].find(
             (attr) => attr.name === 'class' && isNull(attr[HostNamespaceKey])
         );
 
@@ -291,7 +293,7 @@ function getClassList(element: E) {
                 [HostNamespaceKey]: null,
                 value: '',
             };
-            element.attributes.push(classAttribute);
+            element[HostAttributesKey].push(classAttribute);
         }
 
         return classAttribute;
@@ -316,14 +318,14 @@ function getClassList(element: E) {
 }
 
 function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
-    const styleAttribute = element.attributes.find(
+    const styleAttribute = element[HostAttributesKey].find(
         (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
     );
 
     const serializedProperty = `${name}: ${value}${important ? ' !important' : ''}`;
 
     if (isUndefined(styleAttribute)) {
-        element.attributes.push({
+        element[HostAttributesKey].push({
             name: 'style',
             [HostNamespaceKey]: null,
             value: serializedProperty,

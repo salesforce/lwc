@@ -15,6 +15,8 @@ import {
     HostNodeType,
     HostTypeKey,
     HostNamespaceKey,
+    HostShadowRootKey,
+    HostAttributesKey,
 } from './types';
 
 function serializeAttributes(attributes: HostAttribute[]): string {
@@ -60,7 +62,9 @@ export function serializeElement(element: HostElement): string {
     const isForeignElement = namespace !== HTML_NAMESPACE;
     const hasChildren = element.children.length > 0;
 
-    const attrs = element.attributes.length ? ` ${serializeAttributes(element.attributes)}` : '';
+    const attrs = element[HostAttributesKey].length
+        ? ` ${serializeAttributes(element[HostAttributesKey])}`
+        : '';
 
     output += `<${tagName}${attrs}`;
 
@@ -72,8 +76,8 @@ export function serializeElement(element: HostElement): string {
 
     output += '>';
 
-    if (element.shadowRoot) {
-        output += serializeShadowRoot(element.shadowRoot);
+    if (element[HostShadowRootKey]) {
+        output += serializeShadowRoot(element[HostShadowRootKey]);
     }
 
     output += serializeChildNodes(element.children);

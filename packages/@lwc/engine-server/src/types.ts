@@ -8,6 +8,8 @@
 export const HostNamespaceKey = Symbol('namespace');
 export const HostTypeKey = Symbol('type');
 export const HostParentKey = Symbol('parent');
+export const HostShadowRootKey = Symbol('shadow-root');
+export const HostAttributesKey = Symbol('attributes');
 export const HostEventListenersKey = Symbol('event-listeners');
 
 export enum HostNodeType {
@@ -54,9 +56,9 @@ export interface HostElement {
     tagName: string;
     [HostNamespaceKey]: string;
     [HostParentKey]: HostElement | null;
-    shadowRoot: HostShadowRoot | null;
+    [HostShadowRootKey]: HostShadowRoot | null;
     children: HostChildNode[];
-    attributes: HostAttribute[];
+    [HostAttributesKey]: HostAttribute[];
     [HostEventListenersKey]: Record<string, Function[]>;
 }
 
