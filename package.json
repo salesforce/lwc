@@ -72,7 +72,8 @@
   },
   "workspaces": [
     "packages/@lwc/*",
-    "packages/lwc"
+    "packages/lwc",
+    "playground"
   ],
   "engines": {
     "node": ">=10"

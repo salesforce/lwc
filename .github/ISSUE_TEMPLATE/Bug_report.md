@@ -12,7 +12,7 @@ about: Create an issue to help us improve
 <!--
 If LWC specific issue, update link with your example
 -->
-https://webcomponents.dev/create/lwc
+https://playground.lwc.dev
 
 <!--
 if specific code snippet, paste the example here
