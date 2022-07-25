@@ -9,8 +9,13 @@ import {
     isUndefined,
     KEY__SHADOW_TOKEN,
     KEY__SHADOW_TOKEN_PRIVATE,
+    KEY__SHADOW_STATIC,
+    KEY__SHADOW_STATIC_PRIVATE,
+    KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
+import { createTreeWalker } from '../env/document';
+import { getOwnerDocument } from '../shared/utils';
 
 export function getShadowToken(node: Node): string | undefined {
     return (node as any)[KEY__SHADOW_TOKEN];
@@ -41,6 +46,33 @@ defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
     },
     get(this: Element): string | undefined {
         return (this as any)[KEY__SHADOW_TOKEN_PRIVATE];
+    },
+    configurable: true,
+});
+
+defineProperty(Element.prototype, KEY__SHADOW_STATIC, {
+    set(this: Element, v: boolean) {
+        // Marking an element as static will propagate the shadow resolver to the children.
+        const fn = (this as any)[KEY__SHADOW_RESOLVER];
+        if (v) {
+            const treeWalker = createTreeWalker.call(
+                getOwnerDocument(this),
+                this,
+                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT,
+                () => NodeFilter.FILTER_ACCEPT,
+                false
+            );
+
+            let currentNode: Node | null;
+
+            while ((currentNode = treeWalker.nextNode())) {
+                (currentNode as any)[KEY__SHADOW_RESOLVER] = fn;
+            }
+        }
+        (this as any)[KEY__SHADOW_STATIC_PRIVATE] = v;
+    },
+    get(this: Element): string | undefined {
+        return (this as any)[KEY__SHADOW_STATIC_PRIVATE];
     },
     configurable: true,
 });

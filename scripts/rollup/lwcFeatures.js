@@ -14,8 +14,13 @@ module.exports = function lwcFeatures() {
     return {
         id: 'rollup-plugin-lwc-features',
         transform(source, id) {
-            if (id.includes('/node_modules/') || !source.includes('@lwc/features')) {
+            if (
+                id.includes('/node_modules/') ||
+                id.includes('/dist/') ||
+                !source.includes('@lwc/features')
+            ) {
                 // Skip 3rd-party files and files that don't mention @lwc/features
+                // Also skip /dist/ files because these have presumably already been run through lwcFeatures
                 return null;
             }
             return babel.transform(source, {

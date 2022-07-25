@@ -1,0 +1,48 @@
+{
+    "warnings": [
+        {
+            "code": 1041,
+            "message": "LWC1041: Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
+            "level": 2,
+            "location": {
+                "line": 4,
+                "column": 15,
+                "start": 112,
+                "length": 6
+            }
+        },
+        {
+            "code": 1041,
+            "message": "LWC1041: Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
+            "level": 2,
+            "location": {
+                "line": 9,
+                "column": 30,
+                "start": 247,
+                "length": 6
+            }
+        },
+        {
+            "code": 1041,
+            "message": "LWC1041: Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
+            "level": 2,
+            "location": {
+                "line": 14,
+                "column": 15,
+                "start": 369,
+                "length": 6
+            }
+        },
+        {
+            "code": 1041,
+            "message": "LWC1041: Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
+            "level": 2,
+            "location": {
+                "line": 19,
+                "column": 30,
+                "start": 493,
+                "length": 6
+            }
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 {
-    "name": "eslint-plugin-lwc-internal",
+    "name": "@lwc/eslint-plugin-lwc-internal",
     "version": "0.0.0",
     "private": true
 }

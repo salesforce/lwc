@@ -11,42 +11,16 @@ import {
     hasOwnProperty,
     htmlPropertyToAttribute,
     globalThis,
-    isFunction,
     isUndefined,
-    isArray,
     KEY__IS_NATIVE_SHADOW_ROOT_DEFINED,
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
     StringToLowerCase,
-    getOwnPropertyDescriptor,
 } from '@lwc/shared';
+import { insertStylesheet } from './styles';
 
-const globalStylesheets: { [content: string]: true } = create(null);
-
-if (process.env.NODE_ENV === 'development') {
-    // @ts-ignore
-    window.__lwcResetGlobalStylesheets = () => {
-        for (const key of Object.keys(globalStylesheets)) {
-            delete globalStylesheets[key];
-        }
-    };
-}
-
-const globalStylesheetsParentElement: Element = document.head || document.body || document;
-// This check for constructable stylesheets is similar to Fast's:
-// https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
-// See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
-const supportsConstructableStyleSheets =
-    isFunction(CSSStyleSheet.prototype.replaceSync) && isArray(document.adoptedStyleSheets);
-const supportsMutableAdoptedStyleSheets =
-    supportsConstructableStyleSheets &&
-    getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
-const styleElements: { [content: string]: HTMLStyleElement } = create(null);
-const styleSheets: { [content: string]: CSSStyleSheet } = create(null);
-const shadowRootsToStyleSheets = new WeakMap<ShadowRoot, { [content: string]: true }>();
-
-export let getCustomElement: any;
-export let defineCustomElement: any;
+let getCustomElement: any;
+let defineCustomElement: any;
 let HTMLElementConstructor;
 
 function isCustomElementRegistryAvailable() {
@@ -56,7 +30,7 @@ function isCustomElementRegistryAvailable() {
     try {
         // dereference HTMLElement global because babel wraps globals in compat mode with a
         // _wrapNativeSuper()
-        // This is a problem because LWCUpgradableElement extends renderer.HTMLElement which does not
+        // This is a problem because LWCUpgradableElement extends renderer.HTMLElementExported which does not
         // get wrapped by babel.
         const HTMLElementAlias = HTMLElement;
         // In case we use compat mode with a modern browser, the compat mode transformation
@@ -70,53 +44,6 @@ function isCustomElementRegistryAvailable() {
     } catch {
         return false;
     }
-}
-
-function insertConstructableStyleSheet(content: string, target: ShadowRoot) {
-    // It's important for CSSStyleSheets to be unique based on their content, so that
-    // `shadowRoot.adoptedStyleSheets.includes(sheet)` works.
-    let styleSheet = styleSheets[content];
-    if (isUndefined(styleSheet)) {
-        styleSheet = new CSSStyleSheet();
-        styleSheet.replaceSync(content);
-        styleSheets[content] = styleSheet;
-    }
-    const { adoptedStyleSheets } = target;
-    if (!adoptedStyleSheets.includes(styleSheet)) {
-        if (supportsMutableAdoptedStyleSheets) {
-            // This is only supported in later versions of Chromium:
-            // https://chromestatus.com/feature/5638996492288000
-            adoptedStyleSheets.push(styleSheet);
-        } else {
-            target.adoptedStyleSheets = [...adoptedStyleSheets, styleSheet];
-        }
-    }
-}
-
-function insertStyleElement(content: string, target: ShadowRoot) {
-    // Avoid inserting duplicate `<style>`s
-    let sheets = shadowRootsToStyleSheets.get(target);
-    if (isUndefined(sheets)) {
-        sheets = create(null);
-        shadowRootsToStyleSheets.set(target, sheets!);
-    }
-    if (sheets![content]) {
-        return;
-    }
-    sheets![content] = true;
-
-    // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
-    // faster to call `cloneNode()` on an existing node than to recreate it every time.
-    let elm = styleElements[content];
-    if (isUndefined(elm)) {
-        elm = document.createElement('style');
-        elm.type = 'text/css';
-        elm.textContent = content;
-        styleElements[content] = elm;
-    } else {
-        elm = elm.cloneNode(true) as HTMLStyleElement;
-    }
-    target.appendChild(elm);
 }
 
 if (isCustomElementRegistryAvailable()) {
@@ -161,60 +88,76 @@ export function setIsHydrating(value: boolean) {
     hydrating = value;
 }
 
-export const ssr: boolean = false;
+const ssr: boolean = false;
 
-export function isHydrating(): boolean {
+function isHydrating(): boolean {
     return hydrating;
 }
 
-export const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
+const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
     Element.prototype,
     KEY__SHADOW_TOKEN
 );
 
-export function createElement(tagName: string, namespace?: string): Element {
+function cloneNode(node: Node, deep: boolean): Node {
+    return node.cloneNode(deep);
+}
+
+function createFragment(html: string): Node | null {
+    return document.createRange().createContextualFragment(html).firstChild;
+}
+
+function createElement(tagName: string, namespace?: string): Element {
     return isUndefined(namespace)
         ? document.createElement(tagName)
         : document.createElementNS(namespace, tagName);
 }
 
-export function createText(content: string): Node {
+function createText(content: string): Node {
     return document.createTextNode(content);
 }
 
-export function createComment(content: string): Node {
+function createComment(content: string): Node {
     return document.createComment(content);
 }
 
-export function insert(node: Node, parent: Node, anchor: Node): void {
+function insert(node: Node, parent: Node, anchor: Node): void {
     parent.insertBefore(node, anchor);
 }
 
-export function remove(node: Node, parent: Node): void {
+function remove(node: Node, parent: Node): void {
     parent.removeChild(node);
 }
 
-export function nextSibling(node: Node): Node | null {
+function nextSibling(node: Node): Node | null {
     return node.nextSibling;
 }
 
-export function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
-    if (hydrating) {
-        return element.shadowRoot!;
+function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
+    // `hydrating` will be true in two cases:
+    //   1. upon initial load with an SSR-generated DOM, while in Shadow render mode
+    //   2. when a webapp author places <c-app> in their static HTML and mounts their
+    //      root component with customeElement.define('c-app', Ctor)
+    //
+    // The second case can be treated as a failed hydration with nominal impact
+    // to performance. However, because <c-app> won't have a <template shadowroot>
+    // declarative child, `element.shadowRoot` is `null`.
+    if (hydrating && element.shadowRoot) {
+        return element.shadowRoot;
     }
     return element.attachShadow(options);
 }
 
-export function setText(node: Node, content: string): void {
+function setText(node: Node, content: string): void {
     node.nodeValue = content;
 }
 
-export function getProperty(node: Node, key: string): any {
+function getProperty(node: Node, key: string): any {
     return (node as any)[key];
 }
 
-export function setProperty(node: Node, key: string, value: any): void {
+function setProperty(node: Node, key: string, value: any): void {
     if (process.env.NODE_ENV !== 'production') {
         if (node instanceof Element && !(key in node)) {
             // TODO [#1297]: Move this validation to the compiler
@@ -231,17 +174,13 @@ export function setProperty(node: Node, key: string, value: any): void {
     (node as any)[key] = value;
 }
 
-export function getAttribute(
-    element: Element,
-    name: string,
-    namespace?: string | null
-): string | null {
+function getAttribute(element: Element, name: string, namespace?: string | null): string | null {
     return isUndefined(namespace)
         ? element.getAttribute(name)
         : element.getAttributeNS(namespace, name);
 }
 
-export function setAttribute(
+function setAttribute(
     element: Element,
     name: string,
     value: string,
@@ -252,7 +191,7 @@ export function setAttribute(
         : element.setAttributeNS(namespace, name, value);
 }
 
-export function removeAttribute(element: Element, name: string, namespace?: string | null): void {
+function removeAttribute(element: Element, name: string, namespace?: string | null): void {
     if (isUndefined(namespace)) {
         element.removeAttribute(name);
     } else {
@@ -260,7 +199,7 @@ export function removeAttribute(element: Element, name: string, namespace?: stri
     }
 }
 
-export function addEventListener(
+function addEventListener(
     target: Node,
     type: string,
     callback: EventListener,
@@ -269,7 +208,7 @@ export function addEventListener(
     target.addEventListener(type, callback, options);
 }
 
-export function removeEventListener(
+function removeEventListener(
     target: Node,
     type: string,
     callback: EventListener,
@@ -278,15 +217,15 @@ export function removeEventListener(
     target.removeEventListener(type, callback, options);
 }
 
-export function dispatchEvent(target: Node, event: Event): boolean {
+function dispatchEvent(target: Node, event: Event): boolean {
     return target.dispatchEvent(event);
 }
 
-export function getClassList(element: Element): DOMTokenList {
+function getClassList(element: Element): DOMTokenList {
     return element.classList;
 }
 
-export function setCSSStyleProperty(
+function setCSSStyleProperty(
     element: Element,
     name: string,
     value: string,
@@ -301,80 +240,100 @@ export function setCSSStyleProperty(
     );
 }
 
-export function getBoundingClientRect(element: Element): DOMRect {
+function getBoundingClientRect(element: Element): DOMRect {
     return element.getBoundingClientRect();
 }
 
-export function querySelector(element: Element, selectors: string): Element | null {
+function querySelector(element: Element, selectors: string): Element | null {
     return element.querySelector(selectors);
 }
 
-export function querySelectorAll(element: Element, selectors: string): NodeList {
+function querySelectorAll(element: Element, selectors: string): NodeList {
     return element.querySelectorAll(selectors);
 }
 
-export function getElementsByTagName(element: Element, tagNameOrWildCard: string): HTMLCollection {
+function getElementsByTagName(element: Element, tagNameOrWildCard: string): HTMLCollection {
     return element.getElementsByTagName(tagNameOrWildCard);
 }
 
-export function getElementsByClassName(element: Element, names: string): HTMLCollection {
+function getElementsByClassName(element: Element, names: string): HTMLCollection {
     return element.getElementsByClassName(names);
 }
 
-export function getChildren(element: Element): HTMLCollection {
+function getChildren(element: Element): HTMLCollection {
     return element.children;
 }
 
-export function getChildNodes(element: Element): NodeList {
+function getChildNodes(element: Element): NodeList {
     return element.childNodes;
 }
 
-export function getFirstChild(element: Element): Node | null {
+function getFirstChild(element: Element): Node | null {
     return element.firstChild;
 }
 
-export function getFirstElementChild(element: Element): Element | null {
+function getFirstElementChild(element: Element): Element | null {
     return element.firstElementChild;
 }
 
-export function getLastChild(element: Element): Node | null {
+function getLastChild(element: Element): Node | null {
     return element.lastChild;
 }
 
-export function getLastElementChild(element: Element): Element | null {
+function getLastElementChild(element: Element): Element | null {
     return element.lastElementChild;
 }
 
-export function isConnected(node: Node): boolean {
+function isConnected(node: Node): boolean {
     return node.isConnected;
 }
 
-export function insertGlobalStylesheet(content: string): void {
-    if (!isUndefined(globalStylesheets[content])) {
-        return;
-    }
-
-    globalStylesheets[content] = true;
-
-    const elm = document.createElement('style');
-    elm.type = 'text/css';
-    elm.textContent = content;
-
-    globalStylesheetsParentElement.appendChild(elm);
-}
-
-export function insertStylesheet(content: string, target: ShadowRoot): void {
-    if (supportsConstructableStyleSheets) {
-        insertConstructableStyleSheet(content, target);
-    } else {
-        // Fall back to <style> element
-        insertStyleElement(content, target);
-    }
-}
-
-export function assertInstanceOfHTMLElement(elm: any, msg: string) {
+function assertInstanceOfHTMLElement(elm: any, msg: string) {
     assert.invariant(elm instanceof HTMLElement, msg);
 }
 
 const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
-export { HTMLElementExported as HTMLElement };
+
+export const renderer = {
+    ssr,
+    isNativeShadowDefined,
+    isSyntheticShadowDefined,
+    HTMLElementExported,
+    isHydrating,
+    insert,
+    remove,
+    cloneNode,
+    createFragment,
+    createElement,
+    createText,
+    createComment,
+    nextSibling,
+    attachShadow,
+    getProperty,
+    setProperty,
+    setText,
+    getAttribute,
+    setAttribute,
+    removeAttribute,
+    addEventListener,
+    removeEventListener,
+    dispatchEvent,
+    getClassList,
+    setCSSStyleProperty,
+    getBoundingClientRect,
+    querySelector,
+    querySelectorAll,
+    getElementsByTagName,
+    getElementsByClassName,
+    getChildren,
+    getChildNodes,
+    getFirstChild,
+    getFirstElementChild,
+    getLastChild,
+    getLastElementChild,
+    isConnected,
+    insertStylesheet,
+    assertInstanceOfHTMLElement,
+    defineCustomElement,
+    getCustomElement,
+};

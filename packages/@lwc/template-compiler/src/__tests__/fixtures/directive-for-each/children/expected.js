@@ -1,4 +1,7 @@
-import { registerTemplate } from "lwc";
+import { parseFragment, registerTemplate } from "lwc";
+const $fragment1 = parseFragment`<p${3}>Last child</p>`;
+const $fragment2 = parseFragment`<p${3}>Last child</p>`;
+const $fragment3 = parseFragment`<section class="s4${0}"${2}><p${3}>Other child1</p><p${3}>Other child2</p></section>`;
 const stc0 = {
   classMap: {
     s1: true,
@@ -6,42 +9,25 @@ const stc0 = {
   key: 0,
 };
 const stc1 = {
-  key: 1,
-};
-const stc2 = {
   classMap: {
     s2: true,
   },
-  key: 2,
+  key: 3,
 };
-const stc3 = [];
-const stc4 = {
+const stc2 = [];
+const stc3 = {
   classMap: {
     s3: true,
   },
-  key: 5,
-};
-const stc5 = {
   key: 6,
-};
-const stc6 = {
-  classMap: {
-    s4: true,
-  },
-  key: 8,
-};
-const stc7 = {
-  key: 9,
-};
-const stc8 = {
-  key: 10,
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
     i: api_iterator,
-    h: api_element,
+    st: api_static_fragment,
     f: api_flatten,
+    h: api_element,
     k: api_key,
   } = $api;
   return [
@@ -53,12 +39,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_iterator($cmp.items, function (item) {
           return api_text("X");
         }),
-        api_element("p", stc1, [api_text("Last child")]),
+        api_static_fragment($fragment1(), 2),
       ])
     ),
     api_element(
       "section",
-      stc2,
+      stc1,
       api_flatten([
         api_text("Other Child"),
         $cmp.isTrue
@@ -67,38 +53,35 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                   "p",
                   {
-                    key: api_key(3, item.id),
+                    key: api_key(4, item.id),
                   },
                   [api_text("X1")]
                 ),
                 api_element(
                   "p",
                   {
-                    key: api_key(4, item.id),
+                    key: api_key(5, item.id),
                   },
                   [api_text("X2")]
                 ),
               ];
             })
-          : stc3,
+          : stc2,
       ])
     ),
     api_element(
       "section",
-      stc4,
+      stc3,
       api_flatten([
-        api_element("p", stc5, [api_text("Last child")]),
+        api_static_fragment($fragment2(), 8),
         api_iterator($cmp.items, function (item) {
           return api_element("div", {
-            key: api_key(7, item.id),
+            key: api_key(9, item.id),
           });
         }),
       ])
     ),
-    api_element("section", stc6, [
-      api_element("p", stc7, [api_text("Other child1")]),
-      api_element("p", stc8, [api_text("Other child2")]),
-    ]),
+    api_static_fragment($fragment3(), 11),
   ];
   /*LWC compiler vX.X.X*/
 }

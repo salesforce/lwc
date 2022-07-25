@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { HTML_NAMESPACE } from '@lwc/shared';
 import * as parse5 from 'parse5';
 
 import {
@@ -72,6 +73,7 @@ export function component(
     return {
         type: 'Component',
         name: parse5Elm.nodeName,
+        namespace: HTML_NAMESPACE,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
         properties: [],
@@ -85,6 +87,7 @@ export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation
     return {
         type: 'Slot',
         name: 'slot',
+        namespace: HTML_NAMESPACE,
         slotName,
         location: elementSourceLocation(parse5ElmLocation),
         attributes: [],
@@ -95,17 +98,23 @@ export function slot(slotName: string, parse5ElmLocation: parse5.ElementLocation
     };
 }
 
-export function text(value: Literal | Expression, parse5Location: parse5.Location): Text {
+export function text(
+    raw: string,
+    value: Literal | Expression,
+    parse5Location: parse5.Location
+): Text {
     return {
         type: 'Text',
+        raw,
         value,
         location: sourceLocation(parse5Location),
     };
 }
 
-export function comment(value: string, parse5Location: parse5.Location): Comment {
+export function comment(raw: string, value: string, parse5Location: parse5.Location): Comment {
     return {
         type: 'Comment',
+        raw,
         value,
         location: sourceLocation(parse5Location),
     };

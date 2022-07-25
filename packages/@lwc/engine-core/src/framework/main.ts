@@ -26,6 +26,7 @@ export {
     getAssociatedVMIfPresent,
 } from './vm';
 
+export { parseFragment, parseSVGFragment } from './template';
 export { hydrateRoot } from './hydration';
 
 // Internal APIs used by compiled code -------------------------------------------------------------
@@ -41,6 +42,7 @@ export { profilerControl as __unstable__ProfilerControl } from './profiler';
 export { getUpgradableConstructor } from './upgradable-element';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
 export { setHooks } from './overridable-hooks';
+export { freezeTemplate } from './freeze-template';
 
 // Experimental or Internal APIs
 export { getComponentConstructor } from './get-component-constructor';
@@ -54,47 +56,3 @@ export type {
     WireAdapterConstructor,
     WireAdapterSchemaValue,
 } from './wiring';
-
-// Initialization APIs for the renderer, to be used by engine implementations ----------------------
-export {
-    setAssertInstanceOfHTMLElement,
-    setAttachShadow,
-    setCreateComment,
-    setCreateElement,
-    setCreateText,
-    setDefineCustomElement,
-    setDispatchEvent,
-    setGetAttribute,
-    setGetBoundingClientRect,
-    setGetChildNodes,
-    setGetChildren,
-    setGetClassList,
-    setGetCustomElement,
-    setGetElementsByClassName,
-    setGetElementsByTagName,
-    setGetFirstChild,
-    setGetFirstElementChild,
-    setGetLastChild,
-    setGetLastElementChild,
-    setGetProperty,
-    setHTMLElement,
-    setInsert,
-    setInsertGlobalStylesheet,
-    setInsertStylesheet,
-    setIsConnected,
-    setIsHydrating,
-    setIsNativeShadowDefined,
-    setIsSyntheticShadowDefined,
-    setNextSibling,
-    setQuerySelector,
-    setQuerySelectorAll,
-    setRemove,
-    setRemoveAttribute,
-    setRemoveEventListener,
-    setSetAttribute,
-    setSetCSSStyleProperty,
-    setSetProperty,
-    setSetText,
-    setSsr,
-    setAddEventListener,
-} from '../renderer';
