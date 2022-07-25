@@ -47,8 +47,6 @@ export function deprecatedBuildCustomElementConstructor(
     return Ctor.CustomElementConstructor;
 }
 
-// Note: WeakSet is not supported in IE11, and the polyfill is not performant enough.
-//       This WeakSet usage is valid because this functionality is not meant to run in IE11.
 const hydratedCustomElements = new WeakSet<Element>();
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {

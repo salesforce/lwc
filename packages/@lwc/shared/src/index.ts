@@ -13,7 +13,6 @@ export * from './keys';
 export * from './void-elements';
 export * from './html-attributes';
 export * from './html-escape';
-export * from './symbol';
 export * from './namespaces';
 export * from './meta';
 

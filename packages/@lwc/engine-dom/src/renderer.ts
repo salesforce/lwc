@@ -104,8 +104,10 @@ function cloneNode(node: Node, deep: boolean): Node {
     return node.cloneNode(deep);
 }
 
+const template = document.createElement('template');
 function createFragment(html: string): Node | null {
-    return document.createRange().createContextualFragment(html).firstChild;
+    template.innerHTML = html;
+    return template.content.firstChild;
 }
 
 function createElement(tagName: string, namespace?: string): Element {

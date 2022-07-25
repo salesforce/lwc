@@ -8,7 +8,6 @@ import {
     ArrayFilter,
     assign,
     create,
-    defineProperties,
     defineProperty,
     globalThis,
     isNull,
@@ -24,7 +23,7 @@ import {
 
 import { innerHTMLSetter } from '../env/element';
 import { dispatchEvent } from '../env/event-target';
-import { DocumentPrototypeActiveElement, createComment } from '../env/document';
+import { DocumentPrototypeActiveElement } from '../env/document';
 import { isInstanceOfNativeShadowRoot, isNativeShadowRootDefined } from '../env/shadow-root';
 import {
     compareDocumentPosition,
@@ -50,7 +49,6 @@ import { fauxElementFromPoint } from '../shared/faux-element-from-point';
 import { fauxElementsFromPoint } from '../shared/faux-elements-from-point';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 
-import { getInternalChildNodes } from './node';
 import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
 import {
     shadowRootQuerySelector,
@@ -424,7 +422,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: ShadowRoot): ChildNode | null {
-            const childNodes = getInternalChildNodes(this);
+            const childNodes = this.childNodes;
             return childNodes[0] || null;
         },
     },
@@ -432,7 +430,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: ShadowRoot): ChildNode | null {
-            const childNodes = getInternalChildNodes(this);
+            const childNodes = this.childNodes;
             return childNodes[childNodes.length - 1] || null;
         },
     },
@@ -441,7 +439,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: ShadowRoot): boolean {
-            const childNodes = getInternalChildNodes(this);
+            const childNodes = this.childNodes;
             return childNodes.length > 0;
         },
     },
@@ -512,7 +510,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: ShadowRoot): string {
-            const childNodes = getInternalChildNodes(this);
+            const childNodes = this.childNodes;
             let textContent = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
                 const currentNode = childNodes[i];
@@ -546,7 +544,7 @@ const ElementPatchDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: ShadowRoot): string {
-            const childNodes = getInternalChildNodes(this);
+            const childNodes = this.childNodes;
             let innerHTML = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
                 innerHTML += getOuterHTML(childNodes[i]);
@@ -647,40 +645,3 @@ defineProperty(SyntheticShadowRoot, Symbol.hasInstance, {
         );
     },
 });
-
-/**
- * This method is only intended to be used in non-production mode in IE11
- * and its role is to produce a 1-1 mapping between a shadowRoot instance
- * and a comment node that is intended to use to trick the IE11 DevTools
- * to show the content of the shadowRoot in the DOM Explorer.
- */
-export function getIE11FakeShadowRootPlaceholder(host: Element): Comment {
-    const shadowRoot = getShadowRoot(host);
-    // @ts-ignore this $$placeholder$$ is not a security issue because you must
-    // have access to the shadowRoot in order to extract the fake node, which give
-    // you access to the same childNodes of the shadowRoot, so, who cares.
-    let c = shadowRoot.$$placeholder$$;
-    if (!isUndefined(c)) {
-        return c;
-    }
-    const doc = getOwnerDocument(host);
-    // @ts-ignore $$placeholder$$ is fine, read the node above.
-    c = shadowRoot.$$placeholder$$ = createComment.call(doc, '');
-    defineProperties(c, {
-        childNodes: {
-            get() {
-                return shadowRoot.childNodes;
-            },
-            enumerable: true,
-            configurable: true,
-        },
-        tagName: {
-            get() {
-                return `#shadow-root (${shadowRoot.mode})`;
-            },
-            enumerable: true,
-            configurable: true,
-        },
-    });
-    return c;
-}

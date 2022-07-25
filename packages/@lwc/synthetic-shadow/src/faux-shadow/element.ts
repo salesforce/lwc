@@ -48,7 +48,7 @@ import {
 } from '../shared/node-ownership';
 
 import { assignedSlotGetterPatched } from './slot';
-import { getInternalChildNodes, hasMountedChildren } from './node';
+import { hasMountedChildren } from './node';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 import { attachShadow, getShadowRoot, isSyntheticShadowHost } from './shadow-root';
 import {
@@ -66,7 +66,7 @@ const enum ShadowDomSemantic {
 }
 
 function innerHTMLGetterPatched(this: Element): string {
-    const childNodes = getInternalChildNodes(this);
+    const childNodes = this.childNodes;
     let innerHTML = '';
     for (let i = 0, len = childNodes.length; i < len; i += 1) {
         innerHTML += getOuterHTML(childNodes[i]);

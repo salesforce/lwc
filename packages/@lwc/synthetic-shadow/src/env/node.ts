@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
+import { getOwnPropertyDescriptor } from '@lwc/shared';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node
@@ -61,37 +61,22 @@ const ownerDocumentGetter: (this: Node) => Document | null = getOwnPropertyDescr
     'ownerDocument'
 )!.get!;
 
-const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
+const parentElementGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
     nodePrototype,
     'parentElement'
-)
-    ? getOwnPropertyDescriptor(nodePrototype, 'parentElement')!.get!
-    : getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!; // IE11
+)!.get!;
 
 const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(
     nodePrototype,
     'textContent'
 )!.set!;
 
-const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = hasOwnProperty.call(
+const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = getOwnPropertyDescriptor(
     nodePrototype,
     'childNodes'
-)
-    ? getOwnPropertyDescriptor(nodePrototype, 'childNodes')!.get!
-    : getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!; // IE11
+)!.get!;
 
-const isConnected = hasOwnProperty.call(nodePrototype, 'isConnected')
-    ? getOwnPropertyDescriptor(nodePrototype, 'isConnected')!.get!
-    : function (this: Node): boolean {
-          const doc = ownerDocumentGetter.call(this);
-          // IE11
-          return (
-              // if doc is null, it means `this` is actually a document instance which
-              // is always connected
-              doc === null ||
-              (compareDocumentPosition.call(doc, this) & DOCUMENT_POSITION_CONTAINED_BY) !== 0
-          );
-      };
+const isConnected = getOwnPropertyDescriptor(nodePrototype, 'isConnected')!.get!;
 
 export {
     _Node as Node,

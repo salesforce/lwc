@@ -23,8 +23,6 @@ const supportsConstructableStylesheets =
 const supportsMutableAdoptedStyleSheets =
     supportsConstructableStylesheets &&
     getOwnPropertyDescriptor(document.adoptedStyleSheets, 'length')!.writable;
-// Detect IE, via https://stackoverflow.com/a/9851769
-const isIE11 = !isUndefined((document as any).documentMode);
 
 //
 // Style sheet cache
@@ -37,7 +35,6 @@ interface CacheData {
     // Global cache of style elements is used for fast cloning.
     stylesheet: CSSStyleSheet | undefined;
     // Bookkeeping of shadow roots that have already had this CSS injected into them, so we don't duplicate stylesheets.
-    // Note this will never be used by IE11 (because it only uses global styles), so WeakSet support is not important.
     roots: WeakSet<ShadowRoot> | undefined;
     // Same as above, but for the global document to avoid an extra WeakMap lookup for this common case.
     global: boolean;
@@ -79,12 +76,6 @@ function createStyleElement(content: string, cacheData: StyleElementCacheData) {
     // If the <style> was already used, then we should clone it. We cannot insert
     // the same <style> in two places in the DOM.
     if (usedElement) {
-        // For a mysterious reason, IE11 doesn't like the way we clone <style> nodes
-        // and will render the incorrect styles if we do things that way. It's just
-        // a perf optimization, so we can skip it for IE11.
-        if (isIE11) {
-            return createFreshStyleElement(content);
-        }
         // This `<style>` may be repeated multiple times in the DOM, so cache it. It's a bit
         // faster to call `cloneNode()` on an existing node than to recreate it every time.
         return element.cloneNode(true) as HTMLStyleElement;
