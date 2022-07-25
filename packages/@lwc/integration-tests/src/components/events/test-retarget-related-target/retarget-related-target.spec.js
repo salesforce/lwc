@@ -8,7 +8,7 @@ const assert = require('assert');
 
 const URL = '/retarget-related-target';
 
-if (process.env.COMPAT === 'false') {
+if (!process.env.COMPAT) {
     describe('Retarget relatedTarget', () => {
         before(async () => {
             await browser.url(URL);
