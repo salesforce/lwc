@@ -41,7 +41,7 @@ export interface SourceLocation {
 
 export interface ElementSourceLocation extends SourceLocation {
     startTag: SourceLocation;
-    endTag?: SourceLocation;
+    endTag: SourceLocation;
 }
 
 export interface Literal<Value = string | boolean> {
