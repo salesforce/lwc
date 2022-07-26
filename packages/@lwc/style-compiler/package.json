@@ -15,7 +15,7 @@
     "main": "dist/commonjs/index.js",
     "types": "dist/types/index.d.ts",
     "scripts": {
-        "clean": "rm -rf dist/",
+        "clean": "rm -rf dist/ node_modules/",
         "build": "tsc",
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },

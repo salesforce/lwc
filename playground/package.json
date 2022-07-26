@@ -5,7 +5,8 @@
   "description": "Playground project to experiment with LWC.",
   "scripts": {
     "dev": "rollup -c --watch",
-    "build": "NODE_ENV=production rollup -c"
+    "build": "NODE_ENV=production rollup -c",
+    "clean": "rm -rf dist/ node_modules/"
   },
   "devDependencies": {
     "@lwc/rollup-plugin": "2.21.0",

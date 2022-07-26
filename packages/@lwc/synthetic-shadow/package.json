@@ -15,7 +15,7 @@
     "main": "index.js",
     "module": "dist/synthetic-shadow.js",
     "scripts": {
-        "clean": "rm -rf dist/",
+        "clean": "rm -rf dist/ node_modules/",
         "build": "rollup --config ./scripts/rollup/rollup.config.js",
         "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },

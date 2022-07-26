@@ -1,53 +1,24 @@
 {
-  "extends": "nx/presets/npm.json",
-  "npmScope": "lwc-monorepo",
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "test",
-          "lint",
-          "package",
-          "prepare"
-        ],
-        "maxParallel": 20
-      }
+    "extends": "nx/presets/npm.json",
+    "tasksRunnerOptions": {
+        "default": {
+            "runner": "nx/tasks-runners/default",
+            "options": {
+                "cacheDirectory": "./.nx-cache",
+                "cacheableOperations": ["prepare", "build", "dev"],
+                "maxParallel": 20
+            }
+        }
+    },
+    "targetDefaults": {
+        "build": {
+            "dependsOn": ["^build"]
+        },
+        "dev": {
+            "dependsOn": ["^build"]
+        }
+    },
+    "affected": {
+        "defaultBase": "master"
     }
-  },
-  "targetDependencies": {
-    "build": [
-      {
-        "target": "build",
-        "projects": "dependencies"
-      }
-    ],
-    "prepare": [
-      {
-        "target": "prepare",
-        "projects": "dependencies"
-      }
-    ],
-    "package": [
-      {
-        "target": "package",
-        "projects": "dependencies"
-      }
-    ],
-    "dev": [
-      {
-        "target": "build",
-        "projects": "dependencies"
-      }
-    ]
-  },
-  "affected": {
-    "defaultBase": "master"
-  },
-  "pluginsConfig": {
-    "@nrwl/js": {
-      "analyzeSourceFiles": false
-    }
-  }
 }

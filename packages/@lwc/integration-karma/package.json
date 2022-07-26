@@ -11,7 +11,8 @@
         "hydration:test": "karma start ./scripts/karma-configs/hydration/local.js --single-run --browsers ChromeHeadless",
         "hydration:sauce": "karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
         "sauce": "karma start ./scripts/karma-configs/test/sauce.js --single-run",
-        "coverage": "node ./scripts/merge-coverage.js"
+        "coverage": "node ./scripts/merge-coverage.js",
+        "clean": "rm -rf node_modules/"
     },
     "//": [
         "karma-jasmine must be kept at v4 because it is only compatible with jasmine-core@4, which we need for IE11"

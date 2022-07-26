@@ -3,7 +3,8 @@
     "version": "2.21.0",
     "private": true,
     "scripts": {
-        "build": "rm -fr dist && rollup -c"
+        "build": "rm -fr dist && rollup -c",
+        "clean": "rm -rf dist/ node_modules/"
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "2.21.0"
