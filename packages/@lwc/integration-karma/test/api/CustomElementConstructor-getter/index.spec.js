@@ -6,7 +6,7 @@ import WithChildElms from 'x/withChildElms';
 
 // We can't register standard custom elements if we run compat because of the transformation applied to the component
 // constructor.
-const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
+const SUPPORTS_CUSTOM_ELEMENTS = 'customElements' in window;
 
 it('should return a custom element', () => {
     class Test extends LightningElement {}

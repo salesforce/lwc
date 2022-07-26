@@ -56,7 +56,7 @@ it('should create elements with correct component behavior even when they share 
 
 // In compat mode, the custom registry is bypassed and an equivalent implementation is used,
 // the native registry restrictions are not applicable
-const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
+const SUPPORTS_CUSTOM_ELEMENTS = 'customElements' in window;
 if (SUPPORTS_CUSTOM_ELEMENTS) {
     describe('duplicate registration', () => {
         function testDuplicateNativeRegistration(testCase, tag, wcClazz) {

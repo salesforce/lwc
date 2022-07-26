@@ -6,18 +6,12 @@
         "build": "node scripts/build.js",
         "build:dev": "MODE=dev yarn build",
         "build:prod": "MODE=prod yarn build",
-        "build:compat": "MODE=compat yarn build",
-        "build:prod_compat": "MODE=prod_compat yarn build",
         "local": "yarn local:prod",
         "local:dev": "yarn build:dev && MODE=dev wdio ./scripts/wdio.local.conf.js",
         "local:prod": "yarn build:prod && MODE=prod wdio ./scripts/wdio.local.conf.js",
-        "local:compat": "yarn build:compat && MODE=compat wdio ./scripts/wdio.local.conf.js",
-        "local:prod_compat": "yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.local.conf.js",
         "sauce": "yarn sauce:prod",
         "sauce:dev": "MODE=dev yarn build:dev && MODE=dev wdio ./scripts/wdio.sauce.conf.js",
-        "sauce:prod": "MODE=prod yarn build:prod && MODE=prod wdio ./scripts/wdio.sauce.conf.js",
-        "sauce:compat": "MODE=compat yarn build:compat && MODE=compat wdio ./scripts/wdio.sauce.conf.js",
-        "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
+        "sauce:prod": "MODE=prod yarn build:prod && MODE=prod wdio ./scripts/wdio.sauce.conf.js"
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "2.21.0",

@@ -12,7 +12,7 @@ const { getModulePath } = require('lwc');
 
 const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
-const { COMPAT, SYNTHETIC_SHADOW_ENABLED, GREP, COVERAGE } = require('../../shared/options');
+const { SYNTHETIC_SHADOW_ENABLED, GREP, COVERAGE } = require('../../shared/options');
 const { createPattern } = require('../utils');
 const TAGS = require('./tags');
 
@@ -20,13 +20,9 @@ const BASE_DIR = path.resolve(__dirname, '../../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 
 const SYNTHETIC_SHADOW = getModulePath('synthetic-shadow', 'iife', 'es2017', 'dev');
-const SYNTHETIC_SHADOW_COMPAT = getModulePath('synthetic-shadow', 'iife', 'es5', 'dev');
 const LWC_ENGINE = getModulePath('engine-dom', 'iife', 'es2017', 'dev');
-const LWC_ENGINE_COMPAT = getModulePath('engine-dom', 'iife', 'es5', 'dev');
 const WIRE_SERVICE = getModulePath('wire-service', 'iife', 'es2017', 'dev');
-const WIRE_SERVICE_COMPAT = getModulePath('wire-service', 'iife', 'es5', 'dev');
 
-const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const WIRE_SETUP = require.resolve('../../../helpers/wire-setup');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
@@ -40,18 +36,11 @@ process.setMaxListeners(1000);
 function getFiles() {
     const frameworkFiles = [];
 
-    if (COMPAT) {
-        frameworkFiles.push(createPattern(POLYFILL_COMPAT));
-        frameworkFiles.push(createPattern(SYNTHETIC_SHADOW_COMPAT));
-        frameworkFiles.push(createPattern(LWC_ENGINE_COMPAT));
-        frameworkFiles.push(createPattern(WIRE_SERVICE_COMPAT));
-    } else {
-        if (SYNTHETIC_SHADOW_ENABLED) {
-            frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
-        }
-        frameworkFiles.push(createPattern(LWC_ENGINE));
-        frameworkFiles.push(createPattern(WIRE_SERVICE));
+    if (SYNTHETIC_SHADOW_ENABLED) {
+        frameworkFiles.push(createPattern(SYNTHETIC_SHADOW));
     }
+    frameworkFiles.push(createPattern(LWC_ENGINE));
+    frameworkFiles.push(createPattern(WIRE_SERVICE));
     frameworkFiles.push(createPattern(WIRE_SETUP));
     frameworkFiles.push(createPattern(TEST_SETUP));
 
@@ -97,9 +86,9 @@ module.exports = (config) => {
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
     if (COVERAGE) {
         // Indicate to Karma to instrument the code to gather code coverage.
-        config.preprocessors[COMPAT ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
-        config.preprocessors[COMPAT ? WIRE_SERVICE_COMPAT : WIRE_SERVICE] = ['coverage'];
-        config.preprocessors[COMPAT ? SYNTHETIC_SHADOW_COMPAT : SYNTHETIC_SHADOW] = ['coverage'];
+        config.preprocessors[LWC_ENGINE] = ['coverage'];
+        config.preprocessors[WIRE_SERVICE] = ['coverage'];
+        config.preprocessors[SYNTHETIC_SHADOW] = ['coverage'];
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');

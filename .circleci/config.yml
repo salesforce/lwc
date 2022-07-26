@@ -39,9 +39,6 @@ commands:
       coverage:
         type: boolean
         default: false
-      compat:
-        type: boolean
-        default: false
       disable_synthetic:
         type: boolean
         default: false
@@ -69,7 +66,6 @@ commands:
             }
             <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
             <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
-            <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
             <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
             retry << parameters.command >>
   # Setup
@@ -136,8 +132,6 @@ commands:
         type: boolean
       force_native_shadow_mode:
         type: boolean
-      compat:
-        type: boolean
       coverage:
         type: boolean
         default: true
@@ -147,7 +141,6 @@ commands:
           working_directory: packages/@lwc/integration-karma
           disable_synthetic: << parameters.disable_synthetic >>
           force_native_shadow_mode: << parameters.force_native_shadow_mode >>
-          compat: << parameters.compat >>
           coverage: << parameters.coverage >>
           command: yarn sauce
 
@@ -196,19 +189,12 @@ jobs:
       - start_sauce_connect
       - run_karma:
           disable_synthetic: false
-          compat: false
           force_native_shadow_mode: false
       - run_karma:
           disable_synthetic: true
-          compat: false
           force_native_shadow_mode: false
       - run_karma:
           disable_synthetic: false
-          compat: true
-          force_native_shadow_mode: false
-      - run_karma:
-          disable_synthetic: false
-          compat: false
           force_native_shadow_mode: true
       - retry_karma:
           command_name: Run karma hydration tests
@@ -234,19 +220,6 @@ jobs:
           working_directory: packages/@lwc/integration-tests
 
 
-  test_integration_compat:
-    executor: node
-    environment:
-      SAUCE_TUNNEL_ID: lwc_<< pipeline.id	>>_test_integration_compat
-    steps:
-      - load_workspace
-      - start_sauce_connect
-      - retry_karma:
-          command_name: Run integration test - IE11 SauceLabs
-          command: yarn sauce:prod_compat --browsers ie11
-          working_directory: packages/@lwc/integration-tests
-
-
 # Workflows definition
 workflows:
   version: 2
@@ -269,12 +242,6 @@ workflows:
             - test_unit
 
       - test_integration:
-          filters:
-            <<: *ignore_forks
-          requires:
-            - test_unit
-
-      - test_integration_compat:
           filters:
             <<: *ignore_forks
           requires:
@@ -309,14 +276,6 @@ workflows:
             - hold
 
       - test_integration:
-          context: lwc-sauce-labs
-          filters:
-            <<: *only_forks
-          requires:
-            - test_unit
-            - test_karma
-
-      - test_integration_compat:
           context: lwc-sauce-labs
           filters:
             <<: *only_forks

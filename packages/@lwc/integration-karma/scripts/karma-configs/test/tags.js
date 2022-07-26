@@ -8,7 +8,6 @@
 'use strict';
 
 const {
-    COMPAT,
     SYNTHETIC_SHADOW_ENABLED,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
 } = require('../../shared/options');
@@ -16,7 +15,6 @@ const {
 const TAGS = [
     `${SYNTHETIC_SHADOW_ENABLED ? 'synthetic' : 'native'}-shadow`,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST && 'force-native-shadow-mode',
-    COMPAT && 'compat',
 ].filter(Boolean);
 
 module.exports = TAGS;

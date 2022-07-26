@@ -63,7 +63,16 @@ describe('EventTarget.addEventListener', () => {
         expect(log).toEqual(targets);
     });
 
-    if (!process.env.COMPAT) {
+    const supportsEventTargetConstructor = (() => {
+        try {
+            new EventTarget();
+            return true;
+        } catch (err) {
+            return false;
+        }
+    })();
+
+    if (supportsEventTargetConstructor) {
         it('should accept a function listener as second parameter for a non-node EventTarget', () => {
             const target = new EventTarget();
             const listener = jasmine.createSpy();
@@ -110,17 +119,15 @@ describe('EventTarget.addEventListener', () => {
         );
     });
 
-    if (!process.env.COMPAT) {
-        // Safari 10 does not throw these errors even though they are part of the spec
-        it('should throw error when second parameter is not passed', () => {
-            expect(() => nodes.button.addEventListener('dummy')).toThrowError(TypeError);
-        });
+    it('should throw error when second parameter is not passed', () => {
+        expect(() => nodes.button.addEventListener('dummy')).toThrowError(TypeError);
+    });
 
-        it('should throw error when no parameters are passed', () => {
-            expect(() => nodes.button.addEventListener()).toThrowError(TypeError);
-        });
+    it('should throw error when no parameters are passed', () => {
+        expect(() => nodes.button.addEventListener()).toThrowError(TypeError);
+    });
 
-        // IE, Firefox etc don't throw these errors
+    if (typeof BigInt === 'function') {
         [123, 'string', true, BigInt('123'), Symbol('dummy')].forEach((primitive) => {
             it(`should throw error when ${typeof primitive} is passed as second parameter`, () => {
                 expect(() => nodes.button.addEventListener('dummy', primitive)).toThrowError(

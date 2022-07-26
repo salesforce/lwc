@@ -28,8 +28,7 @@ it('should return undefined', () => {
 
 testConvertValueToString('undefined', undefined);
 
-// IE11 doesn't convert null values to String when invoking setAttribute
-// testConvertValueToString('null', null);
+testConvertValueToString('null', null);
 
 testConvertValueToString('number', 1);
 testConvertValueToString('true', true);

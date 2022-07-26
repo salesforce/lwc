@@ -24,7 +24,15 @@ describe('EventTarget.dispatchEvent', () => {
         expect(() => node.dispatchEvent(1)).toThrowError();
     });
 
-    if (!process.env.COMPAT) {
+    const supportsEventTargetConstructor = (() => {
+        try {
+            new EventTarget();
+            return true;
+        } catch (err) {
+            return false;
+        }
+    })();
+    if (supportsEventTargetConstructor) {
         it('should return false when "Event.preventDefault" is invoked on non-node EventTarget', () => {
             const target = new EventTarget();
             target.addEventListener('custom-event', (e) => {

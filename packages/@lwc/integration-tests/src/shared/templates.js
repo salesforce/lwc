@@ -11,10 +11,6 @@ exports.app = function (cmpName) {
     `;
 };
 
-const COMPAT = `
-    <script src="../../shared/downgrade.js"></script>
-    <script src="../../shared/polyfills.js"></script>
-`;
 const SHADOW_POLYFILL = `
     <script>
     var fallback = location.search.indexOf('nativeShadow=true') === -1;
@@ -25,7 +21,7 @@ const SHADOW_POLYFILL = `
     </script>
 `;
 
-exports.html = function (cmpName, isCompat) {
+exports.html = function (cmpName) {
     return `
         <html>
             <head>
@@ -35,7 +31,6 @@ exports.html = function (cmpName, isCompat) {
                 <script>
                     window.process = { env: { NODE_ENV: "development" } };
                 </script>
-                ${isCompat ? COMPAT : ''}
                 ${SHADOW_POLYFILL}
                 <script src="../../shared/engine.js"></script>
                 <script src="./${cmpName}.js"></script>

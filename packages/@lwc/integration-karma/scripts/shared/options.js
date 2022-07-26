@@ -12,13 +12,11 @@ if (process.env.NATIVE_SHADOW) {
     throw new Error('NATIVE_SHADOW is deprecated. Use DISABLE_SYNTHETIC instead!');
 }
 
-const COMPAT = Boolean(process.env.COMPAT);
 const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
 const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST);
 
 module.exports = {
     // Test configuration
-    COMPAT,
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     SYNTHETIC_SHADOW_ENABLED: !DISABLE_SYNTHETIC,
     GREP: process.env.GREP,

@@ -8,74 +8,50 @@
 'use strict';
 
 const { getSauceConfig } = require('../utils');
-const { COMPAT, SYNTHETIC_SHADOW_ENABLED } = require('../../shared/options');
+const { SYNTHETIC_SHADOW_ENABLED } = require('../../shared/options');
 
 const TAGS = require('./tags');
 const localConfig = require('./base');
 
 const SAUCE_BROWSERS = [
-    // Standard browsers
+    // Modern browsers
     {
         label: 'sl_chrome_latest',
         browserName: 'chrome',
         version: 'latest',
-        compat: false,
-        nativeShadowCompatible: true,
         test_hydration: true,
     },
     {
         label: 'sl_firefox_latest',
         browserName: 'firefox',
         version: 'latest',
-        compat: false,
-        nativeShadowCompatible: true,
         test_hydration: true,
     },
     {
         label: 'sl_safari_latest',
         browserName: 'safari',
         version: 'latest',
-        compat: false,
-        nativeShadowCompatible: true,
         test_hydration: true,
     },
 
-    // Compat browsers
+    // Minimum supported versions of browsers
     {
-        label: 'sl_ie11',
-        browserName: 'internet explorer',
-        version: '11',
-        compat: true,
-        nativeShadowCompatible: false,
-    },
-    {
-        label: 'sl_chrome_compat',
+        label: 'sl_chrome_min_supported',
         browserName: 'chrome',
-        version: '59',
-        compat: true,
-        nativeShadowCompatible: false,
+        version: '80',
     },
     {
-        label: 'sl_firefox_compat',
+        label: 'sl_firefox_min_supported',
         browserName: 'firefox',
-        version: '54',
-        compat: true,
-        nativeShadowCompatible: false,
+        version: '79',
     },
     {
-        label: 'sl_safari_compat',
+        label: 'sl_safari_min_supported',
         browserName: 'safari',
-        version: '10',
-        platform: 'OS X 10.11',
-        compat: true,
-        nativeShadowCompatible: false,
+        version: '13.1',
+        platform: 'OS X 10.15',
     },
-].filter((browser) => {
-    return (
-        browser.compat === COMPAT &&
-        (SYNTHETIC_SHADOW_ENABLED || browser.nativeShadowCompatible !== SYNTHETIC_SHADOW_ENABLED)
-    );
-});
+];
 
 module.exports = (config) => {
     localConfig(config);
@@ -89,7 +65,6 @@ module.exports = (config) => {
         tags: TAGS,
         customData: {
             lwc: {
-                COMPAT,
                 DISABLE_SYNTHETIC: !SYNTHETIC_SHADOW_ENABLED,
             },
         },

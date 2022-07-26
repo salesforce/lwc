@@ -30,8 +30,7 @@ function testConvertValueToString(type, value) {
 
 testConvertValueToString('undefined', undefined);
 
-// IE11 doesn't convert null values to String when invoking setAttributeNS
-// testConvertValueToString('null', null);
+testConvertValueToString('null', null);
 
 testConvertValueToString('number', 1);
 testConvertValueToString('true', true);

@@ -7,7 +7,7 @@ End-to-end tests run in the browser across different modes with the option to ru
 
 ## Commands
 
-Builds artifacts in `compat` mode:
+Builds artifacts:
 
 ```
 yarn build
@@ -99,7 +99,7 @@ SAUCE_TUNNEL_ID=my-tunnel-id
 To select a single browser for a run, pass `--browsers` followed by a comma separated list of browser you wish to run. The name of the browser to specify must match the `commonName` entry of the browsers in the webdriver.io config file (wdio.sauce.conf.js).
 
 ```
-SAUCE_USERNAME=my_user SAUCE_KEY=123-456-789 yarn sauce:prod_compat --browsers ie11,safari9
+SAUCE_USERNAME=my_user SAUCE_KEY=123-456-789 yarn sauce:prod --browsers chrome90
 ```
 
 To modify the master list of browsers Sauce Labs runs on, use their [Platform Configurator](https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/) to get the settings for the desired browser. Then, update the `capabilities` section of wdio.sauce.conf.js.

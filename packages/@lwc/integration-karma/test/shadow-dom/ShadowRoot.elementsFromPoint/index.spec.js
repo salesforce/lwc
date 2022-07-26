@@ -110,8 +110,14 @@ describe('elementsFromPoint', () => {
             test(inSlottableInner, [inSlottableInner, inSlottable, slottable, inContainer]);
         });
 
-        // IE11 sometimes includes <html> in the elements array, sometimes not. It's not worth testing
-        if (!process.env.COMPAT) {
+        // Safari shipped MediaRecorder in Safari 14.1
+        // https://caniuse.com/mediarecorder
+        const isOldSafari =
+            navigator.userAgent.includes('Safari') &&
+            !navigator.userAgent.includes('Chrom') &&
+            typeof MediaRecorder !== 'function';
+        // For some reason this test fails in old Safari
+        if (!isOldSafari) {
             it('host elements are not all visible', () => {
                 const grandparent = createElement('x-grandparent', { is: Grandparent });
                 document.body.appendChild(grandparent);

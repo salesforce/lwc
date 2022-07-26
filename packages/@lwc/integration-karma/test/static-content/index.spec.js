@@ -9,7 +9,7 @@ import SvgPathInDiv from 'x/svgPathInDiv';
 import SvgPathInG from 'x/svgPathInG';
 
 // In compat mode, the component will always render in synthetic mode with the scope attribute
-if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
+if (!process.env.NATIVE_SHADOW) {
     describe('Mixed mode for static content', () => {
         beforeEach(() => {
             setFeatureFlagForTest('ENABLE_MIXED_SHADOW_MODE', true);

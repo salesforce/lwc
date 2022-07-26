@@ -10,29 +10,16 @@ const fs = require('fs-extra');
 const rollup = require('rollup');
 const { getModulePath } = require('lwc');
 const rollupLwcCompilerPlugin = require('@lwc/rollup-plugin');
-const rollupCompatPlugin = require('rollup-plugin-compat');
 const rollupReplacePlugin = require('@rollup/plugin-replace');
-const compatPolyfills = require('compat-polyfills');
 
 const templates = require('../src/shared/templates.js');
 
 // -- Build Config -------------------------------------------
-const mode = process.env.MODE || 'compat';
-const isCompat = /compat/.test(mode);
+const mode = process.env.MODE || 'dev';
 const isProd = /prod/.test(mode);
 
-const engineModeFile = getModulePath(
-    'engine-dom',
-    'iife',
-    isCompat ? 'es5' : 'es2017',
-    isProd ? 'prod' : 'dev'
-);
-const shadowModeFile = getModulePath(
-    'synthetic-shadow',
-    'iife',
-    isCompat ? 'es5' : 'es2017',
-    isProd ? 'prod' : 'dev'
-);
+const engineModeFile = getModulePath('engine-dom', 'iife', 'es2017', isProd ? 'prod' : 'dev');
+const shadowModeFile = getModulePath('synthetic-shadow', 'iife', 'es2017', isProd ? 'prod' : 'dev');
 
 const testSufix = '.test.js';
 const testPrefix = 'test-';
@@ -79,8 +66,6 @@ function entryPointResolverPlugin() {
 // -- Rollup config ---------------------------------------------
 
 const globalModules = {
-    'compat-polyfills/downgrade': 'window',
-    'compat-polyfills/polyfills': 'window',
     lwc: 'LWC',
 };
 
@@ -92,7 +77,6 @@ function createRollupInputConfig() {
         plugins: [
             entryPointResolverPlugin(),
             rollupLwcCompilerPlugin({ exclude: `**/*${testSufix}` }),
-            isCompat && rollupCompatPlugin({ polyfills: false }),
             isProd &&
                 rollupReplacePlugin({
                     'process.env.NODE_ENV': JSON.stringify('production'),
@@ -117,8 +101,6 @@ if (!fs.existsSync(engineModeFile)) {
 // copy static files
 fs.copySync(engineModeFile, path.join(testSharedOutput, 'engine.js'));
 fs.copySync(shadowModeFile, path.join(testSharedOutput, 'shadow.js'));
-fs.writeFileSync(path.join(testSharedOutput, 'downgrade.js'), compatPolyfills.loadDowngrade());
-fs.writeFileSync(path.join(testSharedOutput, 'polyfills.js'), compatPolyfills.loadPolyfills());
 
 // -- Build component tests -----------------------------------------------------=
 
@@ -136,7 +118,7 @@ testEntries
 
         fs.writeFileSync(
             `${testOutput}/${testNamespace}/${testName}/index.html`,
-            templates.html(testName, isCompat),
+            templates.html(testName),
             'utf8'
         );
     }, Promise.resolve())
