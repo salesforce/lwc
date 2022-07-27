@@ -172,7 +172,6 @@ function s(
     const { renderMode, shadowMode } = vmBeingRendered;
 
     if (renderMode === RenderMode.Light) {
-        // sc(children);
         return fr(data.key, children);
     }
     if (shadowMode === ShadowMode.Synthetic) {
@@ -336,28 +335,6 @@ function i(
     return list;
 }
 
-/**
- * [f]lattening
- */
-function f(items: Readonly<Array<Readonly<Array<VNodes>> | VNodes>>): VNodes {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
-    }
-    const len = items.length;
-    const flattened: VNodes = [];
-    // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
-    sc(flattened);
-    for (let j = 0; j < len; j += 1) {
-        const item = items[j];
-        if (isArray(item)) {
-            ArrayPush.apply(flattened, item);
-        } else {
-            ArrayPush.call(flattened, item);
-        }
-    }
-    return flattened;
-}
-
 // [t]ext node
 function t(text: string): VText {
     let sel, key, elm;
@@ -399,21 +376,6 @@ function b(fn: EventListener): EventListener {
     return function (event: Event) {
         invokeEventListener(vm, fn, vm.component, event);
     };
-}
-
-// [k]ey function
-function k(compilerKey: number, obj: any): string | void {
-    switch (typeof obj) {
-        case 'number':
-        case 'string':
-            return compilerKey + ':' + obj;
-        case 'object':
-            if (process.env.NODE_ENV !== 'production') {
-                assert.fail(
-                    `Invalid key value "${obj}" in ${getVMBeingRendered()}. Key must be a string or number.`
-                );
-            }
-    }
 }
 
 // [g]lobal [id] function
@@ -466,14 +428,6 @@ function fid(url: string | undefined | null): string | null | undefined {
 }
 
 /**
- * Map to store an index value assigned to any dynamic component reference ingested
- * by dc() api. This allows us to generate a unique unique per template per dynamic
- * component reference to avoid diffing algo mismatches.
- */
-const DynamicImportedComponentMap: Map<LightningElementConstructor, number> = new Map();
-let dynamicImportedComponentCounter = 0;
-
-/**
  * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
  */
 function dc(
@@ -497,18 +451,8 @@ function dc(
     if (!isComponentConstructor(Ctor)) {
         throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
     }
-    let idx = DynamicImportedComponentMap.get(Ctor);
-    if (isUndefined(idx)) {
-        idx = dynamicImportedComponentCounter++;
-        DynamicImportedComponentMap.set(Ctor, idx);
-    }
-    // the new vnode key is a mix of idx and compiler key, this is required by the diffing algo
-    // to identify different constructors as vnodes with different keys to avoid reusing the
-    // element used for previous constructors.
-    // Shallow clone is necessary here becuase VElementData may be shared across VNodes due to
-    // hoisting optimization.
-    const newData = { ...data, key: `dc:${idx}:${data.key}` };
-    return c(sel, Ctor, newData, children);
+
+    return c(sel, Ctor, data, children);
 }
 
 /**
@@ -565,11 +509,9 @@ const api = ObjectFreeze({
     h,
     c,
     i,
-    f,
     t,
     d,
     b,
-    k,
     co,
     dc,
     fr,

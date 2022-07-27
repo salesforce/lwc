@@ -29,7 +29,6 @@ import { serializeStaticElement } from './static-element-serializer';
 
 type RenderPrimitive =
     | 'iterator'
-    | 'flatten'
     | 'element'
     | 'slot'
     | 'customElement'
@@ -37,7 +36,6 @@ type RenderPrimitive =
     | 'text'
     | 'dynamicText'
     | 'dynamicCtor'
-    | 'key'
     | 'tabindex'
     | 'scopedId'
     | 'scopedFragId'
@@ -53,7 +51,6 @@ interface RenderPrimitiveDefinition {
 
 const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition } = {
     iterator: { name: 'i', alias: 'api_iterator' },
-    flatten: { name: 'f', alias: 'api_flatten' },
     element: { name: 'h', alias: 'api_element' },
     slot: { name: 's', alias: 'api_slot' },
     customElement: { name: 'c', alias: 'api_custom_element' },
@@ -61,7 +58,6 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     bind: { name: 'b', alias: 'api_bind' },
     text: { name: 't', alias: 'api_text' },
     dynamicText: { name: 'd', alias: 'api_dynamic_text' },
-    key: { name: 'k', alias: 'api_key' },
     tabindex: { name: 'ti', alias: 'api_tab_index' },
     scopedId: { name: 'gid', alias: 'api_scoped_id' },
     scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
@@ -227,14 +223,6 @@ export default class CodeGen {
 
     genBind(handler: t.Expression) {
         return this._renderApiCall(RENDER_APIS.bind, [handler]);
-    }
-
-    genFlatten(children: t.Expression[]) {
-        return this._renderApiCall(RENDER_APIS.flatten, children);
-    }
-
-    genKey(compilerKey: t.SimpleLiteral, value: t.Expression) {
-        return this._renderApiCall(RENDER_APIS.key, [compilerKey, value]);
     }
 
     genScopedId(id: string | t.Expression): t.CallExpression {

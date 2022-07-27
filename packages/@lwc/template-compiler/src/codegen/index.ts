@@ -57,9 +57,7 @@ import CodeGen from './codegen';
 import {
     identifierFromComponentName,
     objectToAST,
-    shouldFlatten,
     memorizeHandler,
-    containsDynamicChildren,
     parseClassNames,
     parseStyleText,
     hasIdAttribute,
@@ -151,8 +149,7 @@ function transform(codeGen: CodeGen): t.Expression {
             if (isForBlock(child)) {
                 res.push(transformForBlock(child));
             } else if (isIf(child)) {
-                const children = transformIf(child);
-                Array.isArray(children) ? res.push(...children) : res.push(children);
+                res.push(transformIf(child));
             } else if (isBaseElement(child)) {
                 const slotParentName = isSlot(parent) ? parent.slotName : undefined;
                 res.push(transformElement(child, slotParentName));
@@ -161,72 +158,45 @@ function transform(codeGen: CodeGen): t.Expression {
             }
         }
 
-        if (shouldFlatten(codeGen, children)) {
-            if (children.length === 1 && !containsDynamicChildren(children)) {
-                return res[0];
+        return t.arrayExpression(res);
+    }
+
+    function transformIf(ifNode: If): t.Expression {
+        const children = transformChildren(ifNode);
+
+        let node = children;
+        if (t.isArrayExpression(children)) {
+            if (children.elements.length === 1) {
+                node = children.elements[0] as t.Expression;
             } else {
-                return codeGen.genFlatten([t.arrayExpression(res)]);
+                node = codeGen.genFragment(t.literal(codeGen.generateKey()), children);
             }
-        } else {
-            return t.arrayExpression(res);
-        }
-    }
-
-    function transformIf(ifNode: If): t.Expression | t.Expression[] {
-        const expression = transformChildren(ifNode);
-        let res: t.Expression | t.Expression[];
-
-        if (t.isArrayExpression(expression)) {
-            // Bind the expression once for all the template children
-            const testExpression = codeGen.bindExpression(ifNode.condition);
-
-            res = t.arrayExpression(
-                expression.elements.map((element) =>
-                    element !== null
-                        ? applyInlineIf(ifNode, element as t.Expression, testExpression)
-                        : null
-                )
-            );
-        } else {
-            // If the template has a single children, make sure the ternary expression returns an array
-            res = applyInlineIf(ifNode, expression, undefined, t.arrayExpression([]));
         }
 
-        if (t.isArrayExpression(res)) {
-            // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
-            // typecast it to t.Expression[]
-            res = res.elements as t.Expression[];
-        }
-
-        return res;
-    }
-
-    function applyInlineIf(
-        ifNode: If,
-        node: t.Expression,
-        testExpression?: t.Expression,
-        falseValue?: t.Expression
-    ): t.Expression {
-        if (!testExpression) {
-            testExpression = codeGen.bindExpression(ifNode.condition);
-        }
+        const testExpression = codeGen.bindExpression(ifNode.condition);
 
         let leftExpression: t.Expression;
-        const modifier = ifNode.modifier!;
-        if (modifier === 'true') {
-            leftExpression = testExpression;
-        } else if (modifier === 'false') {
-            leftExpression = t.unaryExpression('!', testExpression);
-        } else if (modifier === 'strict-true') {
-            leftExpression = t.binaryExpression('===', testExpression, t.literal(true));
-        } else {
-            // This is a defensive check, should be taken care of during parsing.
-            throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, {
-                messageArgs: [modifier],
-            });
+        switch (ifNode.modifier) {
+            case 'true':
+                leftExpression = testExpression;
+                break;
+
+            case 'false':
+                leftExpression = t.unaryExpression('!', testExpression);
+                break;
+
+            case 'strict-true':
+                leftExpression = t.binaryExpression('===', testExpression, t.literal(true));
+                break;
+
+            default:
+                // This is a defensive check, should be taken care of during parsing.
+                throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, {
+                    messageArgs: [ifNode.modifier],
+                });
         }
 
-        return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
+        return t.conditionalExpression(leftExpression, node, t.literal(null));
     }
 
     function transformForBlock(forBlock: ForBlock): t.Expression {

@@ -115,7 +115,7 @@ function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) 
             break;
 
         case VNodeType.CustomElement:
-            patchCustomElement(n1 as VCustomElement, n2, n2.data.renderer ?? renderer);
+            patchCustomElement(n1 as VCustomElement, n2, parent, n2.data.renderer ?? renderer);
             break;
     }
 }
@@ -326,25 +326,38 @@ function mountCustomElement(
     }
 }
 
-function patchCustomElement(n1: VCustomElement, n2: VCustomElement, renderer: RendererAPI) {
-    const elm = (n2.elm = n1.elm!);
-    const vm = (n2.vm = n1.vm);
+function patchCustomElement(
+    n1: VCustomElement,
+    n2: VCustomElement,
+    parent: ParentNode,
+    renderer: RendererAPI
+) {
+    // Handle the case where the custom element isn't correct.
+    if (n1.ctor !== n2.ctor) {
+        const anchor = renderer.nextSibling(n1.elm);
 
-    patchElementPropsAndAttrs(n1, n2, renderer);
-    if (!isUndefined(vm)) {
-        // in fallback mode, the allocation will always set children to
-        // empty and delegate the real allocation to the slot elements
-        allocateChildren(n2, vm);
-    }
+        unmount(n1, parent, renderer, true);
+        mountCustomElement(n2, parent, anchor, renderer);
+    } else {
+        const elm = (n2.elm = n1.elm!);
+        const vm = (n2.vm = n1.vm);
 
-    // in fallback mode, the children will be always empty, so, nothing
-    // will happen, but in native, it does allocate the light dom
-    patchChildren(n1.children, n2.children, elm, renderer);
+        patchElementPropsAndAttrs(n1, n2, renderer);
+        if (!isUndefined(vm)) {
+            // in fallback mode, the allocation will always set children to
+            // empty and delegate the real allocation to the slot elements
+            allocateChildren(n2, vm);
+        }
 
-    if (!isUndefined(vm)) {
-        // this will probably update the shadowRoot, but only if the vm is in a dirty state
-        // this is important to preserve the top to bottom synchronous rendering phase.
-        rerenderVM(vm);
+        // in fallback mode, the children will be always empty, so, nothing
+        // will happen, but in native, it does allocate the light dom
+        patchChildren(n1.children, n2.children, elm, renderer);
+
+        if (!isUndefined(vm)) {
+            // this will probably update the shadowRoot, but only if the vm is in a dirty state
+            // this is important to preserve the top to bottom synchronous rendering phase.
+            rerenderVM(vm);
+        }
     }
 }
 

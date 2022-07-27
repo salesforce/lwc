@@ -7,16 +7,7 @@
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
 import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
-import {
-    isParentNode,
-    isForBlock,
-    isBaseElement,
-    isIf,
-    isDynamicDirective,
-    isElement,
-    isText,
-    isComment,
-} from '../shared/ast';
+import { isParentNode, isBaseElement, isElement, isText, isComment } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
 import { isLiteral } from '../shared/estree';
@@ -50,41 +41,6 @@ export function objectToAST(
 ): t.ObjectExpression {
     return t.objectExpression(
         Object.keys(obj).map((key) => t.property(t.literal(key), valueMapper(key)))
-    );
-}
-
-function isDynamic(element: BaseElement): boolean {
-    return element.directives.some(isDynamicDirective);
-}
-
-export function containsDynamicChildren(children: ChildNode[]): boolean {
-    return children.some((child) => {
-        if (isForBlock(child) || isIf(child)) {
-            return containsDynamicChildren(child.children);
-        }
-
-        if (isBaseElement(child)) {
-            return isDynamic(child);
-        }
-
-        return false;
-    });
-}
-
-/**
- * Returns true if the children should be flattened.
- *
- * Children should be flattened if they contain an iterator,
- * a dynamic directive or a slot inside a light dom element.
- */
-export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
-    return children.some(
-        (child) =>
-            isParentNode(child) &&
-            ((isBaseElement(child) && isDynamic(child)) ||
-                // If node is only a control flow node and does not map to a stand alone element.
-                // Search children to determine if it should be flattened.
-                (isIf(child) && shouldFlatten(codeGen, child.children)))
     );
 }
 

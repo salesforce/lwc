@@ -7,20 +7,22 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     fr: api_fragment,
   } = $api;
   return [
-    $cmp.isTrue ? api_text("Outer") : null,
     $cmp.isTrue
-      ? api_fragment(
-          0,
-          api_iterator($cmp.items, function (item) {
-            return api_element(
-              "p",
-              {
-                key: item.id,
-              },
-              [api_text("Inner")]
-            );
-          })
-        )
+      ? api_fragment(1, [
+          api_text("Outer"),
+          api_fragment(
+            0,
+            api_iterator($cmp.items, function (item) {
+              return api_element(
+                "p",
+                {
+                  key: item.id,
+                },
+                [api_text("Inner")]
+              );
+            })
+          ),
+        ])
       : null,
   ];
   /*LWC compiler vX.X.X*/
