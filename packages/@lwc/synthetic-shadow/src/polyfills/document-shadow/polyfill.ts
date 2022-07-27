@@ -57,11 +57,6 @@ defineProperty(Document.prototype, 'activeElement', {
                 return null;
             }
         }
-        if (node.tagName === 'HTML') {
-            // IE 11. Active element should never be html element
-            node = this.body;
-        }
-
         return node;
     },
     enumerable: true,
