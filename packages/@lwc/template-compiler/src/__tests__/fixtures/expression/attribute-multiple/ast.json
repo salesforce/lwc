@@ -1,0 +1,199 @@
+{
+    "ast": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 95,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 84,
+                "end": 95
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 83,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 28,
+                        "start": 15,
+                        "end": 38
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 15,
+                        "start": 73,
+                        "end": 83
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "class",
+                        "value": {
+                            "type": "MemberExpression",
+                            "start": 1,
+                            "end": 6,
+                            "object": {
+                                "type": "MemberExpression",
+                                "object": {
+                                    "type": "Identifier",
+                                    "name": "$cmp"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 4,
+                                    "name": "foo"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 5,
+                                "end": 6,
+                                "name": "c"
+                            },
+                            "computed": false,
+                            "optional": false,
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 14,
+                                "endLine": 2,
+                                "endColumn": 27,
+                                "start": 24,
+                                "end": 37
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 14,
+                            "endLine": 2,
+                            "endColumn": 27,
+                            "start": 24,
+                            "end": 37
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "p",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 30,
+                            "start": 47,
+                            "end": 68,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 26,
+                                "start": 47,
+                                "end": 64
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 26,
+                                "endLine": 3,
+                                "endColumn": 30,
+                                "start": 64,
+                                "end": 68
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "class",
+                                "value": {
+                                    "type": "MemberExpression",
+                                    "start": 1,
+                                    "end": 6,
+                                    "object": {
+                                        "type": "MemberExpression",
+                                        "object": {
+                                            "type": "Identifier",
+                                            "name": "$cmp"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 4,
+                                            "name": "bar"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "property": {
+                                        "type": "Identifier",
+                                        "start": 5,
+                                        "end": 6,
+                                        "name": "c"
+                                    },
+                                    "computed": false,
+                                    "optional": false,
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 12,
+                                        "endLine": 3,
+                                        "endColumn": 25,
+                                        "start": 50,
+                                        "end": 63
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 12,
+                                    "endLine": 3,
+                                    "endColumn": 25,
+                                    "start": 50,
+                                    "end": 63
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

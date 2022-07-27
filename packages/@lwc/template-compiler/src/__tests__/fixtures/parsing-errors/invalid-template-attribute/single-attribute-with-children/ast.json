@@ -1,0 +1,61 @@
+{
+    "ast": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 12,
+            "endColumn": 12,
+            "start": 0,
+            "end": 380,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 12,
+                "startColumn": 1,
+                "endLine": 12,
+                "endColumn": 12,
+                "start": 369,
+                "end": 380
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " \n        The current behavior is for the text to be rendered to the DOM which is incorrect.\n        This will be replaced with an error message in the future but is kept here for now to preserve\n        backwards compatibility.\n\n        Work to be done in W-11296404\n    ",
+                "value": " \n        The current behavior is for the text to be rendered to the DOM which is incorrect.\n        This will be replaced with an error message in the future but is kept here for now to preserve\n        backwards compatibility.\n\n        Work to be done in W-11296404\n    ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 8,
+                    "endColumn": 8,
+                    "start": 15,
+                    "end": 294
+                }
+            },
+            {
+                "type": "Text",
+                "raw": "Hello",
+                "value": {
+                    "type": "Literal",
+                    "value": "Hello"
+                },
+                "location": {
+                    "startLine": 9,
+                    "startColumn": 44,
+                    "endLine": 11,
+                    "endColumn": 5,
+                    "start": 338,
+                    "end": 357
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,166 @@
+{
+    "ast": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 95,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 84,
+                "end": 95
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 23,
+                    "start": 15,
+                    "end": 33,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 15,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 17,
+                        "endLine": 2,
+                        "endColumn": 23,
+                        "start": 27,
+                        "end": 33
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "sibling",
+                        "value": {
+                            "type": "Literal",
+                            "value": "sibling"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 17,
+                            "start": 20,
+                            "end": 27
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 50,
+                    "start": 38,
+                    "end": 83,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 42,
+                        "start": 38,
+                        "end": 75
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 42,
+                        "endLine": 3,
+                        "endColumn": 50,
+                        "start": 75,
+                        "end": 83
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "Dynamic",
+                        "value": {
+                            "type": "MemberExpression",
+                            "start": 1,
+                            "end": 16,
+                            "object": {
+                                "type": "MemberExpression",
+                                "object": {
+                                    "type": "Identifier",
+                                    "name": "$cmp"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 12,
+                                    "name": "trackedProp"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 13,
+                                "end": 16,
+                                "name": "foo"
+                            },
+                            "computed": false,
+                            "optional": false,
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 12,
+                                "endLine": 3,
+                                "endColumn": 41,
+                                "start": 45,
+                                "end": 74
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 41,
+                            "start": 45,
+                            "end": 74
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

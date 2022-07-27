@@ -1,0 +1,484 @@
+{
+    "ast": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 11,
+            "endColumn": 12,
+            "start": 0,
+            "end": 455,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 11,
+                "startColumn": 1,
+                "endLine": 11,
+                "endColumn": 12,
+                "start": 444,
+                "end": 455
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "svg",
+                "namespace": "http://www.w3.org/2000/svg",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 10,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 443,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 35,
+                        "start": 15,
+                        "end": 45
+                    },
+                    "endTag": {
+                        "startLine": 10,
+                        "startColumn": 5,
+                        "endLine": 10,
+                        "endColumn": 11,
+                        "start": 437,
+                        "end": 443
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "height",
+                        "value": {
+                            "type": "Literal",
+                            "value": "150"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 22,
+                            "start": 20,
+                            "end": 32
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "width",
+                        "value": {
+                            "type": "Literal",
+                            "value": "400"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 23,
+                            "endLine": 2,
+                            "endColumn": 34,
+                            "start": 33,
+                            "end": 44
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "defs",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 16,
+                            "start": 54,
+                            "end": 364,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 15,
+                                "start": 54,
+                                "end": 60
+                            },
+                            "endTag": {
+                                "startLine": 8,
+                                "startColumn": 9,
+                                "endLine": 8,
+                                "endColumn": 16,
+                                "start": 357,
+                                "end": 364
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "linearGradient",
+                                "namespace": "http://www.w3.org/2000/svg",
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 13,
+                                    "endLine": 7,
+                                    "endColumn": 13,
+                                    "start": 73,
+                                    "end": 331,
+                                    "startTag": {
+                                        "startLine": 4,
+                                        "startColumn": 13,
+                                        "endLine": 4,
+                                        "endColumn": 74,
+                                        "start": 73,
+                                        "end": 134
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "id",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "grad1"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 29,
+                                            "endLine": 4,
+                                            "endColumn": 39,
+                                            "start": 89,
+                                            "end": 99
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "x1",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "0%"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 40,
+                                            "endLine": 4,
+                                            "endColumn": 47,
+                                            "start": 100,
+                                            "end": 107
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "y1",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "0%"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 48,
+                                            "endLine": 4,
+                                            "endColumn": 55,
+                                            "start": 108,
+                                            "end": 115
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "x2",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "100%"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 56,
+                                            "endLine": 4,
+                                            "endColumn": 65,
+                                            "start": 116,
+                                            "end": 125
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "y2",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "0%"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 66,
+                                            "endLine": 4,
+                                            "endColumn": 73,
+                                            "start": 126,
+                                            "end": 133
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": [
+                                    {
+                                        "type": "Element",
+                                        "name": "stop",
+                                        "namespace": "http://www.w3.org/2000/svg",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 17,
+                                            "endLine": 5,
+                                            "endColumn": 92,
+                                            "start": 151,
+                                            "end": 226,
+                                            "startTag": {
+                                                "startLine": 5,
+                                                "startColumn": 17,
+                                                "endLine": 5,
+                                                "endColumn": 85,
+                                                "start": 151,
+                                                "end": 219
+                                            },
+                                            "endTag": {
+                                                "startLine": 5,
+                                                "startColumn": 85,
+                                                "endLine": 5,
+                                                "endColumn": 92,
+                                                "start": 219,
+                                                "end": 226
+                                            }
+                                        },
+                                        "attributes": [
+                                            {
+                                                "type": "Attribute",
+                                                "name": "offset",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "0%"
+                                                },
+                                                "location": {
+                                                    "startLine": 5,
+                                                    "startColumn": 23,
+                                                    "endLine": 5,
+                                                    "endColumn": 34,
+                                                    "start": 157,
+                                                    "end": 168
+                                                }
+                                            },
+                                            {
+                                                "type": "Attribute",
+                                                "name": "style",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "stop-color:rgb(255,255,0);stop-opacity:1"
+                                                },
+                                                "location": {
+                                                    "startLine": 5,
+                                                    "startColumn": 35,
+                                                    "endLine": 5,
+                                                    "endColumn": 83,
+                                                    "start": 169,
+                                                    "end": 217
+                                                }
+                                            }
+                                        ],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": []
+                                    },
+                                    {
+                                        "type": "Element",
+                                        "name": "stop",
+                                        "namespace": "http://www.w3.org/2000/svg",
+                                        "location": {
+                                            "startLine": 6,
+                                            "startColumn": 17,
+                                            "endLine": 6,
+                                            "endColumn": 92,
+                                            "start": 243,
+                                            "end": 318,
+                                            "startTag": {
+                                                "startLine": 6,
+                                                "startColumn": 17,
+                                                "endLine": 6,
+                                                "endColumn": 85,
+                                                "start": 243,
+                                                "end": 311
+                                            },
+                                            "endTag": {
+                                                "startLine": 6,
+                                                "startColumn": 85,
+                                                "endLine": 6,
+                                                "endColumn": 92,
+                                                "start": 311,
+                                                "end": 318
+                                            }
+                                        },
+                                        "attributes": [
+                                            {
+                                                "type": "Attribute",
+                                                "name": "offset",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "100%"
+                                                },
+                                                "location": {
+                                                    "startLine": 6,
+                                                    "startColumn": 23,
+                                                    "endLine": 6,
+                                                    "endColumn": 36,
+                                                    "start": 249,
+                                                    "end": 262
+                                                }
+                                            },
+                                            {
+                                                "type": "Attribute",
+                                                "name": "style",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "stop-color:rgb(255,0,0);stop-opacity:1"
+                                                },
+                                                "location": {
+                                                    "startLine": 6,
+                                                    "startColumn": 37,
+                                                    "endLine": 6,
+                                                    "endColumn": 83,
+                                                    "start": 263,
+                                                    "end": 309
+                                                }
+                                            }
+                                        ],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Element",
+                        "name": "ellipse",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 5,
+                            "endLine": 9,
+                            "endColumn": 68,
+                            "start": 369,
+                            "end": 432,
+                            "startTag": {
+                                "startLine": 9,
+                                "startColumn": 5,
+                                "endLine": 9,
+                                "endColumn": 68,
+                                "start": 369,
+                                "end": 432
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "cx",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "200"
+                                },
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 14,
+                                    "endLine": 9,
+                                    "endColumn": 22,
+                                    "start": 378,
+                                    "end": 386
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "cy",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "70"
+                                },
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 23,
+                                    "endLine": 9,
+                                    "endColumn": 30,
+                                    "start": 387,
+                                    "end": 394
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "rx",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "85"
+                                },
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 31,
+                                    "endLine": 9,
+                                    "endColumn": 38,
+                                    "start": 395,
+                                    "end": 402
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "ry",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "55"
+                                },
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 39,
+                                    "endLine": 9,
+                                    "endColumn": 46,
+                                    "start": 403,
+                                    "end": 410
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "fill",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "url(#grad1)"
+                                },
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 47,
+                                    "endLine": 9,
+                                    "endColumn": 65,
+                                    "start": 411,
+                                    "end": 429
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}
