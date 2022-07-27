@@ -8,6 +8,7 @@ import { CompilerDiagnostic } from '@lwc/errors';
 
 export type TemplateCompileResult = {
     code: string;
+    ast: Root | null;
     warnings: CompilerDiagnostic[];
 };
 
