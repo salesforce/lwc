@@ -155,7 +155,7 @@ function s(
     data: VElementData,
     children: VNodes,
     slotset: SlotSet | undefined
-): VElement | VNodes {
+): VNode {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -172,8 +172,8 @@ function s(
     const { renderMode, shadowMode } = vmBeingRendered;
 
     if (renderMode === RenderMode.Light) {
-        sc(children);
-        return children;
+        // sc(children);
+        return fr(data.key, children);
     }
     if (shadowMode === ShadowMode.Synthetic) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic

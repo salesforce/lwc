@@ -15,11 +15,18 @@ function createTestElement(tag, component) {
     return extractDataIds(elm);
 }
 
+// Filter out fragment anchor nodes.
+function getChildNodes(parent) {
+    return Array.from(parent.childNodes).filter(
+        (node) => node.nodeType !== Node.TEXT_NODE || node.textContent !== ''
+    );
+}
+
 describe('Slotting', () => {
     it('should render properly', () => {
         const nodes = createTestElement('x-default-slot', BasicSlot);
 
-        expect(Array.from(nodes['x-container'].childNodes)).toEqual([
+        expect(getChildNodes(nodes['x-container'])).toEqual([
             nodes['upper-text'],
             nodes['default-text'],
             nodes['lower-text'],
@@ -29,13 +36,7 @@ describe('Slotting', () => {
     it('should render dynamic children', async () => {
         const nodes = createTestElement('x-dynamic-children', DynamicChildren);
 
-        // Filter out fragment anchor nodes.
-        const getChildNodes = () =>
-            Array.from(nodes['x-light-container'].childNodes).filter(
-                (node) => node.nodeType !== Node.TEXT_NODE || node.textContent !== ''
-            );
-
-        expect(getChildNodes()).toEqual([
+        expect(getChildNodes(nodes['x-light-container'])).toEqual([
             nodes['container-upper-slot-default'],
             nodes['1'],
             nodes['2'],
@@ -48,7 +49,7 @@ describe('Slotting', () => {
         nodes.button.click();
         await Promise.resolve();
 
-        expect(getChildNodes()).toEqual([
+        expect(getChildNodes(nodes['x-light-container'])).toEqual([
             nodes['container-upper-slot-default'],
             nodes['5'],
             nodes['4'],
@@ -86,10 +87,10 @@ describe('Slotting', () => {
     it('removes slots properly', async () => {
         const nodes = createTestElement('x-conditional-slot', ConditionalSlot);
         const elm = nodes['x-conditional-slot'];
-        expect(Array.from(elm.childNodes)).toEqual([nodes['default-slotted-text'], nodes.button]);
+        expect(getChildNodes(elm)).toEqual([nodes['default-slotted-text'], nodes.button]);
         nodes.button.click();
         await Promise.resolve();
-        expect(Array.from(elm.childNodes)).toEqual([nodes.button]);
+        expect(getChildNodes(elm)).toEqual([nodes.button]);
     });
 
     it('removes slotted content properly', async () => {
