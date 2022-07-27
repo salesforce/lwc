@@ -12,13 +12,4 @@ describe('ShadowRoot.innerHTML', () => {
             '<div>Before[<slot></slot>]After</div>'
         );
     });
-
-    it('should throw an error when invoking setter on the shadowRoot', () => {
-        const elm = createElement('x-test', { is: Test });
-        document.body.appendChild(elm);
-
-        expect(() => {
-            elm.shadowRoot.innerHTML = '<span>Hello World!</span>';
-        }).toThrowError();
-    });
 });

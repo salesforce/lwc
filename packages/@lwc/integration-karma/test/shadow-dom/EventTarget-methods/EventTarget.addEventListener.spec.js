@@ -224,13 +224,6 @@ describe('EventTarget.addEventListener', () => {
                 });
             });
             */
-            it('should log error on shadow roots', () => {
-                expect(() => {
-                    container.shadowRoot.addEventListener('test', () => {}, {});
-                }).toLogErrorDev(
-                    /The `addEventListener` method on ShadowRoot does not support any options./
-                );
-            });
 
             it('should be discarded on native elements', () => {
                 testWithOptions({
@@ -276,13 +269,6 @@ describe('EventTarget.addEventListener', () => {
                 });
             });
             */
-            it('should log error on shadow roots', () => {
-                expect(() => {
-                    container.shadowRoot.addEventListener('test', () => {}, {});
-                }).toLogErrorDev(
-                    /The `addEventListener` method on ShadowRoot does not support any options./
-                );
-            });
 
             it('should not be discarded on native elements', () => {
                 testWithOptions({

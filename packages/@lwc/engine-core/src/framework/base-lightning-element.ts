@@ -35,7 +35,6 @@ import { associateVM, getAssociatedVM, RenderMode, ShadowMode, ShadowSupportMode
 import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import {
     patchComponentWithRestrictions,
-    patchShadowRootWithRestrictions,
     patchLightningElementPrototypeWithRestrictions,
     patchCustomElementWithRestrictions,
 } from './restrictions';
@@ -259,10 +258,6 @@ function doAttachShadow(vm: VM): ShadowRoot {
 
     vm.shadowRoot = shadowRoot;
     associateVM(shadowRoot, vm);
-
-    if (process.env.NODE_ENV !== 'production') {
-        patchShadowRootWithRestrictions(shadowRoot);
-    }
 
     return shadowRoot;
 }

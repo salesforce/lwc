@@ -165,59 +165,6 @@ export function patchElementWithRestrictions(
     defineProperties(elm, descriptors);
 }
 
-function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-
-    // Disallowing properties in dev mode only to avoid people doing the wrong
-    // thing when using the real shadow root, because if that's the case,
-    // the component will not work when running with synthetic shadow.
-    const originalAddEventListener = sr.addEventListener;
-    const originalInnerHTMLDescriptor = getPropertyDescriptor(sr, 'innerHTML')!;
-    const originalTextContentDescriptor = getPropertyDescriptor(sr, 'textContent')!;
-
-    return {
-        innerHTML: generateAccessorDescriptor({
-            get(this: ShadowRoot): string {
-                return originalInnerHTMLDescriptor.get!.call(this);
-            },
-            set(this: ShadowRoot, _value: string) {
-                throw new TypeError(`Invalid attempt to set innerHTML on ShadowRoot.`);
-            },
-        }),
-        textContent: generateAccessorDescriptor({
-            get(this: ShadowRoot): string {
-                return originalTextContentDescriptor.get!.call(this);
-            },
-            set(this: ShadowRoot, _value: string) {
-                throw new TypeError(`Invalid attempt to set textContent on ShadowRoot.`);
-            },
-        }),
-        addEventListener: generateDataDescriptor({
-            value(
-                this: ShadowRoot,
-                type: string,
-                listener: EventListener,
-                options?: boolean | AddEventListenerOptions
-            ) {
-                // TODO [#420]: this is triggered when the component author attempts to add a listener
-                // programmatically into its Component's shadow root
-                if (!isUndefined(options)) {
-                    logError(
-                        'The `addEventListener` method on ShadowRoot does not support any options.',
-                        getAssociatedVMIfPresent(this)
-                    );
-                }
-                // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-ignore type-mismatch
-                return originalAddEventListener.apply(this, arguments);
-            },
-        }),
-    };
-}
-
 // Custom Elements Restrictions:
 // -----------------------------
 
@@ -366,12 +313,6 @@ function getLightningElementPrototypeRestrictionsDescriptors(
     });
 
     return descriptors;
-}
-
-// This routine will prevent access to certain properties on a shadow root instance to guarantee
-// that all components will work fine in IE11 and other browsers without shadow dom support.
-export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
-    defineProperties(sr, getShadowRootRestrictionsDescriptors(sr));
 }
 
 export function patchCustomElementWithRestrictions(elm: HTMLElement) {

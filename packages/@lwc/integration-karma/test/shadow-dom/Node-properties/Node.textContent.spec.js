@@ -28,15 +28,6 @@ describe('Node.textContent - getter', () => {
 });
 
 describe('Node.textContent - setter', () => {
-    it('should throw when invoking setter on the host element', () => {
-        const elm = createElement('x-test', { is: Slotted });
-        document.body.appendChild(elm);
-
-        expect(() => {
-            elm.shadowRoot.textContent = '<span>Hello World!</span>';
-        }).toThrowError();
-    });
-
     it('should log an error when invoking setter for an element in the shadow', () => {
         const elm = createElement('x-test', { is: Slotted });
         document.body.appendChild(elm);

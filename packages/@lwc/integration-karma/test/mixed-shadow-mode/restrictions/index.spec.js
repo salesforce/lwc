@@ -8,19 +8,6 @@ describe('restrictions', () => {
         document.body.appendChild(elm);
     });
 
-    describe('ShadowRoot', () => {
-        it('innerHTML', () => {
-            expect(() => {
-                elm.setInnerHtmlOnShadowRoot();
-            }).toThrowError(TypeError, 'Invalid attempt to set innerHTML on ShadowRoot.');
-        });
-        it('textContent', () => {
-            expect(() => {
-                elm.setTextContentOnShadowRoot();
-            }).toThrowError(TypeError, 'Invalid attempt to set textContent on ShadowRoot.');
-        });
-    });
-
     describe('custom element', () => {
         it('innerHTML', () => {
             expect(() => {
