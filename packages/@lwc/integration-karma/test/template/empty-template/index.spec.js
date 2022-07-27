@@ -8,6 +8,11 @@ import Test from 'x/test';
 import MixedDirective from 'x/mixed-directive';
 
 function testTemplateRendering(expected, actual) {
+    // Filter-out all the empty text nodes inserted by fragments.
+    actual = Array.from(actual).filter(
+        (node) => node.nodeType !== Node.TEXT_NODE || node.textContent !== ''
+    );
+
     expect(actual.length).toEqual(expected.length);
 
     for (let i = 0; i < actual.length; i++) {

@@ -251,12 +251,11 @@ function c(
 function i(
     iterable: Iterable<any>,
     factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
-): VFragment {
+): VNodes {
     const list: VNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
     const vmBeingRendered = getVMBeingRendered();
-
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
@@ -266,7 +265,7 @@ function i(
                 vmBeingRendered!
             );
         }
-        return fr(-1, []);
+        return list;
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -329,14 +328,12 @@ function i(
         j += 1;
         value = next.value;
     }
-
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(iterationError)) {
             logError(iterationError, vmBeingRendered!);
         }
     }
-
-    return fr(list[0]?.key ?? -1, list);
+    return list;
 }
 
 /**

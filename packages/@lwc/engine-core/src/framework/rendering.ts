@@ -51,6 +51,7 @@ import {
     isSameVnode,
     VNodeType,
     VStatic,
+    VFragment,
 } from './vnodes';
 
 import { patchAttributes } from './modules/attrs';
@@ -74,7 +75,7 @@ export function patchChildren(
     }
 }
 
-function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
+function patch(n1: VNode, n2: VNode, parent: ParentNode, renderer: RendererAPI) {
     if (n1 === n2) {
         return;
     }
@@ -105,6 +106,10 @@ function patch(n1: VNode, n2: VNode, renderer: RendererAPI) {
             n2.elm = n1.elm;
             break;
 
+        case VNodeType.Fragment:
+            patchFragment(n1 as VFragment, n2, parent, renderer);
+            break;
+
         case VNodeType.Element:
             patchElement(n1 as VElement, n2, n2.data.renderer ?? renderer);
             break;
@@ -130,6 +135,10 @@ export function mount(node: VNode, parent: ParentNode, renderer: RendererAPI, an
         case VNodeType.Static:
             // VStatic cannot have a custom renderer associated to them, using owner's renderer
             mountStatic(node, parent, anchor, renderer);
+            break;
+
+        case VNodeType.Fragment:
+            mountFragment(node, parent, anchor, renderer);
             break;
 
         case VNodeType.Element:
@@ -246,6 +255,28 @@ function mountStatic(
     insertNode(elm, parent, anchor, renderer);
 }
 
+function mountFragment(
+    vnode: VFragment,
+    parent: ParentNode,
+    anchor: Node | null,
+    renderer: RendererAPI
+) {
+    const fragmentStart = (vnode.elm = renderer.createText(''));
+    const fragmentEnd = (vnode.anchor = renderer.createText(''));
+
+    insertNode(fragmentStart, parent, anchor, renderer);
+    insertNode(fragmentEnd, parent, anchor, renderer);
+
+    mountVNodes(vnode.children, parent, renderer, fragmentEnd);
+}
+
+function patchFragment(n1: VFragment, n2: VFragment, parent: ParentNode, renderer: RendererAPI) {
+    n2.elm = n1.elm;
+    n2.anchor = n1.anchor;
+
+    patchChildren(n1.children, n2.children, parent, renderer);
+}
+
 function mountCustomElement(
     vnode: VCustomElement,
     parent: ParentNode,
@@ -344,9 +375,20 @@ function unmount(
     // When unmounting a VNode subtree not all the elements have to removed from the DOM. The
     // subtree root, is the only element worth unmounting from the subtree.
     if (doRemove) {
-        // The vnode might or might not have a data.renderer associated to it
-        // but the removal used here is from the owner instead.
-        removeNode(elm!, parent, renderer);
+        if (type === VNodeType.Fragment) {
+            const end = vnode.anchor;
+            let current = elm!;
+
+            while (current !== end) {
+                const next = renderer.nextSibling(current);
+                removeNode(current, parent, renderer);
+                current = next;
+            }
+
+            removeNode(end, parent, renderer);
+        } else {
+            removeNode(elm!, parent, renderer);
+        }
     }
 
     switch (type) {
@@ -652,16 +694,16 @@ function updateDynamicChildren(
         } else if (!isVNode(newEndVnode)) {
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newStartVnode)) {
-            patch(oldStartVnode, newStartVnode, renderer);
+            patch(oldStartVnode, newStartVnode, parent, renderer);
             oldStartVnode = oldCh[++oldStartIdx];
             newStartVnode = newCh[++newStartIdx];
         } else if (isSameVnode(oldEndVnode, newEndVnode)) {
-            patch(oldEndVnode, newEndVnode, renderer);
+            patch(oldEndVnode, newEndVnode, parent, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
-            patch(oldStartVnode, newEndVnode, renderer);
+            patch(oldStartVnode, newEndVnode, parent, renderer);
             insertNode(
                 oldStartVnode.elm!,
                 parent,
@@ -672,7 +714,7 @@ function updateDynamicChildren(
             newEndVnode = newCh[--newEndIdx];
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
-            patch(oldEndVnode, newStartVnode, renderer);
+            patch(oldEndVnode, newStartVnode, parent, renderer);
             insertNode(newStartVnode.elm!, parent, oldStartVnode.elm!, renderer);
             oldEndVnode = oldCh[--oldEndIdx];
             newStartVnode = newCh[++newStartIdx];
@@ -692,7 +734,7 @@ function updateDynamicChildren(
                         // New element
                         mount(newStartVnode, parent, renderer, oldStartVnode.elm!);
                     } else {
-                        patch(elmToMove, newStartVnode, renderer);
+                        patch(elmToMove, newStartVnode, parent, renderer);
                         // Delete the old child, but copy the array since it is read-only.
                         // The `oldCh` will be GC'ed after `updateDynamicChildren` is complete,
                         // so we only care about the `oldCh` object inside this function.
@@ -757,7 +799,7 @@ function updateStaticChildren(c1: VNodes, c2: VNodes, parent: ParentNode, render
             if (isVNode(n1)) {
                 if (isVNode(n2)) {
                     // both vnodes are equivalent, and we just need to patch them
-                    patch(n1, n2, renderer);
+                    patch(n1, n2, parent, renderer);
                     anchor = n2.elm!;
                 } else {
                     // removing the old vnode since the new one is null

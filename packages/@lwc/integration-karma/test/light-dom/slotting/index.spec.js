@@ -28,7 +28,14 @@ describe('Slotting', () => {
 
     it('should render dynamic children', async () => {
         const nodes = createTestElement('x-dynamic-children', DynamicChildren);
-        expect(Array.from(nodes['x-light-container'].childNodes)).toEqual([
+
+        // Filter out fragment anchor nodes.
+        const getChildNodes = () =>
+            Array.from(nodes['x-light-container'].childNodes).filter(
+                (node) => node.nodeType !== Node.TEXT_NODE || node.textContent !== ''
+            );
+
+        expect(getChildNodes()).toEqual([
             nodes['container-upper-slot-default'],
             nodes['1'],
             nodes['2'],
@@ -41,7 +48,7 @@ describe('Slotting', () => {
         nodes.button.click();
         await Promise.resolve();
 
-        expect(Array.from(nodes['x-light-container'].childNodes)).toEqual([
+        expect(getChildNodes()).toEqual([
             nodes['container-upper-slot-default'],
             nodes['5'],
             nodes['4'],
