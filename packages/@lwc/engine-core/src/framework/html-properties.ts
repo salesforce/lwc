@@ -36,20 +36,24 @@ const defaultDefHTMLElementPropertyNames = [
 export const HTMLElementOriginalDescriptors: PropertyDescriptorMap = create(null);
 
 // These properties are on Element.prototype
-forEach.call(
-    [...keys(AriaPropNameToAttrNameMap), ...defaultDefElementPropertyNames],
-    (propName: string) => {
-        const descriptor = getOwnPropertyDescriptor(Element.prototype, propName);
+if (typeof Element === 'function') {
+    forEach.call(
+        [...keys(AriaPropNameToAttrNameMap), ...defaultDefElementPropertyNames],
+        (propName: string) => {
+            const descriptor = getOwnPropertyDescriptor(Element.prototype, propName);
+            if (!isUndefined(descriptor)) {
+                HTMLElementOriginalDescriptors[propName] = descriptor;
+            }
+        }
+    );
+}
+
+// These properties are on HTMLElement.prototype
+if (typeof HTMLElement === 'function') {
+    forEach.call(defaultDefHTMLElementPropertyNames, (propName) => {
+        const descriptor = getOwnPropertyDescriptor(HTMLElement.prototype, propName);
         if (!isUndefined(descriptor)) {
             HTMLElementOriginalDescriptors[propName] = descriptor;
         }
-    }
-);
-
-// These properties are on HTMLElement.prototype
-forEach.call(defaultDefHTMLElementPropertyNames, (propName) => {
-    const descriptor = getOwnPropertyDescriptor(HTMLElement.prototype, propName);
-    if (!isUndefined(descriptor)) {
-        HTMLElementOriginalDescriptors[propName] = descriptor;
-    }
-});
+    });
+}
