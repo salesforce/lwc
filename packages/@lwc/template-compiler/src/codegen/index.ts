@@ -234,6 +234,13 @@ function transform(codeGen: CodeGen): t.Expression {
 
         if (t.isArrayExpression(expression) && expression.elements.length === 1) {
             expression = expression.elements[0] as t.Expression;
+        } else {
+            expression = codeGen.genFragment(
+                forBlock.key
+                    ? codeGen.bindExpression(forBlock.key)
+                    : t.literal(codeGen.generateKey()),
+                expression
+            );
         }
 
         let res: t.Expression;
@@ -512,10 +519,7 @@ function transform(codeGen: CodeGen): t.Expression {
 
         // Key property on VNode
         if (forKey) {
-            // If element has user-supplied `key` or is in iterator, call `api.k`
-            const forKeyExpression = codeGen.bindExpression(forKey.value);
-            const generatedKey = codeGen.genKey(t.literal(codeGen.generateKey()), forKeyExpression);
-            data.push(t.property(t.identifier('key'), generatedKey));
+            data.push(t.property(t.identifier('key'), codeGen.bindExpression(forKey.value)));
         } else {
             // If standalone element with no user-defined key
             let key: number | string = codeGen.generateKey();

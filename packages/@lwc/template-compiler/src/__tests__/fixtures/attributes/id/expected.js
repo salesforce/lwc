@@ -8,11 +8,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
     t: api_text,
     h: api_element,
-    k: api_key,
+    fr: api_fragment,
     i: api_iterator,
-    f: api_flatten,
   } = $api;
-  return api_flatten([
+  return [
     api_custom_element("x-subject", _xSubject, {
       props: {
         htmlFor: api_scoped_id("foo"),
@@ -54,27 +53,30 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       key: 5,
     }),
-    api_iterator($cmp.things, function (thing) {
-      return [
-        api_element(
-          "p",
-          {
-            attrs: {
-              id: api_scoped_id(thing.id),
+    api_fragment(
+      6,
+      api_iterator($cmp.things, function (thing) {
+        return api_fragment($cmp.thing.key, [
+          api_element(
+            "p",
+            {
+              attrs: {
+                id: api_scoped_id(thing.id),
+              },
+              key: $cmp.thing.key,
             },
-            key: api_key(6, thing.key),
-          },
-          [api_text("description text")]
-        ),
-        api_element("input", {
-          attrs: {
-            "aria-describedby": api_scoped_id(thing.id),
-          },
-          key: api_key(7, thing.key),
-        }),
-      ];
-    }),
-  ]);
+            [api_text("description text")]
+          ),
+          api_element("input", {
+            attrs: {
+              "aria-describedby": api_scoped_id(thing.id),
+            },
+            key: thing.key,
+          }),
+        ]);
+      })
+    ),
+  ];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

@@ -666,6 +666,7 @@ function parseForEach(
     const forEachAttribute = parsedAttr.pick('for:each');
     const forItemAttribute = parsedAttr.pick('for:item');
     const forIndex = parsedAttr.pick('for:index');
+    const keyAttribute = parsedAttr.pick('for:key');
 
     if (forEachAttribute && forItemAttribute) {
         if (!ast.isExpression(forEachAttribute.value)) {
@@ -695,12 +696,26 @@ function parseForEach(
             index = parseIdentifier(ctx, forIndexValue.value, forIndex.location);
         }
 
+        let key: Expression | undefined;
+        if (keyAttribute) {
+            if (!ast.isExpression(keyAttribute.value)) {
+                // FIXME: Add proper error message.
+                ctx.throwOnNode(
+                    ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION,
+                    keyAttribute
+                );
+            }
+
+            key = keyAttribute.value;
+        }
+
         return ast.forEach(
             forEachAttribute.value,
             ast.sourceLocation(parse5ElmLocation),
             forEachAttribute.location,
             item,
-            index
+            index,
+            key
         );
     } else if (forEachAttribute || forItemAttribute) {
         ctx.throwAtLocation(
@@ -740,11 +755,24 @@ function parseForOf(
 
     const iterator = parseIdentifier(ctx, iteratorName, iteratorExpression.location);
 
+    let key: Expression | undefined;
+    const keyAttribute = parsedAttr.pick('iterator:key');
+
+    if (keyAttribute) {
+        if (!ast.isExpression(keyAttribute.value)) {
+            // FIXME: Add proper error message.
+            ctx.throwOnNode(ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION, keyAttribute);
+        }
+
+        key = keyAttribute.value;
+    }
+
     return ast.forOf(
         iteratorExpression.value,
         iterator,
         ast.sourceLocation(parse5ElmLocation),
-        iteratorExpression.location
+        iteratorExpression.location,
+        key
     );
 }
 
@@ -781,6 +809,14 @@ function applyKey(ctx: ParserCtx, parsedAttr: ParsedAttribute, element: BaseElem
 
         if (forOfParent || forEachParent) {
             element.directives.push(ast.keyDirective(keyAttribute.value, keyAttribute.location));
+
+            // Reflect the child component key to the closes iteration. Only set the key if not
+            // already set.
+            if (forEachParent && !forEachParent.key) {
+                forEachParent.key = keyAttribute.value;
+            } else if (forOfParent && !forOfParent.key) {
+                forOfParent.key = keyAttribute.value;
+            }
         } else {
             ctx.warnOnNode(ParserDiagnostics.KEY_SHOULD_BE_IN_ITERATION, keyAttribute, [tag]);
         }

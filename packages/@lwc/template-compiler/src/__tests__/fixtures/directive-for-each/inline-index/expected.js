@@ -4,26 +4,27 @@ const stc0 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    k: api_key,
     d: api_dynamic_text,
     t: api_text,
     h: api_element,
     i: api_iterator,
+    fr: api_fragment,
   } = $api;
   return [
-    api_element(
-      "ul",
-      stc0,
-      api_iterator($cmp.items, function (item, index) {
-        return api_element(
-          "li",
-          {
-            key: api_key(1, item.id),
-          },
-          [api_text(api_dynamic_text(index) + " - " + api_dynamic_text(item))]
-        );
-      })
-    ),
+    api_element("ul", stc0, [
+      api_fragment(
+        1,
+        api_iterator($cmp.items, function (item, index) {
+          return api_element(
+            "li",
+            {
+              key: item.id,
+            },
+            [api_text(api_dynamic_text(index) + " - " + api_dynamic_text(item))]
+          );
+        })
+      ),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }

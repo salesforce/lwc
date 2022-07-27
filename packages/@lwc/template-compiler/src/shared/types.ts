@@ -182,6 +182,7 @@ export interface ForEach extends DirectiveParentNode {
     type: 'ForEach';
     expression: Expression;
     item: Identifier;
+    key?: Expression;
     index?: Identifier;
 }
 
@@ -189,6 +190,7 @@ export interface ForOf extends DirectiveParentNode {
     type: 'ForOf';
     expression: Expression;
     iterator: Identifier;
+    key?: Expression;
 }
 
 export type ForBlock = ForEach | ForOf;

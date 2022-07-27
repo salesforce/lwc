@@ -157,7 +157,8 @@ export function forEach(
     elementLocation: SourceLocation,
     directiveLocation: SourceLocation,
     item: Identifier,
-    index?: Identifier
+    index?: Identifier,
+    key?: Expression
 ): ForEach {
     return {
         type: 'ForEach',
@@ -166,6 +167,7 @@ export function forEach(
         index,
         location: elementLocation,
         directiveLocation,
+        key,
         children: [],
     };
 }
@@ -174,7 +176,8 @@ export function forOf(
     expression: Expression,
     iterator: Identifier,
     elementLocation: SourceLocation,
-    directiveLocation: SourceLocation
+    directiveLocation: SourceLocation,
+    key?: Expression
 ): ForOf {
     return {
         type: 'ForOf',
@@ -182,6 +185,7 @@ export function forOf(
         iterator,
         location: elementLocation,
         directiveLocation,
+        key,
         children: [],
     };
 }

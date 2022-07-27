@@ -16,11 +16,16 @@ export const enum VNodeType {
     Element,
     CustomElement,
     Static,
+    Fragment,
 }
 
-export type VNode = VText | VComment | VElement | VCustomElement | VStatic;
-export type VParentElement = VElement | VCustomElement;
+export type VNode = VText | VComment | VElement | VCustomElement | VStatic | VFragment;
+export type VParentElement = VElement | VCustomElement | VFragment;
 export type VNodes = Readonly<Array<VNode | null>>;
+
+export interface BaseVParent {
+    children: VNodes;
+}
 
 export interface BaseVNode {
     type: VNodeType;
@@ -37,6 +42,11 @@ export interface VStatic extends BaseVNode {
     fragment: Element;
 }
 
+export interface VFragment extends BaseVNode, BaseVParent {
+    type: VNodeType.Fragment;
+    anchor: Node | undefined;
+}
+
 export interface VText extends BaseVNode {
     type: VNodeType.Text;
     sel: undefined;
@@ -51,10 +61,9 @@ export interface VComment extends BaseVNode {
     key: undefined;
 }
 
-export interface VBaseElement extends BaseVNode {
+export interface VBaseElement extends BaseVNode, BaseVParent {
     sel: string;
     data: VElementData;
-    children: VNodes;
     elm: Element | undefined;
     key: Key;
 }
