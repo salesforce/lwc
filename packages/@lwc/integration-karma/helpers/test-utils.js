@@ -292,16 +292,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             }
         }
 
-        function acceptNode() {
-            return NodeFilter.FILTER_ACCEPT;
-        }
-
-        // Work around Internet Explorer wanting a function instead of an object. IE also *requires* this argument where
-        // other browsers don't.
-        var safeFilter = acceptNode;
-        safeFilter.acceptNode = acceptNode;
-
-        var walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, safeFilter, false);
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
 
         processElement(root);
 

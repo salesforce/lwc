@@ -58,9 +58,7 @@ defineProperty(Element.prototype, KEY__SHADOW_STATIC, {
             const treeWalker = createTreeWalker.call(
                 getOwnerDocument(this),
                 this,
-                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT,
-                () => NodeFilter.FILTER_ACCEPT,
-                false
+                NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT
             );
 
             let currentNode: Node | null;
