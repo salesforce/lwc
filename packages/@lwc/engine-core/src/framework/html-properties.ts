@@ -7,14 +7,25 @@
 import {
     create,
     forEach,
-    getPropertyDescriptor,
+    getOwnPropertyDescriptor,
     isUndefined,
     keys,
     AriaPropNameToAttrNameMap,
 } from '@lwc/shared';
 
-import { HTMLElementPrototype } from './html-element';
-import { defaultDefHTMLPropertyNames } from './attributes';
+const defaultDefElementPropertyNames = ['id'];
+
+const defaultDefHTMLElementPropertyNames = [
+    'accessKey',
+    'dir',
+    'draggable',
+    'hidden',
+    'id',
+    'lang',
+    'spellcheck',
+    'tabIndex',
+    'title',
+];
 
 /**
  * This is a descriptor map that contains
@@ -24,19 +35,20 @@ import { defaultDefHTMLPropertyNames } from './attributes';
  */
 export const HTMLElementOriginalDescriptors: PropertyDescriptorMap = create(null);
 
-forEach.call(keys(AriaPropNameToAttrNameMap), (propName: string) => {
-    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-    // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
-    const descriptor = getPropertyDescriptor(HTMLElementPrototype, propName);
-    if (!isUndefined(descriptor)) {
-        HTMLElementOriginalDescriptors[propName] = descriptor;
+// These properties are on Element.prototype
+forEach.call(
+    [...keys(AriaPropNameToAttrNameMap), ...defaultDefElementPropertyNames],
+    (propName: string) => {
+        const descriptor = getOwnPropertyDescriptor(Element.prototype, propName);
+        if (!isUndefined(descriptor)) {
+            HTMLElementOriginalDescriptors[propName] = descriptor;
+        }
     }
-});
-forEach.call(defaultDefHTMLPropertyNames, (propName) => {
-    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-    // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
-    // this category, so, better to be sure.
-    const descriptor = getPropertyDescriptor(HTMLElementPrototype, propName);
+);
+
+// These properties are on HTMLElement.prototype
+forEach.call(defaultDefHTMLElementPropertyNames, (propName) => {
+    const descriptor = getOwnPropertyDescriptor(HTMLElement.prototype, propName);
     if (!isUndefined(descriptor)) {
         HTMLElementOriginalDescriptors[propName] = descriptor;
     }
