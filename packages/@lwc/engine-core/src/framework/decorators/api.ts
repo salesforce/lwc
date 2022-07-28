@@ -151,22 +151,26 @@ export function createPublicAccessorDescriptor(
                 );
             }
             if (set) {
-                if (features.ENABLE_REACTIVE_SETTER) {
-                    let ro = vm.oar[key as any];
-                    if (isUndefined(ro)) {
-                        ro = vm.oar[key as any] = new AccessorReactiveObserver(vm, set);
+                // On the server side, we don't need mutation tracking. Skipping it improves performance.
+                // Note the `if` cannot be simplified because `features.ENABLE_REACTIVE_SETTER` must be transformed
+                if (process.env.IS_BROWSER) {
+                    if (features.ENABLE_REACTIVE_SETTER) {
+                        let ro = vm.oar[key as any];
+                        if (isUndefined(ro)) {
+                            ro = vm.oar[key as any] = new AccessorReactiveObserver(vm, set);
+                        }
+                        // every time we invoke this setter from outside (through this wrapper setter)
+                        // we should reset the value and then debounce just in case there is a pending
+                        // invocation the next tick that is not longer relevant since the value is changing
+                        // from outside.
+                        ro.reset(newValue);
+                        ro.observe(() => {
+                            set.call(this, newValue);
+                        });
+                        return;
                     }
-                    // every time we invoke this setter from outside (through this wrapper setter)
-                    // we should reset the value and then debounce just in case there is a pending
-                    // invocation the next tick that is not longer relevant since the value is changing
-                    // from outside.
-                    ro.reset(newValue);
-                    ro.observe(() => {
-                        set.call(this, newValue);
-                    });
-                } else {
-                    set.call(this, newValue);
                 }
+                set.call(this, newValue);
             } else if (process.env.NODE_ENV !== 'production') {
                 assert.fail(
                     `Invalid attempt to set a new value for property ${toString(

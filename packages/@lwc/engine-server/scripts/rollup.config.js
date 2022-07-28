@@ -7,6 +7,7 @@
 
 const path = require('path');
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
 const typescript = require('../../../../scripts/rollup/typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 const lwcFeatures = require('../../../../scripts/rollup/lwcFeatures');
@@ -35,6 +36,23 @@ module.exports = {
         typescript(),
         writeDistAndTypes(),
         lwcFeatures(),
+        replace({
+            values: {
+                'process.env.IS_BROWSER': 'false',
+            },
+            preventAssignment: true,
+        }),
+        {
+            // Check that the output bundle does not include the reactivity / observable-membrane code
+            name: 'check-no-reactivity',
+            renderChunk(code) {
+                if (/\b(ReactiveObserver|ObservableMembrane)\b/.test(code)) {
+                    throw new Error(
+                        '@lwc/engine-server should not include ReactiveObserver or ObservableMembrane.'
+                    );
+                }
+            },
+        },
     ],
 
     onwarn({ code, message }) {
