@@ -109,7 +109,12 @@ function formatHTML(src: string): string {
         }
 
         if (start !== pos) {
-            res += getPadding() + src.slice(start, pos) + '\n';
+            const content = src.slice(start, pos);
+
+            // Ignore the zero-width space character used to mark empty text nodes.
+            if (content !== '\u200D') {
+                res += getPadding() + content + '\n';
+            }
         }
     }
 
