@@ -30,6 +30,7 @@ import {
     VElement,
     VCustomElement,
     VStatic,
+    VFragment,
 } from './vnodes';
 
 import { patchProps } from './modules/props';
@@ -70,7 +71,12 @@ function hydrateVM(vm: VM) {
     runRenderedCallback(vm);
 }
 
-function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | null {
+function hydrateNode(
+    node: Node,
+    vnode: VNode,
+    parent: ParentNode,
+    renderer: RendererAPI
+): Node | null {
     let hydratedNode;
     switch (vnode.type) {
         case VNodeType.Text:
@@ -86,6 +92,10 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
         case VNodeType.Static:
             // VStatic are cacheable and cannot have custom renderer associated to them
             hydratedNode = hydrateStaticElement(node, vnode, renderer);
+            break;
+
+        case VNodeType.Fragment:
+            hydratedNode = hydrateFragment(node, vnode, parent, renderer);
             break;
 
         case VNodeType.Element:
@@ -152,6 +162,35 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
     vnode.elm = elm;
 
     return elm;
+}
+
+function hydrateFragment(
+    elm: Node,
+    vnode: VFragment,
+    parent: ParentNode,
+    renderer: RendererAPI
+): Node | null {
+    // FIXME: Check if the node content is the zero space joiner character.
+    if (!hasCorrectNodeType(vnode, elm, EnvNodeTypes.TEXT, renderer)) {
+        return handleMismatch(elm, vnode, renderer);
+    }
+
+    const { owner, children } = vnode;
+
+    vnode.elm = elm;
+    renderer.setText(elm, '');
+
+    const anchor = hydrateChildren(renderer.nextSibling(elm), children, parent, owner, false);
+
+    // FIXME: Check if the node content is the zero space joiner character.
+    if (isNull(anchor) || !hasCorrectNodeType(vnode, anchor, EnvNodeTypes.TEXT, renderer)) {
+        return handleMismatch(elm, vnode, renderer);
+    }
+
+    vnode.anchor = anchor;
+    renderer.setText(anchor, '');
+
+    return anchor;
 }
 
 function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
@@ -255,19 +294,21 @@ function hydrateCustomElement(
 function hydrateChildren(
     node: Node | null,
     children: VNodes,
-    parentNode: Element | ShadowRoot,
-    owner: VM
-) {
+    parentNode: ParentNode,
+    owner: VM,
+    checkNext: boolean = true
+): Node | null {
     let hasWarned = false;
     let nextNode: Node | null = node;
     let anchor: Node | null = null;
+
     const { renderer } = owner;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
 
         if (!isNull(childVnode)) {
             if (nextNode) {
-                nextNode = hydrateNode(nextNode, childVnode, renderer);
+                nextNode = hydrateNode(nextNode, childVnode, parentNode, renderer);
                 anchor = childVnode.elm!;
             } else {
                 hasMismatch = true;
@@ -286,7 +327,10 @@ function hydrateChildren(
         }
     }
 
-    if (nextNode) {
+    // `checkNext` is set to false, when hydrating a fragment. In this specific case, we don't need
+    // to check for the presence of unexpected nodes after.
+    // FIXME: This is a dirty workaround and should be refactored.
+    if (checkNext && nextNode) {
         hasMismatch = true;
         if (process.env.NODE_ENV !== 'production') {
             if (!hasWarned) {
@@ -307,6 +351,8 @@ function hydrateChildren(
             removeNode(current, parentNode, renderer);
         } while (nextNode);
     }
+
+    return nextNode;
 }
 
 function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node | null {
