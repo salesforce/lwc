@@ -56,14 +56,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_fragment(
       6,
       api_iterator($cmp.things, function (thing) {
-        return api_fragment($cmp.thing.key, [
+        return api_fragment(thing.key, [
           api_element(
             "p",
             {
               attrs: {
                 id: api_scoped_id(thing.id),
               },
-              key: $cmp.thing.key,
+              key: thing.key,
             },
             [api_text("description text")]
           ),

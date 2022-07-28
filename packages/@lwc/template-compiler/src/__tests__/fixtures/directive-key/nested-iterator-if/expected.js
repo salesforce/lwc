@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             first: xFirst,
             last: xLast,
           };
-          return api_fragment($cmp.x.value.id, [
+          return api_fragment(x.value.id, [
             api_element(
               "div",
               {
@@ -32,7 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   "data-islast": x.last,
                   "data-isfirst": x.first,
                 },
-                key: $cmp.x.value.id,
+                key: x.value.id,
               },
               [
                 api_element("span", stc1, [

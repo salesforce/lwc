@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_fragment(
         1,
         api_iterator($cmp.colors, function (color) {
-          return api_fragment($cmp.color, [
+          return api_fragment(color, [
             api_comment(" color "),
             api_element(
               "li",

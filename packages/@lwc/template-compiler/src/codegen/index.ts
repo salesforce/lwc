@@ -119,7 +119,7 @@ function transform(codeGen: CodeGen): t.Expression {
         return codeGen.genComment(comment.value);
     }
 
-    function transformChildren(parent: ParentNode): t.Expression {
+    function transformChildren(parent: ParentNode): t.ArrayExpression {
         const res: t.Expression[] = [];
         const children = parent.children;
         const childrenIterator = children[Symbol.iterator]();
@@ -164,13 +164,11 @@ function transform(codeGen: CodeGen): t.Expression {
     function transformIf(ifNode: If): t.Expression {
         const children = transformChildren(ifNode);
 
-        let node = children;
-        if (t.isArrayExpression(children)) {
-            if (children.elements.length === 1) {
-                node = children.elements[0] as t.Expression;
-            } else {
-                node = codeGen.genFragment(t.literal(codeGen.generateKey()), children);
-            }
+        let childExpression;
+        if (children.elements.length === 1) {
+            childExpression = children.elements[0] as t.Expression;
+        } else {
+            childExpression = codeGen.genFragment(t.literal(codeGen.generateKey()), children);
         }
 
         const testExpression = codeGen.bindExpression(ifNode.condition);
@@ -196,31 +194,17 @@ function transform(codeGen: CodeGen): t.Expression {
                 });
         }
 
-        return t.conditionalExpression(leftExpression, node, t.literal(null));
+        return t.conditionalExpression(leftExpression, childExpression, t.literal(null));
     }
 
     function transformForBlock(forBlock: ForBlock): t.Expression {
-        let expression = transformForChildren(forBlock);
+        const expression = transformForChildren(forBlock);
 
-        if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-            expression = expression.elements[0] as t.Expression;
-        } else {
-            expression = codeGen.genFragment(
-                forBlock.key
-                    ? codeGen.bindExpression(forBlock.key)
-                    : t.literal(codeGen.generateKey()),
-                expression
-            );
-        }
-
-        let res: t.Expression;
         if (isForEach(forBlock)) {
-            res = applyInlineFor(forBlock, expression);
+            return applyInlineFor(forBlock, expression);
         } else {
-            res = applyInlineForOf(forBlock, expression);
+            return applyInlineForOf(forBlock, expression);
         }
-
-        return res;
     }
 
     function transformForChildren(forBlock: ForBlock): t.Expression {
@@ -238,9 +222,22 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         const children = transformChildren(forBlock);
+
+        let childExpression;
+        if (children.elements.length === 1) {
+            childExpression = children.elements[0] as t.Expression;
+        } else {
+            childExpression = codeGen.genFragment(
+                forBlock.key
+                    ? codeGen.bindExpression(forBlock.key)
+                    : t.literal(codeGen.generateKey()),
+                children
+            );
+        }
+
         codeGen.endScope();
 
-        return children;
+        return childExpression;
     }
 
     function applyInlineFor(forEach: ForEach, node: t.Expression): t.Expression {

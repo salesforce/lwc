@@ -18,11 +18,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       api_fragment(
         1,
         api_iterator($cmp.items, function (item) {
-          return api_fragment($cmp.item.id, [
+          return api_fragment(item.id, [
             api_element(
               "p",
               {
-                key: $cmp.item.id,
+                key: item.id,
               },
               [api_text("1" + api_dynamic_text(item))]
             ),
