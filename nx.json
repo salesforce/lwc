@@ -6,7 +6,7 @@
             "options": {
                 "cacheDirectory": "./.nx-cache",
                 "cacheableOperations": ["prepare", "build", "dev"],
-                "maxParallel": 20
+                "parallel": 20
             }
         }
     },
