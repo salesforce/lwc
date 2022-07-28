@@ -35,6 +35,7 @@ export function getProxy(value: any): any {
     return process.env.IS_BROWSER ? reactiveMembrane.getProxy(value) : value;
 }
 
+// Making the component instance a live value when using Locker to support expandos.
 export function setLockerLivePropertyKey(obj: any): void {
     // On the server side, we don't need mutation tracking. Skipping it improves performance.
     if (process.env.IS_BROWSER) {
