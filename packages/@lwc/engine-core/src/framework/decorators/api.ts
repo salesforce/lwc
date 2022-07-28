@@ -12,6 +12,7 @@ import {
     componentValueObserved,
     componentValueMutated,
     ReactiveObserver,
+    JobFunction,
 } from '../mutation-tracker';
 import { LightningElement } from '../base-lightning-element';
 import { getAssociatedVM, rerenderVM, VM } from '../vm';
@@ -73,6 +74,21 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
         enumerable: true,
         configurable: true,
     };
+}
+
+const DUMMY_ACCESSOR_REACTIVE_OBSERVER = {
+    observe(job: JobFunction) {
+        job();
+    },
+    reset() {},
+    link() {},
+} as unknown as AccessorReactiveObserver;
+
+function createAccessorReactiveObserver(vm: VM, set: (v: any) => void) {
+    // On the server side, we don't need mutation tracking. Skipping it improves performance.
+    return process.env.IS_BROWSER
+        ? new AccessorReactiveObserver(vm, set)
+        : DUMMY_ACCESSOR_REACTIVE_OBSERVER;
 }
 
 export class AccessorReactiveObserver extends ReactiveObserver {
@@ -151,26 +167,22 @@ export function createPublicAccessorDescriptor(
                 );
             }
             if (set) {
-                // On the server side, we don't need mutation tracking. Skipping it improves performance.
-                // Note the `if` cannot be simplified because `features.ENABLE_REACTIVE_SETTER` must be transformed
-                if (process.env.IS_BROWSER) {
-                    if (features.ENABLE_REACTIVE_SETTER) {
-                        let ro = vm.oar[key as any];
-                        if (isUndefined(ro)) {
-                            ro = vm.oar[key as any] = new AccessorReactiveObserver(vm, set);
-                        }
-                        // every time we invoke this setter from outside (through this wrapper setter)
-                        // we should reset the value and then debounce just in case there is a pending
-                        // invocation the next tick that is not longer relevant since the value is changing
-                        // from outside.
-                        ro.reset(newValue);
-                        ro.observe(() => {
-                            set.call(this, newValue);
-                        });
-                        return;
+                if (features.ENABLE_REACTIVE_SETTER) {
+                    let ro = vm.oar[key as any];
+                    if (isUndefined(ro)) {
+                        ro = vm.oar[key as any] = createAccessorReactiveObserver(vm, set);
                     }
+                    // every time we invoke this setter from outside (through this wrapper setter)
+                    // we should reset the value and then debounce just in case there is a pending
+                    // invocation the next tick that is not longer relevant since the value is changing
+                    // from outside.
+                    ro.reset(newValue);
+                    ro.observe(() => {
+                        set.call(this, newValue);
+                    });
+                } else {
+                    set.call(this, newValue);
                 }
-                set.call(this, newValue);
             } else if (process.env.NODE_ENV !== 'production') {
                 assert.fail(
                     `Invalid attempt to set a new value for property ${toString(
