@@ -96,7 +96,14 @@ function insert(node: N, parent: E, anchor: N | null) {
 
     node[HostParentKey] = parent;
 
-    const anchorIndex = isNull(anchor) ? -1 : parent[HostChildrenKey].indexOf(anchor);
+    // Perf optimization: Children of a VFragment node are always inserted before the end anchor.
+    // There is a high probability the end anchor is the last children node. We optimize for this
+    // use case here by searching the anchor element from the end using `lastIndexOf` instead of `
+    // indexOf`.
+    // This could be optimized further by storying the children elements in a double-linked list
+    // instead of an array. This approach is used by browsers and jsdom.
+    const anchorIndex = isNull(anchor) ? -1 : parent[HostChildrenKey].lastIndexOf(anchor);
+
     if (anchorIndex === -1) {
         parent[HostChildrenKey].push(node);
     } else {
