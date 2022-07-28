@@ -14,8 +14,9 @@ import {
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
 import { LightningElement } from './base-lightning-element';
-import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
+import { ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';
+import { updateComponentValue } from './update-component-value';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
@@ -53,14 +54,8 @@ export class WireContextRegistrationEvent extends CustomEvent<undefined> {
 }
 
 function createFieldDataCallback(vm: VM, name: string) {
-    const { cmpFields } = vm;
     return (value: any) => {
-        if (value !== vm.cmpFields[name]) {
-            // storing the value in the underlying storage
-            cmpFields[name] = value;
-
-            componentValueMutated(vm, name);
-        }
+        updateComponentValue(vm, name, value);
     };
 }
 

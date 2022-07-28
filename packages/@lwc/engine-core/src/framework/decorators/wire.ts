@@ -6,9 +6,10 @@
  */
 import { assert } from '@lwc/shared';
 import { LightningElement } from '../base-lightning-element';
-import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
+import { componentValueObserved } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
 import { WireAdapterConstructor } from '../wiring';
+import { updateComponentValue } from '../update-component-value';
 
 /**
  * @wire decorator to wire fields and methods to a wire adapter in
@@ -40,11 +41,7 @@ export function internalWireFieldDecorator(key: string): PropertyDescriptor {
              * letting the author to do the wrong thing, but it will keep our
              * system to be backward compatible.
              */
-            if (value !== vm.cmpFields[key]) {
-                vm.cmpFields[key] = value;
-
-                componentValueMutated(vm, key);
-            }
+            updateComponentValue(vm, key, value);
         },
         enumerable: true,
         configurable: true,
