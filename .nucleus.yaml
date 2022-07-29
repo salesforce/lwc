@@ -30,7 +30,6 @@ branches:
         - ris-gpta/core_via_components
         - salesforce/builder-framework
         - salesforce/lds-lightning-platform
-        - salesforce/locker
         - salesforce/luvio
         - salesforce/lwr
         - salesforce/lwr-everywhere
