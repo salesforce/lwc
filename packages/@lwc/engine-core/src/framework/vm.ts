@@ -39,7 +39,7 @@ import {
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import { AccessorReactiveObserver } from './decorators/api';
+import { AccessorReactiveObserver } from './accessor-reactive-observer';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
 
