@@ -28,7 +28,7 @@ async function promptVersion() {
         {
             type: 'list',
             name: 'prompt',
-            messageL: `Select a new version, currently ${tag}`,
+            messageL: `Select a new version, currently ${tag} based on latest tags`,
             choices: [
                 { value: patch, name: `Patch (${patch})` },
                 { value: minor, name: `Minor (${minor})` },
@@ -40,7 +40,7 @@ async function promptVersion() {
     ]);
 
     if (promptAnswer === 'CUSTOM') {
-        const answer = await inquirer.prompt([
+        const inputAnswer = await inquirer.prompt([
             {
                 type: 'input',
                 name: 'input',
@@ -50,7 +50,7 @@ async function promptVersion() {
             },
         ]);
 
-        return answer.input;
+        return inputAnswer.input;
     }
 
     return promptAnswer;
@@ -58,54 +58,104 @@ async function promptVersion() {
 
 function updatePackages(newVersion) {
     try {
-        const output = child_process.execSync('yarn --silent workspaces info');
-        const workspacesInfo = Object.values(JSON.parse(output));
+        if (!newVersion) {
+            throw new Error(`Encountered an error, unexpected version found ${newVersion}`);
+        }
 
-        // validate there are no mismatching dependencies
-        const hasMismatchedWorkspaceDependencies = workspacesInfo.includes(
-            ({ mismatchedWorkspaceDependencies }) => mismatchedWorkspaceDependencies.length
-        );
-        if (hasMismatchedWorkspaceDependencies) {
-            const misMatchedDependencies = workspacesInfo.map(
-                ({ location, mismatchedWorkspaceDependencies }) =>
-                    `${location}: ${mismatchedWorkspaceDependencies.join(', ')}`
+        const mismatchedWorkspaceDependencies = getMismatchedWorkspaceDependencies();
+        if (mismatchedWorkspaceDependencies.length) {
+            throw new Error(
+                `There are mismatching workspace dependencies, please resolve before bumping the versions: 
+                ${mismatchedWorkspaceDependencies.join('\n')}`
             );
-            throw new Error(`There are missmatching workspace dependencies, please resolve before bumping the versions:
-        ${misMatchedDependencies.join('\n')}
+        }
+
+        const packagesToUpdate = getPackagesToUpdate(newVersion);
+        for (const packageJson of packagesToUpdate) {
+            fs.writeFileSync(
+                packageJson.packageJsonLocation,
+                JSON.stringify(packageJson.newPackageJson, null, 4)
+            );
+        }
+
+        // Validate newly created packages have no mismatching workspace dependencies
+        const updatedWorkspaceMismatchedDependencies = getMismatchedWorkspaceDependencies();
+        if (updatedWorkspaceMismatchedDependencies.length) {
+            // Revert changes when mismatching workspace dependencies are detected
+            for (const { packageJsonLocation, oldPackageJson } of packagesToUpdate) {
+                fs.writeFileSync(packageJsonLocation, JSON.stringify(oldPackageJson, null, 4));
+            }
+            throw new Error(`Version bump resulted in mismatching workspace dependencies, reverting to previous package.json.  
+            After the version bump script ran the following mismatching workspace depenedencies were detected: 
+            ${updatedWorkspaceMismatchedDependencies.join('\n')}
         `);
         }
 
-        const updatedPackages = workspacesInfo.map(({ location, workspaceDependencies }) => {
-            const packageJsonLocation = `${path.resolve(
-                path.dirname('..'),
-                location
-            )}/package.json`;
-            const packageJson = JSON.parse(fs.readFileSync(packageJsonLocation, 'utf-8'));
-            // Look for different types of dependencies ex: dependencies, devDependencies, peerDependencies
-            const packageDependencyTypes = Object.keys(packageJson).filter((type) =>
-                type.match(/.*[dD]ependencies.*/g)
+        for (const { newPackageJson, oldPackageJson } of packagesToUpdate) {
+            console.log(
+                `Updating package ${newPackageJson.name} from ${oldPackageJson.version} to ${newPackageJson.version}`
             );
-
-            packageJson.version = newVersion;
-
-            for (const dependencyType of packageDependencyTypes) {
-                for (const dependencyName of workspaceDependencies) {
-                    const currentVersion = packageJson[dependencyType][dependencyName];
-                    if (currentVersion !== newVersion) {
-                        packageJson[dependencyType][dependencyName] = newVersion;
-                    }
-                }
-            }
-
-            return [packageJsonLocation, JSON.stringify(packageJson, null, 4)];
-        });
-
-        // validate all the dependencies match again here
-        for (const [location, serializedJson] of updatedPackages) {
-            fs.writeFileSync(location, serializedJson);
         }
     } catch (error) {
         console.error(error);
         process.exit(1);
     }
+}
+
+function getPackagesToUpdate(newVersion) {
+    const output = child_process.execSync('yarn --silent workspaces info');
+    const workspacesInfo = Object.values(JSON.parse(output));
+    const packagesToUpdate = workspacesInfo.map(({ location, workspaceDependencies }) => {
+        const packageJsonLocation = `${path.resolve(path.dirname('..'), location)}/package.json`;
+        const oldPackageJson = JSON.parse(fs.readFileSync(packageJsonLocation, 'utf-8'));
+        const newPackageJson = { ...oldPackageJson };
+        // Look for different types of dependencies
+        // ex: dependencies, devDependencies, peerDependencies
+        const packageDependencyTypes = Object.keys(newPackageJson).filter((type) =>
+            type.match(/.*[dD]ependencies.*/g)
+        );
+
+        newPackageJson.version = newVersion;
+
+        // Update the package version for all dependencies
+        // ex:
+        //  {
+        //    "devDependencies": {
+        //        "@lwc/template-compiler": "^7.18.9",
+        //  }
+        for (const dependencyType of packageDependencyTypes) {
+            for (const dependencyName of workspaceDependencies) {
+                const currentVersion = newPackageJson[dependencyType][dependencyName];
+                if (currentVersion && currentVersion !== newVersion) {
+                    newPackageJson[dependencyType][dependencyName] = newVersion;
+                }
+            }
+        }
+
+        return {
+            packageJsonLocation,
+            newPackageJson,
+            oldPackageJson,
+        };
+    });
+
+    return packagesToUpdate;
+}
+
+function getMismatchedWorkspaceDependencies() {
+    const output = child_process.execSync('yarn --silent workspaces info');
+    const workspacesInfo = Object.values(JSON.parse(output));
+    const misMatchedDependencies = workspacesInfo.reduce(
+        (acc, { location, mismatchedWorkspaceDependencies }) => {
+            if (mismatchedWorkspaceDependencies.length) {
+                acc.push(
+                    `${location} - dependencies: ${mismatchedWorkspaceDependencies.join(', ')}`
+                );
+            }
+            return acc;
+        },
+        []
+    );
+
+    return misMatchedDependencies;
 }

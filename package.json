@@ -20,8 +20,8 @@
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
     "test:ci": "yarn test --no-cache --coverage --runInBand",
-    "test:integration": "nx sauce --skip-nx-cache @lwc/integration-tests",
-    "test:performance": "nx test --skip-nx-cache @lwc/perf-benchmarks",
+    "test:integration": "nx sauce @lwc/integration-tests --skip-nx-cache",
+    "test:performance": "nx test @lwc/perf-benchmarks --skip-nx-cache",
     "release:version": "./scripts/release/version.mjs"
   },
   "devDependencies": {
