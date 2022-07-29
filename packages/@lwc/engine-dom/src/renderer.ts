@@ -18,7 +18,7 @@ import {
     StringToLowerCase,
 } from '@lwc/shared';
 import { insertStylesheet } from './styles';
-
+import { createFragment } from './createFragment';
 let getCustomElement: any;
 let defineCustomElement: any;
 let HTMLElementConstructor;
@@ -102,10 +102,6 @@ export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
 
 function cloneNode(node: Node, deep: boolean): Node {
     return node.cloneNode(deep);
-}
-
-function createFragment(html: string): Node | null {
-    return document.createRange().createContextualFragment(html).firstChild;
 }
 
 function createElement(tagName: string, namespace?: string): Element {
