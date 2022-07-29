@@ -59,7 +59,7 @@ async function promptVersion() {
 function updatePackages(newVersion) {
     try {
         if (!newVersion) {
-            throw new Error(`Encountered an error, unexpected version found ${newVersion}`);
+            throw new Error(`Encountered an error, unexpected version provided ${newVersion}`);
         }
 
         const mismatchedWorkspaceDependencies = getMismatchedWorkspaceDependencies();
@@ -145,7 +145,7 @@ function getPackagesToUpdate(newVersion) {
 function getMismatchedWorkspaceDependencies() {
     const output = child_process.execSync('yarn --silent workspaces info');
     const workspacesInfo = Object.values(JSON.parse(output));
-    const misMatchedDependencies = workspacesInfo.reduce(
+    const mismatchedDependencies = workspacesInfo.reduce(
         (acc, { location, mismatchedWorkspaceDependencies }) => {
             if (mismatchedWorkspaceDependencies.length) {
                 acc.push(
@@ -157,5 +157,5 @@ function getMismatchedWorkspaceDependencies() {
         []
     );
 
-    return misMatchedDependencies;
+    return mismatchedDependencies;
 }
