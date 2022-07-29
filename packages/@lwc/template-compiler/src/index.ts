@@ -34,7 +34,7 @@ export default function compile(source: string, config: Config): TemplateCompile
     const state = new State(options);
 
     let code = '';
-    let ast: Root | null = null;
+    let root: Root | undefined;
     const warnings: CompilerDiagnostic[] = [];
 
     try {
@@ -47,7 +47,7 @@ export default function compile(source: string, config: Config): TemplateCompile
 
         if (!hasParsingError && parsingResults.root) {
             code = generate(parsingResults.root, state);
-            ast = parsingResults.root;
+            root = parsingResults.root;
         }
     } catch (error) {
         const diagnostic = normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error);
@@ -57,7 +57,7 @@ export default function compile(source: string, config: Config): TemplateCompile
 
     return {
         code,
-        ast,
+        root,
         warnings,
     };
 }

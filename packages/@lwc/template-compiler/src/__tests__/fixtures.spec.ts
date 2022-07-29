@@ -27,7 +27,7 @@ describe('fixtures', () => {
             }
 
             const compiled = compiler(src, config);
-            const { warnings, ast } = compiled;
+            const { warnings, root } = compiled;
 
             // Replace LWC's version with X.X.X so the snapshots don't frequently change
             // String.prototype.replaceAll only available in Node 15+
@@ -38,7 +38,7 @@ describe('fixtures', () => {
 
             return {
                 'expected.js': prettier.format(code, { parser: 'babel' }),
-                'ast.json': JSON.stringify({ ast }, null, 4),
+                'ast.json': JSON.stringify({ root }, null, 4),
                 'metadata.json': JSON.stringify({ warnings }, null, 4),
             };
         }
