@@ -9,12 +9,38 @@ branches:
       auto-start-from-forks: false
       merge-method: disabled # do not auto-merge; we'll do it ourselves
       required-downstream-deps:
+        - Guardrails/analyzer-framework
+        - LightningMobileRuntime/ui-lmr-components
+        - MobilePlatform/lds-debug-app
+        - Trailhead-Platform/ui-trailhead-core-components
+        - automation-platform/ui-interaction-explorer-components
+        - communities/microsite-template-marketing
         - communities/shared-experience-components
+        - communities/talon-template-byo
         - communities/ui-b2b-components
+        - communities/ui-cms-components
+        - communities/ui-commerce-components
+        - communities/ui-dxp-components
+        - communities/ui-feeds-components
         - communities/ui-lightning-community
+        - communities/webruntime
+        - lwc/lwc-platform
+        - nrkruk/lwc-dev-core
+        - omnistudio/ui-omniscript-components
+        - ris-gpta/core_via_components
+        - salesforce/builder-framework
+        - salesforce/lds-lightning-platform
+        - salesforce/locker
+        - salesforce/luvio
         - salesforce/lwr
+        - salesforce/lwr-everywhere
+        - salesforce/lwr-lightning-platform
+        - salesforce/lwr-recipes
+        - salesforce/o11y-sample-app
         - salesforce/utam-docs
-        - uiplatform/nucleus
+        - salesforcedevs/doc-framework-monorepo
+        - swanaselja/experience-container-validate
+        - uiplatform/aura-hotswap-bundle
   release:
     pull-request:
       <<: *branch-definition

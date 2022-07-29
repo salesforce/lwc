@@ -10,7 +10,7 @@ const URL = '/related-target';
 function getEvents(elm) {
     return browser.execute(function (elm) {
         return elm.getEvents();
-    }, elm).value;
+    }, elm);
 }
 
 async function getRootEvents() {
@@ -40,7 +40,7 @@ function getChildInput() {
 }
 
 // FocusEvent.relatedTarget is always null in IE11
-if (process.env.COMPAT === 'false') {
+if (!/compat/.test(process.env.MODE)) {
     describe('relatedTarget', () => {
         beforeEach(async () => {
             await browser.url(URL);
@@ -105,7 +105,7 @@ if (process.env.COMPAT === 'false') {
                 return String(relatedTarget);
             }).value;
 
-            assert.strictEqual(relatedTarget, 'undefined');
+            assert.strictEqual(relatedTarget, undefined);
         });
     });
 }
