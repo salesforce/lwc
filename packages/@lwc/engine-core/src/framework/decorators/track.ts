@@ -8,7 +8,7 @@ import { assert, toString } from '@lwc/shared';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
-import { getProxy } from '../membrane';
+import { getReactiveProxy } from '../membrane';
 import { LightningElement } from '../base-lightning-element';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
@@ -24,7 +24,7 @@ export default function track(
 ): any;
 export default function track(target: any): any {
     if (arguments.length === 1) {
-        return getProxy(target);
+        return getReactiveProxy(target);
     }
     if (process.env.NODE_ENV !== 'production') {
         assert.fail(
@@ -58,7 +58,7 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
                     )}`
                 );
             }
-            const reactiveOrAnyValue = getProxy(newValue);
+            const reactiveOrAnyValue = getReactiveProxy(newValue);
             if (reactiveOrAnyValue !== vm.cmpFields[key]) {
                 vm.cmpFields[key] = reactiveOrAnyValue;
 

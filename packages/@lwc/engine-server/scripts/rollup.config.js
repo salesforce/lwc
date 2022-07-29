@@ -42,17 +42,6 @@ module.exports = {
             },
             preventAssignment: true,
         }),
-        {
-            // Check that the output bundle does not include the reactivity / observable-membrane code
-            name: 'check-no-reactivity',
-            renderChunk(code) {
-                if (/\b(ReactiveObserver|ObservableMembrane)\b/.test(code)) {
-                    throw new Error(
-                        '@lwc/engine-server should not include ReactiveObserver or ObservableMembrane.'
-                    );
-                }
-            },
-        },
     ],
 
     onwarn({ code, message }) {

@@ -42,7 +42,7 @@ import {
 import { unlockAttribute, lockAttribute } from './attributes';
 import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
-import { setLockerLivePropertyKey } from './membrane';
+import { markLockerLiveObject } from './membrane';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -220,7 +220,7 @@ export const LightningElement: LightningElementConstructor = function (
         vm.getHook = getHook;
     }
 
-    setLockerLivePropertyKey(this);
+    markLockerLiveObject(this);
 
     // Linking elm, shadow root and component with the VM.
     associateVM(component, vm);

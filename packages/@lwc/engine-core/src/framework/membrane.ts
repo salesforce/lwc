@@ -26,17 +26,18 @@ export function unwrap(value: any): any {
 }
 
 export function getReadOnlyProxy(value: any): any {
-    // On the server side, we don't need mutation tracking. Skipping it improves performance.
-    return process.env.IS_BROWSER ? reactiveMembrane.getReadOnlyProxy(value) : value;
+    // We must return a frozen wrapper around the value, so that child components cannot mutate properties passed to
+    // them from their parents. This applies to both the client and server.
+    return reactiveMembrane.getReadOnlyProxy(value);
 }
 
-export function getProxy(value: any): any {
+export function getReactiveProxy(value: any): any {
     // On the server side, we don't need mutation tracking. Skipping it improves performance.
     return process.env.IS_BROWSER ? reactiveMembrane.getProxy(value) : value;
 }
 
 // Making the component instance a live value when using Locker to support expandos.
-export function setLockerLivePropertyKey(obj: any): void {
+export function markLockerLiveObject(obj: any): void {
     // On the server side, we don't need mutation tracking. Skipping it improves performance.
     if (process.env.IS_BROWSER) {
         obj[lockerLivePropertyKey] = undefined;
