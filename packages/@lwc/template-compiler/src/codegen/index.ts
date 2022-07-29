@@ -207,6 +207,8 @@ function transform(codeGen: CodeGen): t.Expression {
 
         let leftExpression: t.Expression;
         const modifier = ifNode.modifier!;
+
+        /* istanbul ignore else */
         if (modifier === 'true') {
             leftExpression = testExpression;
         } else if (modifier === 'false') {

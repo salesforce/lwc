@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1083,
+            "message": "LWC1083: Error parsing template expression: Invalid expression { } - Unexpected token (1:2)",
+            "level": 1,
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 9
+            }
+        }
+    ]
+}
