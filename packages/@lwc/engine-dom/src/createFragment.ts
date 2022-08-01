@@ -22,13 +22,22 @@ if (SUPPORTS_TEMPLATE) {
     // <td> in the proper container elements (e.g. <tbody>), because otherwise they will be parsed as null.
 
     // Via https://github.com/webcomponents/polyfills/blob/ee1db33/packages/template/template.js#L273-L280
+    // With other elements added from:
+    // https://github.com/sindresorhus/html-tags/blob/95dcdd5/index.js
+    // Using the test:
+    // document.createRange().createContextualFragment(`<${tag}></${tag}>`).firstChild === null
+    // And omitting <html>, <head>, and <body> as these are not practical in an LWC component.
     const topLevelWrappingMap: { [key: string]: string[] } = {
-        option: ['select'],
-        thead: ['table'],
+        caption: ['table'],
         col: ['colgroup', 'table'],
-        tr: ['tbody', 'table'],
-        th: ['tr', 'tbody', 'table'],
+        colgroup: ['table'],
+        option: ['select'],
+        tbody: ['table'],
         td: ['tr', 'tbody', 'table'],
+        th: ['tr', 'tbody', 'table'],
+        thead: ['table'],
+        tfoot: ['table'],
+        tr: ['tbody', 'table'],
     };
 
     // Via https://github.com/webcomponents/polyfills/blob/ee1db33/packages/template/template.js#L282-L288
