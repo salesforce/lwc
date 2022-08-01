@@ -248,6 +248,9 @@ function internalUpgrade(
     // constructor will reuse the instance by returning the upgradingInstance.
     // This is by far the most important piece of the puzzle
     upgradingInstance = instance;
+    // By `new`ing the UserCtor, we now jump to the constructor for the overridden global HTMLElement
+    // The reason this happens is because the UserCtor is extends HTMLElement, so it calls the `super()`.
+    // Note that `upgradingInstance` is explicitly handled in the HTMLElement constructor.
     new instanceDefinition.UserCtor();
 
     patchAttributesDuringUpgrade(instance, registeredDefinition, instanceDefinition);
@@ -363,6 +366,7 @@ export function patchCustomElementRegistry() {
         });
     };
 
+    // This constructor is invoked when we call `new instanceDefinition.UserCtor()`
     function HTMLElement(this: HTMLElement) {
         // Upgrading case: the pivoting class constructor was run by the browser's
         // native custom elements and we're in the process of running the
