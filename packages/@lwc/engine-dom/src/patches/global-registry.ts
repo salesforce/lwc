@@ -178,7 +178,15 @@ function patchAttributes(
                 if (newObservedAttributes.has(name)) {
                     const old = nativeGetAttribute.call(this, name);
                     nativeSetAttribute.call(this, name, value);
-                    attributeChangedCallback!.call(this, name, old, value + '');
+                    try {
+                        attributeChangedCallback!.call(this, name, old, value + '');
+                    } catch (err) {
+                        // Per native custom element behavior, errors thrown in attributeChangedCallback
+                        // become unhandled async errors
+                        Promise.resolve().then(() => {
+                            throw err;
+                        });
+                    }
                 } else {
                     nativeSetAttribute.call(this, name, value);
                 }
@@ -192,7 +200,15 @@ function patchAttributes(
                 if (newObservedAttributes.has(name)) {
                     const old = nativeGetAttribute.call(this, name);
                     nativeRemoveAttribute.call(this, name);
-                    attributeChangedCallback!.call(this, name, old, null);
+                    try {
+                        attributeChangedCallback!.call(this, name, old, null);
+                    } catch (err) {
+                        // Per native custom element behavior, errors thrown in attributeChangedCallback
+                        // become unhandled async errors
+                        Promise.resolve().then(() => {
+                            throw err;
+                        });
+                    }
                 } else {
                     nativeRemoveAttribute.call(this, name);
                 }
