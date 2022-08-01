@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const babel = require('@babel/core');
 const { LWC_VERSION } = require('@lwc/shared');
-const { testFixtureDir } = require('jest-utils-lwc-internals');
+const { testFixtureDir } = require('@lwc/jest-utils-lwc-internals');
 const plugin = require('../index');
 
 const BASE_CONFIG = {

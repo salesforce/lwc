@@ -39,6 +39,28 @@ export const TemplateErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    DUPLICATE_ELEMENT_ENTRY: {
+        code: 1150,
+        message: 'customRendererConfig contains duplicate entry for {0} element tag',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    CUSTOM_ELEMENT_TAG_DISALLOWED: {
+        code: 1151,
+        message: 'customRendererConfig should not contain a custom element tag, but found {0}',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    DIRECTIVE_DISALLOWED_ON_CUSTOM_ELEMENT: {
+        code: 1152,
+        message:
+            'Directives diallowed on custom elements due to customRendererConfig, found <{0}> assigned to one of [{1}] directives',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
 
 export const ParserDiagnostics = {
@@ -107,7 +129,7 @@ export const ParserDiagnostics = {
         code: 1041,
         message:
             'Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.',
-        level: DiagnosticLevel.Error,
+        level: DiagnosticLevel.Warning,
         url: '',
     },
 
@@ -567,10 +589,11 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
-    UNKNOWN_TEMPLATE_ATTRIBUTE: {
+    INVALID_TEMPLATE_ATTRIBUTE: {
         code: 1145,
         message:
-            'Non root templates only support for:each, iterator and if directives. All other attributes will be ignored.',
+            'Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: {0}. For more information, ' +
+            'please visit https://lwc.dev/guide/reference#html-template-directives',
         level: DiagnosticLevel.Warning,
         url: '',
     },

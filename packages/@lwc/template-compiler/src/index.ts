@@ -20,6 +20,7 @@ import generate from './codegen';
 import { TemplateCompileResult, TemplateParseResult } from './shared/types';
 
 export * from './shared/types';
+export { CustomRendererConfig, CustomRendererElementConfig } from './shared/renderer-hooks';
 export { Config } from './config';
 
 export function parse(source: string, config: Config = {}): TemplateParseResult {
@@ -43,7 +44,7 @@ export default function compile(source: string, config: Config): TemplateCompile
         );
 
         if (!hasParsingError && parsingResults.root) {
-            code = generate(parsingResults.root, options);
+            code = generate(parsingResults.root, state);
         }
     } catch (error) {
         const diagnostic = normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error);

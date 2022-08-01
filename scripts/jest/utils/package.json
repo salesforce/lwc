@@ -1,5 +1,5 @@
 {
-    "name": "jest-utils-lwc-internals",
+    "name": "@lwc/jest-utils-lwc-internals",
     "version": "0.0.0",
     "private": true
 }

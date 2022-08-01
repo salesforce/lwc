@@ -37,6 +37,12 @@ function generateLwcApisImport(codeGen: CodeGen): t.ImportDeclaration {
     return t.importDeclaration(imports, t.literal(LWC_MODULE_NAME));
 }
 
+function generateHoistedNodes(codegen: CodeGen): t.VariableDeclaration[] {
+    return codegen.hoistedNodes.map(({ identifier, expr }) => {
+        return t.variableDeclaration('const', [t.variableDeclarator(identifier, expr)]);
+    });
+}
+
 /**
  * Generate an ES module AST from a template ESTree AST. The generated module imports the dependent
  * LWC components via import statements and expose the template function via a default export
@@ -60,6 +66,7 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
     codeGen.usedLwcApis.add(SECURE_REGISTER_TEMPLATE_METHOD_NAME);
 
     const imports = [...generateComponentImports(codeGen), generateLwcApisImport(codeGen)];
+    const hoistedNodes = generateHoistedNodes(codeGen);
 
     const metadata = generateTemplateMetadata(codeGen);
 
@@ -74,5 +81,5 @@ export function format(templateFn: t.FunctionDeclaration, codeGen: CodeGen): t.P
         ),
     ];
 
-    return t.program([...imports, ...templateBody, ...metadata]);
+    return t.program([...imports, ...hoistedNodes, ...templateBody, ...metadata]);
 }

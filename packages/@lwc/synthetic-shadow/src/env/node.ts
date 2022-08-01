@@ -7,7 +7,7 @@
 import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 
 // TODO [#2472]: Remove this workaround when appropriate.
-// eslint-disable-next-line lwc-internal/no-global-node
+// eslint-disable-next-line @lwc/lwc-internal/no-global-node
 const _Node = Node;
 const nodePrototype = _Node.prototype;
 

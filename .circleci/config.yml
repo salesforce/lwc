@@ -23,6 +23,55 @@ executors:
 
 # Custom commands definition
 commands:
+  # Based on https://circleci.com/developer/orbs/orb/kimh/run-with-retry
+  retry_karma:
+    description: Retry command multiple times until it succeeds
+    parameters:
+      command:
+        type: string
+      command_name:
+        type: string
+      working_directory:
+        type: string
+      retry_count:
+        type: integer
+        default: 3
+      coverage:
+        type: boolean
+        default: false
+      compat:
+        type: boolean
+        default: false
+      disable_synthetic:
+        type: boolean
+        default: false
+      force_native_shadow_mode:
+        type: boolean
+        default: false
+    steps:
+      - run:
+          name: << parameters.command_name >>
+          working_directory: << parameters.working_directory >>
+          command: |
+            retry() {
+               MAX_RETRY=<< parameters.retry_count >>
+               n=0
+               until [ $n -ge $MAX_RETRY ]
+               do
+                  echo "Try $[$n+1]/$MAX_RETRY..."
+                  "$@" && break
+                  n=$[$n+1]
+               done
+               if [ $n -ge $MAX_RETRY ]; then
+                 echo "Failed: ${@}" >&2
+                 exit 1
+               fi
+            }
+            <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >> \
+            <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >> \
+            <<# parameters.compat >> COMPAT=1 <</ parameters.compat >> \
+            <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >> \
+            retry << parameters.command >>
   # Setup
   restore_yarn_cache:
     description: Restore Yarn cache from previous build
@@ -93,15 +142,14 @@ commands:
         type: boolean
         default: true
     steps:
-      - run:
-          name: Run karma integration tests
-          working_directory: packages/integration-karma
-          command: >
-              <<# parameters.disable_synthetic >> DISABLE_SYNTHETIC=1 <</ parameters.disable_synthetic >>
-              <<# parameters.force_native_shadow_mode >> FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 <</ parameters.force_native_shadow_mode >>
-              <<# parameters.compat >> COMPAT=1 <</ parameters.compat >>
-              <<# parameters.coverage >> COVERAGE=1 <</ parameters.coverage >>
-              yarn sauce
+      - retry_karma:
+          command_name: Run karma integration tests
+          working_directory: packages/@lwc/integration-karma
+          disable_synthetic: << parameters.disable_synthetic >>
+          force_native_shadow_mode: << parameters.force_native_shadow_mode >>
+          compat: << parameters.compat >>
+          coverage: << parameters.coverage >>
+          command: yarn sauce
 
 
 # Jobs definition
@@ -162,16 +210,15 @@ jobs:
           disable_synthetic: false
           compat: false
           force_native_shadow_mode: true
-      - run:
-          name: Run karma hydration tests
+      - retry_karma:
+          command_name: Run karma hydration tests
           command: yarn hydration:sauce
-          working_directory: packages/integration-karma
-          environment:
-            COVERAGE: 1
+          working_directory: packages/@lwc/integration-karma
+          coverage: true
       - run:
           name: Compute karma coverage
           command: yarn coverage
-          working_directory: packages/integration-karma
+          working_directory: packages/@lwc/integration-karma
 
 
   test_integration:
@@ -181,10 +228,10 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - run:
-          name: Run integration test - Chrome SauceLabs
+      - retry_karma:
+          command_name: Run integration test - Chrome SauceLabs
           command: yarn sauce:prod --browsers chrome
-          working_directory: packages/integration-tests
+          working_directory: packages/@lwc/integration-tests
 
 
   test_integration_compat:
@@ -194,10 +241,10 @@ jobs:
     steps:
       - load_workspace
       - start_sauce_connect
-      - run:
-          name: Run integration test - IE11 SauceLabs
+      - retry_karma:
+          command_name: Run integration test - IE11 SauceLabs
           command: yarn sauce:prod_compat --browsers ie11
-          working_directory: packages/integration-tests
+          working_directory: packages/@lwc/integration-tests
 
 
 # Workflows definition

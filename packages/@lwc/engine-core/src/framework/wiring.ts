@@ -13,7 +13,6 @@ import {
     noop,
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
-import { dispatchEvent } from '../renderer';
 import { LightningElement } from './base-lightning-element';
 import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';
@@ -104,7 +103,7 @@ function createConfigWatcher(
     const computeConfigAndUpdate = () => {
         let config: ConfigValue;
         ro.observe(() => (config = configCallback(component)));
-        // eslint-disable-next-line lwc-internal/no-invalid-todo
+        // eslint-disable-next-line @lwc/lwc-internal/no-invalid-todo
         // TODO: dev-mode validation of config based on the adapter.configSchema
         // @ts-ignore it is assigned in the observe() callback
         callbackWhenConfigIsReady(config);
@@ -128,6 +127,7 @@ function createContextWatcher(
     const {
         elm,
         context: { wiredConnecting, wiredDisconnecting },
+        renderer: { dispatchEvent },
     } = vm;
     // waiting for the component to be connected to formally request the context via the token
     ArrayPush.call(wiredConnecting, () => {
@@ -138,7 +138,7 @@ function createContextWatcher(
         // guarantee that the linkage can be forged.
         const contextRegistrationEvent = new WireContextRegistrationEvent(adapterContextToken, {
             setNewContext(newContext: ContextValue) {
-                // eslint-disable-next-line lwc-internal/no-invalid-todo
+                // eslint-disable-next-line @lwc/lwc-internal/no-invalid-todo
                 // TODO: dev-mode validation of config based on the adapter.contextSchema
                 callbackWhenContextIsReady(newContext);
             },

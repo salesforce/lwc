@@ -6,7 +6,7 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
+import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
 import {
     isParentNode,
     isSlot,
@@ -14,9 +14,21 @@ import {
     isBaseElement,
     isIf,
     isDynamicDirective,
+    isElement,
+    isText,
+    isComment,
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
+import { isLiteral } from '../shared/estree';
+import {
+    isAllowedFragOnlyUrlsXHTML,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
+import State from '../state';
+import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
 import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
@@ -211,4 +223,70 @@ export function parseClassNames(classNames: string): string[] {
         .split(CLASSNAME_DELIMITER)
         .map((className) => className.trim())
         .filter((className) => className.length);
+}
+
+function isStaticNode(node: BaseElement): boolean {
+    let result = true;
+    const { name: nodeName, namespace = '', attributes, directives, properties, listeners } = node;
+
+    result &&= isElement(node);
+
+    // it is an element.
+    result &&= attributes.every(({ name, value }) => {
+        return (
+            isLiteral(value) &&
+            name !== 'slot' &&
+            // check for ScopedId
+            name !== 'id' &&
+            name !== 'spellcheck' && // spellcheck is specially handled by the vnodes.
+            !isIdReferencingAttribute(name) &&
+            // svg href needs sanitization.
+            !isSvgUseHref(nodeName, name, namespace) &&
+            // Check for ScopedFragId
+            !(
+                isAllowedFragOnlyUrlsXHTML(nodeName, name, namespace) &&
+                isFragmentOnlyUrl(value.value as string)
+            )
+        );
+    }); // all attrs are static
+    result &&= directives.length === 0; // do not have any directive
+    result &&= properties.every((prop) => isLiteral(prop.value)); // all properties are static
+    result &&= listeners.length === 0; // do not have any event listener
+
+    return result;
+}
+
+function collectStaticNodes(node: ChildNode, staticNodes: Set<ChildNode>, state: State) {
+    let childrenAreStatic = true;
+    let nodeIsStatic;
+
+    if (isText(node)) {
+        nodeIsStatic = isLiteral(node.value);
+    } else if (isComment(node)) {
+        nodeIsStatic = true;
+    } else {
+        // it is ForBlock | If | BaseElement
+        node.children.forEach((childNode) => {
+            collectStaticNodes(childNode, staticNodes, state);
+
+            childrenAreStatic = childrenAreStatic && staticNodes.has(childNode);
+        });
+
+        nodeIsStatic =
+            isBaseElement(node) && !isCustomRendererHookRequired(node, state) && isStaticNode(node);
+    }
+
+    if (nodeIsStatic && childrenAreStatic) {
+        staticNodes.add(node);
+    }
+}
+
+export function getStaticNodes(root: Root, state: State): Set<ChildNode> {
+    const staticNodes = new Set<ChildNode>();
+
+    root.children.forEach((childNode) => {
+        collectStaticNodes(childNode, staticNodes, state);
+    });
+
+    return staticNodes;
 }

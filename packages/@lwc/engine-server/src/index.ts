@@ -7,9 +7,6 @@
 // Polyfills ---------------------------------------------------------------------------------------
 import './polyfills';
 
-// Renderer initialization -------------------------------------------------------------------------
-import './initializeRenderer';
-
 // Engine-core public APIs -------------------------------------------------------------------------
 export {
     createContextProvider,
@@ -22,14 +19,18 @@ export {
     setFeatureFlag,
     setFeatureFlagForTest,
     registerTemplate,
+    freezeTemplate,
     registerComponent,
     registerDecorators,
     sanitizeAttribute,
     setHooks,
     getComponentDef,
     isComponentConstructor,
+    parseFragment,
+    parseFragment as parseSVGFragment,
 } from '@lwc/engine-core';
 
 // Engine-server public APIs -----------------------------------------------------------------------
 export { renderComponent } from './apis/render-component';
 export { LightningElement } from './apis/lightning-element';
+export { renderer } from './renderer';
