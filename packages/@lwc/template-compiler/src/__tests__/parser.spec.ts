@@ -6,7 +6,7 @@
  */
 import { DiagnosticLevel } from '@lwc/errors';
 import parse5Errors from 'parse5/lib/common/error-codes';
-import { normalizeConfig } from '../config';
+import { Config, normalizeConfig } from '../config';
 import State from '../state';
 import parse from '../parser';
 import { errorCodesToErrorOn, errorCodesToWarnOn } from '../parser/parse5Errors';
@@ -18,8 +18,8 @@ const EXPECTED_LOCATION = expect.objectContaining({
     length: expect.any(Number),
 });
 
-function parseTemplate(src: string): any {
-    const config = normalizeConfig({});
+function parseTemplate(src: string, cfg: Config = {}): any {
+    const config = normalizeConfig(cfg);
     const state = new State(config);
 
     const res = parse(src, state);
@@ -693,6 +693,64 @@ describe('props and attributes', () => {
                     value: { type: 'Literal', value: 'bar' },
                 },
             ]);
+        });
+    });
+});
+
+describe('lwc:if, lwc:elseif, lwc:else directives', () => {
+    describe('template elements', () => {
+        it('lwc:if directive', () => {
+            const { root } = parseTemplate(
+                `<template><template lwc:if={visible}>Conditional Text</template></template>`
+            );
+
+            expect(root.children[0]).toMatchObject({
+                type: 'IfBlock',
+                condition: {
+                    type: 'Identifier',
+                },
+                children: [{ type: 'Text' }],
+            });
+        });
+    });
+
+    describe('html elements', () => {
+        it('lwc:if directive', () => {
+            const { root } = parseTemplate(`<template><h1 lwc:if={visible}></h1></template>`);
+
+            expect(root.children[0]).toMatchObject({
+                type: 'IfBlock',
+                condition: {
+                    type: 'Identifier',
+                },
+                children: [
+                    {
+                        type: 'Element',
+                        name: 'h1',
+                    },
+                ],
+            });
+        });
+    });
+
+    describe('components', () => {
+        it('lwc:if directive', () => {
+            const { root } = parseTemplate(
+                `<template><c-custom lwc:if={visible}></c-custom></template>`
+            );
+
+            expect(root.children[0]).toMatchObject({
+                type: 'IfBlock',
+                condition: {
+                    type: 'Identifier',
+                },
+                children: [
+                    {
+                        type: 'Component',
+                        name: 'c-custom',
+                    },
+                ],
+            });
         });
     });
 });
