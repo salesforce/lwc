@@ -9,17 +9,27 @@ import { isString, isFunction, isObject, isNull, HTML_NAMESPACE } from '@lwc/sha
 
 import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
-import { HostElement, HostNodeType } from '../types';
+import {
+    HostAttributesKey,
+    HostChildrenKey,
+    HostElement,
+    HostEventListenersKey,
+    HostNamespaceKey,
+    HostNodeType,
+    HostParentKey,
+    HostShadowRootKey,
+    HostTypeKey,
+} from '../types';
 
 const FakeRootElement: HostElement = {
-    type: HostNodeType.Element,
-    name: 'fake-root-element',
-    namespace: HTML_NAMESPACE,
-    parent: null,
-    shadowRoot: null,
-    children: [],
-    attributes: [],
-    eventListeners: {},
+    [HostTypeKey]: HostNodeType.Element,
+    tagName: 'fake-root-element',
+    [HostNamespaceKey]: HTML_NAMESPACE,
+    [HostParentKey]: null,
+    [HostShadowRootKey]: null,
+    [HostChildrenKey]: [],
+    [HostAttributesKey]: [],
+    [HostEventListenersKey]: {},
 };
 
 export function renderComponent(
@@ -56,7 +66,7 @@ export function renderComponent(
         (element as any)[key] = value;
     }
 
-    element.parent = FakeRootElement;
+    element[HostParentKey] = FakeRootElement;
 
     connectRootElement(element);
 
