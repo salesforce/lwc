@@ -44,7 +44,10 @@ if (SUPPORTS_TEMPLATE) {
                 html = `<${wrapperTag}>${html}</${wrapperTag}>`;
             }
         }
-        const doc = document.implementation.createHTMLDocument();
+
+        // For IE11, the document title must not be undefined, but it can be an empty string
+        // https://developer.mozilla.org/en-US/docs/Web/API/DOMImplementation/createHTMLDocument#browser_compatibility
+        const doc = document.implementation.createHTMLDocument('');
         doc.body.innerHTML = html;
 
         let content: Node = doc.body;
