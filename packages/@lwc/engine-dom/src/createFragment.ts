@@ -62,7 +62,7 @@ if (SUPPORTS_TEMPLATE) {
         let content: Node = doc.body;
         if (!isUndefined(wrapperTags)) {
             for (let i = 0; i < wrapperTags.length; i++) {
-                content = content.lastChild!;
+                content = content.firstChild!;
             }
         }
 
