@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { assert } from '@lwc/shared';
-import { reactiveMembrane } from './membrane';
+import { getReadOnlyProxy } from './membrane';
 
 /**
  * EXPERIMENTAL: This function allows you to create a reactive readonly
@@ -21,5 +21,5 @@ export function readonly(obj: any): any {
             );
         }
     }
-    return reactiveMembrane.getReadOnlyProxy(obj);
+    return getReadOnlyProxy(obj);
 }

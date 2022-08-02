@@ -17,6 +17,7 @@ import {
 } from '@lwc/shared';
 import { insertStylesheet } from './styles';
 import { createCustomElement } from './customElements';
+import { createFragment } from './createFragment';
 
 let hydrating = false;
 
@@ -38,10 +39,6 @@ export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
 
 function cloneNode(node: Node, deep: boolean): Node {
     return node.cloneNode(deep);
-}
-
-function createFragment(html: string): Node | null {
-    return document.createRange().createContextualFragment(html).firstChild;
 }
 
 function createElement(tagName: string, namespace?: string): Element {

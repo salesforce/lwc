@@ -7,6 +7,7 @@ import Table from 'x/table';
 import SvgPath from 'x/svgPath';
 import SvgPathInDiv from 'x/svgPathInDiv';
 import SvgPathInG from 'x/svgPathInG';
+import StaticUnsafeTopLevel from 'x/staticUnsafeTopLevel';
 
 // In compat mode, the component will always render in synthetic mode with the scope attribute
 if (!process.env.NATIVE_SHADOW && !process.env.COMPAT) {
@@ -169,7 +170,7 @@ describe('svg and static content', () => {
     });
 });
 
-describe('tables and static content', () => {
+describe('elements that cannot be parsed as top-level', () => {
     it('should work with a static <td>', () => {
         const elm = createElement('x-table', { is: Table });
         document.body.appendChild(elm);
@@ -182,6 +183,47 @@ describe('tables and static content', () => {
             expect(elm.shadowRoot.querySelectorAll('td').length).toEqual(1);
             expect(elm.shadowRoot.querySelector('td').textContent).toEqual('');
         });
+    });
+
+    it('works for all elements that cannot be safely parsed as top-level', () => {
+        const elm = createElement('x-static-unsafe-top-level', { is: StaticUnsafeTopLevel });
+        document.body.appendChild(elm);
+
+        const getChildrenTagNames = () => {
+            const result = [];
+            const { children } = elm.shadowRoot;
+            for (let i = 0; i < children.length; i++) {
+                result.push(children[i].tagName.toLowerCase());
+            }
+            return result;
+        };
+
+        const expectedChildren = [
+            'caption',
+            'col',
+            'colgroup',
+            'tbody',
+            'td',
+            'tfoot',
+            'th',
+            'thead',
+            'tr',
+        ];
+
+        expect(getChildrenTagNames()).toEqual([]);
+        elm.doRender = true;
+        return Promise.resolve()
+            .then(() => {
+                expect(getChildrenTagNames()).toEqual(expectedChildren);
+                elm.doRender = false;
+            })
+            .then(() => {
+                expect(getChildrenTagNames()).toEqual([]);
+                elm.doRender = true;
+            })
+            .then(() => {
+                expect(getChildrenTagNames()).toEqual(expectedChildren);
+            });
     });
 });
 
