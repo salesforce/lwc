@@ -5,13 +5,14 @@ import NotReturningThis from 'x/notReturningThis';
 import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
 import Component from 'x/component';
 
-it('should throw when trying to `new` LightningElement manually', () => {
-    expect(() => {
+it('should throw when trying to invoke the constructor manually', () => {
+    const func = () => {
         new LightningElement();
-    }).toThrowError(ReferenceError);
+    };
+    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(/Illegal constructor/);
 });
 
-// TODO [#2970]: component constructor cannot be new-ed
 it('should throw when trying to `new` a subclass of LightningElement manually', () => {
     const func = () => {
         class Test extends LightningElement {}
@@ -21,8 +22,16 @@ it('should throw when trying to `new` a subclass of LightningElement manually', 
     expect(func).toThrowError(/Illegal constructor/);
 });
 
-// TODO [#2970]: component constructor cannot be new-ed
 it('should throw when trying to `new` a compiled subclass of LightningElement', () => {
+    const func = () => {
+        new Component();
+    };
+    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(/Illegal constructor/);
+});
+
+// TODO [#2970]: component constructor cannot be new-ed even after being defined
+it('should throw when trying to `new` a compiled subclass of LightningElement after definition', () => {
     createElement('x-component', { is: Component });
     const func = () => {
         new Component();
