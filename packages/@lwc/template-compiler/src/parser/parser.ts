@@ -162,6 +162,10 @@ export default class ParserCtx {
         return this.scopes[this.scopes.length - 1];
     }
 
+    private previousScope(): ParentNode[] | undefined {
+        return this.scopes[this.scopes.length - 2];
+    }
+
     /**
      * This method recovers from diagnostic errors that are encountered when fn is invoked.
      * All other errors are considered compiler errors and can not be recovered from.

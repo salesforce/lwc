@@ -39,6 +39,7 @@ import {
     Directive,
     BaseElement,
     LWCDirectiveDomMode,
+    ElseBlock,
 } from './types';
 
 export function root(parse5ElmLocation: parse5.ElementLocation): Root {
@@ -214,7 +215,18 @@ export function ifBlockNode(
         location: elementLocation,
         directiveLocation,
         children: [],
-        childrenFalse: [],
+    };
+}
+
+export function elseBlockNode(
+    elementLocation: SourceLocation,
+    directiveLocation: SourceLocation
+): ElseBlock {
+    return {
+        type: 'ElseBlock',
+        location: elementLocation,
+        directiveLocation,
+        children: [],
     };
 }
 
@@ -383,6 +395,10 @@ export function isIf(node: BaseNode): node is If {
 
 export function isIfBlock(node: BaseNode): node is IfBlock {
     return node.type === 'IfBlock';
+}
+
+export function isElseBlock(node: BaseNode): node is ElseBlock {
+    return node.type === 'ElseBlock';
 }
 
 export function isParentNode(node: BaseNode): node is ParentNode {
