@@ -1,24 +1,29 @@
-import { LightningElement } from 'lwc';
-import { createElement } from 'lwc';
+import { LightningElement, createElement } from 'lwc';
 
 import NotInvokingSuper from 'x/notInvokingSuper';
 import NotReturningThis from 'x/notReturningThis';
 import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
 import Component from 'x/component';
 
-it('should throw when trying to invoke the constructor manually', () => {
+it('should throw when trying to `new` LightningElement manually', () => {
     expect(() => {
         new LightningElement();
-    }).toThrowError(ReferenceError);
-
-    expect(() => {
-        class Test extends LightningElement {}
-        new Test();
     }).toThrowError(ReferenceError);
 });
 
 // TODO [#2970]: component constructor cannot be new-ed
+it('should throw when trying to `new` a subclass of LightningElement manually', () => {
+    const func = () => {
+        class Test extends LightningElement {}
+        new Test();
+    };
+    expect(func).toThrowError(ReferenceError);
+    expect(func).toThrowError(/Illegal constructor/);
+});
+
+// TODO [#2970]: component constructor cannot be new-ed
 it('throws when trying to `new` a compiled subclass of LightningElement', () => {
+    createElement('x-component', { is: Component });
     const func = () => {
         new Component();
     };

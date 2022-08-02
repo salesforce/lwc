@@ -24,13 +24,18 @@ it('should throw when trying to claim abstract LightningElement as custom elemen
 });
 
 if (SUPPORTS_CUSTOM_ELEMENTS) {
-    // TODO [#2970]: component constructor cannot be new-ed
-    it('throws when trying to `new` a subclass of LightningElement', () => {
+    it('CustomElementConstructor cannot be `new`ed before being defined', () => {
         const func = () => {
             new Component.CustomElementConstructor();
         };
         expect(func).toThrowError(TypeError);
         expect(func).toThrowError(/Illegal constructor/);
+    });
+
+    it('CustomElementConstructor can be `new`ed after being defined', () => {
+        customElements.define('x-my-custom-component', Component.CustomElementConstructor);
+        const elm = new Component.CustomElementConstructor();
+        expect(elm.tagName.toLowerCase()).toEqual('x-my-custom-component');
     });
 
     it('should create a custom element with shadow mode set to "open" by default', () => {
