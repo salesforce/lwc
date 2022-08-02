@@ -22,7 +22,7 @@ it('should throw when trying to `new` a subclass of LightningElement manually', 
 });
 
 // TODO [#2970]: component constructor cannot be new-ed
-it('throws when trying to `new` a compiled subclass of LightningElement', () => {
+it('should throw when trying to `new` a compiled subclass of LightningElement', () => {
     createElement('x-component', { is: Component });
     const func = () => {
         new Component();
