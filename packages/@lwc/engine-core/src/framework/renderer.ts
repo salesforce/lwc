@@ -15,7 +15,6 @@ export interface RendererAPI {
     isNativeShadowDefined: boolean;
     isSyntheticShadowDefined: boolean;
     HTMLElementExported: typeof HTMLElement;
-    isHydrating: () => boolean;
     insert: (node: N, parent: E, anchor: N | null) => void;
     remove: (node: N, parent: E) => void;
     cloneNode: (node: N, deep: boolean) => N;

@@ -77,10 +77,6 @@ class HTMLElementImpl {
 
 const ssr: boolean = true;
 
-function isHydrating(): boolean {
-    return false;
-}
-
 const isNativeShadowDefined: boolean = false;
 const isSyntheticShadowDefined: boolean = false;
 
@@ -416,7 +412,6 @@ export const renderer = {
     isNativeShadowDefined,
     isSyntheticShadowDefined,
     HTMLElementExported,
-    isHydrating,
     insert,
     remove,
     cloneNode,
