@@ -6,7 +6,7 @@ import NotReturningThis from 'x/notReturningThis';
 import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
 import Component from 'x/component';
 
-it('should throw when trying to `new` LightningElement manually', () => {
+it('should throw when trying to invoke the constructor manually', () => {
     expect(() => {
         new LightningElement();
     }).toThrowError(ReferenceError);
