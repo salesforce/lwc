@@ -222,28 +222,22 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
     });
 
     describe('constructor', () => {
-        const notSupportedError =
-            /(Shadow root cannot be created on a host which already hosts a shadow tree|Operation is not supported|The operation is not supported)/;
-
         it('new-ing an LWC component constructor from customElements.get()', () => {
             createElement('x-nonce14', { is: Nonce14 });
             const Ctor = customElements.get('x-nonce14');
             const elm = new Ctor();
             document.body.appendChild(elm);
 
-            // TODO [#2877]: element is not upgraded when new-ing the Ctor
-            expect(elm.expectedTagName).toBeUndefined();
+            // TODO [#2877]: element is not hydrated
             // expect(elm.expectedTagName).toEqual('x-nonce14')
         });
 
         it('new-ing an LWC component via new CustomElementConstructor()', () => {
             customElements.define('x-nonce15', Nonce15.CustomElementConstructor);
 
-            // TODO [#2877]: CustomElementConstructor throws an error
-            expect(() => {
-                const elm = new Nonce15.CustomElementConstructor();
-                document.body.appendChild(elm);
-            }).toThrowError(notSupportedError);
+            const elm = new Nonce15.CustomElementConstructor();
+            document.body.appendChild(elm);
+            expect(elm.expectedTagName).toEqual('x-nonce15');
         });
 
         it('new-ing an LWC component defined with CustomElementConstructor, constructor from customElements.get()', () => {
@@ -251,11 +245,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
             const Ctor = customElements.get('x-nonce16');
 
-            // TODO [#2877]: CustomElementConstructor throws an error
-            expect(() => {
-                const elm = new Ctor();
-                document.body.appendChild(elm);
-            }).toThrowError(notSupportedError);
+            const elm = new Ctor();
+            document.body.appendChild(elm);
+            expect(elm.expectedTagName).toEqual('x-nonce16');
         });
     });
 
