@@ -146,6 +146,15 @@ function getNewObservedAttributes(
     );
 }
 
+function throwAsyncError(error: unknown) {
+    // Per native custom element behavior, errors thrown in attributeChangedCallback
+    // become unhandled async errors. We use setTimeout() instead of Promise.resolve()
+    // to make it an unhandled error rather than an unhandled rejection.
+    setTimeout(() => {
+        throw error;
+    });
+}
+
 // Helper to patch `setAttribute`/`getAttribute` to implement `attributeChangedCallback`.
 // Why is this necessary? Well basically, you can't change the `observedAttributes` after
 // a custom element is defined. So with pivots, if two classes share the same tag name,
@@ -180,12 +189,8 @@ function patchAttributes(
                     nativeSetAttribute.call(this, name, value);
                     try {
                         attributeChangedCallback!.call(this, name, old, value + '');
-                    } catch (err) {
-                        // Per native custom element behavior, errors thrown in attributeChangedCallback
-                        // become unhandled async errors
-                        Promise.resolve().then(() => {
-                            throw err;
-                        });
+                    } catch (error) {
+                        throwAsyncError(error);
                     }
                 } else {
                     nativeSetAttribute.call(this, name, value);
@@ -202,12 +207,8 @@ function patchAttributes(
                     nativeRemoveAttribute.call(this, name);
                     try {
                         attributeChangedCallback!.call(this, name, old, null);
-                    } catch (err) {
-                        // Per native custom element behavior, errors thrown in attributeChangedCallback
-                        // become unhandled async errors
-                        Promise.resolve().then(() => {
-                            throw err;
-                        });
+                    } catch (error) {
+                        throwAsyncError(error);
                     }
                 } else {
                     nativeRemoveAttribute.call(this, name);

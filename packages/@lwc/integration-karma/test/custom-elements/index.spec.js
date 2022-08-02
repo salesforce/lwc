@@ -572,33 +572,66 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             expect(lwcElm.getAttribute('foo')).toBeNull();
         });
 
-        ['native', 'pivot'].forEach((behavior) => {
-            // FIXME: is it possible to test asynchronous errors like this in Jasmine?
-            xit(`Element that observes attribute and throws in attributeChangedCallback - ${behavior}`, () => {
-                const tagName = `x-observes-and-throws-${behavior}`;
+        describe('attributeChangedCallback timing', () => {
+            let originalOnError;
+            let errors;
 
-                if (behavior === 'pivot') {
-                    // Registering an LWC component with the same tag name triggers the pivot behavior
-                    // for the native element
-                    createElement(tagName, { is: ObserveNothing });
-                }
+            const onError = (e) => {
+                e.preventDefault(); // avoids logging the error to the console
+                errors.push(e);
+            };
 
-                class Custom extends HTMLElement {
-                    static observedAttributes = ['foo'];
-                    attributeChangedCallback() {
-                        throw new Error('error in attributeChangedCallback');
+            beforeEach(() => {
+                errors = [];
+
+                // Nulling out window.onerror disables Jasmine's global error handler, so we can listen for errors
+                // ourselves. There doesn't seem to be a better way to disable Jasmine's behavior here.
+                // https://github.com/jasmine/jasmine/pull/1860
+                originalOnError = window.onerror;
+                window.onerror = null;
+                window.addEventListener('error', onError);
+            });
+
+            afterEach(() => {
+                window.onerror = originalOnError;
+                window.removeEventListener('error', onError);
+            });
+
+            ['native', 'pivot'].forEach((behavior) => {
+                it(`Element that observes attribute and throws in attributeChangedCallback - ${behavior}`, () => {
+                    const tagName = `x-observes-and-throws-${behavior}`;
+
+                    if (behavior === 'pivot') {
+                        // Registering an LWC component with the same tag name triggers the pivot behavior
+                        // for the native element
+                        createElement(tagName, { is: ObserveNothing });
                     }
-                }
 
-                customElements.define(tagName, Custom);
+                    class Custom extends HTMLElement {
+                        static observedAttributes = ['foo'];
 
-                const elm = document.createElement(tagName);
-                document.body.appendChild(elm);
+                        attributeChangedCallback() {
+                            throw new Error('Error in attributeChangedCallback!');
+                        }
+                    }
 
-                // None of these should throw synchronously, because this matches native browser behavior.
-                // Details: https://github.com/salesforce/lwc/pull/2724#discussion_r899066735
-                elm.setAttribute('foo', 'bar');
-                elm.removeAttribute('foo');
+                    customElements.define(tagName, Custom);
+
+                    const elm = document.createElement(tagName);
+                    document.body.appendChild(elm);
+
+                    // None of these should throw synchronously, because this matches native browser behavior.
+                    // Details: https://github.com/salesforce/lwc/pull/2724#discussion_r899066735
+                    elm.setAttribute('foo', 'bar');
+                    elm.removeAttribute('foo');
+
+                    return new Promise((resolve) => setTimeout(resolve)).then(() => {
+                        expect(errors.length).toEqual(2);
+                        for (const { message } of errors) {
+                            expect(message).toContain('Error in attributeChangedCallback!');
+                        }
+                    });
+                });
             });
         });
     });
