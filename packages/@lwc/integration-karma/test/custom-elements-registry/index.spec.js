@@ -180,6 +180,21 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 ).toEqual('Not LWC!');
             });
 
+            it('can upgrade multiple elements with same tag name that exist before engine loads - vanilla', () => {
+                evaluate(() => {
+                    for (let i = 0; i < 2; i++) {
+                        document.body.appendChild(document.createElement('x-foo'));
+                    }
+                });
+                evaluate(engineScripts);
+                evaluate(`(${createVanilla})({ skipInject: true })`);
+                expect(
+                    [...iframe.contentDocument.querySelectorAll('x-foo')].map(
+                        (_) => _.shadowRoot.querySelector('h1').textContent
+                    )
+                ).toEqual(['Not LWC!', 'Not LWC!']);
+            });
+
             // TODO [#2877]: element is not upgraded
             // fit('can upgrade elements that existed before engine loads - LWC', () => {
             //     evaluate(() => document.body.appendChild(document.createElement('x-foo')))

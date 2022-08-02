@@ -103,6 +103,8 @@ function createPivotingClass(tagName: string, registeredDefinition: Definition) 
             } else {
                 // Un-register for upgrade when defined (so we don't leak)
                 const awaiting = awaitingUpgrade.get(tagName);
+                // At this point, awaiting should never be undefined, because connectedCallback
+                // must have been called before disconnectedCallback. But just to be safe, we check
                 if (!isUndefined(awaiting)) {
                     awaiting.delete(this);
                 }
@@ -339,8 +341,11 @@ export function patchCustomElementRegistry() {
         if (!isUndefined(awaiting)) {
             awaitingUpgrade.delete(tagName);
             for (const element of awaiting) {
-                const registeredDefinition = pendingRegistryForElement.get(element);
-                // TODO [#2877]: is there a case where registeredDefinition is undefined?
+                const registeredDefinition = pendingRegistryForElement.get(element)!;
+                // At this point, registeredDefinition should never be undefined because awaitingUpgrade
+                // is only populated when we haven't run internalUpgrade yet, and we only populate
+                // pendingRegistryForElement when internalUpgrade hasn't run yet.
+                // But just to be safe, we check.
                 if (!isUndefined(registeredDefinition)) {
                     pendingRegistryForElement.delete(element);
                     internalUpgrade(element, registeredDefinition, definition);
