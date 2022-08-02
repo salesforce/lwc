@@ -29,7 +29,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             new Component.CustomElementConstructor();
         };
         expect(func).toThrowError(TypeError);
-        expect(func).toThrowError(/Illegal constructor/);
+        expect(func).toThrowError(/(Illegal constructor|does not define a custom element)/);
     });
 
     it('CustomElementConstructor can be `new`ed after being defined', () => {
