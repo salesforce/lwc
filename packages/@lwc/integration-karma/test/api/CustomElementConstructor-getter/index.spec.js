@@ -3,6 +3,7 @@ import { LightningElement } from 'lwc';
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
 import WithChildElms from 'x/withChildElms';
+import Component from 'x/component';
 
 // We can't register standard custom elements if we run compat because of the transformation applied to the component
 // constructor.
@@ -23,6 +24,15 @@ it('should throw when trying to claim abstract LightningElement as custom elemen
 });
 
 if (SUPPORTS_CUSTOM_ELEMENTS) {
+    // TODO [#2970]: component constructor cannot be new-ed
+    it('throws when trying to `new` a subclass of LightningElement', () => {
+        const func = () => {
+            new Component.CustomElementConstructor();
+        };
+        expect(func).toThrowError(TypeError);
+        expect(func).toThrowError(/Illegal constructor/);
+    });
+
     it('should create a custom element with shadow mode set to "open" by default', () => {
         class Test extends LightningElement {}
 
