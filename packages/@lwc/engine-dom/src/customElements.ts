@@ -47,7 +47,7 @@ if (isCustomElementRegistryAvailable()) {
     getUpgradableElement = (tagName: string) => {
         let Ctor = cachedConstructor[tagName];
         if (!Ctor) {
-            // TODO [#2877]: should expose observedAttributes and attributeChangedCallback where necessary
+            // TODO [#2972]: this class should expose observedAttributes as necessary
             class LWCUpgradableElement extends HTMLElement {}
             Ctor = definePivotCustomElement(tagName, LWCUpgradableElement);
         }

@@ -228,7 +228,8 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             const elm = new Ctor();
             document.body.appendChild(elm);
 
-            // TODO [#2877]: element is not hydrated
+            // TODO [#2877]: element is not upgraded
+            expect(elm.expectedTagName).toBeUndefined();
             // expect(elm.expectedTagName).toEqual('x-nonce14')
         });
 

@@ -195,13 +195,15 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 ).toEqual(['Not LWC!', 'Not LWC!']);
             });
 
-            // TODO [#2877]: element is not upgraded
-            // fit('can upgrade elements that existed before engine loads - LWC', () => {
-            //     evaluate(() => document.body.appendChild(document.createElement('x-foo')))
-            //     evaluate(engineScripts)
-            //     evaluate(`(${createLWC})({ skipInject: true })`)
-            //     expect(iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC')
-            // })
+            it('can upgrade elements that existed before engine loads - LWC', () => {
+                evaluate(() => document.body.appendChild(document.createElement('x-foo')));
+                evaluate(engineScripts);
+                evaluate(`(${createLWC})({ skipInject: true })`);
+
+                // TODO [#2877]: element is not upgraded
+                expect(iframe.contentDocument.querySelector('x-foo').shadowRoot).toBeNull();
+                // expect(iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1').textContent).toEqual('Hello LWC')
+            });
 
             it('can do customElements.whenDefined() for element registered before engine loads', () => {
                 evaluate(`(${createVanilla})()`);
