@@ -3,7 +3,8 @@ import { LightningElement } from 'lwc';
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
 import WithChildElms from 'x/withChildElms';
-import Component from 'x/component';
+import DefinedComponent from 'x/definedComponent';
+import UndefinedComponent from 'x/undefinedComponent';
 
 // We can't register standard custom elements if we run compat because of the transformation applied to the component
 // constructor.
@@ -26,16 +27,16 @@ it('should throw when trying to claim abstract LightningElement as custom elemen
 if (SUPPORTS_CUSTOM_ELEMENTS) {
     it('CustomElementConstructor cannot be `new`ed before being defined', () => {
         const func = () => {
-            new Component.CustomElementConstructor();
+            new UndefinedComponent.CustomElementConstructor();
         };
         expect(func).toThrowError(TypeError);
         expect(func).toThrowError(/(Illegal constructor|does not define a custom element)/);
     });
 
     it('CustomElementConstructor can be `new`ed after being defined', () => {
-        customElements.define('x-my-custom-component', Component.CustomElementConstructor);
-        const elm = new Component.CustomElementConstructor();
-        expect(elm.tagName.toLowerCase()).toEqual('x-my-custom-component');
+        customElements.define('x-my-defined-component', DefinedComponent.CustomElementConstructor);
+        const elm = new DefinedComponent.CustomElementConstructor();
+        expect(elm.tagName.toLowerCase()).toEqual('x-my-defined-component');
     });
 
     it('should create a custom element with shadow mode set to "open" by default', () => {
