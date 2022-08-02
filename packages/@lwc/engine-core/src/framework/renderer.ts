@@ -11,7 +11,6 @@ type N = HostNode;
 type E = HostElement;
 
 export interface RendererAPI {
-    ssr: boolean;
     isNativeShadowDefined: boolean;
     isSyntheticShadowDefined: boolean;
     HTMLElementExported: typeof HTMLElement;

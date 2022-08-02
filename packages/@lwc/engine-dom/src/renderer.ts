@@ -88,8 +88,6 @@ export function setIsHydrating(value: boolean) {
     hydrating = value;
 }
 
-const ssr: boolean = false;
-
 function isHydrating(): boolean {
     return hydrating;
 }
@@ -291,7 +289,6 @@ function assertInstanceOfHTMLElement(elm: any, msg: string) {
 const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
 
 export const renderer = {
-    ssr,
     isNativeShadowDefined,
     isSyntheticShadowDefined,
     HTMLElementExported,
