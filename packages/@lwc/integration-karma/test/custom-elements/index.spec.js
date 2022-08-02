@@ -54,6 +54,8 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         creators.forEach(({ method, create }, i) => {
             const { tag, Component } = nonceElements[i];
 
+            // TODO [#2877]: Should LWC components be exposed via customElements.get/whenDefined?
+            // In the LWC scenario, the PivotCtor is exposed but not the UserCtor
             it(method, () => {
                 expect(customElements.get(tag)).toBeUndefined();
                 const promise = customElements.whenDefined(tag);
@@ -63,7 +65,6 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 expect(typeof Ctor).toEqual('function');
                 document.body.appendChild(elm);
                 expect(elm.expectedTagName).toEqual(tag);
-                // TODO [#2877]: Should LWC components be exposed via customElements.get/whenDefined?
                 return promise
                     .then((Ctor) => {
                         expect(typeof Ctor).toEqual('function');
