@@ -1,5 +1,5 @@
-import { api, track, LightningElement } from "lwc";
-export default class Test extends LightningElement {
+import { api, track } from "lwc";
+export default class Test {
   @track
   @api
   apiWithTrack = "foo";

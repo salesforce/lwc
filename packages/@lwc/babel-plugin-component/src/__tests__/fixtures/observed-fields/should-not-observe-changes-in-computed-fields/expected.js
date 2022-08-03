@@ -1,13 +1,11 @@
-import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, createElement, LightningElement } from "lwc";
+import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, createElement } from "lwc";
 import _tmpl from "./test.html";
 const PREFIX = "prefix";
 
-class Test extends LightningElement {
+class Test {
   interface;
   ["a"] = 0;
   [`${PREFIX}Field`] = "prefixed field";
-  /*LWC compiler vX.X.X*/
-
 }
 
 _registerDecorators(Test, {

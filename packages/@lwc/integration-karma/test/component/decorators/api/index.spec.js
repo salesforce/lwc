@@ -8,7 +8,6 @@ import Reactivity from 'x/reactivity';
 import Methods from 'x/methods';
 import Inheritance from 'x/inheritance';
 import NullInitialValue from 'x/nullInitialValue';
-import ExtendsMixin from 'x/extendsMixin';
 
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
@@ -92,34 +91,20 @@ describe('methods', () => {
 });
 
 describe('inheritance', () => {
-    const cases = [
-        {
-            type: 'normal',
-            Component: Inheritance,
-        },
-        {
-            type: 'mixin',
-            Component: ExtendsMixin,
-        },
-    ];
-    cases.forEach(({ type, Component }) => {
-        describe(type, () => {
-            it('should inherit the public props from the base class', () => {
-                const elm = createElement('x-inheritance', { is: Component });
+    it('should inherit the public props from the base class', () => {
+        const elm = createElement('x-inheritance', { is: Inheritance });
 
-                expect(elm.base).toBe('base');
-                expect(elm.child).toBe('child');
-                expect(elm.overridden).toBe('overridden - child');
-            });
+        expect(elm.base).toBe('base');
+        expect(elm.child).toBe('child');
+        expect(elm.overridden).toBe('overridden - child');
+    });
 
-            it('should inherit the public methods from the base class', () => {
-                const elm = createElement('x-inheritance', { is: Component });
+    it('should inherit the public methods from the base class', () => {
+        const elm = createElement('x-inheritance', { is: Inheritance });
 
-                expect(elm.baseMethod()).toBe('base');
-                expect(elm.childMethod()).toBe('child');
-                expect(elm.overriddenMethod()).toBe('overridden - child');
-            });
-        });
+        expect(elm.baseMethod()).toBe('base');
+        expect(elm.childMethod()).toBe('child');
+        expect(elm.overriddenMethod()).toBe('overridden - child');
     });
 });
 

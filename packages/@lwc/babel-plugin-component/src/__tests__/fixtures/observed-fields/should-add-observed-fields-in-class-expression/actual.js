@@ -1,6 +1,6 @@
-import { api, wire, track, createElement, LightningElement } from "lwc";
+import { api, wire, track, createElement } from "lwc";
 
-const Test = class extends LightningElement {
+const Test = class {
   state;
   @track foo;
   @track bar;

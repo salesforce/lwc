@@ -1,5 +1,5 @@
-import { api, LightningElement } from "lwc";
-export default class Text extends LightningElement {
+import { api } from "lwc";
+export default class Text {
   @api publicProp;
   privateProp;
 
