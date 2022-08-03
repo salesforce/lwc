@@ -644,16 +644,22 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-    INVALID_ELSE_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
+    INVALID_ELSEIF_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
         code: 1156,
+        message: "Invalid usage of 'lwc:elseif' and '{0}' directives on the same element.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    INVALID_ELSE_BLOCK_DIRECTIVE_WITH_CONDITIONAL: {
+        code: 1157,
         message: "Invalid usage of 'lwc:else' and '{0}' directives on the same element.",
         level: DiagnosticLevel.Error,
         url: '',
     },
-    LWC_IF_NOT_FOUND: {
-        code: 1157,
+    LWC_IF_SCOPE_NOT_FOUND: {
+        code: 1158,
         message:
-            "'{0}' directive must be used immediately after an element with 'lwc:if'. No 'lwc:if' element found.",
+            "'{0}' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.",
         level: DiagnosticLevel.Error,
         url: '',
     },

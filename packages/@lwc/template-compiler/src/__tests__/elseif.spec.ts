@@ -10,25 +10,91 @@ import { EXPECTED_LOCATION, parseTemplate } from './utils';
 
 describe('lwc conditional directives', () => {
     describe('invalid uses', () => {
-        it('multiple directives on single element - lwc:if first', () => {
+        it('multiple directives on single element', () => {
             const { warnings } = parseTemplate(
-                `<template><template lwc:if={visible} lwc:else>Conditional Text</template></template>`
+                `<template><template lwc:if={visible} lwc:elseif={elseif} lwc:else>Conditional Text</template></template>`
             );
 
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message: `LWC1155: Invalid usage of 'lwc:if' and 'lwc:elseif' directives on the same element.`,
+                location: EXPECTED_LOCATION,
+            });
+        });
+        it('multiple directives on single element - else first', () => {
+            const { warnings } = parseTemplate(
+                `<template><template lwc:else lwc:if={visible}>Conditional Text</template></template>`
+            );
+
+            expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message: `LWC1155: Invalid usage of 'lwc:if' and 'lwc:else' directives on the same element.`,
                 location: EXPECTED_LOCATION,
             });
         });
-        it('multiple directives on single element - lwc:else first', () => {
+        it('lwc:elseif should be immediately preceded by a sibling lwc:if or lwc:elseif', () => {
             const { warnings } = parseTemplate(
-                `<template><template lwc:else lwc:if={visible}>Conditional Text</template></template>`
+                `<template>
+                    <template lwc:if={visible}>If!</template>
+                    <div></div>
+                    <template lwc:elseif={elseif}>Elseif!</template>
+                </template>`
             );
 
+            expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
-                message: `LWC1155: Invalid usage of 'lwc:if' and 'lwc:else' directives on the same element.`,
+                message: `LWC1158: 'lwc:elseif' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.`,
+                location: EXPECTED_LOCATION,
+            });
+        });
+        it('lwc:else should be immediately preceded by a sibling lwc:if or lwc:elseif', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <template lwc:if={visible}>If!</template>
+                    <div></div>
+                    <template lwc:else>Else!</template>
+                </template>`
+            );
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message: `LWC1158: 'lwc:else' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.`,
+                location: EXPECTED_LOCATION,
+            });
+        });
+        it('lwc:elseif should be immediately preceded by a sibling lwc:if or lwc:elseif, text nodes included', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <template lwc:if={visible}>If!</template>
+                    Header Text
+                    <template lwc:elseif={elseif}>Elseif!</template>
+                </template>`
+            );
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message: `LWC1158: 'lwc:elseif' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.`,
+                location: EXPECTED_LOCATION,
+            });
+        });
+        it('lwc:else should be immediately preceded by a sibling lwc:if or lwc:elseif, text nodes included', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <template lwc:if={visible}>If!</template>
+                    Header Text
+                    <template lwc:else>Else!</template>
+                </template>`
+            );
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message: `LWC1158: 'lwc:else' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.`,
                 location: EXPECTED_LOCATION,
             });
         });
@@ -145,6 +211,47 @@ describe('lwc conditional directives', () => {
                 },
             });
         });
+        it.skip('with for:each directive', () => {
+            const { root } = parseTemplate(
+                `<template>
+                    <template for:each={items} for:item="item" lwc:if={visible}>Conditional Iteration</template>
+                    <template for:each={items} for:item="item" lwc:else>Else Iteration</template>
+                </template>`
+            );
+
+            expect(root.children[0]).toMatchObject({
+                type: 'ForEach',
+                children: [
+                    {
+                        type: 'IfBlock',
+                        condition: {
+                            type: 'Identifier',
+                        },
+                        children: [
+                            {
+                                type: 'Text',
+                                raw: 'Conditional Iteration',
+                            },
+                        ],
+                        else: {
+                            type: 'ElseBlock',
+                            children: [
+                                {
+                                    type: 'ForEach',
+                                    children: [
+                                        {
+                                            type: 'Text',
+                                            raw: 'Else Iteration',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                ],
+            });
+            expect(root.children[0].else).toBeUndefined();
+        });
     });
 
     describe('html elements', () => {
@@ -173,7 +280,6 @@ describe('lwc conditional directives', () => {
                     <h1 lwc:elseif={elseifCondition}>First Alternative Header</h1>
                 </template>`
             );
-
             expect(root.children[0]).toMatchObject({
                 type: 'IfBlock',
                 condition: {
@@ -517,6 +623,48 @@ describe('lwc conditional directives', () => {
                         ],
                     },
                 },
+            });
+        });
+    });
+    describe('preserve-comments', () => {
+        it('should allow comments between directives when preserve-comments is disabled', () => {
+            const { root } = parseTemplate(
+                `<template>
+                    <template lwc:if={visible}>Conditional Text</template>
+                    <!-- Comment -->
+                    <template lwc:else>Else!</template>
+                </template>`
+            );
+
+            expect(root.children[0]).toMatchObject({
+                type: 'IfBlock',
+                condition: {
+                    type: 'Identifier',
+                },
+                children: [{ type: 'Text' }],
+                else: { type: 'ElseBlock' },
+            });
+            expect(root.children[1]).toMatchObject({
+                type: 'Comment',
+            });
+        });
+        it('should not allow comments between directives when preserve-comments is enabled', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <template lwc:if={visible}>Conditional Text</template>
+                    <!-- Comment -->
+                    <template lwc:else>Else!</template>
+                </template>`,
+                {
+                    preserveHtmlComments: true,
+                }
+            );
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message: `LWC1158: 'lwc:else' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.`,
+                location: EXPECTED_LOCATION,
             });
         });
     });
