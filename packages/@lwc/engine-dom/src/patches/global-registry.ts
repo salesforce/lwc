@@ -422,7 +422,7 @@ export function patchCustomElementRegistry() {
 
     // This method patches the DOM and returns a helper function for LWC to register names and associate
     // them to a constructor while returning the pivot constructor, ready to instantiate via `new`.
-    function definePivotCustomElement(
+    return function definePivotCustomElement(
         tagName: string,
         constructor: CustomElementConstructor
     ): CustomElementConstructor {
@@ -440,17 +440,5 @@ export function patchCustomElementRegistry() {
             pivotCtorByTag.set(tagName, PivotCtor);
         }
         return PivotCtor;
-    }
-
-    // It's important to actually export the HTMLElement we _think_ is the global
-    // window.HTMLElement, so we use it consistently everywhere. Otherwise someone
-    // else could overwrite it (e.g. another copy of the engine, or another pivot implementation)
-    // and then we would end up with "Illegal constructor" errors because the HTMLElement
-    // prototypes are all mixed up.
-    const GlobalHTMLElement = window.HTMLElement;
-
-    return {
-        definePivotCustomElement,
-        GlobalHTMLElement,
     };
 }

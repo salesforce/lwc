@@ -41,20 +41,27 @@ function isCustomElementRegistryAvailable() {
 }
 
 if (isCustomElementRegistryAvailable()) {
-    const { definePivotCustomElement, GlobalHTMLElement } = patchCustomElementRegistry();
-    HTMLElementConstructor = GlobalHTMLElement;
+    const definePivotCustomElement = patchCustomElementRegistry();
+
+    // It's important to cache window.HTMLElement immediately after calling patchCustomElementRegistry().
+    // Otherwise, someone else could overwrite window.HTMLElement (e.g. another copy of the engine, or another pivot
+    // implementation) and we would get "Illegal constructor" errors because the HTMLElement prototypes are mixed up.
+    const { HTMLElement } = window;
+
+    HTMLElementConstructor = HTMLElement;
     const cachedConstructor: Record<string, CustomElementConstructor> = create(null);
+
     getUpgradableElement = (tagName: string) => {
         let Ctor = cachedConstructor[tagName];
         if (!Ctor) {
             // TODO [#2972]: this class should expose observedAttributes as necessary
-            class LWCUpgradableElement extends GlobalHTMLElement {}
+            class LWCUpgradableElement extends HTMLElement {}
             Ctor = definePivotCustomElement(tagName, LWCUpgradableElement);
         }
         return Ctor;
     };
     getUserConstructor = (upgradeCallback: UpgradeCallback) => {
-        return class UserElement extends GlobalHTMLElement {
+        return class UserElement extends HTMLElement {
             constructor() {
                 super();
                 upgradeCallback(this);
