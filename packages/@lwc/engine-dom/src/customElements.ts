@@ -41,20 +41,20 @@ function isCustomElementRegistryAvailable() {
 }
 
 if (isCustomElementRegistryAvailable()) {
-    HTMLElementConstructor = HTMLElement;
-    const definePivotCustomElement = patchCustomElementRegistry();
+    const { definePivotCustomElement, GlobalHTMLElement } = patchCustomElementRegistry();
+    HTMLElementConstructor = GlobalHTMLElement;
     const cachedConstructor: Record<string, CustomElementConstructor> = create(null);
     getUpgradableElement = (tagName: string) => {
         let Ctor = cachedConstructor[tagName];
         if (!Ctor) {
             // TODO [#2972]: this class should expose observedAttributes as necessary
-            class LWCUpgradableElement extends HTMLElement {}
+            class LWCUpgradableElement extends GlobalHTMLElement {}
             Ctor = definePivotCustomElement(tagName, LWCUpgradableElement);
         }
         return Ctor;
     };
     getUserConstructor = (upgradeCallback: UpgradeCallback) => {
-        return class UserElement extends HTMLElement {
+        return class UserElement extends GlobalHTMLElement {
             constructor() {
                 super();
                 upgradeCallback(this);

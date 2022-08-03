@@ -18,12 +18,20 @@ function getEngineCode() {
     return Promise.all(promises);
 }
 
-function createLWC({ tagName = 'x-foo', skipInject = false, text = 'Hello LWC' } = {}) {
+function createLWC({
+    tagName = 'x-foo',
+    skipInject = false,
+    text = 'Hello LWC',
+    globalLWC = 'LWC',
+    customElement = false,
+} = {}) {
     // basic "Hello World" compiled LWC component
     function tmpl($api) {
         const { t: api_text, h: api_element } = $api;
         return [api_element('h1', { key: 0 }, [api_text(text)])];
     }
+
+    const LWC = window[globalLWC];
 
     LWC.registerTemplate(tmpl);
     tmpl.stylesheets = [];
@@ -36,7 +44,15 @@ function createLWC({ tagName = 'x-foo', skipInject = false, text = 'Hello LWC' }
         }
     );
 
-    const elm = LWC.createElement(tagName, { is: Component });
+    let elm;
+
+    if (customElement) {
+        customElements.define(tagName, Component.CustomElementConstructor);
+        elm = document.createElement(tagName);
+    } else {
+        elm = LWC.createElement(tagName, { is: Component });
+    }
+
     if (!skipInject) {
         document.body.appendChild(elm);
     }
@@ -98,22 +114,18 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             });
         });
 
-        describe('multiple copies of LWC engine loaded', () => {
-            it('creates elements', () => {
+        describe('basic', () => {
+            it('can create elements', () => {
                 evaluate(engineScripts);
                 evaluate(`(${createLWC})()`);
                 expect(
                     iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                         .textContent
                 ).toEqual('Hello LWC');
-                evaluate(engineScripts);
-                evaluate(`(${createLWC})({ tagName: 'x-bar' })`);
-                expect(
-                    iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
-                        .textContent
-                ).toEqual('Hello LWC');
             });
+        });
 
+        describe('two copies of LWC engine loaded', () => {
             it('errors on duplicate tag names', () => {
                 evaluate(engineScripts);
                 evaluate(`(${createLWC})()`);
@@ -129,6 +141,35 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
                 expect(elements[1].shadowRoot.querySelector('h1').textContent).toEqual(
                     'Hello LWC 2'
                 );
+            });
+
+            [false, true].forEach((customElement) => {
+                const testName = customElement
+                    ? 'with CustomElementConstructor'
+                    : 'with LWC.createElement';
+
+                it(`creates elements in second engine - ${testName}`, () => {
+                    evaluate(engineScripts);
+                    evaluate(engineScripts);
+                    evaluate(`(${createLWC})({ customElement: ${customElement} })`);
+                    expect(
+                        iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                            .textContent
+                    ).toEqual('Hello LWC');
+                });
+
+                it(`creates elements in first engine - ${testName}`, () => {
+                    evaluate(engineScripts);
+                    evaluate('window.oldLWC = window.LWC');
+                    evaluate(engineScripts);
+                    evaluate(
+                        `(${createLWC})({ globalLWC: 'oldLWC', customElement: ${customElement} })`
+                    );
+                    expect(
+                        iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
+                            .textContent
+                    ).toEqual('Hello LWC');
+                });
             });
         });
 

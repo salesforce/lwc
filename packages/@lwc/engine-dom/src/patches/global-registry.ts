@@ -268,7 +268,7 @@ function internalUpgrade(
     // This is by far the most important piece of the puzzle
     upgradingInstance = instance;
     // By `new`ing the UserCtor, we now jump to the constructor for the overridden global HTMLElement
-    // The reason this happens is because the UserCtor is extends HTMLElement, so it calls the `super()`.
+    // The reason this happens is that the UserCtor extends HTMLElement, so it calls the `super()`.
     // Note that `upgradingInstance` is explicitly handled in the HTMLElement constructor.
     new instanceDefinition.UserCtor();
 
@@ -422,7 +422,7 @@ export function patchCustomElementRegistry() {
 
     // This method patches the DOM and returns a helper function for LWC to register names and associate
     // them to a constructor while returning the pivot constructor, ready to instantiate via `new`.
-    return function definePivotCustomElement(
+    function definePivotCustomElement(
         tagName: string,
         constructor: CustomElementConstructor
     ): CustomElementConstructor {
@@ -440,5 +440,17 @@ export function patchCustomElementRegistry() {
             pivotCtorByTag.set(tagName, PivotCtor);
         }
         return PivotCtor;
+    }
+
+    // It's important to actually export the HTMLElement we _think_ is the global
+    // window.HTMLElement, so we use it consistently everywhere. Otherwise someone
+    // else could overwrite it (e.g. another copy of the engine, or another pivot implementation)
+    // and then we would end up with "Illegal constructor" errors because the HTMLElement
+    // prototypes are all mixed up.
+    const GlobalHTMLElement = window.HTMLElement;
+
+    return {
+        definePivotCustomElement,
+        GlobalHTMLElement,
     };
 }
