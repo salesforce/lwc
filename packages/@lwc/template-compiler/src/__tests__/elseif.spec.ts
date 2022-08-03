@@ -417,5 +417,107 @@ describe('lwc conditional directives', () => {
                 },
             });
         });
+
+        it('nested', () => {
+            const { root } = parseTemplate(
+                `<template>
+                    <c-custom lwc:if={visible}></c-custom>
+                    <c-custom-elseif lwc:elseif={elseif}>
+                        If Text
+                        <c-nested lwc:if={showNestedIf}>
+                            <c-double-nested lwc:if={doubleNestedIf}></c-double-nested>
+                            <c-double-nested-else lwc:else></c-double-nested-else>
+                        </c-nested>
+                        <c-nested-elseif lwc:elseif={elseifNested}></c-nested-elseif>
+                        <c-nested-else lwc:else></c-nested-else>
+                    </c-custom-elseif>
+                    <c-custom-else lwc:else></c-custom-else>
+                </template>`
+            );
+
+            expect(root.children[0]).toMatchObject({
+                type: 'IfBlock',
+                children: [
+                    {
+                        type: 'Component',
+                        name: 'c-custom',
+                        children: [],
+                    },
+                ],
+                else: {
+                    type: 'IfBlock',
+                    children: [
+                        {
+                            type: 'Component',
+                            name: 'c-custom-elseif',
+                            children: [
+                                {
+                                    type: 'Text',
+                                    raw: 'If Text',
+                                },
+                                {
+                                    type: 'IfBlock',
+                                    children: [
+                                        {
+                                            type: 'Component',
+                                            name: 'c-nested',
+                                            children: [
+                                                {
+                                                    type: 'IfBlock',
+                                                    children: [
+                                                        {
+                                                            type: 'Component',
+                                                            name: 'c-double-nested',
+                                                        },
+                                                    ],
+                                                    else: {
+                                                        type: 'ElseBlock',
+                                                        children: [
+                                                            {
+                                                                type: 'Component',
+                                                                name: 'c-double-nested-else',
+                                                            },
+                                                        ],
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                    else: {
+                                        type: 'IfBlock',
+                                        children: [
+                                            {
+                                                type: 'Component',
+                                                name: 'c-nested-elseif',
+                                                children: [],
+                                            },
+                                        ],
+                                        else: {
+                                            type: 'ElseBlock',
+                                            children: [
+                                                {
+                                                    type: 'Component',
+                                                    name: 'c-nested-else',
+                                                },
+                                            ],
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                    else: {
+                        type: 'ElseBlock',
+                        children: [
+                            {
+                                type: 'Component',
+                                name: 'c-custom-else',
+                                children: [],
+                            },
+                        ],
+                    },
+                },
+            });
+        });
     });
 });
