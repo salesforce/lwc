@@ -594,7 +594,7 @@ export const ParserDiagnostics = {
         message:
             'Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: {0}. For more information, ' +
             'please visit https://lwc.dev/guide/reference#html-template-directives',
-        level: DiagnosticLevel.Warning,
+        level: DiagnosticLevel.Error,
         url: '',
     },
     PRESERVE_COMMENTS_MUST_BE_BOOLEAN: {
