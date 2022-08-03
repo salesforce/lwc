@@ -1,7 +1,7 @@
-import { registerDecorators as _registerDecorators, registerComponent as _registerComponent, LightningElement } from "lwc";
+import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
 
-class Test extends LightningElement {
+class Test {
   _a = true;
   _b = false;
 
@@ -20,8 +20,6 @@ class Test extends LightningElement {
   set b(value) {
     this._b = value;
   }
-  /*LWC compiler vX.X.X*/
-
 
 }
 

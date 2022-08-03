@@ -50,16 +50,7 @@ export default function scriptTransform(
             ],
         })!;
     } catch (e) {
-        let transformerError = TransformerErrors.JS_TRANSFORMER_ERROR;
-
-        // Sniff for a Babel decorator error, so we can provide a more helpful error message.
-        if (
-            (e as any).code === 'BABEL_TRANSFORM_ERROR' &&
-            (e as any).message?.includes('Decorators are not enabled.')
-        ) {
-            transformerError = TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR;
-        }
-        throw normalizeToCompilerError(transformerError, e, { filename });
+        throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
     }
 
     return {

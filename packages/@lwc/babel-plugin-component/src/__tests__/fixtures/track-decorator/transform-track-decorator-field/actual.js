@@ -1,4 +1,4 @@
-import { track, LightningElement } from "lwc";
-export default class Test extends LightningElement {
+import { track } from "lwc";
+export default class Test {
   @track record;
 }

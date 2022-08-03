@@ -1,3 +1,3 @@
-import { track, LightningElement } from "lwc";
+import { track } from "lwc";
 @track
-class foo extends LightningElement {}
+class foo {}

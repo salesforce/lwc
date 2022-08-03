@@ -1,6 +1,6 @@
-import { api, wire, LightningElement } from "lwc";
+import { api, wire } from "lwc";
 import { getFoo } from "data-service";
-export default class Test extends LightningElement {
+export default class Test {
   @api
   @wire(getFoo, { key1: "$prop1", key2: ["fixed", "array"] })
   wiredPropWithApi;
