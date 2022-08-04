@@ -16,6 +16,7 @@ import {
     KEY__SHADOW_TOKEN,
     setPrototypeOf,
     StringToLowerCase,
+    isNull,
 } from '@lwc/shared';
 import { insertStylesheet } from './styles';
 import { createFragment } from './createFragment';
@@ -82,16 +83,6 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
-let hydrating = false;
-
-export function setIsHydrating(value: boolean) {
-    hydrating = value;
-}
-
-function isHydrating(): boolean {
-    return hydrating;
-}
-
 const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
     Element.prototype,
@@ -129,15 +120,11 @@ function nextSibling(node: Node): Node | null {
 }
 
 function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
-    // `hydrating` will be true in two cases:
+    // `shadowRoot` will be non-null in two cases:
     //   1. upon initial load with an SSR-generated DOM, while in Shadow render mode
     //   2. when a webapp author places <c-app> in their static HTML and mounts their
-    //      root component with customeElement.define('c-app', Ctor)
-    //
-    // The second case can be treated as a failed hydration with nominal impact
-    // to performance. However, because <c-app> won't have a <template shadowroot>
-    // declarative child, `element.shadowRoot` is `null`.
-    if (hydrating && element.shadowRoot) {
+    //      root component with customElement.define('c-app', Ctor)
+    if (!isNull(element.shadowRoot)) {
         return element.shadowRoot;
     }
     return element.attachShadow(options);
@@ -292,7 +279,6 @@ export const renderer = {
     isNativeShadowDefined,
     isSyntheticShadowDefined,
     HTMLElementExported,
-    isHydrating,
     insert,
     remove,
     cloneNode,
