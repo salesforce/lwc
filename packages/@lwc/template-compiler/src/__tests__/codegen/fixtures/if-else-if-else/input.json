@@ -1,0 +1,172 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 11,
+            "endColumn": 12,
+            "start": 0,
+            "end": 216,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 11,
+                "startColumn": 1,
+                "endLine": 11,
+                "endColumn": 12,
+                "start": 205,
+                "end": 216
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "IfBlock",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 12,
+                    "name": "ifCondition",
+                    "location": {
+                        "startLine": 2,
+                        "startColumn": 15,
+                        "endLine": 2,
+                        "endColumn": 35,
+                        "start": 25,
+                        "end": 45
+                    }
+                },
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 16,
+                    "start": 15,
+                    "end": 74
+                },
+                "directiveLocation": {
+                    "startLine": 2,
+                    "startColumn": 15,
+                    "endLine": 2,
+                    "endColumn": 35,
+                    "start": 25,
+                    "end": 45
+                },
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "If!",
+                        "value": {
+                            "type": "Literal",
+                            "value": "If!"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 36,
+                            "endLine": 4,
+                            "endColumn": 5,
+                            "start": 46,
+                            "end": 63
+                        }
+                    }
+                ],
+                "else": {
+                    "type": "IfBlock",
+                    "condition": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 16,
+                        "name": "elseIfCondition",
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 15,
+                            "endLine": 5,
+                            "endColumn": 43,
+                            "start": 89,
+                            "end": 117
+                        }
+                    },
+                    "location": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 7,
+                        "endColumn": 16,
+                        "start": 79,
+                        "end": 150
+                    },
+                    "directiveLocation": {
+                        "startLine": 5,
+                        "startColumn": 15,
+                        "endLine": 5,
+                        "endColumn": 43,
+                        "start": 89,
+                        "end": 117
+                    },
+                    "children": [
+                        {
+                            "type": "Text",
+                            "raw": "ElseIf!",
+                            "value": {
+                                "type": "Literal",
+                                "value": "ElseIf!"
+                            },
+                            "location": {
+                                "startLine": 5,
+                                "startColumn": 44,
+                                "endLine": 7,
+                                "endColumn": 5,
+                                "start": 118,
+                                "end": 139
+                            }
+                        }
+                    ],
+                    "else": {
+                        "type": "ElseBlock",
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 5,
+                            "endLine": 10,
+                            "endColumn": 16,
+                            "start": 155,
+                            "end": 204
+                        },
+                        "directiveLocation": {
+                            "startLine": 8,
+                            "startColumn": 15,
+                            "endLine": 8,
+                            "endColumn": 23,
+                            "start": 165,
+                            "end": 173
+                        },
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Else!",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Else!"
+                                },
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 24,
+                                    "endLine": 10,
+                                    "endColumn": 5,
+                                    "start": 174,
+                                    "end": 193
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    },
+    "warnings": []
+}

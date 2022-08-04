@@ -160,9 +160,8 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformElement(child, slotParentName));
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
-            } else if(isIfBlock(child)) {
-                const children = transformIfBlock(child);
-                Array.isArray(children) ? res.push(...children) : res.push(children);
+            } else if (isIfBlock(child)) {
+                res.push(transformIfBlock(child));
             } else {
                 // Todo: create validation for case when there's invalid AST nodes
             }
@@ -208,32 +207,38 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
-    function transformIfBlock(ifBlockNode: IfBlock): t.Expression | t.Expression[] {
-        const expression = transformChildren(ifBlockNode);
-        let res: t.Expression | t.Expression[];
+    function transformIfBlock(ifBlockNode: IfBlock): t.Expression {
+        // children
+        const childrenExpression = transformChildren(ifBlockNode);
+        // double check here if it should be an arrayExpression or null
+        let elseExpression: t.Expression | undefined;
 
-        if (t.isArrayExpression(expression)) {
-            // Bind the expression once for all the template children
-            const testExpression = codeGen.bindExpression(ifBlockNode.condition);
-
-            res = t.arrayExpression(
-                expression.elements.map((element) =>
-                    element !== null
-                        ? applyInlineIfBlock(ifBlockNode, element as t.Expression, testExpression)
-                        : null
-                )
-            );
-        } else {
-            throw new Error("TODO!");
-            // If the template has a single children, make sure the ternary expression returns an array
-            res = applyInlineIfBlock(ifBlockNode, expression, undefined as any, t.arrayExpression([]));
+        if (ifBlockNode.else) {
+            // The value of else can be either IfBlock or ElseBlock
+            // When it is an IfBlock both the children and elseChildren need to be
+            // traversed
+            if (isIfBlock(ifBlockNode.else)) {
+                elseExpression = transformIfBlock(ifBlockNode.else);
+            } else {
+                elseExpression = transformChildren(ifBlockNode.else);
+            }
         }
 
-        if (t.isArrayExpression(res)) {
-            // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
-            // typecast it to t.Expression[]
-            res = res.elements as t.Expression[];
-        }
+        // JTU: VERIFY THAT THIS DOESNT NEED TO BE AN t.EXPRESSION[]
+        // The results of the compilation always have the ternary operators wrapped in an array
+        // check if this is needed
+        const res = applyInlineIfBlock(
+            ifBlockNode,
+            childrenExpression,
+            undefined as any,
+            elseExpression
+        );
+
+        // if (t.isArrayExpression(res)) {
+        //     // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
+        //     // typecast it to t.Expression[]
+        //     res = res.elements as t.Expression[];
+        // }
 
         return res;
     }
@@ -265,7 +270,6 @@ function transform(codeGen: CodeGen): t.Expression {
 
         return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
     }
-
 
     function applyInlineIfBlock(
         ifNode: IfBlock,
