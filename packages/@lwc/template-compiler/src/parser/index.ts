@@ -311,7 +311,7 @@ function parseChildren(
 ): void {
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
-    let siblingContext: IfBlock | undefined;
+    let siblingContext: ParentNode[] | undefined;
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
@@ -321,7 +321,7 @@ function parseChildren(
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
                 parent.children.push(...textNodes);
-                // Non white-space text nodes interrupt any context we may be carrying
+                // Non whitespace text nodes interrupt any context we may be carrying
                 if (textNodes.length > 0) {
                     siblingContext = undefined;
                 }
@@ -520,7 +520,6 @@ function parseIfBlock(
     );
 
     ctx.addNodeCurrentScope(node);
-    ctx.addSiblingContext(node);
     parent.children.push(node);
 
     return node;
@@ -553,7 +552,7 @@ function parseElseifBlock(
         );
     }
 
-    const parentIfBlock = ctx.getPrevSiblingContext();
+    const parentIfBlock = ctx.getPrevSiblingIfNode();
     if (!parentIfBlock) {
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_SCOPE_NOT_FOUND,
@@ -569,8 +568,6 @@ function parseElseifBlock(
     );
 
     ctx.addNodeCurrentScope(node);
-    ctx.addSiblingContext(node);
-
     parentIfBlock.else = node;
 
     return node;
@@ -596,7 +593,7 @@ function parseElseBlock(
         );
     }
 
-    const parentIfBlock = ctx.getPrevSiblingContext();
+    const parentIfBlock = ctx.getPrevSiblingIfNode();
     if (!parentIfBlock) {
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_SCOPE_NOT_FOUND,

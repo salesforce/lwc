@@ -14,7 +14,7 @@ import {
     normalizeToDiagnostic,
 } from '@lwc/errors';
 import { NormalizedConfig } from '../config';
-import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
+import { isIfBlock, isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
 
 import {
     Root,
@@ -48,8 +48,7 @@ interface ParentWrapper {
 
 interface Scope {
     nodes: ParentNode[];
-    prevSiblingContext?: IfBlock;
-    currentContext?: IfBlock;
+    prevSiblingContext?: ParentNode[];
 }
 
 export default class ParserCtx {
@@ -148,16 +147,16 @@ export default class ParserCtx {
         return sibling || null;
     }
 
-    beginScope(prevSiblingContext: IfBlock | undefined = undefined): void {
+    beginScope(prevSiblingContext: ParentNode[] = []): void {
         this.scopes.push({
             nodes: [],
             prevSiblingContext,
         });
     }
 
-    endScope(): IfBlock | undefined {
+    endScope(): ParentNode[] | undefined {
         const scope = this.scopes.pop();
-        return scope ? scope.currentContext : undefined;
+        return scope ? scope.nodes : undefined;
     }
 
     addNodeCurrentScope(node: ParentNode): void {
@@ -170,20 +169,18 @@ export default class ParserCtx {
         currentScopeNodes.push(node);
     }
 
-    addSiblingContext(context: IfBlock): void {
+    getPrevSiblingIfNode(): IfBlock | undefined {
         const currentScope = this.currentScope();
         if (!currentScope) {
-            throw new Error("Can't invoke addIfBlockContext if there is no current scope");
+            throw new Error("Can't invoke getPrevSiblingIfNode if there is no current scope");
         }
-        currentScope.currentContext = context;
-    }
 
-    getPrevSiblingContext(): IfBlock | undefined {
-        const currentScope = this.currentScope();
-        if (!currentScope) {
-            throw new Error("Can't invoke addIfBlockContext if there is no current scope");
+        const prevSiblingScope = currentScope.prevSiblingContext;
+        // IfBlock is expected to appear first if it exists
+        if (prevSiblingScope && prevSiblingScope[0] && isIfBlock(prevSiblingScope[0])) {
+            return prevSiblingScope[0];
         }
-        return currentScope.prevSiblingContext;
+        return undefined;
     }
 
     private currentScope(): Scope | undefined {
