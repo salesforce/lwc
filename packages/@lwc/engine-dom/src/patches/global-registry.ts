@@ -298,7 +298,7 @@ export function patchCustomElementRegistry() {
         options?: ElementDefinitionOptions
     ): void {
         if (options && options.extends) {
-            // TODO [#2877]: should we support `extends`?
+            // TODO [#2983]: should we support `extends`?
             throw new DOMException(
                 'NotSupportedError: "extends" key in customElements.define() options is not supported.'
             );

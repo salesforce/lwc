@@ -54,8 +54,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         creators.forEach(({ method, create }, i) => {
             const { tag, Component } = nonceElements[i];
 
-            // TODO [#2877]: Should LWC components be exposed via customElements.get/whenDefined?
-            // In the LWC scenario, the PivotCtor is exposed but not the UserCtor
+            // For LWC components, the PivotCtor is exposed externally but not the UserCtor
             it(method, () => {
                 expect(customElements.get(tag)).toBeUndefined();
                 const promise = customElements.whenDefined(tag);
@@ -229,8 +228,10 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             const elm = new Ctor();
             document.body.appendChild(elm);
 
-            // TODO [#2877]: element is not upgraded
+            // TODO [#2984]: element is not upgraded
+            expect(elm.shadowRoot).toBeNull();
             expect(elm.expectedTagName).toBeUndefined();
+            // expect(elm.shadowRoot).not.toBeNull()
             // expect(elm.expectedTagName).toEqual('x-nonce14')
         });
 
@@ -261,8 +262,10 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             document.body.appendChild(elm2);
             expect(elm1.expectedTagName).toEqual('x-nonce8');
 
-            // TODO [#2877]: elm2 is not upgraded
+            // TODO [#2984]: elm2 is not upgraded
+            expect(elm2.shadowRoot).toBeNull();
             expect(elm2.expectedTagName).toBeUndefined();
+            // expect(elm2.shadowRoot).not.toBeNull()
             // expect(elm2.expectedTagName).toEqual('x-nonce8')
         });
 
@@ -273,8 +276,10 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
             document.body.appendChild(elm2);
             expect(elm2.expectedTagName).toEqual('x-nonce9');
 
-            // TODO [#2877]: elm1 is not upgraded
+            // TODO [#2984]: elm1 is not upgraded
+            expect(elm1.shadowRoot).toBeNull();
             expect(elm1.expectedTagName).toBeUndefined();
+            // expect(elm1.shadowRoot).not.toBeNull()
             // expect(elm1.expectedTagName).toEqual('x-nonce9')
         });
 
