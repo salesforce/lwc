@@ -254,12 +254,12 @@ function parseElementDirectives(
     let current: ParentNode | undefined;
 
     const parsers = [
-        parseForEach,
-        parseForOf,
-        parseIf,
         parseIfBlock,
         parseElseifBlock,
         parseElseBlock,
+        parseForEach,
+        parseForOf,
+        parseIf,
     ];
     for (const parser of parsers) {
         const prev = current || parent;
