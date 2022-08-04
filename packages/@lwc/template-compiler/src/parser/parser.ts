@@ -46,11 +46,6 @@ interface ParentWrapper {
     current: ParentNode;
 }
 
-interface Scope {
-    nodes: ParentNode[];
-    prevSiblingContext?: ParentNode[];
-}
-
 export default class ParserCtx {
     private readonly source: String;
 
@@ -64,7 +59,8 @@ export default class ParserCtx {
      * Scopes keep track of context from sibling nodes and the hierarchy of ParentNodes as the parser
      * traverses the parse5 AST. Each scope object contains the following:
      * - an array where each node in the array corresponds to either a ForEach, ForOf, If, Element, Component, or Slot.
-     * - an IfBlock IFF the parser is in the process of parsing a series of sibling if|elseif|else directives.
+     * - an array holding a cache of the immediately preceding sibling's scope, if relevant.
+     *      - currently, that's IFF the parser is in the process of parsing a series of sibling if|elseif|else directives.
      *
      * Currently, each scope has a hierarchy of ForBlock > IfBlock > Element | Component | Slot.
      * Note: Not all scopes will have all three, but when they do, they will appear in this order.
@@ -72,7 +68,8 @@ export default class ParserCtx {
      *
      * Each scope corresponds to the original parse5.Element node.
      */
-    private readonly scopes: Scope[] = [];
+    private readonly scopes: ParentNode[][] = [];
+    private readonly siblings: ParentNode[][] = [];
 
     renderMode: LWCDirectiveRenderMode;
     preserveComments: boolean;
@@ -99,7 +96,7 @@ export default class ParserCtx {
      * This method flattens the scopes into a single array for traversal.
      */
     *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
-        const ancestors = ([] as ParentNode[]).concat(...this.scopes.map((scope) => scope.nodes));
+        const ancestors = ([] as ParentNode[]).concat(...this.scopes);
         const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
 
         for (let i = start; i >= 0; i--) {
@@ -142,25 +139,24 @@ export default class ParserCtx {
      * until it finds one where predicate returns true.
      */
     findSibling<A extends ParentNode>(predicate: (node: ParentNode) => node is A): A | null {
-        const currentScope = this.currentScopeNodes() || [];
+        const currentScope = this.currentScope() || [];
         const sibling = currentScope.find(predicate);
         return sibling || null;
     }
 
-    beginScope(prevSiblingContext: ParentNode[] = []): void {
-        this.scopes.push({
-            nodes: [],
-            prevSiblingContext,
-        });
+    beginScope(): void {
+        this.scopes.push([]);
     }
 
-    endScope(): ParentNode[] | undefined {
+    endScope(): void {
         const scope = this.scopes.pop();
-        return scope ? scope.nodes : undefined;
+        if (scope) {
+            this.setSiblingScope(scope);
+        }
     }
 
     addNodeCurrentScope(node: ParentNode): void {
-        const currentScopeNodes = this.currentScopeNodes();
+        const currentScopeNodes = this.currentScope();
 
         if (!currentScopeNodes) {
             throw new Error("Can't invoke addNodeCurrentScope if there is no current scope");
@@ -169,27 +165,40 @@ export default class ParserCtx {
         currentScopeNodes.push(node);
     }
 
+    beginSiblingScope() {
+        this.siblings.push([]);
+    }
+
+    endSiblingScope() {
+        this.siblings.pop();
+    }
+
+    clearSiblingScope() {
+        this.setSiblingScope([]);
+    }
+
     getPrevSiblingIfNode(): IfBlock | undefined {
-        const currentScope = this.currentScope();
-        if (!currentScope) {
+        const currentSiblingScope = this.currentSiblingScope();
+        if (!currentSiblingScope) {
             throw new Error("Can't invoke getPrevSiblingIfNode if there is no current scope");
         }
 
-        const prevSiblingScope = currentScope.prevSiblingContext;
-        // IfBlock is expected to appear first if it exists
-        if (prevSiblingScope && prevSiblingScope[0] && isIfBlock(prevSiblingScope[0])) {
-            return prevSiblingScope[0];
+        if (currentSiblingScope[0] && isIfBlock(currentSiblingScope[0])) {
+            return currentSiblingScope[0];
         }
         return undefined;
     }
 
-    private currentScope(): Scope | undefined {
+    private currentScope(): ParentNode[] | undefined {
         return this.scopes[this.scopes.length - 1];
     }
 
-    private currentScopeNodes(): ParentNode[] | undefined {
-        const scope = this.currentScope();
-        return scope ? scope.nodes : undefined;
+    private currentSiblingScope(): ParentNode[] | undefined {
+        return this.siblings[this.siblings.length - 1];
+    }
+
+    private setSiblingScope(nodes: ParentNode[]) {
+        this.siblings[this.siblings.length - 1] = nodes;
     }
 
     /**

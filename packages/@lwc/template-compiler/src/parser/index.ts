@@ -311,19 +311,19 @@ function parseChildren(
 ): void {
     const children = (parse5Utils.getTemplateContent(parse5Parent) ?? parse5Parent).childNodes;
 
-    let siblingContext: ParentNode[] | undefined;
+    ctx.beginSiblingScope();
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
-                ctx.beginScope(siblingContext);
+                ctx.beginScope();
                 parseElement(ctx, child, parent, parse5ParentLocation);
-                siblingContext = ctx.endScope();
+                ctx.endScope();
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
                 parent.children.push(...textNodes);
                 // Non whitespace text nodes interrupt any context we may be carrying
                 if (textNodes.length > 0) {
-                    siblingContext = undefined;
+                    ctx.clearSiblingScope();
                 }
             } else if (parse5Utils.isCommentNode(child)) {
                 const commentNode = parseComment(child);
@@ -332,11 +332,12 @@ function parseChildren(
                 // If it is enabled, comments become syntactically meaningful and
                 // interrupt any context we may be carrying
                 if (ctx.preserveComments) {
-                    siblingContext = undefined;
+                    ctx.clearSiblingScope();
                 }
             }
         });
     }
+    ctx.beginSiblingScope();
 }
 
 function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
