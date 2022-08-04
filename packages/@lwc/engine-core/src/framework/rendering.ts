@@ -18,6 +18,7 @@ import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
 } from '@lwc/shared';
+import features from '@lwc/features';
 
 import { RendererAPI } from './renderer';
 import { EmptyArray } from './utils';
@@ -283,7 +284,10 @@ function mountCustomElement(
 
     if (vm) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+            // FIXME: why is the vm.state "connected" sometimes?
+            if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+            }
         }
         runConnectedCallback(vm);
     }
