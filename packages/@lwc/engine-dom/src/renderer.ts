@@ -83,8 +83,6 @@ if (isCustomElementRegistryAvailable()) {
     HTMLElementConstructor.prototype = HTMLElement.prototype;
 }
 
-const ssr: boolean = false;
-
 const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
     Element.prototype,
@@ -278,7 +276,6 @@ function assertInstanceOfHTMLElement(elm: any, msg: string) {
 const HTMLElementExported = HTMLElementConstructor as typeof HTMLElement;
 
 export const renderer = {
-    ssr,
     isNativeShadowDefined,
     isSyntheticShadowDefined,
     HTMLElementExported,

@@ -75,8 +75,6 @@ class HTMLElementImpl {
     }
 }
 
-const ssr: boolean = true;
-
 const isNativeShadowDefined: boolean = false;
 const isSyntheticShadowDefined: boolean = false;
 
@@ -408,7 +406,6 @@ const HTMLElementExported = HTMLElementImpl as typeof HTMLElement;
 const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 
 export const renderer = {
-    ssr,
     isNativeShadowDefined,
     isSyntheticShadowDefined,
     HTMLElementExported,
