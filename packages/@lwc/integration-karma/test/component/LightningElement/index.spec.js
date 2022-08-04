@@ -1,23 +1,44 @@
-import { LightningElement } from 'lwc';
-import { createElement } from 'lwc';
+import { LightningElement, createElement } from 'lwc';
 
 import NotInvokingSuper from 'x/notInvokingSuper';
 import NotReturningThis from 'x/notReturningThis';
 import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
+import DefinedComponent from 'x/definedComponent';
+import UndefinedComponent from 'x/undefinedComponent';
 
 it('should throw when trying to invoke the constructor manually', () => {
-    const callNew = () => {
+    const func = () => {
         new LightningElement();
     };
-    expect(callNew).toThrowError(TypeError);
-    expect(callNew).toThrowError('Illegal constructor');
+    expect(func).toThrowError(TypeError);
+    expect(func).toThrowError(/Illegal constructor/);
+});
 
-    const callNewWithExtend = () => {
+it('should throw when trying to `new` a subclass of LightningElement manually', () => {
+    const func = () => {
         class Test extends LightningElement {}
         new Test();
     };
-    expect(callNewWithExtend).toThrowError(TypeError);
-    expect(callNewWithExtend).toThrowError('Illegal constructor');
+    expect(func).toThrowError(TypeError);
+    expect(func).toThrowError(/Illegal constructor/);
+});
+
+it('should throw when trying to `new` a compiled subclass of LightningElement', () => {
+    const func = () => {
+        new UndefinedComponent();
+    };
+    expect(func).toThrowError(TypeError);
+    expect(func).toThrowError(/Illegal constructor/);
+});
+
+// TODO [#2970]: component constructor cannot be new-ed even after being defined
+it('should throw when trying to `new` a compiled subclass of LightningElement after definition', () => {
+    createElement('x-defined-component', { is: DefinedComponent });
+    const func = () => {
+        new DefinedComponent();
+    };
+    expect(func).toThrowError(TypeError);
+    expect(func).toThrowError(/Illegal constructor/);
 });
 
 it('should have no property enumerable on the component instance', () => {
