@@ -19,18 +19,6 @@ import { insertStylesheet } from './styles';
 import { createCustomElement } from './customElements';
 import { createFragment } from './createFragment';
 
-let hydrating = false;
-
-export function setIsHydrating(value: boolean) {
-    hydrating = value;
-}
-
-const ssr: boolean = false;
-
-function isHydrating(): boolean {
-    return hydrating;
-}
-
 const isNativeShadowDefined: boolean = globalThis[KEY__IS_NATIVE_SHADOW_ROOT_DEFINED];
 export const isSyntheticShadowDefined: boolean = hasOwnProperty.call(
     Element.prototype,
@@ -222,10 +210,8 @@ function assertInstanceOfHTMLElement(elm: any, msg: string) {
 }
 
 export const renderer = {
-    ssr,
     isNativeShadowDefined,
     isSyntheticShadowDefined,
-    isHydrating,
     insert,
     remove,
     cloneNode,

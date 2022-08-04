@@ -213,13 +213,13 @@ export function createStylesheet(vm: VM, stylesheets: string[]): VNode[] | null 
     const {
         renderMode,
         shadowMode,
-        renderer: { ssr, insertStylesheet },
+        renderer: { insertStylesheet },
     } = vm;
     if (renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic) {
         for (let i = 0; i < stylesheets.length; i++) {
             insertStylesheet(stylesheets[i]);
         }
-    } else if (ssr || vm.hydrated) {
+    } else if (!process.env.IS_BROWSER || vm.hydrated) {
         // Note: We need to ensure that during hydration, the stylesheets method is the same as those in ssr.
         //       This works in the client, because the stylesheets are created, and cached in the VM
         //       the first time the VM renders.

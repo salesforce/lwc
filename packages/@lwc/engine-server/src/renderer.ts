@@ -52,12 +52,6 @@ function createElement(tagName: string, namespace?: string): HostElement {
     };
 }
 
-const ssr: boolean = true;
-
-function isHydrating(): boolean {
-    return false;
-}
-
 const isNativeShadowDefined: boolean = false;
 const isSyntheticShadowDefined: boolean = false;
 
@@ -407,10 +401,8 @@ function createCustomElement(tagName: string, upgradeCallback: UpgradeCallback):
 }
 
 export const renderer = {
-    ssr,
     isNativeShadowDefined,
     isSyntheticShadowDefined,
-    isHydrating,
     insert,
     remove,
     cloneNode,

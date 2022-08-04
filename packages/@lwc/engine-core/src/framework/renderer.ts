@@ -19,10 +19,8 @@ export interface UpgradableCustomElementConstructor extends CustomElementConstru
 export type UpgradeCallback = (elm: E) => void;
 
 export interface RendererAPI {
-    ssr: boolean;
     isNativeShadowDefined: boolean;
     isSyntheticShadowDefined: boolean;
-    isHydrating: () => boolean;
     insert: (node: N, parent: E, anchor: N | null) => void;
     remove: (node: N, parent: E) => void;
     cloneNode: (node: N, deep: boolean) => N;
