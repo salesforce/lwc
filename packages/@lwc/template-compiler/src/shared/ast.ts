@@ -401,6 +401,10 @@ export function isElseBlock(node: BaseNode): node is ElseBlock {
     return node.type === 'ElseBlock';
 }
 
+export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseBlock {
+    return isIfBlock(node) || isElseBlock(node);
+}
+
 export function isParentNode(node: BaseNode): node is ParentNode {
     return isBaseElement(node) || isRoot(node) || isForBlock(node) || isIf(node);
 }

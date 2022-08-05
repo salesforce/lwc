@@ -663,4 +663,11 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+    LWC_IF_CANNOT_BE_USED_WITH_IF_DIRECTIVE: {
+        code: 1159,
+        message:
+            "'{0}' directive cannot be used with 'lwc:if', 'lwc:elseif', or 'lwc:else directives on the same element.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

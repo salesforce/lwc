@@ -42,7 +42,7 @@ describe('lwc if/elseif/else directives', () => {
                 location: EXPECTED_LOCATION,
             });
         });
-        it('lwc:elseif should be immediately preceded by a sibling lwc:if or lwc:elseif, text nodes included', () => {
+        it('lwc:elseif cannot be preceded by a text node', () => {
             const { warnings } = parseTemplate(
                 `<template>
                     <template lwc:if={visible}>If!</template>
@@ -58,7 +58,7 @@ describe('lwc if/elseif/else directives', () => {
                 location: EXPECTED_LOCATION,
             });
         });
-        it('lwc:else should be immediately preceded by a sibling lwc:if or lwc:elseif, text nodes included', () => {
+        it('lwc:else cannot be preceded by a text node', () => {
             const { warnings } = parseTemplate(
                 `<template>
                     <template lwc:if={visible}>If!</template>
@@ -76,9 +76,9 @@ describe('lwc if/elseif/else directives', () => {
         });
     });
     describe('invalid uses', () => {
-        it('multiple directives on single element', () => {
+        it('multiple directives on single element - if and elseif', () => {
             const { warnings } = parseTemplate(
-                `<template><template lwc:if={visible} lwc:elseif={elseif} lwc:else>Conditional Text</template></template>`
+                `<template><template lwc:if={visible} lwc:elseif={elseif}>Conditional Text</template></template>`
             );
 
             expect(warnings.length).toBe(1);
@@ -88,7 +88,7 @@ describe('lwc if/elseif/else directives', () => {
                 location: EXPECTED_LOCATION,
             });
         });
-        it('multiple directives on single element - else first', () => {
+        it('multiple directives on single element - if and else', () => {
             const { warnings } = parseTemplate(
                 `<template><template lwc:else lwc:if={visible}>Conditional Text</template></template>`
             );
@@ -97,6 +97,41 @@ describe('lwc if/elseif/else directives', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message: `LWC1155: Invalid usage of 'lwc:if' and 'lwc:else' directives on the same element.`,
+                location: EXPECTED_LOCATION,
+            });
+        });
+        /**
+         * Parser should throw the error for multiple directives on an element rather than
+         * the error for not having a preceding lwc:if. This would require a more extensive
+         * refactor of the parsing logic here.
+         */
+        it.skip('multiple directives on single element - elseif and else', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <template lwc:else lwc:elseif={visible}>Conditional Text</template>
+                </template>`
+            );
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message: `LWC1155: Invalid usage of 'lwc:elseif' and 'lwc:else' directives on the same element.`,
+                location: EXPECTED_LOCATION,
+            });
+        });
+        // Currently doesn't have a way to identify when we've previously visited an elseif vs if
+        it.skip('multiple directives on single element - elseif and else', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <template lwc:if={visible}></template>
+                    <template lwc:else lwc:elseif={visible}>Conditional Text</template>
+                </template>`
+            );
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message: `LWC1155: Invalid usage of 'lwc:elseif' and 'lwc:else' directives on the same element.`,
                 location: EXPECTED_LOCATION,
             });
         });
@@ -167,6 +202,7 @@ describe('lwc if/elseif/else directives', () => {
                 location: EXPECTED_LOCATION,
             });
         });
+
         it('should throw an error when lwc:else is used after if:true', () => {
             const { warnings } = parseTemplate(
                 `<template>
@@ -179,6 +215,38 @@ describe('lwc if/elseif/else directives', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message: `LWC1158: 'lwc:else' directive must be used immediately after an element with 'lwc:if' or 'lwc:elseif'. No such element found.`,
+                location: EXPECTED_LOCATION,
+            });
+        });
+
+        it('should throw an error when lwc:elseif is used on an element with if:true', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <template lwc:if={visible}>Conditional Text</template>
+                    <template if:true={visible} lwc:elseif={elseif}>Elseif Text</template>
+                </template>`
+            );
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message: `LWC1159: 'if:true' directive cannot be used with 'lwc:if', 'lwc:elseif', or 'lwc:else directives on the same element.`,
+                location: EXPECTED_LOCATION,
+            });
+        });
+
+        it('should throw an error when lwc:else is used on an element with if:true', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <template lwc:if={visible}>Conditional Text</template>
+                    <template if:true={visible} lwc:else>Conditional Text</template>
+                </template>`
+            );
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message: `LWC1159: 'if:true' directive cannot be used with 'lwc:if', 'lwc:elseif', or 'lwc:else directives on the same element.`,
                 location: EXPECTED_LOCATION,
             });
         });
