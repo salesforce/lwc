@@ -11,7 +11,7 @@
     "bugs": {
         "url": "https://github.com/salesforce/lwc/issues"
     },
-    "main": "dist/index.cjs",
+    "main": "dist/index.cjs.js",
     "module": "dist/index.js",
     "license": "MIT",
     "typings": "types/index.d.ts",
@@ -21,7 +21,8 @@
         "dev": "rollup  --config scripts/rollup.config.js --watch --no-watch.clearScreen"
     },
     "files": [
-        "dist/"
+        "dist/",
+        "types/"
     ],
     "keywords": [
         "lwc",
