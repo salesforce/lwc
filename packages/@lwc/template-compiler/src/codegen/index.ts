@@ -208,11 +208,7 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function transformIfBlock(ifBlockNode: IfBlock): t.Expression {
-        // children
         const childrenExpression = transformChildren(ifBlockNode);
-        // JTU: double check here if it should be an arrayExpression or null
-        // JTU: This should default to an array if the child is a t.ArrayExpression otherwise just a null
-        // It depends on what the receiving element will be ex:  api_element expects an array
         let elseExpression: t.Expression | undefined;
 
         if (ifBlockNode.else) {

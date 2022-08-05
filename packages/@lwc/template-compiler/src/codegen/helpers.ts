@@ -115,8 +115,6 @@ export function containsDynamicChildren(children: ChildNode[]): boolean {
  * This maps directly the to api_flatten function in the template function.
  */
 export function shouldFlatten(codeGen: CodeGen, parent: ParentNode): boolean {
-    // JTU: check to see if the flattening should occur on the children of the IfBlock or
-    // the IfBlock itself.
     // The result of transformChildren is an array which means that the final result for an
     // of the ternary operation from the IfBlock may be a 2d array.
     // In this case the inner array needs to be flattened.
