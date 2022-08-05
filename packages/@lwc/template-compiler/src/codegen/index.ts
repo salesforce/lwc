@@ -167,7 +167,7 @@ function transform(codeGen: CodeGen): t.Expression {
             }
         }
 
-        if (shouldFlatten(codeGen, children)) {
+        if (shouldFlatten(codeGen, parent)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
                 return res[0];
             } else {
@@ -210,7 +210,9 @@ function transform(codeGen: CodeGen): t.Expression {
     function transformIfBlock(ifBlockNode: IfBlock): t.Expression {
         // children
         const childrenExpression = transformChildren(ifBlockNode);
-        // double check here if it should be an arrayExpression or null
+        // JTU: double check here if it should be an arrayExpression or null
+        // JTU: This should default to an array if the child is a t.ArrayExpression otherwise just a null
+        // It depends on what the receiving element will be ex:  api_element expects an array
         let elseExpression: t.Expression | undefined;
 
         if (ifBlockNode.else) {
@@ -224,23 +226,13 @@ function transform(codeGen: CodeGen): t.Expression {
             }
         }
 
-        // JTU: VERIFY THAT THIS DOESNT NEED TO BE AN t.EXPRESSION[]
-        // The results of the compilation always have the ternary operators wrapped in an array
-        // check if this is needed
-        const res = applyInlineIfBlock(
+        // This function should only return a single Expression
+        return applyInlineIfBlock(
             ifBlockNode,
             childrenExpression,
             undefined as any,
             elseExpression
         );
-
-        // if (t.isArrayExpression(res)) {
-        //     // The `if` transformation does not use the SpreadElement, neither null, therefore we can safely
-        //     // typecast it to t.Expression[]
-        //     res = res.elements as t.Expression[];
-        // }
-
-        return res;
     }
 
     function applyInlineIf(
@@ -272,15 +264,17 @@ function transform(codeGen: CodeGen): t.Expression {
     }
 
     function applyInlineIfBlock(
-        ifNode: IfBlock,
+        ifBlock: IfBlock,
         node: t.Expression,
         testExpression: t.Expression,
         falseValue?: t.Expression
     ): t.Expression {
         if (!testExpression) {
-            testExpression = codeGen.bindExpression(ifNode.condition);
+            testExpression = codeGen.bindExpression(ifBlock.condition);
         }
 
+        // JTU: check here this might need to be an array as the final ternary expression
+        // if there is only one child
         return t.conditionalExpression(testExpression, node, falseValue ?? t.literal(null));
     }
 

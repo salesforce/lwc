@@ -27,6 +27,11 @@ const TEST_DIRECTORIES = [
         json: './fixtures/if/input.json',
         output: './fixtures/if/expected.js',
     },
+    {
+        input: './fixtures/if-flatten/input.html',
+        json: './fixtures/if-flatten/input.json',
+        output: './fixtures/if-flatten/expected.js',
+    },
 ];
 
 const MODIFIED_AST_DIRECTORIES = [
@@ -45,7 +50,6 @@ describe('codegen', () => {
             const state = new State(config);
             const ast = parseTemplate(input, state);
             const code = generate(ast.root!, state);
-
             // write json files
             fs.writeFileSync(path.resolve(__dirname, directory.json), JSON.stringify(ast, null, 4));
             fs.writeFileSync(path.resolve(__dirname, directory.output), code);
