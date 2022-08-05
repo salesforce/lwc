@@ -1,0 +1,27 @@
+
+        <html>
+            <head>
+                <title>delegates-focus-from-previous-sibling</title>
+            </head>
+            <body>
+                <script>
+                    window.process = { env: { NODE_ENV: "development" } };
+                </script>
+                
+    <script src="../../shared/downgrade.js"></script>
+    <script src="../../shared/polyfills.js"></script>
+
+                
+    <script>
+    var fallback = location.search.indexOf('nativeShadow=true') === -1;
+    if (fallback) {
+        /** shadow dom polyfill is needed, this hack evaluate it before engine */
+        document.write('<s' + 'cript src="../../shared/shadow.js"></scr' + 'ipt>');
+    }
+    </script>
+
+                <script src="../../shared/engine.js"></script>
+                <script src="./delegates-focus-from-previous-sibling.js"></script>
+            </body>
+        </html>
+    

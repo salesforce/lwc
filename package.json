@@ -12,15 +12,15 @@
     "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
     "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
     "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",
-    "build": "lerna run build --ignore perf-benchmarks --ignore perf-benchmarks-components --ignore integration-tests",
+    "build": "lerna run build --ignore @lwc/perf-benchmarks --ignore @lwc/perf-benchmarks-components --ignore @lwc/integration-tests",
     "build:performance": "yarn run build:performance:components && yarn run build:performance:benchmarks",
-    "build:performance:components": "lerna exec --scope perf-benchmarks-components -- yarn build",
-    "build:performance:benchmarks": "lerna exec --scope perf-benchmarks -- yarn build",
+    "build:performance:components": "lerna exec --scope @lwc/perf-benchmarks-components -- yarn build",
+    "build:performance:benchmarks": "lerna exec --scope @lwc/perf-benchmarks -- yarn build",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
     "test:ci": "yarn test --no-cache --coverage --runInBand",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
-    "test:performance": "lerna exec --scope perf-benchmarks -- yarn test",
+    "test:performance": "lerna exec --scope @lwc/perf-benchmarks -- yarn test",
     "release:publish:ci": "./scripts/release/publish.mjs",
     "release:version": "./scripts/release/version.mjs"
   },
@@ -71,11 +71,7 @@
   },
   "workspaces": [
     "packages/@lwc/*",
-    "packages/lwc",
-    "packages/integration-karma",
-    "packages/integration-tests",
-    "packages/perf-benchmarks",
-    "packages/perf-benchmarks-components"
+    "packages/lwc"
   ],
   "engines": {
     "node": ">=10"
