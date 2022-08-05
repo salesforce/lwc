@@ -205,21 +205,26 @@ jobs:
           disable_synthetic: false
           compat: false
           force_native_shadow_mode: false
+          enable_native_custom_element_lifecycle: false
       - run_karma:
           disable_synthetic: true
           compat: false
           force_native_shadow_mode: false
+          enable_native_custom_element_lifecycle: false
       - run_karma:
           disable_synthetic: false
           compat: true
           force_native_shadow_mode: false
+          enable_native_custom_element_lifecycle: false
       - run_karma:
           disable_synthetic: false
           compat: false
           force_native_shadow_mode: true
+          enable_native_custom_element_lifecycle: false
       - run_karma:
           disable_synthetic: true
           compat: false
+          force_native_shadow_mode: false
           enable_native_custom_element_lifecycle: true
       - retry_karma:
           command_name: Run karma hydration tests
