@@ -84,7 +84,7 @@ export default class ParserCtx {
      *
      * Each scope corresponds to the original parse5.Element node.
      */
-    private readonly scopes: ParentNode[][] = [];
+    private readonly elementScopes: ParentNode[][] = [];
     private readonly siblingContexts: SiblingContext[] = [];
 
     renderMode: LWCDirectiveRenderMode;
@@ -112,7 +112,7 @@ export default class ParserCtx {
      * This method flattens the scopes into a single array for traversal.
      */
     *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
-        const ancestors = ([] as ParentNode[]).concat(...this.scopes);
+        const ancestors = ([] as ParentNode[]).concat(...this.elementScopes);
         const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
 
         for (let i = start; i >= 0; i--) {
@@ -154,18 +154,18 @@ export default class ParserCtx {
      * @param {function} predicate - This callback is called once for each sibling in the current scope
      * until it finds one where predicate returns true.
      */
-    findSibling<A extends ParentNode>(predicate: (node: ParentNode) => node is A): A | null {
+    findInCurrentScope<A extends ParentNode>(predicate: (node: ParentNode) => node is A): A | null {
         const currentScope = this.currentScope() || [];
         const sibling = currentScope.find(predicate);
         return sibling || null;
     }
 
     beginScope(): void {
-        this.scopes.push([]);
+        this.elementScopes.push([]);
     }
 
     endScope(): void {
-        const scope = this.scopes.pop();
+        const scope = this.elementScopes.pop();
         if (scope) {
             this.setSiblingNodes(scope);
         }
@@ -210,7 +210,7 @@ export default class ParserCtx {
     }
 
     private currentScope(): ParentNode[] | undefined {
-        return this.scopes[this.scopes.length - 1];
+        return this.elementScopes[this.elementScopes.length - 1];
     }
 
     private currentSiblingContext(): SiblingContext | undefined {

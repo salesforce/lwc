@@ -467,7 +467,7 @@ function parseIf(
     }
 
     // if:true cannot be used with lwc:if, lwc:elseif, lwc:else
-    const incompatibleDirective = ctx.findSibling(ast.isConditionalBlock);
+    const incompatibleDirective = ctx.findInCurrentScope(ast.isConditionalBlock);
     if (incompatibleDirective) {
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_CANNOT_BE_USED_WITH_IF_DIRECTIVE,
@@ -540,7 +540,7 @@ function parseElseifBlock(
         return;
     }
 
-    const hasIfBlock = ctx.findSibling(ast.isIfBlock);
+    const hasIfBlock = ctx.findInCurrentScope(ast.isIfBlock);
     if (hasIfBlock) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
@@ -589,7 +589,7 @@ function parseElseBlock(
         return;
     }
 
-    const hasIfBlock = ctx.findSibling(ast.isIfBlock);
+    const hasIfBlock = ctx.findInCurrentScope(ast.isIfBlock);
     if (hasIfBlock) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
@@ -884,7 +884,7 @@ function parseForOf(
         return;
     }
 
-    const hasForEach = ctx.findSibling(ast.isForEach);
+    const hasForEach = ctx.findInCurrentScope(ast.isForEach);
     if (hasForEach) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR,
@@ -965,7 +965,8 @@ function parseSlot(
 ): Slot {
     const location = ast.sourceLocation(parse5ElmLocation);
 
-    const hasDirectives = ctx.findSibling(ast.isForBlock) || ctx.findSibling(ast.isIf);
+    const hasDirectives =
+        ctx.findInCurrentScope(ast.isForBlock) || ctx.findInCurrentScope(ast.isIf);
     if (hasDirectives) {
         ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, location);
     }
