@@ -300,7 +300,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             error = event.error;
         }
 
-        // prevent jasmine from handling the global error
+        // Prevent jasmine from handling the global error. There doesn't seem to be another
+        // way to disable this behavior: https://github.com/jasmine/jasmine/pull/1860
         var originalOnError = window.onerror;
         window.onerror = null;
         window.addEventListener('error', onError);
@@ -314,6 +315,11 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         return error;
     }
 
+    // For errors we expect to be thrown in the connectedCallback() phase
+    // of a custom element, there are two possibilities:
+    // 1) We're using non-native lifecycle callbacks, so the error is thrown synchronously
+    // 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
+    //    only be caught with window.addEventListener('error')
     function customElementConnectedErrorListener(callback) {
         return window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
             ? windowErrorListener(callback)
