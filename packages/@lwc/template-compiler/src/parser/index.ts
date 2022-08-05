@@ -33,6 +33,7 @@ import {
     IfBlock,
     Property,
     ElseBlock,
+    ElseifBlock,
 } from '../shared/types';
 import { isCustomElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -337,7 +338,7 @@ function parseChildren(
             }
         });
     }
-    ctx.beginSiblingScope();
+    ctx.endSiblingScope();
 }
 
 function parseText(ctx: ParserCtx, parse5Text: parse5.TextNode): Text[] {
@@ -522,6 +523,7 @@ function parseIfBlock(
     );
 
     ctx.addNodeCurrentScope(ifNode);
+    ctx.beginIfContext(ifNode);
     parent.children.push(ifNode);
 
     return ifNode;
@@ -532,7 +534,7 @@ function parseElseifBlock(
     parsedAttr: ParsedAttribute,
     parse5ElmLocation: parse5.ElementLocation,
     _: ParentNode
-): IfBlock | undefined {
+): ElseifBlock | undefined {
     const elseifBlockAttribute = parsedAttr.pick('lwc:elseif');
     if (!elseifBlockAttribute) {
         return;
@@ -563,17 +565,17 @@ function parseElseifBlock(
         );
     }
 
-    const ifNode = ast.ifBlockNode(
+    const elseifNode = ast.elseifBlockNode(
         elseifBlockAttribute.value,
         ast.sourceLocation(parse5ElmLocation),
         elseifBlockAttribute.location
     );
 
     // Attach the node as a child of the preceding IfBlock
-    ctx.addNodeCurrentScope(ifNode);
-    parentIfBlock.else = ifNode;
+    ctx.addNodeCurrentScope(elseifNode);
+    parentIfBlock.else = elseifNode;
 
-    return ifNode;
+    return elseifNode;
 }
 
 function parseElseBlock(
