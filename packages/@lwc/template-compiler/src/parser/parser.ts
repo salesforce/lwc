@@ -14,7 +14,12 @@ import {
     normalizeToDiagnostic,
 } from '@lwc/errors';
 import { NormalizedConfig } from '../config';
-import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
+import {
+    isElseifBlock,
+    isIfBlock,
+    isPreserveCommentsDirective,
+    isRenderModeDirective,
+} from '../shared/ast';
 
 import {
     Root,
@@ -22,6 +27,8 @@ import {
     ParentNode,
     BaseNode,
     LWCDirectiveRenderMode,
+    IfBlock,
+    ElseifBlock,
 } from '../shared/types';
 
 function normalizeLocation(location?: SourceLocation): Location {
@@ -45,6 +52,16 @@ interface ParentWrapper {
     current: ParentNode;
 }
 
+interface IfContext {
+    ifBlockParent: IfBlock;
+    seenSlots: Set<string>;
+}
+
+interface SiblingContext {
+    nodes: ParentNode[];
+    ifContext?: IfContext;
+}
+
 export default class ParserCtx {
     private readonly source: String;
 
@@ -55,9 +72,11 @@ export default class ParserCtx {
     readonly seenSlots: Set<string> = new Set();
 
     /**
-     * Scopes keep track of the hierarchy of ParentNodes as the parser traverses the parse5 AST.
-     * Each scope is represented by an array where each node in the array correspond to either
-     * a ForEach, ForOf, If, Element, Component, or Slot.
+     * Scopes keep track of context from sibling nodes and the hierarchy of ParentNodes as the parser
+     * traverses the parse5 AST. Each scope object contains the following:
+     * - an array where each node in the array corresponds to either a ForEach, ForOf, If, Element, Component, or Slot.
+     * - an array holding a cache of the immediately preceding sibling's scope, if relevant.
+     *      - currently, that's IFF the parser is in the process of parsing a series of sibling if|elseif|else directives.
      *
      * Currently, each scope has a hierarchy of ForBlock > IfBlock > Element | Component | Slot.
      * Note: Not all scopes will have all three, but when they do, they will appear in this order.
@@ -65,7 +84,8 @@ export default class ParserCtx {
      *
      * Each scope corresponds to the original parse5.Element node.
      */
-    private readonly scopes: ParentNode[][] = [];
+    private readonly elementScopes: ParentNode[][] = [];
+    private readonly siblingContexts: SiblingContext[] = [];
 
     renderMode: LWCDirectiveRenderMode;
     preserveComments: boolean;
@@ -92,7 +112,7 @@ export default class ParserCtx {
      * This method flattens the scopes into a single array for traversal.
      */
     *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
-        const ancestors = ([] as ParentNode[]).concat(...this.scopes);
+        const ancestors = ([] as ParentNode[]).concat(...this.elementScopes);
         const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
 
         for (let i = start; i >= 0; i--) {
@@ -134,36 +154,104 @@ export default class ParserCtx {
      * @param {function} predicate - This callback is called once for each sibling in the current scope
      * until it finds one where predicate returns true.
      */
-    findSibling<A extends ParentNode>(predicate: (node: ParentNode) => node is A): A | null {
+    findInCurrentScope<A extends ParentNode>(predicate: (node: ParentNode) => node is A): A | null {
         const currentScope = this.currentScope() || [];
         const sibling = currentScope.find(predicate);
         return sibling || null;
     }
 
     beginScope(): void {
-        this.scopes.push([]);
+        this.elementScopes.push([]);
     }
 
     endScope(): void {
-        this.scopes.pop();
+        const scope = this.elementScopes.pop();
+        if (scope) {
+            this.setSiblingNodes(scope);
+        }
     }
 
     addNodeCurrentScope(node: ParentNode): void {
-        const currentScope = this.currentScope();
+        const currentScopeNodes = this.currentScope();
 
-        if (!currentScope) {
+        if (!currentScopeNodes) {
             throw new Error("Can't invoke addNodeCurrentScope if there is no current scope");
         }
 
-        currentScope.push(node);
+        currentScopeNodes.push(node);
+    }
+
+    beginSiblingScope() {
+        this.siblingContexts.push({
+            nodes: [],
+        });
+    }
+
+    endSiblingScope() {
+        this.siblingContexts.pop();
+    }
+
+    clearSiblingScope() {
+        this.setSiblingNodes([]);
+        this.setCurrentIfContext(undefined);
+    }
+
+    getPrevSiblingIfNode(): IfBlock | ElseifBlock | undefined {
+        const currentSiblingContext = this.currentSiblingContext();
+        if (!currentSiblingContext) {
+            throw new Error("Can't invoke getPrevSiblingIfNode if there is no current scope");
+        }
+
+        const nodes = currentSiblingContext.nodes;
+        if (nodes[0] && (isIfBlock(nodes[0]) || isElseifBlock(nodes[0]))) {
+            return nodes[0];
+        }
+        return undefined;
     }
 
     private currentScope(): ParentNode[] | undefined {
-        return this.scopes[this.scopes.length - 1];
+        return this.elementScopes[this.elementScopes.length - 1];
     }
 
-    private previousScope(): ParentNode[] | undefined {
-        return this.scopes[this.scopes.length - 2];
+    private currentSiblingContext(): SiblingContext | undefined {
+        return this.siblingContexts[this.siblingContexts.length - 1];
+    }
+
+    private setSiblingNodes(nodes: ParentNode[]) {
+        this.siblingContexts[this.siblingContexts.length - 1].nodes = nodes;
+    }
+
+    /**
+     * IF CONTEXT STUFF
+     */
+    beginIfContext(node: IfBlock) {
+        const currentSiblingContext = this.currentSiblingContext();
+        if (!currentSiblingContext) {
+            throw new Error();
+        }
+
+        currentSiblingContext.ifContext = {
+            ifBlockParent: node,
+            seenSlots: new Set<string>(),
+        };
+    }
+
+    endIfContext() {
+        this.setCurrentIfContext(undefined);
+    }
+
+    private getCurrentIfContext(): IfContext | undefined {
+        const currentSiblingContext = this.currentSiblingContext();
+        if (currentSiblingContext) {
+            return currentSiblingContext.ifContext;
+        }
+    }
+
+    private setCurrentIfContext(context: IfContext | undefined): void {
+        const currentSiblingContext = this.currentSiblingContext();
+        if (currentSiblingContext) {
+            currentSiblingContext.ifContext = context;
+        }
     }
 
     /**

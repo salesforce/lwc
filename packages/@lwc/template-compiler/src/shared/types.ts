@@ -195,7 +195,13 @@ export interface If extends DirectiveParentNode {
 export interface IfBlock extends DirectiveParentNode {
     type: 'IfBlock';
     condition: Expression;
-    else?: IfBlock | ElseBlock;
+    else?: ElseifBlock | ElseBlock;
+}
+
+export interface ElseifBlock extends DirectiveParentNode {
+    type: 'ElseifBlock';
+    condition: Expression;
+    else?: ElseifBlock | ElseBlock;
 }
 
 export interface ElseBlock extends DirectiveParentNode {
@@ -217,8 +223,25 @@ export interface ForOf extends DirectiveParentNode {
 
 export type ForBlock = ForEach | ForOf;
 
-export type ParentNode = Root | ForBlock | If | IfBlock | ElseBlock | BaseElement;
+export type ParentNode = Root | ForBlock | If | IfBlock | ElseifBlock | ElseBlock | BaseElement;
 
-export type ChildNode = ForBlock | If | IfBlock | ElseBlock | BaseElement | Comment | Text;
+export type ChildNode =
+    | ForBlock
+    | If
+    | IfBlock
+    | ElseifBlock
+    | ElseBlock
+    | BaseElement
+    | Comment
+    | Text;
 
-export type Node = Root | ForBlock | If | IfBlock | ElseBlock | BaseElement | Comment | Text;
+export type Node =
+    | Root
+    | ForBlock
+    | If
+    | IfBlock
+    | ElseifBlock
+    | ElseBlock
+    | BaseElement
+    | Comment
+    | Text;
