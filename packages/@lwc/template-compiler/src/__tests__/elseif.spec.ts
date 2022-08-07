@@ -121,7 +121,7 @@ describe('lwc if/elseif/else directives', () => {
             });
         });
         // Currently doesn't have a way to identify when we've previously visited an elseif vs if
-        it.skip('multiple directives on single element - elseif and else', () => {
+        it('multiple directives on single element - elseif and else', () => {
             const { warnings } = parseTemplate(
                 `<template>
                     <template lwc:if={visible}></template>
@@ -132,7 +132,7 @@ describe('lwc if/elseif/else directives', () => {
             expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
-                message: `LWC1155: Invalid usage of 'lwc:elseif' and 'lwc:else' directives on the same element.`,
+                message: `LWC1156: Invalid usage of 'lwc:elseif' and 'lwc:else' directives on the same element.`,
                 location: EXPECTED_LOCATION,
             });
         });
@@ -741,14 +741,36 @@ describe('lwc if/elseif/else directives', () => {
     });
 
     describe('slots', () => {
-        it.skip('should not warn about duplicate slots when the slot is rendered in separate branches of the same conditional tree', () => {
+        it('should warn about duplicate slots when the slots are not rendered in a conditional tree', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <div>
+                        <div>
+                            <slot name="conditional-slot"></slot>
+                        </div>
+                    </div>
+                    <div>Separator</div>
+                    <div>
+                        <slot name="conditional-slot"></slot>
+                    </div>
+                </template>`
+            );
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Warning,
+                message: `LWC1137: Invalid duplicate slot (name="conditional-slot").`,
+                location: EXPECTED_LOCATION,
+            });
+        });
+        it('should not warn about duplicate slots when the slot is rendered in separate branches of the same conditional tree', () => {
             const { root, warnings } = parseTemplate(
                 `<template>
                     <template lwc:if={condition}>
-                        <slot></slot>
+                        <slot name="conditional-slot"></slot>
                     </template>
                     <template lwc:else>
-                        <slot></slot>
+                        <slot name="conditional-slot"></slot>
                     </template>
                 </template>`
             );
@@ -770,9 +792,43 @@ describe('lwc if/elseif/else directives', () => {
                     ],
                 },
             });
-            expect(root.children[1]).toMatchObject({
-                type: 'Comment',
-            });
+        });
+        it('should not warn about duplicate slots when the slot is rendered in separate branches of a complex conditional tree', () => {
+            const { warnings } = parseTemplate(
+                `<template>
+                    <slot name="outer-slot"></slot>
+                    <template lwc:if={condition}>
+                        <template lwc:if={nested}>
+                            Conditional Nested Text
+                            <slot name="nested-slot"></slot>
+                        </template>
+                        <template lwc:else>
+                            <template lwc:if={doubleNested}>
+                                Double Nested
+                            </template>
+                            <template lwc:elseif={doubleNestedAlt}>
+                                <div lwc:if={tripleNested}>
+                                    <div>
+                                        Triple Nested Text
+                                        <slot name="nested-slot"></slot>
+                                    </div>
+                                </div>
+                            </template>
+                            <template lwc:else>
+                                Else
+                                <slot name="nested-slot"></slot>
+                            </template>
+                        </template>
+                        <slot name="conditional-slot"></slot>
+                    </template>
+                    <template lwc:else>
+                        <slot name="conditional-slot"></slot>
+                        <slot name="nested-slot"></slot>
+                    </template>
+                </template>`
+            );
+
+            expect(warnings.length).toBe(0);
         });
         it('should warn about duplicate slots when the slots are not in the same conditional tree', () => {
             const { warnings } = parseTemplate(
@@ -780,17 +836,29 @@ describe('lwc if/elseif/else directives', () => {
                     <template lwc:if={condition}>
                         Conditional Text
                     </template>
-                    <template lwc:else>
-                        <slot></slot>
+                    <template lwc:elseif={altCondition}>
+                        <div>
+                            <slot name="outside-slot"></slot>
+                        </div>
                     </template>
-                    <slot></slot>
+                    <template lwc:else>
+                        <slot name="outside-slot"></slot>
+                    </template>
+                    <template lwc:if={anotherCondition}>
+                        Another Conditional Text
+                    </template>
+                    <template lwc:elseif={anotherAltCondition}>
+                        <div>
+                            <slot name="outside-slot"></slot>
+                        </div>
+                    </template>
                 </template>`
             );
 
             expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Warning,
-                message: `LWC1137: Invalid duplicate slot (default).`,
+                message: `LWC1137: Invalid duplicate slot (name="outside-slot").`,
                 location: EXPECTED_LOCATION,
             });
         });
@@ -798,13 +866,13 @@ describe('lwc if/elseif/else directives', () => {
             const { warnings } = parseTemplate(
                 `<template>
                     <template lwc:if={condition}>
-                        <slot></slot>
-                        <c-nested-slot>
-                            <slot></slot>
-                        </c-nested-slot>
+                        <slot name="nested-slot"></slot>
+                        <div>
+                            <slot name="nested-slot"></slot>
+                        </div>
                     </template>
                     <template lwc:else>
-                        Alternative Tdxt
+                        Alternative Text
                     </template>
                 </template>`
             );
@@ -812,7 +880,7 @@ describe('lwc if/elseif/else directives', () => {
             expect(warnings.length).toBe(1);
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Warning,
-                message: `LWC1137: Invalid duplicate slot (default).`,
+                message: `LWC1137: Invalid duplicate slot (name="nested-slot").`,
                 location: EXPECTED_LOCATION,
             });
         });
