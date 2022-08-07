@@ -55,9 +55,6 @@ branches:
     pull-request:
       <<: *branch-definition
 steps:
-  node-install:
-    run:
-      command: yarn install --parallel=1
   node-conformance:
     run:
       command: yarn run lint
