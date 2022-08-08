@@ -467,10 +467,13 @@ type LightningElementConfig = {
 
 function isLightningElementConfig(
     obj: any,
-    dereference: (obj: any, key: string) => any
+    dereference: dereferenceLEType
 ): obj is LightningElementConfig {
     return isComponentConstructor(dereference(obj, 'ctor'));
 }
+
+type dereferenceType<T, TProp extends keyof T> = (obj: T, key: TProp) => T[TProp];
+type dereferenceLEType = dereferenceType<LightningElementConfig, keyof LightningElementConfig>;
 
 /**
  * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
@@ -479,7 +482,7 @@ function dc(
     sel: string,
     Ctor: LightningElementConstructor | LightningElementConfig | null | undefined,
     data: VElementData,
-    dereference: (obj: any, key: string) => any,
+    dereference: dereferenceLEType,
     children: VNodes = EmptyArray
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
@@ -495,20 +498,23 @@ function dc(
         return null;
     }
     let props = data.props;
+    let ctor: LightningElementConstructor;
     if (!isComponentConstructor(Ctor)) {
         if (isLightningElementConfig(Ctor, dereference)) {
             props = { ...data.props, ...dereference(Ctor, 'props') };
-            Ctor = dereference(Ctor, 'ctor');
+            ctor = dereference(Ctor, 'ctor') as LightningElementConstructor;
         } else {
             throw new Error(
                 `Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`
             );
         }
+    } else {
+        ctor = Ctor;
     }
-    let idx = DynamicImportedComponentMap.get(Ctor);
+    let idx = DynamicImportedComponentMap.get(ctor);
     if (isUndefined(idx)) {
         idx = dynamicImportedComponentCounter++;
-        DynamicImportedComponentMap.set(Ctor, idx);
+        DynamicImportedComponentMap.set(ctor, idx);
     }
     // the new vnode key is a mix of idx and compiler key, this is required by the diffing algo
     // to identify different constructors as vnodes with different keys to avoid reusing the
@@ -516,7 +522,7 @@ function dc(
     // Shallow clone is necessary here becuase VElementData may be shared across VNodes due to
     // hoisting optimization.
     const newData = { ...data, props, key: `dc:${idx}:${data.key}` };
-    return c(sel, Ctor, newData, children);
+    return c(sel, ctor, newData, children);
 }
 
 /**
