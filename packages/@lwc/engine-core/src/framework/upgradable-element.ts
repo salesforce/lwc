@@ -6,6 +6,7 @@
  */
 import features from '@lwc/features';
 import { isUndefined, isFunction } from '@lwc/shared';
+import { logError } from '../shared/logger';
 import { connectRootElement, disconnectRootElement, getAssociatedVMIfPresent } from './vm';
 import type { RendererAPI } from './renderer';
 
@@ -13,6 +14,21 @@ type UpgradeCallback = (elm: HTMLElement) => void;
 
 interface UpgradableCustomElementConstructor extends CustomElementConstructor {
     new (upgradeCallback?: UpgradeCallback): HTMLElement;
+}
+
+function checkHasVM(elm: Element) {
+    const hasVM = !isUndefined(getAssociatedVMIfPresent(elm));
+    if (process.env.NODE_ENV !== 'production' && !hasVM) {
+        // Occurs when an element is manually created with same tag name as existing LWC component. In that case,
+        // we skip calling the LWC connectedCallback/disconnectedCallback logic and log an error.
+        logError(
+            `VM for tagName ${elm.tagName.toLowerCase()} is undefined. ` +
+                `This indicates that an element was created with this tagName, ` +
+                `which is already reserved by an LWC component. Use lwc.createElement ` +
+                `instead to create elements.`
+        );
+    }
+    return hasVM;
 }
 
 export function getUpgradableConstructor(
@@ -46,15 +62,13 @@ export function getUpgradableConstructor(
     };
     if (features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
         CE.prototype.connectedCallback = function () {
-            // FIXME: why is this undefined sometimes?
-            if (!isUndefined(getAssociatedVMIfPresent(this))) {
+            if (checkHasVM(this)) {
                 connectRootElement(this);
             }
         };
 
         CE.prototype.disconnectedCallback = function () {
-            // FIXME: why is this undefined sometimes?
-            if (!isUndefined(getAssociatedVMIfPresent(this))) {
+            if (checkHasVM(this)) {
                 disconnectRootElement(this);
             }
         };
