@@ -1,0 +1,6 @@
+{
+  "exact": true,
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "version": "2.22.0"
+}

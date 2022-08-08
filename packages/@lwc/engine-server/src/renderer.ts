@@ -75,12 +75,6 @@ class HTMLElementImpl {
     }
 }
 
-const ssr: boolean = true;
-
-function isHydrating(): boolean {
-    return false;
-}
-
 const isNativeShadowDefined: boolean = false;
 const isSyntheticShadowDefined: boolean = false;
 
@@ -412,11 +406,9 @@ const HTMLElementExported = HTMLElementImpl as typeof HTMLElement;
 const assertInstanceOfHTMLElement = noop as (elm: any, msg: string) => void;
 
 export const renderer = {
-    ssr,
     isNativeShadowDefined,
     isSyntheticShadowDefined,
     HTMLElementExported,
-    isHydrating,
     insert,
     remove,
     cloneNode,
