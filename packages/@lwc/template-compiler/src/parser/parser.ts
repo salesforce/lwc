@@ -185,7 +185,7 @@ export default class ParserCtx {
     }
 
     hasSeenSlot(name: string): boolean {
-        return this.hasSeenSlotInParentIfTree(name);
+        return this.hasSeenSlotInAncestorIfTree(name);
     }
 
     addSeenSlot(name: string): void {
@@ -254,10 +254,10 @@ export default class ParserCtx {
         }
 
         // Merge seen slot names from the current if chain into the parent scope.
-        const seenSlotsInParentIfTree = this.seenSlotsFromAncestorIfTree();
+        const seenSlotsInAncestorIfTree = this.seenSlotsFromAncestorIfTree();
         for (const seenSlots of currentIfContext.seenSlots) {
             for (const name of seenSlots) {
-                seenSlotsInParentIfTree.add(name);
+                seenSlotsInAncestorIfTree.add(name);
             }
         }
 
@@ -275,7 +275,7 @@ export default class ParserCtx {
         return !!this.currentIfContext() || !!this.ancestorIfContext();
     }
 
-    private hasSeenSlotInParentIfTree(name: string): boolean {
+    private hasSeenSlotInAncestorIfTree(name: string): boolean {
         const seenSlots = this.seenSlotsFromAncestorIfTree();
         return !!seenSlots && seenSlots.has(name);
     }
