@@ -58,7 +58,6 @@
     "prettier": "^2.7.1",
     "rollup": "^2.77.0",
     "rollup-plugin-compat": "^0.22.4",
-    "semver": "^7.3.7",
     "terser": "^5.14.2",
     "ts-jest": "^28.0.7",
     "tslib": "^2.4.0",
