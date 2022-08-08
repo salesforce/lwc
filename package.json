@@ -1,6 +1,7 @@
 {
   "name": "lwc-monorepo",
   "private": true,
+  "version": "1.45.0",
   "description": "Lightning Web Components",
   "repository": {
     "type": "git",
@@ -13,15 +14,15 @@
     "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
     "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",
     "build": "nx run-many --target=build --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests",
-    "build:performance": "nx run-many --target=build --projects=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components",
+    "build:performance": "yarn build:performance:components && yarn build:performance:benchmarks",
     "build:performance:components": "nx build @lwc/perf-benchmarks-components",
     "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
-    "dev": "nx run-many --target=dev --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests",
+    "dev": "nx run-many --target=dev --all --parallel=999 --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
     "test:ci": "yarn test --no-cache --coverage --runInBand",
-    "test:integration": "nx sauce @lwc/integration-tests --skip-nx-cache",
-    "test:performance": "nx test @lwc/perf-benchmarks --skip-nx-cache",
+    "test:integration": "nx sauce @lwc/integration-tests",
+    "test:performance": "nx test @lwc/perf-benchmarks",
     "release:version": "./scripts/release/version.mjs"
   },
   "devDependencies": {
