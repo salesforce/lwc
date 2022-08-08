@@ -180,7 +180,7 @@ export default class CodeGen {
         data: t.ObjectExpression,
         children: t.Expression
     ) {
-        const args: t.Expression[] = [t.literal(tagName), ctor, data];
+        const args: t.Expression[] = [t.literal(tagName), ctor, data, t.identifier('dereference')];
         if (!isArrayExpression(children) || children.elements.length > 0) {
             args.push(children); // only generate children if non-empty
         }

@@ -460,13 +460,26 @@ function fid(url: string | undefined | null): string | null | undefined {
 const DynamicImportedComponentMap: Map<LightningElementConstructor, number> = new Map();
 let dynamicImportedComponentCounter = 0;
 
+type LightningElementConfig = {
+    ctor: LightningElementConstructor;
+    props: Record<string, any>;
+};
+
+function isLightningElementConfig(
+    obj: any,
+    dereference: (obj: any, key: string) => any
+): obj is LightningElementConfig {
+    return isComponentConstructor(dereference(obj, 'ctor'));
+}
+
 /**
  * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
  */
 function dc(
     sel: string,
-    Ctor: LightningElementConstructor | null | undefined,
+    Ctor: LightningElementConstructor | LightningElementConfig | null | undefined,
     data: VElementData,
+    dereference: (obj: any, key: string) => any,
     children: VNodes = EmptyArray
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
@@ -481,8 +494,16 @@ function dc(
     if (Ctor == null) {
         return null;
     }
+    let props = data.props;
     if (!isComponentConstructor(Ctor)) {
-        throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
+        if (isLightningElementConfig(Ctor, dereference)) {
+            props = { ...data.props, ...dereference(Ctor, 'props') };
+            Ctor = dereference(Ctor, 'ctor');
+        } else {
+            throw new Error(
+                `Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`
+            );
+        }
     }
     let idx = DynamicImportedComponentMap.get(Ctor);
     if (isUndefined(idx)) {
@@ -494,7 +515,7 @@ function dc(
     // element used for previous constructors.
     // Shallow clone is necessary here becuase VElementData may be shared across VNodes due to
     // hoisting optimization.
-    const newData = { ...data, key: `dc:${idx}:${data.key}` };
+    const newData = { ...data, props, key: `dc:${idx}:${data.key}` };
     return c(sel, Ctor, newData, children);
 }
 
