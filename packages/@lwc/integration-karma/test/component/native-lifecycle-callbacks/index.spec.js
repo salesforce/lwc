@@ -8,8 +8,8 @@ if (window.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             document.body.appendChild(lwcElm);
 
             const expectedMessage =
-                'Error: [LWC error]: VM for tagName lwc-already-reserved-this-tag-name is undefined. ' +
-                'This indicates that an element was created with this tagName, which is already reserved ' +
+                'Error: [LWC error]: VM for tag name "lwc-already-reserved-this-tag-name" is undefined. ' +
+                'This indicates that an element was created with this tag name, which is already reserved ' +
                 'by an LWC component. Use lwc.createElement instead to create elements.';
 
             const elm = document.createElement('lwc-already-reserved-this-tag-name');

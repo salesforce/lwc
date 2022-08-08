@@ -19,11 +19,11 @@ interface UpgradableCustomElementConstructor extends CustomElementConstructor {
 function checkHasVM(elm: Element) {
     const hasVM = !isUndefined(getAssociatedVMIfPresent(elm));
     if (process.env.NODE_ENV !== 'production' && !hasVM) {
-        // Occurs when an element is manually created with same tag name as existing LWC component. In that case,
+        // Occurs when an element is manually created with same tag name as an existing LWC component. In that case,
         // we skip calling the LWC connectedCallback/disconnectedCallback logic and log an error.
         logError(
-            `VM for tagName ${elm.tagName.toLowerCase()} is undefined. ` +
-                `This indicates that an element was created with this tagName, ` +
+            `VM for tag name "${elm.tagName.toLowerCase()}" is undefined. ` +
+                `This indicates that an element was created with this tag name, ` +
                 `which is already reserved by an LWC component. Use lwc.createElement ` +
                 `instead to create elements.`
         );
