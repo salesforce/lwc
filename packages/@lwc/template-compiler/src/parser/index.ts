@@ -319,6 +319,8 @@ function parseChildren(
                 ctx.beginElementScope();
                 parseElement(ctx, child, parent, parse5ParentLocation);
 
+                // If we're parsing a chain of if/elseif/else nodes, any node other than
+                // an else-if node ends the chain.
                 const node = ctx.endElementScope();
                 if (
                     node &&
@@ -326,23 +328,22 @@ function parseChildren(
                     !ast.isIfBlock(node) &&
                     !ast.isElseifBlock(node)
                 ) {
-                    ctx.endIfContext();
+                    ctx.endIfChain();
                 }
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
                 parent.children.push(...textNodes);
-                // Non whitespace text nodes interrupt any context we may be carrying
+                // Non whitespace text nodes end any if chain we may be parsing
                 if (ctx.isParsingIfBlock() && textNodes.length > 0) {
-                    ctx.endIfContext();
+                    ctx.endIfChain();
                 }
             } else if (parse5Utils.isCommentNode(child)) {
                 const commentNode = parseComment(child);
                 parent.children.push(commentNode);
-                // Comment behavior depends on whether preserveComments is enabled.
-                // If it is enabled, comments become syntactically meaningful and
-                // interrupt any context we may be carrying
+                // If preserveComments is enabled, comments become syntactically meaningful and
+                // end any if chain we may be parsing
                 if (ctx.isParsingIfBlock() && ctx.preserveComments) {
-                    ctx.endIfContext();
+                    ctx.endIfChain();
                 }
             }
         });
@@ -532,7 +533,7 @@ function parseIfBlock(
     );
 
     ctx.addNodeCurrentElementScope(ifNode);
-    ctx.beginIfContext(ifNode);
+    ctx.beginIfChain(ifNode);
     parent.children.push(ifNode);
 
     return ifNode;
@@ -582,7 +583,7 @@ function parseElseifBlock(
 
     // Attach the node as a child of the preceding IfBlock
     ctx.addNodeCurrentElementScope(elseifNode);
-    ctx.updateIfContext(elseifNode);
+    ctx.updateIfChain(elseifNode);
     conditionalParent.else = elseifNode;
 
     return elseifNode;
@@ -633,7 +634,9 @@ function parseElseBlock(
 
     // Attach the node as a child of the preceding IfBlock
     ctx.addNodeCurrentElementScope(elseNode);
-    ctx.updateIfContext(elseNode);
+
+    // Avoid ending the if-chain until we finish parsing all children
+    ctx.updateIfChain(elseNode);
     conditionalParent.else = elseNode;
 
     return elseNode;

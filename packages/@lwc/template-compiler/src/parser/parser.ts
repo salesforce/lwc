@@ -213,13 +213,16 @@ export default class ParserCtx {
 
     // Next goal is to try and move some of the "business logic" from here out into the parser's index.ts itself
     // so that ParserCtx can be more of an utility than handling specific logic for how to handle the nodes.
-    beginIfContext(node: IfBlock) {
+    beginIfChain(node: IfBlock) {
         const currentSiblingContext = this.currentSiblingContext();
         if (!currentSiblingContext) {
-            throw new Error();
+            throw new Error('Cannot invoke beginIfChain if there is currently no sibling context');
         }
 
-        this.endIfContext();
+        // An if block always starts a new chain.
+        if (this.isParsingIfBlock()) {
+            this.endIfChain();
+        }
 
         const previouslySeenSlots = this.seenSlotsFromParentIfTree();
         currentSiblingContext.ifContext = {
@@ -230,7 +233,7 @@ export default class ParserCtx {
         };
     }
 
-    updateIfContext(node: ElseifBlock | ElseBlock) {
+    updateIfChain(node: ElseifBlock | ElseBlock) {
         const currentIfContext = this.currentIfContext();
         if (!currentIfContext) {
             throw new Error();
@@ -244,14 +247,13 @@ export default class ParserCtx {
         );
     }
 
-    endIfContext() {
+    endIfChain() {
         const currentIfContext = this.currentIfContext();
         if (!currentIfContext) {
             return;
         }
 
-        // Merge seen slot names from the current if-block
-        // into the parent scope.
+        // Merge seen slot names from the current if chain into the parent scope.
         const seenSlotsInParentIfTree = this.seenSlotsFromParentIfTree();
         for (const seenSlots of currentIfContext.seenSlots) {
             for (const name of seenSlots) {
