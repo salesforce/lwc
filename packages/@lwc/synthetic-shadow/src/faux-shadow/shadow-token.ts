@@ -53,7 +53,7 @@ function recursivelySetShadowResolver(node: Node, fn: any) {
     (node as any)[KEY__SHADOW_RESOLVER] = fn;
 
     const childNodes = childNodesGetter.call(node);
-    for (let i = 0, n = childNodes.length; i < n; i++) {
+    for (let i = 0; i < childNodes.length; i++) {
         recursivelySetShadowResolver(childNodes[i], fn);
     }
 }
