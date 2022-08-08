@@ -11,9 +11,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
   return api_flatten([
     api_static_fragment($fragment1(), 1),
-    api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0),
+    api_dynamic_component("x-foo", $cmp.trackedProp.foo, stc0, dereference),
   ]);
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
+function dereference(obj, key) {
+  return obj[key];
+}

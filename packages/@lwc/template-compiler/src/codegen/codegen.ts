@@ -121,6 +121,8 @@ export default class CodeGen {
     memorizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
 
+    hasDynamicComponents: boolean = false;
+
     constructor({
         root,
         state,

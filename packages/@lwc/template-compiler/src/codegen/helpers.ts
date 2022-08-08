@@ -172,17 +172,21 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
         metadataExpressions.push(t.expressionStatement(renderModeMetadata));
     }
 
-    metadataExpressions.push(
-        t.functionDeclaration(
-            t.identifier('dereference'),
-            [t.identifier('obj'), t.identifier('key')],
-            t.blockStatement([
-                t.returnStatement(
-                    t.memberExpression(t.identifier('obj'), t.identifier('key'), { computed: true })
-                ),
-            ])
-        )
-    );
+    if (codeGen.hasDynamicComponents) {
+        metadataExpressions.push(
+            t.functionDeclaration(
+                t.identifier('dereference'),
+                [t.identifier('obj'), t.identifier('key')],
+                t.blockStatement([
+                    t.returnStatement(
+                        t.memberExpression(t.identifier('obj'), t.identifier('key'), {
+                            computed: true,
+                        })
+                    ),
+                ])
+            )
+        );
+    }
 
     return metadataExpressions;
 }
