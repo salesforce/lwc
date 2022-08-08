@@ -50,6 +50,11 @@ interface ParentWrapper {
 
 interface IfContext {
     currentNode: IfBlock | ElseifBlock | ElseBlock;
+
+    // Within a specific if-context, each set of seen slot names must be tracked separately
+    // because duplicate names in separate branches of the same if-block are allowed (the branching
+    // logic provides a compile-time guarantee that the slots will not be rendered multiple times).
+    // seenSlots keeps track of each set holding the slots seen in each branch of the if-block.
     seenSlots: Set<string>[];
 }
 
@@ -206,6 +211,8 @@ export default class ParserCtx {
         this.siblingScopes.pop();
     }
 
+    // Next goal is to try and move some of the "business logic" from here out into the parser's index.ts itself
+    // so that ParserCtx can be more of an utility than handling specific logic for how to handle the nodes.
     beginIfContext(node: IfBlock) {
         const currentSiblingContext = this.currentSiblingContext();
         if (!currentSiblingContext) {
