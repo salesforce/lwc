@@ -275,6 +275,9 @@ function mountCustomElement(
 
     if (vm) {
         allocateChildren(vnode, vm);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+        }
     } else if (vnode.ctor !== UpgradableConstructor) {
         throw new TypeError(`Incorrect Component Constructor`);
     }
@@ -283,13 +286,9 @@ function mountCustomElement(
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
-        if (process.env.NODE_ENV !== 'production') {
-            // FIXME: why is the vm.state "connected" sometimes?
-            if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-                assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
-            }
+        if (!features.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+            runConnectedCallback(vm);
         }
-        runConnectedCallback(vm);
     }
 
     mountVNodes(vnode.children, elm, renderer, null);
