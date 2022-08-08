@@ -10,5 +10,3 @@ The release commit is generated locally, along with a git tag.
 :rotating_light: Please avoid pushing prerelease git tags such as `alpha`. These tags usually
 point to commits that are not guaranteed to exist at a later time due to squashed merges or
 deleted branches.
-
-## add something for nucleus deploy how it works
