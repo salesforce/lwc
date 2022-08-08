@@ -1,7 +1,6 @@
 {
   "name": "lwc-monorepo",
   "private": true,
-  "version": "1.45.0",
   "description": "Lightning Web Components",
   "repository": {
     "type": "git",
@@ -23,7 +22,7 @@
     "test:ci": "yarn test --no-cache --coverage --runInBand",
     "test:integration": "nx sauce @lwc/integration-tests",
     "test:performance": "nx test @lwc/perf-benchmarks",
-    "release:version": "./scripts/release/version.mjs"
+    "release:version": "./scripts/release/version.js"
   },
   "devDependencies": {
     "@babel/core": "^7.18.9",
@@ -47,11 +46,9 @@
     "eslint": "^8.20.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^26.6.0",
-    "execa": "^6.1.0",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "husky": "^8.0.1",
-    "inquirer": "^9.0.2",
     "is-ci": "^3.0.1",
     "isbinaryfile": "^5.0.0",
     "jest": "^28.1.3",
