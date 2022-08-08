@@ -60,7 +60,7 @@ interface IfContext {
 
 interface SiblingScope {
     ifContext?: IfContext;
-    parentIfContext?: IfContext;
+    ancestorIfContext?: IfContext;
 }
 
 export default class ParserCtx {
@@ -189,7 +189,7 @@ export default class ParserCtx {
     }
 
     addSeenSlot(name: string): void {
-        const currentSeenSlots = this.seenSlotsFromParentIfTree();
+        const currentSeenSlots = this.seenSlotsFromAncestorIfTree();
         if (currentSeenSlots) {
             currentSeenSlots.add(name);
         } else {
@@ -203,7 +203,7 @@ export default class ParserCtx {
 
     beginSiblingScope() {
         this.siblingScopes.push({
-            parentIfContext: this.currentIfContext() || this.parentIfContext(),
+            ancestorIfContext: this.currentIfContext() || this.ancestorIfContext(),
         });
     }
 
@@ -224,7 +224,7 @@ export default class ParserCtx {
             this.endIfChain();
         }
 
-        const previouslySeenSlots = this.seenSlotsFromParentIfTree();
+        const previouslySeenSlots = this.seenSlotsFromAncestorIfTree();
         currentSiblingContext.ifContext = {
             currentNode: node,
             seenSlots: [
@@ -241,7 +241,7 @@ export default class ParserCtx {
 
         currentIfContext.currentNode = node;
 
-        const previouslySeenSlots = this.seenSlotsFromParentIfTree();
+        const previouslySeenSlots = this.seenSlotsFromAncestorIfTree();
         currentIfContext.seenSlots.push(
             previouslySeenSlots ? new Set<string>(previouslySeenSlots) : new Set<string>()
         );
@@ -254,7 +254,7 @@ export default class ParserCtx {
         }
 
         // Merge seen slot names from the current if chain into the parent scope.
-        const seenSlotsInParentIfTree = this.seenSlotsFromParentIfTree();
+        const seenSlotsInParentIfTree = this.seenSlotsFromAncestorIfTree();
         for (const seenSlots of currentIfContext.seenSlots) {
             for (const name of seenSlots) {
                 seenSlotsInParentIfTree.add(name);
@@ -272,11 +272,11 @@ export default class ParserCtx {
     }
 
     isParsingIfBlock(): boolean {
-        return !!this.currentIfContext() || !!this.parentIfContext();
+        return !!this.currentIfContext() || !!this.ancestorIfContext();
     }
 
     private hasSeenSlotInParentIfTree(name: string): boolean {
-        const seenSlots = this.seenSlotsFromParentIfTree();
+        const seenSlots = this.seenSlotsFromAncestorIfTree();
         return !!seenSlots && seenSlots.has(name);
     }
 
@@ -288,14 +288,14 @@ export default class ParserCtx {
         return this.currentSiblingContext()?.ifContext;
     }
 
-    private parentIfContext(): IfContext | undefined {
-        return this.currentSiblingContext()?.parentIfContext;
+    private ancestorIfContext(): IfContext | undefined {
+        return this.currentSiblingContext()?.ancestorIfContext;
     }
 
-    private seenSlotsFromParentIfTree(): Set<string> {
-        const parentIfContext = this.parentIfContext();
-        if (parentIfContext) {
-            return parentIfContext.seenSlots[parentIfContext.seenSlots.length - 1];
+    private seenSlotsFromAncestorIfTree(): Set<string> {
+        const ancestorIfContext = this.ancestorIfContext();
+        if (ancestorIfContext) {
+            return ancestorIfContext.seenSlots[ancestorIfContext.seenSlots.length - 1];
         }
         return this.seenSlots;
     }
