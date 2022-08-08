@@ -600,6 +600,7 @@ function parseElseBlock(
         return;
     }
 
+    // Cannot be used with lwc:if on the same element
     const hasIfBlock = ctx.findInCurrentElementScope(ast.isIfBlock);
     if (hasIfBlock) {
         ctx.throwAtLocation(
@@ -609,6 +610,7 @@ function parseElseBlock(
         );
     }
 
+    // Cannot be used with lwc:elseif on the same element
     const hasElseifBlock = ctx.findInCurrentElementScope(ast.isElseifBlock);
     if (hasElseifBlock) {
         ctx.throwAtLocation(
@@ -618,12 +620,24 @@ function parseElseBlock(
         );
     }
 
+    // Must be used immediately after an lwc:if or lwc:elseif
     const conditionalParent = ctx.getSiblingIfNode();
     if (!conditionalParent || !ast.isConditionalParentBlock(conditionalParent)) {
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_SCOPE_NOT_FOUND,
             ast.sourceLocation(parse5ElmLocation),
             [elseBlockAttribute.name]
+        );
+    }
+
+    // Must not have a value
+    if (
+        ast.isExpression(elseBlockAttribute.value) ||
+        ast.isStringLiteral(elseBlockAttribute.value)
+    ) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.ELSE_BLOCK_DIRECTIVE_CANNOT_HAVE_VALUE,
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 
