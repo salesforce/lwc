@@ -742,6 +742,52 @@ describe('lwc if/elseif/else directives', () => {
         });
     });
 
+    describe('mixed', () => {
+        it('if-elseif-else', () => {
+            const { root } = parseTemplate(
+                `<template>
+                    <template lwc:if={visible}>Conditional Text</template>
+                    <div lwc:elseif={elseifCondition}>Elseif!</div>
+                    <c-default lwc:else>Else!</c-default>
+                </template>`
+            );
+
+            expect(root.children[0]).toMatchObject({
+                type: 'IfBlock',
+                condition: {
+                    type: 'Identifier',
+                },
+                children: [
+                    {
+                        type: 'Text',
+                        raw: 'Conditional Text',
+                    },
+                ],
+                else: {
+                    type: 'ElseifBlock',
+                    condition: {
+                        type: 'Identifier',
+                    },
+                    children: [
+                        {
+                            type: 'Element',
+                            name: 'div',
+                        },
+                    ],
+                    else: {
+                        type: 'ElseBlock',
+                        children: [
+                            {
+                                type: 'Component',
+                                name: 'c-default',
+                            },
+                        ],
+                    },
+                },
+            });
+        });
+    });
+
     describe('slots', () => {
         it('should warn about duplicate slots when the slots are not rendered in a conditional tree', () => {
             const { warnings } = parseTemplate(
