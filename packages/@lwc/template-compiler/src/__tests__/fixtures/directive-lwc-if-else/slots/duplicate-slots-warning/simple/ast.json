@@ -1,0 +1,292 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 11,
+            "endColumn": 12,
+            "start": 0,
+            "end": 214,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 11,
+                "startColumn": 1,
+                "endLine": 11,
+                "endColumn": 12,
+                "start": 203,
+                "end": 214
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 110,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 15,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 11,
+                        "start": 104,
+                        "end": 110
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "div",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 15,
+                            "start": 29,
+                            "end": 99,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 14,
+                                "start": 29,
+                                "end": 34
+                            },
+                            "endTag": {
+                                "startLine": 5,
+                                "startColumn": 9,
+                                "endLine": 5,
+                                "endColumn": 15,
+                                "start": 93,
+                                "end": 99
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Slot",
+                                "name": "slot",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "slotName": "conditional-slot",
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 13,
+                                    "endLine": 4,
+                                    "endColumn": 50,
+                                    "start": 47,
+                                    "end": 84,
+                                    "startTag": {
+                                        "startLine": 4,
+                                        "startColumn": 13,
+                                        "endLine": 4,
+                                        "endColumn": 43,
+                                        "start": 47,
+                                        "end": 77
+                                    },
+                                    "endTag": {
+                                        "startLine": 4,
+                                        "startColumn": 43,
+                                        "endLine": 4,
+                                        "endColumn": 50,
+                                        "start": 77,
+                                        "end": 84
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "name",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "conditional-slot"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 19,
+                                            "endLine": 4,
+                                            "endColumn": 42,
+                                            "start": 53,
+                                            "end": 76
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 7,
+                    "startColumn": 5,
+                    "endLine": 7,
+                    "endColumn": 25,
+                    "start": 115,
+                    "end": 135,
+                    "startTag": {
+                        "startLine": 7,
+                        "startColumn": 5,
+                        "endLine": 7,
+                        "endColumn": 10,
+                        "start": 115,
+                        "end": 120
+                    },
+                    "endTag": {
+                        "startLine": 7,
+                        "startColumn": 19,
+                        "endLine": 7,
+                        "endColumn": 25,
+                        "start": 129,
+                        "end": 135
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Separator",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Separator"
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 10,
+                            "endLine": 7,
+                            "endColumn": 19,
+                            "start": 120,
+                            "end": 129
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 8,
+                    "startColumn": 5,
+                    "endLine": 10,
+                    "endColumn": 11,
+                    "start": 140,
+                    "end": 202,
+                    "startTag": {
+                        "startLine": 8,
+                        "startColumn": 5,
+                        "endLine": 8,
+                        "endColumn": 10,
+                        "start": 140,
+                        "end": 145
+                    },
+                    "endTag": {
+                        "startLine": 10,
+                        "startColumn": 5,
+                        "endLine": 10,
+                        "endColumn": 11,
+                        "start": 196,
+                        "end": 202
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Slot",
+                        "name": "slot",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "slotName": "conditional-slot",
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 46,
+                            "start": 154,
+                            "end": 191,
+                            "startTag": {
+                                "startLine": 9,
+                                "startColumn": 9,
+                                "endLine": 9,
+                                "endColumn": 39,
+                                "start": 154,
+                                "end": 184
+                            },
+                            "endTag": {
+                                "startLine": 9,
+                                "startColumn": 39,
+                                "endLine": 9,
+                                "endColumn": 46,
+                                "start": 184,
+                                "end": 191
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "name",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "conditional-slot"
+                                },
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 15,
+                                    "endLine": 9,
+                                    "endColumn": 38,
+                                    "start": 160,
+                                    "end": 183
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

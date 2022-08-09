@@ -1,0 +1,768 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 31,
+            "endColumn": 12,
+            "start": 0,
+            "end": 986,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 31,
+                "startColumn": 1,
+                "endLine": 31,
+                "endColumn": 12,
+                "start": 975,
+                "end": 986
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Slot",
+                "name": "slot",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "slotName": "outer-slot",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 36,
+                    "start": 15,
+                    "end": 46,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 29,
+                        "start": 15,
+                        "end": 39
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 29,
+                        "endLine": 2,
+                        "endColumn": 36,
+                        "start": 39,
+                        "end": 46
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "name",
+                        "value": {
+                            "type": "Literal",
+                            "value": "outer-slot"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 11,
+                            "endLine": 2,
+                            "endColumn": 28,
+                            "start": 21,
+                            "end": 38
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "IfBlock",
+                "condition": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 10,
+                    "name": "condition",
+                    "location": {
+                        "startLine": 3,
+                        "startColumn": 15,
+                        "endLine": 3,
+                        "endColumn": 33,
+                        "start": 61,
+                        "end": 79
+                    }
+                },
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 26,
+                    "endColumn": 16,
+                    "start": 51,
+                    "end": 847
+                },
+                "directiveLocation": {
+                    "startLine": 3,
+                    "startColumn": 15,
+                    "endLine": 3,
+                    "endColumn": 33,
+                    "start": 61,
+                    "end": 79
+                },
+                "children": [
+                    {
+                        "type": "IfBlock",
+                        "condition": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 7,
+                            "name": "nested",
+                            "location": {
+                                "startLine": 4,
+                                "startColumn": 19,
+                                "endLine": 4,
+                                "endColumn": 34,
+                                "start": 99,
+                                "end": 114
+                            }
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 20,
+                            "start": 89,
+                            "end": 216
+                        },
+                        "directiveLocation": {
+                            "startLine": 4,
+                            "startColumn": 19,
+                            "endLine": 4,
+                            "endColumn": 34,
+                            "start": 99,
+                            "end": 114
+                        },
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "Conditional Nested Text",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "Conditional Nested Text"
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 35,
+                                    "endLine": 6,
+                                    "endColumn": 13,
+                                    "start": 115,
+                                    "end": 164
+                                }
+                            },
+                            {
+                                "type": "Slot",
+                                "name": "slot",
+                                "namespace": "http://www.w3.org/1999/xhtml",
+                                "slotName": "nested-slot",
+                                "location": {
+                                    "startLine": 6,
+                                    "startColumn": 13,
+                                    "endLine": 6,
+                                    "endColumn": 45,
+                                    "start": 164,
+                                    "end": 196,
+                                    "startTag": {
+                                        "startLine": 6,
+                                        "startColumn": 13,
+                                        "endLine": 6,
+                                        "endColumn": 38,
+                                        "start": 164,
+                                        "end": 189
+                                    },
+                                    "endTag": {
+                                        "startLine": 6,
+                                        "startColumn": 38,
+                                        "endLine": 6,
+                                        "endColumn": 45,
+                                        "start": 189,
+                                        "end": 196
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "name",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "nested-slot"
+                                        },
+                                        "location": {
+                                            "startLine": 6,
+                                            "startColumn": 19,
+                                            "endLine": 6,
+                                            "endColumn": 37,
+                                            "start": 170,
+                                            "end": 188
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": []
+                            }
+                        ],
+                        "else": {
+                            "type": "ElseBlock",
+                            "location": {
+                                "startLine": 8,
+                                "startColumn": 9,
+                                "endLine": 24,
+                                "endColumn": 20,
+                                "start": 225,
+                                "end": 785
+                            },
+                            "directiveLocation": {
+                                "startLine": 8,
+                                "startColumn": 19,
+                                "endLine": 8,
+                                "endColumn": 27,
+                                "start": 235,
+                                "end": 243
+                            },
+                            "children": [
+                                {
+                                    "type": "IfBlock",
+                                    "condition": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 13,
+                                        "name": "doubleNested",
+                                        "location": {
+                                            "startLine": 9,
+                                            "startColumn": 23,
+                                            "endLine": 9,
+                                            "endColumn": 44,
+                                            "start": 267,
+                                            "end": 288
+                                        }
+                                    },
+                                    "location": {
+                                        "startLine": 9,
+                                        "startColumn": 13,
+                                        "endLine": 11,
+                                        "endColumn": 24,
+                                        "start": 257,
+                                        "end": 343
+                                    },
+                                    "directiveLocation": {
+                                        "startLine": 9,
+                                        "startColumn": 23,
+                                        "endLine": 9,
+                                        "endColumn": 44,
+                                        "start": 267,
+                                        "end": 288
+                                    },
+                                    "children": [
+                                        {
+                                            "type": "Text",
+                                            "raw": "Double Nested",
+                                            "value": {
+                                                "type": "Literal",
+                                                "value": "Double Nested"
+                                            },
+                                            "location": {
+                                                "startLine": 9,
+                                                "startColumn": 45,
+                                                "endLine": 11,
+                                                "endColumn": 13,
+                                                "start": 289,
+                                                "end": 332
+                                            }
+                                        }
+                                    ],
+                                    "else": {
+                                        "type": "ElseifBlock",
+                                        "condition": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 16,
+                                            "name": "doubleNestedAlt",
+                                            "location": {
+                                                "startLine": 12,
+                                                "startColumn": 23,
+                                                "endLine": 12,
+                                                "endColumn": 51,
+                                                "start": 366,
+                                                "end": 394
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 12,
+                                            "startColumn": 13,
+                                            "endLine": 19,
+                                            "endColumn": 24,
+                                            "start": 356,
+                                            "end": 639
+                                        },
+                                        "directiveLocation": {
+                                            "startLine": 12,
+                                            "startColumn": 23,
+                                            "endLine": 12,
+                                            "endColumn": 51,
+                                            "start": 366,
+                                            "end": 394
+                                        },
+                                        "children": [
+                                            {
+                                                "type": "IfBlock",
+                                                "condition": {
+                                                    "type": "Identifier",
+                                                    "start": 1,
+                                                    "end": 13,
+                                                    "name": "tripleNested",
+                                                    "location": {
+                                                        "startLine": 13,
+                                                        "startColumn": 22,
+                                                        "endLine": 13,
+                                                        "endColumn": 43,
+                                                        "start": 417,
+                                                        "end": 438
+                                                    }
+                                                },
+                                                "location": {
+                                                    "startLine": 13,
+                                                    "startColumn": 17,
+                                                    "endLine": 18,
+                                                    "endColumn": 23,
+                                                    "start": 412,
+                                                    "end": 615
+                                                },
+                                                "directiveLocation": {
+                                                    "startLine": 13,
+                                                    "startColumn": 22,
+                                                    "endLine": 13,
+                                                    "endColumn": 43,
+                                                    "start": 417,
+                                                    "end": 438
+                                                },
+                                                "children": [
+                                                    {
+                                                        "type": "Element",
+                                                        "name": "div",
+                                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                                        "location": {
+                                                            "startLine": 13,
+                                                            "startColumn": 17,
+                                                            "endLine": 18,
+                                                            "endColumn": 23,
+                                                            "start": 412,
+                                                            "end": 615,
+                                                            "startTag": {
+                                                                "startLine": 13,
+                                                                "startColumn": 17,
+                                                                "endLine": 13,
+                                                                "endColumn": 44,
+                                                                "start": 412,
+                                                                "end": 439
+                                                            },
+                                                            "endTag": {
+                                                                "startLine": 18,
+                                                                "startColumn": 17,
+                                                                "endLine": 18,
+                                                                "endColumn": 23,
+                                                                "start": 609,
+                                                                "end": 615
+                                                            }
+                                                        },
+                                                        "attributes": [],
+                                                        "properties": [],
+                                                        "directives": [],
+                                                        "listeners": [],
+                                                        "children": [
+                                                            {
+                                                                "type": "Element",
+                                                                "name": "div",
+                                                                "namespace": "http://www.w3.org/1999/xhtml",
+                                                                "location": {
+                                                                    "startLine": 14,
+                                                                    "startColumn": 21,
+                                                                    "endLine": 17,
+                                                                    "endColumn": 27,
+                                                                    "start": 460,
+                                                                    "end": 592,
+                                                                    "startTag": {
+                                                                        "startLine": 14,
+                                                                        "startColumn": 21,
+                                                                        "endLine": 14,
+                                                                        "endColumn": 26,
+                                                                        "start": 460,
+                                                                        "end": 465
+                                                                    },
+                                                                    "endTag": {
+                                                                        "startLine": 17,
+                                                                        "startColumn": 21,
+                                                                        "endLine": 17,
+                                                                        "endColumn": 27,
+                                                                        "start": 586,
+                                                                        "end": 592
+                                                                    }
+                                                                },
+                                                                "attributes": [],
+                                                                "properties": [],
+                                                                "directives": [],
+                                                                "listeners": [],
+                                                                "children": [
+                                                                    {
+                                                                        "type": "Text",
+                                                                        "raw": "Triple Nested Text",
+                                                                        "value": {
+                                                                            "type": "Literal",
+                                                                            "value": "Triple Nested Text"
+                                                                        },
+                                                                        "location": {
+                                                                            "startLine": 14,
+                                                                            "startColumn": 26,
+                                                                            "endLine": 16,
+                                                                            "endColumn": 25,
+                                                                            "start": 465,
+                                                                            "end": 533
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "type": "Slot",
+                                                                        "name": "slot",
+                                                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                                                        "slotName": "nested-slot",
+                                                                        "location": {
+                                                                            "startLine": 16,
+                                                                            "startColumn": 25,
+                                                                            "endLine": 16,
+                                                                            "endColumn": 57,
+                                                                            "start": 533,
+                                                                            "end": 565,
+                                                                            "startTag": {
+                                                                                "startLine": 16,
+                                                                                "startColumn": 25,
+                                                                                "endLine": 16,
+                                                                                "endColumn": 50,
+                                                                                "start": 533,
+                                                                                "end": 558
+                                                                            },
+                                                                            "endTag": {
+                                                                                "startLine": 16,
+                                                                                "startColumn": 50,
+                                                                                "endLine": 16,
+                                                                                "endColumn": 57,
+                                                                                "start": 558,
+                                                                                "end": 565
+                                                                            }
+                                                                        },
+                                                                        "attributes": [
+                                                                            {
+                                                                                "type": "Attribute",
+                                                                                "name": "name",
+                                                                                "value": {
+                                                                                    "type": "Literal",
+                                                                                    "value": "nested-slot"
+                                                                                },
+                                                                                "location": {
+                                                                                    "startLine": 16,
+                                                                                    "startColumn": 31,
+                                                                                    "endLine": 16,
+                                                                                    "endColumn": 49,
+                                                                                    "start": 539,
+                                                                                    "end": 557
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "properties": [],
+                                                                        "directives": [],
+                                                                        "listeners": [],
+                                                                        "children": []
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        "else": {
+                                            "type": "ElseBlock",
+                                            "location": {
+                                                "startLine": 20,
+                                                "startColumn": 13,
+                                                "endLine": 23,
+                                                "endColumn": 24,
+                                                "start": 652,
+                                                "end": 765
+                                            },
+                                            "directiveLocation": {
+                                                "startLine": 20,
+                                                "startColumn": 23,
+                                                "endLine": 20,
+                                                "endColumn": 31,
+                                                "start": 662,
+                                                "end": 670
+                                            },
+                                            "children": [
+                                                {
+                                                    "type": "Text",
+                                                    "raw": "Else",
+                                                    "value": {
+                                                        "type": "Literal",
+                                                        "value": "Else"
+                                                    },
+                                                    "location": {
+                                                        "startLine": 20,
+                                                        "startColumn": 32,
+                                                        "endLine": 22,
+                                                        "endColumn": 17,
+                                                        "start": 671,
+                                                        "end": 709
+                                                    }
+                                                },
+                                                {
+                                                    "type": "Slot",
+                                                    "name": "slot",
+                                                    "namespace": "http://www.w3.org/1999/xhtml",
+                                                    "slotName": "nested-slot",
+                                                    "location": {
+                                                        "startLine": 22,
+                                                        "startColumn": 17,
+                                                        "endLine": 22,
+                                                        "endColumn": 49,
+                                                        "start": 709,
+                                                        "end": 741,
+                                                        "startTag": {
+                                                            "startLine": 22,
+                                                            "startColumn": 17,
+                                                            "endLine": 22,
+                                                            "endColumn": 42,
+                                                            "start": 709,
+                                                            "end": 734
+                                                        },
+                                                        "endTag": {
+                                                            "startLine": 22,
+                                                            "startColumn": 42,
+                                                            "endLine": 22,
+                                                            "endColumn": 49,
+                                                            "start": 734,
+                                                            "end": 741
+                                                        }
+                                                    },
+                                                    "attributes": [
+                                                        {
+                                                            "type": "Attribute",
+                                                            "name": "name",
+                                                            "value": {
+                                                                "type": "Literal",
+                                                                "value": "nested-slot"
+                                                            },
+                                                            "location": {
+                                                                "startLine": 22,
+                                                                "startColumn": 23,
+                                                                "endLine": 22,
+                                                                "endColumn": 41,
+                                                                "start": 715,
+                                                                "end": 733
+                                                            }
+                                                        }
+                                                    ],
+                                                    "properties": [],
+                                                    "directives": [],
+                                                    "listeners": [],
+                                                    "children": []
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type": "Slot",
+                        "name": "slot",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "slotName": "conditional-slot",
+                        "location": {
+                            "startLine": 25,
+                            "startColumn": 9,
+                            "endLine": 25,
+                            "endColumn": 46,
+                            "start": 794,
+                            "end": 831,
+                            "startTag": {
+                                "startLine": 25,
+                                "startColumn": 9,
+                                "endLine": 25,
+                                "endColumn": 39,
+                                "start": 794,
+                                "end": 824
+                            },
+                            "endTag": {
+                                "startLine": 25,
+                                "startColumn": 39,
+                                "endLine": 25,
+                                "endColumn": 46,
+                                "start": 824,
+                                "end": 831
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "name",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "conditional-slot"
+                                },
+                                "location": {
+                                    "startLine": 25,
+                                    "startColumn": 15,
+                                    "endLine": 25,
+                                    "endColumn": 38,
+                                    "start": 800,
+                                    "end": 823
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ],
+                "else": {
+                    "type": "ElseBlock",
+                    "location": {
+                        "startLine": 27,
+                        "startColumn": 5,
+                        "endLine": 30,
+                        "endColumn": 16,
+                        "start": 852,
+                        "end": 974
+                    },
+                    "directiveLocation": {
+                        "startLine": 27,
+                        "startColumn": 15,
+                        "endLine": 27,
+                        "endColumn": 23,
+                        "start": 862,
+                        "end": 870
+                    },
+                    "children": [
+                        {
+                            "type": "Slot",
+                            "name": "slot",
+                            "namespace": "http://www.w3.org/1999/xhtml",
+                            "slotName": "conditional-slot",
+                            "location": {
+                                "startLine": 28,
+                                "startColumn": 9,
+                                "endLine": 28,
+                                "endColumn": 46,
+                                "start": 880,
+                                "end": 917,
+                                "startTag": {
+                                    "startLine": 28,
+                                    "startColumn": 9,
+                                    "endLine": 28,
+                                    "endColumn": 39,
+                                    "start": 880,
+                                    "end": 910
+                                },
+                                "endTag": {
+                                    "startLine": 28,
+                                    "startColumn": 39,
+                                    "endLine": 28,
+                                    "endColumn": 46,
+                                    "start": 910,
+                                    "end": 917
+                                }
+                            },
+                            "attributes": [
+                                {
+                                    "type": "Attribute",
+                                    "name": "name",
+                                    "value": {
+                                        "type": "Literal",
+                                        "value": "conditional-slot"
+                                    },
+                                    "location": {
+                                        "startLine": 28,
+                                        "startColumn": 15,
+                                        "endLine": 28,
+                                        "endColumn": 38,
+                                        "start": 886,
+                                        "end": 909
+                                    }
+                                }
+                            ],
+                            "properties": [],
+                            "directives": [],
+                            "listeners": [],
+                            "children": []
+                        },
+                        {
+                            "type": "Slot",
+                            "name": "slot",
+                            "namespace": "http://www.w3.org/1999/xhtml",
+                            "slotName": "nested-slot",
+                            "location": {
+                                "startLine": 29,
+                                "startColumn": 9,
+                                "endLine": 29,
+                                "endColumn": 41,
+                                "start": 926,
+                                "end": 958,
+                                "startTag": {
+                                    "startLine": 29,
+                                    "startColumn": 9,
+                                    "endLine": 29,
+                                    "endColumn": 34,
+                                    "start": 926,
+                                    "end": 951
+                                },
+                                "endTag": {
+                                    "startLine": 29,
+                                    "startColumn": 34,
+                                    "endLine": 29,
+                                    "endColumn": 41,
+                                    "start": 951,
+                                    "end": 958
+                                }
+                            },
+                            "attributes": [
+                                {
+                                    "type": "Attribute",
+                                    "name": "name",
+                                    "value": {
+                                        "type": "Literal",
+                                        "value": "nested-slot"
+                                    },
+                                    "location": {
+                                        "startLine": 29,
+                                        "startColumn": 15,
+                                        "endLine": 29,
+                                        "endColumn": 33,
+                                        "start": 932,
+                                        "end": 950
+                                    }
+                                }
+                            ],
+                            "properties": [],
+                            "directives": [],
+                            "listeners": [],
+                            "children": []
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
