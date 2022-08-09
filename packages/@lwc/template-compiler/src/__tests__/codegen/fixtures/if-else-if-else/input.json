@@ -78,7 +78,7 @@
                     }
                 ],
                 "else": {
-                    "type": "IfBlock",
+                    "type": "ElseifBlock",
                     "condition": {
                         "type": "Identifier",
                         "start": 1,

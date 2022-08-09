@@ -28,6 +28,7 @@ import {
     isKeyDirective,
     isDomDirective,
     isElement,
+    isElseifBlock,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import {
@@ -44,6 +45,7 @@ import {
     Comment,
     ForOf,
     BaseElement,
+    ElseifBlock,
 } from '../shared/types';
 import * as t from '../shared/estree';
 import {
@@ -167,7 +169,7 @@ function transform(codeGen: CodeGen): t.Expression {
             }
         }
 
-        if (shouldFlatten(codeGen, parent)) {
+        if (shouldFlatten(codeGen, children)) {
             if (children.length === 1 && !containsDynamicChildren(children)) {
                 return res[0];
             } else {
@@ -207,26 +209,21 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
-    function transformIfBlock(ifBlockNode: IfBlock): t.Expression {
-        const childrenExpression = transformChildren(ifBlockNode);
-        let elseExpression: t.Expression | undefined;
+    function transformIfBlock(ifBlock: IfBlock | ElseifBlock): t.Expression {
+        const childrenExpression = transformChildren(ifBlock);
+        let elseExpression: t.Expression = t.arrayExpression([]);
 
-        if (ifBlockNode.else) {
-            // The value of else can be either IfBlock or ElseBlock
-            // When it is an IfBlock both the children and elseChildren need to be
-            // traversed
-            if (isIfBlock(ifBlockNode.else)) {
-                elseExpression = transformIfBlock(ifBlockNode.else);
+        if (ifBlock.else) {
+            if (isElseifBlock(ifBlock.else)) {
+                elseExpression = transformIfBlock(ifBlock.else);
             } else {
-                elseExpression = transformChildren(ifBlockNode.else);
+                elseExpression = transformChildren(ifBlock.else);
             }
         }
 
-        // This function should only return a single Expression
-        return applyInlineIfBlock(
-            ifBlockNode,
+        return t.conditionalExpression(
+            codeGen.bindExpression(ifBlock.condition),
             childrenExpression,
-            undefined as any,
             elseExpression
         );
     }
@@ -257,21 +254,6 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
-    }
-
-    function applyInlineIfBlock(
-        ifBlock: IfBlock,
-        node: t.Expression,
-        testExpression: t.Expression,
-        falseValue?: t.Expression
-    ): t.Expression {
-        if (!testExpression) {
-            testExpression = codeGen.bindExpression(ifBlock.condition);
-        }
-
-        // JTU: check here this might need to be an array as the final ternary expression
-        // if there is only one child
-        return t.conditionalExpression(testExpression, node, falseValue ?? t.literal(null));
     }
 
     function transformForBlock(forBlock: ForBlock): t.Expression {

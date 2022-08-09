@@ -6,14 +6,7 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import {
-    BaseElement,
-    ChildNode,
-    LWCDirectiveRenderMode,
-    Node,
-    ParentNode,
-    Root,
-} from '../shared/types';
+import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
 import {
     isParentNode,
     isSlot,
@@ -25,7 +18,6 @@ import {
     isText,
     isComment,
     isIfBlock,
-    isElseBlock,
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
@@ -73,7 +65,6 @@ export function containsDynamicChildren(children: ChildNode[]): boolean {
             return containsDynamicChildren(child.children);
         }
 
-        // JTU: check this again
         if (isIfBlock(child)) {
             const trueConditionHasDynamicChildren = containsDynamicChildren(child.children);
             const elseConditionHasDynamicChildren = child.else
@@ -93,69 +84,25 @@ export function containsDynamicChildren(children: ChildNode[]): boolean {
 /**
  * Returns true if the children should be flattened.
  *
- * Children should be flattened if they contain an iterator,
- * a dynamic directive or a slot inside a light dom element.
- */
-// export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
-//     return children.some(
-//         (child) =>
-//             isForBlock(child) ||
-//             (isParentNode(child) &&
-//                 ((isBaseElement(child) && isDynamic(child)) ||
-//                     // If node is only a control flow node and does not map to a stand alone element.
-//                     // Search children to determine if it should be flattened.
-//                     // (isIfBlock(child) && shouldFlatten(codeGen, child.children) ||
-//                     (isIf(child) && shouldFlatten(codeGen, child.children)) ||
-//                     (codeGen.renderMode === LWCDirectiveRenderMode.light && isSlot(child))))
-//     );
-// }
-
-/**
  * This function searches through the children to determine if flattening needs to occur in the runtime.
- * This maps directly the to api_flatten function in the template function.
+ * Children should be flattened if they contain an iterator, a dynamic directive or a slot inside a light dom element.
  */
-export function shouldFlatten(codeGen: CodeGen, parent: ParentNode): boolean {
-    // The result of transformChildren is an array which means that the final result for an
-    // of the ternary operation from the IfBlock may be a 2d array.
-    // In this case the inner array needs to be flattened.
-    if (isIfBlock(parent) || isElseBlock(parent)) {
-        return true;
-    }
-
-    for (const child of getFlattenedChildren(parent.children)) {
-        if (
+export function shouldFlatten(codeGen: CodeGen, children: ChildNode[]): boolean {
+    return children.some((child) => {
+        return (
+            // ForBlock will generate a list of iterable vnodes
             isForBlock(child) ||
+            // IfBlock, ElseIfBlock, and Else children will always be an array
+            isIfBlock(child) ||
+            // Dynamic children
             (isBaseElement(child) && isDynamic(child)) ||
-            (isSlot(child) && codeGen.renderMode === LWCDirectiveRenderMode.light)
-        ) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * This function flattens the children array and returns the children.
- * Flattening needs to occcur when a child node is not an actual representation of an
- * HTML element such as If, IfBlock and ElseBlock nodes.
- */
-function* getFlattenedChildren(children: ChildNode[]): Generator<ChildNode> {
-    for (const child of children) {
-        if (isIf(child)) {
-            yield* getFlattenedChildren(child.children);
-        } else if (isIfBlock(child)) {
-            // IfBlock can have two sets of children for when the condition is True and when it is false
-            // Check both to identify if the element should be flattened or not.
-            yield* getFlattenedChildren(child.children);
-
-            if (child.else) {
-                yield* getFlattenedChildren(child.else.children);
-            }
-        } else {
-            yield child;
-        }
-    }
+            // light DOM slots
+            (isSlot(child) && codeGen.renderMode === LWCDirectiveRenderMode.light) ||
+            // If node is only a control flow node and does not map to a stand alone element.
+            // Search children to determine if it should be flattened.
+            (isIf(child) && shouldFlatten(codeGen, child.children))
+        );
+    });
 }
 
 /**
