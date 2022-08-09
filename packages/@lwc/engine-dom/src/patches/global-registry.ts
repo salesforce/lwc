@@ -183,6 +183,7 @@ function patchAttributes(
     // Note we use the native `getAttribute` rather than the super's `getAttribute` because
     // we don't actually want it to be observable that we're calling `getAttribute` from
     // `setAttribute` and `removeAttribute`.
+    // TODO [#2994]: this should handle reflected properties such as `ariaLabel` and `role`.
     defineProperties(instance, {
         setAttribute: {
             value: function setAttribute(name: string, value: any) {
