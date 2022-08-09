@@ -420,7 +420,11 @@ export function isElseBlock(node: BaseNode): node is ElseBlock {
     return node.type === 'ElseBlock';
 }
 
-export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseBlock {
+export function isConditionalParentBlock(node: BaseNode): node is IfBlock | ElseifBlock {
+    return isIfBlock(node) || isElseifBlock(node);
+}
+
+export function isConditionalBlock(node: BaseNode): node is IfBlock | ElseifBlock | ElseBlock {
     return isIfBlock(node) || isElseifBlock(node) || isElseBlock(node);
 }
 

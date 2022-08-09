@@ -297,7 +297,7 @@ function parseBaseElement(
     }
 
     if (element) {
-        ctx.addNodeCurrentScope(element);
+        ctx.addNodeCurrentElementScope(element);
         parent.children.push(element);
     }
 
@@ -316,24 +316,34 @@ function parseChildren(
     for (const child of children) {
         ctx.withErrorRecovery(() => {
             if (parse5Utils.isElementNode(child)) {
-                ctx.beginScope();
+                ctx.beginElementScope();
                 parseElement(ctx, child, parent, parse5ParentLocation);
-                ctx.endScope();
+
+                // If we're parsing a chain of if/elseif/else nodes, any node other than
+                // an else-if node ends the chain.
+                const node = ctx.endElementScope();
+                if (
+                    node &&
+                    ctx.isParsingIfBlock() &&
+                    !ast.isIfBlock(node) &&
+                    !ast.isElseifBlock(node)
+                ) {
+                    ctx.endIfChain();
+                }
             } else if (parse5Utils.isTextNode(child)) {
                 const textNodes = parseText(ctx, child);
                 parent.children.push(...textNodes);
-                // Non whitespace text nodes interrupt any context we may be carrying
-                if (textNodes.length > 0) {
-                    ctx.clearSiblingScope();
+                // Non whitespace text nodes end any if chain we may be parsing
+                if (ctx.isParsingIfBlock() && textNodes.length > 0) {
+                    ctx.endIfChain();
                 }
             } else if (parse5Utils.isCommentNode(child)) {
                 const commentNode = parseComment(child);
                 parent.children.push(commentNode);
-                // Comment behavior depends on whether preserveComments is enabled.
-                // If it is enabled, comments become syntactically meaningful and
-                // interrupt any context we may be carrying
-                if (ctx.preserveComments) {
-                    ctx.clearSiblingScope();
+                // If preserveComments is enabled, comments become syntactically meaningful and
+                // end any if chain we may be parsing
+                if (ctx.isParsingIfBlock() && ctx.preserveComments) {
+                    ctx.endIfChain();
                 }
             }
         });
@@ -467,7 +477,7 @@ function parseIf(
     }
 
     // if:true cannot be used with lwc:if, lwc:elseif, lwc:else
-    const incompatibleDirective = ctx.findInCurrentScope(ast.isConditionalBlock);
+    const incompatibleDirective = ctx.findInCurrentElementScope(ast.isConditionalBlock);
     if (incompatibleDirective) {
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_CANNOT_BE_USED_WITH_IF_DIRECTIVE,
@@ -492,7 +502,7 @@ function parseIf(
         ifAttribute.location
     );
 
-    ctx.addNodeCurrentScope(node);
+    ctx.addNodeCurrentElementScope(node);
     parent.children.push(node);
 
     return node;
@@ -522,8 +532,8 @@ function parseIfBlock(
         ifBlockAttribute.location
     );
 
-    ctx.addNodeCurrentScope(ifNode);
-    ctx.beginIfContext(ifNode);
+    ctx.addNodeCurrentElementScope(ifNode);
+    ctx.beginIfChain(ifNode);
     parent.children.push(ifNode);
 
     return ifNode;
@@ -540,7 +550,7 @@ function parseElseifBlock(
         return;
     }
 
-    const hasIfBlock = ctx.findInCurrentScope(ast.isIfBlock);
+    const hasIfBlock = ctx.findInCurrentElementScope(ast.isIfBlock);
     if (hasIfBlock) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
@@ -556,8 +566,8 @@ function parseElseifBlock(
         );
     }
 
-    const parentIfBlock = ctx.getPrevSiblingIfNode();
-    if (!parentIfBlock) {
+    const conditionalParent = ctx.getSiblingIfNode();
+    if (!conditionalParent || !ast.isConditionalParentBlock(conditionalParent)) {
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_SCOPE_NOT_FOUND,
             ast.sourceLocation(parse5ElmLocation),
@@ -572,8 +582,9 @@ function parseElseifBlock(
     );
 
     // Attach the node as a child of the preceding IfBlock
-    ctx.addNodeCurrentScope(elseifNode);
-    parentIfBlock.else = elseifNode;
+    ctx.addNodeCurrentElementScope(elseifNode);
+    ctx.updateIfChain(elseifNode);
+    conditionalParent.else = elseifNode;
 
     return elseifNode;
 }
@@ -589,7 +600,8 @@ function parseElseBlock(
         return;
     }
 
-    const hasIfBlock = ctx.findInCurrentScope(ast.isIfBlock);
+    // Cannot be used with lwc:if on the same element
+    const hasIfBlock = ctx.findInCurrentElementScope(ast.isIfBlock);
     if (hasIfBlock) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_IF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
@@ -598,12 +610,34 @@ function parseElseBlock(
         );
     }
 
-    const parentIfBlock = ctx.getPrevSiblingIfNode();
-    if (!parentIfBlock) {
+    // Cannot be used with lwc:elseif on the same element
+    const hasElseifBlock = ctx.findInCurrentElementScope(ast.isElseifBlock);
+    if (hasElseifBlock) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.INVALID_ELSEIF_BLOCK_DIRECTIVE_WITH_CONDITIONAL,
+            ast.sourceLocation(parse5ElmLocation),
+            [elseBlockAttribute.name]
+        );
+    }
+
+    // Must be used immediately after an lwc:if or lwc:elseif
+    const conditionalParent = ctx.getSiblingIfNode();
+    if (!conditionalParent || !ast.isConditionalParentBlock(conditionalParent)) {
         ctx.throwAtLocation(
             ParserDiagnostics.LWC_IF_SCOPE_NOT_FOUND,
             ast.sourceLocation(parse5ElmLocation),
             [elseBlockAttribute.name]
+        );
+    }
+
+    // Must not have a value
+    if (
+        ast.isExpression(elseBlockAttribute.value) ||
+        ast.isStringLiteral(elseBlockAttribute.value)
+    ) {
+        ctx.throwAtLocation(
+            ParserDiagnostics.ELSE_BLOCK_DIRECTIVE_CANNOT_HAVE_VALUE,
+            ast.sourceLocation(parse5ElmLocation)
         );
     }
 
@@ -613,8 +647,11 @@ function parseElseBlock(
     );
 
     // Attach the node as a child of the preceding IfBlock
-    ctx.addNodeCurrentScope(elseNode);
-    parentIfBlock.else = elseNode;
+    ctx.addNodeCurrentElementScope(elseNode);
+
+    // Avoid ending the if-chain until we finish parsing all children
+    ctx.updateIfChain(elseNode);
+    conditionalParent.else = elseNode;
 
     return elseNode;
 }
@@ -861,7 +898,7 @@ function parseForEach(
             index
         );
 
-        ctx.addNodeCurrentScope(node);
+        ctx.addNodeCurrentElementScope(node);
         parent.children.push(node);
 
         return node;
@@ -884,7 +921,7 @@ function parseForOf(
         return;
     }
 
-    const hasForEach = ctx.findInCurrentScope(ast.isForEach);
+    const hasForEach = ctx.findInCurrentElementScope(ast.isForEach);
     if (hasForEach) {
         ctx.throwAtLocation(
             ParserDiagnostics.INVALID_FOR_EACH_WITH_ITERATOR,
@@ -911,7 +948,7 @@ function parseForOf(
         iteratorExpression.location
     );
 
-    ctx.addNodeCurrentScope(node);
+    ctx.addNodeCurrentElementScope(node);
     parent.children.push(node);
 
     return node;
@@ -966,7 +1003,7 @@ function parseSlot(
     const location = ast.sourceLocation(parse5ElmLocation);
 
     const hasDirectives =
-        ctx.findInCurrentScope(ast.isForBlock) || ctx.findInCurrentScope(ast.isIf);
+        ctx.findInCurrentElementScope(ast.isForBlock) || ctx.findInCurrentElementScope(ast.isIf);
     if (hasDirectives) {
         ctx.throwAtLocation(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, location);
     }
@@ -1007,8 +1044,8 @@ function parseSlot(
         }
     }
 
-    const alreadySeen = ctx.seenSlots.has(name);
-    ctx.seenSlots.add(name);
+    const alreadySeen = ctx.hasSeenSlot(name);
+    ctx.addSeenSlot(name);
 
     if (alreadySeen) {
         ctx.warnAtLocation(ParserDiagnostics.NO_DUPLICATE_SLOTS, location, [
