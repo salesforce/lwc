@@ -1,0 +1,188 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 134,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 123,
+                "end": 134
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 34,
+                    "start": 15,
+                    "end": 44,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 26,
+                        "start": 15,
+                        "end": 36
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 26,
+                        "endLine": 2,
+                        "endColumn": 34,
+                        "start": 36,
+                        "end": 44
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "spellcheck",
+                        "attributeName": "spellcheck",
+                        "value": {
+                            "type": "Literal",
+                            "value": ""
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 12,
+                            "endLine": 2,
+                            "endColumn": 25,
+                            "start": 22,
+                            "end": 35
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 38,
+                    "start": 49,
+                    "end": 82,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 30,
+                        "start": 49,
+                        "end": 74
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 30,
+                        "endLine": 3,
+                        "endColumn": 38,
+                        "start": 74,
+                        "end": 82
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "spellcheck",
+                        "attributeName": "spellcheck",
+                        "value": {
+                            "type": "Literal",
+                            "value": "true"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 29,
+                            "start": 56,
+                            "end": 73
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 40,
+                    "start": 87,
+                    "end": 122,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 32,
+                        "start": 87,
+                        "end": 114
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 32,
+                        "endLine": 4,
+                        "endColumn": 40,
+                        "start": 114,
+                        "end": 122
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "spellcheck",
+                        "attributeName": "spellcheck",
+                        "value": {
+                            "type": "Literal",
+                            "value": "truthy"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 12,
+                            "endLine": 4,
+                            "endColumn": 31,
+                            "start": 94,
+                            "end": 113
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

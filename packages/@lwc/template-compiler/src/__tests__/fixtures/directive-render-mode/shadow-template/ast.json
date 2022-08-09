@@ -1,0 +1,100 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 63,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 36,
+                "start": 0,
+                "end": 35
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 52,
+                "end": 63
+            }
+        },
+        "directives": [
+            {
+                "type": "Directive",
+                "name": "RenderMode",
+                "value": {
+                    "type": "Literal",
+                    "value": "shadow"
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 1,
+                    "endColumn": 35,
+                    "start": 10,
+                    "end": 34
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 16,
+                    "start": 40,
+                    "end": 51,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 8,
+                        "start": 40,
+                        "end": 43
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 12,
+                        "endLine": 2,
+                        "endColumn": 16,
+                        "start": 47,
+                        "end": 51
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Root",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Root"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 12,
+                            "start": 43,
+                            "end": 47
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

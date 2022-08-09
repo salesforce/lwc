@@ -84,6 +84,7 @@ function serializeChildren(
     let html = '';
 
     children.forEach((child) => {
+        /* istanbul ignore else  */
         if (isElement(child)) {
             html += serializeStaticElement(child, preserveComments);
         } else if (isText(child)) {

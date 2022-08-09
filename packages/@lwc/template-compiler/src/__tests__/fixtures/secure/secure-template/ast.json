@@ -1,0 +1,66 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 1,
+            "endColumn": 39,
+            "start": 0,
+            "end": 38,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 1,
+                "startColumn": 28,
+                "endLine": 1,
+                "endColumn": 39,
+                "start": 27,
+                "end": 38
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-test",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 1,
+                    "endColumn": 28,
+                    "start": 10,
+                    "end": 27,
+                    "startTag": {
+                        "startLine": 1,
+                        "startColumn": 11,
+                        "endLine": 1,
+                        "endColumn": 19,
+                        "start": 10,
+                        "end": 18
+                    },
+                    "endTag": {
+                        "startLine": 1,
+                        "startColumn": 19,
+                        "endLine": 1,
+                        "endColumn": 28,
+                        "start": 18,
+                        "end": 27
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
