@@ -1,0 +1,185 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 100,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 89,
+                "end": 100
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 20,
+                    "start": 15,
+                    "end": 30,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 15,
+                        "start": 15,
+                        "end": 25
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 16,
+                        "endLine": 2,
+                        "endColumn": 20,
+                        "start": 26,
+                        "end": 30
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 14,
+                            "start": 18,
+                            "end": 24
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "x",
+                        "value": {
+                            "type": "Literal",
+                            "value": "x"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 15,
+                            "endLine": 2,
+                            "endColumn": 16,
+                            "start": 25,
+                            "end": 26
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "input",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 58,
+                    "start": 35,
+                    "end": 88,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 58,
+                        "start": 35,
+                        "end": 88
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "readonly",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "name": "getReadOnly",
+                            "location": {
+                                "startLine": 3,
+                                "startColumn": 12,
+                                "endLine": 3,
+                                "endColumn": 34,
+                                "start": 42,
+                                "end": 64
+                            }
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 34,
+                            "start": 42,
+                            "end": 64
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "disabled",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 35,
+                            "endLine": 3,
+                            "endColumn": 43,
+                            "start": 65,
+                            "end": 73
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "title",
+                        "value": {
+                            "type": "Literal",
+                            "value": "foo"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 44,
+                            "endLine": 3,
+                            "endColumn": 55,
+                            "start": 74,
+                            "end": 85
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

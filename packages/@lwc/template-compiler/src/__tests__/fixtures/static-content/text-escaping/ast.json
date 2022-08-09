@@ -1,0 +1,83 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 70,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 59,
+                "end": 70
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "h1",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 48,
+                    "start": 15,
+                    "end": 58,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 9,
+                        "start": 15,
+                        "end": 19
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 43,
+                        "endLine": 2,
+                        "endColumn": 48,
+                        "start": 53,
+                        "end": 58
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "Hello &lt;div&gt;world&lt;/div&gt;",
+                        "value": {
+                            "type": "Literal",
+                            "value": "Hello <div>world</div>"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 9,
+                            "endLine": 2,
+                            "endColumn": 43,
+                            "start": 19,
+                            "end": 53
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

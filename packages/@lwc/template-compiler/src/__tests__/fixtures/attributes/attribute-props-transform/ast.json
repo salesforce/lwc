@@ -1,0 +1,1138 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 67,
+            "endColumn": 12,
+            "start": 0,
+            "end": 2176,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 67,
+                "startColumn": 1,
+                "endLine": 67,
+                "endColumn": 12,
+                "start": 2165,
+                "end": 2176
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 66,
+                    "endColumn": 14,
+                    "start": 15,
+                    "end": 2164,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 66,
+                        "endColumn": 6,
+                        "start": 15,
+                        "end": 2156
+                    },
+                    "endTag": {
+                        "startLine": 66,
+                        "startColumn": 6,
+                        "endLine": 66,
+                        "endColumn": 14,
+                        "start": 2156,
+                        "end": 2164
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "accessKey",
+                        "attributeName": "accesskey",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 31,
+                            "start": 30,
+                            "end": 52
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "readOnly",
+                        "attributeName": "readonly",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 30,
+                            "start": 61,
+                            "end": 82
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "tabIndex",
+                        "attributeName": "tabindex",
+                        "value": {
+                            "type": "Literal",
+                            "value": "0"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 9,
+                            "endLine": 5,
+                            "endColumn": 19,
+                            "start": 92,
+                            "end": 102
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "bgColor",
+                        "attributeName": "bgcolor",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 29,
+                            "start": 111,
+                            "end": 131
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "colSpan",
+                        "attributeName": "colspan",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 29,
+                            "start": 141,
+                            "end": 161
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "rowSpan",
+                        "attributeName": "rowspan",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 29,
+                            "start": 171,
+                            "end": 191
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "contentEditable",
+                        "attributeName": "contenteditable",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 37,
+                            "start": 200,
+                            "end": 228
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "crossOrigin",
+                        "attributeName": "crossorigin",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 10,
+                            "startColumn": 9,
+                            "endLine": 10,
+                            "endColumn": 33,
+                            "start": 238,
+                            "end": 262
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "dateTime",
+                        "attributeName": "datetime",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 11,
+                            "startColumn": 9,
+                            "endLine": 11,
+                            "endColumn": 30,
+                            "start": 272,
+                            "end": 293
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "formAction",
+                        "attributeName": "formaction",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 12,
+                            "startColumn": 9,
+                            "endLine": 12,
+                            "endColumn": 32,
+                            "start": 303,
+                            "end": 326
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "isMap",
+                        "attributeName": "ismap",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 13,
+                            "startColumn": 9,
+                            "endLine": 13,
+                            "endColumn": 27,
+                            "start": 336,
+                            "end": 354
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "maxLength",
+                        "attributeName": "maxlength",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 14,
+                            "startColumn": 9,
+                            "endLine": 14,
+                            "endColumn": 31,
+                            "start": 364,
+                            "end": 386
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "minLength",
+                        "attributeName": "minlength",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 15,
+                            "startColumn": 9,
+                            "endLine": 15,
+                            "endColumn": 31,
+                            "start": 396,
+                            "end": 418
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "noValidate",
+                        "attributeName": "novalidate",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 16,
+                            "startColumn": 9,
+                            "endLine": 16,
+                            "endColumn": 32,
+                            "start": 428,
+                            "end": 451
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "useMap",
+                        "attributeName": "usemap",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 17,
+                            "startColumn": 9,
+                            "endLine": 17,
+                            "endColumn": 28,
+                            "start": 461,
+                            "end": 480
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "htmlFor",
+                        "attributeName": "for",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 18,
+                            "startColumn": 9,
+                            "endLine": 18,
+                            "endColumn": 25,
+                            "start": 490,
+                            "end": 506
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaActiveDescendant",
+                        "attributeName": "aria-activedescendant",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 19,
+                            "startColumn": 9,
+                            "endLine": 19,
+                            "endColumn": 43,
+                            "start": 515,
+                            "end": 549
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaAtomic",
+                        "attributeName": "aria-atomic",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 20,
+                            "startColumn": 9,
+                            "endLine": 20,
+                            "endColumn": 33,
+                            "start": 558,
+                            "end": 582
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaAutoComplete",
+                        "attributeName": "aria-autocomplete",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 21,
+                            "startColumn": 9,
+                            "endLine": 21,
+                            "endColumn": 39,
+                            "start": 591,
+                            "end": 621
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaBusy",
+                        "attributeName": "aria-busy",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 22,
+                            "startColumn": 9,
+                            "endLine": 22,
+                            "endColumn": 31,
+                            "start": 630,
+                            "end": 652
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaChecked",
+                        "attributeName": "aria-checked",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 23,
+                            "startColumn": 9,
+                            "endLine": 23,
+                            "endColumn": 34,
+                            "start": 661,
+                            "end": 686
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaColCount",
+                        "attributeName": "aria-colcount",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 24,
+                            "startColumn": 9,
+                            "endLine": 24,
+                            "endColumn": 35,
+                            "start": 695,
+                            "end": 721
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaColIndex",
+                        "attributeName": "aria-colindex",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 25,
+                            "startColumn": 9,
+                            "endLine": 25,
+                            "endColumn": 35,
+                            "start": 730,
+                            "end": 756
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaColSpan",
+                        "attributeName": "aria-colspan",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 26,
+                            "startColumn": 9,
+                            "endLine": 26,
+                            "endColumn": 34,
+                            "start": 765,
+                            "end": 790
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaControls",
+                        "attributeName": "aria-controls",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 27,
+                            "startColumn": 9,
+                            "endLine": 27,
+                            "endColumn": 35,
+                            "start": 799,
+                            "end": 825
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaCurrent",
+                        "attributeName": "aria-current",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 28,
+                            "startColumn": 9,
+                            "endLine": 28,
+                            "endColumn": 34,
+                            "start": 834,
+                            "end": 859
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaDescribedBy",
+                        "attributeName": "aria-describedby",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 29,
+                            "startColumn": 9,
+                            "endLine": 29,
+                            "endColumn": 38,
+                            "start": 868,
+                            "end": 897
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaDetails",
+                        "attributeName": "aria-details",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 30,
+                            "startColumn": 9,
+                            "endLine": 30,
+                            "endColumn": 34,
+                            "start": 906,
+                            "end": 931
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaDisabled",
+                        "attributeName": "aria-disabled",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 31,
+                            "startColumn": 9,
+                            "endLine": 31,
+                            "endColumn": 35,
+                            "start": 940,
+                            "end": 966
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaErrorMessage",
+                        "attributeName": "aria-errormessage",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 32,
+                            "startColumn": 9,
+                            "endLine": 32,
+                            "endColumn": 39,
+                            "start": 975,
+                            "end": 1005
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaExpanded",
+                        "attributeName": "aria-expanded",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 33,
+                            "startColumn": 9,
+                            "endLine": 33,
+                            "endColumn": 35,
+                            "start": 1014,
+                            "end": 1040
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaFlowTo",
+                        "attributeName": "aria-flowto",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 34,
+                            "startColumn": 9,
+                            "endLine": 34,
+                            "endColumn": 33,
+                            "start": 1049,
+                            "end": 1073
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaHasPopup",
+                        "attributeName": "aria-haspopup",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 35,
+                            "startColumn": 9,
+                            "endLine": 35,
+                            "endColumn": 35,
+                            "start": 1082,
+                            "end": 1108
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaHidden",
+                        "attributeName": "aria-hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 36,
+                            "startColumn": 9,
+                            "endLine": 36,
+                            "endColumn": 33,
+                            "start": 1117,
+                            "end": 1141
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaInvalid",
+                        "attributeName": "aria-invalid",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 37,
+                            "startColumn": 9,
+                            "endLine": 37,
+                            "endColumn": 34,
+                            "start": 1150,
+                            "end": 1175
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaKeyShortcuts",
+                        "attributeName": "aria-keyshortcuts",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 38,
+                            "startColumn": 9,
+                            "endLine": 38,
+                            "endColumn": 39,
+                            "start": 1184,
+                            "end": 1214
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaLabel",
+                        "attributeName": "aria-label",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 39,
+                            "startColumn": 9,
+                            "endLine": 39,
+                            "endColumn": 32,
+                            "start": 1223,
+                            "end": 1246
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaLabelledBy",
+                        "attributeName": "aria-labelledby",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 40,
+                            "startColumn": 9,
+                            "endLine": 40,
+                            "endColumn": 37,
+                            "start": 1255,
+                            "end": 1283
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaLevel",
+                        "attributeName": "aria-level",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 41,
+                            "startColumn": 9,
+                            "endLine": 41,
+                            "endColumn": 32,
+                            "start": 1292,
+                            "end": 1315
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaLive",
+                        "attributeName": "aria-live",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 42,
+                            "startColumn": 9,
+                            "endLine": 42,
+                            "endColumn": 31,
+                            "start": 1324,
+                            "end": 1346
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaModal",
+                        "attributeName": "aria-modal",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 43,
+                            "startColumn": 9,
+                            "endLine": 43,
+                            "endColumn": 32,
+                            "start": 1355,
+                            "end": 1378
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaMultiLine",
+                        "attributeName": "aria-multiline",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 44,
+                            "startColumn": 9,
+                            "endLine": 44,
+                            "endColumn": 36,
+                            "start": 1387,
+                            "end": 1414
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaMultiSelectable",
+                        "attributeName": "aria-multiselectable",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 45,
+                            "startColumn": 9,
+                            "endLine": 45,
+                            "endColumn": 42,
+                            "start": 1423,
+                            "end": 1456
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaOrientation",
+                        "attributeName": "aria-orientation",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 46,
+                            "startColumn": 9,
+                            "endLine": 46,
+                            "endColumn": 38,
+                            "start": 1465,
+                            "end": 1494
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaOwns",
+                        "attributeName": "aria-owns",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 47,
+                            "startColumn": 9,
+                            "endLine": 47,
+                            "endColumn": 31,
+                            "start": 1503,
+                            "end": 1525
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaPlaceholder",
+                        "attributeName": "aria-placeholder",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 48,
+                            "startColumn": 9,
+                            "endLine": 48,
+                            "endColumn": 38,
+                            "start": 1534,
+                            "end": 1563
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaPosInSet",
+                        "attributeName": "aria-posinset",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 49,
+                            "startColumn": 9,
+                            "endLine": 49,
+                            "endColumn": 35,
+                            "start": 1572,
+                            "end": 1598
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaPressed",
+                        "attributeName": "aria-pressed",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 50,
+                            "startColumn": 9,
+                            "endLine": 50,
+                            "endColumn": 34,
+                            "start": 1607,
+                            "end": 1632
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaReadOnly",
+                        "attributeName": "aria-readonly",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 51,
+                            "startColumn": 9,
+                            "endLine": 51,
+                            "endColumn": 35,
+                            "start": 1641,
+                            "end": 1667
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaRelevant",
+                        "attributeName": "aria-relevant",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 52,
+                            "startColumn": 9,
+                            "endLine": 52,
+                            "endColumn": 35,
+                            "start": 1676,
+                            "end": 1702
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaRequired",
+                        "attributeName": "aria-required",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 53,
+                            "startColumn": 9,
+                            "endLine": 53,
+                            "endColumn": 35,
+                            "start": 1711,
+                            "end": 1737
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaRoleDescription",
+                        "attributeName": "aria-roledescription",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 54,
+                            "startColumn": 9,
+                            "endLine": 54,
+                            "endColumn": 42,
+                            "start": 1746,
+                            "end": 1779
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaRowCount",
+                        "attributeName": "aria-rowcount",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 55,
+                            "startColumn": 9,
+                            "endLine": 55,
+                            "endColumn": 35,
+                            "start": 1788,
+                            "end": 1814
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaRowIndex",
+                        "attributeName": "aria-rowindex",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 56,
+                            "startColumn": 9,
+                            "endLine": 56,
+                            "endColumn": 35,
+                            "start": 1823,
+                            "end": 1849
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaRowSpan",
+                        "attributeName": "aria-rowspan",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 57,
+                            "startColumn": 9,
+                            "endLine": 57,
+                            "endColumn": 34,
+                            "start": 1858,
+                            "end": 1883
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaSelected",
+                        "attributeName": "aria-selected",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 58,
+                            "startColumn": 9,
+                            "endLine": 58,
+                            "endColumn": 35,
+                            "start": 1892,
+                            "end": 1918
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaSetSize",
+                        "attributeName": "aria-setsize",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 59,
+                            "startColumn": 9,
+                            "endLine": 59,
+                            "endColumn": 34,
+                            "start": 1927,
+                            "end": 1952
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaSort",
+                        "attributeName": "aria-sort",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 60,
+                            "startColumn": 9,
+                            "endLine": 60,
+                            "endColumn": 31,
+                            "start": 1961,
+                            "end": 1983
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaValueMax",
+                        "attributeName": "aria-valuemax",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 61,
+                            "startColumn": 9,
+                            "endLine": 61,
+                            "endColumn": 35,
+                            "start": 1992,
+                            "end": 2018
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaValueMin",
+                        "attributeName": "aria-valuemin",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 62,
+                            "startColumn": 9,
+                            "endLine": 62,
+                            "endColumn": 35,
+                            "start": 2027,
+                            "end": 2053
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaValueNow",
+                        "attributeName": "aria-valuenow",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 63,
+                            "startColumn": 9,
+                            "endLine": 63,
+                            "endColumn": 35,
+                            "start": 2062,
+                            "end": 2088
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "ariaValueText",
+                        "attributeName": "aria-valuetext",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 64,
+                            "startColumn": 9,
+                            "endLine": 64,
+                            "endColumn": 36,
+                            "start": 2097,
+                            "end": 2124
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "role",
+                        "attributeName": "role",
+                        "value": {
+                            "type": "Literal",
+                            "value": "tranformed"
+                        },
+                        "location": {
+                            "startLine": 65,
+                            "startColumn": 9,
+                            "endLine": 65,
+                            "endColumn": 26,
+                            "start": 2133,
+                            "end": 2150
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

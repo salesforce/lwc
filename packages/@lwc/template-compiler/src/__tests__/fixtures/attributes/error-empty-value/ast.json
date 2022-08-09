@@ -1,0 +1,152 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 86,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 75,
+                "end": 86
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 21,
+                    "start": 15,
+                    "end": 31,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 17,
+                        "start": 15,
+                        "end": 27
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 17,
+                        "endLine": 2,
+                        "endColumn": 21,
+                        "start": 27,
+                        "end": 31
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "title",
+                        "value": {
+                            "type": "Literal",
+                            "value": ""
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 16,
+                            "start": 18,
+                            "end": 26
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Component",
+                "name": "foo-bar",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 43,
+                    "start": 36,
+                    "end": 74,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 33,
+                        "start": 36,
+                        "end": 64
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 33,
+                        "endLine": 3,
+                        "endColumn": 43,
+                        "start": 64,
+                        "end": 74
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "content",
+                        "attributeName": "content",
+                        "value": {
+                            "type": "Literal",
+                            "value": ""
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 14,
+                            "endLine": 3,
+                            "endColumn": 24,
+                            "start": 45,
+                            "end": 55
+                        }
+                    },
+                    {
+                        "type": "Property",
+                        "name": "visible",
+                        "attributeName": "visible",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 25,
+                            "endLine": 3,
+                            "endColumn": 32,
+                            "start": 56,
+                            "end": 63
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

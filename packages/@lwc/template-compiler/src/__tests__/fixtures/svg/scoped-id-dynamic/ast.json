@@ -1,0 +1,523 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 10,
+            "endColumn": 12,
+            "start": 0,
+            "end": 356,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 10,
+                "startColumn": 1,
+                "endLine": 10,
+                "endColumn": 12,
+                "start": 345,
+                "end": 356
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "svg",
+                "namespace": "http://www.w3.org/2000/svg",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 9,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 344,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 62,
+                        "start": 15,
+                        "end": 72
+                    },
+                    "endTag": {
+                        "startLine": 9,
+                        "startColumn": 5,
+                        "endLine": 9,
+                        "endColumn": 11,
+                        "start": 338,
+                        "end": 344
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "width",
+                        "value": {
+                            "type": "Literal",
+                            "value": "100px"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 23,
+                            "start": 20,
+                            "end": 33
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "height",
+                        "value": {
+                            "type": "Literal",
+                            "value": "100px"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 24,
+                            "endLine": 2,
+                            "endColumn": 38,
+                            "start": 34,
+                            "end": 48
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "viewport",
+                        "value": {
+                            "type": "Literal",
+                            "value": "0 0 100 100"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 39,
+                            "endLine": 2,
+                            "endColumn": 61,
+                            "start": 49,
+                            "end": 71
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "defs",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 6,
+                            "endColumn": 16,
+                            "start": 81,
+                            "end": 257,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 15,
+                                "start": 81,
+                                "end": 87
+                            },
+                            "endTag": {
+                                "startLine": 6,
+                                "startColumn": 9,
+                                "endLine": 6,
+                                "endColumn": 16,
+                                "start": 250,
+                                "end": 257
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Element",
+                                "name": "circle",
+                                "namespace": "http://www.w3.org/2000/svg",
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 13,
+                                    "endLine": 4,
+                                    "endColumn": 79,
+                                    "start": 100,
+                                    "end": 166,
+                                    "startTag": {
+                                        "startLine": 4,
+                                        "startColumn": 13,
+                                        "endLine": 4,
+                                        "endColumn": 70,
+                                        "start": 100,
+                                        "end": 157
+                                    },
+                                    "endTag": {
+                                        "startLine": 4,
+                                        "startColumn": 70,
+                                        "endLine": 4,
+                                        "endColumn": 79,
+                                        "start": 157,
+                                        "end": 166
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "id",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 8,
+                                            "name": "blackId",
+                                            "location": {
+                                                "startLine": 4,
+                                                "startColumn": 21,
+                                                "endLine": 4,
+                                                "endColumn": 33,
+                                                "start": 108,
+                                                "end": 120
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 21,
+                                            "endLine": 4,
+                                            "endColumn": 33,
+                                            "start": 108,
+                                            "end": 120
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "r",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "10"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 34,
+                                            "endLine": 4,
+                                            "endColumn": 40,
+                                            "start": 121,
+                                            "end": 127
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "cx",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "10"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 41,
+                                            "endLine": 4,
+                                            "endColumn": 48,
+                                            "start": 128,
+                                            "end": 135
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "cy",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "10"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 49,
+                                            "endLine": 4,
+                                            "endColumn": 56,
+                                            "start": 136,
+                                            "end": 143
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "fill",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "black"
+                                        },
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 57,
+                                            "endLine": 4,
+                                            "endColumn": 69,
+                                            "start": 144,
+                                            "end": 156
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": []
+                            },
+                            {
+                                "type": "Element",
+                                "name": "circle",
+                                "namespace": "http://www.w3.org/2000/svg",
+                                "location": {
+                                    "startLine": 5,
+                                    "startColumn": 13,
+                                    "endLine": 5,
+                                    "endColumn": 75,
+                                    "start": 179,
+                                    "end": 241,
+                                    "startTag": {
+                                        "startLine": 5,
+                                        "startColumn": 13,
+                                        "endLine": 5,
+                                        "endColumn": 66,
+                                        "start": 179,
+                                        "end": 232
+                                    },
+                                    "endTag": {
+                                        "startLine": 5,
+                                        "startColumn": 66,
+                                        "endLine": 5,
+                                        "endColumn": 75,
+                                        "start": 232,
+                                        "end": 241
+                                    }
+                                },
+                                "attributes": [
+                                    {
+                                        "type": "Attribute",
+                                        "name": "id",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 6,
+                                            "name": "redId",
+                                            "location": {
+                                                "startLine": 5,
+                                                "startColumn": 21,
+                                                "endLine": 5,
+                                                "endColumn": 31,
+                                                "start": 187,
+                                                "end": 197
+                                            }
+                                        },
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 21,
+                                            "endLine": 5,
+                                            "endColumn": 31,
+                                            "start": 187,
+                                            "end": 197
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "r",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "10"
+                                        },
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 32,
+                                            "endLine": 5,
+                                            "endColumn": 38,
+                                            "start": 198,
+                                            "end": 204
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "cx",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "14"
+                                        },
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 39,
+                                            "endLine": 5,
+                                            "endColumn": 46,
+                                            "start": 205,
+                                            "end": 212
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "cy",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "14"
+                                        },
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 47,
+                                            "endLine": 5,
+                                            "endColumn": 54,
+                                            "start": 213,
+                                            "end": 220
+                                        }
+                                    },
+                                    {
+                                        "type": "Attribute",
+                                        "name": "fill",
+                                        "value": {
+                                            "type": "Literal",
+                                            "value": "red"
+                                        },
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 55,
+                                            "endLine": 5,
+                                            "endColumn": 65,
+                                            "start": 221,
+                                            "end": 231
+                                        }
+                                    }
+                                ],
+                                "properties": [],
+                                "directives": [],
+                                "listeners": [],
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Element",
+                        "name": "use",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 7,
+                            "startColumn": 9,
+                            "endLine": 7,
+                            "endColumn": 36,
+                            "start": 266,
+                            "end": 293,
+                            "startTag": {
+                                "startLine": 7,
+                                "startColumn": 9,
+                                "endLine": 7,
+                                "endColumn": 30,
+                                "start": 266,
+                                "end": 287
+                            },
+                            "endTag": {
+                                "startLine": 7,
+                                "startColumn": 30,
+                                "endLine": 7,
+                                "endColumn": 36,
+                                "start": 287,
+                                "end": 293
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "href",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 9,
+                                    "name": "blackUrl",
+                                    "location": {
+                                        "startLine": 7,
+                                        "startColumn": 14,
+                                        "endLine": 7,
+                                        "endColumn": 29,
+                                        "start": 271,
+                                        "end": 286
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 7,
+                                    "startColumn": 14,
+                                    "endLine": 7,
+                                    "endColumn": 29,
+                                    "start": 271,
+                                    "end": 286
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    },
+                    {
+                        "type": "Element",
+                        "name": "use",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 8,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 40,
+                            "start": 302,
+                            "end": 333,
+                            "startTag": {
+                                "startLine": 8,
+                                "startColumn": 9,
+                                "endLine": 8,
+                                "endColumn": 34,
+                                "start": 302,
+                                "end": 327
+                            },
+                            "endTag": {
+                                "startLine": 8,
+                                "startColumn": 34,
+                                "endLine": 8,
+                                "endColumn": 40,
+                                "start": 327,
+                                "end": 333
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "xlink:href",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 7,
+                                    "name": "redUrl",
+                                    "location": {
+                                        "startLine": 8,
+                                        "startColumn": 14,
+                                        "endLine": 8,
+                                        "endColumn": 33,
+                                        "start": 307,
+                                        "end": 326
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 8,
+                                    "startColumn": 14,
+                                    "endLine": 8,
+                                    "endColumn": 33,
+                                    "start": 307,
+                                    "end": 326
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

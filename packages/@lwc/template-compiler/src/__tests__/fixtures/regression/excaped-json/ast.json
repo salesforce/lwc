@@ -1,0 +1,84 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 199,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 188,
+                "end": 199
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-test",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 177,
+                    "start": 15,
+                    "end": 187,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 168,
+                        "start": 15,
+                        "end": 178
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 168,
+                        "endLine": 2,
+                        "endColumn": 177,
+                        "start": 178,
+                        "end": 187
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "json",
+                        "attributeName": "json",
+                        "value": {
+                            "type": "Literal",
+                            "value": "[{\"column\":\"ID\",\"value\":\"5e\",\"operator\":\"equals\",\"f\":true}]"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 13,
+                            "endLine": 2,
+                            "endColumn": 167,
+                            "start": 23,
+                            "end": 177
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}
