@@ -1,0 +1,220 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 0,
+            "end": 197,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 186,
+                "end": 197
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "unknonwtag",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 30,
+                    "start": 15,
+                    "end": 40,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 17,
+                        "start": 15,
+                        "end": 27
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 17,
+                        "endLine": 2,
+                        "endColumn": 30,
+                        "start": 27,
+                        "end": 40
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Component",
+                "name": "x-custom-component",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 64,
+                    "start": 45,
+                    "end": 104,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 43,
+                        "start": 45,
+                        "end": 83
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 43,
+                        "endLine": 3,
+                        "endColumn": 64,
+                        "start": 83,
+                        "end": 104
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "someTruthyValue",
+                        "attributeName": "some-truthy-value",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 25,
+                            "endLine": 3,
+                            "endColumn": 42,
+                            "start": 65,
+                            "end": 82
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "span",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 44,
+                    "start": 109,
+                    "end": 148,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 11,
+                        "start": 109,
+                        "end": 115
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 37,
+                        "endLine": 4,
+                        "endColumn": 44,
+                        "start": 141,
+                        "end": 148
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "valid tags should not warn",
+                        "value": {
+                            "type": "Literal",
+                            "value": "valid tags should not warn"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 11,
+                            "endLine": 4,
+                            "endColumn": 37,
+                            "start": 115,
+                            "end": 141
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "spam",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 37,
+                    "start": 153,
+                    "end": 185,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 11,
+                        "start": 153,
+                        "end": 159
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 30,
+                        "endLine": 5,
+                        "endColumn": 37,
+                        "start": 178,
+                        "end": 185
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "this tag has a typo",
+                        "value": {
+                            "type": "Literal",
+                            "value": "this tag has a typo"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 11,
+                            "endLine": 5,
+                            "endColumn": 30,
+                            "start": 159,
+                            "end": 178
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,167 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 142,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 131,
+                "end": 142
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "svg",
+                "namespace": "http://www.w3.org/2000/svg",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 11,
+                    "start": 15,
+                    "end": 130,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 73,
+                        "start": 15,
+                        "end": 83
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 11,
+                        "start": 124,
+                        "end": 130
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "viewBox",
+                        "value": {
+                            "type": "Literal",
+                            "value": "0 0 5 5"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 27,
+                            "start": 20,
+                            "end": 37
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "aria-hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": "true"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 28,
+                            "endLine": 2,
+                            "endColumn": 46,
+                            "start": 38,
+                            "end": 56
+                        }
+                    },
+                    {
+                        "type": "Attribute",
+                        "name": "class",
+                        "value": {
+                            "type": "Literal",
+                            "value": "slds-button__icon"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 47,
+                            "endLine": 2,
+                            "endColumn": 72,
+                            "start": 57,
+                            "end": 82
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "use",
+                        "namespace": "http://www.w3.org/2000/svg",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 36,
+                            "start": 92,
+                            "end": 119,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 30,
+                                "start": 92,
+                                "end": 113
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 30,
+                                "endLine": 3,
+                                "endColumn": 36,
+                                "start": 113,
+                                "end": 119
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "xlink:href",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "/x"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 14,
+                                    "endLine": 3,
+                                    "endColumn": 29,
+                                    "start": 97,
+                                    "end": 112
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

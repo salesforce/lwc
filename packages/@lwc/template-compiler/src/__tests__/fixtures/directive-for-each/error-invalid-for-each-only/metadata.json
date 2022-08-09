@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1044,
+            "message": "LWC1044: for:each and for:item directives should be associated together.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 38
+            }
+        }
+    ]
+}

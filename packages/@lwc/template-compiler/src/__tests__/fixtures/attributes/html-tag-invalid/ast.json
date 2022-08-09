@@ -1,0 +1,167 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 5,
+            "endColumn": 12,
+            "start": 0,
+            "end": 138,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 5,
+                "startColumn": 1,
+                "endLine": 5,
+                "endColumn": 12,
+                "start": 127,
+                "end": 138
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 126,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 15,
+                        "start": 116,
+                        "end": 126
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Element",
+                        "name": "textarea",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 87,
+                            "start": 33,
+                            "end": 111,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 75,
+                                "start": 33,
+                                "end": 99
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 76,
+                                "endLine": 3,
+                                "endColumn": 87,
+                                "start": 100,
+                                "end": 111
+                            }
+                        },
+                        "attributes": [
+                            {
+                                "type": "Attribute",
+                                "name": "minlength",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "1"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 19,
+                                    "endLine": 3,
+                                    "endColumn": 32,
+                                    "start": 43,
+                                    "end": 56
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "maxlength",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "5"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 33,
+                                    "endLine": 3,
+                                    "endColumn": 46,
+                                    "start": 57,
+                                    "end": 70
+                                }
+                            },
+                            {
+                                "type": "Attribute",
+                                "name": "unknown-attr",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "should-error"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 47,
+                                    "endLine": 3,
+                                    "endColumn": 74,
+                                    "start": 71,
+                                    "end": 98
+                                }
+                            }
+                        ],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "x",
+                                "value": {
+                                    "type": "Literal",
+                                    "value": "x"
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 75,
+                                    "endLine": 3,
+                                    "endColumn": 76,
+                                    "start": 99,
+                                    "end": 100
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

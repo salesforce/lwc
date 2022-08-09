@@ -17,7 +17,7 @@ import { normalizeConfig, Config } from './config';
 import parseTemplate from './parser';
 import generate from './codegen';
 
-import { TemplateCompileResult, TemplateParseResult } from './shared/types';
+import { Root, TemplateCompileResult, TemplateParseResult } from './shared/types';
 
 export * from './shared/types';
 export { CustomRendererConfig, CustomRendererElementConfig } from './shared/renderer-hooks';
@@ -34,7 +34,9 @@ export default function compile(source: string, config: Config): TemplateCompile
     const state = new State(options);
 
     let code = '';
+    let root: Root | undefined;
     const warnings: CompilerDiagnostic[] = [];
+
     try {
         const parsingResults = parseTemplate(source, state);
         warnings.push(...parsingResults.warnings);
@@ -45,6 +47,7 @@ export default function compile(source: string, config: Config): TemplateCompile
 
         if (!hasParsingError && parsingResults.root) {
             code = generate(parsingResults.root, state);
+            root = parsingResults.root;
         }
     } catch (error) {
         const diagnostic = normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error);
@@ -54,6 +57,7 @@ export default function compile(source: string, config: Config): TemplateCompile
 
     return {
         code,
+        root,
         warnings,
     };
 }

@@ -1,0 +1,96 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 89,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 78,
+                "end": 89
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " This is an HTML comment ",
+                "value": " This is an HTML comment ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 37,
+                    "start": 15,
+                    "end": 47
+                }
+            },
+            {
+                "type": "Element",
+                "name": "button",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 30,
+                    "start": 52,
+                    "end": 77,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 13,
+                        "start": 52,
+                        "end": 60
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 21,
+                        "endLine": 3,
+                        "endColumn": 30,
+                        "start": 68,
+                        "end": 77
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "click me",
+                        "value": {
+                            "type": "Literal",
+                            "value": "click me"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 13,
+                            "endLine": 3,
+                            "endColumn": 21,
+                            "start": 60,
+                            "end": 68
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

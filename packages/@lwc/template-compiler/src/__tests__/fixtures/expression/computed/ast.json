@@ -1,0 +1,458 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 9,
+            "endColumn": 12,
+            "start": 0,
+            "end": 211,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 9,
+                "startColumn": 1,
+                "endLine": 9,
+                "endColumn": 12,
+                "start": 200,
+                "end": 211
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Text",
+                "raw": "{val}",
+                "value": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 4,
+                    "name": "val",
+                    "location": {
+                        "startLine": 1,
+                        "startColumn": 11,
+                        "endLine": 5,
+                        "endColumn": 5,
+                        "start": 10,
+                        "end": 78
+                    }
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 5,
+                    "endColumn": 5,
+                    "start": 10,
+                    "end": 78
+                }
+            },
+            {
+                "type": "Text",
+                "raw": " ",
+                "value": {
+                    "type": "Literal",
+                    "value": " "
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 5,
+                    "endColumn": 5,
+                    "start": 10,
+                    "end": 78
+                }
+            },
+            {
+                "type": "Text",
+                "raw": "{val[state.foo]}",
+                "value": {
+                    "type": "MemberExpression",
+                    "start": 1,
+                    "end": 15,
+                    "object": {
+                        "type": "MemberExpression",
+                        "object": {
+                            "type": "Identifier",
+                            "name": "$cmp"
+                        },
+                        "property": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "val"
+                        },
+                        "computed": false,
+                        "optional": false
+                    },
+                    "property": {
+                        "type": "MemberExpression",
+                        "start": 5,
+                        "end": 14,
+                        "object": {
+                            "type": "MemberExpression",
+                            "object": {
+                                "type": "Identifier",
+                                "name": "$cmp"
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 5,
+                                "end": 10,
+                                "name": "state"
+                            },
+                            "computed": false,
+                            "optional": false
+                        },
+                        "property": {
+                            "type": "Identifier",
+                            "start": 11,
+                            "end": 14,
+                            "name": "foo"
+                        },
+                        "computed": false,
+                        "optional": false
+                    },
+                    "computed": true,
+                    "optional": false,
+                    "location": {
+                        "startLine": 1,
+                        "startColumn": 11,
+                        "endLine": 5,
+                        "endColumn": 5,
+                        "start": 10,
+                        "end": 78
+                    }
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 5,
+                    "endColumn": 5,
+                    "start": 10,
+                    "end": 78
+                }
+            },
+            {
+                "type": "Text",
+                "raw": " ",
+                "value": {
+                    "type": "Literal",
+                    "value": " "
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 5,
+                    "endColumn": 5,
+                    "start": 10,
+                    "end": 78
+                }
+            },
+            {
+                "type": "Text",
+                "raw": "{val[state.foo][state.bar]}",
+                "value": {
+                    "type": "MemberExpression",
+                    "start": 1,
+                    "end": 26,
+                    "object": {
+                        "type": "MemberExpression",
+                        "start": 1,
+                        "end": 15,
+                        "object": {
+                            "type": "MemberExpression",
+                            "object": {
+                                "type": "Identifier",
+                                "name": "$cmp"
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 1,
+                                "end": 4,
+                                "name": "val"
+                            },
+                            "computed": false,
+                            "optional": false
+                        },
+                        "property": {
+                            "type": "MemberExpression",
+                            "start": 5,
+                            "end": 14,
+                            "object": {
+                                "type": "MemberExpression",
+                                "object": {
+                                    "type": "Identifier",
+                                    "name": "$cmp"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 5,
+                                    "end": 10,
+                                    "name": "state"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 11,
+                                "end": 14,
+                                "name": "foo"
+                            },
+                            "computed": false,
+                            "optional": false
+                        },
+                        "computed": true,
+                        "optional": false
+                    },
+                    "property": {
+                        "type": "MemberExpression",
+                        "start": 16,
+                        "end": 25,
+                        "object": {
+                            "type": "MemberExpression",
+                            "object": {
+                                "type": "Identifier",
+                                "name": "$cmp"
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 16,
+                                "end": 21,
+                                "name": "state"
+                            },
+                            "computed": false,
+                            "optional": false
+                        },
+                        "property": {
+                            "type": "Identifier",
+                            "start": 22,
+                            "end": 25,
+                            "name": "bar"
+                        },
+                        "computed": false,
+                        "optional": false
+                    },
+                    "computed": true,
+                    "optional": false,
+                    "location": {
+                        "startLine": 1,
+                        "startColumn": 11,
+                        "endLine": 5,
+                        "endColumn": 5,
+                        "start": 10,
+                        "end": 78
+                    }
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 5,
+                    "endColumn": 5,
+                    "start": 10,
+                    "end": 78
+                }
+            },
+            {
+                "type": "ForEach",
+                "expression": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 4,
+                    "name": "arr",
+                    "location": {
+                        "startLine": 5,
+                        "startColumn": 15,
+                        "endLine": 5,
+                        "endColumn": 29,
+                        "start": 88,
+                        "end": 102
+                    }
+                },
+                "item": {
+                    "type": "Identifier",
+                    "name": "item",
+                    "location": {
+                        "startLine": 5,
+                        "startColumn": 30,
+                        "endLine": 5,
+                        "endColumn": 45,
+                        "start": 103,
+                        "end": 118
+                    }
+                },
+                "index": {
+                    "type": "Identifier",
+                    "name": "index",
+                    "location": {
+                        "startLine": 5,
+                        "startColumn": 46,
+                        "endLine": 5,
+                        "endColumn": 63,
+                        "start": 119,
+                        "end": 136
+                    }
+                },
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 8,
+                    "endColumn": 16,
+                    "start": 78,
+                    "end": 199
+                },
+                "directiveLocation": {
+                    "startLine": 5,
+                    "startColumn": 15,
+                    "endLine": 5,
+                    "endColumn": 29,
+                    "start": 88,
+                    "end": 102
+                },
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "{arr[index]}",
+                        "value": {
+                            "type": "MemberExpression",
+                            "start": 1,
+                            "end": 11,
+                            "object": {
+                                "type": "MemberExpression",
+                                "object": {
+                                    "type": "Identifier",
+                                    "name": "$cmp"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 4,
+                                    "name": "arr"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 5,
+                                "end": 10,
+                                "name": "index"
+                            },
+                            "computed": true,
+                            "optional": false,
+                            "location": {
+                                "startLine": 5,
+                                "startColumn": 64,
+                                "endLine": 8,
+                                "endColumn": 5,
+                                "start": 137,
+                                "end": 188
+                            }
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 64,
+                            "endLine": 8,
+                            "endColumn": 5,
+                            "start": 137,
+                            "end": 188
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": " ",
+                        "value": {
+                            "type": "Literal",
+                            "value": " "
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 64,
+                            "endLine": 8,
+                            "endColumn": 5,
+                            "start": 137,
+                            "end": 188
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{arr[state.val]}",
+                        "value": {
+                            "type": "MemberExpression",
+                            "start": 1,
+                            "end": 15,
+                            "object": {
+                                "type": "MemberExpression",
+                                "object": {
+                                    "type": "Identifier",
+                                    "name": "$cmp"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 4,
+                                    "name": "arr"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "property": {
+                                "type": "MemberExpression",
+                                "start": 5,
+                                "end": 14,
+                                "object": {
+                                    "type": "MemberExpression",
+                                    "object": {
+                                        "type": "Identifier",
+                                        "name": "$cmp"
+                                    },
+                                    "property": {
+                                        "type": "Identifier",
+                                        "start": 5,
+                                        "end": 10,
+                                        "name": "state"
+                                    },
+                                    "computed": false,
+                                    "optional": false
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "start": 11,
+                                    "end": 14,
+                                    "name": "val"
+                                },
+                                "computed": false,
+                                "optional": false
+                            },
+                            "computed": true,
+                            "optional": false,
+                            "location": {
+                                "startLine": 5,
+                                "startColumn": 64,
+                                "endLine": 8,
+                                "endColumn": 5,
+                                "start": 137,
+                                "end": 188
+                            }
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 64,
+                            "endLine": 8,
+                            "endColumn": 5,
+                            "start": 137,
+                            "end": 188
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

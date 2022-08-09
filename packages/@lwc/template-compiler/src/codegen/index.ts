@@ -9,7 +9,6 @@ import * as astring from 'astring';
 import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT } from '@lwc/shared';
 import { generateCompilerError, TemplateErrors } from '@lwc/errors';
 
-import { isUnsafeTopLevelSerializableElement } from '../parser/tag';
 import {
     isComment,
     isText,
@@ -74,12 +73,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const databag = elementDataBag(element, slotParentName);
         let res: t.Expression;
 
-        if (
-            codeGen.staticNodes.has(element) &&
-            isElement(element) &&
-            // Tags like <th> and <td> are okay as static fragments, but only if they're not at the top level
-            !isUnsafeTopLevelSerializableElement(element)
-        ) {
+        if (codeGen.staticNodes.has(element) && isElement(element)) {
             // do not process children of static nodes.
             return codeGen.genHoistedElement(element, slotParentName);
         }
@@ -160,7 +154,7 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformElement(child, slotParentName));
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
-            } else if(isIfBlock(child)) {
+            } else if (isIfBlock(child)) {
                 const children = transformIfBlock(child);
                 Array.isArray(children) ? res.push(...children) : res.push(children);
             } else {
@@ -224,9 +218,14 @@ function transform(codeGen: CodeGen): t.Expression {
                 )
             );
         } else {
-            throw new Error("TODO!");
+            throw new Error('TODO!');
             // If the template has a single children, make sure the ternary expression returns an array
-            res = applyInlineIfBlock(ifBlockNode, expression, undefined as any, t.arrayExpression([]));
+            res = applyInlineIfBlock(
+                ifBlockNode,
+                expression,
+                undefined as any,
+                t.arrayExpression([])
+            );
         }
 
         if (t.isArrayExpression(res)) {
@@ -250,6 +249,8 @@ function transform(codeGen: CodeGen): t.Expression {
 
         let leftExpression: t.Expression;
         const modifier = ifNode.modifier!;
+
+        /* istanbul ignore else */
         if (modifier === 'true') {
             leftExpression = testExpression;
         } else if (modifier === 'false') {
@@ -265,7 +266,6 @@ function transform(codeGen: CodeGen): t.Expression {
 
         return t.conditionalExpression(leftExpression, node, falseValue ?? t.literal(null));
     }
-
 
     function applyInlineIfBlock(
         ifNode: IfBlock,

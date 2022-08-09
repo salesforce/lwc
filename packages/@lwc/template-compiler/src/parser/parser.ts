@@ -177,6 +177,7 @@ export default class ParserCtx {
     addNodeCurrentElementScope(node: ParentNode): void {
         const currentScope = this.currentElementScope();
 
+        /* istanbul ignore if */
         if (!currentScope) {
             throw new Error("Can't invoke addNodeCurrentElementScope if there is no current scope");
         }
@@ -310,6 +311,7 @@ export default class ParserCtx {
         try {
             return fn();
         } catch (error) {
+            /* istanbul ignore else */
             if (error instanceof CompilerError) {
                 // Diagnostic error
                 this.addDiagnostic(error.toDiagnostic());
