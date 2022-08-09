@@ -1,0 +1,26 @@
+{
+    "warnings": [
+        {
+            "code": 1034,
+            "message": "LWC1034: Ambiguous attribute value title=\"{myValue}\". If you want to make it a valid identifier you should remove the surrounding quotes title={myValue}. If you want to make it a string you should escape it title=\"\\{myValue}\".",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 12,
+                "start": 22,
+                "length": 17
+            }
+        },
+        {
+            "code": 1035,
+            "message": "LWC1035: Ambiguous attribute value title={myValue}checked. If you want to make it a string you should escape it title=\"\\{myValue}checked\"",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 12,
+                "start": 54,
+                "length": 22
+            }
+        }
+    ]
+}

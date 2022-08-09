@@ -6,15 +6,14 @@
  */
 import { CompilerDiagnostic } from '@lwc/errors';
 
-export type TemplateCompileResult = {
-    code: string;
-    warnings: CompilerDiagnostic[];
-};
-
-export type TemplateParseResult = {
+export interface TemplateParseResult {
     root?: Root;
     warnings: CompilerDiagnostic[];
-};
+}
+
+export interface TemplateCompileResult extends TemplateParseResult {
+    code: string;
+}
 
 export enum LWCDirectiveDomMode {
     manual = 'manual',

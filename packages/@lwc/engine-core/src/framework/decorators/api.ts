@@ -5,18 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import features from '@lwc/features';
-import { assert, isFalse, isFunction, isTrue, isUndefined, toString } from '@lwc/shared';
+import { assert, isFunction, isUndefined, toString } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
-import {
-    componentValueObserved,
-    componentValueMutated,
-    ReactiveObserver,
-} from '../mutation-tracker';
+import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { LightningElement } from '../base-lightning-element';
-import { getAssociatedVM, rerenderVM, VM } from '../vm';
-import { addCallbackToNextTick } from '../utils';
+import { getAssociatedVM } from '../vm';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
+import { createAccessorReactiveObserver } from '../accessor-reactive-observer';
 
 /**
  * @api decorator to mark public fields and public methods in
@@ -75,42 +71,6 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
     };
 }
 
-export class AccessorReactiveObserver extends ReactiveObserver {
-    private value: any;
-    private debouncing: boolean = false;
-    constructor(vm: VM, set: (v: any) => void) {
-        super(() => {
-            if (isFalse(this.debouncing)) {
-                this.debouncing = true;
-                addCallbackToNextTick(() => {
-                    if (isTrue(this.debouncing)) {
-                        const { value } = this;
-                        const { isDirty: dirtyStateBeforeSetterCall, component, idx } = vm;
-                        set.call(component, value);
-                        // de-bouncing after the call to the original setter to prevent
-                        // infinity loop if the setter itself is mutating things that
-                        // were accessed during the previous invocation.
-                        this.debouncing = false;
-                        if (isTrue(vm.isDirty) && isFalse(dirtyStateBeforeSetterCall) && idx > 0) {
-                            // immediate rehydration due to a setter driven mutation, otherwise
-                            // the component will get rendered on the second tick, which it is not
-                            // desirable.
-                            rerenderVM(vm);
-                        }
-                    }
-                });
-            }
-        });
-    }
-    reset(value?: any) {
-        super.reset();
-        this.debouncing = false;
-        if (arguments.length > 0) {
-            this.value = value;
-        }
-    }
-}
-
 export function createPublicAccessorDescriptor(
     key: PropertyKey,
     descriptor: PropertyDescriptor
@@ -154,7 +114,7 @@ export function createPublicAccessorDescriptor(
                 if (features.ENABLE_REACTIVE_SETTER) {
                     let ro = vm.oar[key as any];
                     if (isUndefined(ro)) {
-                        ro = vm.oar[key as any] = new AccessorReactiveObserver(vm, set);
+                        ro = vm.oar[key as any] = createAccessorReactiveObserver(vm, set);
                     }
                     // every time we invoke this setter from outside (through this wrapper setter)
                     // we should reset the value and then debounce just in case there is a pending

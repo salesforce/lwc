@@ -1,0 +1,58 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 38,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 27,
+                "end": 38
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Text",
+                "raw": "{  foo    }",
+                "value": {
+                    "type": "Identifier",
+                    "start": 3,
+                    "end": 6,
+                    "name": "foo",
+                    "location": {
+                        "startLine": 1,
+                        "startColumn": 11,
+                        "endLine": 3,
+                        "endColumn": 1,
+                        "start": 10,
+                        "end": 27
+                    }
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 3,
+                    "endColumn": 1,
+                    "start": 10,
+                    "end": 27
+                }
+            }
+        ]
+    }
+}
