@@ -44,9 +44,7 @@ function updatePackages(newVersion) {
         );
 
         for (const { packageJson } of packagesToUpdate) {
-            if (packageJson.version !== newVersion) {
-                packageJson.version = newVersion;
-            }
+            packageJson.version = newVersion;
             // Look for different types of dependencies
             // ex: dependencies, devDependencies, peerDependencies
             const pkgDependencyTypes = Object.keys(packageJson).filter((key) =>
