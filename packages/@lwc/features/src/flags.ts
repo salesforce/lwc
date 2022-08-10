@@ -25,6 +25,7 @@ const features: FeatureFlagMap = {
 if (!globalThis.lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
+globalThis.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = true;
 
 export const runtimeFlags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
 
