@@ -54,11 +54,8 @@ function updatePackages(newVersion) {
             for (const pkgDependencyType of pkgDependencyTypes) {
                 for (const pkgDepName of Object.keys(packageJson[pkgDependencyType])) {
                     if (workspacesPackageJson.has(pkgDepName)) {
-                        const currentVersion = packageJson[pkgDependencyType][pkgDepName];
-                        if (currentVersion && currentVersion !== newVersion) {
-                            // ex: packageJson[devDependencies][@lwc/template-compiler]
-                            packageJson[pkgDependencyType][pkgDepName] = newVersion;
-                        }
+                        // ex: packageJson[devDependencies][@lwc/template-compiler]
+                        packageJson[pkgDependencyType][pkgDepName] = newVersion;
                     }
                 }
             }
