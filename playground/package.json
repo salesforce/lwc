@@ -14,5 +14,14 @@
     "rollup": "^2.75.7",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^2.0.0"
+  },
+  "nx": {
+      "targets": {
+          "build": {
+              "outputs": [
+                  "./dist"
+              ]
+          }
+      }
   }
 }

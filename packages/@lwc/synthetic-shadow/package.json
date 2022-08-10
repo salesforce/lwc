@@ -38,5 +38,14 @@
     "devDependencies": {
         "@lwc/features": "2.22.0",
         "@lwc/shared": "2.22.0"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }

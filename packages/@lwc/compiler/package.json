@@ -33,5 +33,14 @@
     },
     "publishConfig": {
         "access": "public"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }

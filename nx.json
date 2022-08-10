@@ -5,8 +5,7 @@
             "runner": "nx/tasks-runners/default",
             "options": {
                 "cacheDirectory": "./.nx-cache",
-                "cacheableOperations": ["prepare", "build", "dev"],
-                "parallel": 3
+                "cacheableOperations": ["prepare", "build", "dev"]
             }
         }
     },

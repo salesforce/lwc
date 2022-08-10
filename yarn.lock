@@ -1671,6 +1671,20 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@lwc/compiler@2.22.0":
+  version "2.22.0"
+  resolved "https://phx-nexus-proxy.internal.salesforce.com/nexus/content/groups/npm-all/@lwc/compiler/-/compiler-2.22.0.tgz#56b4943e73f447de1fce9f88dd0173a8640dc791"
+  integrity sha512-dyi84tSHDLBa44vBafOjdaWlNA6Nyj09eXA6vj1z4tUTk6OPgCZ5wSjKpZELpCQCz5Oji4iQmDEJyEAQYDOfyw==
+  dependencies:
+    "@babel/core" "~7.18.9"
+    "@babel/plugin-proposal-class-properties" "~7.18.6"
+    "@babel/plugin-proposal-object-rest-spread" "~7.18.9"
+    "@lwc/babel-plugin-component" "2.22.0"
+    "@lwc/errors" "2.22.0"
+    "@lwc/shared" "2.22.0"
+    "@lwc/style-compiler" "2.22.0"
+    "@lwc/template-compiler" "2.22.0"
+
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
   uid ""

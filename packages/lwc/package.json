@@ -16,7 +16,6 @@
     "typings": "types.d.ts",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/",
         "build": "node scripts/build.js",
         "dev": "node scripts/build.js --watch"
     },
@@ -48,5 +47,14 @@
         "@lwc/features": "2.22.0",
         "@lwc/synthetic-shadow": "2.22.0",
         "@lwc/wire-service": "2.22.0"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "dist"
+                ]
+            }
+        }
     }
 }
