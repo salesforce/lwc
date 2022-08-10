@@ -25,10 +25,6 @@ const features: FeatureFlagMap = {
 if (!globalThis.lwcRuntimeFlags) {
     Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
-if (typeof process === 'undefined' || (process as any).browser) {
-    // we're in a browser
-    globalThis.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = true;
-}
 
 export const runtimeFlags: Partial<FeatureFlagMap> = globalThis.lwcRuntimeFlags;
 

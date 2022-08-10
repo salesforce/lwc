@@ -5,6 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { globalThis } from '@lwc/shared';
+
+globalThis.lwcRuntimeFlags.ENABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = true;
+
 // Polyfills ---------------------------------------------------------------------------------------
 import './polyfills/aria-properties/main';
 
