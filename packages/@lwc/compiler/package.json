@@ -15,7 +15,6 @@
     "typings": "dist/types/index.d.ts",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/ node_modules/",
         "build": "tsc && node ./scripts/update-compiler-version.js",
         "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },

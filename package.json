@@ -8,7 +8,6 @@
   },
   "scripts": {
     "prepare": "husky install && yarn build",
-    "clean": "nx run-many --target=clean --all && rm -rf node_modules/ .nx-cache/",
     "lint": "eslint packages/ scripts/ --ext=js,mjs,ts",
     "format": "prettier --write '{packages,scripts}/**/*.{js,mjs,ts,json,md}'",
     "bundlesize": "bundlesize --config ./scripts/bundlesize/bundlesize.config.json",

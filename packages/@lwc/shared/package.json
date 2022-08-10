@@ -18,8 +18,7 @@
     "scripts": {
         "build": "rollup --config ./scripts/rollup/rollup.config.js",
         "postbuild": "node ../../../scripts/tasks/verify-treeshakable.js ./dist/index.js",
-        "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen",
-        "clean": "rm -rf dist/ types/ node_modules/"
+        "dev": "rollup  --config scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"
     },
     "files": [
         "dist/",

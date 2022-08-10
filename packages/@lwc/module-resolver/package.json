@@ -15,8 +15,7 @@
     "typings": "dist/types/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "dev": "tsc --watch --preserveWatchOutput  --incremental",
-        "clean": "rm -rf dist/ node_modules/"
+        "dev": "tsc --watch --preserveWatchOutput  --incremental"
     },
     "license": "MIT",
     "files": [
