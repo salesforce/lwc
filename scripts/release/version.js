@@ -79,9 +79,7 @@ function getPackagesToUpdate() {
     const packagesToUpdate = [];
 
     const workspacePkgs = rootPackageJson.workspaces.reduce((accWorkspacePkgs, workspace) => {
-        const workspacePkg = workspace.includes('*')
-            ? glob.sync(`${workspace}/package.json`)
-            : [`${workspace}/package.json`];
+        const workspacePkg = glob.sync(`${workspace}/package.json`);
         return [...accWorkspacePkgs, ...workspacePkg];
     }, []);
 
