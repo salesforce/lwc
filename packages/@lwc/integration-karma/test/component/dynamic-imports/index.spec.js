@@ -122,11 +122,10 @@ describe('slotted content', () => {
 
         expect(elm.shadowRoot.querySelector('[data-id="slot-default"]').assignedSlot).toBeDefined();
         expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBeDefined();
-        expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]')?.assignedSlot).toBe(
-            process.env.NATIVE_SHADOW ? null : undefined
-        );
 
-        if (!process.env.NATIVE_SHADOW) {
+        if (process.env.NATIVE_SHADOW) {
+            expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBe(null);
+        } else {
             expect(consoleSpy.calls.error[0][0].message).toContain(
                 'Ignoring unknown provided slot name "bar"'
             );
@@ -140,11 +139,12 @@ describe('slotted content', () => {
                 elm.shadowRoot.querySelector('[data-id="slot-default"]').assignedSlot
             ).toBeDefined();
             expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBeDefined();
-            expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]')?.assignedSlot).toBe(
-                process.env.NATIVE_SHADOW ? null : undefined
-            );
 
-            if (!process.env.NATIVE_SHADOW) {
+            if (process.env.NATIVE_SHADOW) {
+                expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBe(
+                    null
+                );
+            } else {
                 expect(consoleSpy.calls.error[1][0].message).toContain(
                     'Ignoring unknown provided slot name "foo"'
                 );
