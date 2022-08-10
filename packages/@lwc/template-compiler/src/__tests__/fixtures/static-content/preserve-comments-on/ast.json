@@ -1,0 +1,110 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 6,
+            "endColumn": 12,
+            "start": 0,
+            "end": 171,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 33,
+                "start": 0,
+                "end": 32
+            },
+            "endTag": {
+                "startLine": 6,
+                "startColumn": 1,
+                "endLine": 6,
+                "endColumn": 12,
+                "start": 160,
+                "end": 171
+            }
+        },
+        "directives": [
+            {
+                "type": "Directive",
+                "name": "PreserveComments",
+                "value": {
+                    "type": "Literal",
+                    "value": true
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 1,
+                    "endColumn": 32,
+                    "start": 10,
+                    "end": 31
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " this comment should not be static ",
+                "value": " this comment should not be static ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 47,
+                    "start": 37,
+                    "end": 79
+                }
+            },
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 11,
+                    "start": 84,
+                    "end": 159,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 10,
+                        "start": 84,
+                        "end": 89
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 11,
+                        "start": 153,
+                        "end": 159
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Comment",
+                        "raw": "only comments within elements can be static",
+                        "value": "only comments within elements can be static",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 4,
+                            "endColumn": 59,
+                            "start": 98,
+                            "end": 148
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

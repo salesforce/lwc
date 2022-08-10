@@ -55,6 +55,8 @@ function getEngineImportSpecifiers(path) {
         imports
             // Flat-map the specifier list for each import statement
             .flatMap((importStatement) => importStatement.get('specifiers'))
+            // Skip ImportDefaultSpecifier and ImportNamespaceSpecifier
+            .filter((specifier) => specifier.type === 'ImportSpecifier')
             // Get the list of specifiers with their name
             .map((specifier) => {
                 const imported = specifier.get('imported').node.name;

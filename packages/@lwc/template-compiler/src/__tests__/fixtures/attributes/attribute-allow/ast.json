@@ -1,0 +1,96 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 135,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 124,
+                "end": 135
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": " Issue #1155 ",
+                "value": " Issue #1155 ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 9,
+                    "endLine": 2,
+                    "endColumn": 29,
+                    "start": 19,
+                    "end": 39
+                }
+            },
+            {
+                "type": "Element",
+                "name": "iframe",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 9,
+                    "endLine": 3,
+                    "endColumn": 84,
+                    "start": 48,
+                    "end": 123,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 9,
+                        "endLine": 3,
+                        "endColumn": 75,
+                        "start": 48,
+                        "end": 114
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 75,
+                        "endLine": 3,
+                        "endColumn": 84,
+                        "start": 114,
+                        "end": 123
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "allow",
+                        "value": {
+                            "type": "Literal",
+                            "value": "geolocation https://google-developers.appspot.com"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 17,
+                            "endLine": 3,
+                            "endColumn": 74,
+                            "start": 56,
+                            "end": 113
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

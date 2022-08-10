@@ -39,7 +39,7 @@ import {
 import { patchChildren } from './rendering';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import { AccessorReactiveObserver } from './decorators/api';
+import { AccessorReactiveObserver } from './accessor-reactive-observer';
 import { removeActiveVM } from './hot-swaps';
 import { VNodes, VCustomElement, VNode, VNodeType } from './vnodes';
 
@@ -475,10 +475,9 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
 export function runRenderedCallback(vm: VM) {
     const {
         def: { renderedCallback },
-        renderer: { ssr },
     } = vm;
 
-    if (isTrue(ssr)) {
+    if (!process.env.IS_BROWSER) {
         return;
     }
 
@@ -674,10 +673,7 @@ export function resetComponentRoot(vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
-    const {
-        renderer: { ssr },
-    } = vm;
-    if (isTrue(ssr) || isTrue(vm.isScheduled)) {
+    if (!process.env.IS_BROWSER || isTrue(vm.isScheduled)) {
         return;
     }
 

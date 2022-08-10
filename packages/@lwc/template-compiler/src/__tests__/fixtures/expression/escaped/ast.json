@@ -1,0 +1,76 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 53,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 42,
+                "end": 53
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "input",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 31,
+                    "start": 15,
+                    "end": 41,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 31,
+                        "start": 15,
+                        "end": 41
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "value",
+                        "attributeName": "value",
+                        "value": {
+                            "type": "Literal",
+                            "value": "{value}"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 12,
+                            "endLine": 2,
+                            "endColumn": 28,
+                            "start": 22,
+                            "end": 38
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

@@ -30,7 +30,6 @@ branches:
         - ris-gpta/core_via_components
         - salesforce/builder-framework
         - salesforce/lds-lightning-platform
-        - salesforce/locker
         - salesforce/luvio
         - salesforce/lwr
         - salesforce/lwr-everywhere
@@ -39,7 +38,6 @@ branches:
         - salesforce/o11y-sample-app
         - salesforce/utam-docs
         - salesforcedevs/doc-framework-monorepo
-        - swanaselja/experience-container-validate
         - uiplatform/aura-hotswap-bundle
   release:
     pull-request:

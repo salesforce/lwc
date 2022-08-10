@@ -14,7 +14,7 @@ import {
 } from '@lwc/shared';
 import featureFlags from '@lwc/features';
 import { LightningElement } from './base-lightning-element';
-import { ReactiveObserver } from './mutation-tracker';
+import { createReactiveObserver, ReactiveObserver } from './mutation-tracker';
 import { runWithBoundaryProtection, VMState, VM } from './vm';
 import { updateComponentValue } from './update-component-value';
 
@@ -82,7 +82,7 @@ function createConfigWatcher(
 ): { computeConfigAndUpdate: () => void; ro: ReactiveObserver } {
     let hasPendingConfig: boolean = false;
     // creating the reactive observer for reactive params when needed
-    const ro = new ReactiveObserver(() => {
+    const ro = createReactiveObserver(() => {
         if (hasPendingConfig === false) {
             hasPendingConfig = true;
             // collect new config in the micro-task

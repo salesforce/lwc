@@ -1,0 +1,31 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 66,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 55,
+                "end": 66
+            }
+        },
+        "directives": [],
+        "children": []
+    }
+}
