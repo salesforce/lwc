@@ -32,8 +32,6 @@ async function promptVersion() {
     } finally {
         rl.close();
     }
-
-    rl.on('close', () => process.exit(0));
 }
 
 function updatePackages(newVersion) {
