@@ -12,7 +12,7 @@ import {
     isUndefined,
     KEY__SHADOW_RESOLVER,
 } from '@lwc/shared';
-import { isSyntheticShadowDefined } from '../renderer';
+import { renderer } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node
@@ -46,7 +46,7 @@ function isNodeShadowed(node: Node): boolean {
 
     // TODO [#1252]: Old behavior that is still used by some pieces of the platform. Manually
     // inserted nodes without the `lwc:dom=manual` directive will be considered as global elements.
-    return isSyntheticShadowDefined && !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
+    return renderer.isSyntheticShadowDefined && !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
 }
 
 // Rename to maintain backcompat
