@@ -1,16 +1,16 @@
 {
   "private": true,
   "name": "lwc-playground",
-  "version": "2.22.0",
+  "version": "2.23.0",
   "description": "Playground project to experiment with LWC.",
   "scripts": {
     "dev": "rollup -c --watch",
     "build": "NODE_ENV=production rollup -c"
   },
   "devDependencies": {
-    "@lwc/rollup-plugin": "2.22.0",
+    "@lwc/rollup-plugin": "2.23.0",
     "@rollup/plugin-replace": "^4.0.0",
-    "lwc": "2.22.0",
+    "lwc": "2.23.0",
     "rollup": "^2.75.7",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-serve": "^2.0.0"
