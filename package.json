@@ -16,9 +16,9 @@
     "build:performance:components": "nx build @lwc/perf-benchmarks-components",
     "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
     "dev": "nx run-many --target=dev --all --parallel=999 --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests",
-    "test": "jest --config ./scripts/jest/root.config.js",
+    "test": "nx run-many --target=test --all --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,@lwc/integration-karma",
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
-    "test:ci": "yarn test --no-cache --coverage --runInBand",
+    "test:ci": "jest --config ./scripts/jest/root.config.js --coverage --runInBand",
     "test:integration": "nx sauce @lwc/integration-tests",
     "test:performance": "nx test @lwc/perf-benchmarks",
     "release:version": "./scripts/release/version.js"

@@ -15,7 +15,8 @@
     "typings": "dist/types/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "dev": "tsc --watch --preserveWatchOutput  --incremental"
+        "dev": "tsc --watch --preserveWatchOutput  --incremental",
+        "test": "jest"
     },
     "license": "MIT",
     "files": [
