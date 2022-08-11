@@ -7,5 +7,14 @@
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "2.22.0"
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "outputs": [
+                    "./dist"
+                ]
+            }
+        }
     }
 }
