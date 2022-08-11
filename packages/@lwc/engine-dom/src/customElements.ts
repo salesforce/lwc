@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { create, isFunction, setPrototypeOf } from '@lwc/shared';
-import { patchCustomElementRegistry } from './patches/global-registry';
+import { createScopedRegistry } from './patches/global-registry';
 
 export type UpgradeCallback = (elm: HTMLElement) => void;
 export interface UpgradableCustomElementConstructor extends CustomElementConstructor {
@@ -41,7 +41,7 @@ function isCustomElementRegistryAvailable() {
 }
 
 if (isCustomElementRegistryAvailable()) {
-    const definePivotCustomElement = patchCustomElementRegistry();
+    const defineScopedElement = createScopedRegistry();
 
     // It's important to cache window.HTMLElement immediately after calling patchCustomElementRegistry().
     // Otherwise, someone else could overwrite window.HTMLElement (e.g. another copy of the engine, or another pivot
@@ -56,7 +56,7 @@ if (isCustomElementRegistryAvailable()) {
         if (!Ctor) {
             // TODO [#2972]: this class should expose observedAttributes as necessary
             class LWCUpgradableElement extends HTMLElement {}
-            Ctor = definePivotCustomElement(tagName, LWCUpgradableElement);
+            Ctor = defineScopedElement(tagName, LWCUpgradableElement);
         }
         return Ctor;
     };

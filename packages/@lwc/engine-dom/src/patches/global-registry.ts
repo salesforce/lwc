@@ -287,7 +287,7 @@ function getOrCreateDefinitionForConstructor(constructor: CustomElementConstruct
     return createDefinitionRecord(constructor);
 }
 
-export function patchCustomElementRegistry() {
+export function createScopedRegistry() {
     const { customElements: nativeRegistry } = window;
     const { define: nativeDefine, whenDefined: nativeWhenDefined, get: nativeGet } = nativeRegistry;
 
@@ -423,7 +423,7 @@ export function patchCustomElementRegistry() {
 
     // This method patches the DOM and returns a helper function for LWC to register names and associate
     // them to a constructor while returning the pivot constructor, ready to instantiate via `new`.
-    return function definePivotCustomElement(
+    return function defineScopedElement(
         tagName: string,
         constructor: CustomElementConstructor
     ): CustomElementConstructor {
