@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isUndefined } from '@lwc/shared';
+import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
 import { RendererAPI } from '../renderer';
 import { EmptyObject } from '../utils';
 import { VBaseElement } from '../vnodes';
@@ -43,7 +43,7 @@ export function patchProps(
             isFirstPatch ||
             cur !== (isLiveBindingProp(sel, key) ? getProperty(elm!, key) : oldProps[key])
         ) {
-            setProperty(elm!, key, cur);
+            setProperty(elm!, key, cur, htmlPropertyToAttribute(key));
         }
     }
 }

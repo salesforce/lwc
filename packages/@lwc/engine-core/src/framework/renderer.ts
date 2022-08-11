@@ -24,7 +24,7 @@ export interface RendererAPI {
     nextSibling: (node: N) => N | null;
     attachShadow: (element: E, options: ShadowRootInit) => N;
     getProperty: (node: N, key: string) => any;
-    setProperty: (node: N, key: string, value: any) => void;
+    setProperty: (node: N, key: string, value: any, attributeName: string) => void;
     setText: (node: N, content: string) => void;
     getAttribute: (element: E, name: string, namespace?: string | null) => string | null;
     setAttribute: (element: E, name: string, value: string, namespace?: string | null) => void;

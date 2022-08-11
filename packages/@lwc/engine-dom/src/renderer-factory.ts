@@ -18,14 +18,12 @@ import type { RendererAPI } from '@lwc/engine-core';
  * @param createFragment
  * @param globalThis
  * @param insertStylesheet
- * @param htmlPropertyToAttribute
  * @returns {@link RendererAPI}
  */
 export function rendererFactory(
     createFragment: (html: string) => Node | null,
     globalThis: any,
-    insertStylesheet: (content: string, target?: ShadowRoot) => void,
-    htmlPropertyToAttribute: (propName: string) => string
+    insertStylesheet: (content: string, target?: ShadowRoot) => void
 ): RendererAPI {
     // Util functions
     function assertFail(msg: string): never {
@@ -167,16 +165,12 @@ export function rendererFactory(
         return (node as any)[key];
     }
 
-    function setProperty(node: Node, key: string, value: any): void {
+    function setProperty(node: Node, key: string, value: any, attributeName: string): void {
         if (process.env.NODE_ENV !== 'production') {
             if (node instanceof Element && !(key in node)) {
                 // TODO [#1297]: Move this validation to the compiler
                 assertFail(
-                    `Unknown public property "${key}" of element <${
-                        node.tagName
-                    }>. This is likely a typo on the corresponding attribute "${htmlPropertyToAttribute(
-                        key
-                    )}".`
+                    `Unknown public property "${key}" of element <${node.tagName}>. This is likely a typo on the corresponding attribute "${attributeName}".`
                 );
             }
         }
