@@ -72,3 +72,11 @@ steps:
   npm-configure-for-publish:
     params:
       registry-url: https://registry.npmjs.org
+  node-restore-dep-cache:
+    params:
+      paths:
+        # it's necessary to redeclare **/node_modules because this overrides the default behavior
+        - '**/node_modules'
+        # add NX cache
+        - '**/.nx-cache'
+    after: node-build
