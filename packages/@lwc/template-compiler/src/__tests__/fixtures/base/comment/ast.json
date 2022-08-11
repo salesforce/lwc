@@ -1,0 +1,61 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 4,
+            "endColumn": 12,
+            "start": 0,
+            "end": 65,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 4,
+                "startColumn": 1,
+                "endLine": 4,
+                "endColumn": 12,
+                "start": 54,
+                "end": 65
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Comment",
+                "raw": "I am a comment ",
+                "value": "I am a comment ",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 27,
+                    "start": 15,
+                    "end": 37
+                }
+            },
+            {
+                "type": "Text",
+                "raw": "Hello world",
+                "value": {
+                    "type": "Literal",
+                    "value": "Hello world"
+                },
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 27,
+                    "endLine": 4,
+                    "endColumn": 1,
+                    "start": 37,
+                    "end": 54
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,737 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 14,
+            "endColumn": 12,
+            "start": 0,
+            "end": 616,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 14,
+                "startColumn": 1,
+                "endLine": 14,
+                "endColumn": 12,
+                "start": 605,
+                "end": 616
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 34,
+                    "start": 15,
+                    "end": 44,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 15,
+                        "start": 15,
+                        "end": 25
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 30,
+                        "endLine": 2,
+                        "endColumn": 34,
+                        "start": 40,
+                        "end": 44
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 14,
+                            "start": 18,
+                            "end": 24
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "boolean present",
+                        "value": {
+                            "type": "Literal",
+                            "value": "boolean present"
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 15,
+                            "endLine": 2,
+                            "endColumn": 30,
+                            "start": 25,
+                            "end": 40
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 3,
+                    "startColumn": 5,
+                    "endLine": 3,
+                    "endColumn": 50,
+                    "start": 49,
+                    "end": 94,
+                    "startTag": {
+                        "startLine": 3,
+                        "startColumn": 5,
+                        "endLine": 3,
+                        "endColumn": 18,
+                        "start": 49,
+                        "end": 62
+                    },
+                    "endTag": {
+                        "startLine": 3,
+                        "startColumn": 46,
+                        "endLine": 3,
+                        "endColumn": 50,
+                        "start": 90,
+                        "end": 94
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": ""
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 8,
+                            "endLine": 3,
+                            "endColumn": 17,
+                            "start": 52,
+                            "end": 61
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "empty string, should be true",
+                        "value": {
+                            "type": "Literal",
+                            "value": "empty string, should be true"
+                        },
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 18,
+                            "endLine": 3,
+                            "endColumn": 46,
+                            "start": 62,
+                            "end": 90
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 65,
+                    "start": 99,
+                    "end": 159,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 33,
+                        "start": 99,
+                        "end": 127
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 61,
+                        "endLine": 4,
+                        "endColumn": 65,
+                        "start": 155,
+                        "end": 159
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": "other than true"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 8,
+                            "endLine": 4,
+                            "endColumn": 32,
+                            "start": 102,
+                            "end": 126
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "string value, should be true",
+                        "value": {
+                            "type": "Literal",
+                            "value": "string value, should be true"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 33,
+                            "endLine": 4,
+                            "endColumn": 61,
+                            "start": 127,
+                            "end": 155
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 5,
+                    "startColumn": 5,
+                    "endLine": 5,
+                    "endColumn": 77,
+                    "start": 164,
+                    "end": 236,
+                    "startTag": {
+                        "startLine": 5,
+                        "startColumn": 5,
+                        "endLine": 5,
+                        "endColumn": 26,
+                        "start": 164,
+                        "end": 185
+                    },
+                    "endTag": {
+                        "startLine": 5,
+                        "startColumn": 73,
+                        "endLine": 5,
+                        "endColumn": 77,
+                        "start": 232,
+                        "end": 236
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "hidden",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 9,
+                            "name": "computed",
+                            "location": {
+                                "startLine": 5,
+                                "startColumn": 8,
+                                "endLine": 5,
+                                "endColumn": 25,
+                                "start": 167,
+                                "end": 184
+                            }
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 8,
+                            "endLine": 5,
+                            "endColumn": 25,
+                            "start": 167,
+                            "end": 184
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "computed value, should be resolved in component",
+                        "value": {
+                            "type": "Literal",
+                            "value": "computed value, should be resolved in component"
+                        },
+                        "location": {
+                            "startLine": 5,
+                            "startColumn": 26,
+                            "endLine": 5,
+                            "endColumn": 73,
+                            "start": 185,
+                            "end": 232
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Element",
+                "name": "p",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 6,
+                    "startColumn": 5,
+                    "endLine": 6,
+                    "endColumn": 50,
+                    "start": 241,
+                    "end": 286,
+                    "startTag": {
+                        "startLine": 6,
+                        "startColumn": 5,
+                        "endLine": 6,
+                        "endColumn": 17,
+                        "start": 241,
+                        "end": 253
+                    },
+                    "endTag": {
+                        "startLine": 6,
+                        "startColumn": 46,
+                        "endLine": 6,
+                        "endColumn": 50,
+                        "start": 282,
+                        "end": 286
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": "3"
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 8,
+                            "endLine": 6,
+                            "endColumn": 16,
+                            "start": 244,
+                            "end": 252
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "integer value, should be true",
+                        "value": {
+                            "type": "Literal",
+                            "value": "integer value, should be true"
+                        },
+                        "location": {
+                            "startLine": 6,
+                            "startColumn": 17,
+                            "endLine": 6,
+                            "endColumn": 46,
+                            "start": 253,
+                            "end": 282
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 9,
+                    "startColumn": 5,
+                    "endLine": 9,
+                    "endColumn": 42,
+                    "start": 293,
+                    "end": 330,
+                    "startTag": {
+                        "startLine": 9,
+                        "startColumn": 5,
+                        "endLine": 9,
+                        "endColumn": 19,
+                        "start": 293,
+                        "end": 307
+                    },
+                    "endTag": {
+                        "startLine": 9,
+                        "startColumn": 34,
+                        "endLine": 9,
+                        "endColumn": 42,
+                        "start": 322,
+                        "end": 330
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hidden",
+                        "attributeName": "hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 12,
+                            "endLine": 9,
+                            "endColumn": 18,
+                            "start": 300,
+                            "end": 306
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "boolean present",
+                        "value": {
+                            "type": "Literal",
+                            "value": "boolean present"
+                        },
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 19,
+                            "endLine": 9,
+                            "endColumn": 34,
+                            "start": 307,
+                            "end": 322
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 10,
+                    "startColumn": 5,
+                    "endLine": 10,
+                    "endColumn": 58,
+                    "start": 335,
+                    "end": 388,
+                    "startTag": {
+                        "startLine": 10,
+                        "startColumn": 5,
+                        "endLine": 10,
+                        "endColumn": 22,
+                        "start": 335,
+                        "end": 352
+                    },
+                    "endTag": {
+                        "startLine": 10,
+                        "startColumn": 50,
+                        "endLine": 10,
+                        "endColumn": 58,
+                        "start": 380,
+                        "end": 388
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hidden",
+                        "attributeName": "hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": ""
+                        },
+                        "location": {
+                            "startLine": 10,
+                            "startColumn": 12,
+                            "endLine": 10,
+                            "endColumn": 21,
+                            "start": 342,
+                            "end": 351
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "empty string, should be true",
+                        "value": {
+                            "type": "Literal",
+                            "value": "empty string, should be true"
+                        },
+                        "location": {
+                            "startLine": 10,
+                            "startColumn": 22,
+                            "endLine": 10,
+                            "endColumn": 50,
+                            "start": 352,
+                            "end": 380
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 11,
+                    "startColumn": 5,
+                    "endLine": 11,
+                    "endColumn": 73,
+                    "start": 393,
+                    "end": 461,
+                    "startTag": {
+                        "startLine": 11,
+                        "startColumn": 5,
+                        "endLine": 11,
+                        "endColumn": 37,
+                        "start": 393,
+                        "end": 425
+                    },
+                    "endTag": {
+                        "startLine": 11,
+                        "startColumn": 65,
+                        "endLine": 11,
+                        "endColumn": 73,
+                        "start": 453,
+                        "end": 461
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hidden",
+                        "attributeName": "hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": "other than true"
+                        },
+                        "location": {
+                            "startLine": 11,
+                            "startColumn": 12,
+                            "endLine": 11,
+                            "endColumn": 36,
+                            "start": 400,
+                            "end": 424
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "string value, should be true",
+                        "value": {
+                            "type": "Literal",
+                            "value": "string value, should be true"
+                        },
+                        "location": {
+                            "startLine": 11,
+                            "startColumn": 37,
+                            "endLine": 11,
+                            "endColumn": 65,
+                            "start": 425,
+                            "end": 453
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 12,
+                    "startColumn": 5,
+                    "endLine": 12,
+                    "endColumn": 85,
+                    "start": 466,
+                    "end": 546,
+                    "startTag": {
+                        "startLine": 12,
+                        "startColumn": 5,
+                        "endLine": 12,
+                        "endColumn": 30,
+                        "start": 466,
+                        "end": 491
+                    },
+                    "endTag": {
+                        "startLine": 12,
+                        "startColumn": 77,
+                        "endLine": 12,
+                        "endColumn": 85,
+                        "start": 538,
+                        "end": 546
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hidden",
+                        "attributeName": "hidden",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 9,
+                            "name": "computed",
+                            "location": {
+                                "startLine": 12,
+                                "startColumn": 12,
+                                "endLine": 12,
+                                "endColumn": 29,
+                                "start": 473,
+                                "end": 490
+                            }
+                        },
+                        "location": {
+                            "startLine": 12,
+                            "startColumn": 12,
+                            "endLine": 12,
+                            "endColumn": 29,
+                            "start": 473,
+                            "end": 490
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "computed value, should be resolved in component",
+                        "value": {
+                            "type": "Literal",
+                            "value": "computed value, should be resolved in component"
+                        },
+                        "location": {
+                            "startLine": 12,
+                            "startColumn": 30,
+                            "endLine": 12,
+                            "endColumn": 77,
+                            "start": 491,
+                            "end": 538
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 13,
+                    "startColumn": 5,
+                    "endLine": 13,
+                    "endColumn": 58,
+                    "start": 551,
+                    "end": 604,
+                    "startTag": {
+                        "startLine": 13,
+                        "startColumn": 5,
+                        "endLine": 13,
+                        "endColumn": 21,
+                        "start": 551,
+                        "end": 567
+                    },
+                    "endTag": {
+                        "startLine": 13,
+                        "startColumn": 50,
+                        "endLine": 13,
+                        "endColumn": 58,
+                        "start": 596,
+                        "end": 604
+                    }
+                },
+                "attributes": [],
+                "properties": [
+                    {
+                        "type": "Property",
+                        "name": "hidden",
+                        "attributeName": "hidden",
+                        "value": {
+                            "type": "Literal",
+                            "value": "3"
+                        },
+                        "location": {
+                            "startLine": 13,
+                            "startColumn": 12,
+                            "endLine": 13,
+                            "endColumn": 20,
+                            "start": 558,
+                            "end": 566
+                        }
+                    }
+                ],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Text",
+                        "raw": "integer value, should be true",
+                        "value": {
+                            "type": "Literal",
+                            "value": "integer value, should be true"
+                        },
+                        "location": {
+                            "startLine": 13,
+                            "startColumn": 21,
+                            "endLine": 13,
+                            "endColumn": 50,
+                            "start": 567,
+                            "end": 596
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
