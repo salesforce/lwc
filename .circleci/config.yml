@@ -88,7 +88,7 @@ commands:
           paths:
             - ~/.cache/yarn
 
-  restore-nx-cache:
+  restore_nx_cache:
     description: Restore nx cache from previous build
     steps:
       - restore_cache:
@@ -96,7 +96,7 @@ commands:
             - nx-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - nx-v4-master-{{ checksum "yarn.lock" }}
 
-  save-nx-cache:
+  save_nx_cache:
     description: Save nx cache for future builds
     steps:
       - save_cache:
@@ -175,8 +175,7 @@ jobs:
     steps:
       - checkout
       - restore_yarn_cache
-      - restore-nx-cache
-          pipeline-stage: build
+      - restore_nx_cache
       - run:
           name: Install dependencies and build
           command: yarn install --frozen-lockfile
@@ -193,7 +192,7 @@ jobs:
           name: Check the size of the LWC bundle
           command: yarn bundlesize
       - save_yarn_cache
-      - save-nx-cache
+      - save_nx_cache
       - save_workspace
 
 
