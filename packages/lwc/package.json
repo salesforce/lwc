@@ -52,7 +52,7 @@
         "targets": {
             "build": {
                 "outputs": [
-                    "dist"
+                    "./dist"
                 ]
             }
         }
