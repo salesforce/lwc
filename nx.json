@@ -15,6 +15,12 @@
         },
         "dev": {
             "dependsOn": ["^build"]
+        },
+        "test": {
+            "dependsOn": ["^build"]
+        },
+        "sauce": {
+            "dependsOn": ["^build"]
         }
     },
     "affected": {
