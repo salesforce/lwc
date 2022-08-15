@@ -6,7 +6,14 @@
  */
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { BaseElement, ChildNode, LWCDirectiveRenderMode, Node, Root } from '../shared/types';
+import {
+    BaseElement,
+    ChildNode,
+    LWCDirectiveRenderMode,
+    Node,
+    ParentNode,
+    Root,
+} from '../shared/types';
 import {
     isParentNode,
     isSlot,
@@ -18,6 +25,7 @@ import {
     isText,
     isComment,
     isIfBlock,
+    isElseifBlock,
 } from '../shared/ast';
 import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 
@@ -59,16 +67,16 @@ function isDynamic(element: BaseElement): boolean {
     return element.directives.some(isDynamicDirective);
 }
 
-export function containsDynamicChildren(children: ChildNode[]): boolean {
-    return children.some((child) => {
+export function containsDynamicChildren(parent: ParentNode): boolean {
+    const hasDynamicChildren = parent.children.some((child) => {
         if (isForBlock(child) || isIf(child)) {
-            return containsDynamicChildren(child.children);
+            return containsDynamicChildren(child);
         }
 
         if (isIfBlock(child)) {
-            const trueConditionHasDynamicChildren = containsDynamicChildren(child.children);
+            const trueConditionHasDynamicChildren = containsDynamicChildren(child);
             const elseConditionHasDynamicChildren = child.else
-                ? containsDynamicChildren(child.children)
+                ? containsDynamicChildren(child.else)
                 : false;
             return trueConditionHasDynamicChildren || elseConditionHasDynamicChildren;
         }
@@ -79,6 +87,15 @@ export function containsDynamicChildren(children: ChildNode[]): boolean {
 
         return false;
     });
+
+    // In order to check the if-elseif-else chain fully, if the parent is an ElseIfBlock
+    // the else branch must be checked as well.
+    // Note that the ElseIfBlock can only occur when it is inside an if-elseif-else chain
+    // meaning that the children passed from transformChildren will not contain an ElseifBlock or ElseBlock
+    const elseIfHasDynamicChildren =
+        isElseifBlock(parent) && parent.else ? containsDynamicChildren(parent.else) : false;
+
+    return hasDynamicChildren || elseIfHasDynamicChildren;
 }
 
 /**

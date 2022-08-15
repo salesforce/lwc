@@ -157,14 +157,14 @@ function transform(codeGen: CodeGen): t.Expression {
             } else if (isComment(child) && codeGen.preserveComments) {
                 res.push(transformComment(child));
             } else if (isIfBlock(child)) {
+                // IfBlock should always appear as the parent in the if-elseif-else chain which means
+                // ElseIfBlock and ElseBlock should never appear in the children array
                 res.push(transformIfBlock(child));
-            } else {
-                // Todo: create validation for case when there's invalid AST nodes
             }
         }
 
         if (shouldFlatten(codeGen, children)) {
-            if (children.length === 1 && !containsDynamicChildren(children)) {
+            if (children.length === 1 && !containsDynamicChildren(parent)) {
                 return res[0];
             } else {
                 return codeGen.genFlatten([t.arrayExpression(res)]);
@@ -203,20 +203,18 @@ function transform(codeGen: CodeGen): t.Expression {
         return res;
     }
 
-    function transformIfBlock(ifBlock: IfBlock | ElseifBlock): t.Expression {
-        const childrenExpression = transformChildren(ifBlock);
+    function transformIfBlock(conditionalParentBlock: IfBlock | ElseifBlock): t.Expression {
+        const childrenExpression = transformChildren(conditionalParentBlock);
         let elseExpression: t.Expression = t.arrayExpression([]);
 
-        if (ifBlock.else) {
-            if (isElseifBlock(ifBlock.else)) {
-                elseExpression = transformIfBlock(ifBlock.else);
-            } else {
-                elseExpression = transformChildren(ifBlock.else);
-            }
+        if (conditionalParentBlock.else) {
+            elseExpression = isElseifBlock(conditionalParentBlock.else)
+                ? transformIfBlock(conditionalParentBlock.else)
+                : transformChildren(conditionalParentBlock.else);
         }
 
         return t.conditionalExpression(
-            codeGen.bindExpression(ifBlock.condition),
+            codeGen.bindExpression(conditionalParentBlock.condition),
             childrenExpression,
             elseExpression
         );
